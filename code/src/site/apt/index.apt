@@ -1,0 +1,17 @@
+ -----
+ The Site
+ -----
+ The caArray Team
+ -----
+
+Maven Site for your project
+
+	The Cancer Array Informatics (caArray) software has been developed by the NCI Center for Bioinformatics (NCICB) to create an information-sharing network modeled on the World Wide Web. caArray consists of a microarray database and microarray data visualization and analysis tools. caArray is an open source project, and the source code and APIs are available in the download site at the NCICB web site, http://ncicb.nci.nih.gov/download/index.jsp. caArray is designed to make microarray data publicly available, and to develop and bring together open source tools to analyze these data.
+	The caArray data portal is a Minimal Information About A Microarray Experiment (MIAME) compliant data repository that allows submission of MIAME 1.1 level annotations and microarray data using web-based submission forms. caArray design is consistent with the cancer Biomedical Informatics Grid (caBIG) silver level compatibility guidelines to allow interoperability with other applications developed under the caBIG program distribution.
+
+  
++-----+
+
+m2 site:site
+
++-----+
