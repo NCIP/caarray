@@ -1,202 +1,191 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>gov.nih.nci.caarray</groupId>
-	<artifactId>caarray2</artifactId>
-	<packaging>pom</packaging>
-	<version>2.0-SNAPSHOT</version>
-	<name>caArray 2.0 - The Next Generation</name>
-	<url>http://caarray.nci.nih.gov/</url>
-	<description>Sample caArray 2.0 w/ Maven</description>
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-	<mailingLists>
-		<mailingList>
-			<name>caArray Commits List</name>
-			<subscribe>
-				http://gforge.nci.nih.gov/mailman/listinfo/caarray2-commits
-			</subscribe>
-			<unsubscribe>
-				http://gforge.nci.nih.gov/mailman/listinfo/caarray2-commits
-			</unsubscribe>
-			<post>caarray2-commits@gforge.nci.nih.gov</post>
-			<archive>
-				http://gforge.nci.nih.gov/pipermail/caarray2-commits/
-			</archive>
-		</mailingList>
-	</mailingLists>
-	<ciManagement>
-		<system>continuum</system>
-		<url>http://localhost:8080/continuum</url>
-		<notifiers>
-			<notifier>
-				<type>mail</type>
-				<configuration>
-					<address>smatyas@5amsolutions.com</address>
-				</configuration>
-			</notifier>
-		</notifiers>
-	</ciManagement>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>gov.nih.nci.caarray</groupId>
-				<artifactId>caarray.war</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>gov.nih.nci.caarray</groupId>
-				<artifactId>caarray-services.jar</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>gov.nih.nci.caarray</groupId>
-				<artifactId>caarray-common.jar</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-	<scm>
-		<connection>
-			scm:svn:https://gforge.nci.nhi.gov/svnroot/caarray2/trunk
-		</connection>
-		<developerConnection>
-			scm:svn:https://gforge.nci.nhi.gov/svnroot/caarray2/trunk
-		</developerConnection>
-	</scm>
-	<!--
-		<scm>
-		<connection>
-		scm:svn:http://gforge.nci.nhi.gov/svnroot/caarray2
-		</connection>
-		<developerConnection>
-		scm:svn:https://gforge.nci.nhi.gov/svnroot/caarray2
-		</developerConnection>
-		<tag>HEAD</tag>
-		<url>
-		https://gforge.nci.nih.gov/plugins/scmsvn/viewcvs.php/?root=caarray2
-		</url>
-		</scm>
-	-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>gov.nih.nci.caarray</groupId>
+    <artifactId>caarray2</artifactId>
+    <packaging>pom</packaging>
+    <version>2.0-SNAPSHOT</version>
+    <name>caArray 2.0 - The Next Generation</name>
+    <url>http://caarray.nci.nih.gov/</url>
+    <description>Sample caArray 2.0 w/ Maven</description>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <mailingLists>
+        <mailingList>
+            <name>caArray Commits List</name>
+            <subscribe>http://gforge.nci.nih.gov/mailman/listinfo/caarray2-commits</subscribe>
+            <unsubscribe>http://gforge.nci.nih.gov/mailman/listinfo/caarray2-commits</unsubscribe>
+            <post>caarray2-commits@gforge.nci.nih.gov</post>
+            <archive>http://gforge.nci.nih.gov/pipermail/caarray2-commits/</archive>
+        </mailingList>
+    </mailingLists>
+    <ciManagement>
+        <system>continuum</system>
+        <url>http://localhost:8080/continuum</url>
+        <notifiers>
+            <notifier>
+                <type>mail</type>
+                <configuration>
+                    <address>smatyas@5amsolutions.com</address>
+                </configuration>
+            </notifier>
+        </notifiers>
+    </ciManagement>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>gov.nih.nci.caarray</groupId>
+                <artifactId>caarray.war</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>gov.nih.nci.caarray</groupId>
+                <artifactId>caarray-services.jar</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>gov.nih.nci.caarray</groupId>
+                <artifactId>caarray-common.jar</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <scm>
+        <connection>scm:svn:https://gforge.nci.nhi.gov/svnroot/caarray2/trunk</connection>
+        <developerConnection>scm:svn:https://gforge.nci.nhi.gov/svnroot/caarray2/trunk</developerConnection>
+    </scm>
+    <!--
+        <scm>
+        <connection>
+        scm:svn:http://gforge.nci.nhi.gov/svnroot/caarray2
+        </connection>
+        <developerConnection>
+        scm:svn:https://gforge.nci.nhi.gov/svnroot/caarray2
+        </developerConnection>
+        <tag>HEAD</tag>
+        <url>
+        https://gforge.nci.nih.gov/plugins/scmsvn/viewcvs.php/?root=caarray2
+        </url>
+        </scm>
+    -->
 
-	<!--
-		<repositories>
-		<repository>
-		<id>caarray2.snapshots</id>
-		<name>caArray 2.0 Snapshot Repository</name>
-		<url>http://gforge.nci.nih.gov/maven-snapshot-repository</url>
-		<releases>
-		<enabled>false</enabled>
-		</releases>
-		</repository>
-		</repositories>
-	-->
+    <!--
+        <repositories>
+        <repository>
+        <id>caarray2.snapshots</id>
+        <name>caArray 2.0 Snapshot Repository</name>
+        <url>http://gforge.nci.nih.gov/maven-snapshot-repository</url>
+        <releases>
+        <enabled>false</enabled>
+        </releases>
+        </repository>
+        </repositories>
+    -->
     <modules>
-    	<module>caarray-common.jar</module>
+        <module>caarray-common.jar</module>
         <module>caarray-services.jar</module>
         <module>caarray.war</module>
     </modules>
-	<!--
-		<repositories>
-		<repository>
-		<id>central</id>
-		<name>Internal Mirror of Central Repository</name>
-		<url>http://localhost:8081/central/</url>
-		</repository>
-		</repositories>
-		<pluginRepositories>
-		<pluginRepository>
-		<id>central</id>
-		<name>Internal Mirror of Central Plugins Repository</name>
-		<url>http://localhost:8081/central/</url>
-		</pluginRepository>
-		</pluginRepositories>
-	-->
+    <!--
+        <repositories>
+        <repository>
+        <id>central</id>
+        <name>Internal Mirror of Central Repository</name>
+        <url>http://localhost:8081/central/</url>
+        </repository>
+        </repositories>
+        <pluginRepositories>
+        <pluginRepository>
+        <id>central</id>
+        <name>Internal Mirror of Central Plugins Repository</name>
+        <url>http://localhost:8081/central/</url>
+        </pluginRepository>
+        </pluginRepositories>
+    -->
 
-	<distributionManagement>
-		<site>
-			<id>website</id>
-			<url>
-				file://localhost/c:/temp/fun/repository/sites/caarray2/reference/${project.version}
-			</url>
-		</site>
-		<!-- use the following if you're not using a snapshot version.
-		<repository>
-			<id>repo</id>
-			<name>Repository Name</name>
-			<url>scp://host/path/to/repo</url>
-		</repository>
-		-->
-		<!-- use the following if you ARE using a snapshot version.
-		<snapshotRepository>
-			<id>repo</id>
-			<name>Repository Name</name>
-			<url>scp://host/path/to/repo</url>
-		</snapshotRepository>
-		-->
-	</distributionManagement>
+    <distributionManagement>
+        <site>
+            <id>website</id>
+            <url>file://localhost/c:/temp/fun/repository/sites/caarray2/reference/${project.version}</url>
+        </site>
+        <!-- use the following if you're not using a snapshot version.
+            <repository>
+            <id>repo</id>
+            <name>Repository Name</name>
+            <url>scp://host/path/to/repo</url>
+            </repository>
+        -->
+        <!-- use the following if you ARE using a snapshot version.
+            <snapshotRepository>
+            <id>repo</id>
+            <name>Repository Name</name>
+            <url>scp://host/path/to/repo</url>
+            </snapshotRepository>
+        -->
+    </distributionManagement>
 
-	<inceptionYear>2007</inceptionYear>
-	<organization>
-		<name>NCI Center for Bioinformatics (NCICB)</name>
-		<url>http://ncicb.nci.nih.gov/</url>
-	</organization>
+    <inceptionYear>2007</inceptionYear>
+    <organization>
+        <name>NCI Center for Bioinformatics (NCICB)</name>
+        <url>http://ncicb.nci.nih.gov/</url>
+    </organization>
 
-	<profiles>
-		<profile>
-			<id>ciProfile</id>
-			<activation>
-				<property>
-					<name>enableCiProfile</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-pmd-plugin</artifactId>
-						<executions>
-							<execution>
-								<goals>
-									<goal>check</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>cobertura-maven-plugin</artifactId>
-						<configuration>
-							<check>
-								<totalLineRate>80</totalLineRate>
-								<totalBranchRate>100</totalBranchRate>
-							</check>
-						</configuration>
-						<executions>
-							<execution>
-								<id>clean</id>
-								<goals>
-									<goal>clean</goal>
-								</goals>
-							</execution>
-							<execution>
-								<id>check</id>
-								<goals>
-									<goal>check</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+    <profiles>
+        <profile>
+            <id>ciProfile</id>
+            <activation>
+                <property>
+                    <name>enableCiProfile</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-pmd-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>cobertura-maven-plugin</artifactId>
+                        <configuration>
+                            <check>
+                                <totalLineRate>80</totalLineRate>
+                                <totalBranchRate>100</totalBranchRate>
+                            </check>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>clean</id>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>check</id>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

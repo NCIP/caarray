@@ -1,131 +1,124 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<artifactId>caarray2</artifactId>
-		<groupId>gov.nih.nci.caarray</groupId>
-		<version>2.0-SNAPSHOT</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>caarray.war</artifactId>
-	<packaging>war</packaging>
-	<name>caarray.war Webapp</name>
-	<dependencies>
-		<dependency>
-			<groupId>gov.nih.nci.caarray</groupId>
-			<artifactId>caarray-common.jar</artifactId>
-			<version>${project.version}</version>
-			<scope></scope>
-		</dependency>
-		<dependency>
-			<groupId>gov.nih.nci.caarray</groupId>
-			<artifactId>caarray-services.jar</artifactId>
-			<version>${project.version}</version>
-			<scope></scope>
-		</dependency>
-	</dependencies>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>codehaus snapshot repository</id>
-			<url>http://snapshots.repository.codehaus.org/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</pluginRepository>
-	</pluginRepositories>
-	<build>
-		<finalName>caarray2</finalName>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.cargo</groupId>
-				<artifactId>cargo-maven2-plugin</artifactId>
-				<version>0.3-SNAPSHOT</version>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <artifactId>caarray2</artifactId>
+        <groupId>gov.nih.nci.caarray</groupId>
+        <version>2.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>caarray.war</artifactId>
+    <packaging>war</packaging>
+    <name>caarray.war Webapp</name>
+    <dependencies>
+        <dependency>
+            <groupId>gov.nih.nci.caarray</groupId>
+            <artifactId>caarray-common.jar</artifactId>
+            <version>${project.version}</version>
+            <scope></scope>
+        </dependency>
+        <dependency>
+            <groupId>gov.nih.nci.caarray</groupId>
+            <artifactId>caarray-services.jar</artifactId>
+            <version>${project.version}</version>
+            <scope></scope>
+        </dependency>
+    </dependencies>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>codehaus snapshot repository</id>
+            <url>http://snapshots.repository.codehaus.org/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+    <build>
+        <finalName>caarray2</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <version>0.3-SNAPSHOT</version>
 
-				<configuration>
-					<war warfile="path/to/my.war" />
-					<!-- Container configuration -->
-					<container>
-						<containerId>jboss4x</containerId>
-						<home>C:/dev/app_servers/jboss-4.0.4.GA</home>
-						<!-- 
-							<zipUrlInstaller>
-							<url>
-							<![CDATA[http://downloads.sourceforge.net/jboss/jboss-4.0.5.GA.zip?modtime=1161642673&big_mirror=1]]>
-							</url>
-							<installDir>
-							C:/dev/app_servers/jboss-4.0.4.GA
-							</installDir>
-							</zipUrlInstaller>
-						-->
-					</container>
+                <configuration>
+                    <war warfile="path/to/my.war" />
+                    <!-- Container configuration -->
+                    <container>
+                        <containerId>jboss4x</containerId>
+                        <home>C:/dev/app_servers/jboss-4.0.4.GA</home>
+                        <!--
+                            <zipUrlInstaller>
+                            <url>
+                            <![CDATA[http://downloads.sourceforge.net/jboss/jboss-4.0.5.GA.zip?modtime=1161642673&big_mirror=1]]>
+                            </url>
+                            <installDir>
+                            C:/dev/app_servers/jboss-4.0.4.GA
+                            </installDir>
+                            </zipUrlInstaller>
+                        -->
+                    </container>
 
-					<!-- Configuration to use with the container -->
-					<configuration>
-						<type>existing</type>
-						<home>
-							C:/dev/app_servers/jboss-4.0.4.GA/server/default
-						</home>
-						<properties>
-							<!-- standalone -->
-							<cargo.protocol>http</cargo.protocol>
-							<cargo.jvmargs></cargo.jvmargs>
-							<cargo.jboss.configuration>
-								default
-							</cargo.jboss.configuration>
-							<cargo.servlet.port>
-								8080
-							</cargo.servlet.port>
-							<cargo.logging>low</cargo.logging>
-							<cargo.hostname>localhost</cargo.hostname>
+                    <!-- Configuration to use with the container -->
+                    <configuration>
+                        <type>existing</type>
+                        <home>C:/dev/app_servers/jboss-4.0.4.GA/server/default</home>
+                        <properties>
+                            <!-- standalone -->
+                            <cargo.protocol>http</cargo.protocol>
+                            <cargo.jvmargs></cargo.jvmargs>
+                            <cargo.jboss.configuration>default</cargo.jboss.configuration>
+                            <cargo.servlet.port>8080</cargo.servlet.port>
+                            <cargo.logging>low</cargo.logging>
+                            <cargo.hostname>localhost</cargo.hostname>
 
-							<!-- existing -->
+                            <!-- existing -->
 
-						</properties>
-					</configuration>
+                        </properties>
+                    </configuration>
 
-					<!-- Deployer configuration -->
-					<deployer>
-						<type>installed</type>
-						<deployables>
-							<deployable>
-								<groupId>gov.nih.nci.caarray</groupId>
-								<artifactId>caarray.war</artifactId>
-								<type>war</type>
-								<properties>
-									<context>caarray2</context>
-								</properties>
-								<!-- 
-									<pingURL>
-									optional url to ping to know if
-									deployable is done or not
-									</pingURL>
-									<pingTimeout>
-									optional timeout to ping (default
-									20000 milliseconds)
-									</pingTimeout>
-								-->
-							</deployable>
-							<!-- 
-								<deployable>
-								<groupId>ear group id</groupId>
-								<artifactId>ear artifact id</artifactId>
-								<type>ear</type>
-								<pingURL>
-								optional url to ping to know if
-								deployable is done or not
-								</pingURL>
-								<pingTimeout>
-								optional timeout to ping (default
-								20000 milliseconds)
-								</pingTimeout>
-								</deployable>
-								[...]
-							-->
-						</deployables>
-					</deployer>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+                    <!-- Deployer configuration -->
+                    <deployer>
+                        <type>installed</type>
+                        <deployables>
+                            <deployable>
+                                <groupId>gov.nih.nci.caarray</groupId>
+                                <artifactId>caarray.war</artifactId>
+                                <type>war</type>
+                                <properties>
+                                    <context>caarray2</context>
+                                </properties>
+                                <!--
+                                    <pingURL>
+                                    optional url to ping to know if
+                                    deployable is done or not
+                                    </pingURL>
+                                    <pingTimeout>
+                                    optional timeout to ping (default
+                                    20000 milliseconds)
+                                    </pingTimeout>
+                                -->
+                            </deployable>
+                            <!--
+                                <deployable>
+                                <groupId>ear group id</groupId>
+                                <artifactId>ear artifact id</artifactId>
+                                <type>ear</type>
+                                <pingURL>
+                                optional url to ping to know if
+                                deployable is done or not
+                                </pingURL>
+                                <pingTimeout>
+                                optional timeout to ping (default
+                                20000 milliseconds)
+                                </pingTimeout>
+                                </deployable>
+                                [...]
+                            -->
+                        </deployables>
+                    </deployer>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
