@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>caarray.war</artifactId>
     <packaging>war</packaging>
-    <name>caarray.war Webapp</name>
+    <name>caArray Webapp</name>
     <dependencies>
         <dependency>
             <groupId>gov.nih.nci.caarray</groupId>
@@ -42,38 +42,23 @@
                 <version>0.3-SNAPSHOT</version>
 
                 <configuration>
-                    <war warfile="path/to/my.war" />
                     <!-- Container configuration -->
                     <container>
                         <containerId>jboss4x</containerId>
-                        <home>C:/dev/app_servers/jboss-4.0.4.GA</home>
-                        <!--
-                            <zipUrlInstaller>
-                            <url>
-                            <![CDATA[http://downloads.sourceforge.net/jboss/jboss-4.0.5.GA.zip?modtime=1161642673&big_mirror=1]]>
-                            </url>
-                            <installDir>
-                            C:/dev/app_servers/jboss-4.0.4.GA
-                            </installDir>
-                            </zipUrlInstaller>
-                        -->
+                        <home>${env.JBOSS_HOME}</home>
                     </container>
 
                     <!-- Configuration to use with the container -->
                     <configuration>
                         <type>existing</type>
-                        <home>C:/dev/app_servers/jboss-4.0.4.GA/server/default</home>
+                        <home>${env.JBOSS_HOME}/server/default</home>
                         <properties>
-                            <!-- standalone -->
-                            <cargo.protocol>http</cargo.protocol>
-                            <cargo.jvmargs></cargo.jvmargs>
                             <cargo.jboss.configuration>default</cargo.jboss.configuration>
-                            <cargo.servlet.port>8080</cargo.servlet.port>
+                            <cargo.rmi.port>1099</cargo.rmi.port>
+                            <cargo.jvmargs></cargo.jvmargs>
                             <cargo.logging>low</cargo.logging>
-                            <cargo.hostname>localhost</cargo.hostname>
-
-                            <!-- existing -->
-
+                            <cargo.servlet.port>8080</cargo.servlet.port>
+                            <cargo.protocol>http</cargo.protocol>
                         </properties>
                     </configuration>
 
@@ -86,35 +71,9 @@
                                 <artifactId>caarray.war</artifactId>
                                 <type>war</type>
                                 <properties>
-                                    <context>caarray2</context>
+                                    <context>caarray</context>
                                 </properties>
-                                <!--
-                                    <pingURL>
-                                    optional url to ping to know if
-                                    deployable is done or not
-                                    </pingURL>
-                                    <pingTimeout>
-                                    optional timeout to ping (default
-                                    20000 milliseconds)
-                                    </pingTimeout>
-                                -->
                             </deployable>
-                            <!--
-                                <deployable>
-                                <groupId>ear group id</groupId>
-                                <artifactId>ear artifact id</artifactId>
-                                <type>ear</type>
-                                <pingURL>
-                                optional url to ping to know if
-                                deployable is done or not
-                                </pingURL>
-                                <pingTimeout>
-                                optional timeout to ping (default
-                                20000 milliseconds)
-                                </pingTimeout>
-                                </deployable>
-                                [...]
-                            -->
                         </deployables>
                     </deployer>
                 </configuration>

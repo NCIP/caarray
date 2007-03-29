@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>caarray-services.jar</artifactId>
     <packaging>jar</packaging>
-    <name>caarray-services.jar</name>
+    <name>caArray-services</name>
     <dependencies>
         <dependency>
             <groupId>gov.nih.nci.caarray</groupId>

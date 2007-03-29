@@ -6,9 +6,8 @@
     <artifactId>caarray2</artifactId>
     <packaging>pom</packaging>
     <version>2.0-SNAPSHOT</version>
-    <name>caArray 2.0 - The Next Generation</name>
+    <name>caArray 2.0</name>
     <url>http://caarray.nci.nih.gov/</url>
-    <description>Sample caArray 2.0 w/ Maven</description>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
