@@ -43,7 +43,7 @@
 			<item name="NCICB GForge" href="http://gforge.nci.nih.gov" />
 		</links>
 
-		<menu name="caArray 2.0">
+		<menu name="caArray 2.0" inherit="top">
 			<item name="Introduction" href="index.html" />
 			<item name="Download"
 				href="http://gforge.nci.nih.gov/frs/?group_id=305" />
@@ -54,7 +54,7 @@
 			<item name="Road Map" href="roadmap.html" />
 		</menu>
 
-		<menu ref="modules" />
+		<menu ref="modules" name="Components" inherit="top"/>
 
 		<menu name="Maven 2.0 Stuff -- remove later">
 			<item name="APT Format" href="format.html" />

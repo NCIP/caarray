@@ -52,36 +52,55 @@
 					<locales>en</locales>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-docck-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 	<reporting>
 		<plugins>
-		<!-- Can't get this to work 
-			<plugin>
+			<!-- Can't get this to work 
+				<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-changelog-plugin</artifactId>
 				<reportSets>
-					<reportSet>
-						<id>tri-report</id>
-						<configuration>
-							<type>range</type>
-							<range>2</range>
-							<dateFormat>yyyy-MM-dd</dateFormat>
-							<tagBase>scm:svn:https://gforge.nci.nih.gov/svnroot/caarray2/tags</tagBase>
-							<scmUrl>scm:svn:https://gforge.nci.nih.gov/svnroot/caarray2/trunk</scmUrl>
-							<connectionType>developerConnection</connectionType>
-							<username>smatyas</username>
-							<password>smatyas</password>
-						</configuration>
-						<reports>
-							<report>changelog</report>
-							<report>file-activity</report>
-							<report>dev-activity</report>
-						</reports>
-					</reportSet>
+				<reportSet>
+				<id>tri-report</id>
+				<configuration>
+				<type>range</type>
+				<range>2</range>
+				<dateFormat>yyyy-MM-dd</dateFormat>
+				<tagBase>scm:svn:https://gforge.nci.nih.gov/svnroot/caarray2/tags</tagBase>
+				<scmUrl>scm:svn:https://gforge.nci.nih.gov/svnroot/caarray2/trunk</scmUrl>
+				<connectionType>developerConnection</connectionType>
+				<username>smatyas</username>
+				<password>smatyas</password>
+				</configuration>
+				<reports>
+				<report>changelog</report>
+				<report>file-activity</report>
+				<report>dev-activity</report>
+				</reports>
+				</reportSet>
 				</reportSets>
+				</plugin>
+			-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-doap-plugin</artifactId>
+				<configuration>
+					<category>build-management</category>
+					<language>Java</language>
+				</configuration>
 			</plugin>
-		 -->
 		</plugins>
 	</reporting>
 
@@ -183,8 +202,8 @@
 	</pluginRepositories>
 	<distributionManagement>
 		<site>
-			<name>local folder</name>
-			<id>website</id>
+			<name>caArray 2.0 Project website</name>
+			<id>project website</id>
 			<url>file://localhost/c:/fullsite</url>
 		</site>
 		<!-- use the following if you're not using a snapshot version.
@@ -353,6 +372,26 @@
 					</plugin>
 				</plugins>
 			</reporting>
+		</profile>
+		<profile>
+			<!-- 
+				This profile will be activated whenever a local.properties file exists at the specified location.
+				Used to override certain default/global POM settings.
+			-->
+			<id>local</id>
+			<activation>
+				<file>
+					<exists>${basedir}/local.properties</exists>
+				</file>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<distributionManagement>
+				<site>
+					<id>local website</id>
+					<name>/temp/fullsite</name>
+					<url>file://localhost/temp/caarray2/site</url>
+				</site>
+			</distributionManagement>
 		</profile>
 	</profiles>
 </project>
