@@ -54,10 +54,30 @@
 			</plugin>
 		</plugins>
 	</build>
-	<reports>
-		<project></project>
-	</reports>
-
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-changelog-plugin</artifactId>
+				<reportSets>
+					<reportSet>
+						<id>tri-report</id>
+						<configuration>
+							<type>range</type>
+							<range>30</range>
+							<dateFormat>yyyy-MM-dd</dateFormat>
+							<tagBase>scm:svn:https://gforge.nci.nih.gov/svnroot/caarray2/tags</tagBase>
+						</configuration>
+						<reports>
+							<report>changelog</report>
+							<report>file-activity</report>
+							<report>dev-activity</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
 
 	<!-- More Project Information -->
 	<name>caArray 2.0</name>
@@ -116,14 +136,14 @@
 	</mailingLists>
 	<scm>
 		<connection>
-			scm:svn:https://gforge.nci.nhi.gov/svnroot/caarray2/trunk
+			scm:svn:https://gforge.nci.nih.gov/svnroot/caarray2/trunk
 		</connection>
 		<developerConnection>
-			scm:svn:https://gforge.nci.nhi.gov/svnroot/caarray2/trunk
+			scm:svn:https://gforge.nci.nih.gov/svnroot/caarray2/trunk
 		</developerConnection>
 		<tag>HEAD</tag>
 		<url>
-			https://gforge.nci.nih.gov/plugins/scmsvn/viewcvs.php/?root=caarray2
+			scm:svn:https://gforge.nci.nih.gov/plugins/scmsvn/viewcvs.php/?root=caarray2
 		</url>
 	</scm>
 	<prerequisites></prerequisites>
@@ -306,6 +326,24 @@
 								</link>
 							</links>
 						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-changelog-plugin</artifactId>
+						<reportSets>
+							<reportSet>
+								<id>tri-report</id>
+								<configuration>
+									<type>range</type>
+									<range>30</range>
+								</configuration>
+								<reports>
+									<report>changelog</report>
+									<report>file-activity</report>
+									<report>dev-activity</report>
+								</reports>
+							</reportSet>
+						</reportSets>
 					</plugin>
 				</plugins>
 			</reporting>
