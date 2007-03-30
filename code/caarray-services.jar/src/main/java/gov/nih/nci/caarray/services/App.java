@@ -1,4 +1,4 @@
-package gov.nih.nci.caarray;
+package gov.nih.nci.caarray.services;
 
 /**
  * Hello world!

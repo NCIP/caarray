@@ -1,4 +1,4 @@
-package gov.nih.nci.caarray;
+package gov.nih.nci.caarray.commmon;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
