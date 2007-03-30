@@ -45,13 +45,13 @@
                     <!-- Container configuration -->
                     <container>
                         <containerId>jboss4x</containerId>
-                        <home>${env.JBOSS_HOME}</home>
+                        <home>${jboss.home}</home>
                     </container>
 
                     <!-- Configuration to use with the container -->
                     <configuration>
                         <type>existing</type>
-                        <home>${env.JBOSS_HOME}/server/default</home>
+                        <home>${jboss.home}/server/default</home>
                         <properties>
                             <cargo.jboss.configuration>default</cargo.jboss.configuration>
                             <cargo.rmi.port>1099</cargo.rmi.port>

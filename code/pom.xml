@@ -41,7 +41,9 @@
 		<module>caarray-services.jar</module>
 		<module>caarray.war</module>
 	</modules>
-	<properties></properties>
+	<properties>
+      <jboss.home>C:/dev/app_servers/jboss-4.0.5.GA</jboss.home>
+    </properties>
 
 	<!-- Build Settings -->
 	<build>
@@ -80,7 +82,7 @@
 	</build>
 	<reporting>
 		<plugins>
-			<!-- Can't get this to work 
+			<!-- Can't get this to work
 				<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-changelog-plugin</artifactId>
@@ -186,7 +188,7 @@
 	</scm>
 	<prerequisites></prerequisites>
 	<repositories>
-		<!-- 
+		<!--
 			<repository>
 			<id>central</id>
 			<name>Internal Mirror of Central Repository</name>
@@ -205,7 +207,7 @@
 		-->
 	</repositories>
 	<pluginRepositories>
-		<!-- 
+		<!--
 			<pluginRepository>
 			<id>central</id>
 			<name>Internal Mirror of Central Plugins Repository</name>
@@ -387,7 +389,7 @@
 			</reporting>
 		</profile>
 		<profile>
-			<!-- 
+			<!--
 				This profile will be activated whenever a local.properties file exists at the specified location.
 				Used to override certain default/global POM settings.
 			-->
