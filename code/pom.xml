@@ -56,6 +56,7 @@
 	</build>
 	<reporting>
 		<plugins>
+		<!-- Can't get this to work 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-changelog-plugin</artifactId>
@@ -64,9 +65,13 @@
 						<id>tri-report</id>
 						<configuration>
 							<type>range</type>
-							<range>30</range>
+							<range>2</range>
 							<dateFormat>yyyy-MM-dd</dateFormat>
 							<tagBase>scm:svn:https://gforge.nci.nih.gov/svnroot/caarray2/tags</tagBase>
+							<scmUrl>scm:svn:https://gforge.nci.nih.gov/svnroot/caarray2/trunk</scmUrl>
+							<connectionType>developerConnection</connectionType>
+							<username>smatyas</username>
+							<password>smatyas</password>
 						</configuration>
 						<reports>
 							<report>changelog</report>
@@ -76,6 +81,7 @@
 					</reportSet>
 				</reportSets>
 			</plugin>
+		 -->
 		</plugins>
 	</reporting>
 
