@@ -12,7 +12,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.1</version>
+            <version>4.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -43,6 +43,43 @@
     <properties>
         <jboss.home>C:/dev/app_servers/jboss-4.0.5.GA</jboss.home>
     </properties>
+
+    <!-- More Project Information -->
+    <name>caArray 2.0</name>
+    <url>http://caarray.nci.nih.gov/</url>
+    <inceptionYear>2007</inceptionYear>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <organization>
+        <name>NCI Center for Bioinformatics (NCICB)</name>
+        <url>http://ncicb.nci.nih.gov/</url>
+    </organization>
+    <developers></developers>
+    <contributors></contributors>
+    <issueManagement>
+        <system>GForge Tracker</system>
+        <url>http://gforge.nci.nih.gov/tracker/?group_id=305</url>
+    </issueManagement>
+    <mailingLists>
+        <mailingList>
+            <name>caArray Commits List</name>
+            <subscribe>http://gforge.nci.nih.gov/mailman/listinfo/caarray2-commits</subscribe>
+            <unsubscribe>http://gforge.nci.nih.gov/mailman/listinfo/caarray2-commits</unsubscribe>
+            <post>caarray2-commits@gforge.nci.nih.gov</post>
+            <archive>http://gforge.nci.nih.gov/pipermail/caarray2-commits/</archive>
+        </mailingList>
+    </mailingLists>
+    <scm>
+        <connection>scm:svn:https://gforge.nci.nih.gov/svnroot/caarray2/trunk</connection>
+        <developerConnection>scm:svn:https://gforge.nci.nih.gov/svnroot/caarray2/trunk</developerConnection>
+        <tag>HEAD</tag>
+        <url>scm:svn:https://gforge.nci.nih.gov/plugins/scmsvn/viewcvs.php/?root=caarray2</url>
+    </scm>
 
     <!-- Build Settings -->
     <build>
@@ -83,13 +120,11 @@
                 <configuration>
                     <instrumentation></instrumentation>
                     <check>
-                        <branchRate>85</branchRate>
+                        <branchRate>100</branchRate>
                         <lineRate>85</lineRate>
-                        <haltOnFailure>true</haltOnFailure>
-                        <totalBranchRate>85</totalBranchRate>
+                        <haltOnFailure>false</haltOnFailure>
+                        <totalBranchRate>100</totalBranchRate>
                         <totalLineRate>85</totalLineRate>
-                        <packageLineRate>85</packageLineRate>
-                        <packageBranchRate>85</packageBranchRate>
                     </check>
                 </configuration>
                 <executions>
@@ -102,8 +137,20 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
     <reporting>
         <plugins>
             <!-- Can't get this to work
@@ -141,35 +188,60 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <configLocation>
+                        http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-checkstyle-plugin/src/main/resources/config/maven_checks.xml
+                    </configLocation>
+                    <headerLocation>
+                        http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-checkstyle-plugin/src/main/resources/config/maven-header.txt
+                    </headerLocation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>cobertura-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>taglist-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <links>
+                        <link>http://java.sun.com/j2ee/1.4/docs/api</link>
+                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                        <link>http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/</link>
+                        <link>http://jakarta.apache.org/commons/dbcp/apidocs/</link>
+                        <link>http://jakarta.apache.org/commons/fileupload/apidocs/</link>
+                        <link>http://jakarta.apache.org/commons/httpclient/apidocs/</link>
+                        <link>http://jakarta.apache.org/commons/logging/apidocs/</link>
+                        <link>http://jakarta.apache.org/commons/pool/apidocs/</link>
+                        <link>http://www.junit.org/junit/javadoc/</link>
+                        <link>http://logging.apache.org/log4j/docs/api/</link>
+                        <link>http://jakarta.apache.org/regexp/apidocs/</link>
+                        <link>http://jakarta.apache.org/velocity/api/</link>
+                    </links>
+                </configuration>
             </plugin>
         </plugins>
     </reporting>
 
-    <!-- More Project Information -->
-    <name>caArray 2.0</name>
-    <url>http://caarray.nci.nih.gov/</url>
-    <inceptionYear>2007</inceptionYear>
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <organization>
-        <name>NCI Center for Bioinformatics (NCICB)</name>
-        <url>http://ncicb.nci.nih.gov/</url>
-    </organization>
-    <developers></developers>
-    <contributors></contributors>
-
-    <!-- Environment Settings -->
-    <issueManagement>
-        <system>GForge Tracker</system>
-        <url>http://gforge.nci.nih.gov/tracker/?group_id=305</url>
-    </issueManagement>
     <ciManagement>
         <system>continuum</system>
         <url>http://6116-caarray-int.nci.nih.gov:7070/continuum</url>
@@ -187,50 +259,7 @@
             </notifier>
         </notifiers>
     </ciManagement>
-    <mailingLists>
-        <mailingList>
-            <name>caArray Commits List</name>
-            <subscribe>http://gforge.nci.nih.gov/mailman/listinfo/caarray2-commits</subscribe>
-            <unsubscribe>http://gforge.nci.nih.gov/mailman/listinfo/caarray2-commits</unsubscribe>
-            <post>caarray2-commits@gforge.nci.nih.gov</post>
-            <archive>http://gforge.nci.nih.gov/pipermail/caarray2-commits/</archive>
-        </mailingList>
-    </mailingLists>
-    <scm>
-        <connection>scm:svn:https://gforge.nci.nih.gov/svnroot/caarray2/trunk</connection>
-        <developerConnection>scm:svn:https://gforge.nci.nih.gov/svnroot/caarray2/trunk</developerConnection>
-        <tag>HEAD</tag>
-        <url>scm:svn:https://gforge.nci.nih.gov/plugins/scmsvn/viewcvs.php/?root=caarray2</url>
-    </scm>
-    <prerequisites></prerequisites>
-    <repositories>
-        <!--
-            <repository>
-            <id>central</id>
-            <name>Internal Mirror of Central Repository</name>
-            <url>http://localhost:8081/central/</url>
-            </repository>
-        -->
-        <!--
-            <repository>
-            <id>caarray2.snapshots</id>
-            <name>caArray 2.0 Snapshot Repository</name>
-            <url>http://gforge.nci.nih.gov/maven-snapshot-repository</url>
-            <releases>
-            <enabled>false</enabled>
-            </releases>
-            </repository>
-        -->
-    </repositories>
-    <pluginRepositories>
-        <!--
-            <pluginRepository>
-            <id>central</id>
-            <name>Internal Mirror of Central Plugins Repository</name>
-            <url>http://localhost:8081/central/</url>
-            </pluginRepository>
-        -->
-    </pluginRepositories>
+
     <distributionManagement>
         <site>
             <name>caArray 2.0 Project website</name>
@@ -252,6 +281,8 @@
             </snapshotRepository>
         -->
     </distributionManagement>
+
+    <!-- Environment Settings -->
     <profiles>
         <profile>
             <id>ciProfile</id>
@@ -261,121 +292,11 @@
                     <value>true</value>
                 </property>
             </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-pmd-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>cobertura-maven-plugin</artifactId>
-                        <configuration>
-                            <check>
-                                <totalLineRate>80</totalLineRate>
-                                <totalBranchRate>100</totalBranchRate>
-                            </check>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>clean</id>
-                                <goals>
-                                    <goal>clean</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>check</id>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
         <profile>
             <id>reporting</id>
             <reporting>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-report-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-checkstyle-plugin</artifactId>
-                        <configuration>
-                            <configLocation>
-                                http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-checkstyle-plugin/src/main/resources/config/maven_checks.xml
-                            </configLocation>
-                            <headerLocation>
-                                http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-checkstyle-plugin/src/main/resources/config/maven-header.txt
-                            </headerLocation>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-pmd-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>cobertura-maven-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>taglist-maven-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jxr-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <configuration>
-                            <links>
-                                <link>http://java.sun.com/j2ee/1.4/docs/api</link>
-                                <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-                                <link>http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/</link>
-                                <link>http://jakarta.apache.org/commons/dbcp/apidocs/</link>
-                                <link>http://jakarta.apache.org/commons/fileupload/apidocs/</link>
-                                <link>http://jakarta.apache.org/commons/httpclient/apidocs/</link>
-                                <link>http://jakarta.apache.org/commons/logging/apidocs/</link>
-                                <link>http://jakarta.apache.org/commons/pool/apidocs/</link>
-                                <link>http://www.junit.org/junit/javadoc/</link>
-                                <link>http://logging.apache.org/log4j/docs/api/</link>
-                                <link>http://jakarta.apache.org/regexp/apidocs/</link>
-                                <link>http://jakarta.apache.org/velocity/api/</link>
-                            </links>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-changelog-plugin</artifactId>
-                        <reportSets>
-                            <reportSet>
-                                <id>tri-report</id>
-                                <configuration>
-                                    <type>range</type>
-                                    <range>30</range>
-                                </configuration>
-                                <reports>
-                                    <report>changelog</report>
-                                    <report>file-activity</report>
-                                    <report>dev-activity</report>
-                                </reports>
-                            </reportSet>
-                        </reportSets>
-                    </plugin>
-                </plugins>
+                <plugins></plugins>
             </reporting>
         </profile>
         <profile>
@@ -408,21 +329,6 @@
             </activation>
             <build>
                 <plugins>
-                    <plugin>
-                        <inherited>true</inherited>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                    <goal>test-jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
                     <plugin>
                         <inherited>true</inherited>
                         <groupId>org.apache.maven.plugins</groupId>
