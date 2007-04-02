@@ -7,6 +7,6 @@ package gov.nih.nci.caarray.common;
 public class App {
 
     public String getMessage() {
-        return "Hello World!!";
+        return "Hello World from the App!!";
     }
 }

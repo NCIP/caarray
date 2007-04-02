@@ -1,5 +1,7 @@
+<%@page import="gov.nih.nci.caarray.common.App"%>
+<% App theApp = new App(); %>
 <html>
 <body>
-<h2>Hello World!</h2>
+<h2><%= theApp.getMessage() %></h2>
 </body>
 </html>
