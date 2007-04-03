@@ -42,6 +42,7 @@
     </modules>
     <properties>
         <jboss.home>C:/dev/app_servers/jboss-4.0.5.GA</jboss.home>
+        <checkstyle.5am.checks>c:/dev/projects/caarray2/code/5am_checks.xml</checkstyle.5am.checks>
     </properties>
 
     <!-- More Project Information -->
@@ -118,7 +119,6 @@
                     <execution>
                         <goals>
                             <goal>clean</goal>
-                            <goal>cobertura</goal>
                             <goal>check</goal>
                         </goals>
                     </execution>
@@ -127,6 +127,20 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <configLocation>${checkstyle.5am.checks}</configLocation>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -181,6 +195,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <configLocation>${checkstyle.5am.checks}</configLocation>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

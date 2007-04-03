@@ -58,6 +58,7 @@ public class App {
 
     /**
      * Method to return the message
+     *
      * @return the message
      */
     public String getMessage() {
