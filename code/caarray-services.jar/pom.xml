@@ -18,7 +18,4 @@
             <scope></scope>
         </dependency>
     </dependencies>
-    <properties>
-        <checkstyle.5am.checks>${project.parent.basedir}/5am_checks.xml</checkstyle.5am.checks>
-    </properties>
 </project>
