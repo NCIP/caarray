@@ -42,7 +42,7 @@
     </modules>
     <properties>
         <jboss.home>C:/dev/app_servers/jboss-4.0.5.GA</jboss.home>
-        <checkstyle.5am.checks>c:/dev/projects/caarray2/code/5am_checks.xml</checkstyle.5am.checks>
+        <checkstyle.5am.checks>5am_checks.xml</checkstyle.5am.checks>
     </properties>
 
     <!-- More Project Information -->

@@ -10,4 +10,7 @@
     <artifactId>caarray-common.jar</artifactId>
     <packaging>jar</packaging>
     <name>caArray-common</name>
+    <properties>
+        <checkstyle.5am.checks>${project.parent.basedir}/5am_checks.xml</checkstyle.5am.checks>
+    </properties>
 </project>
