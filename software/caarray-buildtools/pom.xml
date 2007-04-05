@@ -8,4 +8,10 @@
     <version>2.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>caArray Buildtools</name>
+    <scm>
+        <connection>scm:svn:https://gforge.nci.nih.gov/svnroot/caarray2/trunk</connection>
+        <developerConnection>scm:svn:https://gforge.nci.nih.gov/svnroot/caarray2/trunk</developerConnection>
+        <tag>HEAD</tag>
+        <url>scm:svn:https://gforge.nci.nih.gov/plugins/scmsvn/viewcvs.php/?root=caarray2</url>
+    </scm>
 </project>
