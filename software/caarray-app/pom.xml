@@ -3,19 +3,52 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <!-- The Basics -->
-    <parent>
-        <artifactId>caarray</artifactId>
-        <groupId>gov.nih.nci.caarray</groupId>
-        <version>2.0-SNAPSHOT</version>
-    </parent>
     <modelVersion>4.0.0</modelVersion>
+    <groupId>gov.nih.nci.caarray</groupId>
     <artifactId>caarray-app</artifactId>
+    <version>2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>caArray 2.0 Application</name>
+    <name>caArray 2.0</name>
+    <url>http://caarray.nci.nih.gov/</url>
+    <inceptionYear>2007</inceptionYear>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <organization>
+        <name>NCI Center for Bioinformatics (NCICB)</name>
+        <url>http://ncicb.nci.nih.gov/</url>
+    </organization>
+    <developers></developers>
+    <contributors></contributors>
+    <issueManagement>
+        <system>GForge Tracker</system>
+        <url>http://gforge.nci.nih.gov/tracker/?group_id=305</url>
+    </issueManagement>
+    <mailingLists>
+        <mailingList>
+            <name>caArray Commits List</name>
+            <subscribe>http://gforge.nci.nih.gov/mailman/listinfo/caarray2-commits</subscribe>
+            <unsubscribe>http://gforge.nci.nih.gov/mailman/listinfo/caarray2-commits</unsubscribe>
+            <post>caarray2-commits@gforge.nci.nih.gov</post>
+            <archive>http://gforge.nci.nih.gov/pipermail/caarray2-commits/</archive>
+        </mailingList>
+    </mailingLists>
+    <scm>
+        <connection>scm:svn:https://gforge.nci.nih.gov/svnroot/caarray2/trunk</connection>
+        <developerConnection>scm:svn:https://gforge.nci.nih.gov/svnroot/caarray2/trunk</developerConnection>
+        <tag>HEAD</tag>
+        <url>scm:svn:https://gforge.nci.nih.gov/plugins/scmsvn/viewcvs.php/?root=caarray2</url>
+    </scm>
+
     <properties>
         <jboss.home>C:/dev/app_servers/jboss-4.0.5.GA</jboss.home>
         <checkstyle.checks>caarray_checks.xml</checkstyle.checks>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
