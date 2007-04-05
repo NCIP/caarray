@@ -14,7 +14,7 @@
     <name>caArray 2.0 Application</name>
     <properties>
         <jboss.home>C:/dev/app_servers/jboss-4.0.5.GA</jboss.home>
-        <checkstyle.5am.checks>caarray_checks.xml</checkstyle.5am.checks>
+        <checkstyle.checks>caarray_checks.xml</checkstyle.checks>
     </properties>
     <dependencies>
         <dependency>
@@ -35,11 +35,13 @@
                 <groupId>gov.nih.nci.caarray</groupId>
                 <artifactId>caarray-war</artifactId>
                 <version>${project.version}</version>
+                <type>war</type>
             </dependency>
             <dependency>
                 <groupId>gov.nih.nci.caarray</groupId>
                 <artifactId>caarray-ejb</artifactId>
                 <version>${project.version}</version>
+                <type>ejb</type>
             </dependency>
             <dependency>
                 <groupId>gov.nih.nci.caarray</groupId>
@@ -119,7 +121,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <configuration>
-                    <configLocation>${checkstyle.5am.checks}</configLocation>
+                    <configLocation>${checkstyle.checks}</configLocation>
                 </configuration>
                 <executions>
                     <execution>
@@ -150,7 +152,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <configuration>
-                    <configLocation>${checkstyle.5am.checks}</configLocation>
+                    <configLocation>${checkstyle.checks}</configLocation>
                 </configuration>
             </plugin>
             <plugin>
