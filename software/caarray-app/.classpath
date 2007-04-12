@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="caarray-common/target/classes" path="caarray-common/src/main/java"/>
+	<classpathentry kind="src" output="caarray-ejb/target/test-classes" path="caarray-ejb/src/test/java"/>
+	<classpathentry kind="src" output="caarray-ejb/target/classes" path="caarray-ejb/src/main/java"/>
+	<classpathentry kind="src" output="caarray-common/target/test-classes" path="caarray-common/src/test/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>
