@@ -54,10 +54,17 @@ package gov.nih.nci.caarray.common;
  * Hello world!
  *
  */
-public class App {
+public final class App {
 
     /**
-     * Method to return the message
+     * Creates a new App instance.
+     */
+    public App() {
+        super();
+    }
+
+    /**
+     * Method to return the message.
      *
      * @return the message
      */
