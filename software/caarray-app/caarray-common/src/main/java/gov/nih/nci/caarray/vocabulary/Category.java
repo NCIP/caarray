@@ -85,10 +85,17 @@ package gov.nih.nci.caarray.vocabulary;
 import java.io.Serializable;
 
 /**
- *
+ * Represents a grouping of like vocabulary terms.
  *
  * @author tavelae
  */
 public interface Category extends Serializable {
+
+    /**
+     * Returns the category name.
+     *
+     * @return the name.
+     */
+    String getName();
 
 }

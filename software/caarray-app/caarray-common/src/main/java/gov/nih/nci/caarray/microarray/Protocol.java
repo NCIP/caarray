@@ -93,6 +93,49 @@ import gov.nih.nci.caarray.vocabulary.Term;
 public interface Protocol {
 
     /**
+     * Sets the URI where the protocol definition can be found. Either
+     * URI or text description must be specified.
+     *
+     * @param uri   location of the description of the protocol.
+     */
+    void setUri(String uri);
+
+    /**
+     * Returns the URI where the protocol definition can be found.
+     *
+     * @return the location of the description of the protocol.
+     */
+    String getUri();
+
+    /**
+     * Sets the protocol title.
+     *
+     * @param title the title of the protocol.
+     */
+    void setTitle(String title);
+
+    /**
+     * Returns the protocol title.
+     *
+     * @return the protocol title.
+     */
+    String getTitle();
+
+    /**
+     * Sets the documentation of the protocol. Either this or the description URI must be specified.
+     *
+     * @param text procotol documentation.
+     */
+    void setText(String text);
+
+    /**
+     * Returns the documentation of the protocol.
+     *
+     * @return the protocol documentation.
+     */
+    String getText();
+
+    /**
      * Sets the protocol type.
      *
      * @param type term descriping the category of protocol.

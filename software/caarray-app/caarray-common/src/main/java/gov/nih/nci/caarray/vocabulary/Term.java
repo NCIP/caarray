@@ -99,6 +99,13 @@ public interface Term extends Serializable {
     Category getCategory();
 
     /**
+     * Returns the name (i.e. the term itself).
+     *
+     * @return the name.
+     */
+    String getName();
+
+    /**
      * Returns the description of the term.
      *
      * @return the description.
