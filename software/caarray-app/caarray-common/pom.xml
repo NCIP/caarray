@@ -10,4 +10,12 @@
     <artifactId>caarray-common</artifactId>
     <packaging>jar</packaging>
     <name>caArray Common</name>
-</project>
+    <dependencies>
+        <dependency>
+            <groupId>cacore</groupId>
+            <artifactId>cacore</artifactId>
+            <version>3.2</version>
+            <scope>system</scope>
+            <systemPath>${basedir}\..\lib\cacore32-client.jar</systemPath>
+        </dependency>
+    </dependencies></project>
