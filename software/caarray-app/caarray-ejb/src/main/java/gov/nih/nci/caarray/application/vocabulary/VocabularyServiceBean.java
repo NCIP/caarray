@@ -86,13 +86,16 @@ import gov.nih.nci.caarray.vocabulary.Term;
 
 import java.util.List;
 
+import javax.ejb.Local;
+import javax.ejb.Stateless;
+
 /**
  * Entry point into implementation of the vocabulary service subsystem.
  *
  * @author tavelae
- * @Local(VocabularyService.class);
- * @Stateless
  */
+@Local(VocabularyService.class)
+@Stateless
 public final class VocabularyServiceBean implements VocabularyService {
 
     /**

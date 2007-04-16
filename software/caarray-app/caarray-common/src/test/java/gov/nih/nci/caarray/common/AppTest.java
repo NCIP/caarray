@@ -30,6 +30,6 @@ public final class AppTest extends TestCase {
      */
     public void testGetMessage() {
         final App theApp = new App();
-        assertNotNull(theApp.getMessage());
+        assertEquals("Hello World from the App!!", theApp.getMessage());
     }
 }

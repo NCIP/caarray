@@ -82,6 +82,9 @@
  */
 package gov.nih.nci.caarray.application.protocol;
 
+import javax.ejb.Local;
+import javax.ejb.Stateless;
+
 import gov.nih.nci.caarray.microarray.Protocol;
 
 /**
@@ -89,9 +92,9 @@ import gov.nih.nci.caarray.microarray.Protocol;
  * caArray.
  *
  * @author tavelae
-@Local(ProtcolService.class)
-@Stateless
  */
+@Local(ProtocolService.class)
+@Stateless
 public class ProtocolServiceBean implements ProtocolService {
 
     /**
