@@ -80,7 +80,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.mage.domain.Description;
+package gov.nih.nci.mageom.domain.Description;
 
 /**
  * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species

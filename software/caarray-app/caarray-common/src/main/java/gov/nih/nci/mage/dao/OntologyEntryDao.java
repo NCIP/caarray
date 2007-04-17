@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.mage.dao;
 
-import gov.nih.nci.mage.domain.Description.OntologyEntry;
+import gov.nih.nci.mageom.domain.Description.OntologyEntry;
 
 import java.util.List;
 
