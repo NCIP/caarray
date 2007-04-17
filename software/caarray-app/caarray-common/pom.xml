@@ -16,6 +16,14 @@
             <artifactId>cacore</artifactId>
             <version>3.2</version>
             <scope>system</scope>
-            <systemPath>${basedir}\..\lib\cacore32-client.jar</systemPath>
+            <systemPath>${basedir}/../lib/cacore32-client.jar</systemPath>
         </dependency>
-    </dependencies></project>
+        <dependency>
+            <groupId>hibernate</groupId>
+            <artifactId>hibernate</artifactId>
+            <version>3.2.3</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/../lib/hibernate3.jar</systemPath>
+        </dependency>
+    </dependencies>
+</project>
