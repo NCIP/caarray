@@ -46,7 +46,7 @@
 
     <properties>
         <jboss.home>C:/dev/app_servers/jboss-4.0.5.GA</jboss.home>
-        <checkstyle.checks>C:/ncicb_svn/caarray2/software/caarray-buildtools/src/main/resources/caarray_checks.xml</checkstyle.checks>
+        <checkstyle.checks>caarray_checks.xml</checkstyle.checks>
     </properties>
 
     <dependencies>
