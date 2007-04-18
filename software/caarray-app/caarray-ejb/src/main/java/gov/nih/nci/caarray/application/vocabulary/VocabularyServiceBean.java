@@ -116,4 +116,14 @@ public final class VocabularyServiceBean implements VocabularyService {
         return null;
     }
 
+    /**
+     * Returns all terms that belong to the category for the name given
+     * from the EVS vocab service.
+     *
+     * @param categoryName find entries that match this category.
+     * @return the matching Terms.
+     */
+    private List<Term> getEVSTerms(final String categoryName) {
+        return new EVSUtility().getConcepts(categoryName);
+    }
 }
