@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.DesignElement;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,39 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * The location in the compositeSequence target's sequence to which a source compositeSequence maps. 
+   * The association to MismatchInformation allows the specification, usually for control purposes, 
+   * of deviations from the CompositeSequence's BioMaterial. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
+public interface CompositePosition  extends gov.nih.nci.mageom.domain.BioSequence.SequencePosition  {
 
     /**
-     * Sets the category.
+     * Gets the composite.
      *
-     * @param category the category
+     * @return the composite
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    gov.nih.nci.mageom.domain.DesignElement.CompositeSequence getComposite();
 
     /**
-     * Sets the description.
+     * Sets the composite.
      *
-     * @param description the description
+     * @param composite the composite
      */
-    void setDescription(String description);    
+    void setComposite(
+      gov.nih.nci.mageom.domain.DesignElement.CompositeSequence composite);
     /**
-     * Gets the id.
+     * Gets the mismatchInformation.
      *
-     * @return the id
+     * @return the mismatchInformation
      */
-    java.lang.Long getId();
+    java.util.Collection getMismatchInformation();
 
     /**
-     * Sets the id.
+     * Sets the mismatchInformation.
      *
-     * @param id the id
+     * @param mismatchInformation the mismatchInformation
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
-
-    /**
-     * Sets the value.
-     *
-     * @param value the value
-     */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
-
-    /**
-     * Sets the associations.
-     *
-     * @param associations the associations
-     */
-    void setAssociations(java.util.Collection associations);
-
-    /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
-     */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setMismatchInformation(java.util.Collection mismatchInformation);
 }

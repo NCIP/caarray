@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioEvent.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,41 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * An abstract class to capture the concept of an event (either in the laboratory or a computational 
+   * analysis). 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public abstract class BioEventImpl 
+  extends gov.nih.nci.mageom.domain.impl.IdentifiableImpl
+  implements gov.nih.nci.mageom.domain.BioEvent.BioEvent, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
+
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The protocolApplications set.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.util.Collection protocolApplications = new java.util.HashSet();
 
     /**
-     * Sets the description.
+     * Gets the protocolApplications.
      *
-     * @param description the description
+     * @return the protocolApplications
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
+    public java.util.Collection getProtocolApplications() {
+        return protocolApplications;
+    }
 
     /**
-     * Sets the id.
+     * Sets the protocolApplications.
      *
-     * @param id the id
+     * @param protocolApplicationsVal the protocolApplications
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    public void setProtocolApplications(final java.util.Collection protocolApplicationsVal) {
+        this.protocolApplications = protocolApplicationsVal;
+    }    
 
-    /**
-     * Sets the value.
-     *
-     * @param value the value
-     */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
-
-    /**
-     * Sets the associations.
-     *
-     * @param associations the associations
-     */
-    void setAssociations(java.util.Collection associations);
-
-    /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
-     */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
 }

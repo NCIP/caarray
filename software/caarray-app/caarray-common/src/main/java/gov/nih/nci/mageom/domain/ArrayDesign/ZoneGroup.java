@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.ArrayDesign;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,12 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * Specifies a repeating area on an array. This is useful for printing when the same pattern is repeated 
+   * in a regular fashion. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface ZoneGroup  extends gov.nih.nci.mageom.domain.Extendable  {    
     /**
      * Gets the id.
      *
@@ -130,44 +104,98 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
-     * Gets the value.
+     * Gets the spacingsBetweenZonesX.
      *
-     * @return the value
+     * @return the spacingsBetweenZonesX
      */
-    String getValue();
+    java.lang.Float getSpacingsBetweenZonesX();
 
     /**
-     * Sets the value.
+     * Sets the spacingsBetweenZonesX.
      *
-     * @param value the value
+     * @param spacingsBetweenZonesX the spacingsBetweenZonesX
      */
-    void setValue(String value);
+    void setSpacingsBetweenZonesX(java.lang.Float spacingsBetweenZonesX);    
     /**
-     * Gets the associations.
+     * Gets the spacingsBetweenZonesY.
      *
-     * @return the associations
+     * @return the spacingsBetweenZonesY
      */
-    java.util.Collection getAssociations();
+    java.lang.Float getSpacingsBetweenZonesY();
 
     /**
-     * Sets the associations.
+     * Sets the spacingsBetweenZonesY.
      *
-     * @param associations the associations
+     * @param spacingsBetweenZonesY the spacingsBetweenZonesY
      */
-    void setAssociations(java.util.Collection associations);
+    void setSpacingsBetweenZonesY(java.lang.Float spacingsBetweenZonesY);    
+    /**
+     * Gets the zonesPerX.
+     *
+     * @return the zonesPerX
+     */
+    java.lang.Integer getZonesPerX();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the zonesPerX.
      *
-     * @return the ontologyReference
+     * @param zonesPerX the zonesPerX
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setZonesPerX(java.lang.Integer zonesPerX);    
+    /**
+     * Gets the zonesPerY.
+     *
+     * @return the zonesPerY
+     */
+    java.lang.Integer getZonesPerY();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the zonesPerY.
      *
-     * @param ontologyReference the ontologyReference
+     * @param zonesPerY the zonesPerY
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setZonesPerY(java.lang.Integer zonesPerY);
+
+    /**
+     * Gets the distanceUnit.
+     *
+     * @return the distanceUnit
+     */
+    gov.nih.nci.mageom.domain.Measurement.DistanceUnit getDistanceUnit();
+
+    /**
+     * Sets the distanceUnit.
+     *
+     * @param distanceUnit the distanceUnit
+     */
+    void setDistanceUnit(
+      gov.nih.nci.mageom.domain.Measurement.DistanceUnit distanceUnit);
+    /**
+     * Gets the zoneLocations.
+     *
+     * @return the zoneLocations
+     */
+    java.util.Collection getZoneLocations();
+
+    /**
+     * Sets the zoneLocations.
+     *
+     * @param zoneLocations the zoneLocations
+     */
+    void setZoneLocations(java.util.Collection zoneLocations);
+
+    /**
+     * Gets the zoneLayout.
+     *
+     * @return the zoneLayout
+     */
+    gov.nih.nci.mageom.domain.ArrayDesign.ZoneLayout getZoneLayout();
+
+    /**
+     * Sets the zoneLayout.
+     *
+     * @param zoneLayout the zoneLayout
+     */
+    void setZoneLayout(
+      gov.nih.nci.mageom.domain.ArrayDesign.ZoneLayout zoneLayout);
 }

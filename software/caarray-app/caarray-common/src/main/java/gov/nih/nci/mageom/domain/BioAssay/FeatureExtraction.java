@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioAssay;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,11 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * The process by which data is extracted from an image producing a measuredBioAssayData and a measuredBioAssay. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface FeatureExtraction  extends gov.nih.nci.mageom.domain.BioEvent.BioEvent  {    
     /**
      * Gets the id.
      *
@@ -128,46 +101,35 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    void setId(java.lang.Long id);
 
     /**
-     * Sets the value.
+     * Gets the measuredBioAssayTarget.
      *
-     * @param value the value
+     * @return the measuredBioAssayTarget
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    gov.nih.nci.mageom.domain.BioAssay.MeasuredBioAssay getMeasuredBioAssayTarget();
 
     /**
-     * Sets the associations.
+     * Sets the measuredBioAssayTarget.
      *
-     * @param associations the associations
+     * @param measuredBioAssayTarget the measuredBioAssayTarget
      */
-    void setAssociations(java.util.Collection associations);
+    void setMeasuredBioAssayTarget(
+      gov.nih.nci.mageom.domain.BioAssay.MeasuredBioAssay measuredBioAssayTarget);
 
     /**
-     * Gets the ontologyReference.
+     * Gets the physicalBioAssaySource.
      *
-     * @return the ontologyReference
+     * @return the physicalBioAssaySource
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    gov.nih.nci.mageom.domain.BioAssay.PhysicalBioAssay getPhysicalBioAssaySource();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the physicalBioAssaySource.
      *
-     * @param ontologyReference the ontologyReference
+     * @param physicalBioAssaySource the physicalBioAssaySource
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setPhysicalBioAssaySource(
+      gov.nih.nci.mageom.domain.BioAssay.PhysicalBioAssay physicalBioAssaySource);
 }

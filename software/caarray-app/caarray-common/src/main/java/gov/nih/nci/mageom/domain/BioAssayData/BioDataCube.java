@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioAssayData;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,34 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * A three-dimensional cube representation of the data.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public interface BioDataCube  extends gov.nih.nci.mageom.domain.BioAssayData.BioDataValues  {    
     /**
-     * Gets the category.
+     * Gets the cube.
      *
-     * @return the category
+     * @return the cube
      */
-    String getCategory();
+    Object[][][] getCube();
 
     /**
-     * Sets the category.
+     * Sets the cube.
      *
-     * @param category the category
+     * @param cube the cube
      */
-    void setCategory(String category);    
+    void setCube(Object[][][] cube);    
     /**
-     * Gets the description.
+     * Gets the order.
      *
-     * @return the description
+     * @return the order
      */
-    String getDescription();
+    String getOrder();
 
     /**
-     * Sets the description.
+     * Sets the order.
      *
-     * @param description the description
+     * @param order the order
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
-
-    /**
-     * Sets the id.
-     *
-     * @param id the id
-     */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
-
-    /**
-     * Sets the value.
-     *
-     * @param value the value
-     */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
-
-    /**
-     * Sets the associations.
-     *
-     * @param associations the associations
-     */
-    void setAssociations(java.util.Collection associations);
-
-    /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
-     */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setOrder(String order);
 }

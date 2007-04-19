@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.AuditAndSecurity.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,92 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * Groups contacts together based on their security privileges.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class SecurityGroupImpl 
+  extends gov.nih.nci.mageom.domain.impl.IdentifiableImpl
+  implements gov.nih.nci.mageom.domain.AuditAndSecurity.SecurityGroup, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The id java.lang.Long.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Long id;
 
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
 
     /**
-     * Sets the value.
-     *
-     * @param value the value
+     * The members set.
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    private java.util.Collection members = new java.util.HashSet();
 
     /**
-     * Sets the associations.
+     * Gets the members.
      *
-     * @param associations the associations
+     * @return the members
      */
-    void setAssociations(java.util.Collection associations);
+    public java.util.Collection getMembers() {
+        return members;
+    }
 
     /**
-     * Gets the ontologyReference.
+     * Sets the members.
      *
-     * @return the ontologyReference
+     * @param membersVal the members
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public void setMembers(final java.util.Collection membersVal) {
+        this.members = membersVal;
+    }    
 
     /**
-     * Sets the ontologyReference.
+     * Checks if given object is equal to this object.
      *
-     * @param ontologyReference the ontologyReference
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.AuditAndSecurity.SecurityGroup) {
+            final gov.nih.nci.mageom.domain.AuditAndSecurity.SecurityGroup castObject =
+                (gov.nih.nci.mageom.domain.AuditAndSecurity.SecurityGroup) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

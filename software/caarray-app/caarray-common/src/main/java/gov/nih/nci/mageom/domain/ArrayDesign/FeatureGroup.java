@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.ArrayDesign;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,105 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * A collection of like features.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public interface FeatureGroup  extends gov.nih.nci.mageom.domain.ArrayDesign.DesignElementGroup  {    
     /**
-     * Gets the category.
+     * Gets the featureHeight.
      *
-     * @return the category
+     * @return the featureHeight
      */
-    String getCategory();
+    java.lang.Float getFeatureHeight();
 
     /**
-     * Sets the category.
+     * Sets the featureHeight.
      *
-     * @param category the category
+     * @param featureHeight the featureHeight
      */
-    void setCategory(String category);    
+    void setFeatureHeight(java.lang.Float featureHeight);    
     /**
-     * Gets the description.
+     * Gets the featureLength.
      *
-     * @return the description
+     * @return the featureLength
      */
-    String getDescription();
+    java.lang.Float getFeatureLength();
 
     /**
-     * Sets the description.
+     * Sets the featureLength.
      *
-     * @param description the description
+     * @param featureLength the featureLength
      */
-    void setDescription(String description);    
+    void setFeatureLength(java.lang.Float featureLength);    
     /**
-     * Gets the id.
+     * Gets the featureWidth.
      *
-     * @return the id
+     * @return the featureWidth
      */
-    java.lang.Long getId();
+    java.lang.Float getFeatureWidth();
 
     /**
-     * Sets the id.
+     * Sets the featureWidth.
      *
-     * @param id the id
+     * @param featureWidth the featureWidth
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    void setFeatureWidth(java.lang.Float featureWidth);
 
     /**
-     * Sets the value.
+     * Gets the distanceUnit.
      *
-     * @param value the value
+     * @return the distanceUnit
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    gov.nih.nci.mageom.domain.Measurement.DistanceUnit getDistanceUnit();
 
     /**
-     * Sets the associations.
+     * Sets the distanceUnit.
      *
-     * @param associations the associations
+     * @param distanceUnit the distanceUnit
      */
-    void setAssociations(java.util.Collection associations);
+    void setDistanceUnit(
+      gov.nih.nci.mageom.domain.Measurement.DistanceUnit distanceUnit);
+    /**
+     * Gets the features.
+     *
+     * @return the features
+     */
+    java.util.Collection getFeatures();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the features.
      *
-     * @return the ontologyReference
+     * @param features the features
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setFeatures(java.util.Collection features);
 
     /**
-     * Sets the ontologyReference.
+     * Gets the technologyType.
      *
-     * @param ontologyReference the ontologyReference
+     * @return the technologyType
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    gov.nih.nci.mageom.domain.Description.OntologyEntry getTechnologyType();
+
+    /**
+     * Sets the technologyType.
+     *
+     * @param technologyType the technologyType
+     */
+    void setTechnologyType(
+      gov.nih.nci.mageom.domain.Description.OntologyEntry technologyType);
+
+    /**
+     * Gets the featureShape.
+     *
+     * @return the featureShape
+     */
+    gov.nih.nci.mageom.domain.Description.OntologyEntry getFeatureShape();
+
+    /**
+     * Sets the featureShape.
+     *
+     * @param featureShape the featureShape
+     */
+    void setFeatureShape(
+      gov.nih.nci.mageom.domain.Description.OntologyEntry featureShape);
 }

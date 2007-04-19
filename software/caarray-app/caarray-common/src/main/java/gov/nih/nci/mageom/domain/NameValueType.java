@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,10 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * A tuple designed to store data, keyed by a name and type.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface NameValueType  {    
     /**
      * Gets the id.
      *
@@ -130,6 +102,32 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
+     * Gets the name.
+     *
+     * @return the name
+     */
+    String getName();
+
+    /**
+     * Sets the name.
+     *
+     * @param name the name
+     */
+    void setName(String name);    
+    /**
+     * Gets the type.
+     *
+     * @return the type
+     */
+    String getType();
+
+    /**
+     * Sets the type.
+     *
+     * @param type the type
+     */
+    void setType(String type);    
+    /**
      * Gets the value.
      *
      * @return the value
@@ -142,32 +140,19 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      * @param value the value
      */
     void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
 
     /**
-     * Sets the associations.
+     * Gets the parentPropertySet.
      *
-     * @param associations the associations
+     * @return the parentPropertySet
      */
-    void setAssociations(java.util.Collection associations);
+    gov.nih.nci.mageom.domain.NameValueType getParentPropertySet();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the parentPropertySet.
      *
-     * @return the ontologyReference
+     * @param parentPropertySet the parentPropertySet
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setParentPropertySet(
+      gov.nih.nci.mageom.domain.NameValueType parentPropertySet);
 }

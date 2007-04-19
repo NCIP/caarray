@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioAssayData.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,191 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * Represents the dataset created when the BioAssays are created. BioAssayData is the entry point 
+   * to the values. Because the actual values are represented by a different object, BioDataValues, 
+   * which can be memory intensive, the annotation of the transforma 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public abstract class BioAssayDataImpl 
+  extends gov.nih.nci.mageom.domain.impl.IdentifiableImpl
+  implements gov.nih.nci.mageom.domain.BioAssayData.BioAssayData, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The id java.lang.Long.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Long id;
 
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
 
     /**
-     * Sets the value.
-     *
-     * @param value the value
+     * The quantitationTypeDimension gov.nih.nci.mageom.domain.BioAssayData.QuantitationTypeDimension.
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    private gov.nih.nci.mageom.domain.BioAssayData.QuantitationTypeDimension quantitationTypeDimension;
 
     /**
-     * Sets the associations.
+     * Gets the quantitationTypeDimension.
      *
-     * @param associations the associations
+     * @return the quantitationTypeDimension
      */
-    void setAssociations(java.util.Collection associations);
+    public gov.nih.nci.mageom.domain.BioAssayData.QuantitationTypeDimension getQuantitationTypeDimension() {
+        return quantitationTypeDimension;    
+    }
 
     /**
-     * Gets the ontologyReference.
+     * Sets the quantitationTypeDimension.
      *
-     * @return the ontologyReference
+     * @param quantitationTypeDimensionVal the quantitationTypeDimension
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public void setQuantitationTypeDimension(final 
+      gov.nih.nci.mageom.domain.BioAssayData.QuantitationTypeDimension quantitationTypeDimensionVal) {
+        this.quantitationTypeDimension = quantitationTypeDimensionVal;
+    }
 
     /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
+     * The summaryStatistics set.
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    private java.util.Collection summaryStatistics = new java.util.HashSet();
+
+    /**
+     * Gets the summaryStatistics.
+     *
+     * @return the summaryStatistics
+     */
+    public java.util.Collection getSummaryStatistics() {
+        return summaryStatistics;
+    }
+
+    /**
+     * Sets the summaryStatistics.
+     *
+     * @param summaryStatisticsVal the summaryStatistics
+     */
+    public void setSummaryStatistics(final java.util.Collection summaryStatisticsVal) {
+        this.summaryStatistics = summaryStatisticsVal;
+    }    
+
+    /**
+     * The bioAssayDimension gov.nih.nci.mageom.domain.BioAssayData.BioAssayDimension.
+     */
+    private gov.nih.nci.mageom.domain.BioAssayData.BioAssayDimension bioAssayDimension;
+
+    /**
+     * Gets the bioAssayDimension.
+     *
+     * @return the bioAssayDimension
+     */
+    public gov.nih.nci.mageom.domain.BioAssayData.BioAssayDimension getBioAssayDimension() {
+        return bioAssayDimension;    
+    }
+
+    /**
+     * Sets the bioAssayDimension.
+     *
+     * @param bioAssayDimensionVal the bioAssayDimension
+     */
+    public void setBioAssayDimension(final 
+      gov.nih.nci.mageom.domain.BioAssayData.BioAssayDimension bioAssayDimensionVal) {
+        this.bioAssayDimension = bioAssayDimensionVal;
+    }
+
+    /**
+     * The designElementDimension gov.nih.nci.mageom.domain.BioAssayData.DesignElementDimension.
+     */
+    private gov.nih.nci.mageom.domain.BioAssayData.DesignElementDimension designElementDimension;
+
+    /**
+     * Gets the designElementDimension.
+     *
+     * @return the designElementDimension
+     */
+    public gov.nih.nci.mageom.domain.BioAssayData.DesignElementDimension getDesignElementDimension() {
+        return designElementDimension;    
+    }
+
+    /**
+     * Sets the designElementDimension.
+     *
+     * @param designElementDimensionVal the designElementDimension
+     */
+    public void setDesignElementDimension(final 
+      gov.nih.nci.mageom.domain.BioAssayData.DesignElementDimension designElementDimensionVal) {
+        this.designElementDimension = designElementDimensionVal;
+    }
+
+    /**
+     * The bioDataValues gov.nih.nci.mageom.domain.BioAssayData.BioDataValues.
+     */
+    private gov.nih.nci.mageom.domain.BioAssayData.BioDataValues bioDataValues;
+
+    /**
+     * Gets the bioDataValues.
+     *
+     * @return the bioDataValues
+     */
+    public gov.nih.nci.mageom.domain.BioAssayData.BioDataValues getBioDataValues() {
+        return bioDataValues;    
+    }
+
+    /**
+     * Sets the bioDataValues.
+     *
+     * @param bioDataValuesVal the bioDataValues
+     */
+    public void setBioDataValues(final 
+      gov.nih.nci.mageom.domain.BioAssayData.BioDataValues bioDataValuesVal) {
+        this.bioDataValues = bioDataValuesVal;
+    }
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.BioAssayData.BioAssayData) {
+            final gov.nih.nci.mageom.domain.BioAssayData.BioAssayData castObject =
+                (gov.nih.nci.mageom.domain.BioAssayData.BioAssayData) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

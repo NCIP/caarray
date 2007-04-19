@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Experiment.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,141 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * The value for a ExperimentalFactor
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class FactorValueImpl 
+  extends gov.nih.nci.mageom.domain.impl.IdentifiableImpl
+  implements gov.nih.nci.mageom.domain.Experiment.FactorValue, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The id java.lang.Long.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Long id;
 
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
+
+    /**
+     * The value gov.nih.nci.mageom.domain.Description.OntologyEntry.
+     */
+    private gov.nih.nci.mageom.domain.Description.OntologyEntry value;
+
     /**
      * Gets the value.
      *
      * @return the value
      */
-    String getValue();
+    public gov.nih.nci.mageom.domain.Description.OntologyEntry getValue() {
+        return value;    
+    }
 
     /**
      * Sets the value.
      *
-     * @param value the value
+     * @param valueVal the value
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public void setValue(final 
+      gov.nih.nci.mageom.domain.Description.OntologyEntry valueVal) {
+        this.value = valueVal;
+    }
 
     /**
-     * Sets the associations.
-     *
-     * @param associations the associations
+     * The experimentalFactor gov.nih.nci.mageom.domain.Experiment.ExperimentalFactor.
      */
-    void setAssociations(java.util.Collection associations);
+    private gov.nih.nci.mageom.domain.Experiment.ExperimentalFactor experimentalFactor;
 
     /**
-     * Gets the ontologyReference.
+     * Gets the experimentalFactor.
      *
-     * @return the ontologyReference
+     * @return the experimentalFactor
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public gov.nih.nci.mageom.domain.Experiment.ExperimentalFactor getExperimentalFactor() {
+        return experimentalFactor;    
+    }
 
     /**
-     * Sets the ontologyReference.
+     * Sets the experimentalFactor.
      *
-     * @param ontologyReference the ontologyReference
+     * @param experimentalFactorVal the experimentalFactor
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public void setExperimentalFactor(final 
+      gov.nih.nci.mageom.domain.Experiment.ExperimentalFactor experimentalFactorVal) {
+        this.experimentalFactor = experimentalFactorVal;
+    }
+
+    /**
+     * The measurement gov.nih.nci.mageom.domain.Measurement.Measurement.
+     */
+    private gov.nih.nci.mageom.domain.Measurement.Measurement measurement;
+
+    /**
+     * Gets the measurement.
+     *
+     * @return the measurement
+     */
+    public gov.nih.nci.mageom.domain.Measurement.Measurement getMeasurement() {
+        return measurement;    
+    }
+
+    /**
+     * Sets the measurement.
+     *
+     * @param measurementVal the measurement
+     */
+    public void setMeasurement(final 
+      gov.nih.nci.mageom.domain.Measurement.Measurement measurementVal) {
+        this.measurement = measurementVal;
+    }
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.Experiment.FactorValue) {
+            final gov.nih.nci.mageom.domain.Experiment.FactorValue castObject =
+                (gov.nih.nci.mageom.domain.Experiment.FactorValue) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

@@ -84,38 +84,62 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * A reference to the originating source for the object.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public interface ExternalReference  extends gov.nih.nci.mageom.domain.Extendable  {    
     /**
-     * Gets the category.
+     * Gets the exportedFromDB.
      *
-     * @return the category
+     * @return the exportedFromDB
      */
-    String getCategory();
+    String getExportedFromDB();
 
     /**
-     * Sets the category.
+     * Sets the exportedFromDB.
      *
-     * @param category the category
+     * @param exportedFromDB the exportedFromDB
      */
-    void setCategory(String category);    
+    void setExportedFromDB(String exportedFromDB);    
     /**
-     * Gets the description.
+     * Gets the exportedFromServer.
      *
-     * @return the description
+     * @return the exportedFromServer
      */
-    String getDescription();
+    String getExportedFromServer();
 
     /**
-     * Sets the description.
+     * Sets the exportedFromServer.
      *
-     * @param description the description
+     * @param exportedFromServer the exportedFromServer
      */
-    void setDescription(String description);    
+    void setExportedFromServer(String exportedFromServer);    
+    /**
+     * Gets the exportID.
+     *
+     * @return the exportID
+     */
+    String getExportID();
+
+    /**
+     * Sets the exportID.
+     *
+     * @param exportID the exportID
+     */
+    void setExportID(String exportID);    
+    /**
+     * Gets the exportName.
+     *
+     * @return the exportName
+     */
+    String getExportName();
+
+    /**
+     * Sets the exportName.
+     *
+     * @param exportName the exportName
+     */
+    void setExportName(String exportName);    
     /**
      * Gets the id.
      *
@@ -128,46 +152,5 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
-
-    /**
-     * Sets the value.
-     *
-     * @param value the value
-     */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
-
-    /**
-     * Sets the associations.
-     *
-     * @param associations the associations
-     */
-    void setAssociations(java.util.Collection associations);
-
-    /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
-     */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setId(java.lang.Long id);
 }

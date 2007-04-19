@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioMaterial.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,187 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * The process by which a biomaterial is created (from source biomaterials). Treatments have an order 
+   * and an action. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class TreatmentImpl 
+  extends gov.nih.nci.mageom.domain.BioEvent.impl.BioEventImpl
+  implements gov.nih.nci.mageom.domain.BioMaterial.Treatment, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The id java.lang.Long.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Long id;
 
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
     /**
-     * Gets the value.
-     *
-     * @return the value
+     * The order java.lang.Integer.
      */
-    String getValue();
+    private java.lang.Integer order;
 
     /**
-     * Sets the value.
+     * Gets the order.
      *
-     * @param value the value
+     * @return the order
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public java.lang.Integer getOrder() {
+        return order;
+    }
 
     /**
-     * Sets the associations.
+     * Sets the order.
      *
-     * @param associations the associations
+     * @param orderVal the order
      */
-    void setAssociations(java.util.Collection associations);
+    public void setOrder(final java.lang.Integer orderVal) {
+        this.order = orderVal;
+    }
 
     /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
+     * The sourceBioMaterialMeasurements set.
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    private java.util.Collection sourceBioMaterialMeasurements = new java.util.HashSet();
 
     /**
-     * Sets the ontologyReference.
+     * Gets the sourceBioMaterialMeasurements.
      *
-     * @param ontologyReference the ontologyReference
+     * @return the sourceBioMaterialMeasurements
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public java.util.Collection getSourceBioMaterialMeasurements() {
+        return sourceBioMaterialMeasurements;
+    }
+
+    /**
+     * Sets the sourceBioMaterialMeasurements.
+     *
+     * @param sourceBioMaterialMeasurementsVal the sourceBioMaterialMeasurements
+     */
+    public void setSourceBioMaterialMeasurements(final java.util.Collection sourceBioMaterialMeasurementsVal) {
+        this.sourceBioMaterialMeasurements = sourceBioMaterialMeasurementsVal;
+    }    
+
+    /**
+     * The compoundMeasurements set.
+     */
+    private java.util.Collection compoundMeasurements = new java.util.HashSet();
+
+    /**
+     * Gets the compoundMeasurements.
+     *
+     * @return the compoundMeasurements
+     */
+    public java.util.Collection getCompoundMeasurements() {
+        return compoundMeasurements;
+    }
+
+    /**
+     * Sets the compoundMeasurements.
+     *
+     * @param compoundMeasurementsVal the compoundMeasurements
+     */
+    public void setCompoundMeasurements(final java.util.Collection compoundMeasurementsVal) {
+        this.compoundMeasurements = compoundMeasurementsVal;
+    }    
+
+    /**
+     * The action gov.nih.nci.mageom.domain.Description.OntologyEntry.
+     */
+    private gov.nih.nci.mageom.domain.Description.OntologyEntry action;
+
+    /**
+     * Gets the action.
+     *
+     * @return the action
+     */
+    public gov.nih.nci.mageom.domain.Description.OntologyEntry getAction() {
+        return action;    
+    }
+
+    /**
+     * Sets the action.
+     *
+     * @param actionVal the action
+     */
+    public void setAction(final 
+      gov.nih.nci.mageom.domain.Description.OntologyEntry actionVal) {
+        this.action = actionVal;
+    }
+
+    /**
+     * The actionMeasurement gov.nih.nci.mageom.domain.Measurement.Measurement.
+     */
+    private gov.nih.nci.mageom.domain.Measurement.Measurement actionMeasurement;
+
+    /**
+     * Gets the actionMeasurement.
+     *
+     * @return the actionMeasurement
+     */
+    public gov.nih.nci.mageom.domain.Measurement.Measurement getActionMeasurement() {
+        return actionMeasurement;    
+    }
+
+    /**
+     * Sets the actionMeasurement.
+     *
+     * @param actionMeasurementVal the actionMeasurement
+     */
+    public void setActionMeasurement(final 
+      gov.nih.nci.mageom.domain.Measurement.Measurement actionMeasurementVal) {
+        this.actionMeasurement = actionMeasurementVal;
+    }
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.BioMaterial.Treatment) {
+            final gov.nih.nci.mageom.domain.BioMaterial.Treatment castObject =
+                (gov.nih.nci.mageom.domain.BioMaterial.Treatment) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

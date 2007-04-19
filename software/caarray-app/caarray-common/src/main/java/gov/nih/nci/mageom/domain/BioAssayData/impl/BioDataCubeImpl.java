@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioAssayData.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,91 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * A three-dimensional cube representation of the data.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class BioDataCubeImpl 
+  extends gov.nih.nci.mageom.domain.BioAssayData.impl.BioDataValuesImpl
+  implements gov.nih.nci.mageom.domain.BioAssayData.BioDataCube, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The cube Object[][][].
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private Object[][][] cube;
 
     /**
-     * Sets the description.
+     * Gets the cube.
      *
-     * @param description the description
+     * @return the cube
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
+    public Object[][][] getCube() {
+        return cube;
+    }
 
     /**
-     * Sets the id.
+     * Sets the cube.
      *
-     * @param id the id
+     * @param cubeVal the cube
      */
-    void setId(java.lang.Long id);    
+    public void setCube(final Object[][][] cubeVal) {
+        this.cube = cubeVal;
+    }
     /**
-     * Gets the value.
-     *
-     * @return the value
+     * The order String.
      */
-    String getValue();
+    private String order;
 
     /**
-     * Sets the value.
+     * Gets the order.
      *
-     * @param value the value
+     * @return the order
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public String getOrder() {
+        return order;
+    }
 
     /**
-     * Sets the associations.
+     * Sets the order.
      *
-     * @param associations the associations
+     * @param orderVal the order
      */
-    void setAssociations(java.util.Collection associations);
+    public void setOrder(final String orderVal) {
+        this.order = orderVal;
+    }
 
     /**
-     * Gets the ontologyReference.
+     * Checks if given object is equal to this object.
      *
-     * @return the ontologyReference
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.BioAssayData.BioDataCube) {
+            final gov.nih.nci.mageom.domain.BioAssayData.BioDataCube castObject =
+                (gov.nih.nci.mageom.domain.BioAssayData.BioDataCube) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
 
     /**
-     * Sets the ontologyReference.
+     * Returns the hashcode for the object.
      *
-     * @param ontologyReference the ontologyReference
+     * @return the int hashcode
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

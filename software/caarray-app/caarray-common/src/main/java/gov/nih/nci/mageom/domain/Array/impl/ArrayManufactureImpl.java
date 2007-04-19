@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Array.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,228 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * Describes the process by which arrays are produced.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class ArrayManufactureImpl 
+  extends gov.nih.nci.mageom.domain.impl.IdentifiableImpl
+  implements gov.nih.nci.mageom.domain.Array.ArrayManufacture, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The id java.lang.Long.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Long id;
 
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
     /**
-     * Gets the value.
-     *
-     * @return the value
+     * The manufacturingDate String.
      */
-    String getValue();
+    private String manufacturingDate;
 
     /**
-     * Sets the value.
+     * Gets the manufacturingDate.
      *
-     * @param value the value
+     * @return the manufacturingDate
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public String getManufacturingDate() {
+        return manufacturingDate;
+    }
 
     /**
-     * Sets the associations.
+     * Sets the manufacturingDate.
      *
-     * @param associations the associations
+     * @param manufacturingDateVal the manufacturingDate
      */
-    void setAssociations(java.util.Collection associations);
+    public void setManufacturingDate(final String manufacturingDateVal) {
+        this.manufacturingDate = manufacturingDateVal;
+    }
+    /**
+     * The tolerance java.lang.Float.
+     */
+    private java.lang.Float tolerance;
 
     /**
-     * Gets the ontologyReference.
+     * Gets the tolerance.
      *
-     * @return the ontologyReference
+     * @return the tolerance
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public java.lang.Float getTolerance() {
+        return tolerance;
+    }
 
     /**
-     * Sets the ontologyReference.
+     * Sets the tolerance.
      *
-     * @param ontologyReference the ontologyReference
+     * @param toleranceVal the tolerance
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public void setTolerance(final java.lang.Float toleranceVal) {
+        this.tolerance = toleranceVal;
+    }
+
+    /**
+     * The arrayManufacturers set.
+     */
+    private java.util.Collection arrayManufacturers = new java.util.HashSet();
+
+    /**
+     * Gets the arrayManufacturers.
+     *
+     * @return the arrayManufacturers
+     */
+    public java.util.Collection getArrayManufacturers() {
+        return arrayManufacturers;
+    }
+
+    /**
+     * Sets the arrayManufacturers.
+     *
+     * @param arrayManufacturersVal the arrayManufacturers
+     */
+    public void setArrayManufacturers(final java.util.Collection arrayManufacturersVal) {
+        this.arrayManufacturers = arrayManufacturersVal;
+    }    
+
+    /**
+     * The arrays set.
+     */
+    private java.util.Collection arrays = new java.util.HashSet();
+
+    /**
+     * Gets the arrays.
+     *
+     * @return the arrays
+     */
+    public java.util.Collection getArrays() {
+        return arrays;
+    }
+
+    /**
+     * Sets the arrays.
+     *
+     * @param arraysVal the arrays
+     */
+    public void setArrays(final java.util.Collection arraysVal) {
+        this.arrays = arraysVal;
+    }    
+
+    /**
+     * The qualityControlStatistics set.
+     */
+    private java.util.Collection qualityControlStatistics = new java.util.HashSet();
+
+    /**
+     * Gets the qualityControlStatistics.
+     *
+     * @return the qualityControlStatistics
+     */
+    public java.util.Collection getQualityControlStatistics() {
+        return qualityControlStatistics;
+    }
+
+    /**
+     * Sets the qualityControlStatistics.
+     *
+     * @param qualityControlStatisticsVal the qualityControlStatistics
+     */
+    public void setQualityControlStatistics(final java.util.Collection qualityControlStatisticsVal) {
+        this.qualityControlStatistics = qualityControlStatisticsVal;
+    }    
+
+    /**
+     * The protocolApplications set.
+     */
+    private java.util.Collection protocolApplications = new java.util.HashSet();
+
+    /**
+     * Gets the protocolApplications.
+     *
+     * @return the protocolApplications
+     */
+    public java.util.Collection getProtocolApplications() {
+        return protocolApplications;
+    }
+
+    /**
+     * Sets the protocolApplications.
+     *
+     * @param protocolApplicationsVal the protocolApplications
+     */
+    public void setProtocolApplications(final java.util.Collection protocolApplicationsVal) {
+        this.protocolApplications = protocolApplicationsVal;
+    }    
+
+    /**
+     * The featureLIMSs set.
+     */
+    private java.util.Collection featureLIMSs = new java.util.HashSet();
+
+    /**
+     * Gets the featureLIMSs.
+     *
+     * @return the featureLIMSs
+     */
+    public java.util.Collection getFeatureLIMSs() {
+        return featureLIMSs;
+    }
+
+    /**
+     * Sets the featureLIMSs.
+     *
+     * @param featureLIMSsVal the featureLIMSs
+     */
+    public void setFeatureLIMSs(final java.util.Collection featureLIMSsVal) {
+        this.featureLIMSs = featureLIMSsVal;
+    }    
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.Array.ArrayManufacture) {
+            final gov.nih.nci.mageom.domain.Array.ArrayManufacture castObject =
+                (gov.nih.nci.mageom.domain.Array.ArrayManufacture) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

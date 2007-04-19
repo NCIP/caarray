@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Protocol;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,77 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * Hardware represents the hardware used. Examples of Hardware include: computers, scanners, wash 
+   * stations etc... 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public interface Hardware  extends gov.nih.nci.mageom.domain.Protocol.Parameterizable  {    
     /**
-     * Gets the category.
+     * Gets the make.
      *
-     * @return the category
+     * @return the make
      */
-    String getCategory();
+    String getMake();
 
     /**
-     * Sets the category.
+     * Sets the make.
      *
-     * @param category the category
+     * @param make the make
      */
-    void setCategory(String category);    
+    void setMake(String make);    
     /**
-     * Gets the description.
+     * Gets the model.
      *
-     * @return the description
+     * @return the model
      */
-    String getDescription();
+    String getModel();
 
     /**
-     * Sets the description.
+     * Sets the model.
      *
-     * @param description the description
+     * @param model the model
      */
-    void setDescription(String description);    
+    void setModel(String model);
     /**
-     * Gets the id.
+     * Gets the hardwareManufacturers.
      *
-     * @return the id
+     * @return the hardwareManufacturers
      */
-    java.lang.Long getId();
+    java.util.Collection getHardwareManufacturers();
 
     /**
-     * Sets the id.
+     * Sets the hardwareManufacturers.
      *
-     * @param id the id
+     * @param hardwareManufacturers the hardwareManufacturers
      */
-    void setId(java.lang.Long id);    
+    void setHardwareManufacturers(java.util.Collection hardwareManufacturers);
     /**
-     * Gets the value.
+     * Gets the softwares.
      *
-     * @return the value
+     * @return the softwares
      */
-    String getValue();
+    java.util.Collection getSoftwares();
 
     /**
-     * Sets the value.
+     * Sets the softwares.
      *
-     * @param value the value
+     * @param softwares the softwares
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    void setSoftwares(java.util.Collection softwares);
 
     /**
-     * Sets the associations.
+     * Gets the type.
      *
-     * @param associations the associations
+     * @return the type
      */
-    void setAssociations(java.util.Collection associations);
+    gov.nih.nci.mageom.domain.Description.OntologyEntry getType();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the type.
      *
-     * @return the ontologyReference
+     * @param type the type
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setType(
+      gov.nih.nci.mageom.domain.Description.OntologyEntry type);
 }

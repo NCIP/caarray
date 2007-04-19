@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioAssay.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,119 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * A bioAssay created by the bioAssayCreation event (e.g. in gene expression analysis this event is 
+   * represented by the hybridization event). 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class PhysicalBioAssayImpl 
+  extends gov.nih.nci.mageom.domain.BioAssay.impl.BioAssayImpl
+  implements gov.nih.nci.mageom.domain.BioAssay.PhysicalBioAssay, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
+
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The bioAssayCreation gov.nih.nci.mageom.domain.BioAssay.BioAssayCreation.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private gov.nih.nci.mageom.domain.BioAssay.BioAssayCreation bioAssayCreation;
 
     /**
-     * Sets the description.
+     * Gets the bioAssayCreation.
      *
-     * @param description the description
+     * @return the bioAssayCreation
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
+    public gov.nih.nci.mageom.domain.BioAssay.BioAssayCreation getBioAssayCreation() {
+        return bioAssayCreation;    
+    }
 
     /**
-     * Sets the id.
+     * Sets the bioAssayCreation.
      *
-     * @param id the id
+     * @param bioAssayCreationVal the bioAssayCreation
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    public void setBioAssayCreation(final 
+      gov.nih.nci.mageom.domain.BioAssay.BioAssayCreation bioAssayCreationVal) {
+        this.bioAssayCreation = bioAssayCreationVal;
+    }
 
     /**
-     * Sets the value.
-     *
-     * @param value the value
+     * The bioAssayTreatments set.
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    private java.util.Collection bioAssayTreatments = new java.util.HashSet();
 
     /**
-     * Sets the associations.
+     * Gets the bioAssayTreatments.
      *
-     * @param associations the associations
+     * @return the bioAssayTreatments
      */
-    void setAssociations(java.util.Collection associations);
+    public java.util.Collection getBioAssayTreatments() {
+        return bioAssayTreatments;
+    }
 
     /**
-     * Gets the ontologyReference.
+     * Sets the bioAssayTreatments.
      *
-     * @return the ontologyReference
+     * @param bioAssayTreatmentsVal the bioAssayTreatments
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public void setBioAssayTreatments(final java.util.Collection bioAssayTreatmentsVal) {
+        this.bioAssayTreatments = bioAssayTreatmentsVal;
+    }    
 
     /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
+     * The physicalBioAssayData set.
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    private java.util.Collection physicalBioAssayData = new java.util.HashSet();
+
+    /**
+     * Gets the physicalBioAssayData.
+     *
+     * @return the physicalBioAssayData
+     */
+    public java.util.Collection getPhysicalBioAssayData() {
+        return physicalBioAssayData;
+    }
+
+    /**
+     * Sets the physicalBioAssayData.
+     *
+     * @param physicalBioAssayDataVal the physicalBioAssayData
+     */
+    public void setPhysicalBioAssayData(final java.util.Collection physicalBioAssayDataVal) {
+        this.physicalBioAssayData = physicalBioAssayDataVal;
+    }    
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.BioAssay.PhysicalBioAssay) {
+            final gov.nih.nci.mageom.domain.BioAssay.PhysicalBioAssay castObject =
+                (gov.nih.nci.mageom.domain.BioAssay.PhysicalBioAssay) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Array;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,66 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * Information on the physical production of arrays within the laboratory.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public interface ManufactureLIMS  extends gov.nih.nci.mageom.domain.Describable  {    
     /**
-     * Gets the category.
+     * Gets the quality.
      *
-     * @return the category
+     * @return the quality
      */
-    String getCategory();
+    String getQuality();
 
     /**
-     * Sets the category.
+     * Sets the quality.
      *
-     * @param category the category
+     * @param quality the quality
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    void setQuality(String quality);
 
     /**
-     * Sets the description.
+     * Gets the bioMaterial.
      *
-     * @param description the description
+     * @return the bioMaterial
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
+    gov.nih.nci.mageom.domain.BioMaterial.BioMaterial getBioMaterial();
 
     /**
-     * Sets the id.
+     * Sets the bioMaterial.
      *
-     * @param id the id
+     * @param bioMaterial the bioMaterial
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    void setBioMaterial(
+      gov.nih.nci.mageom.domain.BioMaterial.BioMaterial bioMaterial);
 
     /**
-     * Sets the value.
+     * Gets the identifierLIMS.
      *
-     * @param value the value
+     * @return the identifierLIMS
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    gov.nih.nci.mageom.domain.Description.DatabaseEntry getIdentifierLIMS();
 
     /**
-     * Sets the associations.
+     * Sets the identifierLIMS.
      *
-     * @param associations the associations
+     * @param identifierLIMS the identifierLIMS
      */
-    void setAssociations(java.util.Collection associations);
+    void setIdentifierLIMS(
+      gov.nih.nci.mageom.domain.Description.DatabaseEntry identifierLIMS);
 
     /**
-     * Gets the ontologyReference.
+     * Gets the feature.
      *
-     * @return the ontologyReference
+     * @return the feature
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    gov.nih.nci.mageom.domain.DesignElement.Feature getFeature();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the feature.
      *
-     * @param ontologyReference the ontologyReference
+     * @param feature the feature
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setFeature(
+      gov.nih.nci.mageom.domain.DesignElement.Feature feature);
 }

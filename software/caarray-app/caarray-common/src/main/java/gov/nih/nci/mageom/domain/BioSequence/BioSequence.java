@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioSequence;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,12 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * A BioSequence is a representation of a DNA, RNA, or protein sequence. It can be represented by a Clone, 
+   * Gene, or the sequence. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface BioSequence  extends gov.nih.nci.mageom.domain.Identifiable  {    
     /**
      * Gets the id.
      *
@@ -130,44 +104,139 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
-     * Gets the value.
+     * Gets the isApproximateLength.
      *
-     * @return the value
+     * @return the isApproximateLength
      */
-    String getValue();
+    java.lang.Boolean getIsApproximateLength();
 
     /**
-     * Sets the value.
+     * Sets the isApproximateLength.
      *
-     * @param value the value
+     * @param isApproximateLength the isApproximateLength
      */
-    void setValue(String value);
+    void setIsApproximateLength(java.lang.Boolean isApproximateLength);    
     /**
-     * Gets the associations.
+     * Gets the isCircular.
      *
-     * @return the associations
+     * @return the isCircular
      */
-    java.util.Collection getAssociations();
+    java.lang.Boolean getIsCircular();
 
     /**
-     * Sets the associations.
+     * Sets the isCircular.
      *
-     * @param associations the associations
+     * @param isCircular the isCircular
      */
-    void setAssociations(java.util.Collection associations);
+    void setIsCircular(java.lang.Boolean isCircular);    
+    /**
+     * Gets the length.
+     *
+     * @return the length
+     */
+    java.lang.Integer getLength();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the length.
      *
-     * @return the ontologyReference
+     * @param length the length
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setLength(java.lang.Integer length);    
+    /**
+     * Gets the sequence.
+     *
+     * @return the sequence
+     */
+    String getSequence();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the sequence.
      *
-     * @param ontologyReference the ontologyReference
+     * @param sequence the sequence
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setSequence(String sequence);
+    /**
+     * Gets the seqFeatures.
+     *
+     * @return the seqFeatures
+     */
+    java.util.Collection getSeqFeatures();
+
+    /**
+     * Sets the seqFeatures.
+     *
+     * @param seqFeatures the seqFeatures
+     */
+    void setSeqFeatures(java.util.Collection seqFeatures);
+
+    /**
+     * Gets the polymerType.
+     *
+     * @return the polymerType
+     */
+    gov.nih.nci.mageom.domain.Description.OntologyEntry getPolymerType();
+
+    /**
+     * Sets the polymerType.
+     *
+     * @param polymerType the polymerType
+     */
+    void setPolymerType(
+      gov.nih.nci.mageom.domain.Description.OntologyEntry polymerType);
+    /**
+     * Gets the sequenceDatabases.
+     *
+     * @return the sequenceDatabases
+     */
+    java.util.Collection getSequenceDatabases();
+
+    /**
+     * Sets the sequenceDatabases.
+     *
+     * @param sequenceDatabases the sequenceDatabases
+     */
+    void setSequenceDatabases(java.util.Collection sequenceDatabases);
+    /**
+     * Gets the ontologyEntries.
+     *
+     * @return the ontologyEntries
+     */
+    java.util.Collection getOntologyEntries();
+
+    /**
+     * Sets the ontologyEntries.
+     *
+     * @param ontologyEntries the ontologyEntries
+     */
+    void setOntologyEntries(java.util.Collection ontologyEntries);
+
+    /**
+     * Gets the type.
+     *
+     * @return the type
+     */
+    gov.nih.nci.mageom.domain.Description.OntologyEntry getType();
+
+    /**
+     * Sets the type.
+     *
+     * @param type the type
+     */
+    void setType(
+      gov.nih.nci.mageom.domain.Description.OntologyEntry type);
+
+    /**
+     * Gets the species.
+     *
+     * @return the species
+     */
+    gov.nih.nci.mageom.domain.Description.OntologyEntry getSpecies();
+
+    /**
+     * Sets the species.
+     *
+     * @param species the species
+     */
+    void setSpecies(
+      gov.nih.nci.mageom.domain.Description.OntologyEntry species);
 }

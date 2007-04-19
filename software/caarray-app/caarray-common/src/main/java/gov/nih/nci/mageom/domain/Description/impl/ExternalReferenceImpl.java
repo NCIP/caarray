@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Description.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,157 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * A reference to the originating source for the object.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class ExternalReferenceImpl 
+  extends gov.nih.nci.mageom.domain.impl.ExtendableImpl
+  implements gov.nih.nci.mageom.domain.Description.ExternalReference, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The exportedFromDB String.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private String exportedFromDB;
 
     /**
-     * Sets the description.
+     * Gets the exportedFromDB.
      *
-     * @param description the description
+     * @return the exportedFromDB
      */
-    void setDescription(String description);    
+    public String getExportedFromDB() {
+        return exportedFromDB;
+    }
+
+    /**
+     * Sets the exportedFromDB.
+     *
+     * @param exportedFromDBVal the exportedFromDB
+     */
+    public void setExportedFromDB(final String exportedFromDBVal) {
+        this.exportedFromDB = exportedFromDBVal;
+    }
+    /**
+     * The exportedFromServer String.
+     */
+    private String exportedFromServer;
+
+    /**
+     * Gets the exportedFromServer.
+     *
+     * @return the exportedFromServer
+     */
+    public String getExportedFromServer() {
+        return exportedFromServer;
+    }
+
+    /**
+     * Sets the exportedFromServer.
+     *
+     * @param exportedFromServerVal the exportedFromServer
+     */
+    public void setExportedFromServer(final String exportedFromServerVal) {
+        this.exportedFromServer = exportedFromServerVal;
+    }
+    /**
+     * The exportID String.
+     */
+    private String exportID;
+
+    /**
+     * Gets the exportID.
+     *
+     * @return the exportID
+     */
+    public String getExportID() {
+        return exportID;
+    }
+
+    /**
+     * Sets the exportID.
+     *
+     * @param exportIDVal the exportID
+     */
+    public void setExportID(final String exportIDVal) {
+        this.exportID = exportIDVal;
+    }
+    /**
+     * The exportName String.
+     */
+    private String exportName;
+
+    /**
+     * Gets the exportName.
+     *
+     * @return the exportName
+     */
+    public String getExportName() {
+        return exportName;
+    }
+
+    /**
+     * Sets the exportName.
+     *
+     * @param exportNameVal the exportName
+     */
+    public void setExportName(final String exportNameVal) {
+        this.exportName = exportNameVal;
+    }
+    /**
+     * The id java.lang.Long.
+     */
+    private java.lang.Long id;
+
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
 
     /**
-     * Sets the value.
+     * Checks if given object is equal to this object.
      *
-     * @param value the value
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.Description.ExternalReference) {
+            final gov.nih.nci.mageom.domain.Description.ExternalReference castObject =
+                (gov.nih.nci.mageom.domain.Description.ExternalReference) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
 
     /**
-     * Sets the associations.
+     * Returns the hashcode for the object.
      *
-     * @param associations the associations
+     * @return the int hashcode
      */
-    void setAssociations(java.util.Collection associations);
-
-    /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
-     */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

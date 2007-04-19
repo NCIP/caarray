@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.AuditAndSecurity;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,62 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * A person for which the attributes are self describing.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public interface Person  extends gov.nih.nci.mageom.domain.AuditAndSecurity.Contact  {    
     /**
-     * Gets the category.
+     * Gets the firstName.
      *
-     * @return the category
+     * @return the firstName
      */
-    String getCategory();
+    String getFirstName();
 
     /**
-     * Sets the category.
+     * Sets the firstName.
      *
-     * @param category the category
+     * @param firstName the firstName
      */
-    void setCategory(String category);    
+    void setFirstName(String firstName);    
     /**
-     * Gets the description.
+     * Gets the lastName.
      *
-     * @return the description
+     * @return the lastName
      */
-    String getDescription();
+    String getLastName();
 
     /**
-     * Sets the description.
+     * Sets the lastName.
      *
-     * @param description the description
+     * @param lastName the lastName
      */
-    void setDescription(String description);    
+    void setLastName(String lastName);    
     /**
-     * Gets the id.
+     * Gets the midInitials.
      *
-     * @return the id
+     * @return the midInitials
      */
-    java.lang.Long getId();
+    String getMidInitials();
 
     /**
-     * Sets the id.
+     * Sets the midInitials.
      *
-     * @param id the id
+     * @param midInitials the midInitials
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    void setMidInitials(String midInitials);
 
     /**
-     * Sets the value.
+     * Gets the affiliation.
      *
-     * @param value the value
+     * @return the affiliation
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    gov.nih.nci.mageom.domain.AuditAndSecurity.Organization getAffiliation();
 
     /**
-     * Sets the associations.
+     * Sets the affiliation.
      *
-     * @param associations the associations
+     * @param affiliation the affiliation
      */
-    void setAssociations(java.util.Collection associations);
-
-    /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
-     */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setAffiliation(
+      gov.nih.nci.mageom.domain.AuditAndSecurity.Organization affiliation);
 }

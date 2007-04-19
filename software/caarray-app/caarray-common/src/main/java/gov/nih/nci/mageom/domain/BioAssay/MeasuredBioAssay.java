@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioAssay;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,38 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * A measured bioAssay is the direct processing of information in a physical bioAssay by the featureExtraction 
+   * event. Often uses images which are referenced through the physical bioAssay. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public interface MeasuredBioAssay  extends gov.nih.nci.mageom.domain.BioAssay.BioAssay  {
     /**
-     * Gets the category.
+     * Gets the measuredBioAssayData.
      *
-     * @return the category
+     * @return the measuredBioAssayData
      */
-    String getCategory();
+    java.util.Collection getMeasuredBioAssayData();
 
     /**
-     * Sets the category.
+     * Sets the measuredBioAssayData.
      *
-     * @param category the category
+     * @param measuredBioAssayData the measuredBioAssayData
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    void setMeasuredBioAssayData(java.util.Collection measuredBioAssayData);
 
     /**
-     * Sets the description.
+     * Gets the featureExtraction.
      *
-     * @param description the description
+     * @return the featureExtraction
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
+    gov.nih.nci.mageom.domain.BioAssay.FeatureExtraction getFeatureExtraction();
 
     /**
-     * Sets the id.
+     * Sets the featureExtraction.
      *
-     * @param id the id
+     * @param featureExtraction the featureExtraction
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
-
-    /**
-     * Sets the value.
-     *
-     * @param value the value
-     */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
-
-    /**
-     * Sets the associations.
-     *
-     * @param associations the associations
-     */
-    void setAssociations(java.util.Collection associations);
-
-    /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
-     */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setFeatureExtraction(
+      gov.nih.nci.mageom.domain.BioAssay.FeatureExtraction featureExtraction);
 }

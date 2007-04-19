@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,158 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * A tuple designed to store data, keyed by a name and type.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class NameValueTypeImpl 
+  implements gov.nih.nci.mageom.domain.NameValueType, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The id java.lang.Long.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Long id;
 
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
+    /**
+     * The name String.
+     */
+    private String name;
+
+    /**
+     * Gets the name.
+     *
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the name.
+     *
+     * @param nameVal the name
+     */
+    public void setName(final String nameVal) {
+        this.name = nameVal;
+    }
+    /**
+     * The type String.
+     */
+    private String type;
+
+    /**
+     * Gets the type.
+     *
+     * @return the type
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * Sets the type.
+     *
+     * @param typeVal the type
+     */
+    public void setType(final String typeVal) {
+        this.type = typeVal;
+    }
+    /**
+     * The value String.
+     */
+    private String value;
+
     /**
      * Gets the value.
      *
      * @return the value
      */
-    String getValue();
+    public String getValue() {
+        return value;
+    }
 
     /**
      * Sets the value.
      *
-     * @param value the value
+     * @param valueVal the value
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public void setValue(final String valueVal) {
+        this.value = valueVal;
+    }
 
     /**
-     * Sets the associations.
-     *
-     * @param associations the associations
+     * The parentPropertySet gov.nih.nci.mageom.domain.NameValueType.
      */
-    void setAssociations(java.util.Collection associations);
+    private gov.nih.nci.mageom.domain.NameValueType parentPropertySet;
 
     /**
-     * Gets the ontologyReference.
+     * Gets the parentPropertySet.
      *
-     * @return the ontologyReference
+     * @return the parentPropertySet
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public gov.nih.nci.mageom.domain.NameValueType getParentPropertySet() {
+        return parentPropertySet;    
+    }
 
     /**
-     * Sets the ontologyReference.
+     * Sets the parentPropertySet.
      *
-     * @param ontologyReference the ontologyReference
+     * @param parentPropertySetVal the parentPropertySet
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public void setParentPropertySet(final 
+      gov.nih.nci.mageom.domain.NameValueType parentPropertySetVal) {
+        this.parentPropertySet = parentPropertySetVal;
+    }
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.NameValueType) {
+            final gov.nih.nci.mageom.domain.NameValueType castObject =
+                (gov.nih.nci.mageom.domain.NameValueType) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

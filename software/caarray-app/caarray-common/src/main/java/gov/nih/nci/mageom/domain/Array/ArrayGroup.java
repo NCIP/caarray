@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Array;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,52 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * An array package is a physical platform that contains one or more arrays that are separately addressable 
+   * (e.g. several arrays that can be hybridized on a single microscope slide) or a virtual grouping together 
+   * of arrays. The array package that has been m 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public interface ArrayGroup  extends gov.nih.nci.mageom.domain.Identifiable  {    
     /**
-     * Gets the category.
+     * Gets the arraySpacingX.
      *
-     * @return the category
+     * @return the arraySpacingX
      */
-    String getCategory();
+    java.lang.Float getArraySpacingX();
 
     /**
-     * Sets the category.
+     * Sets the arraySpacingX.
      *
-     * @param category the category
+     * @param arraySpacingX the arraySpacingX
      */
-    void setCategory(String category);    
+    void setArraySpacingX(java.lang.Float arraySpacingX);    
     /**
-     * Gets the description.
+     * Gets the arraySpacingY.
      *
-     * @return the description
+     * @return the arraySpacingY
      */
-    String getDescription();
+    java.lang.Float getArraySpacingY();
 
     /**
-     * Sets the description.
+     * Sets the arraySpacingY.
      *
-     * @param description the description
+     * @param arraySpacingY the arraySpacingY
      */
-    void setDescription(String description);    
+    void setArraySpacingY(java.lang.Float arraySpacingY);    
+    /**
+     * Gets the barcode.
+     *
+     * @return the barcode
+     */
+    String getBarcode();
+
+    /**
+     * Sets the barcode.
+     *
+     * @param barcode the barcode
+     */
+    void setBarcode(String barcode);    
     /**
      * Gets the id.
      *
@@ -130,44 +144,124 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
-     * Gets the value.
+     * Gets the length.
      *
-     * @return the value
+     * @return the length
      */
-    String getValue();
+    java.lang.Float getLength();
 
     /**
-     * Sets the value.
+     * Sets the length.
      *
-     * @param value the value
+     * @param length the length
      */
-    void setValue(String value);
+    void setLength(java.lang.Float length);    
     /**
-     * Gets the associations.
+     * Gets the numArrays.
      *
-     * @return the associations
+     * @return the numArrays
      */
-    java.util.Collection getAssociations();
+    java.lang.Integer getNumArrays();
 
     /**
-     * Sets the associations.
+     * Sets the numArrays.
      *
-     * @param associations the associations
+     * @param numArrays the numArrays
      */
-    void setAssociations(java.util.Collection associations);
+    void setNumArrays(java.lang.Integer numArrays);    
+    /**
+     * Gets the orientationMark.
+     *
+     * @return the orientationMark
+     */
+    String getOrientationMark();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the orientationMark.
      *
-     * @return the ontologyReference
+     * @param orientationMark the orientationMark
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setOrientationMark(String orientationMark);    
+    /**
+     * Gets the orientationMarkPosition.
+     *
+     * @return the orientationMarkPosition
+     */
+    String getOrientationMarkPosition();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the orientationMarkPosition.
      *
-     * @param ontologyReference the ontologyReference
+     * @param orientationMarkPosition the orientationMarkPosition
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setOrientationMarkPosition(String orientationMarkPosition);    
+    /**
+     * Gets the width.
+     *
+     * @return the width
+     */
+    java.lang.Float getWidth();
+
+    /**
+     * Sets the width.
+     *
+     * @param width the width
+     */
+    void setWidth(java.lang.Float width);
+
+    /**
+     * Gets the distanceUnit.
+     *
+     * @return the distanceUnit
+     */
+    gov.nih.nci.mageom.domain.Measurement.DistanceUnit getDistanceUnit();
+
+    /**
+     * Sets the distanceUnit.
+     *
+     * @param distanceUnit the distanceUnit
+     */
+    void setDistanceUnit(
+      gov.nih.nci.mageom.domain.Measurement.DistanceUnit distanceUnit);
+    /**
+     * Gets the fiducials.
+     *
+     * @return the fiducials
+     */
+    java.util.Collection getFiducials();
+
+    /**
+     * Sets the fiducials.
+     *
+     * @param fiducials the fiducials
+     */
+    void setFiducials(java.util.Collection fiducials);
+    /**
+     * Gets the arrays.
+     *
+     * @return the arrays
+     */
+    java.util.Collection getArrays();
+
+    /**
+     * Sets the arrays.
+     *
+     * @param arrays the arrays
+     */
+    void setArrays(java.util.Collection arrays);
+
+    /**
+     * Gets the substrateType.
+     *
+     * @return the substrateType
+     */
+    gov.nih.nci.mageom.domain.Description.OntologyEntry getSubstrateType();
+
+    /**
+     * Sets the substrateType.
+     *
+     * @param substrateType the substrateType
+     */
+    void setSubstrateType(
+      gov.nih.nci.mageom.domain.Description.OntologyEntry substrateType);
 }

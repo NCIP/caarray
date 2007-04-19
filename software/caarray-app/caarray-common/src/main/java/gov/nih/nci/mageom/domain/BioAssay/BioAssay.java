@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioAssay;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,11 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * An abstract class which represents both physical and computational groupings of arrays and biomaterials. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface BioAssay  extends gov.nih.nci.mageom.domain.Identifiable  {    
     /**
      * Gets the id.
      *
@@ -128,46 +101,31 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
+    void setId(java.lang.Long id);
     /**
-     * Gets the value.
+     * Gets the bioAssayFactorValues.
      *
-     * @return the value
+     * @return the bioAssayFactorValues
      */
-    String getValue();
+    java.util.Collection getBioAssayFactorValues();
 
     /**
-     * Sets the value.
+     * Sets the bioAssayFactorValues.
      *
-     * @param value the value
+     * @param bioAssayFactorValues the bioAssayFactorValues
      */
-    void setValue(String value);
+    void setBioAssayFactorValues(java.util.Collection bioAssayFactorValues);
     /**
-     * Gets the associations.
+     * Gets the channels.
      *
-     * @return the associations
+     * @return the channels
      */
-    java.util.Collection getAssociations();
+    java.util.Collection getChannels();
 
     /**
-     * Sets the associations.
+     * Sets the channels.
      *
-     * @param associations the associations
+     * @param channels the channels
      */
-    void setAssociations(java.util.Collection associations);
-
-    /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
-     */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setChannels(java.util.Collection channels);
 }

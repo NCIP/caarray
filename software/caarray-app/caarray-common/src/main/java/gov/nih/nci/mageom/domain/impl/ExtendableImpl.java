@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,40 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * Abstract class that specifies for subclasses an association to NameValueTypes. These can be used, 
+   * for instance, to specify proprietary properties and in-house processing hints. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public abstract class ExtendableImpl 
+  implements gov.nih.nci.mageom.domain.Extendable, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
+
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The propertySets set.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.util.Collection propertySets = new java.util.HashSet();
 
     /**
-     * Sets the description.
+     * Gets the propertySets.
      *
-     * @param description the description
+     * @return the propertySets
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
+    public java.util.Collection getPropertySets() {
+        return propertySets;
+    }
 
     /**
-     * Sets the id.
+     * Sets the propertySets.
      *
-     * @param id the id
+     * @param propertySetsVal the propertySets
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    public void setPropertySets(final java.util.Collection propertySetsVal) {
+        this.propertySets = propertySetsVal;
+    }    
 
-    /**
-     * Sets the value.
-     *
-     * @param value the value
-     */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
-
-    /**
-     * Sets the associations.
-     *
-     * @param associations the associations
-     */
-    void setAssociations(java.util.Collection associations);
-
-    /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
-     */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
 }

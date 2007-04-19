@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Protocol;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,77 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * A Protocol is a parameterizable description of a method. ProtocolApplication is used to specify 
+   * the ParameterValues of it's Protocol's Parameters. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public interface Protocol  extends gov.nih.nci.mageom.domain.Protocol.Parameterizable  {    
     /**
-     * Gets the category.
+     * Gets the text.
      *
-     * @return the category
+     * @return the text
      */
-    String getCategory();
+    String getText();
 
     /**
-     * Sets the category.
+     * Sets the text.
      *
-     * @param category the category
+     * @param text the text
      */
-    void setCategory(String category);    
+    void setText(String text);    
     /**
-     * Gets the description.
+     * Gets the title.
      *
-     * @return the description
+     * @return the title
      */
-    String getDescription();
+    String getTitle();
 
     /**
-     * Sets the description.
+     * Sets the title.
      *
-     * @param description the description
+     * @param title the title
      */
-    void setDescription(String description);    
+    void setTitle(String title);
     /**
-     * Gets the id.
+     * Gets the softwares.
      *
-     * @return the id
+     * @return the softwares
      */
-    java.lang.Long getId();
+    java.util.Collection getSoftwares();
 
     /**
-     * Sets the id.
+     * Sets the softwares.
      *
-     * @param id the id
+     * @param softwares the softwares
      */
-    void setId(java.lang.Long id);    
+    void setSoftwares(java.util.Collection softwares);
     /**
-     * Gets the value.
+     * Gets the hardwares.
      *
-     * @return the value
+     * @return the hardwares
      */
-    String getValue();
+    java.util.Collection getHardwares();
 
     /**
-     * Sets the value.
+     * Sets the hardwares.
      *
-     * @param value the value
+     * @param hardwares the hardwares
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    void setHardwares(java.util.Collection hardwares);
 
     /**
-     * Sets the associations.
+     * Gets the type.
      *
-     * @param associations the associations
+     * @return the type
      */
-    void setAssociations(java.util.Collection associations);
+    gov.nih.nci.mageom.domain.Description.OntologyEntry getType();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the type.
      *
-     * @return the ontologyReference
+     * @param type the type
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setType(
+      gov.nih.nci.mageom.domain.Description.OntologyEntry type);
 }

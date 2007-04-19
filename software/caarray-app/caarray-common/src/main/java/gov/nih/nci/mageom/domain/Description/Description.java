@@ -84,38 +84,10 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * A free text description of an object.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface Description  extends gov.nih.nci.mageom.domain.Describable  {    
     /**
      * Gets the id.
      *
@@ -130,44 +102,83 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
-     * Gets the value.
+     * Gets the text.
      *
-     * @return the value
+     * @return the text
      */
-    String getValue();
+    String getText();
 
     /**
-     * Sets the value.
+     * Sets the text.
      *
-     * @param value the value
+     * @param text the text
      */
-    void setValue(String value);
+    void setText(String text);    
     /**
-     * Gets the associations.
+     * Gets the URI.
      *
-     * @return the associations
+     * @return the URI
      */
-    java.util.Collection getAssociations();
+    String getURI();
 
     /**
-     * Sets the associations.
+     * Sets the URI.
      *
-     * @param associations the associations
+     * @param URI the URI
      */
-    void setAssociations(java.util.Collection associations);
+    void setURI(String URI);
 
     /**
-     * Gets the ontologyReference.
+     * Gets the externalReference.
      *
-     * @return the ontologyReference
+     * @return the externalReference
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    gov.nih.nci.mageom.domain.Description.ExternalReference getExternalReference();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the externalReference.
      *
-     * @param ontologyReference the ontologyReference
+     * @param externalReference the externalReference
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setExternalReference(
+      gov.nih.nci.mageom.domain.Description.ExternalReference externalReference);
+    /**
+     * Gets the annotations.
+     *
+     * @return the annotations
+     */
+    java.util.Collection getAnnotations();
+
+    /**
+     * Sets the annotations.
+     *
+     * @param annotations the annotations
+     */
+    void setAnnotations(java.util.Collection annotations);
+    /**
+     * Gets the bibliographicReferences.
+     *
+     * @return the bibliographicReferences
+     */
+    java.util.Collection getBibliographicReferences();
+
+    /**
+     * Sets the bibliographicReferences.
+     *
+     * @param bibliographicReferences the bibliographicReferences
+     */
+    void setBibliographicReferences(java.util.Collection bibliographicReferences);
+    /**
+     * Gets the databaseReferences.
+     *
+     * @return the databaseReferences
+     */
+    java.util.Collection getDatabaseReferences();
+
+    /**
+     * Sets the databaseReferences.
+     *
+     * @param databaseReferences the databaseReferences
+     */
+    void setDatabaseReferences(java.util.Collection databaseReferences);
 }

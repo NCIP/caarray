@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.AuditAndSecurity.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,224 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * A contact is either a person or an organization.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class ContactImpl 
+  extends gov.nih.nci.mageom.domain.impl.IdentifiableImpl
+  implements gov.nih.nci.mageom.domain.AuditAndSecurity.Contact, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The address String.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private String address;
 
     /**
-     * Sets the description.
+     * Gets the address.
      *
-     * @param description the description
+     * @return the address
      */
-    void setDescription(String description);    
+    public String getAddress() {
+        return address;
+    }
+
+    /**
+     * Sets the address.
+     *
+     * @param addressVal the address
+     */
+    public void setAddress(final String addressVal) {
+        this.address = addressVal;
+    }
+    /**
+     * The email String.
+     */
+    private String email;
+
+    /**
+     * Gets the email.
+     *
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * Sets the email.
+     *
+     * @param emailVal the email
+     */
+    public void setEmail(final String emailVal) {
+        this.email = emailVal;
+    }
+    /**
+     * The fax String.
+     */
+    private String fax;
+
+    /**
+     * Gets the fax.
+     *
+     * @return the fax
+     */
+    public String getFax() {
+        return fax;
+    }
+
+    /**
+     * Sets the fax.
+     *
+     * @param faxVal the fax
+     */
+    public void setFax(final String faxVal) {
+        this.fax = faxVal;
+    }
+    /**
+     * The id java.lang.Long.
+     */
+    private java.lang.Long id;
+
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
     /**
-     * Gets the value.
-     *
-     * @return the value
+     * The phone String.
      */
-    String getValue();
+    private String phone;
 
     /**
-     * Sets the value.
+     * Gets the phone.
      *
-     * @param value the value
+     * @return the phone
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public String getPhone() {
+        return phone;
+    }
 
     /**
-     * Sets the associations.
+     * Sets the phone.
      *
-     * @param associations the associations
+     * @param phoneVal the phone
      */
-    void setAssociations(java.util.Collection associations);
+    public void setPhone(final String phoneVal) {
+        this.phone = phoneVal;
+    }
+    /**
+     * The tollFreePhone String.
+     */
+    private String tollFreePhone;
 
     /**
-     * Gets the ontologyReference.
+     * Gets the tollFreePhone.
      *
-     * @return the ontologyReference
+     * @return the tollFreePhone
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public String getTollFreePhone() {
+        return tollFreePhone;
+    }
 
     /**
-     * Sets the ontologyReference.
+     * Sets the tollFreePhone.
      *
-     * @param ontologyReference the ontologyReference
+     * @param tollFreePhoneVal the tollFreePhone
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public void setTollFreePhone(final String tollFreePhoneVal) {
+        this.tollFreePhone = tollFreePhoneVal;
+    }
+    /**
+     * The URI String.
+     */
+    private String URI;
+
+    /**
+     * Gets the URI.
+     *
+     * @return the URI
+     */
+    public String getURI() {
+        return URI;
+    }
+
+    /**
+     * Sets the URI.
+     *
+     * @param URIVal the URI
+     */
+    public void setURI(final String URIVal) {
+        this.URI = URIVal;
+    }
+
+    /**
+     * The roles set.
+     */
+    private java.util.Collection roles = new java.util.HashSet();
+
+    /**
+     * Gets the roles.
+     *
+     * @return the roles
+     */
+    public java.util.Collection getRoles() {
+        return roles;
+    }
+
+    /**
+     * Sets the roles.
+     *
+     * @param rolesVal the roles
+     */
+    public void setRoles(final java.util.Collection rolesVal) {
+        this.roles = rolesVal;
+    }    
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.AuditAndSecurity.Contact) {
+            final gov.nih.nci.mageom.domain.AuditAndSecurity.Contact castObject =
+                (gov.nih.nci.mageom.domain.AuditAndSecurity.Contact) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

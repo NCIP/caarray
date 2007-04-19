@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BQS;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,38 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * Attributes for the most common criteria and association with OntologyEntry allows criteria to 
+   * be specified for searching for a Bibliographic reference. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public interface BibliographicReference  extends gov.nih.nci.mageom.domain.Describable  {    
     /**
-     * Gets the category.
+     * Gets the authors.
      *
-     * @return the category
+     * @return the authors
      */
-    String getCategory();
+    String getAuthors();
 
     /**
-     * Sets the category.
+     * Sets the authors.
      *
-     * @param category the category
+     * @param authors the authors
      */
-    void setCategory(String category);    
+    void setAuthors(String authors);    
     /**
-     * Gets the description.
+     * Gets the editor.
      *
-     * @return the description
+     * @return the editor
      */
-    String getDescription();
+    String getEditor();
 
     /**
-     * Sets the description.
+     * Sets the editor.
      *
-     * @param description the description
+     * @param editor the editor
      */
-    void setDescription(String description);    
+    void setEditor(String editor);    
     /**
      * Gets the id.
      *
@@ -130,44 +130,133 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
-     * Gets the value.
+     * Gets the issue.
      *
-     * @return the value
+     * @return the issue
      */
-    String getValue();
+    String getIssue();
 
     /**
-     * Sets the value.
+     * Sets the issue.
      *
-     * @param value the value
+     * @param issue the issue
      */
-    void setValue(String value);
+    void setIssue(String issue);    
     /**
-     * Gets the associations.
+     * Gets the pages.
      *
-     * @return the associations
+     * @return the pages
      */
-    java.util.Collection getAssociations();
+    String getPages();
 
     /**
-     * Sets the associations.
+     * Sets the pages.
      *
-     * @param associations the associations
+     * @param pages the pages
      */
-    void setAssociations(java.util.Collection associations);
+    void setPages(String pages);    
+    /**
+     * Gets the publication.
+     *
+     * @return the publication
+     */
+    String getPublication();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the publication.
      *
-     * @return the ontologyReference
+     * @param publication the publication
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setPublication(String publication);    
+    /**
+     * Gets the publisher.
+     *
+     * @return the publisher
+     */
+    String getPublisher();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the publisher.
      *
-     * @param ontologyReference the ontologyReference
+     * @param publisher the publisher
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setPublisher(String publisher);    
+    /**
+     * Gets the title.
+     *
+     * @return the title
+     */
+    String getTitle();
+
+    /**
+     * Sets the title.
+     *
+     * @param title the title
+     */
+    void setTitle(String title);    
+    /**
+     * Gets the URI.
+     *
+     * @return the URI
+     */
+    String getURI();
+
+    /**
+     * Sets the URI.
+     *
+     * @param URI the URI
+     */
+    void setURI(String URI);    
+    /**
+     * Gets the volume.
+     *
+     * @return the volume
+     */
+    String getVolume();
+
+    /**
+     * Sets the volume.
+     *
+     * @param volume the volume
+     */
+    void setVolume(String volume);    
+    /**
+     * Gets the year.
+     *
+     * @return the year
+     */
+    java.util.Date getYear();
+
+    /**
+     * Sets the year.
+     *
+     * @param year the year
+     */
+    void setYear(java.util.Date year);
+    /**
+     * Gets the accessions.
+     *
+     * @return the accessions
+     */
+    java.util.Collection getAccessions();
+
+    /**
+     * Sets the accessions.
+     *
+     * @param accessions the accessions
+     */
+    void setAccessions(java.util.Collection accessions);
+    /**
+     * Gets the parameters.
+     *
+     * @return the parameters
+     */
+    java.util.Collection getParameters();
+
+    /**
+     * Sets the parameters.
+     *
+     * @param parameters the parameters
+     */
+    void setParameters(java.util.Collection parameters);
 }

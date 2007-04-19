@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.mageom.domain.Measurement.impl">
+  <class name="MeasurementImpl" table="MEASUREMENT" polymorphism="implicit">
+    <id name="id" column="ID" type="long">
+      <generator class="assigned"/>
+    </id>
+    <property name="kindCV" column="KINDCV" type="string" />
+    <property name="otherKind" column="OTHERKIND" type="string" />
+    <property name="type" column="TYPE" type="string" />
+    <property name="value" column="VALUE" type="string" />
+    <many-to-one name="unit" column="UNIT_ID" class="UnitImpl" />
+  </class>
+</hibernate-mapping>
+

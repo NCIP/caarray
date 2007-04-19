@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.DesignElement.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,137 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * Specifies a position on an array.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class PositionImpl 
+  extends gov.nih.nci.mageom.domain.impl.ExtendableImpl
+  implements gov.nih.nci.mageom.domain.DesignElement.Position, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The id java.lang.Long.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Long id;
 
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
     /**
-     * Gets the value.
-     *
-     * @return the value
+     * The x java.lang.Float.
      */
-    String getValue();
+    private java.lang.Float x;
 
     /**
-     * Sets the value.
+     * Gets the x.
      *
-     * @param value the value
+     * @return the x
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public java.lang.Float getX() {
+        return x;
+    }
 
     /**
-     * Sets the associations.
+     * Sets the x.
      *
-     * @param associations the associations
+     * @param xVal the x
      */
-    void setAssociations(java.util.Collection associations);
+    public void setX(final java.lang.Float xVal) {
+        this.x = xVal;
+    }
+    /**
+     * The y java.lang.Float.
+     */
+    private java.lang.Float y;
 
     /**
-     * Gets the ontologyReference.
+     * Gets the y.
      *
-     * @return the ontologyReference
+     * @return the y
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public java.lang.Float getY() {
+        return y;
+    }
 
     /**
-     * Sets the ontologyReference.
+     * Sets the y.
      *
-     * @param ontologyReference the ontologyReference
+     * @param yVal the y
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public void setY(final java.lang.Float yVal) {
+        this.y = yVal;
+    }
+
+    /**
+     * The distanceUnit gov.nih.nci.mageom.domain.Measurement.DistanceUnit.
+     */
+    private gov.nih.nci.mageom.domain.Measurement.DistanceUnit distanceUnit;
+
+    /**
+     * Gets the distanceUnit.
+     *
+     * @return the distanceUnit
+     */
+    public gov.nih.nci.mageom.domain.Measurement.DistanceUnit getDistanceUnit() {
+        return distanceUnit;    
+    }
+
+    /**
+     * Sets the distanceUnit.
+     *
+     * @param distanceUnitVal the distanceUnit
+     */
+    public void setDistanceUnit(final 
+      gov.nih.nci.mageom.domain.Measurement.DistanceUnit distanceUnitVal) {
+        this.distanceUnit = distanceUnitVal;
+    }
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.DesignElement.Position) {
+            final gov.nih.nci.mageom.domain.DesignElement.Position castObject =
+                (gov.nih.nci.mageom.domain.DesignElement.Position) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

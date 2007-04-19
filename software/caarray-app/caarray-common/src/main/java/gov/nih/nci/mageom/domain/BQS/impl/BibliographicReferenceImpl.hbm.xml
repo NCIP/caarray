@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.mageom.domain.BQS.impl">
+  <class name="BibliographicReferenceImpl" table="BIBLIOGRAPHICREFERENCE" polymorphism="implicit">
+    <id name="id" column="ID" type="long">
+      <generator class="assigned"/>
+    </id>
+    <property name="authors" column="AUTHORS" type="string" />
+    <property name="editor" column="EDITOR" type="string" />
+    <property name="issue" column="ISSUE" type="string" />
+    <property name="pages" column="PAGES" type="string" />
+    <property name="publication" column="PUBLICATION" type="string" />
+    <property name="publisher" column="PUBLISHER" type="string" />
+    <property name="title" column="TITLE" type="string" />
+    <property name="URI" column="URI" type="string" />
+    <property name="volume" column="VOLUME" type="string" />
+    <property name="year" column="YEAR" type="java.util.Date" />
+    <set name="parameters" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.Description.impl.OntologyEntryImpl" />
+    </set>
+    <set name="accessions" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.Description.impl.DatabaseEntryImpl" />
+    </set>
+    <set name="auditTrail" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.AuditAndSecurity.impl.AuditImpl" />
+    </set>
+    <set name="descriptions" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.Description.impl.DescriptionImpl" />
+    </set>
+    <many-to-one name="security" column="DESC_SECURITY_ID" class="gov.nih.nci.mageom.domain.AuditAndSecurity.impl.SecurityImpl" />
+    <set name="propertySets" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.impl.NameValueTypeImpl" />
+    </set>
+  </class>
+</hibernate-mapping>
+

@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.AuditAndSecurity.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,116 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * Permission information for an object as to ownership, write and read permissions. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class SecurityImpl 
+  extends gov.nih.nci.mageom.domain.impl.IdentifiableImpl
+  implements gov.nih.nci.mageom.domain.AuditAndSecurity.Security, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The id java.lang.Long.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Long id;
 
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
 
     /**
-     * Sets the value.
-     *
-     * @param value the value
+     * The securityGroups set.
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    private java.util.Collection securityGroups = new java.util.HashSet();
 
     /**
-     * Sets the associations.
+     * Gets the securityGroups.
      *
-     * @param associations the associations
+     * @return the securityGroups
      */
-    void setAssociations(java.util.Collection associations);
+    public java.util.Collection getSecurityGroups() {
+        return securityGroups;
+    }
 
     /**
-     * Gets the ontologyReference.
+     * Sets the securityGroups.
      *
-     * @return the ontologyReference
+     * @param securityGroupsVal the securityGroups
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public void setSecurityGroups(final java.util.Collection securityGroupsVal) {
+        this.securityGroups = securityGroupsVal;
+    }    
 
     /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
+     * The owner set.
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    private java.util.Collection owner = new java.util.HashSet();
+
+    /**
+     * Gets the owner.
+     *
+     * @return the owner
+     */
+    public java.util.Collection getOwner() {
+        return owner;
+    }
+
+    /**
+     * Sets the owner.
+     *
+     * @param ownerVal the owner
+     */
+    public void setOwner(final java.util.Collection ownerVal) {
+        this.owner = ownerVal;
+    }    
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.AuditAndSecurity.Security) {
+            final gov.nih.nci.mageom.domain.AuditAndSecurity.Security castObject =
+                (gov.nih.nci.mageom.domain.AuditAndSecurity.Security) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

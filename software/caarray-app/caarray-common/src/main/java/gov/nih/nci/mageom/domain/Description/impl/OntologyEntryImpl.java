@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Description.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -89,85 +89,179 @@ package gov.nih.nci.mageom.domain.Description;
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class OntologyEntryImpl 
+  extends gov.nih.nci.mageom.domain.impl.ExtendableImpl
+  implements gov.nih.nci.mageom.domain.Description.OntologyEntry, java.io.Serializable {
+    /**
+     * The serial version UID for serialization.
+     */
+    private static final long serialVersionUID = 1234567890L;
+
+    /**
+     * The category String.
+     */
+    private String category;
+
     /**
      * Gets the category.
      *
      * @return the category
      */
-    String getCategory();
+    public String getCategory() {
+        return category;
+    }
 
     /**
      * Sets the category.
      *
-     * @param category the category
+     * @param categoryVal the category
      */
-    void setCategory(String category);    
+    public void setCategory(final String categoryVal) {
+        this.category = categoryVal;
+    }
+    /**
+     * The description String.
+     */
+    private String description;
+
     /**
      * Gets the description.
      *
      * @return the description
      */
-    String getDescription();
+    public String getDescription() {
+        return description;
+    }
 
     /**
      * Sets the description.
      *
-     * @param description the description
+     * @param descriptionVal the description
      */
-    void setDescription(String description);    
+    public void setDescription(final String descriptionVal) {
+        this.description = descriptionVal;
+    }
+    /**
+     * The id java.lang.Long.
+     */
+    private java.lang.Long id;
+
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
+    /**
+     * The value String.
+     */
+    private String value;
+
     /**
      * Gets the value.
      *
      * @return the value
      */
-    String getValue();
+    public String getValue() {
+        return value;
+    }
 
     /**
      * Sets the value.
      *
-     * @param value the value
+     * @param valueVal the value
      */
-    void setValue(String value);
+    public void setValue(final String valueVal) {
+        this.value = valueVal;
+    }
+
+    /**
+     * The associations set.
+     */
+    private java.util.Collection associations = new java.util.HashSet();
+
     /**
      * Gets the associations.
      *
      * @return the associations
      */
-    java.util.Collection getAssociations();
+    public java.util.Collection getAssociations() {
+        return associations;
+    }
 
     /**
      * Sets the associations.
      *
-     * @param associations the associations
+     * @param associationsVal the associations
      */
-    void setAssociations(java.util.Collection associations);
+    public void setAssociations(final java.util.Collection associationsVal) {
+        this.associations = associationsVal;
+    }    
+
+    /**
+     * The ontologyReference gov.nih.nci.mageom.domain.Description.DatabaseEntry.
+     */
+    private gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference;
 
     /**
      * Gets the ontologyReference.
      *
      * @return the ontologyReference
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference() {
+        return ontologyReference;    
+    }
 
     /**
      * Sets the ontologyReference.
      *
-     * @param ontologyReference the ontologyReference
+     * @param ontologyReferenceVal the ontologyReference
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public void setOntologyReference(final 
+      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReferenceVal) {
+        this.ontologyReference = ontologyReferenceVal;
+    }
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.Description.OntologyEntry) {
+            final gov.nih.nci.mageom.domain.Description.OntologyEntry castObject =
+                (gov.nih.nci.mageom.domain.Description.OntologyEntry) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

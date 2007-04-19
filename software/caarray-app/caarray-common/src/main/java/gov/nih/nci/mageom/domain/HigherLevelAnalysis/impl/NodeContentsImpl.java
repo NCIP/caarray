@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.HigherLevelAnalysis.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,143 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * The contents of a node for any or all of the three Dimensions. If a node only contained genes just the 
+   * DesignElementDimension would be defined. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class NodeContentsImpl 
+  extends gov.nih.nci.mageom.domain.impl.DescribableImpl
+  implements gov.nih.nci.mageom.domain.HigherLevelAnalysis.NodeContents, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The id java.lang.Long.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Long id;
 
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
 
     /**
-     * Sets the value.
-     *
-     * @param value the value
+     * The bioAssayDimension gov.nih.nci.mageom.domain.BioAssayData.BioAssayDimension.
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    private gov.nih.nci.mageom.domain.BioAssayData.BioAssayDimension bioAssayDimension;
 
     /**
-     * Sets the associations.
+     * Gets the bioAssayDimension.
      *
-     * @param associations the associations
+     * @return the bioAssayDimension
      */
-    void setAssociations(java.util.Collection associations);
+    public gov.nih.nci.mageom.domain.BioAssayData.BioAssayDimension getBioAssayDimension() {
+        return bioAssayDimension;    
+    }
 
     /**
-     * Gets the ontologyReference.
+     * Sets the bioAssayDimension.
      *
-     * @return the ontologyReference
+     * @param bioAssayDimensionVal the bioAssayDimension
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public void setBioAssayDimension(final 
+      gov.nih.nci.mageom.domain.BioAssayData.BioAssayDimension bioAssayDimensionVal) {
+        this.bioAssayDimension = bioAssayDimensionVal;
+    }
 
     /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
+     * The quantitationDimension gov.nih.nci.mageom.domain.BioAssayData.QuantitationTypeDimension.
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    private gov.nih.nci.mageom.domain.BioAssayData.QuantitationTypeDimension quantitationDimension;
+
+    /**
+     * Gets the quantitationDimension.
+     *
+     * @return the quantitationDimension
+     */
+    public gov.nih.nci.mageom.domain.BioAssayData.QuantitationTypeDimension getQuantitationDimension() {
+        return quantitationDimension;    
+    }
+
+    /**
+     * Sets the quantitationDimension.
+     *
+     * @param quantitationDimensionVal the quantitationDimension
+     */
+    public void setQuantitationDimension(final 
+      gov.nih.nci.mageom.domain.BioAssayData.QuantitationTypeDimension quantitationDimensionVal) {
+        this.quantitationDimension = quantitationDimensionVal;
+    }
+
+    /**
+     * The designElementDimension gov.nih.nci.mageom.domain.BioAssayData.DesignElementDimension.
+     */
+    private gov.nih.nci.mageom.domain.BioAssayData.DesignElementDimension designElementDimension;
+
+    /**
+     * Gets the designElementDimension.
+     *
+     * @return the designElementDimension
+     */
+    public gov.nih.nci.mageom.domain.BioAssayData.DesignElementDimension getDesignElementDimension() {
+        return designElementDimension;    
+    }
+
+    /**
+     * Sets the designElementDimension.
+     *
+     * @param designElementDimensionVal the designElementDimension
+     */
+    public void setDesignElementDimension(final 
+      gov.nih.nci.mageom.domain.BioAssayData.DesignElementDimension designElementDimensionVal) {
+        this.designElementDimension = designElementDimensionVal;
+    }
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.HigherLevelAnalysis.NodeContents) {
+            final gov.nih.nci.mageom.domain.HigherLevelAnalysis.NodeContents castObject =
+                (gov.nih.nci.mageom.domain.HigherLevelAnalysis.NodeContents) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

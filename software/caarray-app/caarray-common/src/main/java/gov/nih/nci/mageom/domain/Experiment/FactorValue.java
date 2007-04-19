@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Experiment;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,10 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * The value for a ExperimentalFactor
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface FactorValue  extends gov.nih.nci.mageom.domain.Identifiable  {    
     /**
      * Gets the id.
      *
@@ -128,46 +100,50 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
+    void setId(java.lang.Long id);
+
     /**
      * Gets the value.
      *
      * @return the value
      */
-    String getValue();
+    gov.nih.nci.mageom.domain.Description.OntologyEntry getValue();
 
     /**
      * Sets the value.
      *
      * @param value the value
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    void setValue(
+      gov.nih.nci.mageom.domain.Description.OntologyEntry value);
 
     /**
-     * Sets the associations.
+     * Gets the experimentalFactor.
      *
-     * @param associations the associations
+     * @return the experimentalFactor
      */
-    void setAssociations(java.util.Collection associations);
+    gov.nih.nci.mageom.domain.Experiment.ExperimentalFactor getExperimentalFactor();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the experimentalFactor.
      *
-     * @return the ontologyReference
+     * @param experimentalFactor the experimentalFactor
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setExperimentalFactor(
+      gov.nih.nci.mageom.domain.Experiment.ExperimentalFactor experimentalFactor);
 
     /**
-     * Sets the ontologyReference.
+     * Gets the measurement.
      *
-     * @param ontologyReference the ontologyReference
+     * @return the measurement
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    gov.nih.nci.mageom.domain.Measurement.Measurement getMeasurement();
+
+    /**
+     * Sets the measurement.
+     *
+     * @param measurement the measurement
+     */
+    void setMeasurement(
+      gov.nih.nci.mageom.domain.Measurement.Measurement measurement);
 }

@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Experiment;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,11 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * The Experiment is the collection of all the BioAssays that are related by the ExperimentDesign. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface Experiment  extends gov.nih.nci.mageom.domain.Identifiable  {    
     /**
      * Gets the id.
      *
@@ -128,46 +101,70 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
+    void setId(java.lang.Long id);
     /**
-     * Gets the value.
+     * Gets the experimentDesigns.
      *
-     * @return the value
+     * @return the experimentDesigns
      */
-    String getValue();
+    java.util.Collection getExperimentDesigns();
 
     /**
-     * Sets the value.
+     * Sets the experimentDesigns.
      *
-     * @param value the value
+     * @param experimentDesigns the experimentDesigns
      */
-    void setValue(String value);
+    void setExperimentDesigns(java.util.Collection experimentDesigns);
     /**
-     * Gets the associations.
+     * Gets the providers.
      *
-     * @return the associations
+     * @return the providers
      */
-    java.util.Collection getAssociations();
+    java.util.Collection getProviders();
 
     /**
-     * Sets the associations.
+     * Sets the providers.
      *
-     * @param associations the associations
+     * @param providers the providers
      */
-    void setAssociations(java.util.Collection associations);
+    void setProviders(java.util.Collection providers);
+    /**
+     * Gets the bioAssayData.
+     *
+     * @return the bioAssayData
+     */
+    java.util.Collection getBioAssayData();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the bioAssayData.
      *
-     * @return the ontologyReference
+     * @param bioAssayData the bioAssayData
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setBioAssayData(java.util.Collection bioAssayData);
+    /**
+     * Gets the analysisResults.
+     *
+     * @return the analysisResults
+     */
+    java.util.Collection getAnalysisResults();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the analysisResults.
      *
-     * @param ontologyReference the ontologyReference
+     * @param analysisResults the analysisResults
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setAnalysisResults(java.util.Collection analysisResults);
+    /**
+     * Gets the bioAssays.
+     *
+     * @return the bioAssays
+     */
+    java.util.Collection getBioAssays();
+
+    /**
+     * Sets the bioAssays.
+     *
+     * @param bioAssays the bioAssays
+     */
+    void setBioAssays(java.util.Collection bioAssays);
 }

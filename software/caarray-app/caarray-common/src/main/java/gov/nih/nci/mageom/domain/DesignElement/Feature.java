@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.DesignElement;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,10 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * An intended  position on an array.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface Feature  extends gov.nih.nci.mageom.domain.DesignElement.DesignElement  {    
     /**
      * Gets the id.
      *
@@ -128,46 +100,91 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    void setId(java.lang.Long id);
 
     /**
-     * Sets the value.
+     * Gets the position.
      *
-     * @param value the value
+     * @return the position
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    gov.nih.nci.mageom.domain.DesignElement.Position getPosition();
 
     /**
-     * Sets the associations.
+     * Sets the position.
      *
-     * @param associations the associations
+     * @param position the position
      */
-    void setAssociations(java.util.Collection associations);
+    void setPosition(
+      gov.nih.nci.mageom.domain.DesignElement.Position position);
+    /**
+     * Gets the controlledFeatures.
+     *
+     * @return the controlledFeatures
+     */
+    java.util.Collection getControlledFeatures();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the controlledFeatures.
      *
-     * @return the ontologyReference
+     * @param controlledFeatures the controlledFeatures
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setControlledFeatures(java.util.Collection controlledFeatures);
+    /**
+     * Gets the controlFeatures.
+     *
+     * @return the controlFeatures
+     */
+    java.util.Collection getControlFeatures();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the controlFeatures.
      *
-     * @param ontologyReference the ontologyReference
+     * @param controlFeatures the controlFeatures
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setControlFeatures(java.util.Collection controlFeatures);
+
+    /**
+     * Gets the featureGroup.
+     *
+     * @return the featureGroup
+     */
+    gov.nih.nci.mageom.domain.ArrayDesign.FeatureGroup getFeatureGroup();
+
+    /**
+     * Sets the featureGroup.
+     *
+     * @param featureGroup the featureGroup
+     */
+    void setFeatureGroup(
+      gov.nih.nci.mageom.domain.ArrayDesign.FeatureGroup featureGroup);
+
+    /**
+     * Gets the featureLocation.
+     *
+     * @return the featureLocation
+     */
+    gov.nih.nci.mageom.domain.DesignElement.FeatureLocation getFeatureLocation();
+
+    /**
+     * Sets the featureLocation.
+     *
+     * @param featureLocation the featureLocation
+     */
+    void setFeatureLocation(
+      gov.nih.nci.mageom.domain.DesignElement.FeatureLocation featureLocation);
+
+    /**
+     * Gets the zone.
+     *
+     * @return the zone
+     */
+    gov.nih.nci.mageom.domain.ArrayDesign.Zone getZone();
+
+    /**
+     * Sets the zone.
+     *
+     * @param zone the zone
+     */
+    void setZone(
+      gov.nih.nci.mageom.domain.ArrayDesign.Zone zone);
 }

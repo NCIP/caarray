@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioMaterial;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,13 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * BioMaterial is an abstract class that represents the important substances such as cells, tissues, 
+   * DNA, proteins, etc... Biomaterials can be related to other biomaterial through a directed acyclic 
+   * graph (represented by treatment(s)). 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface BioMaterial  extends gov.nih.nci.mageom.domain.Identifiable  {    
     /**
      * Gets the id.
      *
@@ -128,46 +103,59 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
+    void setId(java.lang.Long id);
     /**
-     * Gets the value.
+     * Gets the treatments.
      *
-     * @return the value
+     * @return the treatments
      */
-    String getValue();
+    java.util.Collection getTreatments();
 
     /**
-     * Sets the value.
+     * Sets the treatments.
      *
-     * @param value the value
+     * @param treatments the treatments
      */
-    void setValue(String value);
+    void setTreatments(java.util.Collection treatments);
     /**
-     * Gets the associations.
+     * Gets the characteristics.
      *
-     * @return the associations
+     * @return the characteristics
      */
-    java.util.Collection getAssociations();
+    java.util.Collection getCharacteristics();
 
     /**
-     * Sets the associations.
+     * Sets the characteristics.
      *
-     * @param associations the associations
+     * @param characteristics the characteristics
      */
-    void setAssociations(java.util.Collection associations);
+    void setCharacteristics(java.util.Collection characteristics);
+    /**
+     * Gets the qualityControlStatistics.
+     *
+     * @return the qualityControlStatistics
+     */
+    java.util.Collection getQualityControlStatistics();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the qualityControlStatistics.
      *
-     * @return the ontologyReference
+     * @param qualityControlStatistics the qualityControlStatistics
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setQualityControlStatistics(java.util.Collection qualityControlStatistics);
 
     /**
-     * Sets the ontologyReference.
+     * Gets the materialType.
      *
-     * @param ontologyReference the ontologyReference
+     * @return the materialType
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    gov.nih.nci.mageom.domain.Description.OntologyEntry getMaterialType();
+
+    /**
+     * Sets the materialType.
+     *
+     * @param materialType the materialType
+     */
+    void setMaterialType(
+      gov.nih.nci.mageom.domain.Description.OntologyEntry materialType);
 }

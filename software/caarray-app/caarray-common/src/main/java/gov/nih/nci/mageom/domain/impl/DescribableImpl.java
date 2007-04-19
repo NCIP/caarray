@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,89 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * Abstract class that allows subclasses to inherit the association to Description, for detailed 
+   * annotations such as Ontology entries and Database references, the association to Audit, for tracking 
+   * changes, and the association to Security for indicating perm 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public abstract class DescribableImpl 
+  extends gov.nih.nci.mageom.domain.impl.ExtendableImpl
+  implements gov.nih.nci.mageom.domain.Describable, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
+
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The auditTrail set.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.util.Collection auditTrail = new java.util.HashSet();
 
     /**
-     * Sets the description.
+     * Gets the auditTrail.
      *
-     * @param description the description
+     * @return the auditTrail
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
+    public java.util.Collection getAuditTrail() {
+        return auditTrail;
+    }
 
     /**
-     * Sets the id.
+     * Sets the auditTrail.
      *
-     * @param id the id
+     * @param auditTrailVal the auditTrail
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    public void setAuditTrail(final java.util.Collection auditTrailVal) {
+        this.auditTrail = auditTrailVal;
+    }    
 
     /**
-     * Sets the value.
-     *
-     * @param value the value
+     * The descriptions set.
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    private java.util.Collection descriptions = new java.util.HashSet();
 
     /**
-     * Sets the associations.
+     * Gets the descriptions.
      *
-     * @param associations the associations
+     * @return the descriptions
      */
-    void setAssociations(java.util.Collection associations);
+    public java.util.Collection getDescriptions() {
+        return descriptions;
+    }
 
     /**
-     * Gets the ontologyReference.
+     * Sets the descriptions.
      *
-     * @return the ontologyReference
+     * @param descriptionsVal the descriptions
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public void setDescriptions(final java.util.Collection descriptionsVal) {
+        this.descriptions = descriptionsVal;
+    }    
 
     /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
+     * The security gov.nih.nci.mageom.domain.AuditAndSecurity.Security.
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    private gov.nih.nci.mageom.domain.AuditAndSecurity.Security security;
+
+    /**
+     * Gets the security.
+     *
+     * @return the security
+     */
+    public gov.nih.nci.mageom.domain.AuditAndSecurity.Security getSecurity() {
+        return security;    
+    }
+
+    /**
+     * Sets the security.
+     *
+     * @param securityVal the security
+     */
+    public void setSecurity(final 
+      gov.nih.nci.mageom.domain.AuditAndSecurity.Security securityVal) {
+        this.security = securityVal;
+    }
+
 }

@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.DesignElement;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,23 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * Specifies where a feature is located relative to a grid.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public interface FeatureLocation  extends gov.nih.nci.mageom.domain.Extendable  {    
     /**
-     * Gets the category.
+     * Gets the column.
      *
-     * @return the category
+     * @return the column
      */
-    String getCategory();
+    java.lang.Integer getColumn();
 
     /**
-     * Sets the category.
+     * Sets the column.
      *
-     * @param category the category
+     * @param column the column
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+    void setColumn(java.lang.Integer column);    
     /**
      * Gets the id.
      *
@@ -130,44 +115,16 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
-     * Gets the value.
+     * Gets the row.
      *
-     * @return the value
+     * @return the row
      */
-    String getValue();
+    java.lang.Integer getRow();
 
     /**
-     * Sets the value.
+     * Sets the row.
      *
-     * @param value the value
+     * @param row the row
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
-
-    /**
-     * Sets the associations.
-     *
-     * @param associations the associations
-     */
-    void setAssociations(java.util.Collection associations);
-
-    /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
-     */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setRow(java.lang.Integer row);
 }

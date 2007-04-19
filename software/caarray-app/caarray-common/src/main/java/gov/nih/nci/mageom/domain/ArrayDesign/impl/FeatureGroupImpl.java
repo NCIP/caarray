@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.ArrayDesign.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,208 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * A collection of like features.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class FeatureGroupImpl 
+  extends gov.nih.nci.mageom.domain.ArrayDesign.impl.DesignElementGroupImpl
+  implements gov.nih.nci.mageom.domain.ArrayDesign.FeatureGroup, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The featureHeight java.lang.Float.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Float featureHeight;
 
     /**
-     * Sets the description.
+     * Gets the featureHeight.
      *
-     * @param description the description
+     * @return the featureHeight
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
+    public java.lang.Float getFeatureHeight() {
+        return featureHeight;
+    }
 
     /**
-     * Sets the id.
+     * Sets the featureHeight.
      *
-     * @param id the id
+     * @param featureHeightVal the featureHeight
      */
-    void setId(java.lang.Long id);    
+    public void setFeatureHeight(final java.lang.Float featureHeightVal) {
+        this.featureHeight = featureHeightVal;
+    }
     /**
-     * Gets the value.
-     *
-     * @return the value
+     * The featureLength java.lang.Float.
      */
-    String getValue();
+    private java.lang.Float featureLength;
 
     /**
-     * Sets the value.
+     * Gets the featureLength.
      *
-     * @param value the value
+     * @return the featureLength
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public java.lang.Float getFeatureLength() {
+        return featureLength;
+    }
 
     /**
-     * Sets the associations.
+     * Sets the featureLength.
      *
-     * @param associations the associations
+     * @param featureLengthVal the featureLength
      */
-    void setAssociations(java.util.Collection associations);
+    public void setFeatureLength(final java.lang.Float featureLengthVal) {
+        this.featureLength = featureLengthVal;
+    }
+    /**
+     * The featureWidth java.lang.Float.
+     */
+    private java.lang.Float featureWidth;
 
     /**
-     * Gets the ontologyReference.
+     * Gets the featureWidth.
      *
-     * @return the ontologyReference
+     * @return the featureWidth
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public java.lang.Float getFeatureWidth() {
+        return featureWidth;
+    }
 
     /**
-     * Sets the ontologyReference.
+     * Sets the featureWidth.
      *
-     * @param ontologyReference the ontologyReference
+     * @param featureWidthVal the featureWidth
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public void setFeatureWidth(final java.lang.Float featureWidthVal) {
+        this.featureWidth = featureWidthVal;
+    }
+
+    /**
+     * The distanceUnit gov.nih.nci.mageom.domain.Measurement.DistanceUnit.
+     */
+    private gov.nih.nci.mageom.domain.Measurement.DistanceUnit distanceUnit;
+
+    /**
+     * Gets the distanceUnit.
+     *
+     * @return the distanceUnit
+     */
+    public gov.nih.nci.mageom.domain.Measurement.DistanceUnit getDistanceUnit() {
+        return distanceUnit;    
+    }
+
+    /**
+     * Sets the distanceUnit.
+     *
+     * @param distanceUnitVal the distanceUnit
+     */
+    public void setDistanceUnit(final 
+      gov.nih.nci.mageom.domain.Measurement.DistanceUnit distanceUnitVal) {
+        this.distanceUnit = distanceUnitVal;
+    }
+
+    /**
+     * The features set.
+     */
+    private java.util.Collection features = new java.util.HashSet();
+
+    /**
+     * Gets the features.
+     *
+     * @return the features
+     */
+    public java.util.Collection getFeatures() {
+        return features;
+    }
+
+    /**
+     * Sets the features.
+     *
+     * @param featuresVal the features
+     */
+    public void setFeatures(final java.util.Collection featuresVal) {
+        this.features = featuresVal;
+    }    
+
+    /**
+     * The technologyType gov.nih.nci.mageom.domain.Description.OntologyEntry.
+     */
+    private gov.nih.nci.mageom.domain.Description.OntologyEntry technologyType;
+
+    /**
+     * Gets the technologyType.
+     *
+     * @return the technologyType
+     */
+    public gov.nih.nci.mageom.domain.Description.OntologyEntry getTechnologyType() {
+        return technologyType;    
+    }
+
+    /**
+     * Sets the technologyType.
+     *
+     * @param technologyTypeVal the technologyType
+     */
+    public void setTechnologyType(final 
+      gov.nih.nci.mageom.domain.Description.OntologyEntry technologyTypeVal) {
+        this.technologyType = technologyTypeVal;
+    }
+
+    /**
+     * The featureShape gov.nih.nci.mageom.domain.Description.OntologyEntry.
+     */
+    private gov.nih.nci.mageom.domain.Description.OntologyEntry featureShape;
+
+    /**
+     * Gets the featureShape.
+     *
+     * @return the featureShape
+     */
+    public gov.nih.nci.mageom.domain.Description.OntologyEntry getFeatureShape() {
+        return featureShape;    
+    }
+
+    /**
+     * Sets the featureShape.
+     *
+     * @param featureShapeVal the featureShape
+     */
+    public void setFeatureShape(final 
+      gov.nih.nci.mageom.domain.Description.OntologyEntry featureShapeVal) {
+        this.featureShape = featureShapeVal;
+    }
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.ArrayDesign.FeatureGroup) {
+            final gov.nih.nci.mageom.domain.ArrayDesign.FeatureGroup castObject =
+                (gov.nih.nci.mageom.domain.ArrayDesign.FeatureGroup) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

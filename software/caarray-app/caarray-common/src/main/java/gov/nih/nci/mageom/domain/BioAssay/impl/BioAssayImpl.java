@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioAssay.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,116 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * An abstract class which represents both physical and computational groupings of arrays and biomaterials. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public abstract class BioAssayImpl 
+  extends gov.nih.nci.mageom.domain.impl.IdentifiableImpl
+  implements gov.nih.nci.mageom.domain.BioAssay.BioAssay, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The id java.lang.Long.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Long id;
 
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
 
     /**
-     * Sets the value.
-     *
-     * @param value the value
+     * The bioAssayFactorValues set.
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    private java.util.Collection bioAssayFactorValues = new java.util.HashSet();
 
     /**
-     * Sets the associations.
+     * Gets the bioAssayFactorValues.
      *
-     * @param associations the associations
+     * @return the bioAssayFactorValues
      */
-    void setAssociations(java.util.Collection associations);
+    public java.util.Collection getBioAssayFactorValues() {
+        return bioAssayFactorValues;
+    }
 
     /**
-     * Gets the ontologyReference.
+     * Sets the bioAssayFactorValues.
      *
-     * @return the ontologyReference
+     * @param bioAssayFactorValuesVal the bioAssayFactorValues
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public void setBioAssayFactorValues(final java.util.Collection bioAssayFactorValuesVal) {
+        this.bioAssayFactorValues = bioAssayFactorValuesVal;
+    }    
 
     /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
+     * The channels set.
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    private java.util.Collection channels = new java.util.HashSet();
+
+    /**
+     * Gets the channels.
+     *
+     * @return the channels
+     */
+    public java.util.Collection getChannels() {
+        return channels;
+    }
+
+    /**
+     * Sets the channels.
+     *
+     * @param channelsVal the channels
+     */
+    public void setChannels(final java.util.Collection channelsVal) {
+        this.channels = channelsVal;
+    }    
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.BioAssay.BioAssay) {
+            final gov.nih.nci.mageom.domain.BioAssay.BioAssay castObject =
+                (gov.nih.nci.mageom.domain.BioAssay.BioAssay) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

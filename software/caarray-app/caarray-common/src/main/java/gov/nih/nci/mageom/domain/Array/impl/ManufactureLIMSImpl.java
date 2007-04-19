@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Array.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,110 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * Information on the physical production of arrays within the laboratory.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public abstract class ManufactureLIMSImpl 
+  extends gov.nih.nci.mageom.domain.impl.DescribableImpl
+  implements gov.nih.nci.mageom.domain.Array.ManufactureLIMS, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The quality String.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private String quality;
 
     /**
-     * Sets the description.
+     * Gets the quality.
      *
-     * @param description the description
+     * @return the quality
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
+    public String getQuality() {
+        return quality;
+    }
 
     /**
-     * Sets the id.
+     * Sets the quality.
      *
-     * @param id the id
+     * @param qualityVal the quality
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    public void setQuality(final String qualityVal) {
+        this.quality = qualityVal;
+    }
 
     /**
-     * Sets the value.
-     *
-     * @param value the value
+     * The bioMaterial gov.nih.nci.mageom.domain.BioMaterial.BioMaterial.
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    private gov.nih.nci.mageom.domain.BioMaterial.BioMaterial bioMaterial;
 
     /**
-     * Sets the associations.
+     * Gets the bioMaterial.
      *
-     * @param associations the associations
+     * @return the bioMaterial
      */
-    void setAssociations(java.util.Collection associations);
+    public gov.nih.nci.mageom.domain.BioMaterial.BioMaterial getBioMaterial() {
+        return bioMaterial;    
+    }
 
     /**
-     * Gets the ontologyReference.
+     * Sets the bioMaterial.
      *
-     * @return the ontologyReference
+     * @param bioMaterialVal the bioMaterial
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public void setBioMaterial(final 
+      gov.nih.nci.mageom.domain.BioMaterial.BioMaterial bioMaterialVal) {
+        this.bioMaterial = bioMaterialVal;
+    }
 
     /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
+     * The identifierLIMS gov.nih.nci.mageom.domain.Description.DatabaseEntry.
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    private gov.nih.nci.mageom.domain.Description.DatabaseEntry identifierLIMS;
+
+    /**
+     * Gets the identifierLIMS.
+     *
+     * @return the identifierLIMS
+     */
+    public gov.nih.nci.mageom.domain.Description.DatabaseEntry getIdentifierLIMS() {
+        return identifierLIMS;    
+    }
+
+    /**
+     * Sets the identifierLIMS.
+     *
+     * @param identifierLIMSVal the identifierLIMS
+     */
+    public void setIdentifierLIMS(final 
+      gov.nih.nci.mageom.domain.Description.DatabaseEntry identifierLIMSVal) {
+        this.identifierLIMS = identifierLIMSVal;
+    }
+
+    /**
+     * The feature gov.nih.nci.mageom.domain.DesignElement.Feature.
+     */
+    private gov.nih.nci.mageom.domain.DesignElement.Feature feature;
+
+    /**
+     * Gets the feature.
+     *
+     * @return the feature
+     */
+    public gov.nih.nci.mageom.domain.DesignElement.Feature getFeature() {
+        return feature;    
+    }
+
+    /**
+     * Sets the feature.
+     *
+     * @param featureVal the feature
+     */
+    public void setFeature(final 
+      gov.nih.nci.mageom.domain.DesignElement.Feature featureVal) {
+        this.feature = featureVal;
+    }
+
 }

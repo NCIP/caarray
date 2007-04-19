@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.DesignElement.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,96 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * A FeatureReporterMap is the description of how source features are transformed into a target reporter. 
+   * These would map replicate features for a reporter to the reporter. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class FeatureReporterMapImpl 
+  extends gov.nih.nci.mageom.domain.BioAssayData.impl.DesignElementMapImpl
+  implements gov.nih.nci.mageom.domain.DesignElement.FeatureReporterMap, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
+
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The reporter gov.nih.nci.mageom.domain.DesignElement.Reporter.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private gov.nih.nci.mageom.domain.DesignElement.Reporter reporter;
 
     /**
-     * Sets the description.
+     * Gets the reporter.
      *
-     * @param description the description
+     * @return the reporter
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
+    public gov.nih.nci.mageom.domain.DesignElement.Reporter getReporter() {
+        return reporter;    
+    }
 
     /**
-     * Sets the id.
+     * Sets the reporter.
      *
-     * @param id the id
+     * @param reporterVal the reporter
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    public void setReporter(final 
+      gov.nih.nci.mageom.domain.DesignElement.Reporter reporterVal) {
+        this.reporter = reporterVal;
+    }
 
     /**
-     * Sets the value.
-     *
-     * @param value the value
+     * The featureInformationSources set.
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    private java.util.Collection featureInformationSources = new java.util.HashSet();
 
     /**
-     * Sets the associations.
+     * Gets the featureInformationSources.
      *
-     * @param associations the associations
+     * @return the featureInformationSources
      */
-    void setAssociations(java.util.Collection associations);
+    public java.util.Collection getFeatureInformationSources() {
+        return featureInformationSources;
+    }
 
     /**
-     * Gets the ontologyReference.
+     * Sets the featureInformationSources.
      *
-     * @return the ontologyReference
+     * @param featureInformationSourcesVal the featureInformationSources
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public void setFeatureInformationSources(final java.util.Collection featureInformationSourcesVal) {
+        this.featureInformationSources = featureInformationSourcesVal;
+    }    
 
     /**
-     * Sets the ontologyReference.
+     * Checks if given object is equal to this object.
      *
-     * @param ontologyReference the ontologyReference
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.DesignElement.FeatureReporterMap) {
+            final gov.nih.nci.mageom.domain.DesignElement.FeatureReporterMap castObject =
+                (gov.nih.nci.mageom.domain.DesignElement.FeatureReporterMap) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

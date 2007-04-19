@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Measurement.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,91 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * The unit is a strict enumeration of types.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public abstract class UnitImpl 
+  extends gov.nih.nci.mageom.domain.impl.ExtendableImpl
+  implements gov.nih.nci.mageom.domain.Measurement.Unit, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The id java.lang.Long.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Long id;
 
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
     /**
-     * Gets the value.
-     *
-     * @return the value
+     * The unitName String.
      */
-    String getValue();
+    private String unitName;
 
     /**
-     * Sets the value.
+     * Gets the unitName.
      *
-     * @param value the value
+     * @return the unitName
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public String getUnitName() {
+        return unitName;
+    }
 
     /**
-     * Sets the associations.
+     * Sets the unitName.
      *
-     * @param associations the associations
+     * @param unitNameVal the unitName
      */
-    void setAssociations(java.util.Collection associations);
+    public void setUnitName(final String unitNameVal) {
+        this.unitName = unitNameVal;
+    }
 
     /**
-     * Gets the ontologyReference.
+     * Checks if given object is equal to this object.
      *
-     * @return the ontologyReference
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.Measurement.Unit) {
+            final gov.nih.nci.mageom.domain.Measurement.Unit castObject =
+                (gov.nih.nci.mageom.domain.Measurement.Unit) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
 
     /**
-     * Sets the ontologyReference.
+     * Returns the hashcode for the object.
      *
-     * @param ontologyReference the ontologyReference
+     * @return the int hashcode
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

@@ -84,38 +84,10 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * An address to a repository.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface Database  extends gov.nih.nci.mageom.domain.Identifiable  {    
     /**
      * Gets the id.
      *
@@ -130,44 +102,42 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
-     * Gets the value.
+     * Gets the URI.
      *
-     * @return the value
+     * @return the URI
      */
-    String getValue();
+    String getURI();
 
     /**
-     * Sets the value.
+     * Sets the URI.
      *
-     * @param value the value
+     * @param URI the URI
      */
-    void setValue(String value);
+    void setURI(String URI);    
     /**
-     * Gets the associations.
+     * Gets the version.
      *
-     * @return the associations
+     * @return the version
      */
-    java.util.Collection getAssociations();
+    String getVersion();
 
     /**
-     * Sets the associations.
+     * Sets the version.
      *
-     * @param associations the associations
+     * @param version the version
      */
-    void setAssociations(java.util.Collection associations);
+    void setVersion(String version);
+    /**
+     * Gets the contacts.
+     *
+     * @return the contacts
+     */
+    java.util.Collection getContacts();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the contacts.
      *
-     * @return the ontologyReference
+     * @param contacts the contacts
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setContacts(java.util.Collection contacts);
 }

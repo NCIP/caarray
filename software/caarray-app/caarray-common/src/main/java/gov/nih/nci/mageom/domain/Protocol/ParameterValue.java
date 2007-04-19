@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Protocol;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,10 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * The value of a Parameter.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface ParameterValue  extends gov.nih.nci.mageom.domain.Extendable  {    
     /**
      * Gets the id.
      *
@@ -142,32 +114,19 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      * @param value the value
      */
     void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
 
     /**
-     * Sets the associations.
+     * Gets the parameterType.
      *
-     * @param associations the associations
+     * @return the parameterType
      */
-    void setAssociations(java.util.Collection associations);
+    gov.nih.nci.mageom.domain.Protocol.Parameter getParameterType();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the parameterType.
      *
-     * @return the ontologyReference
+     * @param parameterType the parameterType
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setParameterType(
+      gov.nih.nci.mageom.domain.Protocol.Parameter parameterType);
 }

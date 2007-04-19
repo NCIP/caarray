@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,62 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * An Identifiable class is one that has an unambiguous reference within the scope. It also has a potentially 
+   * ambiguous name. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public abstract class IdentifiableImpl 
+  extends gov.nih.nci.mageom.domain.impl.DescribableImpl
+  implements gov.nih.nci.mageom.domain.Identifiable, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The identifier String.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private String identifier;
 
     /**
-     * Sets the description.
+     * Gets the identifier.
      *
-     * @param description the description
+     * @return the identifier
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
+    public String getIdentifier() {
+        return identifier;
+    }
 
     /**
-     * Sets the id.
+     * Sets the identifier.
      *
-     * @param id the id
+     * @param identifierVal the identifier
      */
-    void setId(java.lang.Long id);    
+    public void setIdentifier(final String identifierVal) {
+        this.identifier = identifierVal;
+    }
     /**
-     * Gets the value.
-     *
-     * @return the value
+     * The name String.
      */
-    String getValue();
+    private String name;
 
     /**
-     * Sets the value.
+     * Gets the name.
      *
-     * @param value the value
+     * @return the name
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public String getName() {
+        return name;
+    }
 
     /**
-     * Sets the associations.
+     * Sets the name.
      *
-     * @param associations the associations
+     * @param nameVal the name
      */
-    void setAssociations(java.util.Collection associations);
+    public void setName(final String nameVal) {
+        this.name = nameVal;
+    }
 
-    /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
-     */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
 }

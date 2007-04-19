@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.ArrayDesign;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,23 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * Specifies the location of a zone on an array.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public interface Zone  extends gov.nih.nci.mageom.domain.Identifiable  {    
     /**
-     * Gets the category.
+     * Gets the column.
      *
-     * @return the category
+     * @return the column
      */
-    String getCategory();
+    java.lang.Integer getColumn();
 
     /**
-     * Sets the category.
+     * Sets the column.
      *
-     * @param category the category
+     * @param column the column
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+    void setColumn(java.lang.Integer column);    
     /**
      * Gets the id.
      *
@@ -130,44 +115,83 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
-     * Gets the value.
+     * Gets the lowerRightX.
      *
-     * @return the value
+     * @return the lowerRightX
      */
-    String getValue();
+    java.lang.Float getLowerRightX();
 
     /**
-     * Sets the value.
+     * Sets the lowerRightX.
      *
-     * @param value the value
+     * @param lowerRightX the lowerRightX
      */
-    void setValue(String value);
+    void setLowerRightX(java.lang.Float lowerRightX);    
     /**
-     * Gets the associations.
+     * Gets the lowerRightY.
      *
-     * @return the associations
+     * @return the lowerRightY
      */
-    java.util.Collection getAssociations();
+    java.lang.Float getLowerRightY();
 
     /**
-     * Sets the associations.
+     * Sets the lowerRightY.
      *
-     * @param associations the associations
+     * @param lowerRightY the lowerRightY
      */
-    void setAssociations(java.util.Collection associations);
+    void setLowerRightY(java.lang.Float lowerRightY);    
+    /**
+     * Gets the row.
+     *
+     * @return the row
+     */
+    java.lang.Integer getRow();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the row.
      *
-     * @return the ontologyReference
+     * @param row the row
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setRow(java.lang.Integer row);    
+    /**
+     * Gets the upperLeftX.
+     *
+     * @return the upperLeftX
+     */
+    java.lang.Float getUpperLeftX();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the upperLeftX.
      *
-     * @param ontologyReference the ontologyReference
+     * @param upperLeftX the upperLeftX
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setUpperLeftX(java.lang.Float upperLeftX);    
+    /**
+     * Gets the upperLeftY.
+     *
+     * @return the upperLeftY
+     */
+    java.lang.Float getUpperLeftY();
+
+    /**
+     * Sets the upperLeftY.
+     *
+     * @param upperLeftY the upperLeftY
+     */
+    void setUpperLeftY(java.lang.Float upperLeftY);
+
+    /**
+     * Gets the distanceUnit.
+     *
+     * @return the distanceUnit
+     */
+    gov.nih.nci.mageom.domain.Measurement.DistanceUnit getDistanceUnit();
+
+    /**
+     * Sets the distanceUnit.
+     *
+     * @param distanceUnit the distanceUnit
+     */
+    void setDistanceUnit(
+      gov.nih.nci.mageom.domain.Measurement.DistanceUnit distanceUnit);
 }

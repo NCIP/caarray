@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.DesignElement;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,12 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * A collection of Reporter or CompositeSequence Design Elements, annotated through the association 
+   * to BioSequence. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface CompositeSequence  extends gov.nih.nci.mageom.domain.DesignElement.DesignElement  {    
     /**
      * Gets the id.
      *
@@ -128,46 +102,44 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
+    void setId(java.lang.Long id);
     /**
-     * Gets the value.
+     * Gets the reporterCompositeMaps.
      *
-     * @return the value
+     * @return the reporterCompositeMaps
      */
-    String getValue();
+    java.util.Collection getReporterCompositeMaps();
 
     /**
-     * Sets the value.
+     * Sets the reporterCompositeMaps.
      *
-     * @param value the value
+     * @param reporterCompositeMaps the reporterCompositeMaps
      */
-    void setValue(String value);
+    void setReporterCompositeMaps(java.util.Collection reporterCompositeMaps);
     /**
-     * Gets the associations.
+     * Gets the compositeCompositeMaps.
      *
-     * @return the associations
+     * @return the compositeCompositeMaps
      */
-    java.util.Collection getAssociations();
+    java.util.Collection getCompositeCompositeMaps();
 
     /**
-     * Sets the associations.
+     * Sets the compositeCompositeMaps.
      *
-     * @param associations the associations
+     * @param compositeCompositeMaps the compositeCompositeMaps
      */
-    void setAssociations(java.util.Collection associations);
+    void setCompositeCompositeMaps(java.util.Collection compositeCompositeMaps);
+    /**
+     * Gets the biologicalCharacteristics.
+     *
+     * @return the biologicalCharacteristics
+     */
+    java.util.Collection getBiologicalCharacteristics();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the biologicalCharacteristics.
      *
-     * @return the ontologyReference
+     * @param biologicalCharacteristics the biologicalCharacteristics
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setBiologicalCharacteristics(java.util.Collection biologicalCharacteristics);
 }

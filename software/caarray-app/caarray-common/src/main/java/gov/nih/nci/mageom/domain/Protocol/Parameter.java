@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Protocol;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,13 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * A Parameter is a replaceable value in a Parameterizable class. Examples of Parameters include: 
+   * scanning wavelength, laser power, centrifuge speed, multiplicative errors, the number of input 
+   * nodes to a SOM, and PCR temperatures. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface Parameter  extends gov.nih.nci.mageom.domain.Identifiable  {    
     /**
      * Gets the id.
      *
@@ -128,46 +103,35 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    void setId(java.lang.Long id);
 
     /**
-     * Sets the value.
+     * Gets the defaultValue.
      *
-     * @param value the value
+     * @return the defaultValue
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    gov.nih.nci.mageom.domain.Measurement.Measurement getDefaultValue();
 
     /**
-     * Sets the associations.
+     * Sets the defaultValue.
      *
-     * @param associations the associations
+     * @param defaultValue the defaultValue
      */
-    void setAssociations(java.util.Collection associations);
+    void setDefaultValue(
+      gov.nih.nci.mageom.domain.Measurement.Measurement defaultValue);
 
     /**
-     * Gets the ontologyReference.
+     * Gets the dataType.
      *
-     * @return the ontologyReference
+     * @return the dataType
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    gov.nih.nci.mageom.domain.Description.OntologyEntry getDataType();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the dataType.
      *
-     * @param ontologyReference the ontologyReference
+     * @param dataType the dataType
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setDataType(
+      gov.nih.nci.mageom.domain.Description.OntologyEntry dataType);
 }

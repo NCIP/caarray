@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Measurement;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,10 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * A Measurement is a quantity with a unit.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface Measurement  {    
     /**
      * Gets the id.
      *
@@ -130,6 +102,45 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
+     * Gets the kindCV.
+     *
+     * @return the kindCV
+     */
+    String getKindCV();
+
+    /**
+     * Sets the kindCV.
+     *
+     * @param kindCV the kindCV
+     */
+    void setKindCV(String kindCV);    
+    /**
+     * Gets the otherKind.
+     *
+     * @return the otherKind
+     */
+    String getOtherKind();
+
+    /**
+     * Sets the otherKind.
+     *
+     * @param otherKind the otherKind
+     */
+    void setOtherKind(String otherKind);    
+    /**
+     * Gets the type.
+     *
+     * @return the type
+     */
+    String getType();
+
+    /**
+     * Sets the type.
+     *
+     * @param type the type
+     */
+    void setType(String type);    
+    /**
      * Gets the value.
      *
      * @return the value
@@ -142,32 +153,19 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      * @param value the value
      */
     void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
 
     /**
-     * Sets the associations.
+     * Gets the unit.
      *
-     * @param associations the associations
+     * @return the unit
      */
-    void setAssociations(java.util.Collection associations);
+    gov.nih.nci.mageom.domain.Measurement.Unit getUnit();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the unit.
      *
-     * @return the ontologyReference
+     * @param unit the unit
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setUnit(
+      gov.nih.nci.mageom.domain.Measurement.Unit unit);
 }

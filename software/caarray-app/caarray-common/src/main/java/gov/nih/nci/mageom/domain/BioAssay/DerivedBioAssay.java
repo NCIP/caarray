@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioAssay;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,51 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * A BioAssay that is created by the Transformation BioEvent from one or more MeasuredBioAssays or 
+   * DerivedBioAssays. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public interface DerivedBioAssay  extends gov.nih.nci.mageom.domain.BioAssay.BioAssay  {
     /**
-     * Gets the category.
+     * Gets the derivedBioAssayData.
      *
-     * @return the category
+     * @return the derivedBioAssayData
      */
-    String getCategory();
+    java.util.Collection getDerivedBioAssayData();
 
     /**
-     * Sets the category.
+     * Sets the derivedBioAssayData.
      *
-     * @param category the category
+     * @param derivedBioAssayData the derivedBioAssayData
      */
-    void setCategory(String category);    
+    void setDerivedBioAssayData(java.util.Collection derivedBioAssayData);
     /**
-     * Gets the description.
+     * Gets the derivedBioAssayMap.
      *
-     * @return the description
+     * @return the derivedBioAssayMap
      */
-    String getDescription();
+    java.util.Collection getDerivedBioAssayMap();
 
     /**
-     * Sets the description.
+     * Sets the derivedBioAssayMap.
      *
-     * @param description the description
+     * @param derivedBioAssayMap the derivedBioAssayMap
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
+    void setDerivedBioAssayMap(java.util.Collection derivedBioAssayMap);
 
     /**
-     * Sets the id.
+     * Gets the type.
      *
-     * @param id the id
+     * @return the type
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    gov.nih.nci.mageom.domain.Description.OntologyEntry getType();
 
     /**
-     * Sets the value.
+     * Sets the type.
      *
-     * @param value the value
+     * @param type the type
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
-
-    /**
-     * Sets the associations.
-     *
-     * @param associations the associations
-     */
-    void setAssociations(java.util.Collection associations);
-
-    /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
-     */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setType(
+      gov.nih.nci.mageom.domain.Description.OntologyEntry type);
 }

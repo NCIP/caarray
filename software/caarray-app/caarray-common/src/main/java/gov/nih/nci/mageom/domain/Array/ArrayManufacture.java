@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Array;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,10 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * Describes the process by which arrays are produced.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface ArrayManufacture  extends gov.nih.nci.mageom.domain.Identifiable  {    
     /**
      * Gets the id.
      *
@@ -130,44 +102,94 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
-     * Gets the value.
+     * Gets the manufacturingDate.
      *
-     * @return the value
+     * @return the manufacturingDate
      */
-    String getValue();
+    String getManufacturingDate();
 
     /**
-     * Sets the value.
+     * Sets the manufacturingDate.
      *
-     * @param value the value
+     * @param manufacturingDate the manufacturingDate
      */
-    void setValue(String value);
+    void setManufacturingDate(String manufacturingDate);    
     /**
-     * Gets the associations.
+     * Gets the tolerance.
      *
-     * @return the associations
+     * @return the tolerance
      */
-    java.util.Collection getAssociations();
+    java.lang.Float getTolerance();
 
     /**
-     * Sets the associations.
+     * Sets the tolerance.
      *
-     * @param associations the associations
+     * @param tolerance the tolerance
      */
-    void setAssociations(java.util.Collection associations);
+    void setTolerance(java.lang.Float tolerance);
+    /**
+     * Gets the arrayManufacturers.
+     *
+     * @return the arrayManufacturers
+     */
+    java.util.Collection getArrayManufacturers();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the arrayManufacturers.
      *
-     * @return the ontologyReference
+     * @param arrayManufacturers the arrayManufacturers
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setArrayManufacturers(java.util.Collection arrayManufacturers);
+    /**
+     * Gets the arrays.
+     *
+     * @return the arrays
+     */
+    java.util.Collection getArrays();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the arrays.
      *
-     * @param ontologyReference the ontologyReference
+     * @param arrays the arrays
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setArrays(java.util.Collection arrays);
+    /**
+     * Gets the qualityControlStatistics.
+     *
+     * @return the qualityControlStatistics
+     */
+    java.util.Collection getQualityControlStatistics();
+
+    /**
+     * Sets the qualityControlStatistics.
+     *
+     * @param qualityControlStatistics the qualityControlStatistics
+     */
+    void setQualityControlStatistics(java.util.Collection qualityControlStatistics);
+    /**
+     * Gets the protocolApplications.
+     *
+     * @return the protocolApplications
+     */
+    java.util.Collection getProtocolApplications();
+
+    /**
+     * Sets the protocolApplications.
+     *
+     * @param protocolApplications the protocolApplications
+     */
+    void setProtocolApplications(java.util.Collection protocolApplications);
+    /**
+     * Gets the featureLIMSs.
+     *
+     * @return the featureLIMSs
+     */
+    java.util.Collection getFeatureLIMSs();
+
+    /**
+     * Sets the featureLIMSs.
+     *
+     * @param featureLIMSs the featureLIMSs
+     */
+    void setFeatureLIMSs(java.util.Collection featureLIMSs);
 }

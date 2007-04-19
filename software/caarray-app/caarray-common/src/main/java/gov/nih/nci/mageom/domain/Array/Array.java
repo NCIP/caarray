@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Array;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,49 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * The physical substrate along with its features and their annotation
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public interface Array  extends gov.nih.nci.mageom.domain.Identifiable  {    
     /**
-     * Gets the category.
+     * Gets the arrayIdentifier.
      *
-     * @return the category
+     * @return the arrayIdentifier
      */
-    String getCategory();
+    String getArrayIdentifier();
 
     /**
-     * Sets the category.
+     * Sets the arrayIdentifier.
      *
-     * @param category the category
+     * @param arrayIdentifier the arrayIdentifier
      */
-    void setCategory(String category);    
+    void setArrayIdentifier(String arrayIdentifier);    
     /**
-     * Gets the description.
+     * Gets the arrayXOrigin.
      *
-     * @return the description
+     * @return the arrayXOrigin
      */
-    String getDescription();
+    java.lang.Float getArrayXOrigin();
 
     /**
-     * Sets the description.
+     * Sets the arrayXOrigin.
      *
-     * @param description the description
+     * @param arrayXOrigin the arrayXOrigin
      */
-    void setDescription(String description);    
+    void setArrayXOrigin(java.lang.Float arrayXOrigin);    
+    /**
+     * Gets the arrayYOrigin.
+     *
+     * @return the arrayYOrigin
+     */
+    java.lang.Float getArrayYOrigin();
+
+    /**
+     * Sets the arrayYOrigin.
+     *
+     * @param arrayYOrigin the arrayYOrigin
+     */
+    void setArrayYOrigin(java.lang.Float arrayYOrigin);    
     /**
      * Gets the id.
      *
@@ -130,44 +141,74 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
-     * Gets the value.
+     * Gets the originRelativeTo.
      *
-     * @return the value
+     * @return the originRelativeTo
      */
-    String getValue();
+    String getOriginRelativeTo();
 
     /**
-     * Sets the value.
+     * Sets the originRelativeTo.
      *
-     * @param value the value
+     * @param originRelativeTo the originRelativeTo
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    void setOriginRelativeTo(String originRelativeTo);
 
     /**
-     * Sets the associations.
+     * Gets the arrayDesign.
      *
-     * @param associations the associations
+     * @return the arrayDesign
      */
-    void setAssociations(java.util.Collection associations);
+    gov.nih.nci.mageom.domain.ArrayDesign.ArrayDesign getArrayDesign();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the arrayDesign.
      *
-     * @return the ontologyReference
+     * @param arrayDesign the arrayDesign
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setArrayDesign(
+      gov.nih.nci.mageom.domain.ArrayDesign.ArrayDesign arrayDesign);
 
     /**
-     * Sets the ontologyReference.
+     * Gets the arrayGroup.
      *
-     * @param ontologyReference the ontologyReference
+     * @return the arrayGroup
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    gov.nih.nci.mageom.domain.Array.ArrayGroup getArrayGroup();
+
+    /**
+     * Sets the arrayGroup.
+     *
+     * @param arrayGroup the arrayGroup
+     */
+    void setArrayGroup(
+      gov.nih.nci.mageom.domain.Array.ArrayGroup arrayGroup);
+    /**
+     * Gets the arrayManufactureDeviations.
+     *
+     * @return the arrayManufactureDeviations
+     */
+    java.util.Collection getArrayManufactureDeviations();
+
+    /**
+     * Sets the arrayManufactureDeviations.
+     *
+     * @param arrayManufactureDeviations the arrayManufactureDeviations
+     */
+    void setArrayManufactureDeviations(java.util.Collection arrayManufactureDeviations);
+
+    /**
+     * Gets the information.
+     *
+     * @return the information
+     */
+    gov.nih.nci.mageom.domain.Array.ArrayManufacture getInformation();
+
+    /**
+     * Sets the information.
+     *
+     * @param information the information
+     */
+    void setInformation(
+      gov.nih.nci.mageom.domain.Array.ArrayManufacture information);
 }

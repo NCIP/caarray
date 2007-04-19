@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Protocol.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,163 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * Hardware represents the hardware used. Examples of Hardware include: computers, scanners, wash 
+   * stations etc... 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class HardwareImpl 
+  extends gov.nih.nci.mageom.domain.Protocol.impl.ParameterizableImpl
+  implements gov.nih.nci.mageom.domain.Protocol.Hardware, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The make String.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private String make;
 
     /**
-     * Sets the description.
+     * Gets the make.
      *
-     * @param description the description
+     * @return the make
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
+    public String getMake() {
+        return make;
+    }
 
     /**
-     * Sets the id.
+     * Sets the make.
      *
-     * @param id the id
+     * @param makeVal the make
      */
-    void setId(java.lang.Long id);    
+    public void setMake(final String makeVal) {
+        this.make = makeVal;
+    }
     /**
-     * Gets the value.
-     *
-     * @return the value
+     * The model String.
      */
-    String getValue();
+    private String model;
 
     /**
-     * Sets the value.
+     * Gets the model.
      *
-     * @param value the value
+     * @return the model
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public String getModel() {
+        return model;
+    }
 
     /**
-     * Sets the associations.
+     * Sets the model.
      *
-     * @param associations the associations
+     * @param modelVal the model
      */
-    void setAssociations(java.util.Collection associations);
+    public void setModel(final String modelVal) {
+        this.model = modelVal;
+    }
 
     /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
+     * The hardwareManufacturers set.
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    private java.util.Collection hardwareManufacturers = new java.util.HashSet();
 
     /**
-     * Sets the ontologyReference.
+     * Gets the hardwareManufacturers.
      *
-     * @param ontologyReference the ontologyReference
+     * @return the hardwareManufacturers
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public java.util.Collection getHardwareManufacturers() {
+        return hardwareManufacturers;
+    }
+
+    /**
+     * Sets the hardwareManufacturers.
+     *
+     * @param hardwareManufacturersVal the hardwareManufacturers
+     */
+    public void setHardwareManufacturers(final java.util.Collection hardwareManufacturersVal) {
+        this.hardwareManufacturers = hardwareManufacturersVal;
+    }    
+
+    /**
+     * The softwares set.
+     */
+    private java.util.Collection softwares = new java.util.HashSet();
+
+    /**
+     * Gets the softwares.
+     *
+     * @return the softwares
+     */
+    public java.util.Collection getSoftwares() {
+        return softwares;
+    }
+
+    /**
+     * Sets the softwares.
+     *
+     * @param softwaresVal the softwares
+     */
+    public void setSoftwares(final java.util.Collection softwaresVal) {
+        this.softwares = softwaresVal;
+    }    
+
+    /**
+     * The type gov.nih.nci.mageom.domain.Description.OntologyEntry.
+     */
+    private gov.nih.nci.mageom.domain.Description.OntologyEntry type;
+
+    /**
+     * Gets the type.
+     *
+     * @return the type
+     */
+    public gov.nih.nci.mageom.domain.Description.OntologyEntry getType() {
+        return type;    
+    }
+
+    /**
+     * Sets the type.
+     *
+     * @param typeVal the type
+     */
+    public void setType(final 
+      gov.nih.nci.mageom.domain.Description.OntologyEntry typeVal) {
+        this.type = typeVal;
+    }
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.Protocol.Hardware) {
+            final gov.nih.nci.mageom.domain.Protocol.Hardware castObject =
+                (gov.nih.nci.mageom.domain.Protocol.Hardware) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

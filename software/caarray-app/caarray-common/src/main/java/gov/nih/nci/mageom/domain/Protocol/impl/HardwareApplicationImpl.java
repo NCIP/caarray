@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Protocol.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,94 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * The use of a piece of hardware with the requisite Parameters and ParameterValues. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class HardwareApplicationImpl 
+  extends gov.nih.nci.mageom.domain.Protocol.impl.ParameterizableApplicationImpl
+  implements gov.nih.nci.mageom.domain.Protocol.HardwareApplication, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The serialNumber String.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private String serialNumber;
 
     /**
-     * Sets the description.
+     * Gets the serialNumber.
      *
-     * @param description the description
+     * @return the serialNumber
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
+    public String getSerialNumber() {
+        return serialNumber;
+    }
 
     /**
-     * Sets the id.
+     * Sets the serialNumber.
      *
-     * @param id the id
+     * @param serialNumberVal the serialNumber
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    public void setSerialNumber(final String serialNumberVal) {
+        this.serialNumber = serialNumberVal;
+    }
 
     /**
-     * Sets the value.
-     *
-     * @param value the value
+     * The hardware gov.nih.nci.mageom.domain.Protocol.Hardware.
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    private gov.nih.nci.mageom.domain.Protocol.Hardware hardware;
 
     /**
-     * Sets the associations.
+     * Gets the hardware.
      *
-     * @param associations the associations
+     * @return the hardware
      */
-    void setAssociations(java.util.Collection associations);
+    public gov.nih.nci.mageom.domain.Protocol.Hardware getHardware() {
+        return hardware;    
+    }
 
     /**
-     * Gets the ontologyReference.
+     * Sets the hardware.
      *
-     * @return the ontologyReference
+     * @param hardwareVal the hardware
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public void setHardware(final 
+      gov.nih.nci.mageom.domain.Protocol.Hardware hardwareVal) {
+        this.hardware = hardwareVal;
+    }
 
     /**
-     * Sets the ontologyReference.
+     * Checks if given object is equal to this object.
      *
-     * @param ontologyReference the ontologyReference
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.Protocol.HardwareApplication) {
+            final gov.nih.nci.mageom.domain.Protocol.HardwareApplication castObject =
+                (gov.nih.nci.mageom.domain.Protocol.HardwareApplication) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

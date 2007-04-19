@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioAssayData.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,70 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * A relational, tuple representation of the data.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class BioDataTuplesImpl 
+  extends gov.nih.nci.mageom.domain.BioAssayData.impl.BioDataValuesImpl
+  implements gov.nih.nci.mageom.domain.BioAssayData.BioDataTuples, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
+
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The bioAssayTupleData set.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.util.Collection bioAssayTupleData = new java.util.HashSet();
 
     /**
-     * Sets the description.
+     * Gets the bioAssayTupleData.
      *
-     * @param description the description
+     * @return the bioAssayTupleData
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
+    public java.util.Collection getBioAssayTupleData() {
+        return bioAssayTupleData;
+    }
 
     /**
-     * Sets the id.
+     * Sets the bioAssayTupleData.
      *
-     * @param id the id
+     * @param bioAssayTupleDataVal the bioAssayTupleData
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    public void setBioAssayTupleData(final java.util.Collection bioAssayTupleDataVal) {
+        this.bioAssayTupleData = bioAssayTupleDataVal;
+    }    
 
     /**
-     * Sets the value.
+     * Checks if given object is equal to this object.
      *
-     * @param value the value
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.BioAssayData.BioDataTuples) {
+            final gov.nih.nci.mageom.domain.BioAssayData.BioDataTuples castObject =
+                (gov.nih.nci.mageom.domain.BioAssayData.BioDataTuples) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
 
     /**
-     * Sets the associations.
+     * Returns the hashcode for the object.
      *
-     * @param associations the associations
+     * @return the int hashcode
      */
-    void setAssociations(java.util.Collection associations);
-
-    /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
-     */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

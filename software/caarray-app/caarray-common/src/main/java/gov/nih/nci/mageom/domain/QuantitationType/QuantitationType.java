@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.QuantitationType;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,11 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * A method for calculating a single datum of the matrix (e.g. raw intensity, background, error). 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface QuantitationType  extends gov.nih.nci.mageom.domain.Identifiable  {    
     /**
      * Gets the id.
      *
@@ -130,44 +103,87 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
-     * Gets the value.
+     * Gets the isBackground.
      *
-     * @return the value
+     * @return the isBackground
      */
-    String getValue();
+    java.lang.Boolean getIsBackground();
 
     /**
-     * Sets the value.
+     * Sets the isBackground.
      *
-     * @param value the value
+     * @param isBackground the isBackground
      */
-    void setValue(String value);
+    void setIsBackground(java.lang.Boolean isBackground);
     /**
-     * Gets the associations.
+     * Gets the confidenceIndicators.
      *
-     * @return the associations
+     * @return the confidenceIndicators
      */
-    java.util.Collection getAssociations();
+    java.util.Collection getConfidenceIndicators();
 
     /**
-     * Sets the associations.
+     * Sets the confidenceIndicators.
      *
-     * @param associations the associations
+     * @param confidenceIndicators the confidenceIndicators
      */
-    void setAssociations(java.util.Collection associations);
+    void setConfidenceIndicators(java.util.Collection confidenceIndicators);
 
     /**
-     * Gets the ontologyReference.
+     * Gets the channel.
      *
-     * @return the ontologyReference
+     * @return the channel
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    gov.nih.nci.mageom.domain.BioAssay.Channel getChannel();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the channel.
      *
-     * @param ontologyReference the ontologyReference
+     * @param channel the channel
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setChannel(
+      gov.nih.nci.mageom.domain.BioAssay.Channel channel);
+
+    /**
+     * Gets the dataType.
+     *
+     * @return the dataType
+     */
+    gov.nih.nci.mageom.domain.Description.OntologyEntry getDataType();
+
+    /**
+     * Sets the dataType.
+     *
+     * @param dataType the dataType
+     */
+    void setDataType(
+      gov.nih.nci.mageom.domain.Description.OntologyEntry dataType);
+    /**
+     * Gets the quantitationTypeMaps.
+     *
+     * @return the quantitationTypeMaps
+     */
+    java.util.Collection getQuantitationTypeMaps();
+
+    /**
+     * Sets the quantitationTypeMaps.
+     *
+     * @param quantitationTypeMaps the quantitationTypeMaps
+     */
+    void setQuantitationTypeMaps(java.util.Collection quantitationTypeMaps);
+
+    /**
+     * Gets the scale.
+     *
+     * @return the scale
+     */
+    gov.nih.nci.mageom.domain.Description.OntologyEntry getScale();
+
+    /**
+     * Sets the scale.
+     *
+     * @param scale the scale
+     */
+    void setScale(
+      gov.nih.nci.mageom.domain.Description.OntologyEntry scale);
 }

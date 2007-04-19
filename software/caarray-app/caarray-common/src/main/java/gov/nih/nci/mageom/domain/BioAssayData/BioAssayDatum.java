@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioAssayData;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,10 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * A single cell of the quantitation, bioAssay, designElement matrix.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface BioAssayDatum  extends gov.nih.nci.mageom.domain.Extendable  {    
     /**
      * Gets the id.
      *
@@ -142,32 +114,49 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      * @param value the value
      */
     void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
 
     /**
-     * Sets the associations.
+     * Gets the bioAssay.
      *
-     * @param associations the associations
+     * @return the bioAssay
      */
-    void setAssociations(java.util.Collection associations);
+    gov.nih.nci.mageom.domain.BioAssay.BioAssay getBioAssay();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the bioAssay.
      *
-     * @return the ontologyReference
+     * @param bioAssay the bioAssay
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setBioAssay(
+      gov.nih.nci.mageom.domain.BioAssay.BioAssay bioAssay);
 
     /**
-     * Sets the ontologyReference.
+     * Gets the quantitationType.
      *
-     * @param ontologyReference the ontologyReference
+     * @return the quantitationType
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    gov.nih.nci.mageom.domain.QuantitationType.QuantitationType getQuantitationType();
+
+    /**
+     * Sets the quantitationType.
+     *
+     * @param quantitationType the quantitationType
+     */
+    void setQuantitationType(
+      gov.nih.nci.mageom.domain.QuantitationType.QuantitationType quantitationType);
+
+    /**
+     * Gets the designElement.
+     *
+     * @return the designElement
+     */
+    gov.nih.nci.mageom.domain.DesignElement.DesignElement getDesignElement();
+
+    /**
+     * Sets the designElement.
+     *
+     * @param designElement the designElement
+     */
+    void setDesignElement(
+      gov.nih.nci.mageom.domain.DesignElement.DesignElement designElement);
 }

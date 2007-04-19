@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioAssayData;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,12 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * A QuantitationTypeMap is the description of how source QuantitationTypes are mathematically 
+   * transformed into a target QuantitationType. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface QuantitationTypeMap  extends gov.nih.nci.mageom.domain.BioEvent.Map  {    
     /**
      * Gets the id.
      *
@@ -128,46 +102,33 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    void setId(java.lang.Long id);
 
     /**
-     * Sets the value.
+     * Gets the targetQuantitationType.
      *
-     * @param value the value
+     * @return the targetQuantitationType
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    gov.nih.nci.mageom.domain.QuantitationType.QuantitationType getTargetQuantitationType();
 
     /**
-     * Sets the associations.
+     * Sets the targetQuantitationType.
      *
-     * @param associations the associations
+     * @param targetQuantitationType the targetQuantitationType
      */
-    void setAssociations(java.util.Collection associations);
+    void setTargetQuantitationType(
+      gov.nih.nci.mageom.domain.QuantitationType.QuantitationType targetQuantitationType);
+    /**
+     * Gets the sourcesQuantitationType.
+     *
+     * @return the sourcesQuantitationType
+     */
+    java.util.Collection getSourcesQuantitationType();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the sourcesQuantitationType.
      *
-     * @return the ontologyReference
+     * @param sourcesQuantitationType the sourcesQuantitationType
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setSourcesQuantitationType(java.util.Collection sourcesQuantitationType);
 }

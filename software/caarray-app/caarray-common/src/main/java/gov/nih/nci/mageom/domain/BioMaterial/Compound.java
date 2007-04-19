@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioMaterial;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,13 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * A Compound can be a simple compound such as SDS (sodium dodecyl sulfate). It may also be made of other 
+   * Compounds in proportions using CompoundMeasurements to enumerate the Compounds and their amounts 
+   * such as LB (Luria Broth) Media. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface Compound  extends gov.nih.nci.mageom.domain.Identifiable  {    
     /**
      * Gets the id.
      *
@@ -130,44 +105,57 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
-     * Gets the value.
+     * Gets the isSolvent.
      *
-     * @return the value
+     * @return the isSolvent
      */
-    String getValue();
+    java.lang.Boolean getIsSolvent();
 
     /**
-     * Sets the value.
+     * Sets the isSolvent.
      *
-     * @param value the value
+     * @param isSolvent the isSolvent
      */
-    void setValue(String value);
+    void setIsSolvent(java.lang.Boolean isSolvent);
     /**
-     * Gets the associations.
+     * Gets the componentCompounds.
      *
-     * @return the associations
+     * @return the componentCompounds
      */
-    java.util.Collection getAssociations();
+    java.util.Collection getComponentCompounds();
 
     /**
-     * Sets the associations.
+     * Sets the componentCompounds.
      *
-     * @param associations the associations
+     * @param componentCompounds the componentCompounds
      */
-    void setAssociations(java.util.Collection associations);
+    void setComponentCompounds(java.util.Collection componentCompounds);
 
     /**
-     * Gets the ontologyReference.
+     * Gets the externalLIMS.
      *
-     * @return the ontologyReference
+     * @return the externalLIMS
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    gov.nih.nci.mageom.domain.Description.DatabaseEntry getExternalLIMS();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the externalLIMS.
      *
-     * @param ontologyReference the ontologyReference
+     * @param externalLIMS the externalLIMS
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setExternalLIMS(
+      gov.nih.nci.mageom.domain.Description.DatabaseEntry externalLIMS);
+    /**
+     * Gets the compoundIndices.
+     *
+     * @return the compoundIndices
+     */
+    java.util.Collection getCompoundIndices();
+
+    /**
+     * Sets the compoundIndices.
+     *
+     * @param compoundIndices the compoundIndices
+     */
+    void setCompoundIndices(java.util.Collection compoundIndices);
 }

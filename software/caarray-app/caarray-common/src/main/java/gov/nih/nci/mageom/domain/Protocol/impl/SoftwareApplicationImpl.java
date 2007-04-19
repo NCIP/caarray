@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Protocol.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,116 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * The use of a piece of software with the requisite Parameters and ParameterValues. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class SoftwareApplicationImpl 
+  extends gov.nih.nci.mageom.domain.Protocol.impl.ParameterizableApplicationImpl
+  implements gov.nih.nci.mageom.domain.Protocol.SoftwareApplication, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The releaseDate java.util.Date.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.util.Date releaseDate;
 
     /**
-     * Sets the description.
+     * Gets the releaseDate.
      *
-     * @param description the description
+     * @return the releaseDate
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
+    public java.util.Date getReleaseDate() {
+        return releaseDate;
+    }
 
     /**
-     * Sets the id.
+     * Sets the releaseDate.
      *
-     * @param id the id
+     * @param releaseDateVal the releaseDate
      */
-    void setId(java.lang.Long id);    
+    public void setReleaseDate(final java.util.Date releaseDateVal) {
+        this.releaseDate = releaseDateVal;
+    }
     /**
-     * Gets the value.
-     *
-     * @return the value
+     * The version String.
      */
-    String getValue();
+    private String version;
 
     /**
-     * Sets the value.
+     * Gets the version.
      *
-     * @param value the value
+     * @return the version
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public String getVersion() {
+        return version;
+    }
 
     /**
-     * Sets the associations.
+     * Sets the version.
      *
-     * @param associations the associations
+     * @param versionVal the version
      */
-    void setAssociations(java.util.Collection associations);
+    public void setVersion(final String versionVal) {
+        this.version = versionVal;
+    }
 
     /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
+     * The software gov.nih.nci.mageom.domain.Protocol.Software.
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    private gov.nih.nci.mageom.domain.Protocol.Software software;
 
     /**
-     * Sets the ontologyReference.
+     * Gets the software.
      *
-     * @param ontologyReference the ontologyReference
+     * @return the software
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public gov.nih.nci.mageom.domain.Protocol.Software getSoftware() {
+        return software;    
+    }
+
+    /**
+     * Sets the software.
+     *
+     * @param softwareVal the software
+     */
+    public void setSoftware(final 
+      gov.nih.nci.mageom.domain.Protocol.Software softwareVal) {
+        this.software = softwareVal;
+    }
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.Protocol.SoftwareApplication) {
+            final gov.nih.nci.mageom.domain.Protocol.SoftwareApplication castObject =
+                (gov.nih.nci.mageom.domain.Protocol.SoftwareApplication) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

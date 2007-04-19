@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.mageom.domain.BioMaterial.impl">
+  <class name="BioMaterialImpl" table="BIOMATERIAL" polymorphism="implicit">
+    <id name="id" column="ID" type="long">
+      <generator class="assigned"/>
+    </id>
+    <discriminator>
+      <column name="OJBCONCRETECLASS"/>
+    </discriminator>
+    <property name="identifier" column="IDENTIFIER" type="string" />
+    <property name="name" column="NAME" type="string" />
+    <set name="treatments" lazy="true">
+      <key column="ID" />
+      <one-to-many class="TreatmentImpl" />
+    </set>
+    <set name="materialType" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.Description.impl.OntologyEntryImpl" />
+    </set>
+    <set name="characteristics" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.Description.impl.OntologyEntryImpl" />
+    </set>
+    <set name="qualityControlStatistics" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.impl.NameValueTypeImpl" />
+    </set>
+    <many-to-one name="security" column="DESC_SECURITY_ID" class="gov.nih.nci.mageom.domain.AuditAndSecurity.impl.SecurityImpl" />
+    <set name="propertySets" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.impl.NameValueTypeImpl" />
+    </set>
+    <subclass name="BioSourceImpl" discriminator-value="org.biomage.BioMaterial.BioSource">
+      <set name="sourceContact" table="BIOSOURCECONTACT" lazy="true">
+        <key column="BIOSOURCE_ID" />
+        <many-to-many class="gov.nih.nci.mageom.domain.AuditAndSecurity.impl.ContactImpl" column="CONTACT_ID" />
+      </set>
+    </subclass>
+    <subclass name="BioSampleImpl" discriminator-value="org.biomage.BioMaterial.BioSample">
+      <many-to-one name="type" column="TYPE_ID" class="gov.nih.nci.mageom.domain.Description.impl.OntologyEntryImpl" />
+    </subclass>
+    <subclass name="LabeledExtractImpl" discriminator-value="org.biomage.BioMaterial.LabeledExtract">
+      <set name="labels" table="LABELEDEXTRACTCOMPOUND" lazy="true">
+        <key column="LABELED_EXTRACT_ID" />
+        <many-to-many class="CompoundImpl" column="COMPOUND_ID" />
+      </set>
+    </subclass>
+  </class>
+</hibernate-mapping>
+

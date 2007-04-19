@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Description.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,183 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * A reference to a record in a database.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class DatabaseEntryImpl 
+  extends gov.nih.nci.mageom.domain.impl.ExtendableImpl
+  implements gov.nih.nci.mageom.domain.Description.DatabaseEntry, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The accession String.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private String accession;
 
     /**
-     * Sets the description.
+     * Gets the accession.
      *
-     * @param description the description
+     * @return the accession
      */
-    void setDescription(String description);    
+    public String getAccession() {
+        return accession;
+    }
+
+    /**
+     * Sets the accession.
+     *
+     * @param accessionVal the accession
+     */
+    public void setAccession(final String accessionVal) {
+        this.accession = accessionVal;
+    }
+    /**
+     * The accessionVersion String.
+     */
+    private String accessionVersion;
+
+    /**
+     * Gets the accessionVersion.
+     *
+     * @return the accessionVersion
+     */
+    public String getAccessionVersion() {
+        return accessionVersion;
+    }
+
+    /**
+     * Sets the accessionVersion.
+     *
+     * @param accessionVersionVal the accessionVersion
+     */
+    public void setAccessionVersion(final String accessionVersionVal) {
+        this.accessionVersion = accessionVersionVal;
+    }
+    /**
+     * The id java.lang.Long.
+     */
+    private java.lang.Long id;
+
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
     /**
-     * Gets the value.
-     *
-     * @return the value
+     * The URI String.
      */
-    String getValue();
+    private String URI;
 
     /**
-     * Sets the value.
+     * Gets the URI.
      *
-     * @param value the value
+     * @return the URI
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public String getURI() {
+        return URI;
+    }
 
     /**
-     * Sets the associations.
+     * Sets the URI.
      *
-     * @param associations the associations
+     * @param URIVal the URI
      */
-    void setAssociations(java.util.Collection associations);
+    public void setURI(final String URIVal) {
+        this.URI = URIVal;
+    }
 
     /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
+     * The type gov.nih.nci.mageom.domain.Description.OntologyEntry.
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    private gov.nih.nci.mageom.domain.Description.OntologyEntry type;
 
     /**
-     * Sets the ontologyReference.
+     * Gets the type.
      *
-     * @param ontologyReference the ontologyReference
+     * @return the type
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public gov.nih.nci.mageom.domain.Description.OntologyEntry getType() {
+        return type;    
+    }
+
+    /**
+     * Sets the type.
+     *
+     * @param typeVal the type
+     */
+    public void setType(final 
+      gov.nih.nci.mageom.domain.Description.OntologyEntry typeVal) {
+        this.type = typeVal;
+    }
+
+    /**
+     * The database gov.nih.nci.mageom.domain.Description.Database.
+     */
+    private gov.nih.nci.mageom.domain.Description.Database database;
+
+    /**
+     * Gets the database.
+     *
+     * @return the database
+     */
+    public gov.nih.nci.mageom.domain.Description.Database getDatabase() {
+        return database;    
+    }
+
+    /**
+     * Sets the database.
+     *
+     * @param databaseVal the database
+     */
+    public void setDatabase(final 
+      gov.nih.nci.mageom.domain.Description.Database databaseVal) {
+        this.database = databaseVal;
+    }
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.Description.DatabaseEntry) {
+            final gov.nih.nci.mageom.domain.Description.DatabaseEntry castObject =
+                (gov.nih.nci.mageom.domain.Description.DatabaseEntry) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

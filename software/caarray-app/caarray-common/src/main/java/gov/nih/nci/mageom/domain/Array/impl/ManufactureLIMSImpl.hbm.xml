@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.mageom.domain.Array.impl">
+  <class name="ManufactureLIMSBiomaterialImpl" table="MANUFACTURELIMS" polymorphism="implicit">
+    <id name="id" column="ID" type="long">
+      <generator class="assigned"/>
+    </id>
+    <property name="quality" column="QUALITY" type="string" />
+    <property name="bioMaterialPlateCol" column="BIOMATERIALPLATECOL" type="string" />
+    <property name="bioMaterialPlateRow" column="BIOMATERIALPLATEROW" type="string" />
+    <property name="bioMaterialPlateIdentifier" column="BIOMATERIALPLATEIDENTIFIER" type="string" />
+    <many-to-one name="feature" column="FEATURE_ID" class="gov.nih.nci.mageom.domain.DesignElement.impl.FeatureImpl" />
+    <many-to-one name="identifierLIMS" column="IDENTIFIER_LIMS_ID" class="gov.nih.nci.mageom.domain.Description.impl.DatabaseEntryImpl" />
+    <many-to-one name="bioMaterial" column="BIOMATERIAL_ID" class="gov.nih.nci.mageom.domain.BioMaterial.impl.BioMaterialImpl" />
+    <set name="auditTrail" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.AuditAndSecurity.impl.AuditImpl" />
+    </set>
+    <set name="descriptions" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.Description.impl.DescriptionImpl" />
+    </set>
+    <many-to-one name="security" column="DESC_SECURITY_ID" class="gov.nih.nci.mageom.domain.AuditAndSecurity.impl.SecurityImpl" />
+    <set name="propertySets" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.impl.NameValueTypeImpl" />
+    </set>
+  </class>
+</hibernate-mapping>
+

@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioMaterial;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,12 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * The process by which a biomaterial is created (from source biomaterials). Treatments have an order 
+   * and an action. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface Treatment  extends gov.nih.nci.mageom.domain.BioEvent.BioEvent  {    
     /**
      * Gets the id.
      *
@@ -130,44 +104,72 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
-     * Gets the value.
+     * Gets the order.
      *
-     * @return the value
+     * @return the order
      */
-    String getValue();
+    java.lang.Integer getOrder();
 
     /**
-     * Sets the value.
+     * Sets the order.
      *
-     * @param value the value
+     * @param order the order
      */
-    void setValue(String value);
+    void setOrder(java.lang.Integer order);
     /**
-     * Gets the associations.
+     * Gets the sourceBioMaterialMeasurements.
      *
-     * @return the associations
+     * @return the sourceBioMaterialMeasurements
      */
-    java.util.Collection getAssociations();
+    java.util.Collection getSourceBioMaterialMeasurements();
 
     /**
-     * Sets the associations.
+     * Sets the sourceBioMaterialMeasurements.
      *
-     * @param associations the associations
+     * @param sourceBioMaterialMeasurements the sourceBioMaterialMeasurements
      */
-    void setAssociations(java.util.Collection associations);
+    void setSourceBioMaterialMeasurements(java.util.Collection sourceBioMaterialMeasurements);
+    /**
+     * Gets the compoundMeasurements.
+     *
+     * @return the compoundMeasurements
+     */
+    java.util.Collection getCompoundMeasurements();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the compoundMeasurements.
      *
-     * @return the ontologyReference
+     * @param compoundMeasurements the compoundMeasurements
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setCompoundMeasurements(java.util.Collection compoundMeasurements);
 
     /**
-     * Sets the ontologyReference.
+     * Gets the action.
      *
-     * @param ontologyReference the ontologyReference
+     * @return the action
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    gov.nih.nci.mageom.domain.Description.OntologyEntry getAction();
+
+    /**
+     * Sets the action.
+     *
+     * @param action the action
+     */
+    void setAction(
+      gov.nih.nci.mageom.domain.Description.OntologyEntry action);
+
+    /**
+     * Gets the actionMeasurement.
+     *
+     * @return the actionMeasurement
+     */
+    gov.nih.nci.mageom.domain.Measurement.Measurement getActionMeasurement();
+
+    /**
+     * Sets the actionMeasurement.
+     *
+     * @param actionMeasurement the actionMeasurement
+     */
+    void setActionMeasurement(
+      gov.nih.nci.mageom.domain.Measurement.Measurement actionMeasurement);
 }

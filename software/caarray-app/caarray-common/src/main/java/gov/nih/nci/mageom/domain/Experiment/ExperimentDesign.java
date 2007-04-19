@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Experiment;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,12 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * The ExperimentDesign is the description and collection of ExperimentalFactors and the hierarchy 
+   * of BioAssays to which they pertain. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface ExperimentDesign  extends gov.nih.nci.mageom.domain.Describable  {    
     /**
      * Gets the id.
      *
@@ -128,46 +102,89 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    void setId(java.lang.Long id);
 
     /**
-     * Sets the value.
+     * Gets the normalizationDescription.
      *
-     * @param value the value
+     * @return the normalizationDescription
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    gov.nih.nci.mageom.domain.Description.Description getNormalizationDescription();
 
     /**
-     * Sets the associations.
+     * Sets the normalizationDescription.
      *
-     * @param associations the associations
+     * @param normalizationDescription the normalizationDescription
      */
-    void setAssociations(java.util.Collection associations);
+    void setNormalizationDescription(
+      gov.nih.nci.mageom.domain.Description.Description normalizationDescription);
+    /**
+     * Gets the types.
+     *
+     * @return the types
+     */
+    java.util.Collection getTypes();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the types.
      *
-     * @return the ontologyReference
+     * @param types the types
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setTypes(java.util.Collection types);
+    /**
+     * Gets the topLevelBioAssays.
+     *
+     * @return the topLevelBioAssays
+     */
+    java.util.Collection getTopLevelBioAssays();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the topLevelBioAssays.
      *
-     * @param ontologyReference the ontologyReference
+     * @param topLevelBioAssays the topLevelBioAssays
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setTopLevelBioAssays(java.util.Collection topLevelBioAssays);
+    /**
+     * Gets the experimentalFactors.
+     *
+     * @return the experimentalFactors
+     */
+    java.util.Collection getExperimentalFactors();
+
+    /**
+     * Sets the experimentalFactors.
+     *
+     * @param experimentalFactors the experimentalFactors
+     */
+    void setExperimentalFactors(java.util.Collection experimentalFactors);
+
+    /**
+     * Gets the qualityControlDescription.
+     *
+     * @return the qualityControlDescription
+     */
+    gov.nih.nci.mageom.domain.Description.Description getQualityControlDescription();
+
+    /**
+     * Sets the qualityControlDescription.
+     *
+     * @param qualityControlDescription the qualityControlDescription
+     */
+    void setQualityControlDescription(
+      gov.nih.nci.mageom.domain.Description.Description qualityControlDescription);
+
+    /**
+     * Gets the replicateDescription.
+     *
+     * @return the replicateDescription
+     */
+    gov.nih.nci.mageom.domain.Description.Description getReplicateDescription();
+
+    /**
+     * Sets the replicateDescription.
+     *
+     * @param replicateDescription the replicateDescription
+     */
+    void setReplicateDescription(
+      gov.nih.nci.mageom.domain.Description.Description replicateDescription);
 }

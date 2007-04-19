@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioAssay.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,96 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * A measured bioAssay is the direct processing of information in a physical bioAssay by the featureExtraction 
+   * event. Often uses images which are referenced through the physical bioAssay. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class MeasuredBioAssayImpl 
+  extends gov.nih.nci.mageom.domain.BioAssay.impl.BioAssayImpl
+  implements gov.nih.nci.mageom.domain.BioAssay.MeasuredBioAssay, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
+
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The measuredBioAssayData set.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.util.Collection measuredBioAssayData = new java.util.HashSet();
 
     /**
-     * Sets the description.
+     * Gets the measuredBioAssayData.
      *
-     * @param description the description
+     * @return the measuredBioAssayData
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
+    public java.util.Collection getMeasuredBioAssayData() {
+        return measuredBioAssayData;
+    }
 
     /**
-     * Sets the id.
+     * Sets the measuredBioAssayData.
      *
-     * @param id the id
+     * @param measuredBioAssayDataVal the measuredBioAssayData
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    public void setMeasuredBioAssayData(final java.util.Collection measuredBioAssayDataVal) {
+        this.measuredBioAssayData = measuredBioAssayDataVal;
+    }    
 
     /**
-     * Sets the value.
-     *
-     * @param value the value
+     * The featureExtraction gov.nih.nci.mageom.domain.BioAssay.FeatureExtraction.
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    private gov.nih.nci.mageom.domain.BioAssay.FeatureExtraction featureExtraction;
 
     /**
-     * Sets the associations.
+     * Gets the featureExtraction.
      *
-     * @param associations the associations
+     * @return the featureExtraction
      */
-    void setAssociations(java.util.Collection associations);
+    public gov.nih.nci.mageom.domain.BioAssay.FeatureExtraction getFeatureExtraction() {
+        return featureExtraction;    
+    }
 
     /**
-     * Gets the ontologyReference.
+     * Sets the featureExtraction.
      *
-     * @return the ontologyReference
+     * @param featureExtractionVal the featureExtraction
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public void setFeatureExtraction(final 
+      gov.nih.nci.mageom.domain.BioAssay.FeatureExtraction featureExtractionVal) {
+        this.featureExtraction = featureExtractionVal;
+    }
 
     /**
-     * Sets the ontologyReference.
+     * Checks if given object is equal to this object.
      *
-     * @param ontologyReference the ontologyReference
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.BioAssay.MeasuredBioAssay) {
+            final gov.nih.nci.mageom.domain.BioAssay.MeasuredBioAssay castObject =
+                (gov.nih.nci.mageom.domain.BioAssay.MeasuredBioAssay) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

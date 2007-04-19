@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioMaterial.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,164 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * A Compound can be a simple compound such as SDS (sodium dodecyl sulfate). It may also be made of other 
+   * Compounds in proportions using CompoundMeasurements to enumerate the Compounds and their amounts 
+   * such as LB (Luria Broth) Media. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class CompoundImpl 
+  extends gov.nih.nci.mageom.domain.impl.IdentifiableImpl
+  implements gov.nih.nci.mageom.domain.BioMaterial.Compound, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The id java.lang.Long.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Long id;
 
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
     /**
-     * Gets the value.
-     *
-     * @return the value
+     * The isSolvent java.lang.Boolean.
      */
-    String getValue();
+    private java.lang.Boolean isSolvent;
 
     /**
-     * Sets the value.
+     * Gets the isSolvent.
      *
-     * @param value the value
+     * @return the isSolvent
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public java.lang.Boolean getIsSolvent() {
+        return isSolvent;
+    }
 
     /**
-     * Sets the associations.
+     * Sets the isSolvent.
      *
-     * @param associations the associations
+     * @param isSolventVal the isSolvent
      */
-    void setAssociations(java.util.Collection associations);
+    public void setIsSolvent(final java.lang.Boolean isSolventVal) {
+        this.isSolvent = isSolventVal;
+    }
 
     /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
+     * The componentCompounds set.
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    private java.util.Collection componentCompounds = new java.util.HashSet();
 
     /**
-     * Sets the ontologyReference.
+     * Gets the componentCompounds.
      *
-     * @param ontologyReference the ontologyReference
+     * @return the componentCompounds
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public java.util.Collection getComponentCompounds() {
+        return componentCompounds;
+    }
+
+    /**
+     * Sets the componentCompounds.
+     *
+     * @param componentCompoundsVal the componentCompounds
+     */
+    public void setComponentCompounds(final java.util.Collection componentCompoundsVal) {
+        this.componentCompounds = componentCompoundsVal;
+    }    
+
+    /**
+     * The externalLIMS gov.nih.nci.mageom.domain.Description.DatabaseEntry.
+     */
+    private gov.nih.nci.mageom.domain.Description.DatabaseEntry externalLIMS;
+
+    /**
+     * Gets the externalLIMS.
+     *
+     * @return the externalLIMS
+     */
+    public gov.nih.nci.mageom.domain.Description.DatabaseEntry getExternalLIMS() {
+        return externalLIMS;    
+    }
+
+    /**
+     * Sets the externalLIMS.
+     *
+     * @param externalLIMSVal the externalLIMS
+     */
+    public void setExternalLIMS(final 
+      gov.nih.nci.mageom.domain.Description.DatabaseEntry externalLIMSVal) {
+        this.externalLIMS = externalLIMSVal;
+    }
+
+    /**
+     * The compoundIndices set.
+     */
+    private java.util.Collection compoundIndices = new java.util.HashSet();
+
+    /**
+     * Gets the compoundIndices.
+     *
+     * @return the compoundIndices
+     */
+    public java.util.Collection getCompoundIndices() {
+        return compoundIndices;
+    }
+
+    /**
+     * Sets the compoundIndices.
+     *
+     * @param compoundIndicesVal the compoundIndices
+     */
+    public void setCompoundIndices(final java.util.Collection compoundIndicesVal) {
+        this.compoundIndices = compoundIndicesVal;
+    }    
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.BioMaterial.Compound) {
+            final gov.nih.nci.mageom.domain.BioMaterial.Compound castObject =
+                (gov.nih.nci.mageom.domain.BioMaterial.Compound) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

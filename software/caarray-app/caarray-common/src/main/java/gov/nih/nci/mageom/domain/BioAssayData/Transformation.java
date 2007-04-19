@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioAssayData;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,12 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * The process by which derivedBioAssays are created from measuredBioAssays and/or derivedBioAssays. 
+   * It uses mappings to indicate the input and output dimensions. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface Transformation  extends gov.nih.nci.mageom.domain.BioEvent.BioEvent  {    
     /**
      * Gets the id.
      *
@@ -128,46 +102,78 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    void setId(java.lang.Long id);
 
     /**
-     * Sets the value.
+     * Gets the quantitationTypeMapping.
      *
-     * @param value the value
+     * @return the quantitationTypeMapping
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    gov.nih.nci.mageom.domain.BioAssayData.QuantitationTypeMapping getQuantitationTypeMapping();
 
     /**
-     * Sets the associations.
+     * Sets the quantitationTypeMapping.
      *
-     * @param associations the associations
+     * @param quantitationTypeMapping the quantitationTypeMapping
      */
-    void setAssociations(java.util.Collection associations);
+    void setQuantitationTypeMapping(
+      gov.nih.nci.mageom.domain.BioAssayData.QuantitationTypeMapping quantitationTypeMapping);
 
     /**
-     * Gets the ontologyReference.
+     * Gets the designElementMapping.
      *
-     * @return the ontologyReference
+     * @return the designElementMapping
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    gov.nih.nci.mageom.domain.BioAssayData.DesignElementMapping getDesignElementMapping();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the designElementMapping.
      *
-     * @param ontologyReference the ontologyReference
+     * @param designElementMapping the designElementMapping
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setDesignElementMapping(
+      gov.nih.nci.mageom.domain.BioAssayData.DesignElementMapping designElementMapping);
+
+    /**
+     * Gets the bioAssayMapping.
+     *
+     * @return the bioAssayMapping
+     */
+    gov.nih.nci.mageom.domain.BioAssayData.BioAssayMapping getBioAssayMapping();
+
+    /**
+     * Sets the bioAssayMapping.
+     *
+     * @param bioAssayMapping the bioAssayMapping
+     */
+    void setBioAssayMapping(
+      gov.nih.nci.mageom.domain.BioAssayData.BioAssayMapping bioAssayMapping);
+
+    /**
+     * Gets the derivedBioAssayDataTarget.
+     *
+     * @return the derivedBioAssayDataTarget
+     */
+    gov.nih.nci.mageom.domain.BioAssayData.DerivedBioAssayData getDerivedBioAssayDataTarget();
+
+    /**
+     * Sets the derivedBioAssayDataTarget.
+     *
+     * @param derivedBioAssayDataTarget the derivedBioAssayDataTarget
+     */
+    void setDerivedBioAssayDataTarget(
+      gov.nih.nci.mageom.domain.BioAssayData.DerivedBioAssayData derivedBioAssayDataTarget);
+    /**
+     * Gets the bioAssayDataSources.
+     *
+     * @return the bioAssayDataSources
+     */
+    java.util.Collection getBioAssayDataSources();
+
+    /**
+     * Sets the bioAssayDataSources.
+     *
+     * @param bioAssayDataSources the bioAssayDataSources
+     */
+    void setBioAssayDataSources(java.util.Collection bioAssayDataSources);
 }

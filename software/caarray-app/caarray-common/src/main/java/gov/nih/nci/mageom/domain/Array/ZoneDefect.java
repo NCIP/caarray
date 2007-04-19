@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Array;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,10 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * Stores the defect information for a zone.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface ZoneDefect  extends gov.nih.nci.mageom.domain.Extendable  {    
     /**
      * Gets the id.
      *
@@ -128,46 +100,50 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    void setId(java.lang.Long id);
 
     /**
-     * Sets the value.
+     * Gets the positionDelta.
      *
-     * @param value the value
+     * @return the positionDelta
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    gov.nih.nci.mageom.domain.Array.PositionDelta getPositionDelta();
 
     /**
-     * Sets the associations.
+     * Sets the positionDelta.
      *
-     * @param associations the associations
+     * @param positionDelta the positionDelta
      */
-    void setAssociations(java.util.Collection associations);
+    void setPositionDelta(
+      gov.nih.nci.mageom.domain.Array.PositionDelta positionDelta);
 
     /**
-     * Gets the ontologyReference.
+     * Gets the defectType.
      *
-     * @return the ontologyReference
+     * @return the defectType
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    gov.nih.nci.mageom.domain.Description.OntologyEntry getDefectType();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the defectType.
      *
-     * @param ontologyReference the ontologyReference
+     * @param defectType the defectType
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setDefectType(
+      gov.nih.nci.mageom.domain.Description.OntologyEntry defectType);
+
+    /**
+     * Gets the zone.
+     *
+     * @return the zone
+     */
+    gov.nih.nci.mageom.domain.ArrayDesign.Zone getZone();
+
+    /**
+     * Sets the zone.
+     *
+     * @param zone the zone
+     */
+    void setZone(
+      gov.nih.nci.mageom.domain.ArrayDesign.Zone zone);
 }

@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.ArrayDesign;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,12 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * Describes the design of an gene expression layout. In some cases this might be virtual and, for instance, 
+   * represent the output from analysis software at the composite level without reporters or features. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface ArrayDesign  extends gov.nih.nci.mageom.domain.Identifiable  {    
     /**
      * Gets the id.
      *
@@ -130,44 +104,94 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
-     * Gets the value.
+     * Gets the numberOfFeatures.
      *
-     * @return the value
+     * @return the numberOfFeatures
      */
-    String getValue();
+    java.lang.Integer getNumberOfFeatures();
 
     /**
-     * Sets the value.
+     * Sets the numberOfFeatures.
      *
-     * @param value the value
+     * @param numberOfFeatures the numberOfFeatures
      */
-    void setValue(String value);
+    void setNumberOfFeatures(java.lang.Integer numberOfFeatures);    
     /**
-     * Gets the associations.
+     * Gets the version.
      *
-     * @return the associations
+     * @return the version
      */
-    java.util.Collection getAssociations();
+    String getVersion();
 
     /**
-     * Sets the associations.
+     * Sets the version.
      *
-     * @param associations the associations
+     * @param version the version
      */
-    void setAssociations(java.util.Collection associations);
+    void setVersion(String version);
+    /**
+     * Gets the designProviders.
+     *
+     * @return the designProviders
+     */
+    java.util.Collection getDesignProviders();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the designProviders.
      *
-     * @return the ontologyReference
+     * @param designProviders the designProviders
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setDesignProviders(java.util.Collection designProviders);
+    /**
+     * Gets the featureGroups.
+     *
+     * @return the featureGroups
+     */
+    java.util.Collection getFeatureGroups();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the featureGroups.
      *
-     * @param ontologyReference the ontologyReference
+     * @param featureGroups the featureGroups
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setFeatureGroups(java.util.Collection featureGroups);
+    /**
+     * Gets the protocolApplications.
+     *
+     * @return the protocolApplications
+     */
+    java.util.Collection getProtocolApplications();
+
+    /**
+     * Sets the protocolApplications.
+     *
+     * @param protocolApplications the protocolApplications
+     */
+    void setProtocolApplications(java.util.Collection protocolApplications);
+    /**
+     * Gets the compositeGroups.
+     *
+     * @return the compositeGroups
+     */
+    java.util.Collection getCompositeGroups();
+
+    /**
+     * Sets the compositeGroups.
+     *
+     * @param compositeGroups the compositeGroups
+     */
+    void setCompositeGroups(java.util.Collection compositeGroups);
+    /**
+     * Gets the reporterGroups.
+     *
+     * @return the reporterGroups
+     */
+    java.util.Collection getReporterGroups();
+
+    /**
+     * Sets the reporterGroups.
+     *
+     * @param reporterGroups the reporterGroups
+     */
+    void setReporterGroups(java.util.Collection reporterGroups);
 }

@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.DesignElement.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,137 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * Describes how a reporter varies from its ReporterCharacteristics sequence(s) or how a Feature 
+   * varies from its Reporter sequence. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class MismatchInformationImpl 
+  extends gov.nih.nci.mageom.domain.impl.ExtendableImpl
+  implements gov.nih.nci.mageom.domain.DesignElement.MismatchInformation, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The id java.lang.Long.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Long id;
 
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
     /**
-     * Gets the value.
-     *
-     * @return the value
+     * The newSequence String.
      */
-    String getValue();
+    private String newSequence;
 
     /**
-     * Sets the value.
+     * Gets the newSequence.
      *
-     * @param value the value
+     * @return the newSequence
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public String getNewSequence() {
+        return newSequence;
+    }
 
     /**
-     * Sets the associations.
+     * Sets the newSequence.
      *
-     * @param associations the associations
+     * @param newSequenceVal the newSequence
      */
-    void setAssociations(java.util.Collection associations);
+    public void setNewSequence(final String newSequenceVal) {
+        this.newSequence = newSequenceVal;
+    }
+    /**
+     * The replacedLength java.lang.Integer.
+     */
+    private java.lang.Integer replacedLength;
 
     /**
-     * Gets the ontologyReference.
+     * Gets the replacedLength.
      *
-     * @return the ontologyReference
+     * @return the replacedLength
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public java.lang.Integer getReplacedLength() {
+        return replacedLength;
+    }
 
     /**
-     * Sets the ontologyReference.
+     * Sets the replacedLength.
      *
-     * @param ontologyReference the ontologyReference
+     * @param replacedLengthVal the replacedLength
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public void setReplacedLength(final java.lang.Integer replacedLengthVal) {
+        this.replacedLength = replacedLengthVal;
+    }
+    /**
+     * The startCoord java.lang.Integer.
+     */
+    private java.lang.Integer startCoord;
+
+    /**
+     * Gets the startCoord.
+     *
+     * @return the startCoord
+     */
+    public java.lang.Integer getStartCoord() {
+        return startCoord;
+    }
+
+    /**
+     * Sets the startCoord.
+     *
+     * @param startCoordVal the startCoord
+     */
+    public void setStartCoord(final java.lang.Integer startCoordVal) {
+        this.startCoord = startCoordVal;
+    }
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.DesignElement.MismatchInformation) {
+            final gov.nih.nci.mageom.domain.DesignElement.MismatchInformation castObject =
+                (gov.nih.nci.mageom.domain.DesignElement.MismatchInformation) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

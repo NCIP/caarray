@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.DesignElement;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,39 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * A ReporterCompositeMap is the description of how source Reporters are transformed into a target 
+   * CompositeSequences. For instance, several reporters that tile across a section of a chromosome 
+   * could be mapped to a CompositeSequence. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
+public interface ReporterCompositeMap  extends gov.nih.nci.mageom.domain.BioAssayData.DesignElementMap  {
 
     /**
-     * Sets the category.
+     * Gets the compositeSequence.
      *
-     * @param category the category
+     * @return the compositeSequence
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    gov.nih.nci.mageom.domain.DesignElement.CompositeSequence getCompositeSequence();
 
     /**
-     * Sets the description.
+     * Sets the compositeSequence.
      *
-     * @param description the description
+     * @param compositeSequence the compositeSequence
      */
-    void setDescription(String description);    
+    void setCompositeSequence(
+      gov.nih.nci.mageom.domain.DesignElement.CompositeSequence compositeSequence);
     /**
-     * Gets the id.
+     * Gets the reporterPositionSources.
      *
-     * @return the id
+     * @return the reporterPositionSources
      */
-    java.lang.Long getId();
+    java.util.Collection getReporterPositionSources();
 
     /**
-     * Sets the id.
+     * Sets the reporterPositionSources.
      *
-     * @param id the id
+     * @param reporterPositionSources the reporterPositionSources
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
-
-    /**
-     * Sets the value.
-     *
-     * @param value the value
-     */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
-
-    /**
-     * Sets the associations.
-     *
-     * @param associations the associations
-     */
-    void setAssociations(java.util.Collection associations);
-
-    /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
-     */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setReporterPositionSources(java.util.Collection reporterPositionSources);
 }

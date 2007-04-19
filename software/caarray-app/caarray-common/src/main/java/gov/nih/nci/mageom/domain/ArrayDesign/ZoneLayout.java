@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.ArrayDesign;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,10 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * Specifies the layout of features in a rectangular grid.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface ZoneLayout  extends gov.nih.nci.mageom.domain.Extendable  {    
     /**
      * Gets the id.
      *
@@ -130,44 +102,70 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
-     * Gets the value.
+     * Gets the numFeaturesPerCol.
      *
-     * @return the value
+     * @return the numFeaturesPerCol
      */
-    String getValue();
+    java.lang.Integer getNumFeaturesPerCol();
 
     /**
-     * Sets the value.
+     * Sets the numFeaturesPerCol.
      *
-     * @param value the value
+     * @param numFeaturesPerCol the numFeaturesPerCol
      */
-    void setValue(String value);
+    void setNumFeaturesPerCol(java.lang.Integer numFeaturesPerCol);    
     /**
-     * Gets the associations.
+     * Gets the numFeaturesPerRow.
      *
-     * @return the associations
+     * @return the numFeaturesPerRow
      */
-    java.util.Collection getAssociations();
+    java.lang.Integer getNumFeaturesPerRow();
 
     /**
-     * Sets the associations.
+     * Sets the numFeaturesPerRow.
      *
-     * @param associations the associations
+     * @param numFeaturesPerRow the numFeaturesPerRow
      */
-    void setAssociations(java.util.Collection associations);
+    void setNumFeaturesPerRow(java.lang.Integer numFeaturesPerRow);    
+    /**
+     * Gets the spacingBetweenCols.
+     *
+     * @return the spacingBetweenCols
+     */
+    java.lang.Float getSpacingBetweenCols();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the spacingBetweenCols.
      *
-     * @return the ontologyReference
+     * @param spacingBetweenCols the spacingBetweenCols
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setSpacingBetweenCols(java.lang.Float spacingBetweenCols);    
+    /**
+     * Gets the spacingBetweenRows.
+     *
+     * @return the spacingBetweenRows
+     */
+    java.lang.Float getSpacingBetweenRows();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the spacingBetweenRows.
      *
-     * @param ontologyReference the ontologyReference
+     * @param spacingBetweenRows the spacingBetweenRows
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setSpacingBetweenRows(java.lang.Float spacingBetweenRows);
+
+    /**
+     * Gets the distanceUnit.
+     *
+     * @return the distanceUnit
+     */
+    gov.nih.nci.mageom.domain.Measurement.DistanceUnit getDistanceUnit();
+
+    /**
+     * Sets the distanceUnit.
+     *
+     * @param distanceUnit the distanceUnit
+     */
+    void setDistanceUnit(
+      gov.nih.nci.mageom.domain.Measurement.DistanceUnit distanceUnit);
 }

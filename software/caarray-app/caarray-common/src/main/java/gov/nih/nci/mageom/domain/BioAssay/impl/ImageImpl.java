@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioAssay.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,140 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * An image is created by an imageAcquisition event, typically by scanning the hybridized array (the 
+   * PhysicalBioAssay). 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class ImageImpl 
+  extends gov.nih.nci.mageom.domain.impl.IdentifiableImpl
+  implements gov.nih.nci.mageom.domain.BioAssay.Image, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The id java.lang.Long.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Long id;
 
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
     /**
-     * Gets the value.
-     *
-     * @return the value
+     * The URI String.
      */
-    String getValue();
+    private String URI;
 
     /**
-     * Sets the value.
+     * Gets the URI.
      *
-     * @param value the value
+     * @return the URI
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public String getURI() {
+        return URI;
+    }
 
     /**
-     * Sets the associations.
+     * Sets the URI.
      *
-     * @param associations the associations
+     * @param URIVal the URI
      */
-    void setAssociations(java.util.Collection associations);
+    public void setURI(final String URIVal) {
+        this.URI = URIVal;
+    }
 
     /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
+     * The channels set.
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    private java.util.Collection channels = new java.util.HashSet();
 
     /**
-     * Sets the ontologyReference.
+     * Gets the channels.
      *
-     * @param ontologyReference the ontologyReference
+     * @return the channels
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public java.util.Collection getChannels() {
+        return channels;
+    }
+
+    /**
+     * Sets the channels.
+     *
+     * @param channelsVal the channels
+     */
+    public void setChannels(final java.util.Collection channelsVal) {
+        this.channels = channelsVal;
+    }    
+
+    /**
+     * The format gov.nih.nci.mageom.domain.Description.OntologyEntry.
+     */
+    private gov.nih.nci.mageom.domain.Description.OntologyEntry format;
+
+    /**
+     * Gets the format.
+     *
+     * @return the format
+     */
+    public gov.nih.nci.mageom.domain.Description.OntologyEntry getFormat() {
+        return format;    
+    }
+
+    /**
+     * Sets the format.
+     *
+     * @param formatVal the format
+     */
+    public void setFormat(final 
+      gov.nih.nci.mageom.domain.Description.OntologyEntry formatVal) {
+        this.format = formatVal;
+    }
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.BioAssay.Image) {
+            final gov.nih.nci.mageom.domain.BioAssay.Image castObject =
+                (gov.nih.nci.mageom.domain.BioAssay.Image) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.HigherLevelAnalysis;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,12 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * The contents of a node for any or all of the three Dimensions. If a node only contained genes just the 
+   * DesignElementDimension would be defined. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface NodeContents  extends gov.nih.nci.mageom.domain.Describable  {    
     /**
      * Gets the id.
      *
@@ -128,46 +102,50 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    void setId(java.lang.Long id);
 
     /**
-     * Sets the value.
+     * Gets the bioAssayDimension.
      *
-     * @param value the value
+     * @return the bioAssayDimension
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    gov.nih.nci.mageom.domain.BioAssayData.BioAssayDimension getBioAssayDimension();
 
     /**
-     * Sets the associations.
+     * Sets the bioAssayDimension.
      *
-     * @param associations the associations
+     * @param bioAssayDimension the bioAssayDimension
      */
-    void setAssociations(java.util.Collection associations);
+    void setBioAssayDimension(
+      gov.nih.nci.mageom.domain.BioAssayData.BioAssayDimension bioAssayDimension);
 
     /**
-     * Gets the ontologyReference.
+     * Gets the quantitationDimension.
      *
-     * @return the ontologyReference
+     * @return the quantitationDimension
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    gov.nih.nci.mageom.domain.BioAssayData.QuantitationTypeDimension getQuantitationDimension();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the quantitationDimension.
      *
-     * @param ontologyReference the ontologyReference
+     * @param quantitationDimension the quantitationDimension
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setQuantitationDimension(
+      gov.nih.nci.mageom.domain.BioAssayData.QuantitationTypeDimension quantitationDimension);
+
+    /**
+     * Gets the designElementDimension.
+     *
+     * @return the designElementDimension
+     */
+    gov.nih.nci.mageom.domain.BioAssayData.DesignElementDimension getDesignElementDimension();
+
+    /**
+     * Sets the designElementDimension.
+     *
+     * @param designElementDimension the designElementDimension
+     */
+    void setDesignElementDimension(
+      gov.nih.nci.mageom.domain.BioAssayData.DesignElementDimension designElementDimension);
 }

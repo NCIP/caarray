@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Protocol.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,162 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * The use of a protocol with the requisite Parameters and ParameterValues.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class ProtocolApplicationImpl 
+  extends gov.nih.nci.mageom.domain.Protocol.impl.ParameterizableApplicationImpl
+  implements gov.nih.nci.mageom.domain.Protocol.ProtocolApplication, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The activityDate java.util.Date.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.util.Date activityDate;
 
     /**
-     * Sets the description.
+     * Gets the activityDate.
      *
-     * @param description the description
+     * @return the activityDate
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
+    public java.util.Date getActivityDate() {
+        return activityDate;
+    }
 
     /**
-     * Sets the id.
+     * Sets the activityDate.
      *
-     * @param id the id
+     * @param activityDateVal the activityDate
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    public void setActivityDate(final java.util.Date activityDateVal) {
+        this.activityDate = activityDateVal;
+    }
 
     /**
-     * Sets the value.
-     *
-     * @param value the value
+     * The hardwareApplications set.
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    private java.util.Collection hardwareApplications = new java.util.HashSet();
 
     /**
-     * Sets the associations.
+     * Gets the hardwareApplications.
      *
-     * @param associations the associations
+     * @return the hardwareApplications
      */
-    void setAssociations(java.util.Collection associations);
+    public java.util.Collection getHardwareApplications() {
+        return hardwareApplications;
+    }
 
     /**
-     * Gets the ontologyReference.
+     * Sets the hardwareApplications.
      *
-     * @return the ontologyReference
+     * @param hardwareApplicationsVal the hardwareApplications
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public void setHardwareApplications(final java.util.Collection hardwareApplicationsVal) {
+        this.hardwareApplications = hardwareApplicationsVal;
+    }    
 
     /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
+     * The softwareApplications set.
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    private java.util.Collection softwareApplications = new java.util.HashSet();
+
+    /**
+     * Gets the softwareApplications.
+     *
+     * @return the softwareApplications
+     */
+    public java.util.Collection getSoftwareApplications() {
+        return softwareApplications;
+    }
+
+    /**
+     * Sets the softwareApplications.
+     *
+     * @param softwareApplicationsVal the softwareApplications
+     */
+    public void setSoftwareApplications(final java.util.Collection softwareApplicationsVal) {
+        this.softwareApplications = softwareApplicationsVal;
+    }    
+
+    /**
+     * The protocol gov.nih.nci.mageom.domain.Protocol.Protocol.
+     */
+    private gov.nih.nci.mageom.domain.Protocol.Protocol protocol;
+
+    /**
+     * Gets the protocol.
+     *
+     * @return the protocol
+     */
+    public gov.nih.nci.mageom.domain.Protocol.Protocol getProtocol() {
+        return protocol;    
+    }
+
+    /**
+     * Sets the protocol.
+     *
+     * @param protocolVal the protocol
+     */
+    public void setProtocol(final 
+      gov.nih.nci.mageom.domain.Protocol.Protocol protocolVal) {
+        this.protocol = protocolVal;
+    }
+
+    /**
+     * The performers set.
+     */
+    private java.util.Collection performers = new java.util.HashSet();
+
+    /**
+     * Gets the performers.
+     *
+     * @return the performers
+     */
+    public java.util.Collection getPerformers() {
+        return performers;
+    }
+
+    /**
+     * Sets the performers.
+     *
+     * @param performersVal the performers
+     */
+    public void setPerformers(final java.util.Collection performersVal) {
+        this.performers = performersVal;
+    }    
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.Protocol.ProtocolApplication) {
+            final gov.nih.nci.mageom.domain.Protocol.ProtocolApplication castObject =
+                (gov.nih.nci.mageom.domain.Protocol.ProtocolApplication) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

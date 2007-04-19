@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Array;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,12 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * A marking on the surface of the array that can be used to identify the array's origin, the coordinates 
+   * of which are the fiducial's centroid. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface Fiducial  extends gov.nih.nci.mageom.domain.Describable  {    
     /**
      * Gets the id.
      *
@@ -128,46 +102,50 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    void setId(java.lang.Long id);
 
     /**
-     * Sets the value.
+     * Gets the position.
      *
-     * @param value the value
+     * @return the position
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    gov.nih.nci.mageom.domain.DesignElement.Position getPosition();
 
     /**
-     * Sets the associations.
+     * Sets the position.
      *
-     * @param associations the associations
+     * @param position the position
      */
-    void setAssociations(java.util.Collection associations);
+    void setPosition(
+      gov.nih.nci.mageom.domain.DesignElement.Position position);
 
     /**
-     * Gets the ontologyReference.
+     * Gets the distanceUnit.
      *
-     * @return the ontologyReference
+     * @return the distanceUnit
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    gov.nih.nci.mageom.domain.Measurement.DistanceUnit getDistanceUnit();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the distanceUnit.
      *
-     * @param ontologyReference the ontologyReference
+     * @param distanceUnit the distanceUnit
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setDistanceUnit(
+      gov.nih.nci.mageom.domain.Measurement.DistanceUnit distanceUnit);
+
+    /**
+     * Gets the fiducialType.
+     *
+     * @return the fiducialType
+     */
+    gov.nih.nci.mageom.domain.Description.OntologyEntry getFiducialType();
+
+    /**
+     * Sets the fiducialType.
+     *
+     * @param fiducialType the fiducialType
+     */
+    void setFiducialType(
+      gov.nih.nci.mageom.domain.Description.OntologyEntry fiducialType);
 }

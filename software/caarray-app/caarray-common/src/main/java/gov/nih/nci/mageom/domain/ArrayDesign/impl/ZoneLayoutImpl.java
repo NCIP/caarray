@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.ArrayDesign.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,181 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * Specifies the layout of features in a rectangular grid.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class ZoneLayoutImpl 
+  extends gov.nih.nci.mageom.domain.impl.ExtendableImpl
+  implements gov.nih.nci.mageom.domain.ArrayDesign.ZoneLayout, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The id java.lang.Long.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Long id;
 
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
     /**
-     * Gets the value.
-     *
-     * @return the value
+     * The numFeaturesPerCol java.lang.Integer.
      */
-    String getValue();
+    private java.lang.Integer numFeaturesPerCol;
 
     /**
-     * Sets the value.
+     * Gets the numFeaturesPerCol.
      *
-     * @param value the value
+     * @return the numFeaturesPerCol
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public java.lang.Integer getNumFeaturesPerCol() {
+        return numFeaturesPerCol;
+    }
 
     /**
-     * Sets the associations.
+     * Sets the numFeaturesPerCol.
      *
-     * @param associations the associations
+     * @param numFeaturesPerColVal the numFeaturesPerCol
      */
-    void setAssociations(java.util.Collection associations);
+    public void setNumFeaturesPerCol(final java.lang.Integer numFeaturesPerColVal) {
+        this.numFeaturesPerCol = numFeaturesPerColVal;
+    }
+    /**
+     * The numFeaturesPerRow java.lang.Integer.
+     */
+    private java.lang.Integer numFeaturesPerRow;
 
     /**
-     * Gets the ontologyReference.
+     * Gets the numFeaturesPerRow.
      *
-     * @return the ontologyReference
+     * @return the numFeaturesPerRow
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public java.lang.Integer getNumFeaturesPerRow() {
+        return numFeaturesPerRow;
+    }
 
     /**
-     * Sets the ontologyReference.
+     * Sets the numFeaturesPerRow.
      *
-     * @param ontologyReference the ontologyReference
+     * @param numFeaturesPerRowVal the numFeaturesPerRow
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public void setNumFeaturesPerRow(final java.lang.Integer numFeaturesPerRowVal) {
+        this.numFeaturesPerRow = numFeaturesPerRowVal;
+    }
+    /**
+     * The spacingBetweenCols java.lang.Float.
+     */
+    private java.lang.Float spacingBetweenCols;
+
+    /**
+     * Gets the spacingBetweenCols.
+     *
+     * @return the spacingBetweenCols
+     */
+    public java.lang.Float getSpacingBetweenCols() {
+        return spacingBetweenCols;
+    }
+
+    /**
+     * Sets the spacingBetweenCols.
+     *
+     * @param spacingBetweenColsVal the spacingBetweenCols
+     */
+    public void setSpacingBetweenCols(final java.lang.Float spacingBetweenColsVal) {
+        this.spacingBetweenCols = spacingBetweenColsVal;
+    }
+    /**
+     * The spacingBetweenRows java.lang.Float.
+     */
+    private java.lang.Float spacingBetweenRows;
+
+    /**
+     * Gets the spacingBetweenRows.
+     *
+     * @return the spacingBetweenRows
+     */
+    public java.lang.Float getSpacingBetweenRows() {
+        return spacingBetweenRows;
+    }
+
+    /**
+     * Sets the spacingBetweenRows.
+     *
+     * @param spacingBetweenRowsVal the spacingBetweenRows
+     */
+    public void setSpacingBetweenRows(final java.lang.Float spacingBetweenRowsVal) {
+        this.spacingBetweenRows = spacingBetweenRowsVal;
+    }
+
+    /**
+     * The distanceUnit gov.nih.nci.mageom.domain.Measurement.DistanceUnit.
+     */
+    private gov.nih.nci.mageom.domain.Measurement.DistanceUnit distanceUnit;
+
+    /**
+     * Gets the distanceUnit.
+     *
+     * @return the distanceUnit
+     */
+    public gov.nih.nci.mageom.domain.Measurement.DistanceUnit getDistanceUnit() {
+        return distanceUnit;    
+    }
+
+    /**
+     * Sets the distanceUnit.
+     *
+     * @param distanceUnitVal the distanceUnit
+     */
+    public void setDistanceUnit(final 
+      gov.nih.nci.mageom.domain.Measurement.DistanceUnit distanceUnitVal) {
+        this.distanceUnit = distanceUnitVal;
+    }
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.ArrayDesign.ZoneLayout) {
+            final gov.nih.nci.mageom.domain.ArrayDesign.ZoneLayout castObject =
+                (gov.nih.nci.mageom.domain.ArrayDesign.ZoneLayout) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

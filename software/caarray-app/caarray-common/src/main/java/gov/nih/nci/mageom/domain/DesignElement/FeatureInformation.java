@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.DesignElement;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,13 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * As part of the map information, allows the association of one or more differences in the BioMaterial 
+   * on a feature from the BioMaterial of the Reporter. Useful for control purposes such as in Affymetrix 
+   * probe pairs. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface FeatureInformation  extends gov.nih.nci.mageom.domain.Extendable  {    
     /**
      * Gets the id.
      *
@@ -128,46 +103,33 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    void setId(java.lang.Long id);
 
     /**
-     * Sets the value.
+     * Gets the feature.
      *
-     * @param value the value
+     * @return the feature
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    gov.nih.nci.mageom.domain.DesignElement.Feature getFeature();
 
     /**
-     * Sets the associations.
+     * Sets the feature.
      *
-     * @param associations the associations
+     * @param feature the feature
      */
-    void setAssociations(java.util.Collection associations);
+    void setFeature(
+      gov.nih.nci.mageom.domain.DesignElement.Feature feature);
+    /**
+     * Gets the mismatchInformation.
+     *
+     * @return the mismatchInformation
+     */
+    java.util.Collection getMismatchInformation();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the mismatchInformation.
      *
-     * @return the ontologyReference
+     * @param mismatchInformation the mismatchInformation
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setMismatchInformation(java.util.Collection mismatchInformation);
 }

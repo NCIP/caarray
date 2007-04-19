@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioSequence;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,10 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * The location of the SeqFeature annotation.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface SeqFeatureLocation  extends gov.nih.nci.mageom.domain.Extendable  {    
     /**
      * Gets the id.
      *
@@ -130,44 +102,46 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
-     * Gets the value.
+     * Gets the strandType.
      *
-     * @return the value
+     * @return the strandType
      */
-    String getValue();
+    String getStrandType();
 
     /**
-     * Sets the value.
+     * Sets the strandType.
      *
-     * @param value the value
+     * @param strandType the strandType
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    void setStrandType(String strandType);
 
     /**
-     * Sets the associations.
+     * Gets the coordinate.
      *
-     * @param associations the associations
+     * @return the coordinate
      */
-    void setAssociations(java.util.Collection associations);
+    gov.nih.nci.mageom.domain.BioSequence.SequencePosition getCoordinate();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the coordinate.
      *
-     * @return the ontologyReference
+     * @param coordinate the coordinate
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setCoordinate(
+      gov.nih.nci.mageom.domain.BioSequence.SequencePosition coordinate);
 
     /**
-     * Sets the ontologyReference.
+     * Gets the subregions.
      *
-     * @param ontologyReference the ontologyReference
+     * @return the subregions
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    gov.nih.nci.mageom.domain.BioSequence.SeqFeatureLocation getSubregions();
+
+    /**
+     * Sets the subregions.
+     *
+     * @param subregions the subregions
+     */
+    void setSubregions(
+      gov.nih.nci.mageom.domain.BioSequence.SeqFeatureLocation subregions);
 }

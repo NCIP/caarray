@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.AuditAndSecurity;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,49 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * A contact is either a person or an organization.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public interface Contact  extends gov.nih.nci.mageom.domain.Identifiable  {    
     /**
-     * Gets the category.
+     * Gets the address.
      *
-     * @return the category
+     * @return the address
      */
-    String getCategory();
+    String getAddress();
 
     /**
-     * Sets the category.
+     * Sets the address.
      *
-     * @param category the category
+     * @param address the address
      */
-    void setCategory(String category);    
+    void setAddress(String address);    
     /**
-     * Gets the description.
+     * Gets the email.
      *
-     * @return the description
+     * @return the email
      */
-    String getDescription();
+    String getEmail();
 
     /**
-     * Sets the description.
+     * Sets the email.
      *
-     * @param description the description
+     * @param email the email
      */
-    void setDescription(String description);    
+    void setEmail(String email);    
+    /**
+     * Gets the fax.
+     *
+     * @return the fax
+     */
+    String getFax();
+
+    /**
+     * Sets the fax.
+     *
+     * @param fax the fax
+     */
+    void setFax(String fax);    
     /**
      * Gets the id.
      *
@@ -130,44 +141,55 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
-     * Gets the value.
+     * Gets the phone.
      *
-     * @return the value
+     * @return the phone
      */
-    String getValue();
+    String getPhone();
 
     /**
-     * Sets the value.
+     * Sets the phone.
      *
-     * @param value the value
+     * @param phone the phone
      */
-    void setValue(String value);
+    void setPhone(String phone);    
     /**
-     * Gets the associations.
+     * Gets the tollFreePhone.
      *
-     * @return the associations
+     * @return the tollFreePhone
      */
-    java.util.Collection getAssociations();
+    String getTollFreePhone();
 
     /**
-     * Sets the associations.
+     * Sets the tollFreePhone.
      *
-     * @param associations the associations
+     * @param tollFreePhone the tollFreePhone
      */
-    void setAssociations(java.util.Collection associations);
+    void setTollFreePhone(String tollFreePhone);    
+    /**
+     * Gets the URI.
+     *
+     * @return the URI
+     */
+    String getURI();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the URI.
      *
-     * @return the ontologyReference
+     * @param URI the URI
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setURI(String URI);
+    /**
+     * Gets the roles.
+     *
+     * @return the roles
+     */
+    java.util.Collection getRoles();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the roles.
      *
-     * @param ontologyReference the ontologyReference
+     * @param roles the roles
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setRoles(java.util.Collection roles);
 }

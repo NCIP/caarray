@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.AuditAndSecurity.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,137 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * A person for which the attributes are self describing.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class PersonImpl 
+  extends gov.nih.nci.mageom.domain.AuditAndSecurity.impl.ContactImpl
+  implements gov.nih.nci.mageom.domain.AuditAndSecurity.Person, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The firstName String.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private String firstName;
 
     /**
-     * Sets the description.
+     * Gets the firstName.
      *
-     * @param description the description
+     * @return the firstName
      */
-    void setDescription(String description);    
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    java.lang.Long getId();
+    public String getFirstName() {
+        return firstName;
+    }
 
     /**
-     * Sets the id.
+     * Sets the firstName.
      *
-     * @param id the id
+     * @param firstNameVal the firstName
      */
-    void setId(java.lang.Long id);    
+    public void setFirstName(final String firstNameVal) {
+        this.firstName = firstNameVal;
+    }
     /**
-     * Gets the value.
-     *
-     * @return the value
+     * The lastName String.
      */
-    String getValue();
+    private String lastName;
 
     /**
-     * Sets the value.
+     * Gets the lastName.
      *
-     * @param value the value
+     * @return the lastName
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public String getLastName() {
+        return lastName;
+    }
 
     /**
-     * Sets the associations.
+     * Sets the lastName.
      *
-     * @param associations the associations
+     * @param lastNameVal the lastName
      */
-    void setAssociations(java.util.Collection associations);
+    public void setLastName(final String lastNameVal) {
+        this.lastName = lastNameVal;
+    }
+    /**
+     * The midInitials String.
+     */
+    private String midInitials;
 
     /**
-     * Gets the ontologyReference.
+     * Gets the midInitials.
      *
-     * @return the ontologyReference
+     * @return the midInitials
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public String getMidInitials() {
+        return midInitials;
+    }
 
     /**
-     * Sets the ontologyReference.
+     * Sets the midInitials.
      *
-     * @param ontologyReference the ontologyReference
+     * @param midInitialsVal the midInitials
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public void setMidInitials(final String midInitialsVal) {
+        this.midInitials = midInitialsVal;
+    }
+
+    /**
+     * The affiliation gov.nih.nci.mageom.domain.AuditAndSecurity.Organization.
+     */
+    private gov.nih.nci.mageom.domain.AuditAndSecurity.Organization affiliation;
+
+    /**
+     * Gets the affiliation.
+     *
+     * @return the affiliation
+     */
+    public gov.nih.nci.mageom.domain.AuditAndSecurity.Organization getAffiliation() {
+        return affiliation;    
+    }
+
+    /**
+     * Sets the affiliation.
+     *
+     * @param affiliationVal the affiliation
+     */
+    public void setAffiliation(final 
+      gov.nih.nci.mageom.domain.AuditAndSecurity.Organization affiliationVal) {
+        this.affiliation = affiliationVal;
+    }
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.AuditAndSecurity.Person) {
+            final gov.nih.nci.mageom.domain.AuditAndSecurity.Person castObject =
+                (gov.nih.nci.mageom.domain.AuditAndSecurity.Person) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

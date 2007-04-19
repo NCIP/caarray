@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioSequence;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,24 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * Represents, in general, what would be a GenBank Feature Table annotation for a sequence. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public interface SeqFeature  extends gov.nih.nci.mageom.domain.Describable  {    
     /**
-     * Gets the category.
+     * Gets the basis.
      *
-     * @return the category
+     * @return the basis
      */
-    String getCategory();
+    String getBasis();
 
     /**
-     * Sets the category.
+     * Sets the basis.
      *
-     * @param category the category
+     * @param basis the basis
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+    void setBasis(String basis);    
     /**
      * Gets the id.
      *
@@ -128,46 +114,18 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
+    void setId(java.lang.Long id);
     /**
-     * Gets the value.
+     * Gets the regions.
      *
-     * @return the value
+     * @return the regions
      */
-    String getValue();
+    java.util.Collection getRegions();
 
     /**
-     * Sets the value.
+     * Sets the regions.
      *
-     * @param value the value
+     * @param regions the regions
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
-
-    /**
-     * Sets the associations.
-     *
-     * @param associations the associations
-     */
-    void setAssociations(java.util.Collection associations);
-
-    /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
-     */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setRegions(java.util.Collection regions);
 }

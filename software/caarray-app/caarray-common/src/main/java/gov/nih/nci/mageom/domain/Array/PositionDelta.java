@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Array;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,38 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * The delta the feature was actually printed on the array from the position specified for the feature 
+   * in the array design. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public interface PositionDelta  extends gov.nih.nci.mageom.domain.Extendable  {    
     /**
-     * Gets the category.
+     * Gets the deltaX.
      *
-     * @return the category
+     * @return the deltaX
      */
-    String getCategory();
+    java.lang.Float getDeltaX();
 
     /**
-     * Sets the category.
+     * Sets the deltaX.
      *
-     * @param category the category
+     * @param deltaX the deltaX
      */
-    void setCategory(String category);    
+    void setDeltaX(java.lang.Float deltaX);    
     /**
-     * Gets the description.
+     * Gets the deltaY.
      *
-     * @return the description
+     * @return the deltaY
      */
-    String getDescription();
+    java.lang.Float getDeltaY();
 
     /**
-     * Sets the description.
+     * Sets the deltaY.
      *
-     * @param description the description
+     * @param deltaY the deltaY
      */
-    void setDescription(String description);    
+    void setDeltaY(java.lang.Float deltaY);    
     /**
      * Gets the id.
      *
@@ -128,46 +128,20 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    void setId(java.lang.Long id);
 
     /**
-     * Sets the value.
+     * Gets the distanceUnit.
      *
-     * @param value the value
+     * @return the distanceUnit
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    gov.nih.nci.mageom.domain.Measurement.DistanceUnit getDistanceUnit();
 
     /**
-     * Sets the associations.
+     * Sets the distanceUnit.
      *
-     * @param associations the associations
+     * @param distanceUnit the distanceUnit
      */
-    void setAssociations(java.util.Collection associations);
-
-    /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
-     */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setDistanceUnit(
+      gov.nih.nci.mageom.domain.Measurement.DistanceUnit distanceUnit);
 }

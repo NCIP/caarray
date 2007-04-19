@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.QuantitationType.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,210 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * A method for calculating a single datum of the matrix (e.g. raw intensity, background, error). 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public abstract class QuantitationTypeImpl 
+  extends gov.nih.nci.mageom.domain.impl.IdentifiableImpl
+  implements gov.nih.nci.mageom.domain.QuantitationType.QuantitationType, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The id java.lang.Long.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Long id;
 
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
     /**
-     * Gets the value.
-     *
-     * @return the value
+     * The isBackground java.lang.Boolean.
      */
-    String getValue();
+    private java.lang.Boolean isBackground;
 
     /**
-     * Sets the value.
+     * Gets the isBackground.
      *
-     * @param value the value
+     * @return the isBackground
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    public java.lang.Boolean getIsBackground() {
+        return isBackground;
+    }
 
     /**
-     * Sets the associations.
+     * Sets the isBackground.
      *
-     * @param associations the associations
+     * @param isBackgroundVal the isBackground
      */
-    void setAssociations(java.util.Collection associations);
+    public void setIsBackground(final java.lang.Boolean isBackgroundVal) {
+        this.isBackground = isBackgroundVal;
+    }
 
     /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
+     * The confidenceIndicators set.
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    private java.util.Collection confidenceIndicators = new java.util.HashSet();
 
     /**
-     * Sets the ontologyReference.
+     * Gets the confidenceIndicators.
      *
-     * @param ontologyReference the ontologyReference
+     * @return the confidenceIndicators
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    public java.util.Collection getConfidenceIndicators() {
+        return confidenceIndicators;
+    }
+
+    /**
+     * Sets the confidenceIndicators.
+     *
+     * @param confidenceIndicatorsVal the confidenceIndicators
+     */
+    public void setConfidenceIndicators(final java.util.Collection confidenceIndicatorsVal) {
+        this.confidenceIndicators = confidenceIndicatorsVal;
+    }    
+
+    /**
+     * The channel gov.nih.nci.mageom.domain.BioAssay.Channel.
+     */
+    private gov.nih.nci.mageom.domain.BioAssay.Channel channel;
+
+    /**
+     * Gets the channel.
+     *
+     * @return the channel
+     */
+    public gov.nih.nci.mageom.domain.BioAssay.Channel getChannel() {
+        return channel;    
+    }
+
+    /**
+     * Sets the channel.
+     *
+     * @param channelVal the channel
+     */
+    public void setChannel(final 
+      gov.nih.nci.mageom.domain.BioAssay.Channel channelVal) {
+        this.channel = channelVal;
+    }
+
+    /**
+     * The dataType gov.nih.nci.mageom.domain.Description.OntologyEntry.
+     */
+    private gov.nih.nci.mageom.domain.Description.OntologyEntry dataType;
+
+    /**
+     * Gets the dataType.
+     *
+     * @return the dataType
+     */
+    public gov.nih.nci.mageom.domain.Description.OntologyEntry getDataType() {
+        return dataType;    
+    }
+
+    /**
+     * Sets the dataType.
+     *
+     * @param dataTypeVal the dataType
+     */
+    public void setDataType(final 
+      gov.nih.nci.mageom.domain.Description.OntologyEntry dataTypeVal) {
+        this.dataType = dataTypeVal;
+    }
+
+    /**
+     * The quantitationTypeMaps set.
+     */
+    private java.util.Collection quantitationTypeMaps = new java.util.HashSet();
+
+    /**
+     * Gets the quantitationTypeMaps.
+     *
+     * @return the quantitationTypeMaps
+     */
+    public java.util.Collection getQuantitationTypeMaps() {
+        return quantitationTypeMaps;
+    }
+
+    /**
+     * Sets the quantitationTypeMaps.
+     *
+     * @param quantitationTypeMapsVal the quantitationTypeMaps
+     */
+    public void setQuantitationTypeMaps(final java.util.Collection quantitationTypeMapsVal) {
+        this.quantitationTypeMaps = quantitationTypeMapsVal;
+    }    
+
+    /**
+     * The scale gov.nih.nci.mageom.domain.Description.OntologyEntry.
+     */
+    private gov.nih.nci.mageom.domain.Description.OntologyEntry scale;
+
+    /**
+     * Gets the scale.
+     *
+     * @return the scale
+     */
+    public gov.nih.nci.mageom.domain.Description.OntologyEntry getScale() {
+        return scale;    
+    }
+
+    /**
+     * Sets the scale.
+     *
+     * @param scaleVal the scale
+     */
+    public void setScale(final 
+      gov.nih.nci.mageom.domain.Description.OntologyEntry scaleVal) {
+        this.scale = scaleVal;
+    }
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.QuantitationType.QuantitationType) {
+            final gov.nih.nci.mageom.domain.QuantitationType.QuantitationType castObject =
+                (gov.nih.nci.mageom.domain.QuantitationType.QuantitationType) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

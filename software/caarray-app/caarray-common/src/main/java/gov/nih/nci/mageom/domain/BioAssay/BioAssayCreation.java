@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioAssay;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,11 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * The process by which an array and one or more biomaterials are combined to create a bioAssayCreation. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface BioAssayCreation  extends gov.nih.nci.mageom.domain.BioEvent.BioEvent  {    
     /**
      * Gets the id.
      *
@@ -128,46 +101,48 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
+    void setId(java.lang.Long id);
     /**
-     * Gets the value.
+     * Gets the sourceBioMaterialMeasurements.
      *
-     * @return the value
+     * @return the sourceBioMaterialMeasurements
      */
-    String getValue();
+    java.util.Collection getSourceBioMaterialMeasurements();
 
     /**
-     * Sets the value.
+     * Sets the sourceBioMaterialMeasurements.
      *
-     * @param value the value
+     * @param sourceBioMaterialMeasurements the sourceBioMaterialMeasurements
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    void setSourceBioMaterialMeasurements(java.util.Collection sourceBioMaterialMeasurements);
 
     /**
-     * Sets the associations.
+     * Gets the array.
      *
-     * @param associations the associations
+     * @return the array
      */
-    void setAssociations(java.util.Collection associations);
+    gov.nih.nci.mageom.domain.Array.Array getArray();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the array.
      *
-     * @return the ontologyReference
+     * @param array the array
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setArray(
+      gov.nih.nci.mageom.domain.Array.Array array);
 
     /**
-     * Sets the ontologyReference.
+     * Gets the physicalBioAssayTarget.
      *
-     * @param ontologyReference the ontologyReference
+     * @return the physicalBioAssayTarget
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    gov.nih.nci.mageom.domain.BioAssay.PhysicalBioAssay getPhysicalBioAssayTarget();
+
+    /**
+     * Sets the physicalBioAssayTarget.
+     *
+     * @param physicalBioAssayTarget the physicalBioAssayTarget
+     */
+    void setPhysicalBioAssayTarget(
+      gov.nih.nci.mageom.domain.BioAssay.PhysicalBioAssay physicalBioAssayTarget);
 }

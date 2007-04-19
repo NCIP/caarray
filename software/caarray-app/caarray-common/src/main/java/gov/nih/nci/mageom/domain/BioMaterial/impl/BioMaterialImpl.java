@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.BioMaterial.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,165 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * BioMaterial is an abstract class that represents the important substances such as cells, tissues, 
+   * DNA, proteins, etc... Biomaterials can be related to other biomaterial through a directed acyclic 
+   * graph (represented by treatment(s)). 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public abstract class BioMaterialImpl 
+  extends gov.nih.nci.mageom.domain.impl.IdentifiableImpl
+  implements gov.nih.nci.mageom.domain.BioMaterial.BioMaterial, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The id java.lang.Long.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Long id;
 
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
 
     /**
-     * Sets the value.
-     *
-     * @param value the value
+     * The treatments set.
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    private java.util.Collection treatments = new java.util.HashSet();
 
     /**
-     * Sets the associations.
+     * Gets the treatments.
      *
-     * @param associations the associations
+     * @return the treatments
      */
-    void setAssociations(java.util.Collection associations);
+    public java.util.Collection getTreatments() {
+        return treatments;
+    }
 
     /**
-     * Gets the ontologyReference.
+     * Sets the treatments.
      *
-     * @return the ontologyReference
+     * @param treatmentsVal the treatments
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public void setTreatments(final java.util.Collection treatmentsVal) {
+        this.treatments = treatmentsVal;
+    }    
 
     /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
+     * The characteristics set.
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    private java.util.Collection characteristics = new java.util.HashSet();
+
+    /**
+     * Gets the characteristics.
+     *
+     * @return the characteristics
+     */
+    public java.util.Collection getCharacteristics() {
+        return characteristics;
+    }
+
+    /**
+     * Sets the characteristics.
+     *
+     * @param characteristicsVal the characteristics
+     */
+    public void setCharacteristics(final java.util.Collection characteristicsVal) {
+        this.characteristics = characteristicsVal;
+    }    
+
+    /**
+     * The qualityControlStatistics set.
+     */
+    private java.util.Collection qualityControlStatistics = new java.util.HashSet();
+
+    /**
+     * Gets the qualityControlStatistics.
+     *
+     * @return the qualityControlStatistics
+     */
+    public java.util.Collection getQualityControlStatistics() {
+        return qualityControlStatistics;
+    }
+
+    /**
+     * Sets the qualityControlStatistics.
+     *
+     * @param qualityControlStatisticsVal the qualityControlStatistics
+     */
+    public void setQualityControlStatistics(final java.util.Collection qualityControlStatisticsVal) {
+        this.qualityControlStatistics = qualityControlStatisticsVal;
+    }    
+
+    /**
+     * The materialType gov.nih.nci.mageom.domain.Description.OntologyEntry.
+     */
+    private gov.nih.nci.mageom.domain.Description.OntologyEntry materialType;
+
+    /**
+     * Gets the materialType.
+     *
+     * @return the materialType
+     */
+    public gov.nih.nci.mageom.domain.Description.OntologyEntry getMaterialType() {
+        return materialType;    
+    }
+
+    /**
+     * Sets the materialType.
+     *
+     * @param materialTypeVal the materialType
+     */
+    public void setMaterialType(final 
+      gov.nih.nci.mageom.domain.Description.OntologyEntry materialTypeVal) {
+        this.materialType = materialTypeVal;
+    }
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.BioMaterial.BioMaterial) {
+            final gov.nih.nci.mageom.domain.BioMaterial.BioMaterial castObject =
+                (gov.nih.nci.mageom.domain.BioMaterial.BioMaterial) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

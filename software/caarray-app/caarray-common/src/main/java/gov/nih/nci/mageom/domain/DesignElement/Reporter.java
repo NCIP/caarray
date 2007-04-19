@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.DesignElement;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,13 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * A Design Element that represents some biological material (clone, oligo, etc.) on an array which 
+   * will report on some biosequence or biosequences. The derived data from the measured data of its Features 
+   * represents the presence or absence of the biosequenc 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface Reporter  extends gov.nih.nci.mageom.domain.DesignElement.DesignElement  {    
     /**
      * Gets the id.
      *
@@ -128,46 +103,59 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    void setId(java.lang.Long id);
 
     /**
-     * Sets the value.
+     * Gets the warningType.
      *
-     * @param value the value
+     * @return the warningType
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    gov.nih.nci.mageom.domain.Description.OntologyEntry getWarningType();
 
     /**
-     * Sets the associations.
+     * Sets the warningType.
      *
-     * @param associations the associations
+     * @param warningType the warningType
      */
-    void setAssociations(java.util.Collection associations);
+    void setWarningType(
+      gov.nih.nci.mageom.domain.Description.OntologyEntry warningType);
+    /**
+     * Gets the failTypes.
+     *
+     * @return the failTypes
+     */
+    java.util.Collection getFailTypes();
 
     /**
-     * Gets the ontologyReference.
+     * Sets the failTypes.
      *
-     * @return the ontologyReference
+     * @param failTypes the failTypes
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    void setFailTypes(java.util.Collection failTypes);
+    /**
+     * Gets the immobilizedCharacteristics.
+     *
+     * @return the immobilizedCharacteristics
+     */
+    java.util.Collection getImmobilizedCharacteristics();
 
     /**
-     * Sets the ontologyReference.
+     * Sets the immobilizedCharacteristics.
      *
-     * @param ontologyReference the ontologyReference
+     * @param immobilizedCharacteristics the immobilizedCharacteristics
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setImmobilizedCharacteristics(java.util.Collection immobilizedCharacteristics);
+    /**
+     * Gets the featureReporterMaps.
+     *
+     * @return the featureReporterMaps
+     */
+    java.util.Collection getFeatureReporterMaps();
+
+    /**
+     * Sets the featureReporterMaps.
+     *
+     * @param featureReporterMaps the featureReporterMaps
+     */
+    void setFeatureReporterMaps(java.util.Collection featureReporterMaps);
 }

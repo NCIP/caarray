@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.AuditAndSecurity;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,36 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * Tracks information on the contact that creates or modifies an object.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public interface Audit  extends gov.nih.nci.mageom.domain.Describable  {    
     /**
-     * Gets the category.
+     * Gets the action.
      *
-     * @return the category
+     * @return the action
      */
-    String getCategory();
+    String getAction();
 
     /**
-     * Sets the category.
+     * Sets the action.
      *
-     * @param category the category
+     * @param action the action
      */
-    void setCategory(String category);    
+    void setAction(String action);    
     /**
-     * Gets the description.
+     * Gets the date.
      *
-     * @return the description
+     * @return the date
      */
-    String getDescription();
+    java.util.Date getDate();
 
     /**
-     * Sets the description.
+     * Sets the date.
      *
-     * @param description the description
+     * @param date the date
      */
-    void setDescription(String description);    
+    void setDate(java.util.Date date);    
     /**
      * Gets the id.
      *
@@ -128,46 +126,20 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    void setId(java.lang.Long id);
 
     /**
-     * Sets the value.
+     * Gets the performer.
      *
-     * @param value the value
+     * @return the performer
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    gov.nih.nci.mageom.domain.AuditAndSecurity.Contact getPerformer();
 
     /**
-     * Sets the associations.
+     * Sets the performer.
      *
-     * @param associations the associations
+     * @param performer the performer
      */
-    void setAssociations(java.util.Collection associations);
-
-    /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
-     */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setPerformer(
+      gov.nih.nci.mageom.domain.AuditAndSecurity.Contact performer);
 }

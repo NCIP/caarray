@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.DesignElement.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,140 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * A collection of Reporter or CompositeSequence Design Elements, annotated through the association 
+   * to BioSequence. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public class CompositeSequenceImpl 
+  extends gov.nih.nci.mageom.domain.DesignElement.impl.DesignElementImpl
+  implements gov.nih.nci.mageom.domain.DesignElement.CompositeSequence, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The id java.lang.Long.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Long id;
 
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
 
     /**
-     * Sets the value.
-     *
-     * @param value the value
+     * The reporterCompositeMaps set.
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    private java.util.Collection reporterCompositeMaps = new java.util.HashSet();
 
     /**
-     * Sets the associations.
+     * Gets the reporterCompositeMaps.
      *
-     * @param associations the associations
+     * @return the reporterCompositeMaps
      */
-    void setAssociations(java.util.Collection associations);
+    public java.util.Collection getReporterCompositeMaps() {
+        return reporterCompositeMaps;
+    }
 
     /**
-     * Gets the ontologyReference.
+     * Sets the reporterCompositeMaps.
      *
-     * @return the ontologyReference
+     * @param reporterCompositeMapsVal the reporterCompositeMaps
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public void setReporterCompositeMaps(final java.util.Collection reporterCompositeMapsVal) {
+        this.reporterCompositeMaps = reporterCompositeMapsVal;
+    }    
 
     /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
+     * The compositeCompositeMaps set.
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    private java.util.Collection compositeCompositeMaps = new java.util.HashSet();
+
+    /**
+     * Gets the compositeCompositeMaps.
+     *
+     * @return the compositeCompositeMaps
+     */
+    public java.util.Collection getCompositeCompositeMaps() {
+        return compositeCompositeMaps;
+    }
+
+    /**
+     * Sets the compositeCompositeMaps.
+     *
+     * @param compositeCompositeMapsVal the compositeCompositeMaps
+     */
+    public void setCompositeCompositeMaps(final java.util.Collection compositeCompositeMapsVal) {
+        this.compositeCompositeMaps = compositeCompositeMapsVal;
+    }    
+
+    /**
+     * The biologicalCharacteristics set.
+     */
+    private java.util.Collection biologicalCharacteristics = new java.util.HashSet();
+
+    /**
+     * Gets the biologicalCharacteristics.
+     *
+     * @return the biologicalCharacteristics
+     */
+    public java.util.Collection getBiologicalCharacteristics() {
+        return biologicalCharacteristics;
+    }
+
+    /**
+     * Sets the biologicalCharacteristics.
+     *
+     * @param biologicalCharacteristicsVal the biologicalCharacteristics
+     */
+    public void setBiologicalCharacteristics(final java.util.Collection biologicalCharacteristicsVal) {
+        this.biologicalCharacteristics = biologicalCharacteristicsVal;
+    }    
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.DesignElement.CompositeSequence) {
+            final gov.nih.nci.mageom.domain.DesignElement.CompositeSequence castObject =
+                (gov.nih.nci.mageom.domain.DesignElement.CompositeSequence) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }

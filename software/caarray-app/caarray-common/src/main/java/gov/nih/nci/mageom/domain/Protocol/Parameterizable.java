@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Protocol;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,11 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * The Parameterizable interface encapsulates the association of Parameters with ParameterValues. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    String getCategory();
-
-    /**
-     * Sets the category.
-     *
-     * @param category the category
-     */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
+public interface Parameterizable  extends gov.nih.nci.mageom.domain.Identifiable  {    
     /**
      * Gets the id.
      *
@@ -130,44 +103,29 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      */
     void setId(java.lang.Long id);    
     /**
-     * Gets the value.
+     * Gets the URI.
      *
-     * @return the value
+     * @return the URI
      */
-    String getValue();
+    String getURI();
 
     /**
-     * Sets the value.
+     * Sets the URI.
      *
-     * @param value the value
+     * @param URI the URI
      */
-    void setValue(String value);
+    void setURI(String URI);
     /**
-     * Gets the associations.
+     * Gets the parameterTypes.
      *
-     * @return the associations
+     * @return the parameterTypes
      */
-    java.util.Collection getAssociations();
+    java.util.Collection getParameterTypes();
 
     /**
-     * Sets the associations.
+     * Sets the parameterTypes.
      *
-     * @param associations the associations
+     * @param parameterTypes the parameterTypes
      */
-    void setAssociations(java.util.Collection associations);
-
-    /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
-     */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setParameterTypes(java.util.Collection parameterTypes);
 }

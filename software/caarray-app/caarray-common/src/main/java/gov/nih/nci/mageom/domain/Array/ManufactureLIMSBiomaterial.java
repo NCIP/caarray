@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.Array;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,38 +84,49 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
-   * 
+   * Stores the location from which a biomaterial was obtained.
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public interface ManufactureLIMSBiomaterial  extends gov.nih.nci.mageom.domain.Array.ManufactureLIMS  {    
     /**
-     * Gets the category.
+     * Gets the bioMaterialPlateCol.
      *
-     * @return the category
+     * @return the bioMaterialPlateCol
      */
-    String getCategory();
+    String getBioMaterialPlateCol();
 
     /**
-     * Sets the category.
+     * Sets the bioMaterialPlateCol.
      *
-     * @param category the category
+     * @param bioMaterialPlateCol the bioMaterialPlateCol
      */
-    void setCategory(String category);    
+    void setBioMaterialPlateCol(String bioMaterialPlateCol);    
     /**
-     * Gets the description.
+     * Gets the bioMaterialPlateIdentifier.
      *
-     * @return the description
+     * @return the bioMaterialPlateIdentifier
      */
-    String getDescription();
+    String getBioMaterialPlateIdentifier();
 
     /**
-     * Sets the description.
+     * Sets the bioMaterialPlateIdentifier.
      *
-     * @param description the description
+     * @param bioMaterialPlateIdentifier the bioMaterialPlateIdentifier
      */
-    void setDescription(String description);    
+    void setBioMaterialPlateIdentifier(String bioMaterialPlateIdentifier);    
+    /**
+     * Gets the bioMaterialPlateRow.
+     *
+     * @return the bioMaterialPlateRow
+     */
+    String getBioMaterialPlateRow();
+
+    /**
+     * Sets the bioMaterialPlateRow.
+     *
+     * @param bioMaterialPlateRow the bioMaterialPlateRow
+     */
+    void setBioMaterialPlateRow(String bioMaterialPlateRow);    
     /**
      * Gets the id.
      *
@@ -128,46 +139,5 @@ public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {
      *
      * @param id the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
-
-    /**
-     * Sets the value.
-     *
-     * @param value the value
-     */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
-
-    /**
-     * Sets the associations.
-     *
-     * @param associations the associations
-     */
-    void setAssociations(java.util.Collection associations);
-
-    /**
-     * Gets the ontologyReference.
-     *
-     * @return the ontologyReference
-     */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
-
-    /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
-     */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    void setId(java.lang.Long id);
 }

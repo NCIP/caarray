@@ -1,4 +1,4 @@
-package gov.nih.nci.mageom.domain.Description;
+package gov.nih.nci.mageom.domain.ArrayDesign.impl;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -84,90 +84,118 @@ package gov.nih.nci.mageom.domain.Description;
  */
  
   /**
-   * A single entry from an ontology or a controlled vocabulary. For instance, category could be 'species 
-   * name', value could be 'homo sapiens' and ontology would be taxonomy database, NCBI. 
+   * The DesignElementGroup holds information on either features, reporters, or compositeSequences, 
+   * particularly that information that is common between all of the DesignElements contained. 
    * 
    */
 
-public interface OntologyEntry  extends gov.nih.nci.mageom.domain.Extendable  {    
+public abstract class DesignElementGroupImpl 
+  extends gov.nih.nci.mageom.domain.impl.IdentifiableImpl
+  implements gov.nih.nci.mageom.domain.ArrayDesign.DesignElementGroup, java.io.Serializable {
     /**
-     * Gets the category.
-     *
-     * @return the category
+     * The serial version UID for serialization.
      */
-    String getCategory();
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Sets the category.
-     *
-     * @param category the category
+     * The id java.lang.Long.
      */
-    void setCategory(String category);    
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    String getDescription();
+    private java.lang.Long id;
 
-    /**
-     * Sets the description.
-     *
-     * @param description the description
-     */
-    void setDescription(String description);    
     /**
      * Gets the id.
      *
      * @return the id
      */
-    java.lang.Long getId();
+    public java.lang.Long getId() {
+        return id;
+    }
 
     /**
      * Sets the id.
      *
-     * @param id the id
+     * @param idVal the id
      */
-    void setId(java.lang.Long id);    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    String getValue();
+    public void setId(final java.lang.Long idVal) {
+        this.id = idVal;
+    }
 
     /**
-     * Sets the value.
-     *
-     * @param value the value
+     * The types set.
      */
-    void setValue(String value);
-    /**
-     * Gets the associations.
-     *
-     * @return the associations
-     */
-    java.util.Collection getAssociations();
+    private java.util.Collection types = new java.util.HashSet();
 
     /**
-     * Sets the associations.
+     * Gets the types.
      *
-     * @param associations the associations
+     * @return the types
      */
-    void setAssociations(java.util.Collection associations);
+    public java.util.Collection getTypes() {
+        return types;
+    }
 
     /**
-     * Gets the ontologyReference.
+     * Sets the types.
      *
-     * @return the ontologyReference
+     * @param typesVal the types
      */
-    gov.nih.nci.mageom.domain.Description.DatabaseEntry getOntologyReference();
+    public void setTypes(final java.util.Collection typesVal) {
+        this.types = typesVal;
+    }    
 
     /**
-     * Sets the ontologyReference.
-     *
-     * @param ontologyReference the ontologyReference
+     * The species gov.nih.nci.mageom.domain.Description.OntologyEntry.
      */
-    void setOntologyReference(
-      gov.nih.nci.mageom.domain.Description.DatabaseEntry ontologyReference);
+    private gov.nih.nci.mageom.domain.Description.OntologyEntry species;
+
+    /**
+     * Gets the species.
+     *
+     * @return the species
+     */
+    public gov.nih.nci.mageom.domain.Description.OntologyEntry getSpecies() {
+        return species;    
+    }
+
+    /**
+     * Sets the species.
+     *
+     * @param speciesVal the species
+     */
+    public void setSpecies(final 
+      gov.nih.nci.mageom.domain.Description.OntologyEntry speciesVal) {
+        this.species = speciesVal;
+    }
+
+    /**
+     * Checks if given object is equal to this object.
+     *
+     * @param obj the object to compare to this object
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(final Object obj) {
+        boolean theyAreEqual = false;
+        if (obj instanceof gov.nih.nci.mageom.domain.ArrayDesign.DesignElementGroup) {
+            final gov.nih.nci.mageom.domain.ArrayDesign.DesignElementGroup castObject =
+                (gov.nih.nci.mageom.domain.ArrayDesign.DesignElementGroup) obj;                  
+            java.lang.Long thisId = getId();        
+            if (thisId != null && thisId.equals(castObject.getId())) {
+                theyAreEqual = true;
+            }
+            }
+            return theyAreEqual;
+        }
+
+    /**
+     * Returns the hashcode for the object.
+     *
+     * @return the int hashcode
+     */
+    public int hashCode() {
+        int theHashCode = 0;
+        if (getId() != null) {
+            theHashCode += getId().hashCode();
+        }
+        return theHashCode;
+    }
 }
