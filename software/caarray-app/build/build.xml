@@ -199,6 +199,9 @@
     <target name="check:checkstyle">
         <mkdir dir="${site.dir}" />
         <checkstyle config="${checkstyle.config}" failureProperty="checkstyle.failure" failOnViolation="false">
+            <classpath>
+                <pathelement location="${cacore32-client.jar}" />
+            </classpath>
             <formatter type="xml" tofile="${site.dir}/checkstyle.xml" />
             <fileset dir="${caarray-common.src.dir}" includes="**/*.java" />
             <fileset dir="${caarray-ejb.src.dir}" includes="**/*.java" />

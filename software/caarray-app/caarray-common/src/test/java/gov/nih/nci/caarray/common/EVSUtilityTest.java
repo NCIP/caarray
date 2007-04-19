@@ -65,7 +65,7 @@ import static org.junit.Assert.*;
  */
 public class EVSUtilityTest {
     /**
-     * various private uses
+     * various private uses.
      */
     private static final int NUMBER_THREE = 3;
     /**

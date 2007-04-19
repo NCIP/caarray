@@ -7,6 +7,8 @@
 	<classpathentry excluding="**" kind="src" output="caarray-ejb/src/main/resources" path="caarray-ejb/src/main/resources"/>
 	<classpathentry kind="src" path="caarray-war/src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/cacore32-client.jar"/>
+	<classpathentry kind="lib" path="lib/javaee.jar"/>
+	<classpathentry kind="lib" path="lib/junit-4.3.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
