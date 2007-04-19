@@ -95,7 +95,16 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Code for obtaining info from the EVS vocabulary.
+ * This class is responsible for brokering searches between the caArray
+ * Vocabulary Service and the caCore EVS.
+ *
+ * Where caArray uses termininology such as 'Category' and 'Term', EVS
+ * uses 'Concept', 'SuperConcept' and 'SubConcept'.
+ *
+ * Communication to the EVS API is done through the caCore-implemented
+ * Spring Http-Invoker.  We simply obtain a remote service object via the idiom:
+ * 'http://cabio.nci.nih.gov/cacore32/http/remoteService' and invoke calls
+ * on this object.
  *
  * @author John Pike
  *
@@ -107,6 +116,10 @@ public final class EVSUtility  {
      * to-do:  The URL must be externalized.  It will change with each release.
      */
     private static final String APP_SERVICE_URL = "http://cabio.nci.nih.gov/cacore32/http/remoteService";
+
+    /**
+     *This is used as a limiter to the number of EVS matches that we wish to obtain.
+     */
     private static final int MAX_NUM_RESULTS = 10;
 
     /**
@@ -138,6 +151,7 @@ public final class EVSUtility  {
             concept = getEVSConcept(conceptName, evs, allVocabs, appService);
 
             if (concept == null) {
+                throw new ApplicationException();
                 // throw new NoMatchingTermException();??
                 // return some error/empty list, etc??
             } else {
@@ -175,6 +189,7 @@ public final class EVSUtility  {
               concepts = getEVSConceptList(conceptName, evs, allVocabs, appService);
 
               if (concepts.isEmpty()) {
+                  throw new ApplicationException();
                 // throw new NoMatchingTermException();??
                 // return some error/empty list, etc??
             } else {
@@ -207,9 +222,9 @@ public final class EVSUtility  {
         for (Iterator<String> i = subConcepts.iterator(); i.hasNext();) {
             subConcept = i.next();
             Term newTerm = null;
-            // Term newTerm = new ClassThatImplementsTerm();
-            // newTerm.setName(subConcept);
-            // newTerm.setCategory(concept);
+          //  Term newTerm = new OntologyEntry();
+          //  newTerm.setValue(subConcept);
+          //  newTerm.setCategory(concept);
             terms.add(newTerm);
         }
     }
@@ -218,15 +233,15 @@ public final class EVSUtility  {
          * Given a concept name, searches all of the vocabularies and returns when it finds a matching concept in ANY
          * vocabulary.
          *
-         * @param conceptName               name to search
+         * @param conceptName               conceptname
          * @param evs                       instantiated EVSQuery object
          * @param vocabs                    list of Vocabulary objects
          * @param appService                instantiated ApplicationService handle
          * @return <code>DescLogicConcept</code>    an EVS concept object
-         * @throws Exception
+         * @throws ApplicationException     an exception
          */
     private DescLogicConcept getEVSConcept(final String conceptName, final EVSQuery evs, final List<Vocabulary> vocabs,
-            final ApplicationService appService) throws Exception {
+            final ApplicationService appService) throws ApplicationException {
 
         List<DescLogicConcept> concepts = new ArrayList<DescLogicConcept>();
         try {
@@ -240,7 +255,7 @@ public final class EVSUtility  {
                 }
             }
         } catch (ApplicationException e) {
-            throw new Exception(e);
+            throw e;
         }
         if (concepts.isEmpty()) {
             return null;
@@ -256,11 +271,11 @@ public final class EVSUtility  {
          * @param evs                       instantiated EVSQuery object
          * @param vocabs                    list of Vocabulary objects
          * @param appService                instantiated ApplicationService handle
-         * @return <code>List<DescLogicConcept></code>      list of EVS Concept objects
-         * @throws Exception
+         * @return <code>List&lt;DescLogicConcept&gt;</code>      list of EVS Concept objects
+         * @throws ApplicationException     an exception
          */
     private List<DescLogicConcept> getEVSConceptList(final String conceptName, final EVSQuery evs,
-            final List<Vocabulary> vocabs, final ApplicationService appService) throws Exception {
+            final List<Vocabulary> vocabs, final ApplicationService appService) throws ApplicationException {
 
         List<DescLogicConcept> concepts = new ArrayList<DescLogicConcept>();
 
@@ -271,7 +286,7 @@ public final class EVSUtility  {
                 concepts.addAll((ArrayList<DescLogicConcept>) appService.evsSearch(evs));
             }
         } catch (ApplicationException e) {
-            throw new Exception(e);
+            throw new ApplicationException(e);
         }
         return concepts;
     }
@@ -282,7 +297,7 @@ public final class EVSUtility  {
      * @param evs       instantiated EVSQuery object
      * @param appService       instantiated ApplicationService handle
      * @return          list of Vocabulary objects
-     * @throws ApplicationException
+     * @throws ApplicationException     an exception
      *
      */
     private List<Vocabulary> getVocabularyList(final EVSQuery evs, final ApplicationService appService)
