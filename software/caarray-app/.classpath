@@ -6,7 +6,6 @@
 	<classpathentry kind="src" path="caarray-ejb/src/test/java"/>
 	<classpathentry excluding="**" kind="src" output="caarray-ejb/src/main/resources" path="caarray-ejb/src/main/resources"/>
 	<classpathentry kind="src" path="caarray-war/src/main/java"/>
-	<classpathentry excluding="**" kind="src" output="caarray-war/src/main/resources" path="caarray-war/src/main/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
 	<classpathentry kind="output" path="target/classes"/>
