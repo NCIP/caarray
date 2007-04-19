@@ -66,10 +66,10 @@ import junit.framework.TestSuite;
  *
  */
 public class EVSUtilityTest extends TestCase {
-
-
-	String foo;
-
+    /**
+     * various private uses
+     */
+    private static final int NUMBER_THREE = 3;
     /**
      * Create the test case.
      *
@@ -87,7 +87,9 @@ public class EVSUtilityTest extends TestCase {
     }
 
 
-
+    /**
+    * Tests basic search in EVS.
+    */
     public final void testSearchEVS() {
         EVSUtility evs = new EVSUtility();
         List<Term> results = evs.getConcepts("ProtocolType");
@@ -99,21 +101,28 @@ public class EVSUtilityTest extends TestCase {
 
 
         assertTrue(!termNames.isEmpty());
-        assertTrue(termNames.size()==3);
+        assertTrue(termNames.size() == NUMBER_THREE);
         assertTrue(termNames.contains("DataTransformationProtocolType"));
         assertTrue(termNames.contains("ExperimentalProtocolType"));
         assertTrue(termNames.contains("HigherLevelAnalysisProtocolType"));
     }
 
-    public String getFoo() {
-        return this.foo;
+    /**
+     * Tests basic search in EVS, where search should return no results.
+     */
+    public final void testSearchEVSNoResults() {
+        EVSUtility evs = new EVSUtility();
+        List<Term> results = evs.getConcepts("Foo");
+        List<String> termNames = new ArrayList<String>();
+        for (Iterator<Term> i = results.iterator(); i.hasNext();) {
+            Term aTerm = i.next();
+            termNames.add(aTerm.getName());
+        }
+
+
+        assertTrue(termNames.isEmpty());
+
     }
-
-    public void setFoo(String foo) {
-        this.foo = foo;
-    }
-
-
 
 
 
