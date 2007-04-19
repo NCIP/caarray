@@ -57,15 +57,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
+import org.junit.Test;
+import static org.junit.Assert.*;
 /**
  * @author John Pike
  *
  */
-public class EVSUtilityTest extends TestCase {
+public class EVSUtilityTest {
     /**
      * various private uses
      */
@@ -73,24 +71,16 @@ public class EVSUtilityTest extends TestCase {
     /**
      * Create the test case.
      *
-     * @param testName name of the test case
+     *
      */
-    public EVSUtilityTest(final String testName) {
-        super(testName);
-    }
+    public EVSUtilityTest() {
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite() {
-        return new TestSuite(EVSUtilityTest.class);
     }
-
 
     /**
     * Tests basic search in EVS.
     */
-    public final void testSearchEVS() {
+    @Test public final void searchEVS() {
         EVSUtility evs = new EVSUtility();
         List<Term> results = evs.getConcepts("ProtocolType");
         List<String> termNames = new ArrayList<String>();
@@ -98,7 +88,6 @@ public class EVSUtilityTest extends TestCase {
             Term aTerm = i.next();
             termNames.add(aTerm.getName());
         }
-
 
         assertTrue(!termNames.isEmpty());
         assertTrue(termNames.size() == NUMBER_THREE);
@@ -110,17 +99,11 @@ public class EVSUtilityTest extends TestCase {
     /**
      * Tests basic search in EVS, where search should return no results.
      */
-    public final void testSearchEVSNoResults() {
+    @Test public final void searchEVSNoResults() {
         EVSUtility evs = new EVSUtility();
         List<Term> results = evs.getConcepts("Foo");
-        List<String> termNames = new ArrayList<String>();
-        for (Iterator<Term> i = results.iterator(); i.hasNext();) {
-            Term aTerm = i.next();
-            termNames.add(aTerm.getName());
-        }
 
-
-        assertTrue(termNames.isEmpty());
+        assertTrue(results.isEmpty());
 
     }
 
