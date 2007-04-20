@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.mageom.domain.BioAssay.impl">
+  <class name="BioAssayImpl" table="BIOASSAY" polymorphism="implicit">
+    <id name="id" column="ID" type="long">
+      <generator class="assigned"/>
+    </id>
+    <discriminator>
+      <column name="OJBCONCRETECLASS"/>
+    </discriminator>
+    <property name="identifier" column="IDENTIFIER" type="string" />
+    <property name="name" column="NAME" type="string" />
+    <set name="channels" table="BIOASSAYCHANNEL" lazy="true">
+      <key column="BIOASSAY_ID" />
+      <many-to-many class="ChannelImpl" column="CHANNEL_ID" />
+    </set>
+    <set name="bioAssayFactorValues" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.Experiment.impl.FactorValueImpl" />
+    </set>
+    <many-to-one name="security" column="DESC_SECURITY_ID" class="gov.nih.nci.mageom.domain.AuditAndSecurity.impl.SecurityImpl" />
+    <set name="propertySets" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.impl.NameValueTypeImpl" />
+    </set>
+    <subclass name="DerivedBioAssayImpl" discriminator-value="org.biomage.BioAssay.DerivedBioAssay">
+      <set name="derivedBioAssayData" table="DERIVEDBIOASSAYDATA" lazy="true">
+        <key column="BIOASSAY_ID" />
+        <many-to-many class="gov.nih.nci.mageom.domain.BioAssayData.impl.DerivedBioAssayDataImpl" column="BIOASSAY_DATA_ID" />
+      </set>
+      <set name="derivedBioAssayMap" lazy="true">
+        <key column="ID" />
+        <one-to-many class="gov.nih.nci.mageom.domain.BioAssayData.impl.BioAssayMapImpl" />
+      </set>
+      <many-to-one name="type" column="TYPE_ID" class="gov.nih.nci.mageom.domain.Description.impl.OntologyEntryImpl" />
+    </subclass>
+    <subclass name="MeasuredBioAssayImpl" discriminator-value="org.biomage.BioAssay.MeasuredBioAssay">
+      <set name="measuredBioAssayData" table="MEASUREDBIOASSAYDATA" lazy="true">
+        <key column="BIOASSAY_ID" />
+        <many-to-many class="gov.nih.nci.mageom.domain.BioAssayData.impl.MeasuredBioAssayDataImpl" column="BIOASSAY_DATA_ID" />
+      </set>
+      <many-to-one name="featureExtraction" column="FEATURE_EXTRACTION_ID" class="FeatureExtractionImpl" />
+    </subclass>
+    <subclass name="PhysicalBioAssayImpl" discriminator-value="org.biomage.BioAssay.PhysicalBioAssay">
+      <set name="bioAssayTreatments" lazy="true">
+        <key column="ID" />
+        <one-to-many class="BioAssayTreatmentImpl" />
+      </set>
+      <many-to-one name="bioAssayCreation" column="BIOASSAY_CREATION_ID" class="BioAssayCreationImpl" />
+      <set name="physicalBioAssayData" lazy="true">
+        <key column="ID" />
+        <one-to-many class="ImageImpl" />
+      </set>
+    </subclass>
+  </class>
+</hibernate-mapping>
+

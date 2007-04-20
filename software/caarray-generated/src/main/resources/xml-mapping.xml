@@ -1,0 +1,1002 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Object Mapping DTD Version 1.0//EN" "http://www.castor.org/mapping.dtd">
+
+<mapping>
+  <class name="gov.nih.nci.mageom.domain.NameValueType">
+    <map-to xml="NameValueType" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="name" type="string">
+      <bind-xml name="name" node="attribute" />
+    </field>
+    <field name="type" type="string">
+      <bind-xml name="type" node="attribute" />
+    </field>
+    <field name="value" type="string">
+      <bind-xml name="value" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="Extendable" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.DesignElementMapping">
+    <map-to xml="DesignElementMapping" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Measurement.Measurement">
+    <map-to xml="Measurement" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Measurement" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="kindCV" type="string">
+      <bind-xml name="kindCV" node="attribute" />
+    </field>
+    <field name="otherKind" type="string">
+      <bind-xml name="otherKind" node="attribute" />
+    </field>
+    <field name="type" type="string">
+      <bind-xml name="type" node="attribute" />
+    </field>
+    <field name="value" type="string">
+      <bind-xml name="value" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Describable" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="Describable" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Identifiable" extends="gov.nih.nci.mageom.domain.Describable">
+    <map-to xml="Identifiable" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain" />
+    <field name="identifier" type="string">
+      <bind-xml name="identifier" node="attribute" />
+    </field>
+    <field name="name" type="string">
+      <bind-xml name="name" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Array.PositionDelta" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="PositionDelta" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Array" />
+    <field name="deltaX" type="float">
+      <bind-xml name="deltaX" node="attribute" />
+    </field>
+    <field name="deltaY" type="float">
+      <bind-xml name="deltaY" node="attribute" />
+    </field>
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Array.ZoneDefect" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="ZoneDefect" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Array" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Array.ArrayManufacture" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="ArrayManufacture" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Array" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="manufacturingDate" type="string">
+      <bind-xml name="manufacturingDate" node="attribute" />
+    </field>
+    <field name="tolerance" type="float">
+      <bind-xml name="tolerance" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Array.ArrayManufactureDeviation" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="ArrayManufactureDeviation" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Array" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Array.Fiducial" extends="gov.nih.nci.mageom.domain.Describable">
+    <map-to xml="Fiducial" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Array" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Array.ManufactureLIMSBiomaterial" extends="gov.nih.nci.mageom.domain.Array.ManufactureLIMS">
+    <map-to xml="ManufactureLIMSBiomaterial" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Array" />
+    <field name="bioMaterialPlateCol" type="string">
+      <bind-xml name="bioMaterialPlateCol" node="attribute" />
+    </field>
+    <field name="bioMaterialPlateIdentifier" type="string">
+      <bind-xml name="bioMaterialPlateIdentifier" node="attribute" />
+    </field>
+    <field name="bioMaterialPlateRow" type="string">
+      <bind-xml name="bioMaterialPlateRow" node="attribute" />
+    </field>
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Array.ArrayGroup" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="ArrayGroup" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Array" />
+    <field name="arraySpacingX" type="float">
+      <bind-xml name="arraySpacingX" node="attribute" />
+    </field>
+    <field name="arraySpacingY" type="float">
+      <bind-xml name="arraySpacingY" node="attribute" />
+    </field>
+    <field name="barcode" type="string">
+      <bind-xml name="barcode" node="attribute" />
+    </field>
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="length" type="float">
+      <bind-xml name="length" node="attribute" />
+    </field>
+    <field name="numArrays" type="int">
+      <bind-xml name="numArrays" node="attribute" />
+    </field>
+    <field name="orientationMark" type="string">
+      <bind-xml name="orientationMark" node="attribute" />
+    </field>
+    <field name="orientationMarkPosition" type="string">
+      <bind-xml name="orientationMarkPosition" node="attribute" />
+    </field>
+    <field name="width" type="float">
+      <bind-xml name="width" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Array.Array" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="Array" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Array" />
+    <field name="arrayIdentifier" type="string">
+      <bind-xml name="arrayIdentifier" node="attribute" />
+    </field>
+    <field name="arrayXOrigin" type="float">
+      <bind-xml name="arrayXOrigin" node="attribute" />
+    </field>
+    <field name="arrayYOrigin" type="float">
+      <bind-xml name="arrayYOrigin" node="attribute" />
+    </field>
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="originRelativeTo" type="string">
+      <bind-xml name="originRelativeTo" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Array.ManufactureLIMS" extends="gov.nih.nci.mageom.domain.Describable">
+    <map-to xml="ManufactureLIMS" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Array" />
+    <field name="quality" type="string">
+      <bind-xml name="quality" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Array.FeatureDefect" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="FeatureDefect" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Array" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.ArrayDesign.ReporterGroup" extends="gov.nih.nci.mageom.domain.ArrayDesign.DesignElementGroup">
+    <map-to xml="ReporterGroup" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.ArrayDesign" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.ArrayDesign.ZoneLayout" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="ZoneLayout" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.ArrayDesign" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="numFeaturesPerCol" type="int">
+      <bind-xml name="numFeaturesPerCol" node="attribute" />
+    </field>
+    <field name="numFeaturesPerRow" type="int">
+      <bind-xml name="numFeaturesPerRow" node="attribute" />
+    </field>
+    <field name="spacingBetweenCols" type="float">
+      <bind-xml name="spacingBetweenCols" node="attribute" />
+    </field>
+    <field name="spacingBetweenRows" type="float">
+      <bind-xml name="spacingBetweenRows" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.ArrayDesign.ZoneGroup" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="ZoneGroup" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.ArrayDesign" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="spacingsBetweenZonesX" type="float">
+      <bind-xml name="spacingsBetweenZonesX" node="attribute" />
+    </field>
+    <field name="spacingsBetweenZonesY" type="float">
+      <bind-xml name="spacingsBetweenZonesY" node="attribute" />
+    </field>
+    <field name="zonesPerX" type="int">
+      <bind-xml name="zonesPerX" node="attribute" />
+    </field>
+    <field name="zonesPerY" type="int">
+      <bind-xml name="zonesPerY" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.ArrayDesign.DesignElementGroup" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="DesignElementGroup" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.ArrayDesign" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.ArrayDesign.FeatureGroup" extends="gov.nih.nci.mageom.domain.ArrayDesign.DesignElementGroup">
+    <map-to xml="FeatureGroup" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.ArrayDesign" />
+    <field name="featureHeight" type="float">
+      <bind-xml name="featureHeight" node="attribute" />
+    </field>
+    <field name="featureLength" type="float">
+      <bind-xml name="featureLength" node="attribute" />
+    </field>
+    <field name="featureWidth" type="float">
+      <bind-xml name="featureWidth" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.ArrayDesign.ArrayDesign" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="ArrayDesign" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.ArrayDesign" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="numberOfFeatures" type="int">
+      <bind-xml name="numberOfFeatures" node="attribute" />
+    </field>
+    <field name="version" type="string">
+      <bind-xml name="version" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.ArrayDesign.CompositeGroup" extends="gov.nih.nci.mageom.domain.ArrayDesign.DesignElementGroup">
+    <map-to xml="CompositeGroup" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.ArrayDesign" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.ArrayDesign.Zone" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="Zone" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.ArrayDesign" />
+    <field name="column" type="int">
+      <bind-xml name="column" node="attribute" />
+    </field>
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="lowerRightX" type="float">
+      <bind-xml name="lowerRightX" node="attribute" />
+    </field>
+    <field name="lowerRightY" type="float">
+      <bind-xml name="lowerRightY" node="attribute" />
+    </field>
+    <field name="row" type="int">
+      <bind-xml name="row" node="attribute" />
+    </field>
+    <field name="upperLeftX" type="float">
+      <bind-xml name="upperLeftX" node="attribute" />
+    </field>
+    <field name="upperLeftY" type="float">
+      <bind-xml name="upperLeftY" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.ArrayDesign.PhysicalArrayDesign" extends="gov.nih.nci.mageom.domain.ArrayDesign.ArrayDesign">
+    <map-to xml="PhysicalArrayDesign" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.ArrayDesign" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.AuditAndSecurity.SecurityGroup" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="SecurityGroup" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.AuditAndSecurity" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.AuditAndSecurity.Audit" extends="gov.nih.nci.mageom.domain.Describable">
+    <map-to xml="Audit" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.AuditAndSecurity" />
+    <field name="action" type="string">
+      <bind-xml name="action" node="attribute" />
+    </field>
+    <field name="date" type="date">
+      <bind-xml name="date" node="attribute" />
+    </field>
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.AuditAndSecurity.Person" extends="gov.nih.nci.mageom.domain.AuditAndSecurity.Contact">
+    <map-to xml="Person" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.AuditAndSecurity" />
+    <field name="firstName" type="string">
+      <bind-xml name="firstName" node="attribute" />
+    </field>
+    <field name="lastName" type="string">
+      <bind-xml name="lastName" node="attribute" />
+    </field>
+    <field name="midInitials" type="string">
+      <bind-xml name="midInitials" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.AuditAndSecurity.Organization" extends="gov.nih.nci.mageom.domain.AuditAndSecurity.Contact">
+    <map-to xml="Organization" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.AuditAndSecurity" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.AuditAndSecurity.Contact" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="Contact" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.AuditAndSecurity" />
+    <field name="address" type="string">
+      <bind-xml name="address" node="attribute" />
+    </field>
+    <field name="email" type="string">
+      <bind-xml name="email" node="attribute" />
+    </field>
+    <field name="fax" type="string">
+      <bind-xml name="fax" node="attribute" />
+    </field>
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="phone" type="string">
+      <bind-xml name="phone" node="attribute" />
+    </field>
+    <field name="tollFreePhone" type="string">
+      <bind-xml name="tollFreePhone" node="attribute" />
+    </field>
+    <field name="URI" type="string">
+      <bind-xml name="URI" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.AuditAndSecurity.Security" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="Security" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.AuditAndSecurity" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssay.BioAssay" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="BioAssay" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssay" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssay.DerivedBioAssay" extends="gov.nih.nci.mageom.domain.BioAssay.BioAssay">
+    <map-to xml="DerivedBioAssay" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssay" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssay.BioAssayTreatment" extends="gov.nih.nci.mageom.domain.BioEvent.BioEvent">
+    <map-to xml="BioAssayTreatment" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssay" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssay.PhysicalBioAssay" extends="gov.nih.nci.mageom.domain.BioAssay.BioAssay">
+    <map-to xml="PhysicalBioAssay" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssay" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssay.MeasuredBioAssay" extends="gov.nih.nci.mageom.domain.BioAssay.BioAssay">
+    <map-to xml="MeasuredBioAssay" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssay" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssay.FeatureExtraction" extends="gov.nih.nci.mageom.domain.BioEvent.BioEvent">
+    <map-to xml="FeatureExtraction" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssay" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssay.Channel" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="Channel" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssay" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssay.ImageAcquisition" extends="gov.nih.nci.mageom.domain.BioAssay.BioAssayTreatment">
+    <map-to xml="ImageAcquisition" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssay" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssay.BioAssayCreation" extends="gov.nih.nci.mageom.domain.BioEvent.BioEvent">
+    <map-to xml="BioAssayCreation" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssay" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssay.Image" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="Image" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssay" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="URI" type="string">
+      <bind-xml name="URI" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssay.Hybridization" extends="gov.nih.nci.mageom.domain.BioAssay.BioAssayCreation">
+    <map-to xml="Hybridization" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssay" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.DesignElementMap" extends="gov.nih.nci.mageom.domain.BioEvent.Map">
+    <map-to xml="DesignElementMap" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.BioDataCube" extends="gov.nih.nci.mageom.domain.BioAssayData.BioDataValues">
+    <map-to xml="BioDataCube" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+    <field name="cube" type="object[][][]">
+      <bind-xml name="cube" node="attribute" />
+    </field>
+    <field name="order" type="string">
+      <bind-xml name="order" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.FeatureDimension" extends="gov.nih.nci.mageom.domain.BioAssayData.DesignElementDimension">
+    <map-to xml="FeatureDimension" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.QuantitationTypeDimension" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="QuantitationTypeDimension" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.BioDataValues" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="BioDataValues" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.CompositeSequenceDimension" extends="gov.nih.nci.mageom.domain.BioAssayData.DesignElementDimension">
+    <map-to xml="CompositeSequenceDimension" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.MeasuredBioAssayData" extends="gov.nih.nci.mageom.domain.BioAssayData.BioAssayData">
+    <map-to xml="MeasuredBioAssayData" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.BioAssayDatum" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="BioAssayDatum" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="value" type="string">
+      <bind-xml name="value" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.QuantitationTypeMap" extends="gov.nih.nci.mageom.domain.BioEvent.Map">
+    <map-to xml="QuantitationTypeMap" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.DerivedBioAssayData" extends="gov.nih.nci.mageom.domain.BioAssayData.BioAssayData">
+    <map-to xml="DerivedBioAssayData" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.BioAssayData" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="BioAssayData" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.QuantitationTypeMapping" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="QuantitationTypeMapping" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.BioAssayDimension" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="BioAssayDimension" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.BioAssayMapping" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="BioAssayMapping" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.BioDataTuples" extends="gov.nih.nci.mageom.domain.BioAssayData.BioDataValues">
+    <map-to xml="BioDataTuples" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.ReporterDimension" extends="gov.nih.nci.mageom.domain.BioAssayData.DesignElementDimension">
+    <map-to xml="ReporterDimension" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.Transformation" extends="gov.nih.nci.mageom.domain.BioEvent.BioEvent">
+    <map-to xml="Transformation" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.DesignElementDimension" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="DesignElementDimension" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioAssayData.BioAssayMap" extends="gov.nih.nci.mageom.domain.BioEvent.Map">
+    <map-to xml="BioAssayMap" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioAssayData" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioEvent.Map" extends="gov.nih.nci.mageom.domain.BioEvent.BioEvent">
+    <map-to xml="Map" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioEvent" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioEvent.BioEvent" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="BioEvent" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioEvent" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioMaterial.BioMaterialMeasurement" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="BioMaterialMeasurement" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioMaterial" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioMaterial.CompoundMeasurement" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="CompoundMeasurement" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioMaterial" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioMaterial.BioMaterial" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="BioMaterial" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioMaterial" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioMaterial.Treatment" extends="gov.nih.nci.mageom.domain.BioEvent.BioEvent">
+    <map-to xml="Treatment" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioMaterial" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="order" type="int">
+      <bind-xml name="order" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioMaterial.Compound" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="Compound" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioMaterial" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="isSolvent" type="boolean">
+      <bind-xml name="isSolvent" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioMaterial.BioSample" extends="gov.nih.nci.mageom.domain.BioMaterial.BioMaterial">
+    <map-to xml="BioSample" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioMaterial" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioMaterial.BioSource" extends="gov.nih.nci.mageom.domain.BioMaterial.BioMaterial">
+    <map-to xml="BioSource" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioMaterial" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioMaterial.LabeledExtract" extends="gov.nih.nci.mageom.domain.BioMaterial.BioMaterial">
+    <map-to xml="LabeledExtract" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioMaterial" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioSequence.SeqFeatureLocation" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="SeqFeatureLocation" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioSequence" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="strandType" type="string">
+      <bind-xml name="strandType" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioSequence.BioSequence" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="BioSequence" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioSequence" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="isApproximateLength" type="boolean">
+      <bind-xml name="isApproximateLength" node="attribute" />
+    </field>
+    <field name="isCircular" type="boolean">
+      <bind-xml name="isCircular" node="attribute" />
+    </field>
+    <field name="length" type="int">
+      <bind-xml name="length" node="attribute" />
+    </field>
+    <field name="sequence" type="string">
+      <bind-xml name="sequence" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioSequence.SequencePosition" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="SequencePosition" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioSequence" />
+    <field name="end" type="int">
+      <bind-xml name="end" node="attribute" />
+    </field>
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="start" type="int">
+      <bind-xml name="start" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BioSequence.SeqFeature" extends="gov.nih.nci.mageom.domain.Describable">
+    <map-to xml="SeqFeature" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BioSequence" />
+    <field name="basis" type="string">
+      <bind-xml name="basis" node="attribute" />
+    </field>
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.BQS.BibliographicReference" extends="gov.nih.nci.mageom.domain.Describable">
+    <map-to xml="BibliographicReference" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.BQS" />
+    <field name="authors" type="string">
+      <bind-xml name="authors" node="attribute" />
+    </field>
+    <field name="editor" type="string">
+      <bind-xml name="editor" node="attribute" />
+    </field>
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="issue" type="string">
+      <bind-xml name="issue" node="attribute" />
+    </field>
+    <field name="pages" type="string">
+      <bind-xml name="pages" node="attribute" />
+    </field>
+    <field name="publication" type="string">
+      <bind-xml name="publication" node="attribute" />
+    </field>
+    <field name="publisher" type="string">
+      <bind-xml name="publisher" node="attribute" />
+    </field>
+    <field name="title" type="string">
+      <bind-xml name="title" node="attribute" />
+    </field>
+    <field name="URI" type="string">
+      <bind-xml name="URI" node="attribute" />
+    </field>
+    <field name="volume" type="string">
+      <bind-xml name="volume" node="attribute" />
+    </field>
+    <field name="year" type="date">
+      <bind-xml name="year" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Description.DatabaseEntry" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="DatabaseEntry" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Description" />
+    <field name="accession" type="string">
+      <bind-xml name="accession" node="attribute" />
+    </field>
+    <field name="accessionVersion" type="string">
+      <bind-xml name="accessionVersion" node="attribute" />
+    </field>
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="URI" type="string">
+      <bind-xml name="URI" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Description.OntologyEntry" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="OntologyEntry" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Description" />
+    <field name="category" type="string">
+      <bind-xml name="category" node="attribute" />
+    </field>
+    <field name="description" type="string">
+      <bind-xml name="description" node="attribute" />
+    </field>
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="value" type="string">
+      <bind-xml name="value" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Description.Database" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="Database" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Description" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="URI" type="string">
+      <bind-xml name="URI" node="attribute" />
+    </field>
+    <field name="version" type="string">
+      <bind-xml name="version" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Description.ExternalReference" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="ExternalReference" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Description" />
+    <field name="exportedFromDB" type="string">
+      <bind-xml name="exportedFromDB" node="attribute" />
+    </field>
+    <field name="exportedFromServer" type="string">
+      <bind-xml name="exportedFromServer" node="attribute" />
+    </field>
+    <field name="exportID" type="string">
+      <bind-xml name="exportID" node="attribute" />
+    </field>
+    <field name="exportName" type="string">
+      <bind-xml name="exportName" node="attribute" />
+    </field>
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Description.Description" extends="gov.nih.nci.mageom.domain.Describable">
+    <map-to xml="Description" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Description" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="text" type="string">
+      <bind-xml name="text" node="attribute" />
+    </field>
+    <field name="URI" type="string">
+      <bind-xml name="URI" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.DesignElement.FeatureInformation" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="FeatureInformation" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.DesignElement" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.DesignElement.CompositeCompositeMap" extends="gov.nih.nci.mageom.domain.BioAssayData.DesignElementMap">
+    <map-to xml="CompositeCompositeMap" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.DesignElement" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.DesignElement.CompositePosition" extends="gov.nih.nci.mageom.domain.BioSequence.SequencePosition">
+    <map-to xml="CompositePosition" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.DesignElement" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.DesignElement.Feature" extends="gov.nih.nci.mageom.domain.DesignElement.DesignElement">
+    <map-to xml="Feature" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.DesignElement" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.DesignElement.Position" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="Position" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.DesignElement" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="x" type="float">
+      <bind-xml name="x" node="attribute" />
+    </field>
+    <field name="y" type="float">
+      <bind-xml name="y" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.DesignElement.ReporterCompositeMap" extends="gov.nih.nci.mageom.domain.BioAssayData.DesignElementMap">
+    <map-to xml="ReporterCompositeMap" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.DesignElement" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.DesignElement.ReporterPosition" extends="gov.nih.nci.mageom.domain.BioSequence.SequencePosition">
+    <map-to xml="ReporterPosition" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.DesignElement" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.DesignElement.FeatureReporterMap" extends="gov.nih.nci.mageom.domain.BioAssayData.DesignElementMap">
+    <map-to xml="FeatureReporterMap" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.DesignElement" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.DesignElement.DesignElement" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="DesignElement" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.DesignElement" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.DesignElement.Reporter" extends="gov.nih.nci.mageom.domain.DesignElement.DesignElement">
+    <map-to xml="Reporter" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.DesignElement" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.DesignElement.MismatchInformation" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="MismatchInformation" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.DesignElement" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="newSequence" type="string">
+      <bind-xml name="newSequence" node="attribute" />
+    </field>
+    <field name="replacedLength" type="int">
+      <bind-xml name="replacedLength" node="attribute" />
+    </field>
+    <field name="startCoord" type="int">
+      <bind-xml name="startCoord" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.DesignElement.CompositeSequence" extends="gov.nih.nci.mageom.domain.DesignElement.DesignElement">
+    <map-to xml="CompositeSequence" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.DesignElement" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.DesignElement.FeatureLocation" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="FeatureLocation" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.DesignElement" />
+    <field name="column" type="int">
+      <bind-xml name="column" node="attribute" />
+    </field>
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="row" type="int">
+      <bind-xml name="row" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Experiment.FactorValue" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="FactorValue" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Experiment" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Experiment.ExperimentalFactor" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="ExperimentalFactor" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Experiment" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Experiment.Experiment" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="Experiment" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Experiment" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Experiment.ExperimentDesign" extends="gov.nih.nci.mageom.domain.Describable">
+    <map-to xml="ExperimentDesign" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Experiment" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.HigherLevelAnalysis.NodeContents" extends="gov.nih.nci.mageom.domain.Describable">
+    <map-to xml="NodeContents" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.HigherLevelAnalysis" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.HigherLevelAnalysis.BioAssayDataCluster" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="BioAssayDataCluster" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.HigherLevelAnalysis" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.HigherLevelAnalysis.NodeValue" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="NodeValue" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.HigherLevelAnalysis" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="name" type="string">
+      <bind-xml name="name" node="attribute" />
+    </field>
+    <field name="value" type="string">
+      <bind-xml name="value" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.HigherLevelAnalysis.Node" extends="gov.nih.nci.mageom.domain.Describable">
+    <map-to xml="Node" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.HigherLevelAnalysis" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Measurement.TimeUnit" extends="gov.nih.nci.mageom.domain.Measurement.Unit">
+    <map-to xml="TimeUnit" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Measurement" />
+    <field name="unitNameCV" type="string">
+      <bind-xml name="unitNameCV" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Measurement.VolumeUnit" extends="gov.nih.nci.mageom.domain.Measurement.Unit">
+    <map-to xml="VolumeUnit" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Measurement" />
+    <field name="unitNameCV" type="string">
+      <bind-xml name="unitNameCV" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Measurement.DistanceUnit" extends="gov.nih.nci.mageom.domain.Measurement.Unit">
+    <map-to xml="DistanceUnit" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Measurement" />
+    <field name="unitNameCV" type="string">
+      <bind-xml name="unitNameCV" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Measurement.Unit" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="Unit" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Measurement" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="unitName" type="string">
+      <bind-xml name="unitName" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Measurement.TemperatureUnit" extends="gov.nih.nci.mageom.domain.Measurement.Unit">
+    <map-to xml="TemperatureUnit" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Measurement" />
+    <field name="unitNameCV" type="string">
+      <bind-xml name="unitNameCV" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Measurement.MassUnit" extends="gov.nih.nci.mageom.domain.Measurement.Unit">
+    <map-to xml="MassUnit" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Measurement" />
+    <field name="unitNameCV" type="string">
+      <bind-xml name="unitNameCV" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Measurement.ConcentrationUnit" extends="gov.nih.nci.mageom.domain.Measurement.Unit">
+    <map-to xml="ConcentrationUnit" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Measurement" />
+    <field name="unitNameCV" type="string">
+      <bind-xml name="unitNameCV" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Measurement.QuantityUnit" extends="gov.nih.nci.mageom.domain.Measurement.Unit">
+    <map-to xml="QuantityUnit" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Measurement" />
+    <field name="unitNameCV" type="string">
+      <bind-xml name="unitNameCV" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Protocol.Parameterizable" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="Parameterizable" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Protocol" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="URI" type="string">
+      <bind-xml name="URI" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Protocol.Parameter" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="Parameter" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Protocol" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Protocol.Protocol" extends="gov.nih.nci.mageom.domain.Protocol.Parameterizable">
+    <map-to xml="Protocol" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Protocol" />
+    <field name="text" type="string">
+      <bind-xml name="text" node="attribute" />
+    </field>
+    <field name="title" type="string">
+      <bind-xml name="title" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Protocol.ProtocolApplication" extends="gov.nih.nci.mageom.domain.Protocol.ParameterizableApplication">
+    <map-to xml="ProtocolApplication" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Protocol" />
+    <field name="activityDate" type="date">
+      <bind-xml name="activityDate" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Protocol.Hardware" extends="gov.nih.nci.mageom.domain.Protocol.Parameterizable">
+    <map-to xml="Hardware" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Protocol" />
+    <field name="make" type="string">
+      <bind-xml name="make" node="attribute" />
+    </field>
+    <field name="model" type="string">
+      <bind-xml name="model" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Protocol.HardwareApplication" extends="gov.nih.nci.mageom.domain.Protocol.ParameterizableApplication">
+    <map-to xml="HardwareApplication" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Protocol" />
+    <field name="serialNumber" type="string">
+      <bind-xml name="serialNumber" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Protocol.SoftwareApplication" extends="gov.nih.nci.mageom.domain.Protocol.ParameterizableApplication">
+    <map-to xml="SoftwareApplication" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Protocol" />
+    <field name="releaseDate" type="date">
+      <bind-xml name="releaseDate" node="attribute" />
+    </field>
+    <field name="version" type="string">
+      <bind-xml name="version" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Protocol.ParameterValue" extends="gov.nih.nci.mageom.domain.Extendable">
+    <map-to xml="ParameterValue" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Protocol" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="value" type="string">
+      <bind-xml name="value" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Protocol.ParameterizableApplication" extends="gov.nih.nci.mageom.domain.Describable">
+    <map-to xml="ParameterizableApplication" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Protocol" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.Protocol.Software" extends="gov.nih.nci.mageom.domain.Protocol.Parameterizable">
+    <map-to xml="Software" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.Protocol" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.QuantitationType.StandardQuantitationType" extends="gov.nih.nci.mageom.domain.QuantitationType.QuantitationType">
+    <map-to xml="StandardQuantitationType" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.QuantitationType" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.QuantitationType.SpecializedQuantitationType" extends="gov.nih.nci.mageom.domain.QuantitationType.QuantitationType">
+    <map-to xml="SpecializedQuantitationType" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.QuantitationType" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.QuantitationType.ExpectedValue" extends="gov.nih.nci.mageom.domain.QuantitationType.ConfidenceIndicator">
+    <map-to xml="ExpectedValue" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.QuantitationType" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.QuantitationType.Failed" extends="gov.nih.nci.mageom.domain.QuantitationType.StandardQuantitationType">
+    <map-to xml="Failed" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.QuantitationType" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.QuantitationType.QuantitationType" extends="gov.nih.nci.mageom.domain.Identifiable">
+    <map-to xml="QuantitationType" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.QuantitationType" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <field name="isBackground" type="boolean">
+      <bind-xml name="isBackground" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.mageom.domain.QuantitationType.ConfidenceIndicator" extends="gov.nih.nci.mageom.domain.QuantitationType.StandardQuantitationType">
+    <map-to xml="ConfidenceIndicator" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.QuantitationType" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.QuantitationType.DerivedSignal" extends="gov.nih.nci.mageom.domain.QuantitationType.StandardQuantitationType">
+    <map-to xml="DerivedSignal" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.QuantitationType" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.QuantitationType.Ratio" extends="gov.nih.nci.mageom.domain.QuantitationType.StandardQuantitationType">
+    <map-to xml="Ratio" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.QuantitationType" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.QuantitationType.Error" extends="gov.nih.nci.mageom.domain.QuantitationType.ConfidenceIndicator">
+    <map-to xml="Error" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.QuantitationType" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.QuantitationType.MeasuredSignal" extends="gov.nih.nci.mageom.domain.QuantitationType.StandardQuantitationType">
+    <map-to xml="MeasuredSignal" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.QuantitationType" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.QuantitationType.PValue" extends="gov.nih.nci.mageom.domain.QuantitationType.ConfidenceIndicator">
+    <map-to xml="PValue" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.QuantitationType" />
+  </class>
+  <class name="gov.nih.nci.mageom.domain.QuantitationType.PresentAbsent" extends="gov.nih.nci.mageom.domain.QuantitationType.StandardQuantitationType">
+    <map-to xml="PresentAbsent" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.mageom.domain.QuantitationType" />
+  </class>
+</mapping>
+

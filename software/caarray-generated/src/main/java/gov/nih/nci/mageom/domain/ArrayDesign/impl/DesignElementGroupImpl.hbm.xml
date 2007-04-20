@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.mageom.domain.ArrayDesign.impl">
+  <class name="DesignElementGroupImpl" table="DESIGNELEMENTGROUP" polymorphism="implicit">
+    <id name="id" column="ID" type="long">
+      <generator class="assigned"/>
+    </id>
+    <discriminator>
+      <column name="OJBCONCRETECLASS"/>
+    </discriminator>
+    <property name="identifier" column="IDENTIFIER" type="string" />
+    <property name="name" column="NAME" type="string" />
+    <many-to-one name="species" column="SPECIES_ID" class="gov.nih.nci.mageom.domain.Description.impl.OntologyEntryImpl" />
+    <set name="types" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.Description.impl.OntologyEntryImpl" />
+    </set>
+    <many-to-one name="security" column="DESC_SECURITY_ID" class="gov.nih.nci.mageom.domain.AuditAndSecurity.impl.SecurityImpl" />
+    <set name="propertySets" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.impl.NameValueTypeImpl" />
+    </set>
+    <subclass name="CompositeGroupImpl" discriminator-value="org.biomage.ArrayDesign.CompositeGroup">
+      <set name="compositeSequences" lazy="true">
+        <key column="ID" />
+        <one-to-many class="gov.nih.nci.mageom.domain.DesignElement.impl.CompositeSequenceImpl" />
+      </set>
+    </subclass>
+    <subclass name="ReporterGroupImpl" discriminator-value="org.biomage.ArrayDesign.ReporterGroup">
+      <set name="reporters" lazy="true">
+        <key column="ID" />
+        <one-to-many class="gov.nih.nci.mageom.domain.DesignElement.impl.ReporterImpl" />
+      </set>
+    </subclass>
+    <subclass name="FeatureGroupImpl" discriminator-value="org.biomage.ArrayDesign.FeatureGroup" >
+      <property name="featureHeight" column="FEATUREHEIGHT" type="float" />
+      <property name="featureLength" column="FEATURELENGTH" type="float" />
+      <property name="featureWidth" column="FEATUREWIDTH" type="float" />
+      <many-to-one name="featureShape" column="FEATURE_SHAPE_ID" class="gov.nih.nci.mageom.domain.Description.impl.OntologyEntryImpl" />
+      <many-to-one name="technologyType" column="TECHNOLOGY_TYPE_ID" class="gov.nih.nci.mageom.domain.Description.impl.OntologyEntryImpl" />
+      <many-to-one name="distanceUnit" column="DISTANCE_UNIT_ID" class="gov.nih.nci.mageom.domain.Measurement.impl.DistanceUnitImpl" />
+      <set name="features" lazy="true">
+        <key column="ID" />
+        <one-to-many class="gov.nih.nci.mageom.domain.DesignElement.impl.FeatureImpl" />
+      </set>
+    </subclass>
+  </class>
+</hibernate-mapping>
+

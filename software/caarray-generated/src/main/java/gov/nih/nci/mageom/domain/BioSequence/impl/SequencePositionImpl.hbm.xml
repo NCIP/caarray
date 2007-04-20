@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.mageom.domain.DesignElement.impl">
+  <class name="gov.nih.nci.mageom.domain.BioSequence.impl.SequencePositionImpl" table="SEQUENCEPOSITION" polymorphism="implicit">
+    <id name="id" column="ID" type="long">
+      <generator class="assigned"/>
+    </id>
+    <discriminator>
+      <column name="OJBCONCRETECLASS"/>
+    </discriminator>
+    <property name="start" column="POSITION_START" type="int" />
+    <property name="end" column="POSITION_END" type="int" />
+    <set name="propertySets" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.impl.NameValueTypeImpl" />
+    </set>
+    <subclass name="CompositePositionImpl" discriminator-value="org.biomage.BioSequence.CompositePosition">
+      <many-to-one name="composite" column="COMPOSITE_ID" class="CompositeSequenceImpl" />
+      <set name="mismatchInformation" lazy="true">
+        <key column="ID" />
+        <one-to-many class="MismatchInformationImpl" />
+      </set>
+    </subclass>
+    <subclass name="ReporterPositionImpl" discriminator-value="org.biomage.BioSequence.ReporterPosition">
+      <many-to-one name="reporter" column="REPORTER_ID" class="ReporterImpl" />
+      <set name="mismatchInformation" lazy="true">
+        <key column="ID" />
+        <one-to-many class="MismatchInformationImpl" />
+      </set>
+    </subclass>
+  </class>
+</hibernate-mapping>
+

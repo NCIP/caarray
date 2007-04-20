@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.mageom.domain.BioAssayData.impl">
+  <class name="BioAssayMapImpl" table="BIOASSAYMAP" polymorphism="implicit">
+    <id name="id" column="ID" type="long">
+      <generator class="assigned"/>
+    </id>
+    <property name="identifier" column="IDENTIFIER" type="string" />
+    <property name="name" column="NAME" type="string" />
+    <set name="protocolApplications" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.Protocol.impl.ProtocolApplicationImpl" />
+    </set>
+    <set name="sourceBioAssays" table="BIOASSAYMAPBIOASSAY" lazy="true">
+      <key column="BIOASSAY_MAP_ID" />
+      <many-to-many class="gov.nih.nci.mageom.domain.BioAssay.impl.BioAssayImpl" column="BIOASSAY_ID" />
+    </set>
+    <many-to-one name="bioAssayMapTarget" column="DERIVED_BIOASSAY_ID" class="gov.nih.nci.mageom.domain.BioAssay.impl.DerivedBioAssayImpl" />
+  </class>
+</hibernate-mapping>
+
