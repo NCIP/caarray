@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="caarray-common/src/main/java"/>
-	<classpathentry kind="src" path="caarray-common/src/test/java"/>
-	<classpathentry kind="src" path="caarray-ejb/src/main/java"/>
-	<classpathentry kind="src" path="caarray-ejb/src/test/java"/>
-	<classpathentry excluding="**" kind="src" output="caarray-ejb/src/main/resources" path="caarray-ejb/src/main/resources"/>
-	<classpathentry kind="src" path="caarray-war/src/main/java"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-        <classpathentry kind="lib" path="lib/hibernate3.jar"/>        
-        <classpathentry kind="lib" path="lib/xml-apis.jar"/>
-        <classpathentry kind="lib" path="lib/antlr-2.7.6.jar"/>
-        <classpathentry kind="lib" path="lib/asm.jar"/>
-        <classpathentry kind="lib" path="lib/asm-attrs.jar"/>
-        <classpathentry kind="lib" path="lib/axis.jar"/>
-        <classpathentry kind="lib" path="lib/castor-1.0.2.jar"/>
-        <classpathentry kind="lib" path="lib/cglib-2.1.3.jar"/>
-        <classpathentry kind="lib" path="lib/commons-discovery-0.2.jar"/>
-        <classpathentry kind="lib" path="lib/commons-logging-1.1.jar"/>
-        <classpathentry kind="lib" path="lib/jaxrpc.jar"/>
-        <classpathentry kind="lib" path="lib/mail.jar"/>
-        <classpathentry kind="lib" path="lib/saaj.jar"/>
-        <classpathentry kind="lib" path="lib/spring-richclient-full-0.1.0.jar"/>
-        <classpathentry kind="lib" path="lib/wsdl4j-1.5.1.jar"/>
-        <classpathentry kind="lib" path="lib/xercesImpl.jar"/>
-        <classpathentry kind="lib" path="lib/spring.jar"/>
-        <classpathentry kind="lib" path="lib/log4j-1.2.13.jar"/>
-	<classpathentry kind="lib" path="lib/cacore32-client.jar"/>
-	<classpathentry kind="lib" path="lib/javaee.jar"/>
-	<classpathentry kind="lib" path="lib/junit-4.3.1.jar"/>
-	<classpathentry kind="output" path="target/classes"/>
+    <classpathentry kind="src" path="caarray-common/src/main/java" />
+    <classpathentry kind="src" path="caarray-common/src/test/java" />
+    <classpathentry kind="src" path="caarray-ejb/src/main/java" />
+    <classpathentry kind="src" path="caarray-ejb/src/test/java" />
+    <classpathentry excluding="**" kind="src" output="caarray-ejb/src/main/resources"
+        path="caarray-ejb/src/main/resources" />
+    <classpathentry kind="src" path="caarray-war/src/main/java" />
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER" />
+    <classpathentry kind="lib" path="lib/hibernate3.jar" />
+    <classpathentry kind="lib" path="lib/xml-apis.jar" />
+    <classpathentry kind="lib" path="lib/antlr-2.7.6.jar" />
+    <classpathentry kind="lib" path="lib/asm.jar" />
+    <classpathentry kind="lib" path="lib/asm-attrs.jar" />
+    <classpathentry kind="lib" path="lib/axis.jar" />
+    <classpathentry kind="lib" path="lib/castor-1.0.2.jar" />
+    <classpathentry kind="lib" path="lib/cglib-2.1.3.jar" />
+    <classpathentry kind="lib" path="lib/commons-discovery-0.2.jar" />
+    <classpathentry kind="lib" path="lib/commons-logging-1.1.jar" />
+    <classpathentry kind="lib" path="lib/jaxrpc.jar" />
+    <classpathentry kind="lib" path="lib/mail.jar" />
+    <classpathentry kind="lib" path="lib/saaj.jar" />
+    <classpathentry kind="lib" path="lib/spring-richclient-full-0.1.0.jar" />
+    <classpathentry kind="lib" path="lib/wsdl4j-1.5.1.jar" />
+    <classpathentry kind="lib" path="lib/xercesImpl.jar" />
+    <classpathentry kind="lib" path="lib/spring.jar" />
+    <classpathentry kind="lib" path="lib/log4j-1.2.13.jar" />
+    <classpathentry kind="lib" path="lib/cacore32-client.jar" />
+    <classpathentry kind="lib" path="lib/javaee.jar" />
+    <classpathentry kind="lib" path="lib/junit-4.3.1.jar" />
+    <classpathentry kind="output" path="target/classes" />
 </classpath>
