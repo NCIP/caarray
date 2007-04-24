@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.mageom.domain.BioSequence.impl">
+  <class name="SeqFeatureLocationImpl" table="SEQFEATURELOCATION" polymorphism="implicit">
+    <id name="id" column="ID" type="long">
+      <generator class="assigned"/>
+    </id>
+    <property name="strandType" column="STRANDTYPE" type="string" />
+    <many-to-one name="subregions" column="SEQ_FEATURE_LOC_ID" class="SeqFeatureLocationImpl" />
+    <many-to-one name="coordinate" column="COORDINATE_ID" class="SequencePositionImpl" />
+    <set name="propertySets" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.impl.NameValueTypeImpl" />
+    </set>
+  </class>
+</hibernate-mapping>
+

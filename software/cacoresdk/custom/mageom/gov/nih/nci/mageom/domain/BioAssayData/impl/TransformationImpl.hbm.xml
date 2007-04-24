@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.mageom.domain.BioAssayData.impl">
+  <class name="TransformationImpl" table="TRANSFORMATION" polymorphism="implicit">
+    <id name="id" column="ID" type="long">
+      <generator class="assigned"/>
+    </id>
+    <property name="identifier" column="IDENTIFIER" type="string" />
+    <property name="name" column="NAME" type="string" />
+    <set name="protocolApplications" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.Protocol.impl.ProtocolApplicationImpl" />
+    </set>
+    <many-to-one name="derivedBioAssayDataTarget" column="DER_BIOASSAY_DATA_TARGET_ID" class="DerivedBioAssayDataImpl" />
+    <many-to-one name="bioAssayMapping" column="BIOASSAY_MAPPING_ID" class="BioAssayMappingImpl" />
+    <set name="bioAssayDataSources" table="TRANSFORMEDBIOASSAYDATA" lazy="true">
+      <key column="TRANSFORMATION_ID" />
+      <many-to-many class="BioAssayDataImpl" column="BIOASSAY_DATA_ID" />
+    </set>
+    <many-to-one name="quantitationTypeMapping" column="QUANTITATION_TYPE_MAPPING_ID" class="QuantitationTypeMappingImpl" />
+    <many-to-one name="designElementMapping" column="DESIGN_ELEMENT_MAPPING_ID" class="DesignElementMappingImpl" />
+  </class>
+</hibernate-mapping>
+

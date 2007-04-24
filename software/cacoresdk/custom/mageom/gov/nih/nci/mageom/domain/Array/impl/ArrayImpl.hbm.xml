@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.mageom.domain.Array.impl">
+  <class name="ArrayImpl" table="ARRAY" polymorphism="implicit">
+    <id name="id" column="ID" type="long">
+      <generator class="assigned"/>
+    </id>
+    <property name="identifier" column="IDENTIFIER" type="string" />
+    <property name="name" column="NAME" type="string" />
+    <property name="arrayIdentifier" column="ARRAYIDENTIFIER" type="string" />
+    <property name="arrayXOrigin" column="ARRAYXORIGIN" type="float" />
+    <property name="arrayYOrigin" column="ARRAYYORIGIN" type="float" />
+    <property name="originRelativeTo" column="ORIGINRELATIVETO" type="string" />
+    <many-to-one name="information" column="ARRAY_MANUFACTURE_ID" class="ArrayManufactureImpl" />
+    <many-to-one name="arrayDesign" column="ARRAY_DESIGN_ID" class="gov.nih.nci.mageom.domain.ArrayDesign.impl.ArrayDesignImpl" />
+    <many-to-one name="arrayGroup" column="ARRAY_GROUP_ID" class="ArrayGroupImpl" />
+    <set name="arrayManufactureDeviations" lazy="true">
+      <key column="ID" />
+      <one-to-many class="ArrayManufactureDeviationImpl" />
+    </set>
+    <many-to-one name="security" column="DESC_SECURITY_ID" class="gov.nih.nci.mageom.domain.AuditAndSecurity.impl.SecurityImpl" />
+    <set name="propertySets" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.impl.NameValueTypeImpl" />
+    </set>
+  </class>
+</hibernate-mapping>
+

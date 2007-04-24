@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="gov.nih.nci.mageom.domain.Description.impl">
+  <class name="ExternalReferenceImpl" table="EXTERNALREFERENCE" polymorphism="implicit">
+    <id name="id" column="ID" type="long">
+      <generator class="assigned"/>
+    </id>
+    <property name="exportedFromDB" column="EXPORTEDFROMDB" type="string" />
+    <property name="exportedFromServer" column="EXPORTEDFROMSERVER" type="string" />
+    <property name="exportID" column="EXPORTID" type="string" />
+    <property name="exportName" column="EXPORTNAME" type="string" />
+    <set name="propertySets" lazy="true">
+      <key column="ID" />
+      <one-to-many class="gov.nih.nci.mageom.domain.impl.NameValueTypeImpl" />
+    </set>
+  </class>
+</hibernate-mapping>
+
