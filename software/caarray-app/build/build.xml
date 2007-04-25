@@ -37,6 +37,7 @@
 
     <property name="caarray-war.dir" value="${basedir}/caarray-war" />
     <property name="caarray-war.src.dir" value="${caarray-war.dir}/src/main/java" />
+    <property name="caarray-war.resources.dir" value="${caarray-war.dir}/src/main/resources" />
     <property name="caarray-war.webapp.dir" value="${caarray-war.dir}/src/main/webapp" />
     <property name="caarray-war.test.src.dir" value="${caarray-war.dir}/src/test/java" />
     <property name="caarray-war.target.dir" value="${caarray-war.dir}/target" />
@@ -165,6 +166,9 @@
         <war destfile="${caarray.war}" webxml="${caarray-war.webapp.dir}/WEB-INF/web.xml">
             <fileset dir="${caarray-war.webapp.dir}">
                 <exclude name="WEB-INF/**"/>
+            </fileset>
+            <fileset dir="${caarray-war.resources.dir}">
+                <include name="**"/>
             </fileset>
             <classes dir="${caarray-common.classes.dir}" />
             <webinf dir="${caarray-war.webapp.dir}/WEB-INF" >
