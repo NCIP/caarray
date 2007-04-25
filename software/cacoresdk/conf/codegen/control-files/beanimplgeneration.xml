@@ -20,7 +20,7 @@
 		<transformer name="jet"
 			className="gov.nih.nci.codegen.core.transformer.JETTransformer">
 			<param name="templateClassName" value="gov.nih.nci.codegen.core.template.jet.BeanImpl"/>
-			<param name="basePackage" value="Logical View.Logical Model"/>
+			<param name="basePackage" value="@MODEL_BASE_PACKAGE@"/>
 		</transformer>
 	</transformer-chain>
 	<artifact-handler className="gov.nih.nci.codegen.core.handler.ResourceFileHandler">

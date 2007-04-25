@@ -54,13 +54,16 @@ fixed_filename=fixed_mageom.xmi
 model_base_package=Logical View.Logical Model
 data_model_base_package=Logical View.Data Model
 include_package=.*domain.*
-#include_package=.*mage.*
 exclude_package=
 exclude_name=
 external_server_name=
 
 fix_xmi=yes
 xmi_preprocessor=gov.nih.nci.codegen.core.util.EAXMIPreprocessor
+
+# Set to yes if generated beans should be self-contained. Set to no if
+# interfaces and Impl classes should be generated.
+self-contained-beans=no
 
 ######################################
 #

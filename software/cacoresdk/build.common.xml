@@ -30,6 +30,10 @@
 		</and>
 	</condition>
 
+	<condition property="self-contained-beans-true">
+		<equals arg1="${self-contained-beans}" arg2="yes" casesensitive="false" trim="true" />
+	</condition>
+
 	<condition property="OR-mapping-yes">
 		<not>
 			<istrue value="${manual_datamodel}" />

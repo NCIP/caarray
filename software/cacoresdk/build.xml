@@ -137,10 +137,21 @@
 	<target name="-generate-beans.main" unless="generate-beans.main.ignore"
 		depends="init-project,compile-generator,fix-xmi">
 		<SDKecho message="Generating Java beans from model"/>
-		<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.beangeneration}"/>
-		<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.beanimplgeneration}"/>
+		<antcall target="-generate-self-contained-beans" />
+		<antcall target="-generate-interfaces-and-impls" />
 		<!-- <SDKgenerate controlfile="${dir.output.conf.control}/${file.control.beanwsgeneration}"/> -->
 		<!-- <SDKgenerate controlfile="${dir.output.conf.control}/${file.control.beanwsimplgeneration}"/> -->
+	</target>
+
+	<target name="-generate-self-contained-beans" if="self-contained-beans-true"
+		depends="init-project,compile-generator,fix-xmi">
+		<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.beanselfcontainedgeneration}"/>
+	</target>
+
+	<target name="-generate-interfaces-and-impls" unless="self-contained-beans-true"
+		depends="init-project,compile-generator,fix-xmi">
+		<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.beangeneration}"/>
+		<SDKgenerate controlfile="${dir.output.conf.control}/${file.control.beanimplgeneration}"/>
 	</target>
 
 	<target name="generate-junit" 
