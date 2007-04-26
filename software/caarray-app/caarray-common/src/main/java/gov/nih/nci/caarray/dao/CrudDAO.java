@@ -100,19 +100,19 @@ import gov.nih.nci.caarray.util.HibernateUtil;
  */
 public class CrudDAO {
     /**
-     * A basic no-arg constructor.
+     * A basic no-arg constructor which creates a CrudDAO object.
      */
     public CrudDAO() {
+        // Create and return a new CrudDAO object.
     }
 
     /**
      * Gets a Hibernate session, and saves the given object in a transaction.
      *
      * @param obj the object to be saved (persisted).
-     * @return the saved object.
      * @throws DAOException if unable to create (save) the object.
      */
-    public Object createObject(Object obj) throws DAOException {
+    public void createObject(Object obj) throws DAOException {
         Session session = null;
         Transaction transaction = null;
 
@@ -133,8 +133,6 @@ public class CrudDAO {
         } finally {
             session.close();
         }
-
-        return obj;
     }
 
     /**
@@ -166,10 +164,9 @@ public class CrudDAO {
      * Gets a Hibernate session, and updates the given object in a transaction.
      *
      * @param obj the object to be updated.
-     * @return the updated object.
      * @throws DAOException if unable to update the object.
      */
-    public Object updateObject(Object obj) throws DAOException {
+    public void updateObject(Object obj) throws DAOException {
         Session session = null;
         Transaction transaction = null;
 
@@ -190,8 +187,6 @@ public class CrudDAO {
         } finally {
             session.close();
         }
-
-        return obj;
     }
 
     /**
