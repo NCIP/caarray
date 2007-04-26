@@ -105,6 +105,12 @@ public final class HibernateUtil {
     }
 
     /**
+     * Holds a Hibernate session local to this thread.
+     * This is used to enable concurrent threads to get Hibernate Sessions.
+     */
+    private static final ThreadLocal<Session> LOCAL_SESSION = new ThreadLocal<Session>();
+
+    /**
      * A private constructor because this class should not be instantiated.
      * All callable methods are static methods.
      */
@@ -115,8 +121,29 @@ public final class HibernateUtil {
      * Opens and returns a Hibernate session.
      *
      * @return a Hibernate session.
+     * @throws a HibernateException if it can't obtain a session.
      */
-    public static Session getSession() {
-        return SESSION_FACTORY.openSession();
+    public static Session getSession() throws HibernateException {
+        // See if the thread has a Session.
+        Session session = (Session) LOCAL_SESSION.get();
+        // If the thread does not have a Session, open one and associate
+        // the thread with it.
+        if (session == null) {
+            session = SESSION_FACTORY.openSession();
+            LOCAL_SESSION.set(session);
+        }
+        return session;
+    }
+
+    /**
+     * Closes the Hibernate session associated with this thread.
+     * @throws a HibernateException if it can't close the session.
+     */
+    public static void closeSession() throws HibernateException {
+        Session session = (Session) LOCAL_SESSION.get();
+        LOCAL_SESSION.set(null);
+        if (session != null) {
+            session.close();
+        }
     }
 }
