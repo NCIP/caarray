@@ -55,9 +55,13 @@
     <property name="javaee.jar" value="${lib.dir}/javaee.jar" />
     <property name="checkstyle.jar" value="${lib.dir}/checkstyle-all-4.3.jar" />
     <property name="pmd.jar" value="${lib.dir}/pmd-3.9.jar" />
+    <property name="hibernate.jar" value="${lib.dir}/hibernate3.jar" />
 
     <!-- Configuration files -->
     <property name="checkstyle.config" value="${resource.dir}/caarray_checks.xml" />
+
+    <!-- Datasource configuration -->
+    <property file="${build.dir}/config.properties" />
 
     <!-- ******************************************************************* -->
     <!-- ** TASKDEFS                                                      ** -->
@@ -105,6 +109,23 @@
 
 
     <!-- ******************************************************************* -->
+    <!-- ** DATASOURCE CONFIGURATION TARGETS                              ** -->
+    <!-- ******************************************************************* -->
+
+    <!-- Copy hibernate files to classes directory and configure datasource -->
+    <target name="configure-datasource">
+        <copy todir="${caarray-war.classes.dir}" overwrite="true">
+            <fileset dir="${caarray-war.resources.dir}" includes="hibernate*" />
+        </copy>
+        <replace file="${caarray-war.classes.dir}/hibernate.cfg.xml">
+            <replacefilter token="@SERVERNAME@" value="${database.server}" />
+            <replacefilter token="@DBNAME@" value="${database.name}" />
+            <replacefilter token="@DBUSER@" value="${database.user}" />
+            <replacefilter token="@DBPASSWD@" value="${database.password}" />
+        </replace>
+    </target>
+
+    <!-- ******************************************************************* -->
     <!-- ** COMPILE TARGETS                                               ** -->
     <!-- ******************************************************************* -->
 
@@ -114,7 +135,11 @@
 
     <target name="compile:caarray-common.jar">
         <mkdir dir="${caarray-common.classes.dir}" />
-        <javac srcdir="${caarray-common.src.dir}" destdir="${caarray-common.classes.dir}" />
+        <javac srcdir="${caarray-common.src.dir}" destdir="${caarray-common.classes.dir}">
+            <classpath>
+                <pathelement location="${hibernate.jar}" />
+            </classpath>
+        </javac>
     </target>
 
     <target name="compile:caarray-ejb.jar" depends="compile:caarray-common.jar">
@@ -161,16 +186,15 @@
         </jar>
     </target>
 
-    <target name="build:caarray.war" depends="compile:caarray.war">
+    <target name="build:caarray.war" depends="compile:caarray.war,configure-datasource">
         <mkdir dir="${caarray-war.target.dir}"/>
         <war destfile="${caarray.war}" webxml="${caarray-war.webapp.dir}/WEB-INF/web.xml">
             <fileset dir="${caarray-war.webapp.dir}">
                 <exclude name="WEB-INF/**"/>
             </fileset>
-            <fileset dir="${caarray-war.resources.dir}">
-                <include name="**"/>
-            </fileset>
             <classes dir="${caarray-common.classes.dir}" />
+            <classes dir="${caarray-war.classes.dir}" includes="hibernate*" />
+            <classes dir="${caarray-common.src.dir}" includes="**/*.hbm.xml" />
             <webinf dir="${caarray-war.webapp.dir}/WEB-INF" >
                 <exclude name="web.xml"/>
             </webinf>
