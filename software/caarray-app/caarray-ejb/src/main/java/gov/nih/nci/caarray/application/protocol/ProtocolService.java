@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.application.protocol;
 
-import gov.nih.nci.caarray.microarray.Protocol;
+import gov.nih.nci.caarray.domain.protocol.Protocol;
 
 /**
  * Interface to caArray scientific protocol management.

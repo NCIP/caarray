@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.application.vocabulary;
 
-import gov.nih.nci.caarray.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.evs.domain.DescLogicConcept;
 import gov.nih.nci.evs.domain.Vocabulary;
 import gov.nih.nci.evs.query.EVSQuery;

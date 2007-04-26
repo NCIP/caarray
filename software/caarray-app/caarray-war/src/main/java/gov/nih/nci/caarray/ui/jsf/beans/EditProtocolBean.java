@@ -80,73 +80,46 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.microarray;
+package gov.nih.nci.caarray.ui.jsf.beans;
 
-import gov.nih.nci.caarray.vocabulary.Term;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.faces.model.SelectItem;
 
 /**
- * A specified, repeatable method for performing a task; either scientific, manufacturing
- * or other.
+ * JSF backing bean for protocol creation and editing.
  *
  * @author tavelae
  */
-public interface Protocol {
+public final class EditProtocolBean {
+
+    @EJB
+    private VocabularyService vocabularyService;
 
     /**
-     * Sets the URI where the protocol definition can be found. Either
-     * URI or text description must be specified.
-     *
-     * @param uri   location of the description of the protocol.
+     * Creates a new instance.
      */
-    void setUri(String uri);
+    public EditProtocolBean() {
+        super();
+    }
 
     /**
-     * Returns the URI where the protocol definition can be found.
+     * Returns the list of protocol type choices.
      *
-     * @return the location of the description of the protocol.
+     * @return the protocol types.
      */
-    String getUri();
-
-    /**
-     * Sets the protocol title.
-     *
-     * @param title the title of the protocol.
-     */
-    void setTitle(String title);
-
-    /**
-     * Returns the protocol title.
-     *
-     * @return the protocol title.
-     */
-    String getTitle();
-
-    /**
-     * Sets the documentation of the protocol. Either this or the description URI must be specified.
-     *
-     * @param text procotol documentation.
-     */
-    void setText(String text);
-
-    /**
-     * Returns the documentation of the protocol.
-     *
-     * @return the protocol documentation.
-     */
-    String getText();
-
-    /**
-     * Sets the protocol type.
-     *
-     * @param type term descriping the category of protocol.
-     */
-    void setType(Term type);
-
-    /**
-     * Returns the protocol type.
-     *
-     * @return the type.
-     */
-    Term getType();
+    public List<SelectItem> getProtocolTypes() {
+        List<Term> types = vocabularyService.getTerms("ProtocolType");
+        List<SelectItem> items = new ArrayList<SelectItem>(types.size());
+        for (Term type : types) {
+            items.add(new SelectItem(type, type.getValue()));
+        }
+        return items;
+    }
 
 }

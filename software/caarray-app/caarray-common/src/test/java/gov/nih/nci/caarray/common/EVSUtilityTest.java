@@ -51,7 +51,7 @@
 package gov.nih.nci.caarray.common;
 
 import gov.nih.nci.caarray.application.vocabulary.EVSUtility;
-import gov.nih.nci.caarray.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -86,7 +86,7 @@ public class EVSUtilityTest {
         List<String> termNames = new ArrayList<String>();
         for (Iterator<Term> i = results.iterator(); i.hasNext();) {
             Term aTerm = i.next();
-            termNames.add(aTerm.getName());
+            termNames.add(aTerm.getValue());
         }
 
         assertTrue(!termNames.isEmpty());

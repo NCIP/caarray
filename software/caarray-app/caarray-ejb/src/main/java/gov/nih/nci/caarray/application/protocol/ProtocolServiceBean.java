@@ -82,10 +82,10 @@
  */
 package gov.nih.nci.caarray.application.protocol;
 
+import gov.nih.nci.caarray.domain.protocol.Protocol;
+
 import javax.ejb.Local;
 import javax.ejb.Stateless;
-
-import gov.nih.nci.caarray.microarray.Protocol;
 
 /**
  * Session bean used to access and update protocols (i.e. scientific) used in

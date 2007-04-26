@@ -137,7 +137,7 @@ public final class HibernateUtil {
 
     /**
      * Closes the Hibernate session associated with this thread.
-     * @throws a HibernateException if it can't close the session.
+     * @throws HibernateException if it can't close the session.
      */
     public static void closeSession() throws HibernateException {
         Session session = (Session) LOCAL_SESSION.get();

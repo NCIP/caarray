@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.application.vocabulary;
 
-import gov.nih.nci.caarray.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.List;
 
@@ -113,7 +113,7 @@ public final class VocabularyServiceBean implements VocabularyService {
      * @return the matching Terms.
      */
     public List<Term> getTerms(final String categoryName) {
-        return null;
+        return getEVSTerms(categoryName);
     }
 
     /**

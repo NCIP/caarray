@@ -1,7 +1,6 @@
-<%@page import="gov.nih.nci.caarray.common.App"%>
-<% App theApp = new App(); %>
 <html>
 <body>
-<h2><%= theApp.getMessage() %></h2>
+<h2>Welcome to caArray 2</h2>
+<%@include file="/mainMenu.jsp" %>
 </body>
 </html>
