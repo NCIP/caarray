@@ -17,7 +17,7 @@
     <many-to-one name="scale" column="SCALE_ID" class="gov.nih.nci.mageom.domain.Description.impl.OntologyEntryImpl" />
     <many-to-one name="dataType" column="DATA_TYPE_ID" class="gov.nih.nci.mageom.domain.Description.impl.OntologyEntryImpl" />
     <many-to-one name="channel" column="CHANNEL_ID" class="gov.nih.nci.mageom.domain.BioAssay.impl.ChannelImpl" />
-    <set name="quantitationTypeMaps" table="QUANTITATIONTYPEMAPSOURCES" lazy="true">
+    <set name="quantitationTypeMaps" table="QUANTITATIONTYPEMAPSOURCES" lazy="true" inverse="true">
       <key column="QUANTITATION_TYPE_ID" />
       <many-to-many class="gov.nih.nci.mageom.domain.BioAssayData.impl.QuantitationTypeMapImpl" column="QUANTITATION_TYPE_MAP_ID" />
     </set>
