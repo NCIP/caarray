@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.dao;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.HibernateException;
@@ -99,6 +101,9 @@ import gov.nih.nci.caarray.util.HibernateUtil;
  * @author Rashmi Srinivasa
  */
 public class CrudDAO {
+
+    private static Log log = LogFactory.getLog(CrudDAO.class);
+
     /**
      * A basic no-arg constructor which creates a CrudDAO object.
      */
@@ -127,7 +132,7 @@ public class CrudDAO {
                     transaction.rollback();
                 }
             } catch (HibernateException rollbackException) {
-                // TODO Log rollback error.
+                log.equals(rollbackException);
             }
             throw new DAOException("Unable to create object", he);
         } finally {
@@ -181,7 +186,7 @@ public class CrudDAO {
                     transaction.rollback();
                 }
             } catch (HibernateException rollbackException) {
-                // TODO Log rollback error.
+                log.equals(rollbackException);
             }
             throw new DAOException("Unable to update object", he);
         } finally {
@@ -210,7 +215,7 @@ public class CrudDAO {
                     transaction.rollback();
                 }
             } catch (HibernateException rollbackException) {
-                // TODO Log rollback error.
+                log.equals(rollbackException);
             }
             throw new DAOException("Unable to remove object", he);
         } finally {

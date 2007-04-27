@@ -121,9 +121,8 @@ public final class HibernateUtil {
      * Opens and returns a Hibernate session.
      *
      * @return a Hibernate session.
-     * @throws a HibernateException if it can't obtain a session.
      */
-    public static Session getSession() throws HibernateException {
+    public static Session getSession() {
         // See if the thread has a Session.
         Session session = (Session) LOCAL_SESSION.get();
         // If the thread does not have a Session, open one and associate
@@ -137,9 +136,8 @@ public final class HibernateUtil {
 
     /**
      * Closes the Hibernate session associated with this thread.
-     * @throws HibernateException if it can't close the session.
      */
-    public static void closeSession() throws HibernateException {
+    public static void closeSession() {
         Session session = (Session) LOCAL_SESSION.get();
         LOCAL_SESSION.set(null);
         if (session != null) {
