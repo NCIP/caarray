@@ -87,35 +87,13 @@ package gov.nih.nci.caarray.domain.protocol;
 
    */
 
-public class Protocol 
+public class ProtocolApplication 
   implements java.io.Serializable {
     /**
      * The serial version UID for serialization.
      */
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The accession String.
-     */
-    private String accession;
-
-    /**
-     * Gets the accession.
-     *
-     * @return the accession
-     */
-    public String getAccession() {
-        return accession;
-    }
-
-    /**
-     * Sets the accession.
-     *
-     * @param accessionVal the accession
-     */
-    public void setAccession(final String accessionVal) {
-        this.accession = accessionVal;
-    }
     /**
      * The id Long.
      */
@@ -138,138 +116,52 @@ public class Protocol
     public void setId(final Long idVal) {
         this.id = idVal;
     }
-    /**
-     * The name String.
-     */
-    private String name;
 
     /**
-     * Gets the name.
-     *
-     * @return the name
+     * The protocol gov.nih.nci.caarray.domain.protocol.Protocol.
      */
-    public String getName() {
-        return name;
+    private gov.nih.nci.caarray.domain.protocol.Protocol protocol;
+
+    /**
+     * Gets the protocol.
+     *
+     * @return the protocol
+     */
+    public gov.nih.nci.caarray.domain.protocol.Protocol getProtocol() {
+        return protocol;    
     }
 
     /**
-     * Sets the name.
+     * Sets the protocol.
      *
-     * @param nameVal the name
+     * @param protocolVal the protocol
      */
-    public void setName(final String nameVal) {
-        this.name = nameVal;
-    }
-    /**
-     * The text String.
-     */
-    private String text;
-
-    /**
-     * Gets the text.
-     *
-     * @return the text
-     */
-    public String getText() {
-        return text;
+    public void setProtocol(final 
+      gov.nih.nci.caarray.domain.protocol.Protocol protocolVal) {
+        this.protocol = protocolVal;
     }
 
     /**
-     * Sets the text.
-     *
-     * @param textVal the text
+     * The values set.
      */
-    public void setText(final String textVal) {
-        this.text = textVal;
-    }
-    /**
-     * The title String.
-     */
-    private String title;
+    private java.util.Collection values = new java.util.HashSet();
 
     /**
-     * Gets the title.
+     * Gets the values.
      *
-     * @return the title
+     * @return the values
      */
-    public String getTitle() {
-        return title;
+    public java.util.Collection getValues() {
+        return values;
     }
 
     /**
-     * Sets the title.
+     * Sets the values.
      *
-     * @param titleVal the title
+     * @param valuesVal the values
      */
-    public void setTitle(final String titleVal) {
-        this.title = titleVal;
-    }
-    /**
-     * The type gov.nih.nci.caarray.domain.vocabulary.Term.
-     */
-    private gov.nih.nci.caarray.domain.vocabulary.Term type;
-
-    /**
-     * Gets the type.
-     *
-     * @return the type
-     */
-    public gov.nih.nci.caarray.domain.vocabulary.Term getType() {
-        return type;
-    }
-
-    /**
-     * Sets the type.
-     *
-     * @param typeVal the type
-     */
-    public void setType(final gov.nih.nci.caarray.domain.vocabulary.Term typeVal) {
-        this.type = typeVal;
-    }
-    /**
-     * The url String.
-     */
-    private String url;
-
-    /**
-     * Gets the url.
-     *
-     * @return the url
-     */
-    public String getUrl() {
-        return url;
-    }
-
-    /**
-     * Sets the url.
-     *
-     * @param urlVal the url
-     */
-    public void setUrl(final String urlVal) {
-        this.url = urlVal;
-    }
-
-    /**
-     * The parameters set.
-     */
-    private java.util.Collection parameters = new java.util.HashSet();
-
-    /**
-     * Gets the parameters.
-     *
-     * @return the parameters
-     */
-    public java.util.Collection getParameters() {
-        return parameters;
-    }
-
-    /**
-     * Sets the parameters.
-     *
-     * @param parametersVal the parameters
-     */
-    public void setParameters(final java.util.Collection parametersVal) {
-        this.parameters = parametersVal;
+    public void setValues(final java.util.Collection valuesVal) {
+        this.values = valuesVal;
     }    
 
     /**
@@ -280,9 +172,9 @@ public class Protocol
      */
     public boolean equals(final Object obj) {
         boolean theyAreEqual = false;
-        if (obj instanceof gov.nih.nci.caarray.domain.protocol.Protocol) {
-            final gov.nih.nci.caarray.domain.protocol.Protocol castObject =
-                (gov.nih.nci.caarray.domain.protocol.Protocol) obj;                  
+        if (obj instanceof gov.nih.nci.caarray.domain.protocol.ProtocolApplication) {
+            final gov.nih.nci.caarray.domain.protocol.ProtocolApplication castObject =
+                (gov.nih.nci.caarray.domain.protocol.ProtocolApplication) obj;                  
             Long thisId = getId();        
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;

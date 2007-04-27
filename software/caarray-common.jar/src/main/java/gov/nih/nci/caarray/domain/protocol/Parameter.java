@@ -87,35 +87,13 @@ package gov.nih.nci.caarray.domain.protocol;
 
    */
 
-public class Protocol 
+public class Parameter 
   implements java.io.Serializable {
     /**
      * The serial version UID for serialization.
      */
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The accession String.
-     */
-    private String accession;
-
-    /**
-     * Gets the accession.
-     *
-     * @return the accession
-     */
-    public String getAccession() {
-        return accession;
-    }
-
-    /**
-     * Sets the accession.
-     *
-     * @param accessionVal the accession
-     */
-    public void setAccession(final String accessionVal) {
-        this.accession = accessionVal;
-    }
     /**
      * The id Long.
      */
@@ -160,117 +138,30 @@ public class Protocol
     public void setName(final String nameVal) {
         this.name = nameVal;
     }
-    /**
-     * The text String.
-     */
-    private String text;
 
     /**
-     * Gets the text.
-     *
-     * @return the text
+     * The defaultValue gov.nih.nci.caarray.domain.protocol.ParameterValue.
      */
-    public String getText() {
-        return text;
+    private gov.nih.nci.caarray.domain.protocol.ParameterValue defaultValue;
+
+    /**
+     * Gets the defaultValue.
+     *
+     * @return the defaultValue
+     */
+    public gov.nih.nci.caarray.domain.protocol.ParameterValue getDefaultValue() {
+        return defaultValue;    
     }
 
     /**
-     * Sets the text.
+     * Sets the defaultValue.
      *
-     * @param textVal the text
+     * @param defaultValueVal the defaultValue
      */
-    public void setText(final String textVal) {
-        this.text = textVal;
+    public void setDefaultValue(final 
+      gov.nih.nci.caarray.domain.protocol.ParameterValue defaultValueVal) {
+        this.defaultValue = defaultValueVal;
     }
-    /**
-     * The title String.
-     */
-    private String title;
-
-    /**
-     * Gets the title.
-     *
-     * @return the title
-     */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
-     * Sets the title.
-     *
-     * @param titleVal the title
-     */
-    public void setTitle(final String titleVal) {
-        this.title = titleVal;
-    }
-    /**
-     * The type gov.nih.nci.caarray.domain.vocabulary.Term.
-     */
-    private gov.nih.nci.caarray.domain.vocabulary.Term type;
-
-    /**
-     * Gets the type.
-     *
-     * @return the type
-     */
-    public gov.nih.nci.caarray.domain.vocabulary.Term getType() {
-        return type;
-    }
-
-    /**
-     * Sets the type.
-     *
-     * @param typeVal the type
-     */
-    public void setType(final gov.nih.nci.caarray.domain.vocabulary.Term typeVal) {
-        this.type = typeVal;
-    }
-    /**
-     * The url String.
-     */
-    private String url;
-
-    /**
-     * Gets the url.
-     *
-     * @return the url
-     */
-    public String getUrl() {
-        return url;
-    }
-
-    /**
-     * Sets the url.
-     *
-     * @param urlVal the url
-     */
-    public void setUrl(final String urlVal) {
-        this.url = urlVal;
-    }
-
-    /**
-     * The parameters set.
-     */
-    private java.util.Collection parameters = new java.util.HashSet();
-
-    /**
-     * Gets the parameters.
-     *
-     * @return the parameters
-     */
-    public java.util.Collection getParameters() {
-        return parameters;
-    }
-
-    /**
-     * Sets the parameters.
-     *
-     * @param parametersVal the parameters
-     */
-    public void setParameters(final java.util.Collection parametersVal) {
-        this.parameters = parametersVal;
-    }    
 
     /**
      * Checks if given object is equal to this object.
@@ -280,9 +171,9 @@ public class Protocol
      */
     public boolean equals(final Object obj) {
         boolean theyAreEqual = false;
-        if (obj instanceof gov.nih.nci.caarray.domain.protocol.Protocol) {
-            final gov.nih.nci.caarray.domain.protocol.Protocol castObject =
-                (gov.nih.nci.caarray.domain.protocol.Protocol) obj;                  
+        if (obj instanceof gov.nih.nci.caarray.domain.protocol.Parameter) {
+            final gov.nih.nci.caarray.domain.protocol.Parameter castObject =
+                (gov.nih.nci.caarray.domain.protocol.Parameter) obj;                  
             Long thisId = getId();        
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;
