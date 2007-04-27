@@ -131,7 +131,9 @@ public class CrudDAO {
             }
             throw new DAOException("Unable to create object", he);
         } finally {
-            session.close();
+            if (session != null) {
+                session.close();
+            }
         }
     }
 
@@ -154,7 +156,9 @@ public class CrudDAO {
         } catch (HibernateException he) {
             throw new DAOException("Unable to retrieve objects", he);
         } finally {
-            session.close();
+            if (session != null) {
+                session.close();
+            }
         }
 
         return list;
@@ -185,7 +189,9 @@ public class CrudDAO {
             }
             throw new DAOException("Unable to update object", he);
         } finally {
-            session.close();
+            if (session != null) {
+                session.close();
+            }
         }
     }
 
@@ -214,7 +220,9 @@ public class CrudDAO {
             }
             throw new DAOException("Unable to remove object", he);
         } finally {
-            session.close();
+            if (session != null) {
+                session.close();
+            }
         }
     }
 }
