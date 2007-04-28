@@ -90,6 +90,11 @@ import java.util.List;
 
 import javax.ejb.EJB;
 import javax.faces.model.SelectItem;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * JSF backing bean for protocol creation and editing.
@@ -97,6 +102,8 @@ import javax.faces.model.SelectItem;
  * @author tavelae
  */
 public final class EditProtocolBean {
+    
+    private static Log log = LogFactory.getLog(EditProtocolBean.class);
 
     @EJB
     private VocabularyService vocabularyService;
@@ -114,12 +121,34 @@ public final class EditProtocolBean {
      * @return the protocol types.
      */
     public List<SelectItem> getProtocolTypes() {
-        List<Term> types = vocabularyService.getTerms("ProtocolType");
+        List<Term> types = getVocabularyService().getTerms("ProtocolType");
         List<SelectItem> items = new ArrayList<SelectItem>(types.size());
         for (Term type : types) {
             items.add(new SelectItem(type, type.getValue()));
         }
         return items;
+    }
+
+    private VocabularyService getVocabularyService() {
+        if (vocabularyService == null) {
+            vocabularyService = lookupVocabularyService();
+        }
+        return vocabularyService;
+    }
+
+    private VocabularyService lookupVocabularyService() {
+        try {
+            InitialContext initialContext = new InitialContext();
+            return (VocabularyService) initialContext.lookup(VocabularyService.JNDI_NAME);
+        } catch (NamingException e) {
+            log.error("Couldn't get InitialContex", e);
+            throw new RuntimeException(e);
+        }
+        
+    }
+
+    void setVocabularyService(VocabularyService vocabularyService) {
+        this.vocabularyService = vocabularyService;
     }
 
 }
