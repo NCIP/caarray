@@ -218,13 +218,12 @@ public final class EVSUtility  {
      * @param terms             list of caArray Terms
      */
     private void conceptsToTerms(final List<String> subConcepts, final List<Term> terms) {
-        // String subConcept;
+        String subConcept;
         for (Iterator<String> i = subConcepts.iterator(); i.hasNext();) {
-            //subConcept = i.next();
-            Term newTerm = null;
-          //  Term newTerm = new OntologyEntry();
-          //  newTerm.setValue(subConcept);
-          //  newTerm.setCategory(concept);
+            subConcept = i.next();
+            Term newTerm = new Term();
+            newTerm.setValue(subConcept);
+            //newTerm.setCategory(concept);
             terms.add(newTerm);
         }
     }
