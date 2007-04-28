@@ -233,6 +233,29 @@
             <fileset dir="${caarray-common.target.dir}">
                 <include name="caarray-common.jar" />
             </fileset>
+            <fileset dir="${lib.dir}">
+                <include name="activation.jar" />
+                <include name="antlr-2.7.6.jar" />
+                <include name="asm.jar" />
+		        <include name="asm-attrs.jar" />
+		        <include name="axis.jar" />
+                <include name="cacore32-client.jar" />
+                <include name="castor-1.0.2.jar" />
+                <include name="cglib-2.1.3.jar" />
+                <include name="commons-discovery-0.2.jar" />
+                <include name="commons-logging-1.1.jar" />
+                <include name="commons-discovery-0.2.jar" />
+			    <include name="hibernate3.jar" />
+			    <include name="jaxrpc.jar" />
+			    <include name="log4j-1.2.13.jar" />
+                <include name="mail.jar" />
+                <include name="saaj.jar" />
+                <include name="spring.jar" />
+			    <include name="spring-richclient-full-0.1.0.jar" />
+			    <include name="wsdl4j-1.5.1.jar" />
+			    <include name="xercesImpl.jar" />
+			    <include name="xml-apis.jar" />
+            </fileset>
         </ear>
     </target>
 
