@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE application PUBLIC
-    "-//Sun Microsystems, Inc.//DTD J2EE Application 1.3//EN"
-    "http://java.sun.com/dtd/application_1_3.dtd">
-<application>
+<application 
+       xmlns="http://java.sun.com/xml/ns/j2ee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+       http://java.sun.com/xml/ns/j2ee/application_1_4.xsd"
+       version="1.4">
     <display-name>display-name</display-name>
     <module>
         <web>
@@ -15,5 +17,68 @@
     </module>
     <module>
         <java>caarray-common.jar</java>
+    </module>
+    <module>
+        <java>activation.jar</java>
+    </module>
+    <module>
+        <java>antlr-2.7.6.jar</java>
+    </module>
+    <module>
+        <java>asm.jar</java>
+    </module>
+    <module>
+        <java>asm-attrs.jar</java>
+    </module>
+    <module>
+        <java>axis.jar</java>
+    </module>
+    <module>
+        <java>cacore32-client.jar</java>
+    </module>
+    <module>
+        <java>castor-1.0.2.jar</java>
+    </module>
+    <module>
+        <java>cglib-2.1.3.jar</java>
+    </module>
+    <module>
+        <java>commons-discovery-0.2.jar</java>
+    </module>
+    <module>
+        <java>commons-logging-1.1.jar</java>
+    </module>
+    <module>
+        <java>commons-discovery-0.2.jar</java>
+    </module>
+    <module>
+        <java>hibernate3.jar</java>
+    </module>
+    <module>
+        <java>jaxrpc.jar</java>
+    </module>
+    <module>
+        <java>log4j-1.2.13.jar</java>
+    </module>
+    <module>
+        <java>mail.jar</java>
+    </module>
+    <module>
+        <java>saaj.jar</java>
+    </module>
+    <module>
+        <java>spring.jar</java>
+    </module>
+    <module>
+        <java>spring-richclient-full-0.1.0.jar</java>
+    </module>
+    <module>
+        <java>wsdl4j-1.5.1.jar</java>
+    </module>
+    <module>
+        <java>xercesImpl.jar</java>
+    </module>
+    <module>
+        <java>xml-apis.jar</java>
     </module>
 </application>
