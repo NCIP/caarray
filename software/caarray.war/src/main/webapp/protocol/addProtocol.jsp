@@ -14,11 +14,11 @@
 
 <body>
     <f:view>
-    <h1>AddProtocol</h1>
+    <h1>Add Protocol</h1>
         <h:form id="protocolForm">
             <h:outputLabel for="protocolType" value="Type"/>
             <h:selectOneListbox>
-                <f:selectItems value="#{EditProtocolBean.protocolTypes}" />
+                <f:selectItems value="#{editProtocolBean.protocolTypes}" />
             </h:selectOneListbox>
         </h:form>
     </f:view>

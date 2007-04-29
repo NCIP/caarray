@@ -14,7 +14,7 @@
     </navigation-rule>
 
     <managed-bean>
-        <managed-bean-name>EditProtocolBean</managed-bean-name>
+        <managed-bean-name>editProtocolBean</managed-bean-name>
         <managed-bean-class>gov.nih.nci.caarray.ui.jsf.beans.EditProtocolBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>

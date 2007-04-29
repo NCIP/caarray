@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.ui.jsf.beans;
 
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.ArrayList;
@@ -104,6 +105,7 @@ import org.apache.commons.logging.LogFactory;
 public final class EditProtocolBean {
     
     private static Log log = LogFactory.getLog(EditProtocolBean.class);
+    private Protocol protocol;
 
     @EJB
     private VocabularyService vocabularyService;
@@ -123,8 +125,9 @@ public final class EditProtocolBean {
     public List<SelectItem> getProtocolTypes() {
         List<Term> types = getVocabularyService().getTerms("ProtocolType");
         List<SelectItem> items = new ArrayList<SelectItem>(types.size());
-        for (Term type : types) {
-            items.add(new SelectItem(type, type.getValue()));
+        for (int i = 0; i < types.size(); i++) {
+            Term type = types.get(i);
+            items.add(new SelectItem(String.valueOf(i), type.getValue()));
         }
         return items;
     }
@@ -149,6 +152,27 @@ public final class EditProtocolBean {
 
     void setVocabularyService(VocabularyService vocabularyService) {
         this.vocabularyService = vocabularyService;
+    }
+
+    /**
+     * Returns the current protocol for editing, creating a new instance if none has been set.
+     * 
+     * @return the protocol
+     */
+    public Protocol getProtocol() {
+        if (protocol == null) {
+            protocol = new Protocol();
+        }
+        return protocol;
+    }
+
+    /**
+     * Sets the protocol to be edited.
+     * 
+     * @param protocol the protocol to set
+     */
+    public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
     }
 
 }
