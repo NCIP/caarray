@@ -1,0 +1,24 @@
+<project name="macrodefs">
+
+    <macrodef name="run-junit-tests">
+        <attribute name="test.src.dir" />
+        <attribute name="xml.output.dir" />
+        <attribute name="classpath" default="" />
+
+        <sequential>
+            <mkdir dir="@{xml.output.dir}" />
+            <junit printsummary="on" failureproperty="junit.failure" fork="true">
+                <classpath>
+                    <pathelement path="@{classpath}" />
+                </classpath>
+                <formatter type="xml" />
+                <batchtest todir="@{xml.output.dir}">
+                    <fileset dir="@{test.src.dir}">
+                        <include name="**/*Test.java" />
+                    </fileset>
+                </batchtest>
+            </junit>
+        </sequential>
+    </macrodef>
+
+</project>
