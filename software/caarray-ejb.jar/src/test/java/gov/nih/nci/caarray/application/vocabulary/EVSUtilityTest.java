@@ -48,7 +48,7 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.common;
+package gov.nih.nci.caarray.application.vocabulary;
 
 import gov.nih.nci.caarray.application.vocabulary.EVSUtility;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
