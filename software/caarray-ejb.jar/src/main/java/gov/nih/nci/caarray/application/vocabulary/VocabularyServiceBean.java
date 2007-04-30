@@ -83,11 +83,18 @@
 package gov.nih.nci.caarray.application.vocabulary;
 
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.common.net.Request;
+import gov.nih.nci.common.net.Response;
+import gov.nih.nci.caarray.dao.CrudDAO;
+import gov.nih.nci.caarray.dao.DAOException;
 
+
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
+
 
 /**
  * Entry point into implementation of the vocabulary service subsystem.
@@ -97,6 +104,13 @@ import javax.ejb.Stateless;
 @Local(VocabularyService.class)
 @Stateless
 public final class VocabularyServiceBean implements VocabularyService {
+
+    /**
+     * Logger used by this class.
+     */
+    private static org.apache.log4j.Logger logger =
+        org.apache.log4j.Logger.getLogger(VocabularyServiceBean.class);
+
 
     /**
      * Creates a new instance.
@@ -111,9 +125,24 @@ public final class VocabularyServiceBean implements VocabularyService {
      *
      * @param categoryName find entries that match this category.
      * @return the matching Terms.
-     */
-    public List<Term> getTerms(final String categoryName) {
-        return getEVSTerms(categoryName);
+    */
+    public List<Term> getTerms(final String categoryName) throws Exception {
+
+//        CrudDAO crudDAO = new CrudDAO();
+        List<Term> termList = new ArrayList<Term>();
+//       try {
+//          termList = crudDAO.getObjects(categoryName);
+//      } catch (DAOException e) {
+//         logger.debug("Error calling getTerms(): " + e.getMessage());
+           // throw new Exception(e);
+//      }
+
+        //if not found in our repository, then get it from evs
+        if (termList.isEmpty()) {
+            termList = getEVSTerms(categoryName);
+        }
+
+        return termList;
     }
 
     /**
@@ -122,8 +151,11 @@ public final class VocabularyServiceBean implements VocabularyService {
      *
      * @param categoryName find entries that match this category.
      * @return the matching Terms.
-     */
+    */
     private List<Term> getEVSTerms(final String categoryName) {
-        return new EVSUtility().getConcepts(categoryName);
+
+        EVSUtility evsUtil = new EVSUtility();
+        return evsUtil.getConcepts(categoryName);
+
     }
 }
