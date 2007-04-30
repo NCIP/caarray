@@ -1,5 +1,7 @@
 package gov.nih.nci.caarray.domain.vocabulary;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+
 /**
  * The software subject to this notice and license includes both human readable
  * source code form and machine readable, binary, object code form. The caArray
@@ -87,35 +89,12 @@ package gov.nih.nci.caarray.domain.vocabulary;
 
    */
 
-public class Source 
-  implements java.io.Serializable {
+public class Source extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
      */
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The id Long.
-     */
-    private Long id;
-
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    public Long getId() {
-        return id;
-    }
-
-    /**
-     * Sets the id.
-     *
-     * @param idVal the id
-     */
-    public void setId(final Long idVal) {
-        this.id = idVal;
-    }
     /**
      * The name String.
      */

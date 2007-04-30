@@ -1,5 +1,7 @@
 package gov.nih.nci.caarray.domain.protocol;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+
 /**
  * The software subject to this notice and license includes both human readable
  * source code form and machine readable, binary, object code form. The caArray
@@ -87,8 +89,7 @@ package gov.nih.nci.caarray.domain.protocol;
 
    */
 
-public class Protocol 
-  implements java.io.Serializable {
+public class Protocol extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
      */
@@ -116,28 +117,7 @@ public class Protocol
     public void setAccession(final String accessionVal) {
         this.accession = accessionVal;
     }
-    /**
-     * The id Long.
-     */
-    private Long id;
 
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    public Long getId() {
-        return id;
-    }
-
-    /**
-     * Sets the id.
-     *
-     * @param idVal the id
-     */
-    public void setId(final Long idVal) {
-        this.id = idVal;
-    }
     /**
      * The name String.
      */
