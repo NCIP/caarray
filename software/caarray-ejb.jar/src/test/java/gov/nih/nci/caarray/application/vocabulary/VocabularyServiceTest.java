@@ -55,7 +55,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 
 import org.junit.Test;
@@ -66,19 +66,22 @@ import org.junit.Test;
  */
 public class VocabularyServiceTest {
 
+    private static final int NUM_37 = 37;
     /**
-     * Test method for {@link gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean#getTerms(java.lang.String)}.
+     * Test method for {@link gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean#getTerms
+     * (java.lang.String)}.
      */
     @Test
     public void getTerms() {
         VocabularyService vocab = new VocabularyServiceBean();
-        List<gov.nih.nci.caarray.domain.vocabulary.Term> terms = new ArrayList<gov.nih.nci.caarray.domain.vocabulary.Term>();
+        List<Term> terms = new ArrayList<Term>();
         try {
              terms =  vocab.getTerms("ProtocolType");
         } catch (Exception e) {
             System.out.println("ERROR");
         }
         assertTrue(!terms.isEmpty());
-        assertTrue(terms.size()==37);    }
+        assertTrue(terms.size() == NUM_37);
+    }
 
 }
