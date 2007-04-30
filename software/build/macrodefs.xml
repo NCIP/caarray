@@ -4,12 +4,17 @@
         <attribute name="test.src.dir" />
         <attribute name="xml.output.dir" />
         <attribute name="classpath" default="" />
+        <attribute name="instrumented.classes" default="" />
 
         <sequential>
             <mkdir dir="@{xml.output.dir}" />
             <junit printsummary="on" failureproperty="junit.failure" fork="true">
+                <sysproperty key="net.sourceforge.cobertura.datafile"
+                		file="${basedir}/cobertura.ser" />
                 <classpath>
+                    <pathelement path="@{instrumented.classes}" />
                     <pathelement path="@{classpath}" />
+                	<path refid="cobertura.classpath" />
                 </classpath>
                 <formatter type="xml" />
                 <batchtest todir="@{xml.output.dir}">
