@@ -125,8 +125,13 @@ public final class EVSUtility  {
     private static final String MGED_VOCAB = "MGED_Ontology";
     private static final String MGED_INST = "mged_instance";
     private static final String PROP_CONCEPT_TYPE = "Concept_Type";
+    private static final String PROP_DEFINITION = "DEFINITION";
 
-
+    /**
+     * Logger used by this class.
+     */
+    private static org.apache.log4j.Logger logger =
+        org.apache.log4j.Logger.getLogger(EVSUtility.class);
     /**
      * Creates a new instance.
      */
@@ -164,12 +169,11 @@ public final class EVSUtility  {
 
                  //if the concept is of type MGED_INSTANCE, it is a term
                 if (conceptIsInstance(concept)) {
-                    addConceptToTermList(null,concept, terms);
-                }
-                //if the concept is of type MGED_CLASS, it is a concept/category
-                else {
+                    addConceptToTermList(null, concept, terms);
+                }  else {
+                    //if the concept is of type MGED_CLASS, it is a concept/category
                     //loop thru the concepts as many times as necessary to extracted extract the nested terms
-                    subConcepts = (ArrayList<DescLogicConcept>)getEVSConceptList(concept,evs,vocab,appService);
+                    subConcepts = (ArrayList<DescLogicConcept>) getEVSConceptList(concept, evs, vocab, appService);
                     int test = 0;
                     String categoryName = conceptName;
                     while (!subConcepts.isEmpty()) {
@@ -180,23 +184,25 @@ public final class EVSUtility  {
                             tempList.addAll(subConcepts);
                             tempList.remove(0);
                             categoryName = subConcepts.get(0).getName();
-                            subConcepts = (ArrayList<DescLogicConcept>)getEVSConceptList(subConcepts.get(0),evs,vocab,appService);
+                            subConcepts = (ArrayList<DescLogicConcept>) getEVSConceptList(
+                                    subConcepts.get(0), evs, vocab, appService);
                             //if the tempList is empty, that means that there were no other items left besides this one
-                            if (!tempList.isEmpty())
+                            if (!tempList.isEmpty()) {
                                 subConcepts.addAll(tempList);
+                            }
                         }
                         //clone the original subconcept list, iterate it to obtain each element's CONCEPTS, and if
                         //an the subconcept is an INSTANCE, add to the Term list, and remove from the SubConcept list
                         DescLogicConcept subConcept;
-                        List<DescLogicConcept> iteratorList = (ArrayList<DescLogicConcept>)subConcepts.clone();
-                        for (Iterator<DescLogicConcept> subConcIterator = iteratorList.iterator(); subConcIterator.hasNext();) {
-                            subConcept = subConcIterator.next();
+                        List<DescLogicConcept> iteratorList = (ArrayList<DescLogicConcept>) subConcepts.clone();
+                        for (Iterator<DescLogicConcept> conceptIter = iteratorList.iterator(); conceptIter.hasNext();) {
+                            subConcept = conceptIter.next();
                             if (conceptIsInstance(subConcept)) {
-                                addConceptToTermList(categoryName,subConcept,terms);
+                                addConceptToTermList(categoryName, subConcept, terms);
                                 subConcepts.remove(subConcept);
-                            }
-                            // concept is not a term, it stays on the list
-                            else {
+                            } else {
+                                logger.debug("This is not really a problem");
+                                 //concept is not a term, it stays on the list
                                 //just continue
                             }
                         }
@@ -224,7 +230,8 @@ public final class EVSUtility  {
      * @return
      * @throws ApplicationException
      */
-    private List<String> getSubConceptNames(ApplicationService appService, EVSQuery evs, DescLogicConcept concept) throws ApplicationException {
+    private List<String> getSubConceptNames(
+            ApplicationService appService, EVSQuery evs, DescLogicConcept concept) throws ApplicationException {
         List<String> subConcepts;
         evs.getSubConcepts(
                   concept.getVocabulary().getName(), concept.getName(), Boolean.FALSE, Boolean.FALSE);
@@ -249,8 +256,7 @@ public final class EVSUtility  {
 
         List<DescLogicConcept> concepts = new ArrayList<DescLogicConcept>();
         try {
-            for (Iterator<Vocabulary> i = vocabs.iterator(); i.hasNext();) {
-                Vocabulary vocab = i.next();
+            for (Vocabulary vocab : vocabs) {
                 evs.searchDescLogicConcepts(vocab.getName(), conceptName, MAX_NUM_RESULTS);
                 concepts = (ArrayList<DescLogicConcept>) appService.evsSearch(evs);
                 // I found the concept
@@ -320,7 +326,8 @@ public final class EVSUtility  {
      * @throws ApplicationException     an exception
      *
      */
-    private List<Vocabulary> getVocabularyByName(final EVSQuery evs, final ApplicationService appService, final String name)
+    private List<Vocabulary> getVocabularyByName(
+            final EVSQuery evs, final ApplicationService appService, final String name)
         throws ApplicationException {
 
         evs.getVocabularyByName(name);
@@ -329,7 +336,7 @@ public final class EVSUtility  {
 
     /**
      * This method determines whether the given concept is of CONCEPT_TYPE="mged_instance".  These
-     * represent real Terms, in the caArray sense.
+     * concept types represent real Terms, in the caArray sense.
      * @param evs       instantiated EVSQuery object
      * @param appService       instantiated ApplicationService handle
      * @return          list of Vocabulary objects
@@ -338,35 +345,59 @@ public final class EVSUtility  {
      */
     private boolean conceptIsInstance(DescLogicConcept concept) {
         Vector list = concept.getPropertyCollection();
-        for (int i=0; i<list.size(); i++) {
-            Property p = (Property)list.get(i);
+        for (int i = 0; i < list.size(); i++) {
+            Property p = (Property) list.get(i);
 
             //if the concept is of type MGED_INSTANCE
             if (p.getName().equals(PROP_CONCEPT_TYPE)) {
-                if (p.getValue().equals(MGED_INST))
+                if (p.getValue().equals(MGED_INST)) {
                     return true;
-
+                }
             }
         }
         return false;
     }
 
+
+    /** This will iterate the Concept's vector of properties and
+     *  return the value for the matching name
+     * @param concept
+     * @param name
+     * @return
+     */
+    private String getConceptPropertyValue(DescLogicConcept concept, String name) {
+        String defValue = null;
+        Vector list = concept.getPropertyCollection();
+        for (int i = 0; i < list.size(); i++) {
+            Property p = (Property) list.get(i);
+            if (p.getName().equals(name)) {
+                defValue = p.getValue();
+            }
+        }
+        return defValue;
+    }
+
     /** This method creates a term for the given concept and category, and adds it to the Term list,
-     *  in essence convering EVS Concepts to caArray Terms
+     *  in essence convering EVS Concepts to caArray Terms.
      * @param conceptName
      * @param concept
      * @param terms
      */
     private void addConceptToTermList(String categoryName, DescLogicConcept concept, List<Term> terms) {
         Source aSource = new Source();
+        List<Term> children = new ArrayList<Term>();
         aSource.setName(MGED_VOCAB);
         aSource.setUrl(APP_SERVICE_URL);
         Category aCategory = new Category();
         aCategory.setName(categoryName);
         Term aTerm = new Term();
         aTerm.setValue(concept.getName());
+        aTerm.setDescription(getConceptPropertyValue(concept, EVSUtility.PROP_DEFINITION));
         aTerm.setCategory(aCategory);
         aTerm.setSource(aSource);
+
+        children.add(aTerm);
+        aCategory.setChildren(children);
         terms.add(aTerm);
     }
 
