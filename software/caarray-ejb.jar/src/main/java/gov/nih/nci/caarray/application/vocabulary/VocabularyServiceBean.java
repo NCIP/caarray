@@ -83,17 +83,15 @@
 package gov.nih.nci.caarray.application.vocabulary;
 
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.common.net.Request;
-import gov.nih.nci.common.net.Response;
-import gov.nih.nci.caarray.dao.CrudDAO;
-import gov.nih.nci.caarray.dao.DAOException;
-
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -108,8 +106,7 @@ public final class VocabularyServiceBean implements VocabularyService {
     /**
      * Logger used by this class.
      */
-    private static org.apache.log4j.Logger logger =
-        org.apache.log4j.Logger.getLogger(VocabularyServiceBean.class);
+    private static Log logger = LogFactory.getLog(VocabularyServiceBean.class);
 
 
     /**
@@ -126,7 +123,7 @@ public final class VocabularyServiceBean implements VocabularyService {
      * @param categoryName find entries that match this category.
      * @return the matching Terms.
     */
-    public List<Term> getTerms(final String categoryName) throws Exception {
+    public List<Term> getTerms(final String categoryName) {
 
 //        CrudDAO crudDAO = new CrudDAO();
         List<Term> termList = new ArrayList<Term>();

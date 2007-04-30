@@ -98,6 +98,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * This class is responsible for brokering searches between the caArray
  * Vocabulary Service and the caCore EVS.
@@ -130,8 +133,8 @@ public final class EVSUtility  {
     /**
      * Logger used by this class.
      */
-    private static org.apache.log4j.Logger logger =
-        org.apache.log4j.Logger.getLogger(EVSUtility.class);
+    private static Log logger = LogFactory.getLog(EVSUtility.class);
+    
     /**
      * Creates a new instance.
      */
@@ -319,7 +322,7 @@ public final class EVSUtility  {
     }
 
     /**
-     * This method gets a specific vocabulary from the EVS repository
+     * This method gets a specific vocabulary from the EVS repository.
      * @param evs       instantiated EVSQuery object
      * @param appService       instantiated ApplicationService handle
      * @return          list of vocab objects
@@ -360,7 +363,7 @@ public final class EVSUtility  {
 
 
     /** This will iterate the Concept's vector of properties and
-     *  return the value for the matching name
+     *  return the value for the matching name.
      * @param concept
      * @param name
      * @return
