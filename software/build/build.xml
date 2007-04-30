@@ -384,11 +384,11 @@
             <fileset dir="${caarray-ejb.src.dir}" includes="**/*.java" />
             <fileset dir="${caarray-war.src.dir}" includes="**/*.java" />
         </checkstyle>
-        <style in="${site.dir}/checkstyle/checkstyle.xml"
+        <xslt in="${site.dir}/checkstyle/checkstyle.xml"
             out="${site.dir}/checkstyle/checkstyle.html"
             style="${resource.dir}/checkstyle-frames.xsl">
             <param name="output.dir" expression="${site.dir}/checkstyle" />
-        </style>
+        </xslt>
     </target>
 
     <!-- ******************************************************************* -->
