@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="gov.nih.nci.caarray.domain.protocol.ParameterValue" table="PARAMETERVALUE" polymorphism="implicit">
+        <id name="id" column="ID" type="long">
+            <generator class="assigned"/>
+        </id>
+        <property name="unit" column="UNIT" type="string" />
+        <property name="value" column="VALUE" type="string" />
+        <many-to-one name="parameter" column="PARAMETER_ID" class="gov.nih.nci.caarray.domain.protocol.Parameter" />
+    </class>
+</hibernate-mapping>
