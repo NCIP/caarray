@@ -20,8 +20,8 @@
             target="continuous-integration" />
         <svn username="${svn.username}" password="${svn.password}">
             <copy message="Tagging with ${label}"
-                srcurl="https://gforge.nci.nih.gov/svnroot/caarray2/trunk"
-                desturl="https://gforge.nci.nih.gov/svnroot/caarray2/tags/${label}" />
+                srcurl="http://gforge.nci.nih.gov/svnroot/caarray2/trunk"
+                desturl="http://gforge.nci.nih.gov/svnroot/caarray2/tags/${label}" />
         </svn>
   </target>
 
