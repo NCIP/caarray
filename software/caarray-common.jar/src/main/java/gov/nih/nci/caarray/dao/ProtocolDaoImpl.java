@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common.jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-common.jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-common.jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-common.jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common.jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -82,14 +82,28 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.Query;
+import org.hibernate.Transaction;
+
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.util.HibernateUtil;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.protocol</code> package.
  *
- * @author ETavela
+ * @author Rashmi Srinivasa
  */
-public interface ProtocolDao extends CaArrayDao {
+public class ProtocolDaoImpl implements ProtocolDao {
+
+    private static Log log = LogFactory.getLog(ProtocolDaoImpl.class);
 
     /**
      * Returns the <code>Protocol</code> with the id given or null if none exists.
@@ -98,6 +112,98 @@ public interface ProtocolDao extends CaArrayDao {
      * @return the <code>Protocol</code> or null.
      * @throws DAOException if there is a problem retrieving the <code>Protocol</code>.
      */
-    Protocol getProtocol(Long id) throws DAOException;
+    public Protocol getProtocol(Long id) throws DAOException {
+        Session session = null;
+        Protocol returnedProtocol = null;
 
+        try {
+            session = HibernateUtil.getSession();
+            returnedProtocol = getProtocolById(session, id);
+        } catch (HibernateException he) {
+            throw new DAOException("Unable to retrieve protocol", he);
+        } finally {
+            if (session != null) {
+                HibernateUtil.closeSession();
+            }
+        }
+
+        return returnedProtocol;
+    }
+
+    /**
+     * Saves the entity to persistent storage, updating or inserting
+     * as necessary.
+     *
+     * @param caArrayEntity the entity to save
+     * @throws DAOException if the entity could not be saved.
+     */
+    public void save(AbstractCaArrayEntity caArrayEntity) throws DAOException {
+        Long protocolId = caArrayEntity.getId();
+        Session session = null;
+        Transaction transaction = null;
+
+        try {
+            session = HibernateUtil.getSession();
+            transaction = session.beginTransaction();
+            Protocol matchingProtocol = getProtocolById(session, protocolId);
+            if (matchingProtocol == null) {
+                // Protocol does not exist. Save new protocol.
+                session.save(caArrayEntity);
+            } else {
+                // Protocol already exists. Update existing protocol.
+                session.update(caArrayEntity);
+            }
+            transaction.commit();
+        } catch (HibernateException he) {
+            try {
+                if (transaction != null) {
+                    transaction.rollback();
+                }
+            } catch (HibernateException rollbackException) {
+                log.equals(rollbackException);
+            }
+            throw new DAOException("Unable to save entity", he);
+        } finally {
+            if (session != null) {
+                HibernateUtil.closeSession();
+            }
+        }
+    }
+
+    /**
+     * Saves the collection of entities to persistent storage, updating or inserting
+     * as necessary.
+     *
+     * @param caArrayEntities the entity collection to save
+     * @throws DAOException if the entity collection could not be saved.
+     */
+    public void save(Collection<AbstractCaArrayEntity> caArrayEntities) throws DAOException {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
+     * Returns the <code>Protocol</code> with the id given or null if none exists.
+     *
+     * @param session the Hibernate <code>Session</code> to use
+     * @param id get <code>Protocol</code> matching this id
+     * @return the <code>Protocol</code> or null.
+     */
+    private Protocol getProtocolById(Session session, Long id) {
+        Query query = null;
+        List resultSet = null;
+
+        // Query database for list of Protocols with this id.
+        String hql = "from " + Protocol.class.getName() + " protocol where protocol.id=?";
+        query = session.createQuery(hql.toString());
+        query.setLong(0, id.longValue());
+        resultSet = query.list();
+
+        // Return the first Protocol with the given id, or null if none exists.
+        if ((resultSet != null) && (resultSet.size() >= 1)) {
+            return (Protocol) resultSet.get(0);
+        } else {
+            return null;
+        }
+    }
 }
