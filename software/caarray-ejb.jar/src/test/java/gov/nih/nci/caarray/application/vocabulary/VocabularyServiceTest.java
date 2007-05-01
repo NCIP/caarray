@@ -72,7 +72,7 @@ public class VocabularyServiceTest {
      * (java.lang.String)}.
      */
     @Test
-    public void getTerms() {
+    public void getTermsProtocolType() {
         VocabularyService vocab = new VocabularyServiceBean();
         List<Term> terms = new ArrayList<Term>();
         try {
@@ -82,6 +82,22 @@ public class VocabularyServiceTest {
         }
         assertTrue(!terms.isEmpty());
         assertTrue(terms.size() == NUM_37);
+    }
+
+    /**
+     * Test method for {@link gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean#getTerms
+     * (java.lang.String)}.
+     */
+    @Test
+    public void getTermsNullTerm() {
+        VocabularyService vocab = new VocabularyServiceBean();
+        List<Term> terms = new ArrayList<Term>();
+        try {
+             terms =  vocab.getTerms("Foo");
+        } catch (Exception e) {
+            System.out.println("ERROR");
+        }
+        assertTrue(terms.isEmpty());
     }
 
 }
