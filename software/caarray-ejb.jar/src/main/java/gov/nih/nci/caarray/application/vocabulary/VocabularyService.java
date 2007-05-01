@@ -92,11 +92,6 @@ import java.util.List;
  * @author tavelae
  */
 public interface VocabularyService {
-    
-    /**
-     * The default JNDI name to use to lookup <code>VocabularyService</code>.
-     */
-    String JNDI_NAME = "caarray/VocabularyServiceBean/local";
 
     /**
      * Returns all terms that belong to the category for the name given (including all
@@ -104,7 +99,8 @@ public interface VocabularyService {
      *
      * @param categoryName find entries that match this category.
      * @return the matching Terms.
+     * @throws Exception exception
      */
-    List<Term> getTerms(String categoryName);
+    List<Term> getTerms(String categoryName) throws Exception;
 
 }
