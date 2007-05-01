@@ -82,43 +82,103 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-
-import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
 /**
- * DAO for entities in the <code>gov.nih.nci.caarray.domain.protocol</code> package.
+ * Base DAO implementation for all caArray domain DAOs.
  *
  * @author Rashmi Srinivasa
  */
-public class ProtocolDaoImpl extends AbstractCaArrayDaoImpl {
+public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
+
+    private static Log log = LogFactory.getLog(AbstractCaArrayDaoImpl.class);
 
     /**
-     * Returns the <code>Protocol</code> with the id given or null if none exists.
+     * Saves the entity to persistent storage, updating or inserting
+     * as necessary.
      *
-     * @param id get <code>Protocol</code> matching this id
-     * @return the <code>Protocol</code> or null.
-     * @throws DAOException if there is a problem retrieving the <code>Protocol</code>.
+     * @param caArrayEntity the entity to save
+     * @throws DAOException if the entity could not be saved.
      */
-    public Protocol getProtocol(Long id) throws DAOException {
+    public void save(AbstractCaArrayEntity caArrayEntity) throws DAOException {
         Session session = null;
-        Protocol returnedProtocol = null;
-        Protocol protocolToMatch = new Protocol();
-        protocolToMatch.setId(id);
+        Transaction transaction = null;
 
         try {
             session = HibernateUtil.getSession();
-            returnedProtocol = (Protocol) getEntityById(session, protocolToMatch);
+            transaction = session.beginTransaction();
+            AbstractCaArrayEntity matchingEntity = getEntityById(session, caArrayEntity);
+            if (matchingEntity == null) {
+                // Entity with this id does not exist. Save new entity.
+                session.save(caArrayEntity);
+            } else {
+                // Entity with this id already exists. Update existing entity.
+                session.update(caArrayEntity);
+            }
+            transaction.commit();
         } catch (HibernateException he) {
-            throw new DAOException("Unable to retrieve protocol", he);
+            try {
+                if (transaction != null) {
+                    transaction.rollback();
+                }
+            } catch (HibernateException rollbackException) {
+                log.equals(rollbackException);
+            }
+            throw new DAOException("Unable to save entity", he);
         } finally {
             if (session != null) {
                 HibernateUtil.closeSession();
             }
         }
+    }
 
-        return returnedProtocol;
+    /**
+     * Saves the collection of entities to persistent storage, updating or inserting
+     * as necessary.
+     *
+     * @param caArrayEntities the entity collection to save
+     * @throws DAOException if the entity collection could not be saved.
+     */
+    public void save(Collection<AbstractCaArrayEntity> caArrayEntities) throws DAOException {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
+     * Returns the <code>AbstractCaArrayEntity</code> with the id given,
+     * or null if none exists.
+     *
+     * @param session the Hibernate <code>Session</code> to use
+     * @param entityToMatch get <code>AbstractCaArrayEntity</code> matching the id of this entity
+     * @return the <code>AbstractCaArrayEntity</code> or null.
+     */
+    protected AbstractCaArrayEntity getEntityById(Session session, AbstractCaArrayEntity entityToMatch) {
+        Query query = null;
+        List resultSet = null;
+        Long entityId = entityToMatch.getId();
+
+        // Query database for list of Protocols with this id.
+        String hql = "from " + entityToMatch.getClass().getName() + " entity where entity.id=?";
+        query = session.createQuery(hql.toString());
+        query.setLong(0, entityId.longValue());
+        resultSet = query.list();
+
+        // Return the first entity with the given id, or null if none exists.
+        if ((resultSet != null) && (resultSet.size() >= 1)) {
+            return (AbstractCaArrayEntity) resultSet.get(0);
+        } else {
+            return null;
+        }
     }
 }
