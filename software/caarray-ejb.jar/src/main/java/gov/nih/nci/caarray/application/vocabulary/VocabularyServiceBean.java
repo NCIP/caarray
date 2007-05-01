@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.vocabulary;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 
 
@@ -131,12 +132,11 @@ public final class VocabularyServiceBean implements VocabularyService {
 
         VocabularyDao vocabDao = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
         List<Term> termList = new ArrayList<Term>();
-        //try {
-        //    termList = vocabDao.getTerms(categoryName);
-        //} catch (DAOException e) {
-        //    logger.debug("Error calling getTerms(): " + e.getMessage());
-            // throw new Exception(e);
-        //}
+        try {
+            termList = vocabDao.getTerms(categoryName);
+        } catch (DAOException e) {
+            logger.debug("Error calling getTerms(): " + e.getMessage());
+        }
 
         //if not found in our repository, then get it from evs
         if (termList.isEmpty()) {
