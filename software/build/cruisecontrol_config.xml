@@ -12,12 +12,12 @@
         buildresultsurl="${email.buildresultsurl}"
         mailhost="mailfwd.nih.gov"
         returnaddress="matyass@mail.nih.gov"
-        returnname="CRUISCONTROL"
+        returnname="CRUISECONTROL"
         subjectprefix="BUILD:"
         xsldir="${env.CCDIR}/webapps/cruisecontrol/xsl"
         css="${env.CCDIR}/webapps/cruisecontrol/css/cruisecontrol.css" />
 
-    <project name="caArray 2.0" buildafterfailed="false">
+    <project name="caarray2" buildafterfailed="false">
 
         <labelincrementer separator="_" defaultLabel="CAARRAY_BL_1" />
 
