@@ -3,53 +3,53 @@
 <!-- *********************************************************************** -->
 <cruisecontrol>
 
+    <property environment="env" toupper="true" />
+    <property name="svn.users.file" value="svn.users.properties"/>
+    <property name="email.buildresultsurl" value="http://${env.CCNAME}:${env.CCWEBPORT}/"/>
+
     <plugin name="htmlemail"
-            classname="net.sourceforge.cruisecontrol.publishers.HTMLEmailPublisher"
-            buildresultsurl="${email.buildresultsurl}"
-            mailhost="mailfwd.nih.gov"
-            returnaddress="matyass@mail.nih.gov"
-            returnname="CRUISCONTROL"
-            subjectprefix="BUILD:"
-            xsldir="${env.CCDIR}/webapps/cruisecontrol/xsl"
-            css="${env.CCDIR}/webapps/cruisecontrol/css/cruisecontrol.css"/>
+        classname="net.sourceforge.cruisecontrol.publishers.HTMLEmailPublisher"
+        buildresultsurl="${email.buildresultsurl}"
+        mailhost="mailfwd.nih.gov"
+        returnaddress="matyass@mail.nih.gov"
+        returnname="CRUISCONTROL"
+        subjectprefix="BUILD:"
+        xsldir="${env.CCDIR}/webapps/cruisecontrol/xsl"
+        css="${env.CCDIR}/webapps/cruisecontrol/css/cruisecontrol.css" />
 
-  <project name="caArray 2.0" buildafterfailed="false">
+    <project name="caArray 2.0" buildafterfailed="false">
 
-    <labelincrementer separator="_" defaultLabel="CAARRAY_BL_1" />
+        <labelincrementer separator="_" defaultLabel="CAARRAY_BL_1" />
 
-    <bootstrappers>
-      <currentbuildstatusbootstrapper file="logs/caarray2/buildstatus.txt"/>
-      <svnbootstrapper localworkingcopy="projects/caarray2"
-                       file="software\build\delegating-build.xml" />
-    </bootstrappers>
+        <bootstrappers>
+            <currentbuildstatusbootstrapper file="logs/caarray2/buildstatus.txt" />
+            <svnbootstrapper localworkingcopy="projects/caarray2" file="software\build\delegating-build.xml" />
+        </bootstrappers>
 
-    <modificationset quietperiod="90">
-      <svn localworkingcopy="projects/caarray2"/>
-    </modificationset>
+        <modificationset quietperiod="90">
+            <svn localworkingcopy="projects/caarray2" />
+        </modificationset>
 
-    <schedule>
-      <ant anthome="C:\dev\tools\apache-ant-1.7.0"
-           buildfile="projects\caarray2\software\build\delegating-build.xml"
-           target="build"
-           uselogger="true"
-           usedebug="false">
-      </ant>
-    </schedule>
+        <schedule>
+            <ant anthome="C:\dev\tools\apache-ant-1.7.0"
+                buildfile="projects\caarray2\software\build\delegating-build.xml" target="build" uselogger="true"
+                usedebug="false">
+            </ant>
+        </schedule>
 
-    <log dir="logs\caarray2">
-      <merge dir="projects\caarray2\software\build\site\junit" />
-    </log>
+        <log dir="logs\caarray2">
+            <merge dir="projects\caarray2\software\build\site\junit" />
+        </log>
 
-    <publishers>
-      <artifactspublisher dir="projects\caarray2\software\build\site" dest="artifacts\caarray2" />
-      <currentbuildstatuspublisher file="logs/caarray2/buildstatus.txt"/>
-      <htmlemail>
-        <propertiesmapper file="${cvs.users.file}"/>
-        <always address="${caarray.email.always}"/>
-        <success address="${caarray.email.success}"/>
-      </htmlemail>
-    </publishers>
+        <publishers>
+            <artifactspublisher dir="projects\caarray2\software\build\site" dest="artifacts\caarray2" />
+            <currentbuildstatuspublisher file="logs/caarray2/buildstatus.txt" />
+            <htmlemail>
+                <propertiesmapper file="${svn.users.file}" />
+                <always address="teamcaarray@5amsolutions.com" />
+            </htmlemail>
+        </publishers>
 
-  </project>
+    </project>
 
 </cruisecontrol>
