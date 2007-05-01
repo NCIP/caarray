@@ -103,7 +103,7 @@ import org.apache.commons.logging.LogFactory;
  * @author tavelae
  */
 public final class EditProtocolBean {
-    
+
     private static Log log = LogFactory.getLog(EditProtocolBean.class);
     private Protocol protocol;
 
@@ -123,7 +123,13 @@ public final class EditProtocolBean {
      * @return the protocol types.
      */
     public List<SelectItem> getProtocolTypes() {
-        List<Term> types = getVocabularyService().getTerms("ProtocolType");
+        List<Term> types = null;
+        try {
+            types = getVocabularyService().getTerms("ProtocolType");
+        } catch (Exception e) {
+            log.error(e);
+            return null;
+        }
         List<SelectItem> items = new ArrayList<SelectItem>(types.size());
         for (int i = 0; i < types.size(); i++) {
             Term type = types.get(i);
@@ -147,7 +153,7 @@ public final class EditProtocolBean {
             log.error("Couldn't get InitialContex", e);
             throw new RuntimeException(e);
         }
-        
+
     }
 
     void setVocabularyService(VocabularyService vocabularyService) {
@@ -156,7 +162,7 @@ public final class EditProtocolBean {
 
     /**
      * Returns the current protocol for editing, creating a new instance if none has been set.
-     * 
+     *
      * @return the protocol
      */
     public Protocol getProtocol() {
@@ -168,7 +174,7 @@ public final class EditProtocolBean {
 
     /**
      * Sets the protocol to be edited.
-     * 
+     *
      * @param protocol the protocol to set
      */
     public void setProtocol(Protocol protocol) {
