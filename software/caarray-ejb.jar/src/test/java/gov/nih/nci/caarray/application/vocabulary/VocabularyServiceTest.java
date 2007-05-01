@@ -70,7 +70,7 @@ public class VocabularyServiceTest {
     /**
      * Test method for {@link gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean#getTerms
      * (java.lang.String)}.
-
+    */
     @Test
     public void getTermsProtocolType() {
         VocabularyService vocab = new VocabularyServiceBean();
@@ -83,7 +83,7 @@ public class VocabularyServiceTest {
         assertTrue(!terms.isEmpty());
         assertTrue(terms.size() == NUM_37);
     }
-     */
+
 
     /**
      * Test method for {@link gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean#getTerms
