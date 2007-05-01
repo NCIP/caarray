@@ -1,0 +1,28 @@
+<!-- *********************************************************************** -->
+<!-- ** SCTR DELEGATING BUILD FILE FOR CRUISECONTROL                      ** -->
+<!-- *********************************************************************** -->
+
+<project name="caarray-cruisecontrol" default="build" basedir="../..">
+
+    <taskdef resource="svntask.properties"/>
+
+    <property name="build.dir" value="${basedir}/software/build" />
+
+    <property file="${build.dir}/local.properties" />
+
+    <target name="build">
+        <echo message="svn.username=${svn.username}" />
+        <svn username="${svn.username}" password="${svn.password}">
+            <update dir="${basedir}" />
+        </svn>
+        <copy todir="${basedir}/../.." file="software/build/cruisecontrol_config.xml" />
+        <ant antfile="build.xml"
+            dir="software/build"
+            target="continuous-integration" />
+        <svn username="${svn.username}" password="${svn.password}">
+            <copy srcurl="https://gforge.nci.nih.gov/svnroot/caarray2/trunk"
+                desturl="https://gforge.nci.nih.gov/svnroot/caarray2/tags/${label}" />
+        </svn>
+  </target>
+
+</project>
