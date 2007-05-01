@@ -3,6 +3,16 @@
 <!-- *********************************************************************** -->
 <cruisecontrol>
 
+    <plugin name="htmlemail"
+            classname="net.sourceforge.cruisecontrol.publishers.HTMLEmailPublisher"
+            buildresultsurl="${email.buildresultsurl}"
+            mailhost="mailfwd.nih.gov"
+            returnaddress="matyass@mail.nih.gov"
+            returnname="CRUISCONTROL"
+            subjectprefix="BUILD:"
+            xsldir="${env.CCDIR}/webapps/cruisecontrol/xsl"
+            css="${env.CCDIR}/webapps/cruisecontrol/css/cruisecontrol.css"/>
+
   <project name="caArray 2.0" buildafterfailed="false">
 
     <labelincrementer separator="_" defaultLabel="CAARRAY_BL_1" />
@@ -33,17 +43,10 @@
     <publishers>
       <artifactspublisher dir="projects\caarray2\software\build\site" dest="artifacts\caarray2" />
       <currentbuildstatuspublisher file="logs/caarray2/buildstatus.txt"/>
-      <htmlemail buildresultsurl="http://test.5amsolutions.com/cruisecontrol/buildresults/caarray2"
-                 mailhost="mail.5amsolutions.com"
-                 username="etavela@5amsolutions.com"
-                 password="bungle!"
-                 reportsuccess="always"
-                 returnaddress="cruisecontrol@5amsolutions.com"
-                 returnname="5AM CruiseControl"
-                 css="D:\dev\tools\cruisecontrol-2.2\reporting\jsp\css\cruisecontrol.css"
-                 logdir="logs\caarray2"
-                 xsldir="D:\dev\tools\cruisecontrol-2.2\reporting\jsp\xsl">
-        <always address="teamcaarray@5amsolutions.com" />
+      <htmlemail>
+        <propertiesmapper file="${cvs.users.file}"/>
+        <always address="${caarray.email.always}"/>
+        <success address="${caarray.email.success}"/>
       </htmlemail>
     </publishers>
 
