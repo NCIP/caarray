@@ -84,6 +84,11 @@ package gov.nih.nci.caarray.application.vocabulary;
 
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactoryImpl;
+import gov.nih.nci.caarray.dao.VocabularyDao;
+
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,18 +126,18 @@ public final class VocabularyServiceBean implements VocabularyService {
      * subcategories).
      *
      * @param categoryName find entries that match this category.
-     * @return the matching Terms.
+     * @return the matching Terms.  Empty list if no term found.
     */
     public List<Term> getTerms(final String categoryName) {
 
-//        CrudDAO crudDAO = new CrudDAO();
+        VocabularyDao vocabDao = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
         List<Term> termList = new ArrayList<Term>();
-//       try {
-//          termList = crudDAO.getObjects(categoryName);
-//      } catch (DAOException e) {
-//         logger.debug("Error calling getTerms(): " + e.getMessage());
-           // throw new Exception(e);
-//      }
+        //try {
+        //    termList = vocabDao.getTerms(categoryName);
+        //} catch (DAOException e) {
+        //    logger.debug("Error calling getTerms(): " + e.getMessage());
+            // throw new Exception(e);
+        //}
 
         //if not found in our repository, then get it from evs
         if (termList.isEmpty()) {
