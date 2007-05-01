@@ -91,10 +91,11 @@ import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Example;
 
 /**
  * Base DAO implementation for all caArray domain DAOs.
@@ -166,7 +167,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             } catch (HibernateException rollbackException) {
                 log.equals(rollbackException);
             }
-            throw new DAOException("Unable to save entity", he);
+            throw new DAOException("Unable to save entity collection", he);
         } finally {
             if (session != null) {
                 HibernateUtil.closeSession();
@@ -175,25 +176,22 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     }
 
     /**
-     * Returns the <code>AbstractCaArrayEntity</code> with the id given,
+     * Returns the <code>AbstractCaArrayEntity</code> matching the given entity,
      * or null if none exists.
      *
      * @param session the Hibernate <code>Session</code> to use
-     * @param entityToMatch get <code>AbstractCaArrayEntity</code> matching the id of this entity
+     * @param entityToMatch get <code>AbstractCaArrayEntity</code> matching this entity
      * @return the <code>AbstractCaArrayEntity</code> or null.
      */
-    protected AbstractCaArrayEntity getEntityById(Session session, AbstractCaArrayEntity entityToMatch) {
-        Query query = null;
+    protected AbstractCaArrayEntity queryEntityByExample(Session session, AbstractCaArrayEntity entityToMatch) {
         List resultSet = null;
-        Long entityId = entityToMatch.getId();
 
         // Query database for list of Protocols with this id.
-        String hql = "from " + entityToMatch.getClass().getName() + " entity where entity.id=?";
-        query = session.createQuery(hql.toString());
-        query.setLong(0, entityId.longValue());
-        resultSet = query.list();
+        Criteria criteria = session.createCriteria(entityToMatch.getClass());
+        criteria.add(Example.create(entityToMatch));
+        resultSet = criteria.list();
 
-        // Return the first entity with the given id, or null if none exists.
+        // Return the first entity that matches, or null if none exists.
         if ((resultSet != null) && (resultSet.size() >= 1)) {
             return (AbstractCaArrayEntity) resultSet.get(0);
         } else {
@@ -208,7 +206,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * @param caArrayEntity the entity to save
      */
     private void saveOrUpdateOneEntity(Session session, AbstractCaArrayEntity caArrayEntity) {
-        AbstractCaArrayEntity matchingEntity = getEntityById(session, caArrayEntity);
+        AbstractCaArrayEntity matchingEntity = queryEntityByExample(session, caArrayEntity);
         if (matchingEntity == null) {
             // Entity with this id does not exist. Save new entity.
             session.save(caArrayEntity);

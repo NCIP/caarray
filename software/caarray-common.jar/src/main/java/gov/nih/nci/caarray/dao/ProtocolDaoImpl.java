@@ -105,12 +105,14 @@ public class ProtocolDaoImpl extends AbstractCaArrayDaoImpl {
     public Protocol getProtocol(Long id) throws DAOException {
         Session session = null;
         Protocol returnedProtocol = null;
+
+        // Create an example Protocol that has the desired id.
         Protocol protocolToMatch = new Protocol();
         protocolToMatch.setId(id);
 
         try {
             session = HibernateUtil.getSession();
-            returnedProtocol = (Protocol) getEntityById(session, protocolToMatch);
+            returnedProtocol = (Protocol) queryEntityByExample(session, protocolToMatch);
         } catch (HibernateException he) {
             throw new DAOException("Unable to retrieve protocol", he);
         } finally {
