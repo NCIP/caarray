@@ -134,7 +134,7 @@ public final class EVSUtility  {
      * Logger used by this class.
      */
     private static Log logger = LogFactory.getLog(EVSUtility.class);
-    
+
     /**
      * Creates a new instance.
      */
@@ -164,11 +164,7 @@ public final class EVSUtility  {
             List<Vocabulary> vocab = getVocabularyByName(evs, appService, MGED_VOCAB);
             concept = getEVSConcept(conceptName, evs, vocab, appService);
 
-            if (concept == null) {
-                throw new ApplicationException();
-                // throw new NoMatchingTermException();??
-                // return some error/empty list, etc??
-            } else {
+            if (concept != null) {
 
                  //if the concept is of type MGED_INSTANCE, it is a term
                 if (conceptIsInstance(concept)) {
@@ -178,8 +174,11 @@ public final class EVSUtility  {
                     //loop thru the concepts as many times as necessary to extracted extract the nested terms
                     subConcepts = (ArrayList<DescLogicConcept>) getEVSConceptList(concept, evs, vocab, appService);
                     int test = 0;
+                    //set the category as the current concept...as we go deeper in the tree, the
+                    //category will always be set to the parent concept
                     String categoryName = conceptName;
                     while (!subConcepts.isEmpty()) {
+                        //the first time through, skip this part and simply extract children for the current concept
                         test++;
                         if (test > 1) {
                             List<DescLogicConcept> tempList = new ArrayList<DescLogicConcept>();
@@ -195,7 +194,7 @@ public final class EVSUtility  {
                             }
                         }
                         //clone the original subconcept list, iterate it to obtain each element's CONCEPTS, and if
-                        //an the subconcept is an INSTANCE, add to the Term list, and remove from the SubConcept list
+                        //any of the subconcepts is an INSTANCE, add to the Term list, remove from the SubConcept list
                         DescLogicConcept subConcept;
                         List<DescLogicConcept> iteratorList = (ArrayList<DescLogicConcept>) subConcepts.clone();
                         for (Iterator<DescLogicConcept> conceptIter = iteratorList.iterator(); conceptIter.hasNext();) {
@@ -215,7 +214,8 @@ public final class EVSUtility  {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
+
         }
         return terms;
     }
