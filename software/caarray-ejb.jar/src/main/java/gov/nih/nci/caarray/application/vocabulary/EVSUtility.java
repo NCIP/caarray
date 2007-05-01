@@ -196,7 +196,7 @@ public final class EVSUtility  {
                         //clone the original subconcept list, iterate it to obtain each element's CONCEPTS, and if
                         //any of the subconcepts is an INSTANCE, add to the Term list, remove from the SubConcept list
                         DescLogicConcept subConcept;
-                        List<DescLogicConcept> iteratorList = (ArrayList<DescLogicConcept>) subConcepts.clone();
+                        List<DescLogicConcept> iteratorList = new ArrayList<DescLogicConcept>(subConcepts);
                         for (Iterator<DescLogicConcept> conceptIter = iteratorList.iterator(); conceptIter.hasNext();) {
                             subConcept = conceptIter.next();
                             if (conceptIsInstance(subConcept)) {
@@ -314,7 +314,7 @@ public final class EVSUtility  {
      * @throws ApplicationException     an exception
      *
      */
-    private List<Vocabulary> getVocabularyList(final EVSQuery evs, final ApplicationService appService)
+    public List<Vocabulary> getVocabularyList(final EVSQuery evs, final ApplicationService appService)
         throws ApplicationException {
 
         evs.getAllVocabularies();
