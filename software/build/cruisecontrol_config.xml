@@ -18,7 +18,7 @@
     </modificationset>
 
     <schedule>
-      <ant antscript="D:\dev\tools\apache-ant-1.7.0"
+      <ant anthome="D:\dev\tools\apache-ant-1.7.0"
            buildfile="projects\caarray2\software\build\delegating-build.xml"
            target="build"
            uselogger="true"
