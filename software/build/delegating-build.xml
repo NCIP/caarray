@@ -11,7 +11,6 @@
     <property file="${build.dir}/local.properties" />
 
     <target name="build">
-        <echo message="svn.username=${svn.username}" />
         <svn username="${svn.username}" password="${svn.password}">
             <update dir="${basedir}" />
         </svn>
