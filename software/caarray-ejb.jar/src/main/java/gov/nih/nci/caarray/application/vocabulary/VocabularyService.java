@@ -94,6 +94,11 @@ import java.util.List;
 public interface VocabularyService {
 
     /**
+     * The default JNDI name to use to lookup <code>VocabularyService</code>.
+     */
+    String JNDI_NAME = "caarray/VocabularyServiceBean/local";
+
+    /**
      * Returns all terms that belong to the category for the name given (including all
      * subcategories).
      *
