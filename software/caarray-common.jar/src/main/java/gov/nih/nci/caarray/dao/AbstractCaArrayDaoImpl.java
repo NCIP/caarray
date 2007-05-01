@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -118,14 +119,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         try {
             session = HibernateUtil.getSession();
             transaction = session.beginTransaction();
-            AbstractCaArrayEntity matchingEntity = getEntityById(session, caArrayEntity);
-            if (matchingEntity == null) {
-                // Entity with this id does not exist. Save new entity.
-                session.save(caArrayEntity);
-            } else {
-                // Entity with this id already exists. Update existing entity.
-                session.update(caArrayEntity);
-            }
+            saveOrUpdateOneEntity(session, caArrayEntity);
             transaction.commit();
         } catch (HibernateException he) {
             try {
@@ -145,14 +139,39 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
 
     /**
      * Saves the collection of entities to persistent storage, updating or inserting
-     * as necessary.
+     * as necessary. All entities are saved in a single transaction.
      *
      * @param caArrayEntities the entity collection to save
      * @throws DAOException if the entity collection could not be saved.
      */
     public void save(Collection<AbstractCaArrayEntity> caArrayEntities) throws DAOException {
-        // TODO Auto-generated method stub
+        Session session = null;
+        Transaction transaction = null;
 
+        try {
+            session = HibernateUtil.getSession();
+            transaction = session.beginTransaction();
+
+            Iterator<AbstractCaArrayEntity> iterator = caArrayEntities.iterator();
+            while (iterator.hasNext()) {
+                AbstractCaArrayEntity entity = iterator.next();
+                saveOrUpdateOneEntity(session, entity);
+            }
+            transaction.commit();
+        } catch (HibernateException he) {
+            try {
+                if (transaction != null) {
+                    transaction.rollback();
+                }
+            } catch (HibernateException rollbackException) {
+                log.equals(rollbackException);
+            }
+            throw new DAOException("Unable to save entity", he);
+        } finally {
+            if (session != null) {
+                HibernateUtil.closeSession();
+            }
+        }
     }
 
     /**
@@ -179,6 +198,23 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             return (AbstractCaArrayEntity) resultSet.get(0);
         } else {
             return null;
+        }
+    }
+    /**
+     * Saves the entity to persistent storage, updating or inserting
+     * as necessary.
+     *
+     * @param session the Hibernate <code>Session</code> to use
+     * @param caArrayEntity the entity to save
+     */
+    private void saveOrUpdateOneEntity(Session session, AbstractCaArrayEntity caArrayEntity) {
+        AbstractCaArrayEntity matchingEntity = getEntityById(session, caArrayEntity);
+        if (matchingEntity == null) {
+            // Entity with this id does not exist. Save new entity.
+            session.save(caArrayEntity);
+        } else {
+            // Entity with this id already exists. Update existing entity.
+            session.update(caArrayEntity);
         }
     }
 }
