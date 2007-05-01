@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.application.vocabulary;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactoryImpl;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 
 
