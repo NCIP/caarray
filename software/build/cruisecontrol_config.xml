@@ -45,7 +45,6 @@
             <artifactspublisher dir="projects\caarray2\software\build\site" dest="artifacts\caarray2" />
             <currentbuildstatuspublisher file="logs/caarray2/buildstatus.txt" />
             <htmlemail>
-                <propertiesmapper file="${svn.users.file}" />
                 <always address="teamcaarray@5amsolutions.com" />
             </htmlemail>
         </publishers>
