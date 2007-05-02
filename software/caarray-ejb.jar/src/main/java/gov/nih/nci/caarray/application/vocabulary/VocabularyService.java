@@ -99,6 +99,12 @@ public interface VocabularyService {
     String JNDI_NAME = "caarray/VocabularyServiceBean/local";
 
     /**
+     * Test classes set this bit so that hte bean will use Test stubs.
+     * @param isTest arg
+     */
+    void setTest(boolean isTest);
+
+    /**
      * Returns all terms that belong to the category for the name given (including all
      * subcategories).
      *
