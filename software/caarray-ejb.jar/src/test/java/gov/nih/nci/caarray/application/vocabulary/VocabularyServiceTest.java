@@ -76,7 +76,7 @@ public class VocabularyServiceTest {
     @Test
     public void getTermsProtocolType() {
         VocabularyService vocab = new VocabularyServiceBean();
-        vocab.setTest(true);
+        vocab.setVocabularyDao(new VocabularyDaoTestStub());
         List<Term> terms = new ArrayList<Term>();
         try {
              terms =  vocab.getTerms("ProtocolType");
@@ -95,7 +95,7 @@ public class VocabularyServiceTest {
     @Test
     public void getTermsNullTerm() {
         VocabularyService vocab = new VocabularyServiceBean();
-        vocab.setTest(true);
+        vocab.setVocabularyDao(new VocabularyDaoTestStub());
         List<Term> terms = new ArrayList<Term>();
         try {
              terms =  vocab.getTerms("Foo");

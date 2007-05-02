@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.vocabulary;
 
+import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
@@ -95,7 +96,7 @@ import java.util.List;
  */
 public class VocabularyServiceTestStub implements VocabularyService {
 
-    private boolean isTest;
+    private VocabularyDao vocabDao;
     /** Test stub.
      * @see gov.nih.nci.caarray.application.vocabulary.VocabularyService#getTerms(java.lang.String)
      * @param categoryName arg
@@ -110,8 +111,8 @@ public class VocabularyServiceTestStub implements VocabularyService {
         return terms;
     }
 
-    public void setTest(boolean arg) {
-        isTest = true;
+    public void setVocabularyDao(VocabularyDao arg) {
+        vocabDao = arg;
     }
     private Term createTerm(long id, Category category, String value) {
         Term term = new Term();
