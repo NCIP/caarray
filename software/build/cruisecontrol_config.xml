@@ -45,7 +45,7 @@
             <artifactspublisher dir="projects\caarray2\software\build\site" dest="artifacts\caarray2" />
             <currentbuildstatuspublisher file="logs/caarray2/buildstatus.txt" />
             <htmlemail>
-                <always address="teamcaarray@5amsolutions.com" />
+                <failure address="teamcaarray@5amsolutions.com" reportwhenfixed="true" />
             </htmlemail>
         </publishers>
 
