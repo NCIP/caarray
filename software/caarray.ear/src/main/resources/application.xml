@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<application 
+<application
        xmlns="http://java.sun.com/xml/ns/j2ee"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
@@ -50,6 +50,9 @@
     </module>
     <module>
         <java>commons-discovery-0.2.jar</java>
+    </module>
+    <module>
+        <java>dom4j-1.6.1.jar</java>
     </module>
     <module>
         <java>hibernate3.jar</java>
