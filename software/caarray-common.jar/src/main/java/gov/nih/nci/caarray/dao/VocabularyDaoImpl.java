@@ -75,6 +75,7 @@ public class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements Vocabul
      * @return all matching terms or an empty <code>List</code> if no matches.
      * @exception DAOException exception
      */
+    @SuppressWarnings("unchecked")
     public List<Term> getTerms(String categoryName) throws DAOException {
         Session session = null;
         List<Term> matchingTerms = new ArrayList<Term>();
@@ -98,8 +99,8 @@ public class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements Vocabul
             // Java generics completely in their next release. We could get rid of the
             // warning by looping through the elements of the hibernate-returned List,
             // and explicitly casting each object to Term before adding it to our List<Term>.
-            // But that's not a great solution.
-            matchingTerms.addAll((ArrayList<Term>) hibernateReturnedTerms);
+            // But that's not a great solution. Hence the SuppressWarnings annotation.
+            matchingTerms.addAll(hibernateReturnedTerms);
         }
         return matchingTerms;
     }
