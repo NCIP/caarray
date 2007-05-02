@@ -112,19 +112,20 @@ public final class VocabularyServiceBean implements VocabularyService {
      * Logger used by this class.
      */
     private static Log logger = LogFactory.getLog(VocabularyServiceBean.class);
-    private boolean isTest = false;
+    private VocabularyDao vocabularyDao;
     /**
      * Creates a new instance.
      */
     public VocabularyServiceBean() {
         super();
+        setVocabularyDao(CaArrayDaoFactory.INSTANCE.getVocabularyDao());
     }
     /**
      * Set when testing.
      * @param arg boolean
      */
-    public void setTest(boolean arg) {
-        isTest = arg;
+    public void setVocabularyDao(VocabularyDao arg) {
+        vocabularyDao = arg;
     }
     /**
      * Returns all terms that belong to the category for the name given (including all
@@ -135,10 +136,10 @@ public final class VocabularyServiceBean implements VocabularyService {
     */
     public List<Term> getTerms(final String categoryName) {
 
-        VocabularyDao vocabDao = getVocabularyDao();
+
         List<Term> termList = new ArrayList<Term>();
         try {
-            termList = vocabDao.getTerms(categoryName);
+            termList = vocabularyDao.getTerms(categoryName);
         } catch (DAOException e) {
             logger.debug("Error calling getTerms(): " + e.getMessage());
         }
@@ -164,12 +165,5 @@ public final class VocabularyServiceBean implements VocabularyService {
         return evsUtil.getConcepts(categoryName);
     }
 
-    private VocabularyDao getVocabularyDao() {
-        if (isTest) {
-            return new VocabularyDaoTestStub();
-        } else {
-            return CaArrayDaoFactory.INSTANCE.getVocabularyDao();
-        }
-    }
 
 }

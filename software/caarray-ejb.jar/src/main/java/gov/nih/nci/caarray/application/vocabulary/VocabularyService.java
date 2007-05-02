@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.vocabulary;
 
+import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.List;
@@ -100,9 +101,9 @@ public interface VocabularyService {
 
     /**
      * Test classes set this bit so that hte bean will use Test stubs.
-     * @param isTest arg
+     * @param argDao argse
      */
-    void setTest(boolean isTest);
+    void setVocabularyDao(VocabularyDao argDao);
 
     /**
      * Returns all terms that belong to the category for the name given (including all
