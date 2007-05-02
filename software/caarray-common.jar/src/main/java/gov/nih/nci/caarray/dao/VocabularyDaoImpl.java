@@ -99,7 +99,7 @@ public class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements Vocabul
             // warning by looping through the elements of the hibernate-returned List,
             // and explicitly casting each object to Term before adding it to our List<Term>.
             // But that's not a great solution.
-            matchingTerms.addAll(hibernateReturnedTerms);
+            matchingTerms.addAll((ArrayList<Term>) hibernateReturnedTerms);
         }
         return matchingTerms;
     }
