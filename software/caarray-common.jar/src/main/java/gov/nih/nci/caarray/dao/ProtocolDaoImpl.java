@@ -93,7 +93,7 @@ import gov.nih.nci.caarray.util.HibernateUtil;
  *
  * @author Rashmi Srinivasa
  */
-public class ProtocolDaoImpl extends AbstractCaArrayDaoImpl {
+public class ProtocolDaoImpl extends AbstractCaArrayDaoImpl implements ProtocolDao {
 
     /**
      * Returns the <code>Protocol</code> with the id given or null if none exists.

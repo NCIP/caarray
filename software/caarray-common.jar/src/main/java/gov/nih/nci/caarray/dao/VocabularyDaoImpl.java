@@ -50,47 +50,57 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
-
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.ArrayList;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
+
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.util.HibernateUtil;
 
 /**
- * @author John Pike
+ * DAO for entities in the <code>gov.nih.nci.caarray.domain.vocabulary</code> package.
  *
+ * @author John Pike
  */
-public class VocabularyDaoImpl implements VocabularyDao {
+public class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao {
 
     /**
-     * Obtains terms from the Term table.
-     * @see gov.nih.nci.caarray.dao.VocabularyDao#getTerms(java.lang.String)
-     * @param categoryName arg
+     * Gets all the <code>Terms</code> matching the category name
+     * given.
+     *
+     * @param categoryName get terms for this category
+     * @return all matching terms or an empty <code>List</code> if no matches.
      * @exception DAOException exception
-     * @return List of Terms
      */
     public List<Term> getTerms(String categoryName) throws DAOException {
-        // TODO Auto-generated method stub
-        return new ArrayList<Term>();
+        Session session = null;
+        List<Term> matchingTerms = new ArrayList<Term>();
+        List hibernateReturnedTerms = null;
+
+        try {
+            session = HibernateUtil.getSession();
+            hibernateReturnedTerms = session.createCriteria(Term.class).createCriteria(
+                    "category").add(Restrictions.eq("name", categoryName)).list();
+        } catch (HibernateException he) {
+            throw new DAOException("Unable to retrieve terms", he);
+        } finally {
+            if (session != null) {
+                HibernateUtil.closeSession();
+            }
+        }
+
+        if (hibernateReturnedTerms != null) {
+            // Note: The following line gives a type safety warning because Hibernate 3.2
+            // still returns a List instead of a List<Term>. Hopefully, they will support
+            // Java generics completely in their next release. We could get rid of the
+            // warning by looping through the elements of the hibernate-returned List,
+            // and explicitly casting each object to Term before adding it to our List<Term>.
+            // But that's not a great solution.
+            matchingTerms.addAll(hibernateReturnedTerms);
+        }
+        return matchingTerms;
     }
-
-    /** saves a Term object
-     * @see gov.nih.nci.caarray.dao.CaArrayDao#save(gov.nih.nci.caarray.domain.AbstractCaArrayEntity)
-     * @param caArrayEntity entity
-     */
-    public void save(AbstractCaArrayEntity caArrayEntity) {
-        // TODO Auto-generated method stub
-
-    }
-
-    /** Saves a collection of Terms.
-     * @see gov.nih.nci.caarray.dao.CaArrayDao#save(java.util.Collection)
-     * @param caArrayEntities terms
-     */
-    public void save(Collection<AbstractCaArrayEntity> caArrayEntities) {
-        // TODO Auto-generated method stub
-
-    }
-
 }
