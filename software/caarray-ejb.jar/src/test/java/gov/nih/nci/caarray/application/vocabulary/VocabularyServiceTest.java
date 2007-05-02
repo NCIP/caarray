@@ -67,6 +67,8 @@ import org.junit.Test;
 public class VocabularyServiceTest {
 
     private static final int NUM_37 = 37;
+
+
     /**
      * Test method for {@link gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean#getTerms
      * (java.lang.String)}.
@@ -74,6 +76,7 @@ public class VocabularyServiceTest {
     @Test
     public void getTermsProtocolType() {
         VocabularyService vocab = new VocabularyServiceBean();
+        vocab.setTest(true);
         List<Term> terms = new ArrayList<Term>();
         try {
              terms =  vocab.getTerms("ProtocolType");
@@ -92,6 +95,7 @@ public class VocabularyServiceTest {
     @Test
     public void getTermsNullTerm() {
         VocabularyService vocab = new VocabularyServiceBean();
+        vocab.setTest(true);
         List<Term> terms = new ArrayList<Term>();
         try {
              terms =  vocab.getTerms("Foo");
