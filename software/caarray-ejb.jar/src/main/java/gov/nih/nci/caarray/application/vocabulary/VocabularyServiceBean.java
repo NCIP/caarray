@@ -131,9 +131,12 @@ public class VocabularyServiceBean implements VocabularyService {
      *
      * @param categoryName find entries that match this category.
      * @return the matching Terms.  Empty list if no term found.
+     * @throws VocabularyServiceException exception from EVS svc
     */
-    public List<Term> getTerms(final String categoryName) {
-
+    public List<Term> getTerms(final String categoryName) throws VocabularyServiceException {
+        if (categoryName == null) {
+            throw new IllegalArgumentException("CategoryName is null");
+        }
         VocabularyDao vocabDao = getVocabularyDao();
         List<Term> termList = new ArrayList<Term>();
         try {
@@ -143,8 +146,10 @@ public class VocabularyServiceBean implements VocabularyService {
         }
 
         //if not found in our repository, then get it from evs
+
         if (termList.isEmpty()) {
             termList = getEVSTerms(categoryName);
+
         }
 
         return termList;
@@ -157,10 +162,23 @@ public class VocabularyServiceBean implements VocabularyService {
      * @param categoryName find entries that match this category.
      * @return the matching Terms.
     */
-    private List<Term> getEVSTerms(final String categoryName) {
-
-        EVSUtility evsUtil = new EVSUtility();
-        return evsUtil.getConcepts(categoryName);
+    private List<Term> getEVSTerms(final String categoryName) throws VocabularyServiceException {
+        EVSUtility evsUtil = getEVSUtility();
+        List<Term> evsTerms = new ArrayList<Term>();
+        try {
+            evsTerms = evsUtil.getConcepts(categoryName);
+        }  catch (VocabularyServiceException vse) {
+            throw vse;
+        }  catch (Exception e) {
+            throw new VocabularyServiceException(e);
+        }
+        return evsTerms;
+    }
+    /**
+     * @return evsUtility
+     */
+    public EVSUtility getEVSUtility() {
+        return new EVSUtility();
     }
 
 

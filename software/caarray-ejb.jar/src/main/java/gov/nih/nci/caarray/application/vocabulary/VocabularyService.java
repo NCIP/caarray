@@ -105,8 +105,8 @@ public interface VocabularyService {
      *
      * @param categoryName find entries that match this category.
      * @return the matching Terms.
-     * @throws Exception exception
+     * @throws VocabularyServiceException exception
      */
-    List<Term> getTerms(String categoryName) throws Exception;
+    List<Term> getTerms(String categoryName) throws VocabularyServiceException;
 
 }
