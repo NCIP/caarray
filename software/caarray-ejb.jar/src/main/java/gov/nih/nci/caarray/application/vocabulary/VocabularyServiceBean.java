@@ -109,9 +109,9 @@ import org.apache.commons.logging.LogFactory;
 public class VocabularyServiceBean implements VocabularyService {
 
     /**
-     * Logger used by this class.
+     * LOG used by this class.
      */
-    private static Log logger = LogFactory.getLog(VocabularyServiceBean.class);
+    private static final Log LOG = LogFactory.getLog(VocabularyServiceBean.class);
     /**
      * Creates a new instance.
      */
@@ -139,7 +139,7 @@ public class VocabularyServiceBean implements VocabularyService {
         try {
             termList = vocabDao.getTerms(categoryName);
         } catch (DAOException e) {
-            logger.debug("Error calling getTerms(): " + e.getMessage());
+            LOG.debug("Error calling getTerms(): " + e.getMessage());
         }
 
         //if not found in our repository, then get it from evs

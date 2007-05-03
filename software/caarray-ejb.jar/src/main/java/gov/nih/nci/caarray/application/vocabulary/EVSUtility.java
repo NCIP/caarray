@@ -96,7 +96,6 @@ import gov.nih.nci.system.applicationservice.ApplicationService;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -131,9 +130,9 @@ public final class EVSUtility  {
     private static final String PROP_DEFINITION = "DEFINITION";
 
     /**
-     * Logger used by this class.
+     * LOG used by this class.
      */
-    private static Log logger = LogFactory.getLog(EVSUtility.class);
+    private static final Log LOG = LogFactory.getLog(EVSUtility.class);
 
     /**
      * Creates a new instance.
@@ -190,7 +189,7 @@ public final class EVSUtility  {
                 }
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            LOG.error(e.getMessage());
 
         }
         return terms;
@@ -206,7 +205,7 @@ public final class EVSUtility  {
      * @param iteratorList
      */
     private void obtainConceptInstances(
-            ArrayList<DescLogicConcept> subConcepts, List<Term> terms, String categoryName) {
+            List<DescLogicConcept> subConcepts, List<Term> terms, String categoryName) {
         DescLogicConcept subConcept;
         List<DescLogicConcept> iteratorList = new ArrayList<DescLogicConcept>(subConcepts);
         for (Iterator<DescLogicConcept> conceptIter = iteratorList.iterator(); conceptIter.hasNext();) {
@@ -215,7 +214,7 @@ public final class EVSUtility  {
                 addConceptToTermList(categoryName, subConcept, terms);
                 subConcepts.remove(subConcept);
             } else {
-                logger.debug("This is not really a problem");
+                LOG.debug("This is not really a problem");
                  //concept is not a term, it stays on the list
                 //just continue
             }
@@ -349,7 +348,7 @@ public final class EVSUtility  {
      *
      */
     private boolean conceptIsInstance(DescLogicConcept concept) {
-        Vector list = concept.getPropertyCollection();
+        List list = concept.getPropertyCollection();
         for (int i = 0; i < list.size(); i++) {
             Property p = (Property) list.get(i);
 
@@ -372,7 +371,7 @@ public final class EVSUtility  {
      */
     private String getConceptPropertyValue(DescLogicConcept concept, String name) {
         String defValue = null;
-        Vector list = concept.getPropertyCollection();
+        List list = concept.getPropertyCollection();
         for (int i = 0; i < list.size(); i++) {
             Property p = (Property) list.get(i);
             if (p.getName().equals(name)) {
