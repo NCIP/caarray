@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.dao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Iterator;
@@ -129,7 +130,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
                     transaction.rollback();
                 }
             } catch (HibernateException rollbackException) {
-                log.equals(rollbackException);
+                log.error("Unable to roll back transaction: ", rollbackException);
             }
             throw new DAOException("Unable to save entity", he);
         } finally {
@@ -166,7 +167,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
                     transaction.rollback();
                 }
             } catch (HibernateException rollbackException) {
-                log.equals(rollbackException);
+                log.error("Unable to roll back transaction: ", rollbackException);
             }
             throw new DAOException("Unable to save entity collection", he);
         } finally {
@@ -177,27 +178,37 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     }
 
     /**
-     * Returns the <code>AbstractCaArrayEntity</code> matching the given entity,
+     * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity,
      * or null if none exists.
      *
-     * @param session the Hibernate <code>Session</code> to use
-     * @param entityToMatch get <code>AbstractCaArrayEntity</code> matching this entity
-     * @return the <code>AbstractCaArrayEntity</code> or null.
+     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
+     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
+     * @throws DAOException if the list of matching entities could not be retrieved.
      */
-    protected AbstractCaArrayEntity queryEntityByExample(Session session, AbstractCaArrayEntity entityToMatch) {
-        List resultSet = null;
+    @SuppressWarnings("unchecked")
+    public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
+        Session session = null;
+        List<AbstractCaArrayEntity> resultList = new ArrayList<AbstractCaArrayEntity>();
+        List hibernateReturnedEntities = null;
 
-        // Query database for list of Protocols with this id.
-        Criteria criteria = session.createCriteria(entityToMatch.getClass());
-        criteria.add(Example.create(entityToMatch));
-        resultSet = criteria.list();
-
-        // Return the first entity that matches, or null if none exists.
-        if ((resultSet != null) && (resultSet.size() >= 1)) {
-            return (AbstractCaArrayEntity) resultSet.get(0);
-        } else {
-            return null;
+        try {
+            session = HibernateUtil.getSession();
+            // Query database for list of Protocols with this id.
+            Criteria criteria = session.createCriteria(entityToMatch.getClass());
+            criteria.add(Example.create(entityToMatch));
+            hibernateReturnedEntities = criteria.list();
+        } catch (HibernateException he) {
+            throw new DAOException("Unable to retrieve entity", he);
+        } finally {
+            if (session != null) {
+                HibernateUtil.closeSession();
+            }
         }
+
+        if (hibernateReturnedEntities != null) {
+            resultList.addAll(hibernateReturnedEntities);
+        }
+        return resultList;
     }
 
     /**
@@ -221,7 +232,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
                     transaction.rollback();
                 }
             } catch (HibernateException rollbackException) {
-                log.equals(rollbackException);
+                log.error("Unable to roll back transaction: ", rollbackException);
             }
             throw new DAOException("Unable to remove entity", he);
         } finally {

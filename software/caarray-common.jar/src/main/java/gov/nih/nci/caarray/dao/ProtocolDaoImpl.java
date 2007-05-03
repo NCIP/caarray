@@ -82,11 +82,9 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
+import java.util.List;
 
 import gov.nih.nci.caarray.domain.protocol.Protocol;
-import gov.nih.nci.caarray.util.HibernateUtil;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.protocol</code> package.
@@ -103,24 +101,18 @@ public class ProtocolDaoImpl extends AbstractCaArrayDaoImpl implements ProtocolD
      * @throws DAOException if there is a problem retrieving the <code>Protocol</code>.
      */
     public Protocol getProtocol(Long id) throws DAOException {
-        Session session = null;
-        Protocol returnedProtocol = null;
+        List matchingProtocols = null;
 
-        // Create an example Protocol that has the desired id.
+        // Create an example protocol that has the desired id, and use it to retrieve matching protocols.
         Protocol protocolToMatch = new Protocol();
         protocolToMatch.setId(id);
+        matchingProtocols = queryEntityByExample(protocolToMatch);
 
-        try {
-            session = HibernateUtil.getSession();
-            returnedProtocol = (Protocol) queryEntityByExample(session, protocolToMatch);
-        } catch (HibernateException he) {
-            throw new DAOException("Unable to retrieve protocol", he);
-        } finally {
-            if (session != null) {
-                HibernateUtil.closeSession();
-            }
+        // Return the first protocol that matches, or null if none exists.
+        if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
+            return (Protocol) matchingProtocols.get(0);
+        } else {
+            return null;
         }
-
-        return returnedProtocol;
     }
 }

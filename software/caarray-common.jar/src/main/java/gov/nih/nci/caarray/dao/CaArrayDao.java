@@ -83,11 +83,13 @@
 package gov.nih.nci.caarray.dao;
 
 import java.util.Collection;
+import java.util.List;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
 /**
  * Base interface for all caArray domain DAOs.
+ * It provides methods to save, update, remove and query entities by example.
  *
  * @author ETavela
  */
@@ -118,4 +120,14 @@ public interface CaArrayDao {
      * @throws DAOException if unable to delete the entity.
      */
     void remove(AbstractCaArrayEntity caArrayEntity) throws DAOException;
+
+    /**
+     * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity,
+     * or null if none exists.
+     *
+     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
+     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
+     * @throws DAOException if the list of matching entities could not be retrieved.
+     */
+    List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) throws DAOException;
 }
