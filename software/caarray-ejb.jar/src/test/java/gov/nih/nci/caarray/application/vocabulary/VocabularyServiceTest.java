@@ -53,12 +53,18 @@ package gov.nih.nci.caarray.application.vocabulary;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.system.applicationservice.ApplicationService;
 
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 /**
@@ -67,9 +73,13 @@ import org.junit.Test;
  */
 public class VocabularyServiceTest {
 
-    private static final int NUM_37 = 37;
+    private static final int NUM_PROT_TYPES = 37;
+    /**
+     * LOG used by this class.
+     */
+    private static final Log LOG = LogFactory.getLog(VocabularyServiceTest.class);
 
-
+////TEST METHODS///////////////////////////////////
 
     /**
      * Test method for {@link gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean#getTerms
@@ -82,10 +92,19 @@ public class VocabularyServiceTest {
         try {
              terms =  vocab.getTerms("ProtocolType");
         } catch (Exception e) {
-            System.out.println("ERROR");
+
         }
         assertTrue(!terms.isEmpty());
-        assertTrue(terms.size() == NUM_37);
+        assertTrue(terms.size() == NUM_PROT_TYPES);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+
+    public void getTermsNullCategory() throws VocabularyServiceException {
+        VocabularyService vocab = new MockVocabularyServiceBean();
+        List<Term> terms = new ArrayList<Term>();
+        String arg = null;
+        terms =  vocab.getTerms(arg);
     }
 
 
@@ -94,15 +113,68 @@ public class VocabularyServiceTest {
      * (java.lang.String)}.
      */
     @Test
-    public void getTermsNullTerm() {
+    public void getTermsBadTerm() {
         VocabularyService vocab = new MockVocabularyServiceBean();
         List<Term> terms = new ArrayList<Term>();
         try {
              terms =  vocab.getTerms("Foo");
-        } catch (Exception e) {
-            System.out.println("ERROR");
+        } catch (VocabularyServiceException e) {
+
         }
         assertTrue(terms.isEmpty());
     }
 
+    /**
+     * Test method for {@link gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean#getTerms
+     * (java.lang.String)}.
+     */
+    @Test(expected=VocabularyServiceException.class)
+    public void getTermsEVSException() throws VocabularyServiceException {
+        VocabularyService vocab = new MockVSBeanForEVSException();
+        List<Term> terms = new ArrayList<Term>();
+         terms =  vocab.getTerms("ProtocolType");
+
+    }
+
+
+//////// INNER CLASS TEST STUBS///////////////////////
+    /**
+     * Put all of my inner stub classes here
+     * @author John Pike
+     *
+     */
+    class MockEVSUtility extends EVSUtility {
+        public ApplicationService getApplicationInstance() {
+            return ApplicationService.getRemoteInstance("http://yahoo.com");
+        }
+    }
+
+    class MockVSBeanForEVSException extends VocabularyServiceBean {
+        public VocabularyDao getVocabularyDao() {
+            return new MockVocabularyDao();
+        }
+        public EVSUtility getEVSUtility() {
+            return new MockEVSUtility();
+        }
+    }
+    class MockVocabularyServiceBean extends VocabularyServiceBean {
+        public VocabularyDao getVocabularyDao() {
+            return new MockVocabularyDao();
+        }
+    }
+    public class MockVocabularyDao implements VocabularyDao {
+
+        public List<Term> getTerms(String categoryName) throws DAOException {
+            return new ArrayList<Term>();
+        }
+        public void save(AbstractCaArrayEntity caArrayEntity) throws DAOException {
+        }
+        public void save(Collection<AbstractCaArrayEntity> caArrayEntities) throws DAOException {
+        }
+        public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
+            return new ArrayList<AbstractCaArrayEntity>();
+        }
+        public void remove(AbstractCaArrayEntity caArrayEntity) throws DAOException {
+        }
+    }
 }
