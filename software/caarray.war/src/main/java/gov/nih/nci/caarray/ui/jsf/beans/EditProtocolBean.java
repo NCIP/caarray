@@ -104,7 +104,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public final class EditProtocolBean {
 
-    private static Log log = LogFactory.getLog(EditProtocolBean.class);
+    private static final Log LOG = LogFactory.getLog(EditProtocolBean.class);
     private Protocol protocol;
 
     @EJB
@@ -127,7 +127,7 @@ public final class EditProtocolBean {
         try {
             types = getVocabularyService().getTerms("ProtocolType");
         } catch (Exception e) {
-            log.error(e);
+            LOG.error("Couldn't retrieve ProtocolTypes", e);
             return null;
         }
         List<SelectItem> items = new ArrayList<SelectItem>(types.size());
@@ -150,8 +150,8 @@ public final class EditProtocolBean {
             InitialContext initialContext = new InitialContext();
             return (VocabularyService) initialContext.lookup(VocabularyService.JNDI_NAME);
         } catch (NamingException e) {
-            log.error("Couldn't get InitialContex", e);
-            throw new RuntimeException(e);
+            LOG.error("Couldn't get InitialContex", e);
+            throw new IllegalStateException(e);
         }
 
     }
