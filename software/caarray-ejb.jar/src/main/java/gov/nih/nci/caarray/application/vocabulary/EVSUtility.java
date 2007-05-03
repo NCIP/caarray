@@ -145,9 +145,7 @@ public final class EVSUtility  {
 
     /**
      * Returns all terms that belong to the category for the name given (including all subcategories). In EVS, these
-     * categories are concepts, and items in a category are simply subconcepts for that concept. NOTE: This method will
-     * only return all of the concepts for the FIRST matching term that is found...that is, as soon as a conceptName is
-     * found in ANY vocabulary, all matching subconcepts for THAT term are returned...
+     * categories are concepts, and items in a category are simply subconcepts for that concept.
      *
      * @param conceptName   find subconcepts for this concept.
      * @return          the matching Terms.
@@ -160,25 +158,19 @@ public final class EVSUtility  {
         List<Term> terms = new ArrayList<Term>();
         try {
             EVSQuery evs = new EVSQueryImpl();
-
             List<Vocabulary> vocab = getVocabularyByName(evs, appService, MGED_VOCAB);
             concept = getEVSConcept(conceptName, evs, vocab, appService);
-
             if (concept != null) {
-
-                 //if the concept is of type MGED_INSTANCE, it is a term
                 if (conceptIsInstance(concept)) {
                     addConceptToTermList(null, concept, terms);
                 }  else {
-                    //if the concept is of type MGED_CLASS, it is a concept/category
-                    //loop thru the concepts as many times as necessary to extracted extract the nested terms
                     subConcepts = (ArrayList<DescLogicConcept>) getEVSConceptList(concept, evs, vocab, appService);
                     int test = 0;
                     //set the category as the current concept...as we go deeper in the tree, the
                     //category will always be set to the parent concept
                     String categoryName = conceptName;
                     while (!subConcepts.isEmpty()) {
-                        //the first time through, skip this part and simply extract children for the current concept
+                        //the first time through, skip this part... obtain conceptInstances for the current concept
                         test++;
                         if (test > 1) {
                             List<DescLogicConcept> tempList = new ArrayList<DescLogicConcept>();
@@ -188,36 +180,46 @@ public final class EVSUtility  {
                             categoryName = subConcepts.get(0).getName();
                             subConcepts = (ArrayList<DescLogicConcept>) getEVSConceptList(
                                     subConcepts.get(0), evs, vocab, appService);
-                            //if the tempList is empty, that means that there were no other items left besides this one
+                            //when the tempList is empty, we're done
                             if (!tempList.isEmpty()) {
                                 subConcepts.addAll(tempList);
                             }
                         }
-                        //clone the original subconcept list, iterate it to obtain each element's CONCEPTS, and if
-                        //any of the subconcepts is an INSTANCE, add to the Term list, remove from the SubConcept list
-                        DescLogicConcept subConcept;
-                        List<DescLogicConcept> iteratorList = new ArrayList<DescLogicConcept>(subConcepts);
-                        for (Iterator<DescLogicConcept> conceptIter = iteratorList.iterator(); conceptIter.hasNext();) {
-                            subConcept = conceptIter.next();
-                            if (conceptIsInstance(subConcept)) {
-                                addConceptToTermList(categoryName, subConcept, terms);
-                                subConcepts.remove(subConcept);
-                            } else {
-                                logger.debug("This is not really a problem");
-                                 //concept is not a term, it stays on the list
-                                //just continue
-                            }
-                        }
+                        obtainConceptInstances(subConcepts, terms, categoryName);
                     }
-
                 }
             }
-
         } catch (Exception e) {
             logger.error(e.getMessage());
 
         }
         return terms;
+    }
+
+
+    /**
+     *  This method will loop through the list of subconcepts, and if any are of type
+     *  mged_instance they will be converted to Terms and removed from the subconcept list.
+     * @param subConcepts
+     * @param terms
+     * @param categoryName
+     * @param iteratorList
+     */
+    private void obtainConceptInstances(
+            ArrayList<DescLogicConcept> subConcepts, List<Term> terms, String categoryName) {
+        DescLogicConcept subConcept;
+        List<DescLogicConcept> iteratorList = new ArrayList<DescLogicConcept>(subConcepts);
+        for (Iterator<DescLogicConcept> conceptIter = iteratorList.iterator(); conceptIter.hasNext();) {
+            subConcept = conceptIter.next();
+            if (conceptIsInstance(subConcept)) {
+                addConceptToTermList(categoryName, subConcept, terms);
+                subConcepts.remove(subConcept);
+            } else {
+                logger.debug("This is not really a problem");
+                 //concept is not a term, it stays on the list
+                //just continue
+            }
+        }
     }
 
 
