@@ -89,4 +89,28 @@ public class VocabularyDaoTestStub implements VocabularyDao {
 
     }
 
+    /**
+     * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity,
+     * or null if none exists.
+     *
+     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
+     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
+     * @throws DAOException if the list of matching entities could not be retrieved.
+     */
+    public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
+        // TODO Auto-generated method stub
+        return new ArrayList<AbstractCaArrayEntity>();
+    }
+
+    /**
+     * Deletes the entity from persistent storage.
+     *
+     * @param caArrayEntity the entity to be deleted.
+     * @throws DAOException if unable to delete the entity.
+     */
+    public void remove(AbstractCaArrayEntity caArrayEntity) throws DAOException {
+        // TODO Auto-generated method stub
+
+    }
+
 }
