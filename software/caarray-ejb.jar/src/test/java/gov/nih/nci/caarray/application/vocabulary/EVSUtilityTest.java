@@ -62,6 +62,7 @@ import static org.junit.Assert.*;
  * @author John Pike
  *
  */
+@SuppressWarnings("PMD")
 public class EVSUtilityTest {
     /**
      * various private uses.
