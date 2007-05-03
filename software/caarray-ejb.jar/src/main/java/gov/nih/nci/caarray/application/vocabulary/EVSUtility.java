@@ -167,30 +167,7 @@ public class EVSUtility  {
                     addConceptToTermList(null, concept, terms);
                 }  else {
                     subConcepts = (ArrayList<DescLogicConcept>) getEVSConceptList(concept, vocab, appService);
-
-                    int test = 0;
-                    //set the category as the current concept...as we go deeper in the tree, the
-                    //category will always be set to the parent concept
-                    String categoryName = conceptName;
-                    while (!subConcepts.isEmpty()) {
-                        //the first time through, skip this part... obtain conceptInstances for the current concept
-                        test++;
-                        if (test > 1) {
-                            List<DescLogicConcept> tempList = new ArrayList<DescLogicConcept>();
-                            //let's always test the first element, and put the others in a tempList
-                            tempList.addAll(subConcepts);
-                            tempList.remove(0);
-                            categoryName = subConcepts.get(0).getName();
-                            subConcepts = (ArrayList<DescLogicConcept>) getEVSConceptList(
-                                    subConcepts.get(0), vocab, appService);
-
-                            //when the tempList is empty, we're done
-                            if (!tempList.isEmpty()) {
-                                subConcepts.addAll(tempList);
-                            }
-                        }
-                        obtainConceptInstances(subConcepts, terms, categoryName);
-                    }
+                    traverseEVSConceptTree(conceptName, appService, subConcepts, terms, vocab);
                 }
             }
         } catch (Exception e) {
@@ -203,7 +180,48 @@ public class EVSUtility  {
 
 
     /**
+     * This awkward method will pop off a subConcept at a time, traverse the tree of this subConcept
+     * and placing any found terms on the Terms list.  Eventually the subConcepts (locally, the remainderList)
+     * will be empty.
+     * @param conceptName
+     * @param appService
+     * @param subConcepts
+     * @param terms
+     * @param vocab
+     * @throws ApplicationException
+     */
+    private void traverseEVSConceptTree(final String conceptName, final ApplicationService appService,
+            List<DescLogicConcept> subConcepts, List<Term> terms, List<Vocabulary> vocab) throws ApplicationException {
+
+        //set the category as the current concept...as we go deeper in the tree, the
+        //category will always be set to the parent concept
+        String categoryName = conceptName;
+        List<DescLogicConcept> remainderList = new ArrayList<DescLogicConcept>(subConcepts);
+        int test = 0;
+        while (!remainderList.isEmpty()) {
+            //the first time through, skip this part... obtain conceptInstances for the current concept
+            test++;
+            if (test > 1) {
+                List<DescLogicConcept> tempList = new ArrayList<DescLogicConcept>(remainderList);
+                //let's always test the first element, and put the others in a tempList
+                tempList.remove(0);
+                categoryName = subConcepts.get(0).getName();
+                remainderList = (ArrayList<DescLogicConcept>) getEVSConceptList(
+                        remainderList.get(0), vocab, appService);
+
+                //when the tempList is empty, we're done
+                if (!tempList.isEmpty()) {
+                    remainderList.addAll(tempList);
+                }
+            }
+            obtainConceptInstances(remainderList, terms, categoryName);
+        }
+    }
+
+
+    /**
      * @param e
+     * @return VocabularyServiceException
      */
     private VocabularyServiceException createVocabException(Exception e) {
         VocabularyServiceException vse = new VocabularyServiceException(e);
@@ -231,7 +249,7 @@ public class EVSUtility  {
                 addConceptToTermList(categoryName, subConcept, terms);
                 subConcepts.remove(subConcept);
             } else {
-                LOG.debug("This is not really a problem");
+                LOG.debug("In Else-statement: This is not really a problem");
                  //concept is not a term, it stays on the list
                 //just continue
             }
@@ -369,6 +387,7 @@ public class EVSUtility  {
      *
      */
     private boolean conceptIsInstance(DescLogicConcept concept) {
+        boolean isInstance = false;
         List list = concept.getPropertyCollection();
         for (int i = 0; i < list.size(); i++) {
             Property p = (Property) list.get(i);
@@ -376,11 +395,11 @@ public class EVSUtility  {
             //if the concept is of type MGED_INSTANCE
             if (p.getName().equals(PROP_CONCEPT_TYPE)) {
                 if (p.getValue().equals(MGED_INST)) {
-                    return true;
+                    isInstance = true;
                 }
             }
         }
-        return false;
+        return isInstance;
     }
 
 

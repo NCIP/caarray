@@ -143,18 +143,35 @@ public class VocabularyServiceBean implements VocabularyService {
             termList = vocabDao.getTerms(categoryName);
         } catch (DAOException e) {
             LOG.debug("Error calling getTerms(): " + e.getMessage());
+            throw new VocabularyServiceException(e);
         }
 
         //if not found in our repository, then get it from evs
+        //and save locally
 
         if (termList.isEmpty()) {
             termList = getEVSTerms(categoryName);
+            if (termList != null && !(termList.isEmpty())) {
+                saveTermsLocally(termList);
+            }
 
         }
 
         return termList;
     }
 
+
+    private void saveTermsLocally(List<Term> termList) throws VocabularyServiceException {
+        if (termList == null || termList.isEmpty()) {
+            throw new IllegalArgumentException("TermList is null or emptylist");
+        }
+        VocabularyDao vocabDao = this.getVocabularyDao();
+ //       try {
+ //           vocabDao.save(termList);
+ //       } catch (DAOException de) {
+ //           throw new VocabularyServiceException(de);
+ //       }
+    }
     /**
      * Returns all terms that belong to the category for the name given
      * from the EVS vocab service.
@@ -167,8 +184,6 @@ public class VocabularyServiceBean implements VocabularyService {
         List<Term> evsTerms = new ArrayList<Term>();
         try {
             evsTerms = evsUtil.getConcepts(categoryName);
-        }  catch (VocabularyServiceException vse) {
-            throw vse;
         }  catch (Exception e) {
             throw new VocabularyServiceException(e);
         }
