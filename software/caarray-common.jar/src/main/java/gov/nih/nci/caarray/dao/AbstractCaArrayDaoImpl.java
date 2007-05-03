@@ -106,7 +106,7 @@ import org.hibernate.criterion.Example;
  */
 public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
 
-    private static Log log = LogFactory.getLog(AbstractCaArrayDaoImpl.class);
+    private static final Log LOG = LogFactory.getLog(AbstractCaArrayDaoImpl.class);
 
     /**
      * Saves the entity to persistent storage, updating or inserting
@@ -130,7 +130,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
                     transaction.rollback();
                 }
             } catch (HibernateException rollbackException) {
-                log.error("Unable to roll back transaction: ", rollbackException);
+                LOG.error("Unable to roll back transaction: ", rollbackException);
             }
             throw new DAOException("Unable to save entity", he);
         } finally {
@@ -167,7 +167,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
                     transaction.rollback();
                 }
             } catch (HibernateException rollbackException) {
-                log.error("Unable to roll back transaction: ", rollbackException);
+                LOG.error("Unable to roll back transaction: ", rollbackException);
             }
             throw new DAOException("Unable to save entity collection", he);
         } finally {
@@ -232,7 +232,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
                     transaction.rollback();
                 }
             } catch (HibernateException rollbackException) {
-                log.error("Unable to roll back transaction: ", rollbackException);
+                LOG.error("Unable to roll back transaction: ", rollbackException);
             }
             throw new DAOException("Unable to remove entity", he);
         } finally {
