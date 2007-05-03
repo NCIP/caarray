@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<ruleset name="pmd-rules">
+
+    <description>5AM JSF PMD Rules</description>
+
+    <rule ref="rulesets/basic-jsf.xml" />
+
+    <rule ref="rulesets/basic-jsp.xml" />
+
+</ruleset>

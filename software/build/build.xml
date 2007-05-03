@@ -55,6 +55,8 @@
 
     <!-- Third-party -->
     <property name="asm-2.2.1.jar" value="${lib.dir}/asm-2.2.1.jar" />
+    <property name="asm-3.0.jar" value="${lib.dir}/asm-3.0.jar" />
+    <property name="backport-util-concurrent" value="${lib.dir}/backport-util-concurrent" />
     <property name="cacore32-client.jar" value="${lib.dir}/cacore32-client.jar" />
     <property name="checkstyle.jar" value="${lib.dir}/checkstyle-all-4.3.jar" />
     <property name="cobertura.jar" value="${lib.dir}/cobertura.jar" />
@@ -63,6 +65,7 @@
     <property name="hibernate.jar" value="${lib.dir}/hibernate3.jar" />
     <property name="jakarta-oro-2.0.8.jar" value="${lib.dir}/jakarta-oro-2.0.8.jar" />
     <property name="javaee.jar" value="${lib.dir}/javaee.jar" />
+    <property name="jaxen.jar" value="${lib.dir}/jaxen-1.1-beta.jar" />
     <property name="junit.jar" value="${lib.dir}/junit-4.3.1.jar" />
     <property name="log4j.jar" value="${lib.dir}/log4j-1.2.13.jar" />
     <property name="myfaces-api.jar" value="${lib.dir}/myfaces-api-1.1.5.jar" />
@@ -102,7 +105,12 @@
     <!-- ******************************************************************* -->
 
     <taskdef resource="checkstyletask.properties" classpath="${checkstyle.jar}" />
+
     <taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+
+    <taskdef name="pmd"
+        classname="net.sourceforge.pmd.ant.PMDTask"
+        classpath="${pmd.jar};${jaxen.jar};${asm.jar};${backport-util-concurrent}" />
 
     <!-- ******************************************************************* -->
     <!-- ** MAIN TARGETS                                                  ** -->
@@ -432,9 +440,10 @@
     <!-- ** CHECK TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
 
-    <target name="check" depends="check:checkstyle">
-      <fail if="checkstyle.failure" message="There were Checkstyle failures." />
-  </target>
+    <target name="check" depends="check:checkstyle,check:pmd">
+        <fail if="checkstyle.failure" message="There were Checkstyle failures." />
+        <!-- fail if="pmd.failure" message="There were PMD failures." / -->
+    </target>
 
     <target name="check:checkstyle" depends="build:caarray-common.jar,build:caarray-ejb.jar,compile:caarray.war">
         <mkdir dir="${site.dir}/checkstyle" />
@@ -458,6 +467,47 @@
         </xslt>
     </target>
 
+    <target name="check:pmd">
+        <mkdir dir="${site.dir}/pmd" />
+        <mkdir dir="${site.dir}/pmd-jsp" />
+
+        <pmd failonerror="false"
+            rulesetfiles="${resource.dir}/pmd-ruleset.xml"
+            failurespropertyname="pmd.failure"
+            targetjdk="1.5">
+            <formatter type="xml" toFile="${site.dir}/pmd/pmd-report.xml" toConsole="false" />
+            <fileset dir="${caarray-common.src.dir}">
+                <include name="**/*.java" />
+            </fileset>
+            <fileset dir="${caarray-war.src.dir}">
+                <include name="**/*.java" />
+            </fileset>
+            <fileset dir="${caarray-ejb.src.dir}">
+                <include name="**/*.java" />
+            </fileset>
+        </pmd>
+
+        <pmd failonerror="false"
+            rulesetfiles="${resource.dir}/pmd-jsp-ruleset.xml"
+            failurespropertyname="pmd.jsp.failure"
+            targetjdk="1.5">
+            <formatter type="xml" toFile="${site.dir}/pmd-jsp/pmd-jsp-report.xml" toConsole="false" />
+            <fileset dir="${caarray-war.webapp.dir}">
+                <include name="**/*.jsp" />
+            </fileset>
+        </pmd>
+
+        <xslt in="${site.dir}/pmd/pmd-report.xml"
+            out="${site.dir}/pmd/pmd-report.html"
+            style="${resource.dir}/pmd-report-per-class.xslt">
+        </xslt>
+
+        <xslt in="${site.dir}/pmd-jsp/pmd-jsp-report.xml"
+            out="${site.dir}/pmd-jsp/pmd-jsp-report.html"
+            style="${resource.dir}/pmd-report-per-class.xslt">
+        </xslt>
+    </target>
+
     <!-- ******************************************************************* -->
     <!-- ** SITE TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
@@ -467,7 +517,7 @@
     <!-- ** DEPLOY TARGETS                                                ** -->
     <!-- ******************************************************************* -->
 
-    <target name="deploy:deploy" depends="build:caarray.ear">
+    <target name="deploy" depends="build:caarray.ear">
         <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
     </target>
 
