@@ -15,7 +15,7 @@ CREATE TABLE CATEGORY
 (
   ID                          NUMBER            NOT NULL,
   NAME                        VARCHAR2(1000),
-  PARENT_ID                   NUMBER            NOT NULL
+  PARENT_ID                   NUMBER
 )
 NOLOGGING
 NOCACHE
