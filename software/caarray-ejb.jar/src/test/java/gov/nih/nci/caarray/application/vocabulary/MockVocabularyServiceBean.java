@@ -50,59 +50,15 @@
  */
 package gov.nih.nci.caarray.application.vocabulary;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import gov.nih.nci.caarray.dao.VocabularyDao;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
-
-
-import org.junit.Test;
 
 /**
  * @author John Pike
  *
  */
-public class VocabularyServiceTest {
-
-    private static final int NUM_37 = 37;
-
-
-
-    /**
-     * Test method for {@link gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean#getTerms
-     * (java.lang.String)}.
-    */
-    @Test
-    public void getTermsProtocolType() {
-        VocabularyService vocab = new MockVocabularyServiceBean();
-        List<Term> terms = new ArrayList<Term>();
-        try {
-             terms =  vocab.getTerms("ProtocolType");
-        } catch (Exception e) {
-            System.out.println("ERROR");
-        }
-        assertTrue(!terms.isEmpty());
-        assertTrue(terms.size() == NUM_37);
-    }
-
-
-    /**
-     * Test method for {@link gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean#getTerms
-     * (java.lang.String)}.
-     */
-    @Test
-    public void getTermsNullTerm() {
-        VocabularyService vocab = new MockVocabularyServiceBean();
-        List<Term> terms = new ArrayList<Term>();
-        try {
-             terms =  vocab.getTerms("Foo");
-        } catch (Exception e) {
-            System.out.println("ERROR");
-        }
-        assertTrue(terms.isEmpty());
+public class MockVocabularyServiceBean extends VocabularyServiceBean {
+    public VocabularyDao getVocabularyDao() {
+        return new VocabularyDaoTestStub();
     }
 
 }

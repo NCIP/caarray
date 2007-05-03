@@ -106,26 +106,24 @@ import org.apache.commons.logging.LogFactory;
  */
 @Local(VocabularyService.class)
 @Stateless
-public final class VocabularyServiceBean implements VocabularyService {
+public class VocabularyServiceBean implements VocabularyService {
 
     /**
      * Logger used by this class.
      */
     private static Log logger = LogFactory.getLog(VocabularyServiceBean.class);
-    private VocabularyDao vocabularyDao;
     /**
      * Creates a new instance.
      */
     public VocabularyServiceBean() {
         super();
-        setVocabularyDao(CaArrayDaoFactory.INSTANCE.getVocabularyDao());
     }
     /**
-     * Set when testing.
-     * @param arg boolean
+     *
+     * @return VocabularyDao
      */
-    public void setVocabularyDao(VocabularyDao arg) {
-        vocabularyDao = arg;
+    public VocabularyDao getVocabularyDao() {
+        return CaArrayDaoFactory.INSTANCE.getVocabularyDao();
     }
     /**
      * Returns all terms that belong to the category for the name given (including all
@@ -136,10 +134,10 @@ public final class VocabularyServiceBean implements VocabularyService {
     */
     public List<Term> getTerms(final String categoryName) {
 
-
+        VocabularyDao vocabDao = getVocabularyDao();
         List<Term> termList = new ArrayList<Term>();
         try {
-            termList = vocabularyDao.getTerms(categoryName);
+            termList = vocabDao.getTerms(categoryName);
         } catch (DAOException e) {
             logger.debug("Error calling getTerms(): " + e.getMessage());
         }
