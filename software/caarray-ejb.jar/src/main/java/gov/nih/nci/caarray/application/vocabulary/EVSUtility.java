@@ -302,7 +302,7 @@ public class EVSUtility  {
          */
     private List<DescLogicConcept> getEVSConceptList(final DescLogicConcept concept,
             final List<Vocabulary> vocabs, final ApplicationService appService) throws ApplicationException {
-        EVSQuery evs = null;
+        EVSQuery evs = new EVSQueryImpl();
         List<DescLogicConcept> concepts = new ArrayList<DescLogicConcept>();
         List<String> subConceptList = this.getSubConceptNames(appService, evs, concept);
         try {
