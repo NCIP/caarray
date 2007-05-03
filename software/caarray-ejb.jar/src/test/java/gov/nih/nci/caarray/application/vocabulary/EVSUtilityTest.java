@@ -79,7 +79,7 @@ public class EVSUtilityTest {
     /**
     * Tests basic search in EVS.
     */
-    @Test public final void searchEVS() throws Exception {
+    @Test public final void searchEVS() throws VocabularyServiceException {
         EVSUtility evs = new EVSUtility();
         List<Term> results = evs.getConcepts("ProtocolType");
         List<String> termNames = new ArrayList<String>();
@@ -94,7 +94,7 @@ public class EVSUtilityTest {
     /**
      * Tests basic search in EVS, where search should return no results.
      */
-     public final void searchEVSNoResults() throws Exception {
+     public final void searchEVSNoResults() throws VocabularyServiceException {
         EVSUtility evs = new EVSUtility();
         List<Term> results = evs.getConcepts("Foo");
 
