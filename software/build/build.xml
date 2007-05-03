@@ -20,6 +20,7 @@
 
     <property name="caarray-common.dir" value="${basedir}/caarray-common.jar" />
     <property name="caarray-common.src.dir" value="${caarray-common.dir}/src/main/java" />
+    <property name="caarray-common.resources.dir" value="${caarray-common.dir}/src/main/resources" />
     <property name="caarray-common.test.src.dir" value="${caarray-common.dir}/src/test/java" />
     <property name="caarray-common.target.dir" value="${caarray-common.dir}/target" />
     <property name="caarray-common.classes.dir" value="${caarray-common.target.dir}/classes" />
@@ -39,7 +40,6 @@
 
     <property name="caarray-war.dir" value="${basedir}/caarray.war" />
     <property name="caarray-war.src.dir" value="${caarray-war.dir}/src/main/java" />
-    <property name="caarray-war.resources.dir" value="${caarray-war.dir}/src/main/resources" />
     <property name="caarray-war.webapp.dir" value="${caarray-war.dir}/src/main/webapp" />
     <property name="caarray-war.test.src.dir" value="${caarray-war.dir}/src/test/java" />
     <property name="caarray-war.target.dir" value="${caarray-war.dir}/target" />
@@ -168,7 +168,7 @@
     <!-- Copy hibernate files to classes directory and configure datasource -->
     <target name="configure-datasource">
         <copy todir="${caarray-common.classes.dir}" overwrite="true">
-            <fileset dir="${caarray-war.resources.dir}" includes="hibernate*" />
+            <fileset dir="${caarray-common.resources.dir}" includes="hibernate*" />
             <fileset dir="${caarray-common.src.dir}" includes="**/*.hbm.xml" />
         </copy>
         <replace file="${caarray-common.classes.dir}/hibernate.cfg.xml">
