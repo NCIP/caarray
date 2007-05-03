@@ -99,6 +99,7 @@ import org.hibernate.criterion.Example;
 
 /**
  * Base DAO implementation for all caArray domain DAOs.
+ * It provides methods to save, update, remove and query entities by example.
  *
  * @author Rashmi Srinivasa
  */
@@ -120,7 +121,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         try {
             session = HibernateUtil.getSession();
             transaction = session.beginTransaction();
-            saveOrUpdateOneEntity(session, caArrayEntity);
+            session.saveOrUpdate(caArrayEntity);
             transaction.commit();
         } catch (HibernateException he) {
             try {
@@ -156,7 +157,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             Iterator<AbstractCaArrayEntity> iterator = caArrayEntities.iterator();
             while (iterator.hasNext()) {
                 AbstractCaArrayEntity entity = iterator.next();
-                saveOrUpdateOneEntity(session, entity);
+                session.saveOrUpdate(entity);
             }
             transaction.commit();
         } catch (HibernateException he) {
@@ -198,21 +199,33 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             return null;
         }
     }
+
     /**
-     * Saves the entity to persistent storage, updating or inserting
-     * as necessary.
+     * Deletes the entity from persistent storage.
      *
-     * @param session the Hibernate <code>Session</code> to use
-     * @param caArrayEntity the entity to save
+     * @param caArrayEntity the entity to be deleted.
+     * @throws DAOException if unable to delete the entity.
      */
-    private void saveOrUpdateOneEntity(Session session, AbstractCaArrayEntity caArrayEntity) {
-        AbstractCaArrayEntity matchingEntity = queryEntityByExample(session, caArrayEntity);
-        if (matchingEntity == null) {
-            // Entity with this id does not exist. Save new entity.
-            session.save(caArrayEntity);
-        } else {
-            // Entity with this id already exists. Update existing entity.
-            session.update(caArrayEntity);
+    public void remove(AbstractCaArrayEntity caArrayEntity) throws DAOException {
+        Session session = null;
+        Transaction transaction = null;
+
+        try {
+            session = HibernateUtil.getSession();
+            transaction = session.beginTransaction();
+            session.delete(caArrayEntity);
+            transaction.commit();
+        } catch (HibernateException he) {
+            try {
+                if (transaction != null) {
+                    transaction.rollback();
+                }
+            } catch (HibernateException rollbackException) {
+                log.equals(rollbackException);
+            }
+            throw new DAOException("Unable to remove entity", he);
+        } finally {
+            session.close();
         }
     }
 }

@@ -111,4 +111,11 @@ public interface CaArrayDao {
      */
     void save(Collection<AbstractCaArrayEntity> caArrayEntities) throws DAOException;
 
+    /**
+     * Deletes the entity from persistent storage.
+     *
+     * @param caArrayEntity the entity to be deleted.
+     * @throws DAOException if unable to delete the entity.
+     */
+    void remove(AbstractCaArrayEntity caArrayEntity) throws DAOException;
 }
