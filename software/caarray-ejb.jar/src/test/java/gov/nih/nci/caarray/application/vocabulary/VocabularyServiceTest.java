@@ -71,6 +71,7 @@ import org.junit.Test;
  * @author John Pike
  *
  */
+@SuppressWarnings("PMD")
 public class VocabularyServiceTest {
 
     private static final int NUM_PROT_TYPES = 37;
@@ -82,6 +83,7 @@ public class VocabularyServiceTest {
 ////TEST METHODS///////////////////////////////////
 
     /**
+     * Test to ensure that 37 entries are returned for the categoryName "ProtocolType".
      * Test method for {@link gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean#getTerms
      * (java.lang.String)}.
     */
@@ -98,8 +100,12 @@ public class VocabularyServiceTest {
         assertTrue(terms.size() == NUM_PROT_TYPES);
     }
 
+    /**
+     * Test to ensure IllegalArgumentException is thrown if a null arg
+     * is passed to "getTerms()" method
+     * @throws VocabularyServiceException
+     */
     @Test(expected=IllegalArgumentException.class)
-
     public void getTermsNullCategory() throws VocabularyServiceException {
         VocabularyService vocab = new MockVocabularyServiceBean();
         List<Term> terms = new ArrayList<Term>();
@@ -108,7 +114,8 @@ public class VocabularyServiceTest {
     }
 
 
-    /**
+    /**  Test to ensure that no results are found for the category "Foo",
+     *   and that this will return an empty list.
      * Test method for {@link gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean#getTerms
      * (java.lang.String)}.
      */
@@ -125,6 +132,8 @@ public class VocabularyServiceTest {
     }
 
     /**
+     * Test to ensure that when the EVS service goes haywire, the getTerms() method will create
+     * a VocabServiceException
      * Test method for {@link gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean#getTerms
      * (java.lang.String)}.
      */
