@@ -236,7 +236,9 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             }
             throw new DAOException("Unable to remove entity", he);
         } finally {
-            session.close();
+            if (session != null) {
+                HibernateUtil.closeSession();
+            }
         }
     }
 }
