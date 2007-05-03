@@ -368,6 +368,8 @@
           <classpath>
           <pathelement location="${caarray-ejb.classes.dir}" />
           <pathelement location="${caarray-common.classes.dir}" />
+          <pathelement location="${cacore32-client.jar}" />
+          <pathelement location="${commons-logging.jar}" />
           <pathelement location="${javaee.jar}" />
           <pathelement location="${junit.jar}" />
           </classpath>
@@ -463,7 +465,7 @@
         <checkstyle config="${checkstyle.config}" failureProperty="checkstyle.failure" failOnViolation="false">
             <classpath>
                 <pathelement location="${caarray-common.jar}" />
-                <pathelement location="${caarray-ejb.jar}}" />
+                <pathelement location="${caarray-ejb.jar}" />
                 <pathelement location="${caarray-war.classes.dir}" />
                 <pathelement location="${cacore32-client.jar}" />
                 <pathelement location="${cacore32-client.jar}" />
