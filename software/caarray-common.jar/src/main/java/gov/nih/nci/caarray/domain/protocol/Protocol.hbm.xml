@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC 
+<!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
@@ -15,7 +15,7 @@
         <property name="url" column="URL" type="string" />
         <many-to-one name="type" column="TYPE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Term" />
         <set name="parameters" lazy="true">
-            <key column="ID" />
+            <key column="PROTOCOL_ID" />
             <one-to-many class="gov.nih.nci.caarray.domain.protocol.Parameter" />
         </set>
     </class>
