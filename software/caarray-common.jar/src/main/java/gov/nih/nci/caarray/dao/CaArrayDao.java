@@ -111,7 +111,7 @@ public interface CaArrayDao {
      * @param caArrayEntities the entity collection to save
      * @throws DAOException if the entity collection could not be saved.
      */
-    void save(Collection<AbstractCaArrayEntity> caArrayEntities) throws DAOException;
+    void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) throws DAOException;
 
     /**
      * Deletes the entity from persistent storage.

@@ -148,7 +148,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * @param caArrayEntities the entity collection to save
      * @throws DAOException if the entity collection could not be saved.
      */
-    public void save(Collection<AbstractCaArrayEntity> caArrayEntities) throws DAOException {
+    public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) throws DAOException {
         Session session = null;
         Transaction transaction = null;
 
@@ -156,7 +156,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             session = HibernateUtil.getSession();
             transaction = session.beginTransaction();
 
-            Iterator<AbstractCaArrayEntity> iterator = caArrayEntities.iterator();
+            Iterator<? extends AbstractCaArrayEntity> iterator = caArrayEntities.iterator();
             while (iterator.hasNext()) {
                 AbstractCaArrayEntity entity = iterator.next();
                 session.saveOrUpdate(entity);
