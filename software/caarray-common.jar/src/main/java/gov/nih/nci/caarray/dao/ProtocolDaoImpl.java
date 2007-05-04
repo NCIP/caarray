@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import java.util.List;
-
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 
 /**
@@ -101,18 +99,9 @@ public class ProtocolDaoImpl extends AbstractCaArrayDaoImpl implements ProtocolD
      * @throws DAOException if there is a problem retrieving the <code>Protocol</code>.
      */
     public Protocol getProtocol(Long id) throws DAOException {
-        List matchingProtocols = null;
-
         // Create an example protocol that has the desired id, and use it to retrieve matching protocols.
         Protocol protocolToMatch = new Protocol();
         protocolToMatch.setId(id);
-        matchingProtocols = queryEntityByExample(protocolToMatch);
-
-        // Return the first protocol that matches, or null if none exists.
-        if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
-            return (Protocol) matchingProtocols.get(0);
-        } else {
-            return null;
-        }
+        return (Protocol) queryEntityById(protocolToMatch);
     }
 }

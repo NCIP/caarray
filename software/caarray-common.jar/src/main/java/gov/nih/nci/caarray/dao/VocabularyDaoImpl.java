@@ -94,12 +94,8 @@ public class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements Vocabul
         }
 
         if (hibernateReturnedTerms != null) {
-            // Note: The following line gives a type safety warning because Hibernate 3.2
-            // still returns a List instead of a List<Term>. Hopefully, they will support
-            // Java generics completely in their next release. We could get rid of the
-            // warning by looping through the elements of the hibernate-returned List,
-            // and explicitly casting each object to Term before adding it to our List<Term>.
-            // But that's not a great solution. Hence the SuppressWarnings annotation.
+            // Note: When Hibernate starts supporting Java generics, the SuppressWarnings
+            // annotation should be removed.
             matchingTerms.addAll(hibernateReturnedTerms);
         }
         return matchingTerms;

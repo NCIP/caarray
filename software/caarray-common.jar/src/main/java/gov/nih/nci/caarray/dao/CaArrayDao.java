@@ -130,4 +130,13 @@ public interface CaArrayDao {
      * @throws DAOException if the list of matching entities could not be retrieved.
      */
     List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) throws DAOException;
+    /**
+     * Returns the <code>AbstractCaArrayEntity</code> matching the given id,
+     * or null if none exists.
+     *
+     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this id.
+     * @return the retrieved <code>AbstractCaArrayEntity</code> or null.
+     * @throws DAOException if matching entities could not be retrieved.
+     */
+    AbstractCaArrayEntity queryEntityById(AbstractCaArrayEntity entityToMatch) throws DAOException;
 }

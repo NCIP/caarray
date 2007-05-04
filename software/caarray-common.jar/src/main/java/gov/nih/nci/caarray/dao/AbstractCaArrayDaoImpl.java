@@ -97,6 +97,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Example;
+import org.hibernate.criterion.Restrictions;
 
 /**
  * Base DAO implementation for all caArray domain DAOs.
@@ -211,6 +212,37 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         return resultList;
     }
 
+    /**
+     * Returns the <code>AbstractCaArrayEntity</code> matching the given id,
+     * or null if none exists.
+     *
+     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this id.
+     * @return the retrieved <code>AbstractCaArrayEntity</code> or null.
+     * @throws DAOException if matching entities could not be retrieved.
+     */
+    public AbstractCaArrayEntity queryEntityById(AbstractCaArrayEntity entityToMatch) throws DAOException {
+        List hibernateReturnedEntities = null;
+        Session session = null;
+
+        try {
+            session = HibernateUtil.getSession();
+            // Query database for list of entities matching the given entity.
+            hibernateReturnedEntities = session.createCriteria(entityToMatch.getClass()).add(
+                Restrictions.eq("id", entityToMatch.getId())).list();
+        } catch (HibernateException he) {
+            throw new DAOException("Unable to retrieve entity", he);
+        } finally {
+            if (session != null) {
+                HibernateUtil.closeSession();
+            }
+        }
+
+        if ((hibernateReturnedEntities != null) && (hibernateReturnedEntities.size() >= 1)) {
+            return (AbstractCaArrayEntity) hibernateReturnedEntities.get(0);
+        } else {
+            return null;
+        }
+    }
     /**
      * Deletes the entity from persistent storage.
      *
