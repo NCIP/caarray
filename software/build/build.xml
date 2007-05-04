@@ -523,6 +523,12 @@
         </xslt>
     </target>
 
+    <target name="check:pmd:update-eclipse-projects">
+		<copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-common.dir}/.ruleset" />
+		<copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-war.dir}/.ruleset" />
+		<copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-ejb.dir}/.ruleset" />
+    </target>
+
     <!-- ******************************************************************* -->
     <!-- ** SITE TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
