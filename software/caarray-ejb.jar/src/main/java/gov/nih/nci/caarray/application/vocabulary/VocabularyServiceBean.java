@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.vocabulary;
 
+
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
@@ -148,13 +149,11 @@ public class VocabularyServiceBean implements VocabularyService {
 
         //if not found in our repository, then get it from evs
         //and save locally
-
         if (termList.isEmpty()) {
             termList = getEVSTerms(categoryName);
             if (termList != null && !(termList.isEmpty())) {
                 saveTermsLocally(termList);
             }
-
         }
 
         return termList;
@@ -165,12 +164,13 @@ public class VocabularyServiceBean implements VocabularyService {
         if (termList == null || termList.isEmpty()) {
             throw new IllegalArgumentException("TermList is null or emptylist");
         }
+
         VocabularyDao vocabDao = this.getVocabularyDao();
- //       try {
- //           vocabDao.save(termList);
- //       } catch (DAOException de) {
- //           throw new VocabularyServiceException(de);
- //       }
+        try {
+            vocabDao.save(termList);
+        } catch (DAOException de) {
+            throw new VocabularyServiceException(de);
+        }
     }
     /**
      * Returns all terms that belong to the category for the name given
