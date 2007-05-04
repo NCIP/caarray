@@ -60,12 +60,6 @@
         <exclude name="ShortVariable" />
     </rule>
 
-    <rule ref="rulesets/naming.xml/LongVariable">
-        <properties>
-            <property name="minimum" value="30"></property>
-        </properties>
-    </rule>
-
     <rule ref="rulesets/optimizations.xml">
         <exclude name="AvoidInstantiatingObjectsInLoops" />
         <exclude name="LocalVariableCouldBeFinal" />
