@@ -178,7 +178,7 @@ public class VocabularyServiceTest {
         }
         public void save(AbstractCaArrayEntity caArrayEntity) throws DAOException {
         }
-        public void save(Collection<AbstractCaArrayEntity> caArrayEntities) throws DAOException {
+        public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) throws DAOException {
         }
         public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
             return new ArrayList<AbstractCaArrayEntity>();

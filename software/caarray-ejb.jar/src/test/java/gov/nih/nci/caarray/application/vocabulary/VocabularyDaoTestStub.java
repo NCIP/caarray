@@ -84,7 +84,7 @@ public class VocabularyDaoTestStub implements VocabularyDao {
     /* (non-Javadoc)
      * @see gov.nih.nci.caarray.dao.CaArrayDao#save(java.util.Collection)
      */
-    public void save(Collection<AbstractCaArrayEntity> caArrayEntities) throws DAOException {
+    public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) throws DAOException {
         // TODO Auto-generated method stub
 
     }
