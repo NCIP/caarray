@@ -135,9 +135,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             }
             throw new DAOException("Unable to save entity", he);
         } finally {
-            if (session != null) {
-                HibernateUtil.closeSession();
-            }
+            HibernateUtil.closeSession();
         }
     }
 
@@ -172,9 +170,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             }
             throw new DAOException("Unable to save entity collection", he);
         } finally {
-            if (session != null) {
-                HibernateUtil.closeSession();
-            }
+            HibernateUtil.closeSession();
         }
     }
 
@@ -201,9 +197,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         } catch (HibernateException he) {
             throw new DAOException("Unable to retrieve entity", he);
         } finally {
-            if (session != null) {
-                HibernateUtil.closeSession();
-            }
+            HibernateUtil.closeSession();
         }
 
         if (hibernateReturnedEntities != null) {
@@ -232,9 +226,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         } catch (HibernateException he) {
             throw new DAOException("Unable to retrieve entity", he);
         } finally {
-            if (session != null) {
-                HibernateUtil.closeSession();
-            }
+            HibernateUtil.closeSession();
         }
 
         if ((hibernateReturnedEntities != null) && (hibernateReturnedEntities.size() >= 1)) {
@@ -268,9 +260,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             }
             throw new DAOException("Unable to remove entity", he);
         } finally {
-            if (session != null) {
-                HibernateUtil.closeSession();
-            }
+            HibernateUtil.closeSession();
         }
     }
 }

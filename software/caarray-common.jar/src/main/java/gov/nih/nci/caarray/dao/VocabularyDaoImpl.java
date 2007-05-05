@@ -88,9 +88,7 @@ public class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements Vocabul
         } catch (HibernateException he) {
             throw new DAOException("Unable to retrieve terms", he);
         } finally {
-            if (session != null) {
-                HibernateUtil.closeSession();
-            }
+            HibernateUtil.closeSession();
         }
 
         if (hibernateReturnedTerms != null) {
