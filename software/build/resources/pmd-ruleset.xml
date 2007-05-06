@@ -18,17 +18,17 @@
     </rule>
     <rule ref="rulesets/codesize.xml/ExcessiveClassLength">
         <properties>
-            <property name="minimum" value="300" />
+            <property name="minimum" value="500" />
         </properties>
     </rule>
     <rule ref="rulesets/codesize.xml/ExcessiveParameterList">
         <properties>
-            <property name="minimum" value="5" />
+            <property name="minimum" value="6" />
         </properties>
     </rule>
     <rule ref="rulesets/codesize.xml/CyclomaticComplexity">
         <properties>
-            <property name="reportLevel" value="5" />
+            <property name="reportLevel" value="6" />
         </properties>
     </rule>
 
