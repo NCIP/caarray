@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.application.protocol;
 
-import static org.junit.Assert.*;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 
 import org.junit.Test;

@@ -56,6 +56,8 @@ package gov.nih.nci.caarray.application.vocabulary;
  */
 public class VocabularyServiceException extends Exception {
 
+    private static final long serialVersionUID = 1901721771982992506L;
+    
     /**
     *
     */

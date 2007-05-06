@@ -58,16 +58,14 @@ import java.util.List;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
+
 /**
  * @author John Pike
  *
  */
 @SuppressWarnings("PMD")
 public class EVSUtilityTest {
-    /**
-     * various private uses.
-     */
-    private static final int NUMBER_THREE = 3;
+
     /**
      * Create the test case.
      *

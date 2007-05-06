@@ -103,7 +103,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Entry point into implementation of the vocabulary service subsystem.
  *
- * @author tavelae
+ * @author tavelae, pikej
  */
 @Local(VocabularyService.class)
 @Stateless
@@ -138,20 +138,10 @@ public class VocabularyServiceBean implements VocabularyService {
         if (categoryName == null) {
             throw new IllegalArgumentException("CategoryName is null");
         }
-        VocabularyDao vocabDao = getVocabularyDao();
-        List<Term> termList = new ArrayList<Term>();
-        try {
-            termList = vocabDao.getTerms(categoryName);
-        } catch (DAOException e) {
-            LOG.debug("Error calling getTerms(): " + e.getMessage());
-            throw new VocabularyServiceException(e);
-        }
-
-        //if not found in our repository, then get it from evs
-        //and save locally
+        List<Term> termList = getTermsFromDao(categoryName);
         if (termList.isEmpty()) {
             termList = getEVSTerms(categoryName);
-            if (termList != null && !(termList.isEmpty())) {
+            if (!termList.isEmpty()) {
                 saveTermsLocally(termList);
             }
         }
@@ -159,7 +149,15 @@ public class VocabularyServiceBean implements VocabularyService {
         return termList;
     }
 
-
+    private List<Term> getTermsFromDao(String categoryName) throws VocabularyServiceException {
+        try {
+            return getVocabularyDao().getTerms(categoryName);
+        } catch (DAOException e) {
+            LOG.debug("Error calling getTerms(): " + e.getMessage());
+            throw new VocabularyServiceException(e);
+        }
+    }
+    
     private void saveTermsLocally(List<Term> termList) throws VocabularyServiceException {
         if (termList == null || termList.isEmpty()) {
             throw new IllegalArgumentException("TermList is null or emptylist");

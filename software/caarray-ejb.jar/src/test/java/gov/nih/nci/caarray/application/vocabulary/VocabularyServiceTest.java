@@ -75,6 +75,7 @@ import org.junit.Test;
 public class VocabularyServiceTest {
 
     private static final int NUM_PROT_TYPES = 37;
+    
     /**
      * LOG used by this class.
      */
@@ -141,7 +142,7 @@ public class VocabularyServiceTest {
     public void getTermsEVSException() throws VocabularyServiceException {
         VocabularyService vocab = new MockVSBeanForEVSException();
         List<Term> terms = new ArrayList<Term>();
-         terms =  vocab.getTerms("ProtocolType");
+         terms = vocab.getTerms("ProtocolType");
 
     }
 

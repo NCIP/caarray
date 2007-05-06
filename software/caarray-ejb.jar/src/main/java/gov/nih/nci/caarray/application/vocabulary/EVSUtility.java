@@ -289,17 +289,13 @@ public class EVSUtility  {
             final ApplicationService appService) throws ApplicationException {
 
         List<DescLogicConcept> concepts = new ArrayList<DescLogicConcept>();
-        try {
-            for (Vocabulary vocab : vocabs) {
-                evs.searchDescLogicConcepts(vocab.getName(), conceptName, MAX_NUM_RESULTS);
-                concepts = (ArrayList<DescLogicConcept>) appService.evsSearch(evs);
-                // I found the concept
-                if (!concepts.isEmpty()) {
-                    break;
-                }
+        for (Vocabulary vocab : vocabs) {
+            evs.searchDescLogicConcepts(vocab.getName(), conceptName, MAX_NUM_RESULTS);
+            concepts = (ArrayList<DescLogicConcept>) appService.evsSearch(evs);
+            // I found the concept
+            if (!concepts.isEmpty()) {
+                break;
             }
-        } catch (ApplicationException e) {
-            throw e;
         }
         if (concepts.isEmpty()) {
             return null;
@@ -387,19 +383,18 @@ public class EVSUtility  {
      *
      */
     private boolean conceptIsInstance(DescLogicConcept concept) {
-        boolean isInstance = false;
         List list = concept.getPropertyCollection();
         for (int i = 0; i < list.size(); i++) {
-            Property p = (Property) list.get(i);
-
-            //if the concept is of type MGED_INSTANCE
-            if (p.getName().equals(PROP_CONCEPT_TYPE)) {
-                if (p.getValue().equals(MGED_INST)) {
-                    isInstance = true;
-                }
+            Property property = (Property) list.get(i);
+            if (isMgedInstance(property)) {
+                return true;
             }
         }
-        return isInstance;
+        return false;
+    }
+
+    private boolean isMgedInstance(Property property) {
+        return PROP_CONCEPT_TYPE.equals(property.getName()) && MGED_INST.equals(property.getValue());
     }
 
 
