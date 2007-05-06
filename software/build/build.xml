@@ -457,7 +457,7 @@
 
     <target name="check" depends="check:checkstyle,check:pmd">
         <fail if="checkstyle.failure" message="There were Checkstyle failures." />
-        <!-- fail if="pmd.failure" message="There were PMD failures." / -->
+        <fail if="pmd.failure" message="There were PMD failures." />
     </target>
 
     <target name="check:checkstyle" depends="build:caarray-common.jar,build:caarray-ejb.jar,compile:caarray.war">
