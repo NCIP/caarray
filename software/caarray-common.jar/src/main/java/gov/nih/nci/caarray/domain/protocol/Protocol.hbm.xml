@@ -14,7 +14,7 @@
         <property name="title" column="TITLE" type="string" />
         <property name="url" column="URL" type="string" />
         <many-to-one name="type" column="TYPE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Term" />
-        <set name="parameters" lazy="true">
+        <set name="parameters" lazy="false">
             <key column="PROTOCOL_ID" />
             <one-to-many class="gov.nih.nci.caarray.domain.protocol.Parameter" />
         </set>

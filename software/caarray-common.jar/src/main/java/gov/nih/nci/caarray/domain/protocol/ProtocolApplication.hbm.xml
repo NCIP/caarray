@@ -9,7 +9,7 @@
             <generator class="assigned"/>
         </id>
         <many-to-one name="protocol" column="PROTOCOL_ID" class="gov.nih.nci.caarray.domain.protocol.Protocol" />
-        <set name="values" lazy="true">
+        <set name="values" lazy="false">
             <key column="PROTOCOL_APPLICATION_ID" />
             <one-to-many class="gov.nih.nci.caarray.domain.protocol.ParameterValue" />
         </set>
