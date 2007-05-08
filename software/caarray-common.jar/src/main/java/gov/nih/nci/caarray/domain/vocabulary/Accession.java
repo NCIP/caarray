@@ -84,7 +84,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
   /**
 
    */
@@ -141,16 +141,16 @@ public class Accession extends AbstractCaArrayEntity {
     }
 
     /**
-     * The source set.
+     * The source gov.nih.nci.caarray.domain.vocabulary.Source.
      */
-    private java.util.Collection source = new java.util.HashSet();
+    private gov.nih.nci.caarray.domain.vocabulary.Source source;
 
     /**
      * Gets the source.
      *
      * @return the source
      */
-    public java.util.Collection getSource() {
+    public gov.nih.nci.caarray.domain.vocabulary.Source getSource() {
         return source;
     }
 
@@ -159,9 +159,10 @@ public class Accession extends AbstractCaArrayEntity {
      *
      * @param sourceVal the source
      */
-    public void setSource(final java.util.Collection sourceVal) {
+    public void setSource(final
+      gov.nih.nci.caarray.domain.vocabulary.Source sourceVal) {
         this.source = sourceVal;
-    }    
+    }
 
     /**
      * Checks if given object is equal to this object.
@@ -173,8 +174,8 @@ public class Accession extends AbstractCaArrayEntity {
         boolean theyAreEqual = false;
         if (obj instanceof gov.nih.nci.caarray.domain.vocabulary.Accession) {
             final gov.nih.nci.caarray.domain.vocabulary.Accession castObject =
-                (gov.nih.nci.caarray.domain.vocabulary.Accession) obj;                  
-            Long thisId = getId();        
+                (gov.nih.nci.caarray.domain.vocabulary.Accession) obj;
+            Long thisId = getId();
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;
             }
