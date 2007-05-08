@@ -75,16 +75,17 @@
     <property name="junit.jar" value="${lib.dir}/junit-4.3.1.jar" />
     <property name="log4j.jar" value="${lib.dir}/log4j-1.2.13.jar" />
     <property name="myfaces-api.jar" value="${lib.dir}/myfaces-api-1.1.5.jar" />
+    <property name="mysql-connector.jar" value="${lib.dir}/mysql-connector-java-5.0.5-bin.jar" />
     <property name="ojdbc.jar" value="${lib.dir}/ojdbc14.jar" />
     <property name="pmd.jar" value="${lib.dir}/pmd-3.9.jar" />
     <property name="spring.jar" value="${lib.dir}/spring.jar" />
 
     <path id="cobertura.classpath">
         <fileset dir="${lib.dir}">
-        <include name="cobertura.jar" />
-        <include name="asm-2.2.1.jar" />
-        <include name="jakarta-oro-2.0.8.jar" />
-        <include name="log4j-1.2.13.jar" />
+            <include name="cobertura.jar" />
+            <include name="asm-2.2.1.jar" />
+            <include name="jakarta-oro-2.0.8.jar" />
+            <include name="log4j-1.2.13.jar" />
         </fileset>
     </path>
 
@@ -203,7 +204,7 @@
             <classpath>
                 <pathelement location="${caarray-common.classes.dir}" />
                 <pathelement location="${cacore32-client.jar}" />
-          <pathelement location="${commons-logging.jar}" />
+                <pathelement location="${commons-logging.jar}" />
                 <pathelement location="${javaee.jar}" />
             </classpath>
         </javac>
@@ -213,10 +214,10 @@
         <mkdir dir="${caarray-war.classes.dir}" />
         <javac srcdir="${caarray-war.src.dir}" destdir="${caarray-war.classes.dir}" debug="true">
             <classpath>
-          <pathelement location="${caarray-common.classes.dir}" />
+                <pathelement location="${caarray-common.classes.dir}" />
                 <pathelement location="${caarray-ejb.classes.dir}" />
                 <pathelement location="${javaee.jar}" />
-          <pathelement location="${commons-logging.jar}" />
+                <pathelement location="${commons-logging.jar}" />
                 <pathelement location="${myfaces-api.jar}" />
             </classpath>
         </javac>
@@ -299,6 +300,7 @@
                 <include name="hibernate3.jar" />
                 <include name="jta.jar" />
                 <include name="mail.jar" />
+                <include name="mysql-connector.jar" />
                 <include name="saaj.jar" />
                 <include name="spring.jar" />
                 <include name="spring-richclient-full-0.1.0.jar" />
@@ -323,61 +325,61 @@
       test:junit-report,
       test:cobertura-report,
       test:cobertura-check">
-      <fail if="junit.failure" message="There were JUnit failures." />
-      <fail if="cobertura.failure" message="Test coverage was insufficient (see Cobertura report)." />
-  </target>
+        <fail if="junit.failure" message="There were JUnit failures." />
+        <fail if="cobertura.failure" message="Test coverage was insufficient (see Cobertura report)." />
+    </target>
 
     <!-- caarray-common.jar -->
 
     <target name="test:instrument:caarray-common.jar" depends="compile:caarray-common.jar,configure-datasource">
-      <cobertura-instrument todir="${caarray-common.instrumented.classes.dir}">
-        <fileset dir="${caarray-common.classes.dir}" />
-    </cobertura-instrument>
-  </target>
+        <cobertura-instrument todir="${caarray-common.instrumented.classes.dir}">
+            <fileset dir="${caarray-common.classes.dir}" />
+        </cobertura-instrument>
+    </target>
 
     <target name="test:compile:caarray-common.test.classes" depends="compile:caarray-common.jar">
-      <mkdir dir="${caarray-common.test.classes.dir}" />
-      <javac srcdir="${caarray-common.test.src.dir}" destdir="${caarray-common.test.classes.dir}" debug="true">
-          <classpath>
-          <pathelement location="${caarray-common.classes.dir}" />
-          <pathelement location="${commons-logging.jar}" />
-          <pathelement location="${junit.jar}" />
-          </classpath>
-      </javac>
+        <mkdir dir="${caarray-common.test.classes.dir}" />
+        <javac srcdir="${caarray-common.test.src.dir}" destdir="${caarray-common.test.classes.dir}" debug="true">
+            <classpath>
+                <pathelement location="${caarray-common.classes.dir}" />
+                <pathelement location="${commons-logging.jar}" />
+                <pathelement location="${junit.jar}" />
+            </classpath>
+        </javac>
     </target>
 
     <target name="test:junit-caarray-common.jar" depends="test:compile:caarray-common.test.classes,test:instrument:caarray-common.jar">
-      <run-junit-tests
+        <run-junit-tests
       test.src.dir="${caarray-common.test.src.dir}"
       xml.output.dir="${caarray-common.target.dir}/junit"
       instrumented.classes="${caarray-common.instrumented.classes.dir}"
-      classpath="${caarray-common.test.classes.dir};${caarray-common.classes.dir};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${ojdbc.jar};${jta.jar};${junit.jar}" />
+      classpath="${caarray-common.test.classes.dir};${caarray-common.classes.dir};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${jta.jar};${junit.jar}" />
     </target>
 
     <!-- caarray-ejb.jar -->
 
     <target name="test:instrument:caarray-ejb.jar" depends="compile:caarray-ejb.jar">
-      <cobertura-instrument todir="${caarray-ejb.instrumented.classes.dir}">
-        <fileset dir="${caarray-ejb.classes.dir}" />
-    </cobertura-instrument>
-  </target>
+        <cobertura-instrument todir="${caarray-ejb.instrumented.classes.dir}">
+            <fileset dir="${caarray-ejb.classes.dir}" />
+        </cobertura-instrument>
+    </target>
 
     <target name="test:compile:caarray-ejb.test.classes" depends="compile:caarray-ejb.jar,compile:caarray-common.jar">
-      <mkdir dir="${caarray-ejb.test.classes.dir}" />
-      <javac srcdir="${caarray-ejb.test.src.dir}" destdir="${caarray-ejb.test.classes.dir}" debug="true">
-          <classpath>
-          <pathelement location="${caarray-ejb.classes.dir}" />
-          <pathelement location="${caarray-common.classes.dir}" />
-          <pathelement location="${cacore32-client.jar}" />
-          <pathelement location="${commons-logging.jar}" />
-          <pathelement location="${javaee.jar}" />
-          <pathelement location="${junit.jar}" />
-          </classpath>
-      </javac>
+        <mkdir dir="${caarray-ejb.test.classes.dir}" />
+        <javac srcdir="${caarray-ejb.test.src.dir}" destdir="${caarray-ejb.test.classes.dir}" debug="true">
+            <classpath>
+                <pathelement location="${caarray-ejb.classes.dir}" />
+                <pathelement location="${caarray-common.classes.dir}" />
+                <pathelement location="${cacore32-client.jar}" />
+                <pathelement location="${commons-logging.jar}" />
+                <pathelement location="${javaee.jar}" />
+                <pathelement location="${junit.jar}" />
+            </classpath>
+        </javac>
     </target>
 
     <target name="test:junit-caarray-ejb.jar" depends="test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-common.jar">
-      <run-junit-tests
+        <run-junit-tests
       test.src.dir="${caarray-ejb.test.src.dir}"
       xml.output.dir="${caarray-ejb.target.dir}/junit"
         instrumented.classes="${caarray-ejb.instrumented.classes.dir}"
@@ -387,23 +389,23 @@
     <!-- caarray.war -->
 
     <target name="test:instrument:caarray.war" depends="compile:caarray.war">
-      <cobertura-instrument todir="${caarray-war.instrumented.classes.dir}">
-        <fileset dir="${caarray-war.classes.dir}" />
-    </cobertura-instrument>
-  </target>
+        <cobertura-instrument todir="${caarray-war.instrumented.classes.dir}">
+            <fileset dir="${caarray-war.classes.dir}" />
+        </cobertura-instrument>
+    </target>
 
     <target name="test:compile:caarray-war.test.classes" depends="compile:caarray.war,compile:caarray-common.jar">
-      <mkdir dir="${caarray-war.test.classes.dir}" />
-      <javac srcdir="${caarray-war.test.src.dir}" destdir="${caarray-war.test.classes.dir}" debug="true">
-          <classpath>
-          <pathelement location="${caarray-war.classes.dir}" />
-          <pathelement location="${caarray-common.classes.dir}" />
-          <pathelement location="${caarray-ejb.classes.dir}" />
-          <pathelement location="${caarray-ejb.test.classes.dir}" />
-          <pathelement location="${myfaces-api.jar}" />
-          <pathelement location="${junit.jar}" />
-          </classpath>
-      </javac>
+        <mkdir dir="${caarray-war.test.classes.dir}" />
+        <javac srcdir="${caarray-war.test.src.dir}" destdir="${caarray-war.test.classes.dir}" debug="true">
+            <classpath>
+                <pathelement location="${caarray-war.classes.dir}" />
+                <pathelement location="${caarray-common.classes.dir}" />
+                <pathelement location="${caarray-ejb.classes.dir}" />
+                <pathelement location="${caarray-ejb.test.classes.dir}" />
+                <pathelement location="${myfaces-api.jar}" />
+                <pathelement location="${junit.jar}" />
+            </classpath>
+        </javac>
     </target>
 
     <target name="test:junit-caarray.war" depends="test:compile:caarray-war.test.classes,test:instrument:caarray.war,compile:caarray-ejb.jar,compile:caarray-common.jar,test:compile:caarray-ejb.test.classes">
@@ -417,30 +419,30 @@
     <target name="test:junit-report">
         <mkdir dir="${site.dir}/junit" />
         <junitreport todir="${site.dir}/junit">
-        <fileset dir="${caarray-common.target.dir}/junit">
-            <include name="TEST-*.xml" />
-        </fileset>
-        <fileset dir="${caarray-ejb.target.dir}/junit">
-            <include name="TEST-*.xml" />
-        </fileset>
-        <fileset dir="${caarray-war.target.dir}/junit">
-            <include name="TEST-*.xml" />
-        </fileset>
+            <fileset dir="${caarray-common.target.dir}/junit">
+                <include name="TEST-*.xml" />
+            </fileset>
+            <fileset dir="${caarray-ejb.target.dir}/junit">
+                <include name="TEST-*.xml" />
+            </fileset>
+            <fileset dir="${caarray-war.target.dir}/junit">
+                <include name="TEST-*.xml" />
+            </fileset>
             <report format="frames" todir="${site.dir}/junit" />
         </junitreport>
     </target>
 
     <!-- Cobertura Test Targets -->
     <target name="test:cobertura-report">
-      <cobertura-report format="html" destdir="${site.dir}/cobertura" >
-        <fileset dir="${caarray-common.src.dir}" />
-        <fileset dir="${caarray-ejb.src.dir}" />
-        <fileset dir="${caarray-war.src.dir}" />
-      </cobertura-report>
+        <cobertura-report format="html" destdir="${site.dir}/cobertura" >
+            <fileset dir="${caarray-common.src.dir}" />
+            <fileset dir="${caarray-ejb.src.dir}" />
+            <fileset dir="${caarray-war.src.dir}" />
+        </cobertura-report>
     </target>
 
     <target name="test:cobertura-check">
-      <cobertura-check failureproperty="cobertura.failure"
+        <cobertura-check failureproperty="cobertura.failure"
         haltonfailure="false"
         branchrate="0"
       linerate="0"
@@ -524,9 +526,9 @@
     </target>
 
     <target name="check:pmd:update-eclipse-projects">
-		<copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-common.dir}/.ruleset" />
-		<copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-war.dir}/.ruleset" />
-		<copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-ejb.dir}/.ruleset" />
+        <copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-common.dir}/.ruleset" />
+        <copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-war.dir}/.ruleset" />
+        <copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-ejb.dir}/.ruleset" />
     </target>
 
     <!-- ******************************************************************* -->
