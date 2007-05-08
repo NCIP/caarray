@@ -10,6 +10,6 @@
         </id>
         <property name="url" column="URL" type="string" />
         <property name="value" column="VALUE" type="string" />
-        <many-to-one name="source" column="SOURCE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Source" cascade="all" />
+        <many-to-one name="source" column="SOURCE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Source" cascade="save-update" />
     </class>
 </hibernate-mapping>

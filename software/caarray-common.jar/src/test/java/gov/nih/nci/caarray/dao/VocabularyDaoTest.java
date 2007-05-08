@@ -88,7 +88,6 @@ import java.util.List;
 import java.util.ArrayList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -106,16 +105,16 @@ public class VocabularyDaoTest {
     private static final Log LOG = LogFactory.getLog(VocabularyDaoTest.class);
 
     private static final Long DUMMY_START_ID = new Long(150);
-    private static Category dummyCategory1 = null;
-    private static Category dummyCategory2 = null;
-    private static Category dummyCategory3 = null;
+    private static final Category DUMMY_CATEGORY_1 = new Category();
+    private static final Category DUMMY_CATEGORY_2 = new Category();
+    private static final Category DUMMY_CATEGORY_3 = new Category();
     private static final int NUM_DUMMY_TERMS = 2;
-    private static Term dummyTerm1 = null;
-    private static Term dummyTerm2 = null;
-    private static Source dummySource1 = null;
-    private static Source dummySource2 = null;
-    private static Accession dummyAccession1 = null;
-    private static Accession dummyAccession2 = null;
+    private static final Term DUMMY_TERM_1 = new Term();
+    private static final Term DUMMY_TERM_2 = new Term();
+    private static final Source DUMMY_SOURCE_1 = new Source();
+    private static final Source DUMMY_SOURCE_2 = new Source();
+    private static final Accession DUMMY_ACCESSION_1 = new Accession();
+    private static final Accession DUMMY_ACCESSION_2 = new Accession();
 
     private static final VocabularyDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
 
@@ -133,66 +132,44 @@ public class VocabularyDaoTest {
      * Initialize the dummy <code>Category</code> and <code>Term</code> objects.
      */
     private static void initializeCategoriesAndTerms() {
-        dummyCategory1 = new Category();
-        dummyCategory1.setId(DUMMY_START_ID);
-        dummyCategory1.setName("DummyTestCategory1");
-        dummyCategory2 = new Category();
-        dummyCategory2.setId(DUMMY_START_ID + 1);
-        dummyCategory2.setName("DummyTestCategory2");
-        dummyCategory3 = new Category();
-        dummyCategory3.setId(DUMMY_START_ID + 2);
-        dummyCategory3.setName("DummyTestCategory3");
-        dummyTerm1 = new Term();
-        dummyTerm1.setId(DUMMY_START_ID);
-        dummyTerm1.setDescription("DummyTestTerm1");
-        dummyTerm1.setCategory(dummyCategory3);
-        dummyTerm2 = new Term();
-        dummyTerm2.setId(DUMMY_START_ID + 1);
-        dummyTerm2.setDescription("DummyTestTerm2");
-        dummyTerm2.setCategory(dummyCategory3);
+        DUMMY_CATEGORY_1.setId(DUMMY_START_ID);
+        DUMMY_CATEGORY_1.setName("DummyTestCategory1");
+        DUMMY_CATEGORY_2.setId(DUMMY_START_ID + 1);
+        DUMMY_CATEGORY_2.setName("DummyTestCategory2");
+        DUMMY_CATEGORY_3.setId(DUMMY_START_ID + 2);
+        DUMMY_CATEGORY_3.setName("DummyTestCategory3");
+
+        DUMMY_TERM_1.setId(DUMMY_START_ID);
+        DUMMY_TERM_1.setDescription("DummyTestTerm1");
+        DUMMY_TERM_1.setCategory(DUMMY_CATEGORY_3);
+        DUMMY_TERM_2.setId(DUMMY_START_ID + 1);
+        DUMMY_TERM_2.setDescription("DummyTestTerm2");
+        DUMMY_TERM_2.setCategory(DUMMY_CATEGORY_3);
     }
 
     /**
      * Initialize the dummy <code>Source</code> and <code>Accession</code> objects.
      */
     private static void initializeSourcesAndAccessions() {
-        dummySource1 = new Source();
-        dummySource1.setId(DUMMY_START_ID);
-        dummySource1.setName("DummyTestSource1");
-        dummySource1.setUrl("DummyUrlForSource1");
-        dummySource1.setVersion("1.0");
-        dummySource2 = new Source();
-        dummySource2.setId(DUMMY_START_ID + 1);
-        dummySource2.setName("DummyTestSource2");
-        dummySource2.setUrl("DummyUrlForSource2");
-        dummySource2.setVersion("1.0");
-        dummyAccession1 = new Accession();
-        dummyAccession1.setId(DUMMY_START_ID);
-        dummyAccession1.setUrl("DummyUrlForAccession1");
-        dummyAccession1.setValue("DummyValueForAccession1");
-        dummyAccession1.setSource(dummySource1);
-        dummyAccession2 = new Accession();
-        dummyAccession2.setId(DUMMY_START_ID + 1);
-        dummyAccession2.setUrl("DummyUrlForAccession2");
-        dummyAccession2.setValue("DummyValueForAccession2");
-        dummyAccession2.setSource(dummySource1);
+        DUMMY_SOURCE_1.setId(DUMMY_START_ID);
+        DUMMY_SOURCE_1.setName("DummyTestSource1");
+        DUMMY_SOURCE_1.setUrl("DummyUrlForSource1");
+        DUMMY_SOURCE_1.setVersion("1.0");
+        DUMMY_SOURCE_2.setId(DUMMY_START_ID + 1);
+        DUMMY_SOURCE_2.setName("DummyTestSource2");
+        DUMMY_SOURCE_2.setUrl("DummyUrlForSource2");
+        DUMMY_SOURCE_2.setVersion("1.0");
+
+        DUMMY_ACCESSION_1.setId(DUMMY_START_ID);
+        DUMMY_ACCESSION_1.setUrl("DummyUrlForAccession1");
+        DUMMY_ACCESSION_1.setValue("DummyValueForAccession1");
+        DUMMY_ACCESSION_1.setSource(DUMMY_SOURCE_1);
+        DUMMY_ACCESSION_2.setId(DUMMY_START_ID + 1);
+        DUMMY_ACCESSION_2.setUrl("DummyUrlForAccession2");
+        DUMMY_ACCESSION_2.setValue("DummyValueForAccession2");
+        DUMMY_ACCESSION_2.setSource(DUMMY_SOURCE_1);
     }
 
-    /**
-     * Clear the dummy objects that were used by the tests.
-     */
-    @AfterClass
-    public static void tearDownAfterClass() {
-        dummyCategory1 = null;
-        dummyCategory2 = null;
-        dummyCategory3 = null;
-        dummyTerm1 = null;
-        dummyTerm2 = null;
-        dummySource1 = null;
-        dummySource2 = null;
-        dummyAccession1 = null;
-        dummyAccession2 = null;
-    }
     /**
      * Tests retrieving all <code>Term</code>s in a given <code>Category</code>.
      */
@@ -200,7 +177,7 @@ public class VocabularyDaoTest {
     public void testGetTerms() {
         try {
             setupTestGetTerms();
-            List<Term> retrievedTerms = DAO_OBJECT.getTerms(dummyCategory3.getName());
+            List<Term> retrievedTerms = DAO_OBJECT.getTerms(DUMMY_CATEGORY_3.getName());
             if (retrievedTerms.size() != NUM_DUMMY_TERMS) {
                 fail("Did not retrieve the expected number of terms.");
             }
@@ -221,7 +198,7 @@ public class VocabularyDaoTest {
     private void checkIfExpectedTerms(List<Term> retrievedTerms) {
         for (int i = 0; i < NUM_DUMMY_TERMS; i++) {
             Term term = retrievedTerms.get(i);
-            if (!(dummyTerm1.equals(term) || dummyTerm2.equals(term))) {
+            if (!(DUMMY_TERM_1.equals(term) || DUMMY_TERM_2.equals(term))) {
                 fail("Did not retrieve the expected terms.");
             }
         }
@@ -234,9 +211,9 @@ public class VocabularyDaoTest {
      */
     private void cleanUpTestGetTerms() {
         try {
-            DAO_OBJECT.remove(dummyTerm1);
-            DAO_OBJECT.remove(dummyTerm2);
-            DAO_OBJECT.remove(dummyCategory3);
+            DAO_OBJECT.remove(DUMMY_TERM_1);
+            DAO_OBJECT.remove(DUMMY_TERM_2);
+            DAO_OBJECT.remove(DUMMY_CATEGORY_3);
         } catch (DAOException deleteException) {
             LOG.error("Error cleaning up dummy category and terms.", deleteException);
         }
@@ -248,9 +225,9 @@ public class VocabularyDaoTest {
      * @throws DAOException
      */
     private void setupTestGetTerms() throws DAOException {
-        DAO_OBJECT.save(dummyCategory3);
-        DAO_OBJECT.save(dummyTerm1);
-        DAO_OBJECT.save(dummyTerm2);
+        DAO_OBJECT.save(DUMMY_CATEGORY_3);
+        DAO_OBJECT.save(DUMMY_TERM_1);
+        DAO_OBJECT.save(DUMMY_TERM_2);
     }
 
     /**
@@ -260,7 +237,7 @@ public class VocabularyDaoTest {
     public void testCategoryCrud() {
         // Try saving the dummy category and then retrieving it.
         try {
-            DAO_OBJECT.save(dummyCategory1);
+            DAO_OBJECT.save(DUMMY_CATEGORY_1);
             // Check if we got the expected category, and accordingly pass or fail the test.
             checkIfExpectedCategory();
         } catch (DAOException saveException) {
@@ -268,7 +245,7 @@ public class VocabularyDaoTest {
         } finally {
             // Clean up by removing the dummy category.
             try {
-                DAO_OBJECT.remove(dummyCategory1);
+                DAO_OBJECT.remove(DUMMY_CATEGORY_1);
             } catch (DAOException deleteException) {
                 LOG.error("Error cleaning up dummy category.", deleteException);
                 fail("DAO exception during deletion of category: " + deleteException.getMessage());
@@ -282,8 +259,8 @@ public class VocabularyDaoTest {
      * @throws DAOException
      */
     private void checkIfExpectedCategory() throws DAOException {
-        Category retrievedCategory = (Category) DAO_OBJECT.queryEntityById(dummyCategory1);
-        if (dummyCategory1.equals(retrievedCategory)) {
+        Category retrievedCategory = (Category) DAO_OBJECT.queryEntityById(DUMMY_CATEGORY_1);
+        if (DUMMY_CATEGORY_1.equals(retrievedCategory)) {
             // The retrieved category is the same as the saved category. Save and retrieve test passed.
             assertTrue(true);
         } else {
@@ -297,8 +274,8 @@ public class VocabularyDaoTest {
     @Test
     public void testSaveCategoryCollection() {
         List<Category> categoryList = new ArrayList<Category>();
-        categoryList.add(dummyCategory1);
-        categoryList.add(dummyCategory2);
+        categoryList.add(DUMMY_CATEGORY_1);
+        categoryList.add(DUMMY_CATEGORY_2);
         try {
             DAO_OBJECT.save(categoryList);
         } catch (DAOException e) {
@@ -306,8 +283,8 @@ public class VocabularyDaoTest {
         } finally {
             // Clean up by removing the dummy categories.
             try {
-                DAO_OBJECT.remove(dummyCategory1);
-                DAO_OBJECT.remove(dummyCategory2);
+                DAO_OBJECT.remove(DUMMY_CATEGORY_1);
+                DAO_OBJECT.remove(DUMMY_CATEGORY_2);
             } catch (DAOException deleteException) {
                 LOG.error("Error cleaning up dummy categories.", deleteException);
                 fail("DAO exception during deletion of categories: " + deleteException.getMessage());
@@ -323,8 +300,8 @@ public class VocabularyDaoTest {
     public void testTermCrud() {
         // Try saving the dummy term and then retrieving it.
         try {
-            DAO_OBJECT.save(dummyCategory3);
-            DAO_OBJECT.save(dummyTerm1);
+            DAO_OBJECT.save(DUMMY_CATEGORY_3);
+            DAO_OBJECT.save(DUMMY_TERM_1);
             // Check if we got the expected term, and accordingly pass or fail the test.
             checkIfExpectedTerm();
         } catch (DAOException saveException) {
@@ -332,8 +309,8 @@ public class VocabularyDaoTest {
         } finally {
             // Clean up by removing the dummy term.
             try {
-                DAO_OBJECT.remove(dummyTerm1);
-                DAO_OBJECT.remove(dummyCategory3);
+                DAO_OBJECT.remove(DUMMY_TERM_1);
+                DAO_OBJECT.remove(DUMMY_CATEGORY_3);
             } catch (DAOException deleteException) {
                 LOG.error("Error cleaning up dummy term.", deleteException);
                 fail("DAO exception during deletion of term: " + deleteException.getMessage());
@@ -347,8 +324,8 @@ public class VocabularyDaoTest {
      * @throws DAOException
      */
     private void checkIfExpectedTerm() throws DAOException {
-        Term retrievedTerm = (Term) DAO_OBJECT.queryEntityById(dummyTerm1);
-        if (dummyTerm1.equals(retrievedTerm)) {
+        Term retrievedTerm = (Term) DAO_OBJECT.queryEntityById(DUMMY_TERM_1);
+        if (DUMMY_TERM_1.equals(retrievedTerm)) {
             // The retrieved term is the same as the saved term. Save and retrieve test passed.
             assertTrue(true);
         } else {
@@ -362,19 +339,19 @@ public class VocabularyDaoTest {
     @Test
     public void testSaveTermCollection() {
         List<Term> termList = new ArrayList<Term>();
-        termList.add(dummyTerm1);
-        termList.add(dummyTerm2);
+        termList.add(DUMMY_TERM_1);
+        termList.add(DUMMY_TERM_2);
         try {
-            DAO_OBJECT.save(dummyCategory3);
+            DAO_OBJECT.save(DUMMY_CATEGORY_3);
             DAO_OBJECT.save(termList);
         } catch (DAOException e) {
             fail("DAO exception during save of term collection: " + e.getMessage());
         } finally {
             // Clean up by removing the dummy terms.
             try {
-                DAO_OBJECT.remove(dummyTerm1);
-                DAO_OBJECT.remove(dummyTerm2);
-                DAO_OBJECT.remove(dummyCategory3);
+                DAO_OBJECT.remove(DUMMY_TERM_1);
+                DAO_OBJECT.remove(DUMMY_TERM_2);
+                DAO_OBJECT.remove(DUMMY_CATEGORY_3);
             } catch (DAOException deleteException) {
                 LOG.error("Error cleaning up dummy terms.", deleteException);
                 fail("DAO exception during deletion of terms: " + deleteException.getMessage());
@@ -390,7 +367,7 @@ public class VocabularyDaoTest {
     public void testSourceCrud() {
         // Try saving the dummy source and then retrieving it.
         try {
-            DAO_OBJECT.save(dummySource1);
+            DAO_OBJECT.save(DUMMY_SOURCE_1);
             // Check if we got the expected source, and accordingly pass or fail the test.
             checkIfExpectedSource();
         } catch (DAOException saveException) {
@@ -398,7 +375,7 @@ public class VocabularyDaoTest {
         } finally {
             // Clean up by removing the dummy source.
             try {
-                DAO_OBJECT.remove(dummySource1);
+                DAO_OBJECT.remove(DUMMY_SOURCE_1);
             } catch (DAOException deleteException) {
                 LOG.error("Error cleaning up dummy category.", deleteException);
                 fail("DAO exception during deletion of category: " + deleteException.getMessage());
@@ -412,8 +389,8 @@ public class VocabularyDaoTest {
      * @throws DAOException
      */
     private void checkIfExpectedSource() throws DAOException {
-        Source retrievedSource = (Source) DAO_OBJECT.queryEntityById(dummySource1);
-        if (dummySource1.equals(retrievedSource)) {
+        Source retrievedSource = (Source) DAO_OBJECT.queryEntityById(DUMMY_SOURCE_1);
+        if (DUMMY_SOURCE_1.equals(retrievedSource)) {
             // The retrieved category is the same as the saved category. Save and retrieve test passed.
             assertTrue(true);
         } else {
@@ -427,8 +404,8 @@ public class VocabularyDaoTest {
     @Test
     public void testSaveSourceCollection() {
         List<Source> sourceList = new ArrayList<Source>();
-        sourceList.add(dummySource1);
-        sourceList.add(dummySource2);
+        sourceList.add(DUMMY_SOURCE_1);
+        sourceList.add(DUMMY_SOURCE_2);
         try {
             DAO_OBJECT.save(sourceList);
         } catch (DAOException e) {
@@ -436,8 +413,8 @@ public class VocabularyDaoTest {
         } finally {
             // Clean up by removing the dummy sources.
             try {
-                DAO_OBJECT.remove(dummySource1);
-                DAO_OBJECT.remove(dummySource2);
+                DAO_OBJECT.remove(DUMMY_SOURCE_1);
+                DAO_OBJECT.remove(DUMMY_SOURCE_2);
             } catch (DAOException deleteException) {
                 LOG.error("Error cleaning up dummy sources.", deleteException);
                 fail("DAO exception during deletion of sources: " + deleteException.getMessage());
@@ -448,12 +425,13 @@ public class VocabularyDaoTest {
 
     /**
      * Tests save, retrieve, update and remove operations on a <code>Accession</code>.
+     * Relies on cascading save-update being set in the Hibernate mapping.
      */
     @Test
     public void testAccessionCrud() {
         // Try saving the dummy accession and then retrieving it.
         try {
-            DAO_OBJECT.save(dummyAccession1);
+            DAO_OBJECT.save(DUMMY_ACCESSION_1);
             // Check if we got the expected accession, and accordingly pass or fail the test.
             checkIfExpectedAccession();
         } catch (DAOException saveException) {
@@ -461,7 +439,7 @@ public class VocabularyDaoTest {
         } finally {
             // Clean up by removing the dummy accession.
             try {
-                DAO_OBJECT.remove(dummyAccession1);
+                DAO_OBJECT.remove(DUMMY_ACCESSION_1);
             } catch (DAOException deleteException) {
                 LOG.error("Error cleaning up dummy category.", deleteException);
                 fail("DAO exception during deletion of category: " + deleteException.getMessage());
@@ -475,12 +453,39 @@ public class VocabularyDaoTest {
      * @throws DAOException
      */
     private void checkIfExpectedAccession() throws DAOException {
-        Accession retrievedAccession = (Accession) DAO_OBJECT.queryEntityById(dummyAccession1);
-        if (dummyAccession1.equals(retrievedAccession)) {
+        Accession retrievedAccession = (Accession) DAO_OBJECT.queryEntityById(DUMMY_ACCESSION_1);
+        if (DUMMY_ACCESSION_1.equals(retrievedAccession)) {
             // The retrieved category is the same as the saved category. Save and retrieve test passed.
             assertTrue(true);
         } else {
             fail("Retrieved accession is different from saved accession.");
         }
+    }
+
+    /**
+     * Tests saving an <code>Accession</code> collection.
+     * Relies on cascading save-update being set in the Hibernate mapping.
+     */
+    @Test
+    public void testSaveAccessionCollection() {
+        List<Accession> accessionList = new ArrayList<Accession>();
+        accessionList.add(DUMMY_ACCESSION_1);
+        accessionList.add(DUMMY_ACCESSION_2);
+        try {
+            DAO_OBJECT.save(accessionList);
+        } catch (DAOException e) {
+            fail("DAO exception during save of accession collection: " + e.getMessage());
+        } finally {
+            // Clean up by removing the dummy accessions.
+            try {
+                DAO_OBJECT.remove(DUMMY_ACCESSION_1);
+                DAO_OBJECT.remove(DUMMY_ACCESSION_2);
+                DAO_OBJECT.remove(DUMMY_SOURCE_1);
+            } catch (DAOException deleteException) {
+                LOG.error("Error cleaning up dummy accessions.", deleteException);
+                fail("DAO exception during deletion of accessions: " + deleteException.getMessage());
+            }
+        }
+        assertTrue(true);
     }
 }
