@@ -56,8 +56,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.dao.VocabularyDaoImpl;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.system.applicationservice.ApplicationService;
@@ -75,7 +77,7 @@ import org.junit.Test;
 public class VocabularyServiceTest {
 
     private static final int NUM_PROT_TYPES = 37;
-    
+
     /**
      * LOG used by this class.
      */
@@ -146,6 +148,15 @@ public class VocabularyServiceTest {
 
     }
 
+    @Test(expected=DAOException.class)
+    public void testDAOException() throws DAOException {
+        VocabularyDao vocabDao = new MockVocabularyDaoForException();
+        List<Term> terms = new ArrayList<Term>();
+        terms = vocabDao.getTerms("ProtocolType");
+
+
+    }
+
 
 //////// INNER CLASS TEST STUBS///////////////////////
     /**
@@ -176,6 +187,24 @@ public class VocabularyServiceTest {
 
         public List<Term> getTerms(String categoryName) throws DAOException {
             return new ArrayList<Term>();
+        }
+        public void save(AbstractCaArrayEntity caArrayEntity) throws DAOException {
+        }
+        public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) throws DAOException {
+        }
+        public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
+            return new ArrayList<AbstractCaArrayEntity>();
+        }
+        public AbstractCaArrayEntity queryEntityById(AbstractCaArrayEntity entityToMatch) throws DAOException {
+            return null;
+        }
+        public void remove(AbstractCaArrayEntity caArrayEntity) throws DAOException {
+        }
+    }
+    public class MockVocabularyDaoForException implements VocabularyDao {
+
+        public List<Term> getTerms(String categoryName) throws DAOException {
+            throw new DAOException("This is a test exception");
         }
         public void save(AbstractCaArrayEntity caArrayEntity) throws DAOException {
         }
