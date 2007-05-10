@@ -96,6 +96,7 @@ import gov.nih.nci.system.applicationservice.ApplicationService;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -424,19 +425,19 @@ public class EVSUtility  {
      */
     private void addConceptToTermList(String categoryName, DescLogicConcept concept, List<Term> terms) {
         Source aSource = new Source();
-        List<Term> children = new ArrayList<Term>();
+        aSource.setId(Math.abs(new Long(new Random().nextInt())));
         aSource.setName(MGED_VOCAB);
         aSource.setUrl(APP_SERVICE_URL);
         Category aCategory = new Category();
         aCategory.setName(categoryName);
+        aCategory.setId(Math.abs(new Long(new Random().nextInt())));
         Term aTerm = new Term();
+        aTerm.setId(Math.abs(new Long(new Random().nextInt())));
         aTerm.setValue(concept.getName());
         aTerm.setDescription(getConceptPropertyValue(concept, EVSUtility.PROP_DEFINITION));
         aTerm.setCategory(aCategory);
         aTerm.setSource(aSource);
 
-        children.add(aTerm);
-        aCategory.setChildren(children);
         terms.add(aTerm);
     }
 
