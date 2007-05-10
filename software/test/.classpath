@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/lib/selenium-server.jar" sourcepath="/lib/selenium-server-src.jar"/>
+	<classpathentry kind="lib" path="/lib/selenium-java-client-driver.jar" sourcepath="/lib/selenium-java-client-driver-src.jar"/>
+	<classpathentry kind="lib" path="/lib/selenium-java-client-driver-tests.jar" sourcepath="/lib/selenium-java-client-driver-tests-src.jar"/>
+	<classpathentry kind="lib" path="/lib/junit-4.3.1.jar"/>
+	<classpathentry kind="output" path="target/test-classes"/>
+</classpath>
