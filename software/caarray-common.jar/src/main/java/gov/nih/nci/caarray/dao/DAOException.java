@@ -96,28 +96,12 @@ public class DAOException extends Exception {
     private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Constructs an empty DAO exception object.
-     */
-    public DAOException() {
-        super();
-    }
-
-    /**
      * Constructs a DAO exception object with an error message.
      *
      * @param message An error message describing the exception.
      */
     public DAOException(String message) {
         super(message);
-    }
-
-    /**
-     * Constructs a DAO exception object with a causing exception.
-     *
-     * @param cause The underlying exception that caused this DAO exception.
-     */
-    public DAOException(Throwable cause) {
-        super(cause);
     }
 
     /**
