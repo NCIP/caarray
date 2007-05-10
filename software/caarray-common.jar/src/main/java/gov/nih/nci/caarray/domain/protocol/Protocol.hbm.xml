@@ -13,9 +13,9 @@
         <property name="text" column="TEXT" type="string" />
         <property name="title" column="TITLE" type="string" />
         <property name="url" column="URL" type="string" />
-        <many-to-one name="type" column="TYPE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Term" />
-        <set name="parameters" lazy="false">
-            <key column="PROTOCOL_ID" />
+        <many-to-one name="type" column="TYPE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Term" lazy="false" cascade="save-update" />
+        <set name="parameters" lazy="false" cascade="save-update">
+            <key column="PROTOCOL_ID" not-null="true" />
             <one-to-many class="gov.nih.nci.caarray.domain.protocol.Parameter" />
         </set>
     </class>

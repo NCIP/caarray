@@ -96,7 +96,7 @@ public class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
      */
     public ProtocolDao getProtocolDao() {
         // TODO Auto-generated method stub
-        return null;
+        return new ProtocolDaoImpl();
     }
 
     /**

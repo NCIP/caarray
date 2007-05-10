@@ -84,7 +84,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
   /**
 
    */
@@ -248,9 +248,10 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @param parametersVal the parameters
      */
+    @SuppressWarnings("unchecked")
     public void setParameters(final java.util.Collection parametersVal) {
-        this.parameters = parametersVal;
-    }    
+        this.parameters.addAll(parametersVal);
+    }
 
     /**
      * Checks if given object is equal to this object.
@@ -262,8 +263,8 @@ public class Protocol extends AbstractCaArrayEntity {
         boolean theyAreEqual = false;
         if (obj instanceof gov.nih.nci.caarray.domain.protocol.Protocol) {
             final gov.nih.nci.caarray.domain.protocol.Protocol castObject =
-                (gov.nih.nci.caarray.domain.protocol.Protocol) obj;                  
-            Long thisId = getId();        
+                (gov.nih.nci.caarray.domain.protocol.Protocol) obj;
+            Long thisId = getId();
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;
             }

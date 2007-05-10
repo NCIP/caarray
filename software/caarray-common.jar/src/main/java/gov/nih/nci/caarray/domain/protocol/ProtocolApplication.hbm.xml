@@ -8,8 +8,8 @@
         <id name="id" column="ID" type="long">
             <generator class="assigned"/>
         </id>
-        <many-to-one name="protocol" column="PROTOCOL_ID" class="gov.nih.nci.caarray.domain.protocol.Protocol" />
-        <set name="values" lazy="false">
+        <many-to-one name="protocol" column="PROTOCOL_ID" class="gov.nih.nci.caarray.domain.protocol.Protocol" lazy="false" cascade="save-update" />
+        <set name="values" lazy="false" cascade="save-update">
             <key column="PROTOCOL_APPLICATION_ID" />
             <one-to-many class="gov.nih.nci.caarray.domain.protocol.ParameterValue" />
         </set>
