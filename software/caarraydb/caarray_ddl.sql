@@ -66,7 +66,7 @@ CREATE TABLE PARAMETERVALUE
   ID                          INT UNSIGNED      NOT NULL,
   UNIT                        VARCHAR(1000),
   VALUE                       VARCHAR(1000),
-  PROTOCOL_APPLICATION_ID     INT UNSIGNED      NOT NULL,
+  PROTOCOL_APPLICATION_ID     INT UNSIGNED,
   PARAMETER_ID                INT UNSIGNED      NOT NULL,
   PRIMARY KEY                 (ID)
 );
