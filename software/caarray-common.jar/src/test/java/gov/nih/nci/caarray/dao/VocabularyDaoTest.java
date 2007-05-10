@@ -225,7 +225,6 @@ public class VocabularyDaoTest {
      * @throws DAOException
      */
     private void setupTestGetTerms() throws DAOException {
-        DAO_OBJECT.save(DUMMY_CATEGORY_3);
         DAO_OBJECT.save(DUMMY_TERM_1);
         DAO_OBJECT.save(DUMMY_TERM_2);
     }
@@ -300,7 +299,6 @@ public class VocabularyDaoTest {
     public void testTermCrud() {
         // Try saving the dummy term and then retrieving it.
         try {
-            DAO_OBJECT.save(DUMMY_CATEGORY_3);
             DAO_OBJECT.save(DUMMY_TERM_1);
             // Check if we got the expected term, and accordingly pass or fail the test.
             checkIfExpectedTerm();
@@ -342,7 +340,6 @@ public class VocabularyDaoTest {
         termList.add(DUMMY_TERM_1);
         termList.add(DUMMY_TERM_2);
         try {
-            DAO_OBJECT.save(DUMMY_CATEGORY_3);
             DAO_OBJECT.save(termList);
         } catch (DAOException e) {
             fail("DAO exception during save of term collection: " + e.getMessage());
@@ -377,8 +374,8 @@ public class VocabularyDaoTest {
             try {
                 DAO_OBJECT.remove(DUMMY_SOURCE_1);
             } catch (DAOException deleteException) {
-                LOG.error("Error cleaning up dummy category.", deleteException);
-                fail("DAO exception during deletion of category: " + deleteException.getMessage());
+                LOG.error("Error cleaning up dummy source.", deleteException);
+                fail("DAO exception during deletion of source: " + deleteException.getMessage());
             }
         }
     }
@@ -391,7 +388,7 @@ public class VocabularyDaoTest {
     private void checkIfExpectedSource() throws DAOException {
         Source retrievedSource = (Source) DAO_OBJECT.queryEntityById(DUMMY_SOURCE_1);
         if (DUMMY_SOURCE_1.equals(retrievedSource)) {
-            // The retrieved category is the same as the saved category. Save and retrieve test passed.
+            // The retrieved source is the same as the saved source. Save and retrieve test passed.
             assertTrue(true);
         } else {
             fail("Retrieved source is different from saved source.");
@@ -440,9 +437,10 @@ public class VocabularyDaoTest {
             // Clean up by removing the dummy accession.
             try {
                 DAO_OBJECT.remove(DUMMY_ACCESSION_1);
+                DAO_OBJECT.remove(DUMMY_SOURCE_1);
             } catch (DAOException deleteException) {
-                LOG.error("Error cleaning up dummy category.", deleteException);
-                fail("DAO exception during deletion of category: " + deleteException.getMessage());
+                LOG.error("Error cleaning up dummy accession.", deleteException);
+                fail("DAO exception during deletion of accession: " + deleteException.getMessage());
             }
         }
     }
@@ -455,7 +453,7 @@ public class VocabularyDaoTest {
     private void checkIfExpectedAccession() throws DAOException {
         Accession retrievedAccession = (Accession) DAO_OBJECT.queryEntityById(DUMMY_ACCESSION_1);
         if (DUMMY_ACCESSION_1.equals(retrievedAccession)) {
-            // The retrieved category is the same as the saved category. Save and retrieve test passed.
+            // The retrieved accession is the same as the saved accession. Save and retrieve test passed.
             assertTrue(true);
         } else {
             fail("Retrieved accession is different from saved accession.");
