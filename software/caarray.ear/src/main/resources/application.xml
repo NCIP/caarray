@@ -67,6 +67,9 @@
         <java>mail.jar</java>
     </module>
     <module>
+        <java>mysql-connector-java-5.0.5-bin.jar</java>
+    </module>
+    <module>
         <java>saaj.jar</java>
     </module>
     <module>
