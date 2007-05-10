@@ -232,7 +232,7 @@ public class Protocol extends AbstractCaArrayEntity {
     /**
      * The parameters set.
      */
-    private java.util.Collection parameters = new java.util.HashSet();
+    private final java.util.Collection parameters = new java.util.HashSet();
 
     /**
      * Gets the parameters.
