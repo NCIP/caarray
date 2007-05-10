@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC 
+<!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
@@ -10,8 +10,8 @@
         </id>
         <property name="description" column="DESCRIPTION" type="string" />
         <property name="value" column="VALUE" type="string" />
-        <many-to-one name="category" column="CATEGORY_ID" class="gov.nih.nci.caarray.domain.vocabulary.Category" />
-        <many-to-one name="accession" column="ACCESSION_ID" class="gov.nih.nci.caarray.domain.vocabulary.Accession" />
-        <many-to-one name="source" column="SOURCE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Source" />
+        <many-to-one name="category" column="CATEGORY_ID" class="gov.nih.nci.caarray.domain.vocabulary.Category" lazy="false" cascade="save-update" />
+        <many-to-one name="accession" column="ACCESSION_ID" class="gov.nih.nci.caarray.domain.vocabulary.Accession" lazy="false" cascade="save-update" />
+        <many-to-one name="source" column="SOURCE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Source" lazy="false" cascade="save-update" />
     </class>
 </hibernate-mapping>
