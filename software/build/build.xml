@@ -78,7 +78,16 @@
     <property name="mysql-connector.jar" value="${lib.dir}/mysql-connector-java-5.0.5-bin.jar" />
     <property name="ojdbc.jar" value="${lib.dir}/ojdbc14.jar" />
     <property name="pmd.jar" value="${lib.dir}/pmd-3.9.jar" />
+    <property name="selenium-server.jar" value="${lib.dir}/selenium-server.jar" />
+    <property name="selenium-java-client-driver.jar" value="${lib.dir}/selenium-java-client-driver.jar" />
+    <property name="selenium-java-client-driver-tests.jar" value="${lib.dir}/selenium-java-client-driver-tests.jar" />
     <property name="spring.jar" value="${lib.dir}/spring.jar" />
+
+    <!-- Test-related properties -->
+    <property name="test.dir" value="${basedir}/test" />
+    <property name="test.target.dir" value="${test.dir}/target" />
+    <property name="test.src.dir" value="${test.dir}/src/test/java" />
+    <property name="test.classes.dir" value="${test.target.dir}/test-classes" />
 
     <path id="cobertura.classpath">
         <fileset dir="${lib.dir}">
@@ -92,13 +101,10 @@
     <!-- Configuration files -->
     <property name="checkstyle.config" value="${resource.dir}/caarray_checks.xml" />
 
-    <!-- Datasource configuration -->
-    <property file="${build.dir}/config.properties" />
-
     <!-- Environment properties -->
     <property environment="env" />
-    <property name="jboss.home" value="${env.JBOSS_HOME}" />
-    <property name="jboss.server.name" value="default" />
+    <property file="${build.dir}/local.properties" />
+    <property file="${build.dir}/default.properties" />
     <property name="jboss.deploy.dir" value="${jboss.home}/server/${jboss.server.name}/deploy" />
 
     <!-- ******************************************************************* -->
@@ -125,6 +131,8 @@
     <!-- ******************************************************************* -->
 
     <target name="continuous-integration" depends="clean,build,check,test:unit" />
+
+    <target name="nightly" depends="continuous-integration,deploy,test:functional" />
 
     <!-- ******************************************************************* -->
     <!-- ** CLEAN TARGETS                                                 ** -->
@@ -298,9 +306,11 @@
                 <include name="commons-discovery-0.2.jar" />
                 <include name="dom4j-1.6.1.jar" />
                 <include name="hibernate3.jar" />
+                <include name="jaxrpc.jar" />
                 <include name="jta.jar" />
+                <include name="log4j-1.2.13.jar" />
                 <include name="mail.jar" />
-                <include name="mysql-connector.jar" />
+                <include name="mysql-connector-java-5.0.5-bin.jar" />
                 <include name="saaj.jar" />
                 <include name="spring.jar" />
                 <include name="spring-richclient-full-0.1.0.jar" />
@@ -452,6 +462,46 @@
       totallinerate="10" />
     </target>
 
+    <!-- Functional (Selenium) Test Targets -->
+
+    <target name="test:functional">
+        <antcall target="test:selenium:start-server" />
+        <antcall target="test:selenium:run-tests" />
+        <antcall target="test:selenium:stop-server" />
+    </target>
+
+    <target name="test:selenium:start-server">
+        <java jar="${selenium-server.jar}" fork="true" spawn="true">
+            <arg line="-timeout 30"/>
+            <arg value="-port"/>
+            <arg value="${selenium.server.port}"/>
+        </java>
+    </target>
+
+    <target name="test:selenium:stop-server">
+        <get taskname="selenium-shutdown"
+            src="http://localhost:${selenium.server.port}/selenium-server/driver/?cmd=shutDown"
+            dest="${target.dir}/temp/selenium-shutdown-result.txt" ignoreerrors="true" />
+        <echo taskname="selenium-shutdown" message="DGF Errors during shutdown are expected" />
+    </target>
+
+    <target name="test:selenium:compile-tests">
+        <mkdir dir="${test.classes.dir}" />
+        <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}" debug="true">
+            <classpath>
+                <pathelement location="${selenium-java-client-driver.jar}" />
+                <pathelement location="${selenium-java-client-driver-tests.jar}" />
+                <pathelement location="${junit.jar}" />
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="test:selenium:run-tests" depends="test:selenium:compile-tests">
+        <run-junit-tests
+            test.src.dir="${test.src.dir}"
+            xml.output.dir="${test.target.dir}/junit"
+            classpath="${test.classes.dir};${selenium-server.jar};${selenium-java-client-driver.jar};${selenium-java-client-driver-tests.jar};${junit.jar}" />
+    </target>
 
     <!-- ******************************************************************* -->
     <!-- ** CHECK TARGETS                                                 ** -->
@@ -542,6 +592,7 @@
 
     <target name="deploy" depends="build:caarray.ear">
         <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
+        <sleep seconds="20" />
     </target>
 
 </project>
