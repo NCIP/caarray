@@ -6,13 +6,13 @@
 	<classpathentry kind="src" output="target/test-classes" path="src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/lib/commons-logging-1.1.jar"/>
-	<classpathentry kind="lib" path="C:/ncicb_cvs/caarray2/software/lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="src/main/resources"/>
-	<classpathentry kind="lib" path="C:/ncicb_cvs/caarray2/software/lib/commons-collections-3.1.jar"/>
-	<classpathentry kind="lib" path="C:/ncicb_cvs/caarray2/software/lib/mysql-connector-java-5.0.5-bin.jar"/>
-	<classpathentry kind="lib" path="C:/ncicb_cvs/caarray2/software/lib/javaee.jar"/>
-	<classpathentry kind="lib" path="C:/ncicb_cvs/caarray2/software/lib/c3p0-0.9.0.jar"/>
-	<classpathentry kind="lib" path="C:/ncicb_cvs/caarray2/software/lib/cglib-2.1.3.jar"/>
-	<classpathentry kind="lib" path="C:/ncicb_cvs/caarray2/software/lib/asm.jar"/>
+	<classpathentry kind="lib" path="/lib/asm.jar"/>
+	<classpathentry kind="lib" path="/lib/c3p0-0.9.0.jar"/>
+	<classpathentry kind="lib" path="/lib/cglib-2.1.3.jar"/>
+	<classpathentry kind="lib" path="/lib/commons-collections-3.1.jar"/>
+	<classpathentry kind="lib" path="/lib/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="/lib/javaee.jar"/>
+	<classpathentry kind="lib" path="/lib/mysql-connector-java-5.0.5-bin.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
