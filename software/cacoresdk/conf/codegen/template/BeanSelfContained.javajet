@@ -1,5 +1,5 @@
 <%@ jet package="gov.nih.nci.codegen.core.template.jet" 
-    class="BeanImpl"
+    class="BeanSelfContained"
     skeleton="BeanSkel.skeleton" %>
 <%
     Classifier klass = (Classifier)context.get("modelElement");
@@ -10,15 +10,16 @@
     String superPkgName = null;
     if (superClass != null)
         superPkgName = UML13Utils.getNamespaceName(UML13Utils.getPackage(UML13Utils.getModel(superClass), basePkg), superClass);
-    // Check if this class is an abstract class - does an "id" attribute exist for it or for one of its superclasses.
+    // Check if this class is an abstract class that is not persisted.
+    // (Does an "id" attribute exist for it or for one of its superclasses?)
     // This will determine whether to generate the equals() and hashCode() methods.
     boolean isAbstractNoId = false;
     if (getIdAtt((UmlClass)klass) == null) {
-        // Abstract class
+        // Abstract class that is not persisted.
         isAbstractNoId = true;
     }
 %>
-package <%=pkgName%>.impl;
+package <%=pkgName%>;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -104,9 +105,9 @@ package <%=pkgName%>.impl;
  */
  
 <%=UML13JavaSourceHelper.getClassJavadoc(klass)%>
-public <% if (klass.isAbstract()) {%>abstract <%}%>class <%=klass.getName()%>Impl <% if (superClass != null) { %>
-  extends <%=superPkgName%>.impl.<%=superClass.getName()%>Impl<% } %>
-  implements <%=pkgName%>.<%=klass.getName()%>, java.io.Serializable {
+public <% if (klass.isAbstract()) {%>abstract <%}%>class <%=klass.getName()%> <% if (superClass != null) { %>
+  extends <%=superPkgName%>.<%=superClass.getName()%><% } %>
+  implements java.io.Serializable {
     /**
      * The serial version UID for serialization.
      */
@@ -230,9 +231,9 @@ public <% if (klass.isAbstract()) {%>abstract <%}%>class <%=klass.getName()%>Imp
      */
     public boolean equals(final Object obj) {
         boolean theyAreEqual = false;
-        if (obj instanceof <%=pkgName%>.impl.<%=klass.getName()%>Impl) {
-            final <%=pkgName%>.impl.<%=klass.getName()%>Impl castObject =
-                (<%=pkgName%>.impl.<%=klass.getName()%>Impl) obj;              
+        if (obj instanceof <%=pkgName%>.<%=klass.getName()%>) {
+            final <%=pkgName%>.<%=klass.getName()%> castObject =
+                (<%=pkgName%>.<%=klass.getName()%>) obj;              
 <%
         String idAttTypeName = getIdAtt((UmlClass)klass).getType().getName();
         // Convert Java primitive types to wrapper types.
