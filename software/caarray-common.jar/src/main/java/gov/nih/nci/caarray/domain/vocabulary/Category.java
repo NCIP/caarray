@@ -84,7 +84,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
   /**
 
    */
@@ -121,7 +121,7 @@ public class Category extends AbstractCaArrayEntity {
     /**
      * The children set.
      */
-    private java.util.Collection children = new java.util.HashSet();
+    private final java.util.Collection children = new java.util.HashSet();
 
     /**
      * Gets the children.
@@ -137,9 +137,10 @@ public class Category extends AbstractCaArrayEntity {
      *
      * @param childrenVal the children
      */
+    @SuppressWarnings("unchecked")
     public void setChildren(final java.util.Collection childrenVal) {
-        this.children = childrenVal;
-    }    
+        this.children.addAll(childrenVal);
+    }
 
     /**
      * The parent gov.nih.nci.caarray.domain.vocabulary.Category.
@@ -152,7 +153,7 @@ public class Category extends AbstractCaArrayEntity {
      * @return the parent
      */
     public gov.nih.nci.caarray.domain.vocabulary.Category getParent() {
-        return parent;    
+        return parent;
     }
 
     /**
@@ -160,7 +161,7 @@ public class Category extends AbstractCaArrayEntity {
      *
      * @param parentVal the parent
      */
-    public void setParent(final 
+    public void setParent(final
       gov.nih.nci.caarray.domain.vocabulary.Category parentVal) {
         this.parent = parentVal;
     }
@@ -175,8 +176,8 @@ public class Category extends AbstractCaArrayEntity {
         boolean theyAreEqual = false;
         if (obj instanceof gov.nih.nci.caarray.domain.vocabulary.Category) {
             final gov.nih.nci.caarray.domain.vocabulary.Category castObject =
-                (gov.nih.nci.caarray.domain.vocabulary.Category) obj;                  
-            Long thisId = getId();        
+                (gov.nih.nci.caarray.domain.vocabulary.Category) obj;
+            Long thisId = getId();
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;
             }
