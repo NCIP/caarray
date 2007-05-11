@@ -92,7 +92,7 @@ public class VocabularyServiceTest {
     */
     @Test
     public void getTermsProtocolType() {
-        VocabularyService vocab = new MockVocabularyServiceBean();
+        VocabularyService vocab = new VocabularyServiceBean();
         List<Term> terms = new ArrayList<Term>();
         try {
              terms =  vocab.getTerms("ProtocolType");
