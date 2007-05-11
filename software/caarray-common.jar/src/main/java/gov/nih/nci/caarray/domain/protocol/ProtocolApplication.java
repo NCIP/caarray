@@ -84,7 +84,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
   /**
 
    */
@@ -106,7 +106,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      * @return the protocol
      */
     public gov.nih.nci.caarray.domain.protocol.Protocol getProtocol() {
-        return protocol;    
+        return protocol;
     }
 
     /**
@@ -114,7 +114,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      *
      * @param protocolVal the protocol
      */
-    public void setProtocol(final 
+    public void setProtocol(final
       gov.nih.nci.caarray.domain.protocol.Protocol protocolVal) {
         this.protocol = protocolVal;
     }
@@ -122,7 +122,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
     /**
      * The values set.
      */
-    private java.util.Collection values = new java.util.HashSet();
+    private final java.util.Collection values = new java.util.HashSet();
 
     /**
      * Gets the values.
@@ -138,9 +138,10 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      *
      * @param valuesVal the values
      */
+    @SuppressWarnings("unchecked")
     public void setValues(final java.util.Collection valuesVal) {
-        this.values = valuesVal;
-    }    
+        this.values.addAll(valuesVal);
+    }
 
     /**
      * Checks if given object is equal to this object.
@@ -152,8 +153,8 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
         boolean theyAreEqual = false;
         if (obj instanceof gov.nih.nci.caarray.domain.protocol.ProtocolApplication) {
             final gov.nih.nci.caarray.domain.protocol.ProtocolApplication castObject =
-                (gov.nih.nci.caarray.domain.protocol.ProtocolApplication) obj;                  
-            Long thisId = getId();        
+                (gov.nih.nci.caarray.domain.protocol.ProtocolApplication) obj;
+            Long thisId = getId();
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;
             }
