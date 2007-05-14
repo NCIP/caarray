@@ -180,16 +180,8 @@
     <!-- ** DATASOURCE CONFIGURATION TARGETS                              ** -->
     <!-- ******************************************************************* -->
 
-    <!-- Configure datasource and transaction management for deployment -->
-    <target name="configure-datasource-for-deploy" depends="configure-datasource-common,
-        configure-transactions-for-deploy" />
-
-    <!-- Configure datasource and transaction management for junit tests -->
-    <target name="configure-datasource-for-test" depends="configure-datasource-common,
-        configure-transactions-for-test" />
-
-    <!-- Copy hibernate files to classes directory and configure datasource -->
-    <target name="configure-datasource-common">
+    <!-- Copy hibernate files to classes directory and configure datasource and transaction management -->
+    <target name="configure-datasource-for-deploy">
         <copy todir="${caarray-common.classes.dir}" overwrite="true">
             <fileset dir="${caarray-common.resources.dir}" includes="hibernate*" />
             <fileset dir="${caarray-common.src.dir}" includes="**/*.hbm.xml" />
@@ -200,21 +192,26 @@
             <replacefilter token="@DBUSER@" value="${database.user}" />
             <replacefilter token="@DBPASSWD@" value="${database.password}" />
         </replace>
-    </target>
-
-    <!-- Configure transaction and session management for junit tests -->
-    <target name="configure-transactions-for-test">
-        <replace file="${caarray-common.classes.dir}/hibernate.properties">
-            <replacefilter token="#@TRANSACTION_FACTORY@" value="${jdbc.transaction.factory}" />
-            <replacefilter token="#@SESSION_CONTEXT@" value="${hibernate.session.context}" />
-        </replace>
-    </target>
-
-    <!-- Configure transaction and session management for EAR/WAR deployment -->
-    <target name="configure-transactions-for-deploy">
         <replace file="${caarray-common.classes.dir}/hibernate.properties">
             <replacefilter token="#@TRANSACTION_FACTORY@" value="${jta.transaction.factory}" />
             <replacefilter token="#@TRANSACTION_MANAGER@" value="${jta.transaction.manager}" />
+        </replace>
+    </target>
+
+    <target name="configure-datasource-for-test">
+        <copy todir="${caarray-common.test.classes.dir}" overwrite="true">
+            <fileset dir="${caarray-common.resources.dir}" includes="hibernate*" />
+            <fileset dir="${caarray-common.src.dir}" includes="**/*.hbm.xml" />
+        </copy>
+        <replace file="${caarray-common.test.classes.dir}/hibernate.cfg.xml">
+            <replacefilter token="@SERVERNAME@" value="${database.server}" />
+            <replacefilter token="@DBNAME@" value="${database.name}" />
+            <replacefilter token="@DBUSER@" value="${database.user}" />
+            <replacefilter token="@DBPASSWD@" value="${database.password}" />
+        </replace>
+        <replace file="${caarray-common.test.classes.dir}/hibernate.properties">
+            <replacefilter token="#@TRANSACTION_FACTORY@" value="${jdbc.transaction.factory}" />
+            <replacefilter token="#@SESSION_CONTEXT@" value="${hibernate.session.context}" />
         </replace>
     </target>
 
@@ -371,13 +368,13 @@
 
     <!-- caarray-common.jar -->
 
-    <target name="test:instrument:caarray-common.jar" depends="compile:caarray-common.jar,configure-datasource-for-test">
+    <target name="test:instrument:caarray-common.jar" depends="compile:caarray-common.jar">
         <cobertura-instrument todir="${caarray-common.instrumented.classes.dir}">
             <fileset dir="${caarray-common.classes.dir}" />
         </cobertura-instrument>
     </target>
 
-    <target name="test:compile:caarray-common.test.classes" depends="compile:caarray-common.jar,configure-datasource-for-test">
+    <target name="test:compile:caarray-common.test.classes" depends="compile:caarray-common.jar">
         <mkdir dir="${caarray-common.test.classes.dir}" />
         <javac srcdir="${caarray-common.test.src.dir}" destdir="${caarray-common.test.classes.dir}" debug="true">
             <classpath>
@@ -389,7 +386,7 @@
         </javac>
     </target>
 
-    <target name="test:junit-caarray-common.jar" depends="test:compile:caarray-common.test.classes,test:instrument:caarray-common.jar">
+    <target name="test:junit-caarray-common.jar" depends="test:compile:caarray-common.test.classes,test:instrument:caarray-common.jar,configure-datasource-for-test">
         <run-junit-tests
       test.src.dir="${caarray-common.test.src.dir}"
       xml.output.dir="${caarray-common.target.dir}/junit"
