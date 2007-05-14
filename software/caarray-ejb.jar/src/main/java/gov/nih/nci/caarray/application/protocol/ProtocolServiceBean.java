@@ -83,9 +83,20 @@
 package gov.nih.nci.caarray.application.protocol;
 
 import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.ProtocolDao;
+import gov.nih.nci.caarray.application.ApplicationServiceException;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
+import javax.transaction.UserTransaction;
+import javax.transaction.SystemException;
+import javax.transaction.RollbackException;
+import javax.transaction.HeuristicRollbackException;
+import javax.naming.InitialContext;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Session bean used to access and update protocols (i.e. scientific) used in
@@ -96,6 +107,8 @@ import javax.ejb.Stateless;
 @Local(ProtocolService.class)
 @Stateless
 public class ProtocolServiceBean implements ProtocolService {
+
+    private static final Log LOG = LogFactory.getLog(ProtocolServiceBean.class);
 
     /**
      * Creates a new bean instance.
@@ -108,9 +121,52 @@ public class ProtocolServiceBean implements ProtocolService {
      * Saves the given protocol.
      *
      * @param protocol protocol to save.
+     *
+     * @throws ApplicationServiceException if the protocol could not be saved.
      */
-    public void save(final Protocol protocol) {
-        // TODO Auto-generated method stub
+    public void save(final Protocol protocol) throws ApplicationServiceException {
+        UserTransaction tx = null;
+        ProtocolDao dao = getProtocolDao();
+        try {
+            InitialContext initialContext = new InitialContext();
+            tx = (UserTransaction) initialContext.lookup("java:comp/UserTransaction");
+            tx.begin();
+            dao.save(protocol);
+            tx.commit();
+        } catch (RollbackException re) {
+            throw new ApplicationServiceException("Transaction was rolled back", re);
+        } catch (HeuristicRollbackException hre) {
+            throw new ApplicationServiceException("Transaction was rolled back", hre);
+        } catch (Exception e) {
+            rollbackAndThrow(tx, e, "Error saving protocol");
+        }
     }
 
+    /**
+     * Rolls back the transaction.
+     *
+     * @param tx the transaction to roll back.
+     * @param e the exception to wrap.
+     * @param message the error message.
+     *
+     * @throws ApplicationServiceException wrapping the given exception.
+     */
+    private void rollbackAndThrow(UserTransaction tx, Throwable e, String message) throws ApplicationServiceException {
+        try {
+            if (tx != null) {
+                tx.rollback();
+            }
+        } catch (SystemException se) {
+            LOG.error("Couldn't roll back transaction", se);
+        }
+        throw new ApplicationServiceException(message, e);
+    }
+
+    /**
+    *
+    * @return ProtocolDao
+    */
+   public ProtocolDao getProtocolDao() {
+       return CaArrayDaoFactory.INSTANCE.getProtocolDao();
+   }
 }
