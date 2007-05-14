@@ -95,7 +95,6 @@ public class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
      * @return a <code>ProtocolDao</code>.
      */
     public ProtocolDao getProtocolDao() {
-        // TODO Auto-generated method stub
         return new ProtocolDaoImpl();
     }
 
@@ -105,7 +104,6 @@ public class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
      * @return a <code>VocabularyDao</code>.
      */
     public VocabularyDao getVocabularyDao() {
-        // TODO Auto-generated method stub
         return new VocabularyDaoImpl();
     }
 

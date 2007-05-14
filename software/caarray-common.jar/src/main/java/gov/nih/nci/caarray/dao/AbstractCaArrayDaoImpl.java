@@ -82,22 +82,19 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.util.HibernateUtil;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Iterator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Restrictions;
+
+import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
 /**
  * Base DAO implementation for all caArray domain DAOs.
@@ -107,7 +104,14 @@ import org.hibernate.criterion.Restrictions;
  */
 public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
 
-    private static final Log LOG = LogFactory.getLog(AbstractCaArrayDaoImpl.class);
+    /**
+     * Returns the current Hibernate Session.
+     *
+     * @return the current Hibernate Session.
+     */
+    protected Session getCurrentSession() {
+        return HibernateUtil.getCurrentSession();
+    }
 
     /**
      * Saves the entity to persistent storage, updating or inserting
@@ -117,60 +121,29 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * @throws DAOException if the entity could not be saved.
      */
     public void save(AbstractCaArrayEntity caArrayEntity) throws DAOException {
-        Session session = null;
-        Transaction transaction = null;
-
         try {
-            session = HibernateUtil.getSession();
-            transaction = session.beginTransaction();
-            session.saveOrUpdate(caArrayEntity);
-            transaction.commit();
+            getCurrentSession().saveOrUpdate(caArrayEntity);
         } catch (HibernateException he) {
-            try {
-                if (transaction != null) {
-                    transaction.rollback();
-                }
-            } catch (HibernateException rollbackException) {
-                LOG.error("Unable to roll back transaction: ", rollbackException);
-            }
             throw new DAOException("Unable to save entity", he);
-        } finally {
-            HibernateUtil.closeSession();
         }
     }
 
     /**
      * Saves the collection of entities to persistent storage, updating or inserting
-     * as necessary. All entities are saved in a single transaction.
+     * as necessary.
      *
      * @param caArrayEntities the entity collection to save
      * @throws DAOException if the entity collection could not be saved.
      */
     public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) throws DAOException {
-        Session session = null;
-        Transaction transaction = null;
-
         try {
-            session = HibernateUtil.getSession();
-            transaction = session.beginTransaction();
-
             Iterator<? extends AbstractCaArrayEntity> iterator = caArrayEntities.iterator();
             while (iterator.hasNext()) {
                 AbstractCaArrayEntity entity = iterator.next();
-                session.saveOrUpdate(entity);
+                getCurrentSession().saveOrUpdate(entity);
             }
-            transaction.commit();
         } catch (HibernateException he) {
-            try {
-                if (transaction != null) {
-                    transaction.rollback();
-                }
-            } catch (HibernateException rollbackException) {
-                LOG.error("Unable to roll back transaction: ", rollbackException);
-            }
             throw new DAOException("Unable to save entity collection", he);
-        } finally {
-            HibernateUtil.closeSession();
         }
     }
 
@@ -184,20 +157,19 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      */
     @SuppressWarnings("unchecked")
     public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
-        Session session = null;
         List<AbstractCaArrayEntity> resultList = new ArrayList<AbstractCaArrayEntity>();
         List hibernateReturnedEntities = null;
+        Session mySession = HibernateUtil.getSessionForQueryMethod();
 
         try {
-            session = HibernateUtil.getSession();
             // Query database for list of Protocols with this id.
-            Criteria criteria = session.createCriteria(entityToMatch.getClass());
+            Criteria criteria = mySession.createCriteria(entityToMatch.getClass());
             criteria.add(Example.create(entityToMatch));
             hibernateReturnedEntities = criteria.list();
         } catch (HibernateException he) {
             throw new DAOException("Unable to retrieve entity", he);
         } finally {
-            HibernateUtil.closeSession();
+            HibernateUtil.returnSession(mySession);
         }
 
         if (hibernateReturnedEntities != null) {
@@ -216,17 +188,16 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      */
     public AbstractCaArrayEntity queryEntityById(AbstractCaArrayEntity entityToMatch) throws DAOException {
         List hibernateReturnedEntities = null;
-        Session session = null;
+        Session mySession = HibernateUtil.getSessionForQueryMethod();
 
         try {
-            session = HibernateUtil.getSession();
             // Query database for list of entities matching the given entity.
-            hibernateReturnedEntities = session.createCriteria(entityToMatch.getClass()).add(
+            hibernateReturnedEntities = mySession.createCriteria(entityToMatch.getClass()).add(
                 Restrictions.eq("id", entityToMatch.getId())).list();
         } catch (HibernateException he) {
             throw new DAOException("Unable to retrieve entity", he);
         } finally {
-            HibernateUtil.closeSession();
+            HibernateUtil.returnSession(mySession);
         }
 
         if ((hibernateReturnedEntities != null) && (hibernateReturnedEntities.size() >= 1)) {
@@ -235,6 +206,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             return null;
         }
     }
+
     /**
      * Deletes the entity from persistent storage.
      *
@@ -242,25 +214,10 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * @throws DAOException if unable to delete the entity.
      */
     public void remove(AbstractCaArrayEntity caArrayEntity) throws DAOException {
-        Session session = null;
-        Transaction transaction = null;
-
         try {
-            session = HibernateUtil.getSession();
-            transaction = session.beginTransaction();
-            session.delete(caArrayEntity);
-            transaction.commit();
+            getCurrentSession().delete(caArrayEntity);
         } catch (HibernateException he) {
-            try {
-                if (transaction != null) {
-                    transaction.rollback();
-                }
-            } catch (HibernateException rollbackException) {
-                LOG.error("Unable to roll back transaction: ", rollbackException);
-            }
             throw new DAOException("Unable to remove entity", he);
-        } finally {
-            HibernateUtil.closeSession();
         }
     }
 }

@@ -86,6 +86,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.SessionFactory;
 import org.hibernate.Session;
 import org.hibernate.HibernateException;
+import org.hibernate.Transaction;
 
 /**
  * Utility class to create and retrieve Hibernate sessions.
@@ -105,12 +106,6 @@ public final class HibernateUtil {
     }
 
     /**
-     * Holds a Hibernate session local to this thread.
-     * This is used to enable concurrent threads to get Hibernate Sessions.
-     */
-    private static final ThreadLocal<Session> LOCAL_SESSION = new ThreadLocal<Session>();
-
-    /**
      * A private constructor because this class should not be instantiated.
      * All callable methods are static methods.
      */
@@ -118,30 +113,54 @@ public final class HibernateUtil {
     }
 
     /**
-     * Opens and returns a Hibernate session.
+     * Returns the current Hibernate session.
+     * Note that this returns a special session that can be used only in the context of a transaction.
+     * (Assuming that the hibernate properties are set to use a JTA or JDBC transaction factory.)
      *
      * @return a Hibernate session.
      */
-    public static Session getSession() {
-        // See if the thread has a Session.
-        Session session = (Session) LOCAL_SESSION.get();
-        // If the thread does not have a Session, open one and associate
-        // the thread with it.
-        if (session == null) {
+    public static Session getCurrentSession() {
+        return SESSION_FACTORY.getCurrentSession();
+    }
+
+    /**
+     * Gets a Hibernate Session for a query-only method to use.
+     * If the current session is not associated with a transaction, then it opens a new session.
+     * Note that this must be used only by DAO methods that don't need a transaction (query-only DAO methods).
+     *
+     * @return the Hibernate Session to use.
+     */
+    public static Session getSessionForQueryMethod() {
+        Session session = getCurrentSession();
+        if ((session == null) || (session.getTransaction() == null) || (!session.getTransaction().isActive())) {
+            // Session is not associated with a transaction. Have to manage my own session.
             session = SESSION_FACTORY.openSession();
-            LOCAL_SESSION.set(session);
         }
         return session;
     }
 
     /**
-     * Closes the Hibernate session associated with this thread.
+     * Returns a Hibernate session by flushing and closing it.
+     * If the current session is not associated with a transaction, then it closes the session.
+     * Note that this must be used only by DAO methods that don't need a transaction (query-only DAO methods).
+     *
+     * @param session the Hibernate session to flush and close.
      */
-    public static void closeSession() {
-        Session session = (Session) LOCAL_SESSION.get();
-        LOCAL_SESSION.set(null);
-        if (session != null) {
+    public static void returnSession(Session session) {
+        if ((session != null) && (session.getTransaction() == null) || (!session.getTransaction().isActive())) {
+            session.flush();
             session.close();
+        }
+    }
+
+    /**
+     * Checks if the transaction is active and then rolls it back.
+     *
+     * @param tx the Transaction to roll back.
+     */
+    public static void rollbackTransaction(Transaction tx) {
+        if ((tx != null) && (tx.isActive())) {
+            tx.rollback();
         }
     }
 }

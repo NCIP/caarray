@@ -77,18 +77,17 @@ public class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements Vocabul
      */
     @SuppressWarnings("unchecked")
     public List<Term> getTerms(String categoryName) throws DAOException {
-        Session session = null;
+        Session mySession = HibernateUtil.getSessionForQueryMethod();
         List<Term> matchingTerms = new ArrayList<Term>();
         List hibernateReturnedTerms = null;
 
         try {
-            session = HibernateUtil.getSession();
-            hibernateReturnedTerms = session.createCriteria(Term.class).createCriteria(
+            hibernateReturnedTerms = mySession.createCriteria(Term.class).createCriteria(
                     "category").add(Restrictions.eq("name", categoryName)).list();
         } catch (HibernateException he) {
             throw new DAOException("Unable to retrieve terms", he);
         } finally {
-            HibernateUtil.closeSession();
+            HibernateUtil.returnSession(mySession);
         }
 
         if (hibernateReturnedTerms != null) {
