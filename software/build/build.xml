@@ -98,6 +98,12 @@
         </fileset>
     </path>
 
+    <!-- Datasource-configuration-related properties -->
+    <property name="jta.transaction.factory" value="hibernate.transaction.factory_class org.hibernate.transaction.JTATransactionFactory" />
+    <property name="jta.transaction.manager" value="hibernate.transaction.manager_lookup_class org.hibernate.transaction.JBossTransactionManagerLookup" />
+    <property name="jdbc.transaction.factory" value="hibernate.transaction.factory_class org.hibernate.transaction.JDBCTransactionFactory" />
+    <property name="hibernate.session.context" value="hibernate.current_session_context_class thread" />
+
     <!-- Configuration files -->
     <property name="checkstyle.config" value="${resource.dir}/caarray_checks.xml" />
 
@@ -174,8 +180,16 @@
     <!-- ** DATASOURCE CONFIGURATION TARGETS                              ** -->
     <!-- ******************************************************************* -->
 
+    <!-- Configure datasource and transaction management for deployment -->
+    <target name="configure-datasource-for-deploy" depends="configure-datasource-common,
+        configure-transactions-for-deploy" />
+
+    <!-- Configure datasource and transaction management for junit tests -->
+    <target name="configure-datasource-for-test" depends="configure-datasource-common,
+        configure-transactions-for-test" />
+
     <!-- Copy hibernate files to classes directory and configure datasource -->
-    <target name="configure-datasource">
+    <target name="configure-datasource-common">
         <copy todir="${caarray-common.classes.dir}" overwrite="true">
             <fileset dir="${caarray-common.resources.dir}" includes="hibernate*" />
             <fileset dir="${caarray-common.src.dir}" includes="**/*.hbm.xml" />
@@ -185,6 +199,22 @@
             <replacefilter token="@DBNAME@" value="${database.name}" />
             <replacefilter token="@DBUSER@" value="${database.user}" />
             <replacefilter token="@DBPASSWD@" value="${database.password}" />
+        </replace>
+    </target>
+
+    <!-- Configure transaction and session management for junit tests -->
+    <target name="configure-transactions-for-test">
+        <replace file="${caarray-common.classes.dir}/hibernate.properties">
+            <replacefilter token="#@TRANSACTION_FACTORY@" value="${jdbc.transaction.factory}" />
+            <replacefilter token="#@SESSION_CONTEXT@" value="${hibernate.session.context}" />
+        </replace>
+    </target>
+
+    <!-- Configure transaction and session management for EAR/WAR deployment -->
+    <target name="configure-transactions-for-deploy">
+        <replace file="${caarray-common.classes.dir}/hibernate.properties">
+            <replacefilter token="#@TRANSACTION_FACTORY@" value="${jta.transaction.factory}" />
+            <replacefilter token="#@TRANSACTION_MANAGER@" value="${jta.transaction.manager}" />
         </replace>
     </target>
 
@@ -240,7 +270,7 @@
         build:caarray.war,
         build:caarray.ear" />
 
-    <target name="build:caarray-common.jar" depends="compile:caarray-common.jar,configure-datasource">
+    <target name="build:caarray-common.jar" depends="compile:caarray-common.jar,configure-datasource-for-deploy">
         <mkdir dir="${caarray-common.target.dir}"/>
         <jar destfile="${caarray-common.jar}">
             <fileset dir="${caarray-common.classes.dir}" />
@@ -341,19 +371,20 @@
 
     <!-- caarray-common.jar -->
 
-    <target name="test:instrument:caarray-common.jar" depends="compile:caarray-common.jar,configure-datasource">
+    <target name="test:instrument:caarray-common.jar" depends="compile:caarray-common.jar,configure-datasource-for-test">
         <cobertura-instrument todir="${caarray-common.instrumented.classes.dir}">
             <fileset dir="${caarray-common.classes.dir}" />
         </cobertura-instrument>
     </target>
 
-    <target name="test:compile:caarray-common.test.classes" depends="compile:caarray-common.jar">
+    <target name="test:compile:caarray-common.test.classes" depends="compile:caarray-common.jar,configure-datasource-for-test">
         <mkdir dir="${caarray-common.test.classes.dir}" />
         <javac srcdir="${caarray-common.test.src.dir}" destdir="${caarray-common.test.classes.dir}" debug="true">
             <classpath>
                 <pathelement location="${caarray-common.classes.dir}" />
                 <pathelement location="${commons-logging.jar}" />
                 <pathelement location="${junit.jar}" />
+                <pathelement location="${hibernate.jar}" />
             </classpath>
         </javac>
     </target>
@@ -394,7 +425,7 @@
       xml.output.dir="${caarray-ejb.target.dir}/junit"
         instrumented.classes="${caarray-ejb.instrumented.classes.dir}"
 classpath="${caarray-ejb.test.classes.dir};${caarray-ejb.classes.dir};${caarray-common.classes.dir};${cacore32-client.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar}" />
-</target>
+    </target>
 
     <!-- caarray.war -->
 
