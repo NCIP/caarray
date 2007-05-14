@@ -82,6 +82,9 @@
  */
 package gov.nih.nci.caarray.ui.jsf.beans;
 
+import gov.nih.nci.caarray.application.ApplicationServiceException;
+import gov.nih.nci.caarray.application.ServiceLocator;
+import gov.nih.nci.caarray.application.protocol.ProtocolService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -91,8 +94,6 @@ import java.util.List;
 
 import javax.ejb.EJB;
 import javax.faces.model.SelectItem;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -105,10 +106,14 @@ import org.apache.commons.logging.LogFactory;
 public final class EditProtocolBean {
 
     private static final Log LOG = LogFactory.getLog(EditProtocolBean.class);
+    
     private Protocol protocol;
 
     @EJB
     private VocabularyService vocabularyService;
+
+    @EJB
+    private ProtocolService protocolService;
 
     /**
      * Creates a new instance.
@@ -138,28 +143,6 @@ public final class EditProtocolBean {
         return items;
     }
 
-    private VocabularyService getVocabularyService() {
-        if (vocabularyService == null) {
-            vocabularyService = lookupVocabularyService();
-        }
-        return vocabularyService;
-    }
-
-    private VocabularyService lookupVocabularyService() {
-        try {
-            InitialContext initialContext = new InitialContext();
-            return (VocabularyService) initialContext.lookup(VocabularyService.JNDI_NAME);
-        } catch (NamingException e) {
-            LOG.error("Couldn't get InitialContex", e);
-            throw new IllegalStateException(e);
-        }
-
-    }
-
-    void setVocabularyService(VocabularyService vocabularyService) {
-        this.vocabularyService = vocabularyService;
-    }
-
     /**
      * Returns the current protocol for editing, creating a new instance if none has been set.
      *
@@ -179,6 +162,39 @@ public final class EditProtocolBean {
      */
     public void setProtocol(Protocol protocol) {
         this.protocol = protocol;
+    }
+    
+    /**
+     * Saves the current protocol.
+     * 
+     * @return JSF navigation target
+     */
+    public String save() {
+        try {
+            getProtocolService().save(getProtocol());
+        } catch (ApplicationServiceException e) {
+            // TODO REMOVE ApplicationServiceException!!!!!!!!!!!!
+            LOG.error("Couldn't save protocol.", e);
+        }
+        return "success";
+    }
+
+    private VocabularyService getVocabularyService() {
+        if (vocabularyService == null) {
+            vocabularyService = (VocabularyService) ServiceLocator.getInstance().lookup(VocabularyService.JNDI_NAME);
+        }
+        return vocabularyService;
+    }
+    
+    void setVocabularyService(VocabularyService vocabularyService) {
+        this.vocabularyService = vocabularyService;
+    }
+
+    private ProtocolService getProtocolService() {
+        if (protocolService == null) {
+            protocolService = (ProtocolService) ServiceLocator.getInstance().lookup(ProtocolService.JNDI_NAME);
+        }
+        return protocolService;
     }
 
 }

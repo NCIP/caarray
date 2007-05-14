@@ -9,7 +9,7 @@
 			<attribute name="javadoc_location" value="http://java.sun.com/javaee/javaserverfaces/1.1/docs/api"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/lib/myfaces-impl-1.1.5.jar"/>
+	<classpathentry kind="lib" path="/lib/myfaces-impl-1.1.5.jar" sourcepath="/lib/myfaces-core-1.1.5-src.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/caarray-common.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/caarray-ejb.jar"/>
 	<classpathentry kind="lib" path="/lib/javaee.jar"/>
