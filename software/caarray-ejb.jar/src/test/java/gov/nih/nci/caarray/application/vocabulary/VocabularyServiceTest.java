@@ -56,10 +56,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
-import gov.nih.nci.caarray.dao.VocabularyDaoImpl;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.system.applicationservice.ApplicationService;

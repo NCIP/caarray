@@ -93,6 +93,11 @@ import gov.nih.nci.caarray.application.ApplicationServiceException;
 public interface ProtocolService {
 
     /**
+     * The default JNDI name to use to lookup <code>ProtocolService</code>.
+     */
+    String JNDI_NAME = "caarray/ProtocolServiceBean/local";
+
+    /**
      * Saves the protocol given.
      *
      * @param protocol protocol to save.
