@@ -136,9 +136,14 @@
     <!-- ** MAIN TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
 
-    <target name="continuous-integration" depends="clean,build,check,test:unit" />
+    <target name="continuous-integration" depends="clean,
+	    build,
+	    check,
+	    test:unit" />
 
-    <target name="nightly" depends="continuous-integration,deploy,test:functional" />
+    <target name="nightly" depends="continuous-integration,
+	    deploy:deploy-and-wait,
+	    test:functional" />
 
     <!-- ******************************************************************* -->
     <!-- ** CLEAN TARGETS                                                 ** -->
@@ -492,10 +497,8 @@ classpath="${caarray-ejb.test.classes.dir};${caarray-ejb.classes.dir};${caarray-
 
     <!-- Functional (Selenium) Test Targets -->
 
-    <target name="test:functional">
-        <antcall target="test:selenium:start-server" />
-        <antcall target="test:selenium:run-tests" />
-        <antcall target="test:selenium:stop-server" />
+    <target name="test:functional" depends="test:selenium:run-tests">
+        <fail if="junit.failure" message="There were Selenium test failures." />
     </target>
 
     <target name="test:selenium:start-server">
@@ -525,10 +528,12 @@ classpath="${caarray-ejb.test.classes.dir};${caarray-ejb.classes.dir};${caarray-
     </target>
 
     <target name="test:selenium:run-tests" depends="test:selenium:compile-tests">
+	    <antcall target="test:selenium:start-server" />
         <run-junit-tests
             test.src.dir="${test.src.dir}"
             xml.output.dir="${test.target.dir}/junit"
             classpath="${test.classes.dir};${selenium-server.jar};${selenium-java-client-driver.jar};${selenium-java-client-driver-tests.jar};${junit.jar}" />
+	    <antcall target="test:selenium:stop-server" />
     </target>
 
     <!-- ******************************************************************* -->
@@ -620,7 +625,13 @@ classpath="${caarray-ejb.test.classes.dir};${caarray-ejb.classes.dir};${caarray-
 
     <target name="deploy" depends="build:caarray.ear">
         <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
-        <sleep seconds="20" />
+    </target>
+    
+    <target name="deploy:deploy-and-wait" depends="deploy">
+    	<sleep seconds="5" />
+    	<waitfor maxwait="30" maxwaitunit="second" checkevery="5" checkeveryunit="second">
+			<http url="http://localhost:${jboss.server.port}/caarray"/>
+		</waitfor>
     </target>
 
 </project>
