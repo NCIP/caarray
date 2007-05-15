@@ -20,6 +20,7 @@
                 <batchtest todir="@{xml.output.dir}">
                     <fileset dir="@{test.src.dir}">
                         <include name="**/*Test.java" />
+                        <exclude name="**/Abstract*Test.java" />
                     </fileset>
                 </batchtest>
             </junit>
