@@ -113,6 +113,11 @@
     <property file="${build.dir}/default.properties" />
     <property name="jboss.deploy.dir" value="${jboss.home}/server/${jboss.server.name}/deploy" />
 
+    <filterset id="caarray.filterset">
+		<filtersfile file="${build.dir}/local.properties" />
+		<filtersfile file="${build.dir}/default.properties" />
+	</filterset>
+
     <!-- ******************************************************************* -->
     <!-- ** IMPORTS                                                       ** -->
     <!-- ******************************************************************* -->
@@ -180,6 +185,20 @@
         <delete dir="${target.dir}" />
     </target>
 
+    
+    <!-- ******************************************************************* -->
+    <!-- ** PREPARATION TARGETS                                           ** -->
+    <!-- ******************************************************************* -->
+
+    <target name="prepare:create-local.properties" 
+    	unless="local.properties.exists" 
+    	depends="prepare:check-for-local.properties">
+    	<touch file="${build.dir}/local.properties" />
+    </target>
+    
+    <target name="prepare:check-for-local.properties">
+		<available file="${build.dir}/local.properties" property="local.properties.exists" />
+    </target>
 
     <!-- ******************************************************************* -->
     <!-- ** DATASOURCE CONFIGURATION TARGETS                              ** -->
@@ -622,9 +641,12 @@ classpath="${caarray-ejb.test.classes.dir};${caarray-ejb.classes.dir};${caarray-
     <!-- ******************************************************************* -->
     <!-- ** DEPLOY TARGETS                                                ** -->
     <!-- ******************************************************************* -->
-
-    <target name="deploy" depends="build:caarray.ear">
+    
+    <target name="deploy" depends="build:caarray.ear,prepare:create-local.properties">
         <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
+        <copy file="${resource.dir}/deploy/caarray-mysql-ds.xml" todir="${jboss.deploy.dir}">
+    		<filterset refid="caarray.filterset" />
+		</copy>
     </target>
     
     <target name="deploy:deploy-and-wait" depends="deploy">
