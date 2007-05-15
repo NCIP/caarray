@@ -18,31 +18,31 @@
         <th><h:outputLabel for="protocolName" value="Name" /></th>
         <td><h:inputText id="protocolName" value="#{editProtocolBean.protocol.name}" /></td>
       </tr>
-      
+
       <tr>
         <th><h:outputLabel for="protocolTitle" value="Title" /></th>
         <td><h:inputText id="protocolTitle" value="#{editProtocolBean.protocol.title}" /></td>
       </tr>
-      
+
       <tr>
         <th><h:outputLabel for="protocolText" value="Text" /></th>
         <td><h:inputTextarea id="protocolText" value="#{editProtocolBean.protocol.text}" /></td>
       </tr>
-      
+
       <tr>
         <th><h:outputLabel for="protocolUrl" value="URL" /></th>
         <td><h:inputText id="protocolUrl" value="#{editProtocolBean.protocol.url}" /></td>
       </tr>
-      
+
       <tr>
         <th><h:outputLabel for="protocolType" value="Type" /></th>
         <td>
-          <h:selectOneMenu id="protocolType">
+          <h:selectOneMenu id="protocolType" value="#{editProtocolBean.protocolTypeId}">
             <f:selectItems value="#{editProtocolBean.protocolTypes}" />
           </h:selectOneMenu>
         </td>
       </tr>
-      
+
       <tr>
         <td colspan="2">
           <h:commandButton id="saveButton" action="#{editProtocolBean.save}" />

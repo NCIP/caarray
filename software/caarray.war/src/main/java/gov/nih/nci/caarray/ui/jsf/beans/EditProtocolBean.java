@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.application.ApplicationServiceException;
 import gov.nih.nci.caarray.application.ServiceLocator;
 import gov.nih.nci.caarray.application.protocol.ProtocolService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
@@ -106,7 +107,7 @@ import org.apache.commons.logging.LogFactory;
 public final class EditProtocolBean {
 
     private static final Log LOG = LogFactory.getLog(EditProtocolBean.class);
-    
+
     private Protocol protocol;
 
     @EJB
@@ -138,7 +139,7 @@ public final class EditProtocolBean {
         List<SelectItem> items = new ArrayList<SelectItem>(types.size());
         for (int i = 0; i < types.size(); i++) {
             Term type = types.get(i);
-            items.add(new SelectItem(String.valueOf(i), type.getValue()));
+            items.add(new SelectItem(String.valueOf(type.getId()), type.getValue()));
         }
         return items;
     }
@@ -165,10 +166,10 @@ public final class EditProtocolBean {
     public void setProtocol(Protocol protocol) {
         this.protocol = protocol;
     }
-    
+
     /**
      * Saves the current protocol.
-     * 
+     *
      * @return JSF navigation target
      */
     public String save() {
@@ -187,7 +188,7 @@ public final class EditProtocolBean {
         }
         return vocabularyService;
     }
-    
+
     void setVocabularyService(VocabularyService vocabularyService) {
         this.vocabularyService = vocabularyService;
     }
@@ -197,6 +198,38 @@ public final class EditProtocolBean {
             protocolService = (ProtocolService) ServiceLocator.getInstance().lookup(ProtocolService.JNDI_NAME);
         }
         return protocolService;
+    }
+
+    /**
+     * Returns the id of the protocol's type.
+     *
+     * @return the protocolTypeId
+     */
+    public Long getProtocolTypeId() {
+        if (getProtocol().getType() != null) {
+            return getProtocol().getType().getId();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Sets the protocol type by id.
+     *
+     * @param protocolTypeId the protocolTypeId to set
+     */
+    public void setProtocolTypeId(Long protocolTypeId) {
+        try {
+            List<Term> types = getVocabularyService().getTerms("ProtocolType");
+            for (Term type : types) {
+                if (type.getId().equals(protocolTypeId)) {
+                    getProtocol().setType(type);
+                    break;
+                }
+            }
+        } catch (VocabularyServiceException e) {
+            LOG.error("Couldn't get protocol types", e);
+        }
     }
 
 }
