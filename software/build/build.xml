@@ -99,6 +99,7 @@
     </path>
 
     <!-- Datasource-configuration-related properties -->
+    <property name="cmt.transaction.factory" value="hibernate.transaction.factory_class org.hibernate.transaction.CMTTransactionFactory" />
     <property name="jta.transaction.factory" value="hibernate.transaction.factory_class org.hibernate.transaction.JTATransactionFactory" />
     <property name="jta.transaction.manager" value="hibernate.transaction.manager_lookup_class org.hibernate.transaction.JBossTransactionManagerLookup" />
     <property name="jdbc.transaction.factory" value="hibernate.transaction.factory_class org.hibernate.transaction.JDBCTransactionFactory" />
@@ -114,9 +115,9 @@
     <property name="jboss.deploy.dir" value="${jboss.home}/server/${jboss.server.name}/deploy" />
 
     <filterset id="caarray.filterset">
-		<filtersfile file="${build.dir}/local.properties" />
-		<filtersfile file="${build.dir}/default.properties" />
-	</filterset>
+    <filtersfile file="${build.dir}/local.properties" />
+    <filtersfile file="${build.dir}/default.properties" />
+  </filterset>
 
     <!-- ******************************************************************* -->
     <!-- ** IMPORTS                                                       ** -->
@@ -142,13 +143,13 @@
     <!-- ******************************************************************* -->
 
     <target name="continuous-integration" depends="clean,
-	    build,
-	    check,
-	    test:unit" />
+      build,
+      check,
+      test:unit" />
 
     <target name="nightly" depends="continuous-integration,
-	    deploy:deploy-and-wait,
-	    test:functional" />
+      deploy:deploy-and-wait,
+      test:functional" />
 
     <!-- ******************************************************************* -->
     <!-- ** CLEAN TARGETS                                                 ** -->
@@ -185,19 +186,19 @@
         <delete dir="${target.dir}" />
     </target>
 
-    
+
     <!-- ******************************************************************* -->
     <!-- ** PREPARATION TARGETS                                           ** -->
     <!-- ******************************************************************* -->
 
-    <target name="prepare:create-local.properties" 
-    	unless="local.properties.exists" 
-    	depends="prepare:check-for-local.properties">
-    	<touch file="${build.dir}/local.properties" />
+    <target name="prepare:create-local.properties"
+      unless="local.properties.exists"
+      depends="prepare:check-for-local.properties">
+      <touch file="${build.dir}/local.properties" />
     </target>
-    
+
     <target name="prepare:check-for-local.properties">
-		<available file="${build.dir}/local.properties" property="local.properties.exists" />
+    <available file="${build.dir}/local.properties" property="local.properties.exists" />
     </target>
 
     <!-- ******************************************************************* -->
@@ -217,7 +218,7 @@
             <replacefilter token="@DBPASSWD@" value="${database.password}" />
         </replace>
         <replace file="${caarray-common.classes.dir}/hibernate.properties">
-            <replacefilter token="#@TRANSACTION_FACTORY@" value="${jta.transaction.factory}" />
+            <replacefilter token="#@TRANSACTION_FACTORY@" value="${cmt.transaction.factory}" />
             <replacefilter token="#@TRANSACTION_MANAGER@" value="${jta.transaction.manager}" />
         </replace>
     </target>
@@ -547,12 +548,12 @@ classpath="${caarray-ejb.test.classes.dir};${caarray-ejb.classes.dir};${caarray-
     </target>
 
     <target name="test:selenium:run-tests" depends="test:selenium:compile-tests">
-	    <antcall target="test:selenium:start-server" />
+      <antcall target="test:selenium:start-server" />
         <run-junit-tests
             test.src.dir="${test.src.dir}"
             xml.output.dir="${test.target.dir}/junit"
             classpath="${test.classes.dir};${selenium-server.jar};${selenium-java-client-driver.jar};${selenium-java-client-driver-tests.jar};${junit.jar}" />
-	    <antcall target="test:selenium:stop-server" />
+      <antcall target="test:selenium:stop-server" />
     </target>
 
     <!-- ******************************************************************* -->
@@ -641,19 +642,19 @@ classpath="${caarray-ejb.test.classes.dir};${caarray-ejb.classes.dir};${caarray-
     <!-- ******************************************************************* -->
     <!-- ** DEPLOY TARGETS                                                ** -->
     <!-- ******************************************************************* -->
-    
+
     <target name="deploy" depends="build:caarray.ear,prepare:create-local.properties">
         <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
         <copy file="${resource.dir}/deploy/caarray-mysql-ds.xml" todir="${jboss.deploy.dir}">
-    		<filterset refid="caarray.filterset" />
-		</copy>
+        <filterset refid="caarray.filterset" />
+    </copy>
     </target>
-    
+
     <target name="deploy:deploy-and-wait" depends="deploy">
-    	<sleep seconds="5" />
-    	<waitfor maxwait="30" maxwaitunit="second" checkevery="5" checkeveryunit="second">
-			<http url="http://localhost:${jboss.server.port}/caarray"/>
-		</waitfor>
+      <sleep seconds="5" />
+      <waitfor maxwait="30" maxwaitunit="second" checkevery="5" checkeveryunit="second">
+      <http url="http://localhost:${jboss.server.port}/caarray"/>
+    </waitfor>
     </target>
 
 </project>
