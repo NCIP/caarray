@@ -95,6 +95,8 @@ import java.util.List;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -134,6 +136,7 @@ public class VocabularyServiceBean implements VocabularyService {
      * @return the matching Terms.  Empty list if no term found.
      * @throws VocabularyServiceException exception from EVS svc
     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public List<Term> getTerms(final String categoryName) throws VocabularyServiceException {
         if (categoryName == null) {
             throw new IllegalArgumentException("CategoryName is null");
@@ -157,7 +160,7 @@ public class VocabularyServiceBean implements VocabularyService {
             throw new VocabularyServiceException(e);
         }
     }
-    
+
     private void saveTermsLocally(List<Term> termList) throws VocabularyServiceException {
         if (termList == null || termList.isEmpty()) {
             throw new IllegalArgumentException("TermList is null or emptylist");
