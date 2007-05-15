@@ -151,6 +151,8 @@ public final class EditProtocolBean {
     public Protocol getProtocol() {
         if (protocol == null) {
             protocol = new Protocol();
+            // TODO -- Remove id generation below when id strategy switched to native
+            protocol.setId(System.currentTimeMillis());
         }
         return protocol;
     }
