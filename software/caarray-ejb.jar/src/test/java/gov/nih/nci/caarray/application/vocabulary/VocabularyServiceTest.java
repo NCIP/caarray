@@ -59,6 +59,7 @@ import java.util.Set;
 
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.dao.VocabularyDaoImpl;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -96,13 +97,18 @@ public class VocabularyServiceTest {
         List<Term> terms = new ArrayList<Term>();
         try {
              terms =  vocab.getTerms("ProtocolType");
+             assertTrue(!terms.isEmpty());
+             assertTrue(terms.size() == NUM_PROT_TYPES);
         } catch (Exception e) {
-
+             System.out.println(e.getMessage());
+        } finally {
+            try {
+                VocabularyDao vocabDao = new VocabularyDaoImpl();
+                vocabDao.removeTerms(terms);
+            } catch (DAOException de) {
+                 System.out.println(de.getCause());
+            }
         }
-        assertTrue(!terms.isEmpty());
-        assertTrue(terms.size() == NUM_PROT_TYPES);
-
-
     }
 
     /**
@@ -185,14 +191,13 @@ public class VocabularyServiceTest {
             return new MockVocabularyDao();
         }
     }
-    public class MockVocabularyDao implements VocabularyDao {
+    public class MockVocabularyDao extends VocabularyDaoImpl {
+
 
         public List<Term> getTerms(String categoryName) throws DAOException {
             return new ArrayList<Term>();
         }
-        public Set<Term> getTermsRecursive(String categoryName) throws DAOException {
-            return null;
-        }
+
         public Category getCategory(String name) throws DAOException {
             return null;
         }
@@ -207,6 +212,8 @@ public class VocabularyServiceTest {
             return null;
         }
         public void remove(AbstractCaArrayEntity caArrayEntity) throws DAOException {
+        }
+        public void removeTerms(List<Term> entityList) throws DAOException {
         }
     }
     public class MockVocabularyDaoForException implements VocabularyDao {
@@ -232,5 +239,8 @@ public class VocabularyServiceTest {
         }
         public void remove(AbstractCaArrayEntity caArrayEntity) throws DAOException {
         }
+        public void removeTerms(List<Term> entityList) throws DAOException {
+        }
+
     }
 }
