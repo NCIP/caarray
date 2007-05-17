@@ -58,6 +58,7 @@ import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 
 /**
  * @author John Pike
@@ -71,6 +72,14 @@ public class VocabularyDaoTestStub implements VocabularyDao {
     public List<Term> getTerms(String categoryName) throws DAOException {
         // TODO Auto-generated method stub
         return new ArrayList<Term>();
+    }
+
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.dao.VocabularyDao#getCategory(java.lang.String)
+     */
+    public Category getCategory(String name) throws DAOException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     /* (non-Javadoc)

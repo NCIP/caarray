@@ -59,6 +59,7 @@ import java.util.List;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.system.applicationservice.ApplicationService;
 
@@ -188,6 +189,9 @@ public class VocabularyServiceTest {
         public List<Term> getTerms(String categoryName) throws DAOException {
             return new ArrayList<Term>();
         }
+        public Category getCategory(String name) throws DAOException {
+            return null;
+        }
         public void save(AbstractCaArrayEntity caArrayEntity) throws DAOException {
         }
         public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) throws DAOException {
@@ -204,6 +208,9 @@ public class VocabularyServiceTest {
     public class MockVocabularyDaoForException implements VocabularyDao {
 
         public List<Term> getTerms(String categoryName) throws DAOException {
+            throw new DAOException("This is a test exception");
+        }
+        public Category getCategory(String name) throws DAOException {
             throw new DAOException("This is a test exception");
         }
         public void save(AbstractCaArrayEntity caArrayEntity) throws DAOException {
