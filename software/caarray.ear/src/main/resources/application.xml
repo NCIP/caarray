@@ -34,9 +34,6 @@
         <java>axis.jar</java>
     </module>
     <module>
-        <java>c3p0-0.9.0.jar</java>
-    </module>
-    <module>
         <java>cacore32-client.jar</java>
     </module>
     <module>
@@ -56,9 +53,6 @@
     </module>
     <module>
         <java>dom4j-1.6.1.jar</java>
-    </module>
-    <module>
-        <java>hibernate3.jar</java>
     </module>
     <module>
         <java>jaxrpc.jar</java>
