@@ -13,10 +13,10 @@ public class AddProtocolTest extends AbstractSeleniumTest {
     @Test
     public void testAddProtocol() {
         selenium.open("/caarray/");
-        selenium.click("_idJsp0:_idJsp1");
+        selenium.click("protocolMenu:addProtocol");
         selenium.waitForPageToLoad("30000");
-        selenium.type("protocolForm:protocolName", "a name");
-        selenium.type("protocolForm:protocolTitle", "a title");
+        selenium.type("protocolForm:protocolName", "name");
+        selenium.type("protocolForm:protocolTitle", "title");
         selenium.type("protocolForm:protocolText", "some text");
         selenium.type("protocolForm:protocolUrl", "http://www.5amsolutions.com");
         selenium.select("protocolForm:protocolType", "label=acclimatization");
