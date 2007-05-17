@@ -82,6 +82,9 @@
  */
 package gov.nih.nci.caarray.application.vocabulary;
 
+import gov.nih.nci.caarray.dao.DAOException;
+import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.dao.VocabularyDaoImpl;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -94,6 +97,7 @@ import gov.nih.nci.system.applicationservice.ApplicationException;
 import gov.nih.nci.system.applicationservice.ApplicationService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -102,55 +106,65 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * This class is responsible for brokering searches between the caArray
- * Vocabulary Service and the caCore EVS.
+ * This class is responsible for brokering searches between the caArray Vocabulary Service and the caCore EVS.
  *
- * Where caArray uses termininology such as 'Category' and 'Term', EVS
- * uses 'Concept', 'SuperConcept' and 'SubConcept'.
+ * Where caArray uses termininology such as 'Category' and 'Term', EVS uses 'Concept', 'SuperConcept' and 'SubConcept'.
  *
- * Communication to the EVS API is done through the caCore-implemented
- * Spring Http-Invoker.  We simply obtain a remote service object via the idiom:
- * 'http://cabio.nci.nih.gov/cacore32/http/remoteService' and invoke calls
- * on this object.
+ * Communication to the EVS API is done through the caCore-implemented Spring Http-Invoker. We simply obtain a remote
+ * service object via the idiom: 'http://cabio.nci.nih.gov/cacore32/http/remoteService' and invoke calls on this object.
  *
  * @author John Pike
  *
  */
-public class EVSUtility  {
+public class EVSUtility {
 
     /**
-     *This gets us a handle to the caCORE EVS API.
-     * to-do:  The URL must be externalized.  It will change with each release.
+     * This gets us a handle to the caCORE EVS API. to-do: The URL must be externalized. It will change with each
+     * release.
      */
     private static final String APP_SERVICE_URL = "http://cabio.nci.nih.gov/cacore32/http/remoteService";
+
     private static final String MGED_VOCAB = "MGED_Ontology";
+
     private static final String MGED_INST = "mged_instance";
+
     private static final String PROP_CONCEPT_TYPE = "Concept_Type";
+
     private static final String PROP_DEFINITION = "DEFINITION";
 
     private static final int MAX_NUM_RESULTS = 10;
+
     /**
      * LOG used by this class.
      */
     private static final Log LOG = LogFactory.getLog(EVSUtility.class);
+
+    private final Source mgedSource;
+
+    private HashMap categoryList;
 
     /**
      * Creates a new instance.
      */
     public EVSUtility() {
         super();
-    }
 
+        mgedSource = getSourceForName(MGED_VOCAB);
+        categoryList = new HashMap();
+
+    }
 
     /**
      * Returns all terms that belong to the category for the name given (including all subcategories). In EVS, these
      * categories are concepts, and items in a category are simply subconcepts for that concept.
      *
-     * @param conceptName   find subconcepts for this concept.
-     * @return          the matching Terms.
-     * @throws VocabularyServiceException exc.
+     * @param conceptName
+     *            find subconcepts for this concept.
+     * @return the matching Terms.
+     * @throws VocabularyServiceException
+     *             exc.
      */
-     public List<Term> getConcepts(final String conceptName) throws VocabularyServiceException {
+    public List<Term> getConcepts(final String conceptName) throws VocabularyServiceException {
 
         final ApplicationService appService = getApplicationInstance();
         ArrayList<DescLogicConcept> subConcepts = new ArrayList<DescLogicConcept>();
@@ -158,17 +172,26 @@ public class EVSUtility  {
         List<Term> terms = new ArrayList<Term>();
         List<Vocabulary> vocab = new ArrayList<Vocabulary>();
 
+
         EVSQuery evs = new EVSQueryImpl();
         try {
             vocab = getVocabularyByName(evs, appService, MGED_VOCAB);
             concept = getEVSConcept(conceptName, evs, vocab, appService);
 
             if (concept != null) {
+                Category parentCat = fetchCategory(conceptName);
+                if (parentCat == null) {
+                    parentCat = new Category();
+                    parentCat.setName(conceptName);
+                    parentCat.setId(createCategoryId());
+                }
                 if (conceptIsInstance(concept)) {
-                    addConceptToTermList(null, concept, terms);
-                }  else {
-                    subConcepts = (ArrayList<DescLogicConcept>) getEVSConceptList(concept, vocab, appService);
-                    traverseEVSConceptTree(conceptName, appService, subConcepts, terms, vocab);
+                    // create a term and the conceptName is the category
+                    addConceptToTermList(parentCat, concept, terms);
+                } else {
+                    // need to recurse, the conceptName will be the parent Category
+                    subConcepts = (ArrayList<DescLogicConcept>) getEVSConceptList(vocab, appService, concept);
+                    traverseEVSConceptTree(parentCat, appService, subConcepts, terms, vocab);
                 }
             }
         } catch (Exception e) {
@@ -179,11 +202,10 @@ public class EVSUtility  {
         return terms;
     }
 
-
     /**
-     * This awkward method will pop off a subConcept at a time, traverse the tree of this subConcept
-     * and placing any found terms on the Terms list.  Eventually the subConcepts (locally, the remainderList)
-     * will be empty.
+     * This awkward method will pop off a subConcept at a time, traverse the tree of this subConcept and placing any
+     * found terms on the Terms list. Eventually the subConcepts (locally, the remainderList) will be empty.
+     *
      * @param conceptName
      * @param appService
      * @param subConcepts
@@ -191,34 +213,43 @@ public class EVSUtility  {
      * @param vocab
      * @throws ApplicationException
      */
-    private void traverseEVSConceptTree(final String conceptName, final ApplicationService appService,
+    private void traverseEVSConceptTree(Category parentCategory, final ApplicationService appService,
             List<DescLogicConcept> subConcepts, List<Term> terms, List<Vocabulary> vocab) throws ApplicationException {
 
-        //set the category as the current concept...as we go deeper in the tree, the
-        //category will always be set to the parent concept
-        String categoryName = conceptName;
+        // set the category as the current concept...as we go deeper in the tree, the
+        // category will always be set to the parent concept
         List<DescLogicConcept> remainderList = new ArrayList<DescLogicConcept>(subConcepts);
         int test = 0;
+
+        Category oldParent = new Category();
+        oldParent = this.cloneCategory(parentCategory);
         while (!remainderList.isEmpty()) {
-            //the first time through, skip this part... obtain conceptInstances for the current concept
+            // the first time through, skip this part... obtain conceptInstances for the current concept
             test++;
             if (test > 1) {
+                // let's always test the first element, and put the others in a tempList
                 List<DescLogicConcept> tempList = new ArrayList<DescLogicConcept>(remainderList);
-                //let's always test the first element, and put the others in a tempList
                 tempList.remove(0);
-                categoryName = subConcepts.get(0).getName();
-                remainderList = (ArrayList<DescLogicConcept>) getEVSConceptList(
-                        remainderList.get(0), vocab, appService);
-
-                //when the tempList is empty, we're done
+                String newCatName = remainderList.get(0).getName();
+                Category newParent = fetchCategory(newCatName);
+                if (newParent == null) {
+                    newParent = new Category();
+                    newParent.setName(newCatName);
+                    newParent.setId(createCategoryId());
+                    newParent.setParent(oldParent);
+                }
+                remainderList = (ArrayList<DescLogicConcept>)
+                getEVSConceptList(vocab, appService, remainderList.get(0));
+                // when the tempList is empty, we're done
                 if (!tempList.isEmpty()) {
                     remainderList.addAll(tempList);
                 }
+                obtainConceptInstances(remainderList, terms, newParent);
+            } else {
+                obtainConceptInstances(remainderList, terms, parentCategory);
             }
-            obtainConceptInstances(remainderList, terms, categoryName);
         }
     }
-
 
     /**
      * @param e
@@ -230,33 +261,38 @@ public class EVSUtility  {
         return vse;
     }
 
-
-
     /**
-     *  This method will loop through the list of subconcepts, and if any are of type
-     *  mged_instance they will be converted to Terms and removed from the subconcept list.
+     * This method will loop through the list of subconcepts, and if any are of type mged_instance they will be
+     * converted to Terms and removed from the subconcept list.
+     *
      * @param subConcepts
      * @param terms
      * @param categoryName
      * @param iteratorList
      */
-    private void obtainConceptInstances(
-            List<DescLogicConcept> subConcepts, List<Term> terms, String categoryName) {
+    private void obtainConceptInstances(List<DescLogicConcept> subConcepts, List<Term> terms, Category parentCategory) {
         DescLogicConcept subConcept;
         List<DescLogicConcept> iteratorList = new ArrayList<DescLogicConcept>(subConcepts);
+        Category localParent = cloneCategory(parentCategory);
         for (Iterator<DescLogicConcept> conceptIter = iteratorList.iterator(); conceptIter.hasNext();) {
             subConcept = conceptIter.next();
             if (conceptIsInstance(subConcept)) {
-                addConceptToTermList(categoryName, subConcept, terms);
+                addConceptToTermList(localParent, subConcept, terms);
                 subConcepts.remove(subConcept);
             } else {
-                LOG.debug("In Else-statement: This is not really a problem");
-                 //concept is not a term, it stays on the list
-                //just continue
+                // we are going deeper. need to add to the category hierarchy
+                Category newCategory = fetchCategory(subConcept.getName());
+                if (newCategory == null) {
+                    newCategory = new Category();
+                    newCategory.setParent(localParent);
+                    newCategory.setName(subConcept.getName());
+                    newCategory.setId(createCategoryId());
+                }
+                localParent = newCategory;
+
             }
         }
     }
-
 
     /**
      * @param appService
@@ -265,27 +301,30 @@ public class EVSUtility  {
      * @return
      * @throws ApplicationException
      */
-    private List<String> getSubConceptNames(
-            ApplicationService appService, EVSQuery evs, DescLogicConcept concept) throws ApplicationException {
+    private List<String> getSubConceptNames(ApplicationService appService, EVSQuery evs, DescLogicConcept concept)
+            throws ApplicationException {
         List<String> subConcepts;
-        evs.getSubConcepts(
-                  concept.getVocabulary().getName(), concept.getName(), Boolean.FALSE, Boolean.FALSE);
+        evs.getSubConcepts(concept.getVocabulary().getName(), concept.getName(), Boolean.FALSE, Boolean.FALSE);
         subConcepts = (ArrayList<String>) appService.evsSearch(evs);
         return subConcepts;
     }
 
-
-      /**
-         * Given a concept name, searches all of the vocabularies and returns when it finds a matching concept in ANY
-         * vocabulary.
-         *
-         * @param conceptName               conceptname
-         * @param evs                       instantiated EVSQuery object
-         * @param vocabs                    list of Vocabulary objects
-         * @param appService                instantiated ApplicationService handle
-         * @return <code>DescLogicConcept</code>    an EVS concept object
-         * @throws ApplicationException     an exception
-         */
+    /**
+     * Given a concept name, searches all of the vocabularies and returns when it finds a matching concept in ANY
+     * vocabulary.
+     *
+     * @param conceptName
+     *            conceptname
+     * @param evs
+     *            instantiated EVSQuery object
+     * @param vocabs
+     *            list of Vocabulary objects
+     * @param appService
+     *            instantiated ApplicationService handle
+     * @return <code>DescLogicConcept</code> an EVS concept object
+     * @throws ApplicationException
+     *             an exception
+     */
     private DescLogicConcept getEVSConcept(final String conceptName, final EVSQuery evs, final List<Vocabulary> vocabs,
             final ApplicationService appService) throws ApplicationException {
 
@@ -305,18 +344,23 @@ public class EVSUtility  {
         }
     }
 
-     /**
-         * Given a concept name, searches all of the vocabularies and returns ALL subconcepts from ALL found concepts.
-         *
-         * @param conceptName               name to search
-         * @param evs                       instantiated EVSQuery object
-         * @param vocabs                    list of Vocabulary objects
-         * @param appService                instantiated ApplicationService handle
-         * @return <code>List&lt;DescLogicConcept&gt;</code>      list of EVS Concept objects
-         * @throws ApplicationException     an exception
-         */
-    private List<DescLogicConcept> getEVSConceptList(final DescLogicConcept concept,
-            final List<Vocabulary> vocabs, final ApplicationService appService) throws ApplicationException {
+    /**
+     * Given a concept name, searches all of the vocabularies and returns ALL subconcepts from ALL found concepts.
+     *
+     * @param conceptName
+     *            name to search
+     * @param evs
+     *            instantiated EVSQuery object
+     * @param vocabs
+     *            list of Vocabulary objects
+     * @param appService
+     *            instantiated ApplicationService handle
+     * @return <code>List&lt;DescLogicConcept&gt;</code> list of EVS Concept objects
+     * @throws ApplicationException
+     *             an exception
+     */
+    private List<DescLogicConcept> getEVSConceptList(final List<Vocabulary> vocabs,
+            final ApplicationService appService, DescLogicConcept concept) throws ApplicationException {
         EVSQuery evs = new EVSQueryImpl();
         List<DescLogicConcept> concepts = new ArrayList<DescLogicConcept>();
         List<String> subConceptList = this.getSubConceptNames(appService, evs, concept);
@@ -333,22 +377,24 @@ public class EVSUtility  {
         return concepts;
     }
 
-
     /**
      * This method gets all of the vocabularies from the EVS repository.
-     * @param evs       instantiated EVSQuery object
-     * @param appService       instantiated ApplicationService handle
-     * @return          list of Vocabulary objects
-     * @throws ApplicationException     an exception
+     *
+     * @param evs
+     *            instantiated EVSQuery object
+     * @param appService
+     *            instantiated ApplicationService handle
+     * @return list of Vocabulary objects
+     * @throws ApplicationException
+     *             an exception
      *
      */
     public List<Vocabulary> getVocabularyList(final EVSQuery evs, final ApplicationService appService)
-        throws ApplicationException {
+            throws ApplicationException {
 
         evs.getAllVocabularies();
         return (ArrayList<Vocabulary>) appService.evsSearch(evs);
     }
-
 
     /**
      * @return appService
@@ -357,30 +403,36 @@ public class EVSUtility  {
         return ApplicationService.getRemoteInstance(APP_SERVICE_URL);
     }
 
-
     /**
      * This method gets a specific vocabulary from the EVS repository.
-     * @param evs       instantiated EVSQuery object
-     * @param appService       instantiated ApplicationService handle
-     * @return          list of vocab objects
-     * @throws ApplicationException     an exception
+     *
+     * @param evs
+     *            instantiated EVSQuery object
+     * @param appService
+     *            instantiated ApplicationService handle
+     * @return list of vocab objects
+     * @throws ApplicationException
+     *             an exception
      *
      */
-    private List<Vocabulary> getVocabularyByName(
-            final EVSQuery evs, final ApplicationService appService, final String name)
-        throws ApplicationException {
+    private List<Vocabulary> getVocabularyByName(final EVSQuery evs, final ApplicationService appService,
+            final String name) throws ApplicationException {
 
         evs.getVocabularyByName(name);
         return (ArrayList<Vocabulary>) appService.evsSearch(evs);
     }
 
     /**
-     * This method determines whether the given concept is of CONCEPT_TYPE="mged_instance".  These
-     * concept types represent real Terms, in the caArray sense.
-     * @param evs       instantiated EVSQuery object
-     * @param appService       instantiated ApplicationService handle
-     * @return          list of Vocabulary objects
-     * @throws ApplicationException     an exception
+     * This method determines whether the given concept is of CONCEPT_TYPE="mged_instance". These concept types
+     * represent real Terms, in the caArray sense.
+     *
+     * @param evs
+     *            instantiated EVSQuery object
+     * @param appService
+     *            instantiated ApplicationService handle
+     * @return list of Vocabulary objects
+     * @throws ApplicationException
+     *             an exception
      *
      */
     private boolean conceptIsInstance(DescLogicConcept concept) {
@@ -398,9 +450,9 @@ public class EVSUtility  {
         return PROP_CONCEPT_TYPE.equals(property.getName()) && MGED_INST.equals(property.getValue());
     }
 
-
-    /** This will iterate the Concept's vector of properties and
-     *  return the value for the matching name.
+    /**
+     * This will iterate the Concept's vector of properties and return the value for the matching name.
+     *
      * @param concept
      * @param name
      * @return
@@ -417,28 +469,78 @@ public class EVSUtility  {
         return defValue;
     }
 
-    /** This method creates a term for the given concept and category, and adds it to the Term list,
-     *  in essence convering EVS Concepts to caArray Terms.
+    private Category cloneCategory(Category oldCategory) {
+        Category newCategory = new Category();
+        newCategory.setChildren(oldCategory.getChildren());
+        newCategory.setId(oldCategory.getId());
+        newCategory.setName(oldCategory.getName());
+        newCategory.setParent(oldCategory.getParent());
+        return newCategory;
+    }
+
+    /**
+     * This method creates a term for the given concept and category, and adds it to the Term list, in essence convering
+     * EVS Concepts to caArray Terms.
+     *
      * @param conceptName
      * @param concept
      * @param terms
      */
-    private void addConceptToTermList(String categoryName, DescLogicConcept concept, List<Term> terms) {
-        Source aSource = new Source();
-        aSource.setId(Math.abs(new Long(new Random().nextInt())));
-        aSource.setName(MGED_VOCAB);
-        aSource.setUrl(APP_SERVICE_URL);
-        Category aCategory = new Category();
-        aCategory.setName(categoryName);
-        aCategory.setId(Math.abs(new Long(new Random().nextInt())));
+    private void addConceptToTermList(Category category, DescLogicConcept concept, List<Term> terms) {
+
         Term aTerm = new Term();
-        aTerm.setId(Math.abs(new Long(new Random().nextInt())));
+        aTerm.setId(createTermId());
         aTerm.setValue(concept.getName());
         aTerm.setDescription(getConceptPropertyValue(concept, EVSUtility.PROP_DEFINITION));
-        aTerm.setCategory(aCategory);
-        aTerm.setSource(aSource);
+        aTerm.setCategory(category);
+        aTerm.setSource(mgedSource);
 
+        // TODO need to add term to the category's Children
         terms.add(aTerm);
     }
 
+
+    private Source getSourceForName(String source) {
+        Source newSource = new Source();
+        newSource.setId(new Long(0));
+        newSource.setName(source);
+        newSource.setUrl(APP_SERVICE_URL);
+        return newSource;
+    }
+    private long createTermId() {
+        return createId();
+    }
+
+    private long createId() {
+        return Math.abs(new Long(new Random().nextInt()));
+    }
+
+    private Category fetchCategory(String categoryName) {
+        if (categoryList.containsKey(categoryName)) {
+            return (Category) categoryList.get(categoryName);
+        }
+        VocabularyDao vocabDao = new VocabularyDaoImpl();
+        Category existingCategory = null;
+        try {
+            existingCategory = vocabDao.getCategory(categoryName);
+            if (existingCategory != null) {
+                putCategoryInList(existingCategory);
+            }
+        } catch (DAOException daoe) {
+            LOG.error("Failed in categoryDoesExist()");
+        }
+        return existingCategory;
+    }
+
+
+    private void putCategoryInList(Category category) {
+        Category localCategory;
+        if (!categoryList.containsKey(category.getName())) {
+            categoryList.put(category.getName(), category);
+        }
+
+    }
+    private long createCategoryId() {
+        return createId();
+    }
 }
