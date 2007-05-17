@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.dao.VocabularyDao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -141,7 +142,7 @@ public class VocabularyServiceBean implements VocabularyService {
         if (categoryName == null) {
             throw new IllegalArgumentException("CategoryName is null");
         }
-        List<Term> termList = getTermsFromDao(categoryName);
+        List<Term> termList = new ArrayList<Term>(getTermsFromDao(categoryName));
         if (termList.isEmpty()) {
             termList = getEVSTerms(categoryName);
             if (!termList.isEmpty()) {
@@ -152,9 +153,9 @@ public class VocabularyServiceBean implements VocabularyService {
         return termList;
     }
 
-    private List<Term> getTermsFromDao(String categoryName) throws VocabularyServiceException {
+    private Set<Term> getTermsFromDao(String categoryName) throws VocabularyServiceException {
         try {
-            return getVocabularyDao().getTerms(categoryName);
+            return getVocabularyDao().getTermsRecursive(categoryName);
         } catch (DAOException e) {
             LOG.debug("Error calling getTerms(): " + e.getMessage());
             throw new VocabularyServiceException(e);
