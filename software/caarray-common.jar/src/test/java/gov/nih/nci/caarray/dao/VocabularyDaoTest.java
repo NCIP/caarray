@@ -86,6 +86,8 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.Iterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Transaction;
@@ -110,9 +112,11 @@ public class VocabularyDaoTest {
     private static final Category DUMMY_CATEGORY_1 = new Category();
     private static final Category DUMMY_CATEGORY_2 = new Category();
     private static final Category DUMMY_CATEGORY_3 = new Category();
-    private static final int NUM_DUMMY_TERMS = 2;
+    private static final Category DUMMY_CATEGORY_4 = new Category();
+    private static final int NUM_DUMMY_TERMS = 3;
     private static final Term DUMMY_TERM_1 = new Term();
     private static final Term DUMMY_TERM_2 = new Term();
+    private static final Term DUMMY_TERM_3 = new Term();
     private static final Source DUMMY_SOURCE_1 = new Source();
     private static final Source DUMMY_SOURCE_2 = new Source();
     private static final Accession DUMMY_ACCESSION_1 = new Accession();
@@ -133,20 +137,30 @@ public class VocabularyDaoTest {
     /**
      * Initialize the dummy <code>Category</code> and <code>Term</code> objects.
      */
+    @SuppressWarnings("unchecked")
     private static void initializeCategoriesAndTerms() {
-        DUMMY_CATEGORY_1.setId(DUMMY_START_ID);
+        long id = DUMMY_START_ID;
+        DUMMY_CATEGORY_1.setId(id);
         DUMMY_CATEGORY_1.setName("DummyTestCategory1");
-        DUMMY_CATEGORY_2.setId(DUMMY_START_ID + 1);
+        DUMMY_CATEGORY_2.setId(++id);
         DUMMY_CATEGORY_2.setName("DummyTestCategory2");
-        DUMMY_CATEGORY_3.setId(DUMMY_START_ID + 2);
+        DUMMY_CATEGORY_3.setId(++id);
         DUMMY_CATEGORY_3.setName("DummyTestCategory3");
+        DUMMY_CATEGORY_4.setId(++id);
+        DUMMY_CATEGORY_4.setName("DummyTestCategory4");
+        DUMMY_CATEGORY_3.setParent(DUMMY_CATEGORY_4);
+        DUMMY_CATEGORY_4.getChildren().add(DUMMY_CATEGORY_3);
 
-        DUMMY_TERM_1.setId(DUMMY_START_ID);
+        id = DUMMY_START_ID;
+        DUMMY_TERM_1.setId(id);
         DUMMY_TERM_1.setDescription("DummyTestTerm1");
         DUMMY_TERM_1.setCategory(DUMMY_CATEGORY_3);
-        DUMMY_TERM_2.setId(DUMMY_START_ID + 1);
+        DUMMY_TERM_2.setId(++id);
         DUMMY_TERM_2.setDescription("DummyTestTerm2");
         DUMMY_TERM_2.setCategory(DUMMY_CATEGORY_3);
+        DUMMY_TERM_3.setId(++id);
+        DUMMY_TERM_3.setDescription("DummyTestTerm3");
+        DUMMY_TERM_3.setCategory(DUMMY_CATEGORY_4);
     }
 
     /**
@@ -182,7 +196,7 @@ public class VocabularyDaoTest {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             setupTestGetTerms();
             List<Term> retrievedTerms = DAO_OBJECT.getTerms(DUMMY_CATEGORY_3.getName());
-            if (retrievedTerms.size() != NUM_DUMMY_TERMS) {
+            if (retrievedTerms.size() != 2) {
                 fail("Did not retrieve the expected number of terms.");
             }
             // Check if we got the expected terms, and accordingly pass or fail the test.
@@ -193,6 +207,30 @@ public class VocabularyDaoTest {
             fail("DAO exception while getting terms in a category: " + e.getMessage());
         } finally {
             cleanUpTestGetTerms();
+        }
+    }
+
+    /**
+     * Tests retrieving all <code>Term</code>s in a given <code>Category</code> recursively.
+     */
+    @Test
+    public void testGetTermsRecursive() {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            setupTestGetTermsRecursive();
+            Set<Term> retrievedTerms = DAO_OBJECT.getTermsRecursive(DUMMY_CATEGORY_4.getName());
+            if (retrievedTerms.size() != NUM_DUMMY_TERMS) {
+                fail("Did not retrieve the expected number of terms.");
+            }
+            // Check if we got the expected terms, and accordingly pass or fail the test.
+            checkIfExpectedTermsRecursive(retrievedTerms);
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception while getting terms in a category: " + e.getMessage());
+        } finally {
+            cleanUpTestGetTermsRecursive();
         }
     }
 
@@ -222,49 +260,6 @@ public class VocabularyDaoTest {
     }
 
     /**
-     * Check if we got the expected terms, and accordingly pass or fail the test.
-     *
-     * @param retrievedTerms the <code>Term</code>s retrieved from the database.
-     */
-    private void checkIfExpectedTerms(List<Term> retrievedTerms) {
-        for (int i = 0; i < NUM_DUMMY_TERMS; i++) {
-            Term term = retrievedTerms.get(i);
-            if (!(DUMMY_TERM_1.equals(term) || DUMMY_TERM_2.equals(term))) {
-                fail("Did not retrieve the expected terms.");
-            }
-        }
-        // Test passed.
-        assertTrue(true);
-    }
-
-    /**
-     * Cleans up after testGetTerms by removing the dummy category and terms.
-     */
-    private void cleanUpTestGetTerms() {
-        Transaction tx = null;
-        try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
-            DAO_OBJECT.remove(DUMMY_TERM_1);
-            DAO_OBJECT.remove(DUMMY_TERM_2);
-            DAO_OBJECT.remove(DUMMY_CATEGORY_3);
-            tx.commit();
-        } catch (DAOException deleteException) {
-            HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up dummy category and terms.", deleteException);
-        }
-    }
-
-    /**
-     * Save dummy category and terms in the database for testGetTerms.
-     *
-     * @throws DAOException
-     */
-    private void setupTestGetTerms() throws DAOException {
-        DAO_OBJECT.save(DUMMY_TERM_1);
-        DAO_OBJECT.save(DUMMY_TERM_2);
-    }
-
-    /**
      * Tests save, retrieve, update and remove operations on a <code>Category</code>.
      */
     @Test
@@ -283,38 +278,6 @@ public class VocabularyDaoTest {
             fail("DAO exception during save and retrieve of category: " + saveException.getMessage());
         } finally {
             cleanUpCategory();
-        }
-    }
-
-    /**
-     * Clean up after test by removing the dummy category.
-     */
-    private void cleanUpCategory() {
-        Transaction tx = null;
-
-        try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
-            DAO_OBJECT.remove(DUMMY_CATEGORY_1);
-            tx.commit();
-        } catch (DAOException deleteException) {
-            HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up dummy category.", deleteException);
-            fail("DAO exception during deletion of category: " + deleteException.getMessage());
-        }
-    }
-
-    /**
-     * Check if we got the expected <code>Category</code>, and accordingly pass or fail the test.
-     *
-     * @throws DAOException
-     */
-    private void checkIfExpectedCategory() throws DAOException {
-        Category retrievedCategory = (Category) DAO_OBJECT.queryEntityById(DUMMY_CATEGORY_1);
-        if (DUMMY_CATEGORY_1.equals(retrievedCategory)) {
-            // The retrieved category is the same as the saved category. Save and retrieve test passed.
-            assertTrue(true);
-        } else {
-            fail("Retrieved category is different from saved category.");
         }
     }
 
@@ -382,21 +345,6 @@ public class VocabularyDaoTest {
     }
 
     /**
-     * Check if we got the expected <code>Term</code>, and accordingly pass or fail the test.
-     *
-     * @throws DAOException
-     */
-    private void checkIfExpectedTerm() throws DAOException {
-        Term retrievedTerm = (Term) DAO_OBJECT.queryEntityById(DUMMY_TERM_1);
-        if (DUMMY_TERM_1.equals(retrievedTerm)) {
-            // The retrieved term is the same as the saved term. Save and retrieve test passed.
-            assertTrue(true);
-        } else {
-            fail("Retrieved term is different from saved term.");
-        }
-    }
-
-    /**
      * Tests saving a <code>Term</code> collection.
      */
     @Test
@@ -456,21 +404,6 @@ public class VocabularyDaoTest {
                 LOG.error("Error cleaning up dummy source.", deleteException);
                 fail("DAO exception during deletion of source: " + deleteException.getMessage());
             }
-        }
-    }
-
-    /**
-     * Check if we got the expected <code>Source</code>, and accordingly pass or fail the test.
-     *
-     * @throws DAOException
-     */
-    private void checkIfExpectedSource() throws DAOException {
-        Source retrievedSource = (Source) DAO_OBJECT.queryEntityById(DUMMY_SOURCE_1);
-        if (DUMMY_SOURCE_1.equals(retrievedSource)) {
-            // The retrieved source is the same as the saved source. Save and retrieve test passed.
-            assertTrue(true);
-        } else {
-            fail("Retrieved source is different from saved source.");
         }
     }
 
@@ -539,21 +472,6 @@ public class VocabularyDaoTest {
     }
 
     /**
-     * Check if we got the expected <code>Accession</code>, and accordingly pass or fail the test.
-     *
-     * @throws DAOException
-     */
-    private void checkIfExpectedAccession() throws DAOException {
-        Accession retrievedAccession = (Accession) DAO_OBJECT.queryEntityById(DUMMY_ACCESSION_1);
-        if (DUMMY_ACCESSION_1.equals(retrievedAccession)) {
-            // The retrieved accession is the same as the saved accession. Save and retrieve test passed.
-            assertTrue(true);
-        } else {
-            fail("Retrieved accession is different from saved accession.");
-        }
-    }
-
-    /**
      * Tests saving an <code>Accession</code> collection.
      * Relies on cascading save-update being set in the Hibernate mapping.
      */
@@ -585,5 +503,133 @@ public class VocabularyDaoTest {
             }
         }
         assertTrue(true);
+    }
+
+    /**
+     * Methods to check if we got the expected results from the tests.
+     */
+    private void checkIfExpectedTerms(List<Term> retrievedTerms) {
+        for (int i = 0; i < 2; i++) {
+            Term term = retrievedTerms.get(i);
+            if (!(DUMMY_TERM_1.equals(term) || DUMMY_TERM_2.equals(term))) {
+                fail("Did not retrieve the expected terms.");
+            }
+        }
+        // Test passed.
+        assertTrue(true);
+    }
+
+    private void checkIfExpectedTermsRecursive(Set<Term> retrievedTerms) {
+        Iterator iterator = retrievedTerms.iterator();
+        while (iterator.hasNext()) {
+            Term term = (Term) iterator.next();
+            if (!(DUMMY_TERM_1.equals(term) || DUMMY_TERM_2.equals(term)
+                    || DUMMY_TERM_3.equals(term))) {
+                fail("Did not retrieve the expected terms.");
+            }
+        }
+        // Test passed.
+        assertTrue(true);
+    }
+
+    private void checkIfExpectedTerm() throws DAOException {
+        Term retrievedTerm = (Term) DAO_OBJECT.queryEntityById(DUMMY_TERM_1);
+        if (DUMMY_TERM_1.equals(retrievedTerm)) {
+            // The retrieved term is the same as the saved term. Save and retrieve test passed.
+            assertTrue(true);
+        } else {
+            fail("Retrieved term is different from saved term.");
+        }
+    }
+
+    private void checkIfExpectedCategory() throws DAOException {
+        Category retrievedCategory = (Category) DAO_OBJECT.queryEntityById(DUMMY_CATEGORY_1);
+        if (DUMMY_CATEGORY_1.equals(retrievedCategory)) {
+            // The retrieved category is the same as the saved category. Save and retrieve test passed.
+            assertTrue(true);
+        } else {
+            fail("Retrieved category is different from saved category.");
+        }
+    }
+
+    private void checkIfExpectedSource() throws DAOException {
+        Source retrievedSource = (Source) DAO_OBJECT.queryEntityById(DUMMY_SOURCE_1);
+        if (DUMMY_SOURCE_1.equals(retrievedSource)) {
+            // The retrieved source is the same as the saved source. Save and retrieve test passed.
+            assertTrue(true);
+        } else {
+            fail("Retrieved source is different from saved source.");
+        }
+    }
+
+    private void checkIfExpectedAccession() throws DAOException {
+        Accession retrievedAccession = (Accession) DAO_OBJECT.queryEntityById(DUMMY_ACCESSION_1);
+        if (DUMMY_ACCESSION_1.equals(retrievedAccession)) {
+            // The retrieved accession is the same as the saved accession. Save and retrieve test passed.
+            assertTrue(true);
+        } else {
+            fail("Retrieved accession is different from saved accession.");
+        }
+    }
+
+    /**
+     * Save dummy entities in the database to prepare for tests.
+     */
+    private void setupTestGetTerms() throws DAOException {
+        DAO_OBJECT.save(DUMMY_TERM_1);
+        DAO_OBJECT.save(DUMMY_TERM_2);
+    }
+
+    private void setupTestGetTermsRecursive() throws DAOException {
+        DAO_OBJECT.save(DUMMY_TERM_1);
+        DAO_OBJECT.save(DUMMY_TERM_2);
+        DAO_OBJECT.save(DUMMY_TERM_3);
+    }
+
+    /**
+     * Clean up after tests by removing the dummy entities from the database.
+     */
+    private void cleanUpTestGetTerms() {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            DAO_OBJECT.remove(DUMMY_TERM_1);
+            DAO_OBJECT.remove(DUMMY_TERM_2);
+            DAO_OBJECT.remove(DUMMY_CATEGORY_3);
+            tx.commit();
+        } catch (DAOException deleteException) {
+            HibernateUtil.rollbackTransaction(tx);
+            LOG.error("Error cleaning up dummy category and terms.", deleteException);
+        }
+    }
+
+    private void cleanUpTestGetTermsRecursive() {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            DAO_OBJECT.remove(DUMMY_TERM_1);
+            DAO_OBJECT.remove(DUMMY_TERM_2);
+            DAO_OBJECT.remove(DUMMY_TERM_3);
+            DAO_OBJECT.remove(DUMMY_CATEGORY_3);
+            DAO_OBJECT.remove(DUMMY_CATEGORY_4);
+            tx.commit();
+        } catch (DAOException deleteException) {
+            HibernateUtil.rollbackTransaction(tx);
+            LOG.error("Error cleaning up dummy category and terms.", deleteException);
+        }
+    }
+
+    private void cleanUpCategory() {
+        Transaction tx = null;
+
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            DAO_OBJECT.remove(DUMMY_CATEGORY_1);
+            tx.commit();
+        } catch (DAOException deleteException) {
+            HibernateUtil.rollbackTransaction(tx);
+            LOG.error("Error cleaning up dummy category.", deleteException);
+            fail("DAO exception during deletion of category: " + deleteException.getMessage());
+        }
     }
 }

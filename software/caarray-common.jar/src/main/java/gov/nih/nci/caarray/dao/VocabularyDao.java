@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * DAO for classes in the <code>gov.nih.nci.caarray.domain.vocabulary</code> package.
@@ -103,6 +104,15 @@ public interface VocabularyDao extends CaArrayDao {
      * @exception DAOException exception
      */
     List<Term> getTerms(String categoryName) throws DAOException;
+
+    /**
+     * Gets all the <code>Terms</code> in the given category and all sub-categories.
+     *
+     * @param categoryName get terms for this category and all sub-categories.
+     * @return all matching terms or an empty <code>Set</code> if no matches.
+     * @exception DAOException exception
+     */
+    Set<Term> getTermsRecursive(String categoryName) throws DAOException;
 
     /**
      * Returns the <code>Category</code> with the given name or null if none exists.
