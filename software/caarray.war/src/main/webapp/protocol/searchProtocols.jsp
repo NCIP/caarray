@@ -39,7 +39,7 @@
         <th><h:outputLabel for="protocolType" value="Type" /></th>
         <td>
           <h:selectOneMenu id="protocolType" value="#{searchProtocolsBean.protocolTypeId}">
-            <f:selectItem itemLabel="(Any)" itemValue="0" />
+            <f:selectItem itemLabel="(Any)" itemValue="816779638" />
             <f:selectItems value="#{searchProtocolsBean.protocolTypeItems}" />
           </h:selectOneMenu><h:message for="protocolType" />
         </td>

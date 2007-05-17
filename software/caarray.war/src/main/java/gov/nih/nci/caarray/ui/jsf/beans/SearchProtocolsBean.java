@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.domain.protocol.Protocol;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -122,8 +123,24 @@ public final class SearchProtocolsBean extends AbstractProtocolBean {
      * @return null, to return to same page.
      */
     public String search() {
+        setEmptyProtocolFieldsToNull();
         matchingProtocols = getProtocolService().find(getProtocol());
         return null;
+    }
+
+    private void setEmptyProtocolFieldsToNull() {
+        if (StringUtils.isEmpty(getProtocol().getName())) {
+            getProtocol().setName(null);
+        }
+        if (StringUtils.isEmpty(getProtocol().getTitle())) {
+            getProtocol().setTitle(null);
+        }
+        if (StringUtils.isEmpty(getProtocol().getText())) {
+            getProtocol().setText(null);
+        }
+        if (StringUtils.isEmpty(getProtocol().getUrl())) {
+            getProtocol().setUrl(null);
+        }
     }
 
     /**
