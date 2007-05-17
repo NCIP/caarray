@@ -104,6 +104,14 @@ public interface VocabularyDao extends CaArrayDao {
      * @exception DAOException exception
      */
     List<Term> getTerms(String categoryName) throws DAOException;
+    
+    /**
+     * Removes a given list of terms from the db.
+     *
+     * @param termList list of temrs
+     * @exception DAOException exception
+     */    
+    void removeTerms(List<Term> termList) throws DAOException;
 
     /**
      * Gets all the <code>Terms</code> in the given category and all sub-categories.

@@ -50,12 +50,12 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -106,7 +106,26 @@ public class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements Vocabul
         }
         return matchingTerms;
     }
+    /**
+     * Gets all the <code>Terms</code> matching the category name
+     * given.
+     *
+     * @param termList list of terms
+     * @exception DAOException exception
+     */
+    @SuppressWarnings("unchecked")
+    public void removeTerms(List<Term> termList) throws DAOException {
+        Term aTerm = null;
 
+        try {
+            for (Iterator<Term> termIter = termList.iterator(); termIter.hasNext();) {
+                aTerm = termIter.next();
+                remove(aTerm);
+            }
+        } catch (HibernateException he) {
+            throw new DAOException("Unable to retrieve terms", he);
+        }
+    }
     /**
      * Gets all the <code>Terms</code> in the given category and all sub-categories.
      *
@@ -121,14 +140,16 @@ public class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements Vocabul
         try {
             // Get the parent category. Add it along with its children to a set of ids.
             Category category = getCategoryByName(categoryName, mySession);
-            Set<Long> categoryIdList = new HashSet<Long>();
-            addCategoryAndChildren(categoryIdList, category);
+            if (category != null) {
+                Set<Long> categoryIdList = new HashSet<Long>();
+                addCategoryAndChildren(categoryIdList, category);
 
-            // Find all terms in the set of categories we just created.
-            Iterator<Long> iterator = categoryIdList.iterator();
-            while (iterator.hasNext()) {
-                Long categoryId = iterator.next();
-                getTermsByCategoryId(mySession, matchingTerms, categoryId);
+                // Find all terms in the set of categories we just created.
+                Iterator<Long> iterator = categoryIdList.iterator();
+                while (iterator.hasNext()) {
+                    Long categoryId = iterator.next();
+                    getTermsByCategoryId(mySession, matchingTerms, categoryId);
+                }
             }
         } catch (HibernateException he) {
             getLog().error("Unable to retrieve terms recursively", he);
