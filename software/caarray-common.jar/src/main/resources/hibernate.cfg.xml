@@ -4,11 +4,18 @@
     "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
     <session-factory>
+
+        <!-- @DATASOURCE_CONFIG_START@
+        <property name="hibernate.connection.datasource">java:jdbc/CaArrayDataSource</property>
+        @DATASOURCE_CONFIG_END@ -->
+
+        <!-- @HIBERNATE_CONFIG_START@
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
         <property name="hibernate.connection.url">jdbc:mysql://@SERVERNAME@/@DBNAME@</property>
         <property name="hibernate.connection.username">@DBUSER@</property>
         <property name="hibernate.connection.password">@DBPASSWD@</property>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        @HIBERNATE_CONFIG_END@ -->
 
         <!-- mapping files -->
         <mapping resource="gov/nih/nci/caarray/domain/vocabulary/Term.hbm.xml"/>
