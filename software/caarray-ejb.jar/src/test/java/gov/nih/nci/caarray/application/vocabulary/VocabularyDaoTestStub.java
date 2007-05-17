@@ -53,6 +53,7 @@ package gov.nih.nci.caarray.application.vocabulary;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
@@ -72,6 +73,13 @@ public class VocabularyDaoTestStub implements VocabularyDao {
     public List<Term> getTerms(String categoryName) throws DAOException {
         // TODO Auto-generated method stub
         return new ArrayList<Term>();
+    }
+
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.dao.VocabularyDao#getTermsRecursive(java.lang.String)
+     */
+    public Set<Term> getTermsRecursive(String categoryName) throws DAOException {
+        return null;
     }
 
     /* (non-Javadoc)

@@ -55,6 +55,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
@@ -189,6 +190,9 @@ public class VocabularyServiceTest {
         public List<Term> getTerms(String categoryName) throws DAOException {
             return new ArrayList<Term>();
         }
+        public Set<Term> getTermsRecursive(String categoryName) throws DAOException {
+            return null;
+        }
         public Category getCategory(String name) throws DAOException {
             return null;
         }
@@ -208,6 +212,9 @@ public class VocabularyServiceTest {
     public class MockVocabularyDaoForException implements VocabularyDao {
 
         public List<Term> getTerms(String categoryName) throws DAOException {
+            throw new DAOException("This is a test exception");
+        }
+        public Set<Term> getTermsRecursive(String categoryName) throws DAOException {
             throw new DAOException("This is a test exception");
         }
         public Category getCategory(String name) throws DAOException {
