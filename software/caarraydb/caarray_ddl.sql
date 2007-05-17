@@ -12,42 +12,42 @@ DROP TABLE IF EXISTS PROTOCOL;
 
 CREATE TABLE TERM
 (
-  ID                          INT UNSIGNED      NOT NULL,
+  ID                          BIGINT      NOT NULL,
   DESCRIPTION                 VARCHAR(1000),
   VALUE                       VARCHAR(1000),
-  CATEGORY_ID                 INT UNSIGNED      NOT NULL,
-  ACCESSION_ID                INT UNSIGNED,
-  SOURCE_ID                   INT UNSIGNED,
+  CATEGORY_ID                 BIGINT      NOT NULL,
+  ACCESSION_ID                BIGINT,
+  SOURCE_ID                   BIGINT,
   PRIMARY KEY                 (ID)
 );
 
 CREATE TABLE CATEGORY
 (
-  ID                          INT UNSIGNED      NOT NULL,
+  ID                          BIGINT      NOT NULL,
   NAME                        VARCHAR(1000),
-  PARENT_ID                   INT UNSIGNED,
+  PARENT_ID                   BIGINT,
   PRIMARY KEY                 (ID)
 );
 
 CREATE TABLE CATEGORYCHILDREN
 (
-  CATEGORY_ID           INT UNSIGNED            NOT NULL,
-  CHILD_CATEGORY_ID     INT UNSIGNED            NOT NULL,
+  CATEGORY_ID           BIGINT            NOT NULL,
+  CHILD_CATEGORY_ID     BIGINT            NOT NULL,
   CONSTRAINT CATEGORYCHILDREN_PK PRIMARY KEY(CATEGORY_ID,CHILD_CATEGORY_ID)
 );
 
 CREATE TABLE ACCESSION
 (
-  ID                          INT UNSIGNED      NOT NULL,
+  ID                          BIGINT      NOT NULL,
   URL                         VARCHAR(1000),
   VALUE                       VARCHAR(1000),
-  SOURCE_ID                   INT UNSIGNED      NOT NULL,
+  SOURCE_ID                   BIGINT      NOT NULL,
   PRIMARY KEY                 (ID)
 );
 
 CREATE TABLE SOURCE
 (
-  ID                          INT UNSIGNED      NOT NULL,
+  ID                          BIGINT      NOT NULL,
   NAME                        VARCHAR(1000),
   URL                         VARCHAR(1000),
   VERSION                     VARCHAR(1000),
@@ -56,39 +56,39 @@ CREATE TABLE SOURCE
 
 CREATE TABLE PROTOCOLAPPLICATION
 (
-  ID                          INT UNSIGNED      NOT NULL,
-  PROTOCOL_ID                 INT UNSIGNED      NOT NULL,
+  ID                          BIGINT      NOT NULL,
+  PROTOCOL_ID                 BIGINT      NOT NULL,
   PRIMARY KEY                 (ID)
 );
 
 CREATE TABLE PARAMETERVALUE
 (
-  ID                          INT UNSIGNED      NOT NULL,
+  ID                          BIGINT      NOT NULL,
   UNIT                        VARCHAR(1000),
   VALUE                       VARCHAR(1000),
-  PROTOCOL_APPLICATION_ID     INT UNSIGNED,
-  PARAMETER_ID                INT UNSIGNED      NOT NULL,
+  PROTOCOL_APPLICATION_ID     BIGINT,
+  PARAMETER_ID                BIGINT      NOT NULL,
   PRIMARY KEY                 (ID)
 );
 
 CREATE TABLE PARAMETER
 (
-  ID                          INT UNSIGNED      NOT NULL,
+  ID                          BIGINT      NOT NULL,
   NAME                        VARCHAR(1000),
-  PROTOCOL_ID                 INT UNSIGNED      NOT NULL,
-  DEFAULT_VALUE_ID            INT UNSIGNED,
+  PROTOCOL_ID                 BIGINT      NOT NULL,
+  DEFAULT_VALUE_ID            BIGINT,
   PRIMARY KEY                 (ID)
 );
 
 CREATE TABLE PROTOCOL
 (
-  ID                          INT UNSIGNED      NOT NULL,
+  ID                          BIGINT      NOT NULL,
   ACCESSION                   VARCHAR(1000),
   NAME                        VARCHAR(1000),
   TEXT                        VARCHAR(1000),
   TITLE                       VARCHAR(1000),
   URL                         VARCHAR(1000),
-  TYPE_ID                     INT UNSIGNED      NOT NULL,
+  TYPE_ID                     BIGINT      NOT NULL,
   PRIMARY KEY                 (ID)
 );
 
