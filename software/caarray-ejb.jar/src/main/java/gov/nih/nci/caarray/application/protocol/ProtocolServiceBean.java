@@ -82,6 +82,10 @@
  */
 package gov.nih.nci.caarray.application.protocol;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.DAOException;
@@ -132,7 +136,28 @@ public class ProtocolServiceBean implements ProtocolService {
         }
     }
 
-   private ProtocolDao getProtocolDao() {
+    /**
+     * Performs a query-by-example search based on the protocol object passed.
+     *
+     * @param protocolExample find protocols that match the non-null fields of this protocol.
+     * @return the matching protocols.
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public List<Protocol> find(Protocol protocolExample) {
+        List<Protocol> protocols = null;
+        try {
+            List<AbstractCaArrayEntity> results = getProtocolDao().queryEntityByExample(protocolExample);
+            protocols = new ArrayList<Protocol>(results.size());
+            for (AbstractCaArrayEntity entity : results) {
+                protocols.add((Protocol) entity);
+            }
+        } catch (DAOException e) {
+            LOG.error("Couldn't retrieve protocols", e);
+        }
+        return protocols;
+    }
+
+    private ProtocolDao getProtocolDao() {
        return CaArrayDaoFactory.INSTANCE.getProtocolDao();
-   }
+    }
 }

@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.application.protocol;
 
+import java.util.List;
+
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.application.ApplicationServiceException;
 
@@ -104,5 +106,13 @@ public interface ProtocolService {
      * @throws ApplicationServiceException if the protocol could not be saved.
      */
     void save(Protocol protocol) throws ApplicationServiceException;
+
+    /**
+     * Performs a query-by-example search based on the protocol object passed.
+     *
+     * @param protocolExample find protocols that match the non-null fields of this protocol.
+     * @return the matching protocols.
+     */
+    List<Protocol> find(Protocol protocolExample);
 
 }
