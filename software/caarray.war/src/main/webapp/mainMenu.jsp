@@ -1,9 +1,8 @@
-<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
-<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
+<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
+<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
 
-<f:view>
-    <h:form>
-        <h:commandLink action="addProtocol" value="Add Protocol" />
-        <h:commandLink action="searchProtocol" value="Search Protocol" />
-    </h:form>
-</f:view>
+<h:form id="protocolMenu">
+  <h:outputLabel value="Protocol Menu" />
+  <h:commandLink id="addProtocol" action="addProtocol" value="Add Protocol" />
+  <h:commandLink id="searchProtocol" action="searchProtocol" value="Search Protocol" />
+</h:form>

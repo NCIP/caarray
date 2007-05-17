@@ -86,10 +86,10 @@ import gov.nih.nci.caarray.application.ApplicationServiceException;
 import gov.nih.nci.caarray.application.ServiceLocator;
 import gov.nih.nci.caarray.application.protocol.ProtocolService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
-import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,11 +104,14 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author tavelae
  */
-public final class EditProtocolBean {
+public final class EditProtocolBean implements Serializable {
+
+    private static final long serialVersionUID = -7548806609762035864L;
 
     private static final Log LOG = LogFactory.getLog(EditProtocolBean.class);
 
     private Protocol protocol;
+    private List<Term> protocolTypes;
 
     @EJB
     private VocabularyService vocabularyService;
@@ -128,20 +131,28 @@ public final class EditProtocolBean {
      *
      * @return the protocol types.
      */
-    public List<SelectItem> getProtocolTypes() {
-        List<Term> types = null;
-        try {
-            types = getVocabularyService().getTerms("ProtocolType");
-        } catch (Exception e) {
-            LOG.error("Couldn't retrieve ProtocolTypes", e);
-            return null;
+    public List<SelectItem> getProtocolTypeItems() {
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("getProtocolTypes()");
         }
-        List<SelectItem> items = new ArrayList<SelectItem>(types.size());
-        for (int i = 0; i < types.size(); i++) {
-            Term type = types.get(i);
-            items.add(new SelectItem(String.valueOf(type.getId()), type.getValue()));
+        List<SelectItem> protocolTypeItems = new ArrayList<SelectItem>(getProtocolTypes().size());
+        for (int i = 0; i < getProtocolTypes().size(); i++) {
+            Term type = getProtocolTypes().get(i);
+            protocolTypeItems.add(new SelectItem(type.getId(), type.getValue()));
         }
-        return items;
+        return protocolTypeItems;
+    }
+
+    private List<Term> getProtocolTypes() {
+        if (protocolTypes == null) {
+            try {
+                protocolTypes = getVocabularyService().getTerms("ProtocolType");
+            } catch (Exception e) {
+                LOG.error("Couldn't retrieve ProtocolTypes", e);
+                return null;
+            }
+        }
+        return protocolTypes;
     }
 
     /**
@@ -171,11 +182,15 @@ public final class EditProtocolBean {
      * @return JSF navigation target
      */
     public String save() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("save()");
+        }
         try {
             getProtocolService().save(getProtocol());
         } catch (ApplicationServiceException e) {
             // TODO REMOVE ApplicationServiceException!!!!!!!!!!!!
             LOG.error("Couldn't save protocol.", e);
+            return "error";
         }
         return "success";
     }
@@ -204,6 +219,9 @@ public final class EditProtocolBean {
      * @return the protocolTypeId
      */
     public Long getProtocolTypeId() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("getProtocolTypeId()");
+        }
         if (getProtocol().getType() != null) {
             return getProtocol().getType().getId();
         } else {
@@ -217,17 +235,19 @@ public final class EditProtocolBean {
      * @param protocolTypeId the protocolTypeId to set
      */
     public void setProtocolTypeId(Long protocolTypeId) {
-        try {
-            List<Term> types = getVocabularyService().getTerms("ProtocolType");
-            for (Term type : types) {
-                if (type.getId().equals(protocolTypeId)) {
-                    getProtocol().setType(type);
-                    break;
-                }
-            }
-        } catch (VocabularyServiceException e) {
-            LOG.error("Couldn't get protocol types", e);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("setProtocolTypeId(" + protocolTypeId + ")");
         }
+        getProtocol().setType(getProtocolType(protocolTypeId));
+    }
+
+    private Term getProtocolType(Long protocolTypeId) {
+        for (Term type : getProtocolTypes()) {
+            if (type.getId().equals(protocolTypeId)) {
+                return type;
+            }
+        }
+        return null;
     }
 
 }

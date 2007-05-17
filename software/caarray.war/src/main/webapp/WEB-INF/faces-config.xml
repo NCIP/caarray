@@ -13,10 +13,23 @@
         </navigation-case>
     </navigation-rule>
 
+    <navigation-rule>
+        <from-view-id>/protocol/addProtocol.jsp</from-view-id>
+        <navigation-case>
+            <from-outcome>success</from-outcome>
+            <to-view-id>/protocol/viewProtocol.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>error</from-outcome>
+            <to-view-id>/protocol/protocolError.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
     <managed-bean>
         <managed-bean-name>editProtocolBean</managed-bean-name>
         <managed-bean-class>gov.nih.nci.caarray.ui.jsf.beans.EditProtocolBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
+
 
 </faces-config>

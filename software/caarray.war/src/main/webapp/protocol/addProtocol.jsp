@@ -11,6 +11,7 @@
 <body>
 <f:view>
   <h1>Add Protocol</h1>
+  <%@include file="/mainMenu.jsp" %>
   <h:form id="protocolForm">
 
     <table>
@@ -38,16 +39,17 @@
         <th><h:outputLabel for="protocolType" value="Type" /></th>
         <td>
           <h:selectOneMenu id="protocolType" value="#{editProtocolBean.protocolTypeId}">
-            <f:selectItems value="#{editProtocolBean.protocolTypes}" />
-          </h:selectOneMenu>
+            <f:selectItems value="#{editProtocolBean.protocolTypeItems}" />
+          </h:selectOneMenu><h:message for="protocolType" />
         </td>
-      </tr>
 
       <tr>
         <td colspan="2">
-          <h:commandButton id="saveButton" action="#{editProtocolBean.save}" />
+          <h:commandButton id="saveButton" value="save" action="#{editProtocolBean.save}" />
         </td>
       </tr>
+
+    </table>
 
   </h:form>
 </f:view>

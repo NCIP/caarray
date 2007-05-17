@@ -107,14 +107,14 @@ public class EditProtocolBeanTest {
     public void testGetProtocolTypes() {
         EditProtocolBean bean = new EditProtocolBean();
         bean.setVocabularyService(new VocabularyServiceTestStub());
-        List<SelectItem> selectItems = bean.getProtocolTypes();
+        List<SelectItem> selectItems = bean.getProtocolTypeItems();
         assertEquals(3, selectItems.size());
         assertEquals("term1", selectItems.get(0).getLabel());
         assertEquals("term2", selectItems.get(1).getLabel());
         assertEquals("term3", selectItems.get(2).getLabel());
-        assertEquals("0", selectItems.get(0).getValue());
-        assertEquals("1", selectItems.get(1).getValue());
-        assertEquals("99", selectItems.get(2).getValue());
+        assertEquals(0, selectItems.get(0).getValue());
+        assertEquals(1, selectItems.get(1).getValue());
+        assertEquals(99, selectItems.get(2).getValue());
     }
 
     /**

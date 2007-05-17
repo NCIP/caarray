@@ -10,7 +10,9 @@
 <title>Add Protocol</title>
 </head>
 <body>
-<h2>Welcome to caArray 2</h2>
+<h1>Welcome to caArray 2</h1>
+<f:view>
 <%@include file="/mainMenu.jsp" %>
+</f:view>
 </body>
 </html>
