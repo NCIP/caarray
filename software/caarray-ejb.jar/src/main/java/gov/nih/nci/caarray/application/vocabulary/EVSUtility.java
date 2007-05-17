@@ -100,6 +100,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.logging.Log;
@@ -141,7 +142,7 @@ public class EVSUtility {
 
     private final Source mgedSource;
 
-    private HashMap categoryList;
+    private final Map categoryList;
 
     /**
      * Creates a new instance.
