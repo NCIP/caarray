@@ -172,20 +172,13 @@ public class EVSUtility {
         DescLogicConcept concept = new DescLogicConcept();
         List<Term> terms = new ArrayList<Term>();
         List<Vocabulary> vocab = new ArrayList<Vocabulary>();
-
-
         EVSQuery evs = new EVSQueryImpl();
         try {
             vocab = getVocabularyByName(evs, appService, MGED_VOCAB);
             concept = getEVSConcept(conceptName, evs, vocab, appService);
-
             if (concept != null) {
                 Category parentCat = fetchCategory(conceptName);
-                if (parentCat == null) {
-                    parentCat = new Category();
-                    parentCat.setName(conceptName);
-                    parentCat.setId(createCategoryId());
-                }
+
                 if (conceptIsInstance(concept)) {
                     // create a term and the conceptName is the category
                     addConceptToTermList(parentCat, concept, terms);
@@ -198,7 +191,6 @@ public class EVSUtility {
         } catch (Exception e) {
             LOG.error(e.getMessage());
             throw createVocabException(e);
-
         }
         return terms;
     }
@@ -216,14 +208,11 @@ public class EVSUtility {
      */
     private void traverseEVSConceptTree(Category parentCategory, final ApplicationService appService,
             List<DescLogicConcept> subConcepts, List<Term> terms, List<Vocabulary> vocab) throws ApplicationException {
-
         // set the category as the current concept...as we go deeper in the tree, the
         // category will always be set to the parent concept
         List<DescLogicConcept> remainderList = new ArrayList<DescLogicConcept>(subConcepts);
         int test = 0;
-
-        Category oldParent = new Category();
-        oldParent = this.cloneCategory(parentCategory);
+        Category oldParent = this.cloneCategory(parentCategory);
         while (!remainderList.isEmpty()) {
             // the first time through, skip this part... obtain conceptInstances for the current concept
             test++;
@@ -233,12 +222,7 @@ public class EVSUtility {
                 tempList.remove(0);
                 String newCatName = remainderList.get(0).getName();
                 Category newParent = fetchCategory(newCatName);
-                if (newParent == null) {
-                    newParent = new Category();
-                    newParent.setName(newCatName);
-                    newParent.setId(createCategoryId());
-                    newParent.setParent(oldParent);
-                }
+                newParent.setParent(oldParent);
                 remainderList = (ArrayList<DescLogicConcept>)
                 getEVSConceptList(vocab, appService, remainderList.get(0));
                 // when the tempList is empty, we're done
@@ -530,12 +514,16 @@ public class EVSUtility {
         } catch (DAOException daoe) {
             LOG.error("Failed in categoryDoesExist()");
         }
+        if (existingCategory == null) {
+            existingCategory = new Category();
+            existingCategory.setName(categoryName);
+            existingCategory.setId(createCategoryId());
+        }
         return existingCategory;
     }
 
 
     private void putCategoryInList(Category category) {
-        Category localCategory;
         if (!categoryList.containsKey(category.getName())) {
             categoryList.put(category.getName(), category);
         }
