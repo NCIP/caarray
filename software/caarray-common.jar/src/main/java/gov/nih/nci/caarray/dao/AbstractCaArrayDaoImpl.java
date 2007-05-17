@@ -87,6 +87,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Iterator;
 
+import org.apache.commons.logging.Log;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -103,6 +104,11 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
  * @author Rashmi Srinivasa
  */
 public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
+
+    /**
+     * 
+     */
+    private static final String UNABLE_TO_RETRIEVE_ENTITY_MESSASGE = "Unable to retrieve entity";
 
     /**
      * Returns the current Hibernate Session.
@@ -123,8 +129,9 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     public void save(AbstractCaArrayEntity caArrayEntity) throws DAOException {
         try {
             getCurrentSession().saveOrUpdate(caArrayEntity);
-        } catch (HibernateException he) {
-            throw new DAOException("Unable to save entity", he);
+        } catch (Exception e) {
+            getLog().error("Unable to save entity", e);
+           throw new DAOException("Unable to save entity", e);
         }
     }
 
@@ -143,6 +150,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
                 getCurrentSession().saveOrUpdate(entity);
             }
         } catch (HibernateException he) {
+            getLog().error("Unable to save entity collection", he);
             throw new DAOException("Unable to save entity collection", he);
         }
     }
@@ -167,7 +175,8 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             criteria.add(Example.create(entityToMatch));
             hibernateReturnedEntities = criteria.list();
         } catch (HibernateException he) {
-            throw new DAOException("Unable to retrieve entity", he);
+            getLog().error(UNABLE_TO_RETRIEVE_ENTITY_MESSASGE, he);
+            throw new DAOException(UNABLE_TO_RETRIEVE_ENTITY_MESSASGE, he);
         } finally {
             HibernateUtil.returnSession(mySession);
         }
@@ -195,11 +204,11 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             hibernateReturnedEntities = mySession.createCriteria(entityToMatch.getClass()).add(
                 Restrictions.eq("id", entityToMatch.getId())).list();
         } catch (HibernateException he) {
-            throw new DAOException("Unable to retrieve entity", he);
+            getLog().error(UNABLE_TO_RETRIEVE_ENTITY_MESSASGE, he);
+            throw new DAOException(UNABLE_TO_RETRIEVE_ENTITY_MESSASGE, he);
         } finally {
             HibernateUtil.returnSession(mySession);
         }
-
         if ((hibernateReturnedEntities != null) && (hibernateReturnedEntities.size() >= 1)) {
             return (AbstractCaArrayEntity) hibernateReturnedEntities.get(0);
         } else {
@@ -217,7 +226,11 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         try {
             getCurrentSession().delete(caArrayEntity);
         } catch (HibernateException he) {
+            getLog().error("Unable to remove entity", he);
             throw new DAOException("Unable to remove entity", he);
         }
     }
+
+    abstract Log getLog();
+
 }

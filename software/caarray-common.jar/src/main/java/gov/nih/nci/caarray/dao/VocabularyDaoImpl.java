@@ -53,6 +53,8 @@ package gov.nih.nci.caarray.dao;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
@@ -66,6 +68,8 @@ import gov.nih.nci.caarray.util.HibernateUtil;
  * @author John Pike
  */
 public class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao {
+
+    private static final Log LOG = LogFactory.getLog(VocabularyDaoImpl.class);
 
     /**
      * Gets all the <code>Terms</code> matching the category name
@@ -85,6 +89,7 @@ public class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements Vocabul
             hibernateReturnedTerms = mySession.createCriteria(Term.class).createCriteria(
                     "category").add(Restrictions.eq("name", categoryName)).list();
         } catch (HibernateException he) {
+            getLog().error("Unable to retrieve terms", he);
             throw new DAOException("Unable to retrieve terms", he);
         } finally {
             HibernateUtil.returnSession(mySession);
@@ -97,4 +102,10 @@ public class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements Vocabul
         }
         return matchingTerms;
     }
+
+    @Override
+    Log getLog() {
+        return LOG;
+    }
+
 }

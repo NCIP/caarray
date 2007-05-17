@@ -82,6 +82,9 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 
 /**
@@ -90,6 +93,8 @@ import gov.nih.nci.caarray.domain.protocol.Protocol;
  * @author Rashmi Srinivasa
  */
 public class ProtocolDaoImpl extends AbstractCaArrayDaoImpl implements ProtocolDao {
+
+    private static final Log LOG = LogFactory.getLog(ProtocolDaoImpl.class);
 
     /**
      * Returns the <code>Protocol</code> with the id given or null if none exists.
@@ -103,5 +108,10 @@ public class ProtocolDaoImpl extends AbstractCaArrayDaoImpl implements ProtocolD
         Protocol protocolToMatch = new Protocol();
         protocolToMatch.setId(id);
         return (Protocol) queryEntityById(protocolToMatch);
+    }
+
+    @Override
+    Log getLog() {
+        return LOG;
     }
 }
