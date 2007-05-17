@@ -6,46 +6,46 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Add Protocol</title>
+<title>Edit Protocol</title>
 </head>
 <body>
 <f:view>
-  <h1>Add Protocol</h1>
+  <h1>Edit Protocol</h1>
   <%@include file="/mainMenu.jsp" %>
   <h:form id="protocolForm">
 
     <table>
       <tr>
         <th><h:outputLabel for="protocolName" value="Name" /></th>
-        <td><h:inputText id="protocolName" value="#{editProtocolBean.protocol.name}" /></td>
+        <td><h:inputText id="protocolName" value="#{protocolBean.protocol.name}" /></td>
       </tr>
 
       <tr>
         <th><h:outputLabel for="protocolTitle" value="Title" /></th>
-        <td><h:inputText id="protocolTitle" value="#{editProtocolBean.protocol.title}" /></td>
+        <td><h:inputText id="protocolTitle" value="#{protocolBean.protocol.title}" /></td>
       </tr>
 
       <tr>
         <th><h:outputLabel for="protocolText" value="Text" /></th>
-        <td><h:inputTextarea id="protocolText" value="#{editProtocolBean.protocol.text}" /></td>
+        <td><h:inputTextarea id="protocolText" value="#{protocolBean.protocol.text}" /></td>
       </tr>
 
       <tr>
         <th><h:outputLabel for="protocolUrl" value="URL" /></th>
-        <td><h:inputText id="protocolUrl" value="#{editProtocolBean.protocol.url}" /></td>
+        <td><h:inputText id="protocolUrl" value="#{protocolBean.protocol.url}" /></td>
       </tr>
 
       <tr>
         <th><h:outputLabel for="protocolType" value="Type" /></th>
         <td>
-          <h:selectOneMenu id="protocolType" value="#{editProtocolBean.protocolTypeId}">
-            <f:selectItems value="#{editProtocolBean.protocolTypeItems}" />
+          <h:selectOneMenu id="protocolType" value="#{protocolBean.protocolTypeId}">
+            <f:selectItems value="#{protocolBean.protocolTypeItems}" />
           </h:selectOneMenu><h:message for="protocolType" />
         </td>
 
       <tr>
         <td colspan="2">
-          <h:commandButton id="saveButton" value="save" action="#{editProtocolBean.save}" />
+          <h:commandButton id="saveButton" value="save" action="#{protocolBean.save}" />
         </td>
       </tr>
 

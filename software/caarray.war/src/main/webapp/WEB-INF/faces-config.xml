@@ -8,13 +8,20 @@
 
     <navigation-rule>
         <navigation-case>
-            <from-outcome>addProtocol</from-outcome>
-            <to-view-id>/protocol/addProtocol.jsp</to-view-id>
+            <from-outcome>editProtocol</from-outcome>
+            <to-view-id>/protocol/editProtocol.jsp</to-view-id>
         </navigation-case>
     </navigation-rule>
 
     <navigation-rule>
-        <from-view-id>/protocol/addProtocol.jsp</from-view-id>
+        <navigation-case>
+            <from-outcome>searchProtocols</from-outcome>
+            <to-view-id>/protocol/searchProtocols.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <from-view-id>/protocol/editProtocol.jsp</from-view-id>
         <navigation-case>
             <from-outcome>success</from-outcome>
             <to-view-id>/protocol/viewProtocol.jsp</to-view-id>
@@ -26,8 +33,14 @@
     </navigation-rule>
 
     <managed-bean>
-        <managed-bean-name>editProtocolBean</managed-bean-name>
-        <managed-bean-class>gov.nih.nci.caarray.ui.jsf.beans.EditProtocolBean</managed-bean-class>
+        <managed-bean-name>protocolBean</managed-bean-name>
+        <managed-bean-class>gov.nih.nci.caarray.ui.jsf.beans.ProtocolBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>searchProtocolsBean</managed-bean-name>
+        <managed-bean-class>gov.nih.nci.caarray.ui.jsf.beans.SearchProtocolsBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 

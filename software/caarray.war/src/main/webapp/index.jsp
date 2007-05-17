@@ -7,7 +7,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Add Protocol</title>
+<title>Welcome to caArray 2</title>
 </head>
 <body>
 <h1>Welcome to caArray 2</h1>

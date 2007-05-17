@@ -82,67 +82,62 @@
  */
 package gov.nih.nci.caarray.ui.jsf.beans;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
-import javax.faces.model.SelectItem;
-
-import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceTestStub;
+import gov.nih.nci.caarray.application.ApplicationServiceException;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 
-import org.junit.Test;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
- * Tests for EditProtocolBean
+ * JSF backing bean for protocol creation, editing, and viewing.
  *
- * @author ETavela
+ * @author tavelae
  */
-public class EditProtocolBeanTest {
+public final class ProtocolBean extends AbstractProtocolBean {
+
+    private static final long serialVersionUID = -7548806609762035864L;
+
+    private static final Log LOG = LogFactory.getLog(ProtocolBean.class);
 
     /**
-     * Test method for {@link gov.nih.nci.caarray.ui.jsf.beans.EditProtocolBean#getProtocolTypes()}.
+     * Creates a new instance.
      */
-    @Test
-    public void testGetProtocolTypes() {
-        EditProtocolBean bean = new EditProtocolBean();
-        bean.setVocabularyService(new VocabularyServiceTestStub());
-        List<SelectItem> selectItems = bean.getProtocolTypeItems();
-        assertEquals(3, selectItems.size());
-        assertEquals("term1", selectItems.get(0).getLabel());
-        assertEquals("term2", selectItems.get(1).getLabel());
-        assertEquals("term3", selectItems.get(2).getLabel());
-        assertEquals(0, selectItems.get(0).getValue());
-        assertEquals(1, selectItems.get(1).getValue());
-        assertEquals(99, selectItems.get(2).getValue());
+    public ProtocolBean() {
+        super();
     }
 
     /**
-     * Test method for {@link gov.nih.nci.caarray.ui.jsf.beans.EditProtocolBean#getProtocol()}.
+     * Called to instantiate a new Protocol to edit and save.
+     *
+     * @return navigation outcome to edit new protocol.
      */
-    @Test
-    public void testGetProtocol() {
-        EditProtocolBean bean = new EditProtocolBean();
-        Protocol protocol = bean.getProtocol();
-        assertNotNull(protocol);
-        Protocol protocol2 = bean.getProtocol();
-        assertSame(protocol, protocol2);
-        protocol = new Protocol();
-        bean.setProtocol(protocol);
-        protocol2 = bean.getProtocol();
-        assertSame(protocol, protocol2);
+    public String addProtocol() {
+        setProtocol(new Protocol());
+        return "editProtocol";
     }
 
-    @Test
-    public void testSetProtocolTypeId() {
-        EditProtocolBean bean = new EditProtocolBean();
-        bean.setVocabularyService(new VocabularyServiceTestStub());
-        assertNull(bean.getProtocol().getType());
-        assertNull(bean.getProtocolTypeId());
-        bean.setProtocolTypeId(99L);
-        assertNotNull(bean.getProtocol().getType());
-        assertEquals(99L, bean.getProtocolTypeId());
-        assertEquals("term3", bean.getProtocol().getType().getValue());
+    /**
+     * Saves the current protocol.
+     *
+     * @return JSF navigation target
+     */
+    public String save() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("save()");
+        }
+        try {
+            getProtocolService().save(getProtocol());
+        } catch (ApplicationServiceException e) {
+            // TODO REMOVE ApplicationServiceException!!!!!!!!!!!!
+            LOG.error("Couldn't save protocol.", e);
+            return "error";
+        }
+        return "success";
+    }
+
+    @Override
+    Log getLog() {
+        return LOG;
     }
 
 }

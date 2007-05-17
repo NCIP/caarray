@@ -3,6 +3,6 @@
 
 <h:form id="protocolMenu">
   <h:outputLabel value="Protocol Menu" />
-  <h:commandLink id="addProtocol" action="addProtocol" value="Add Protocol" />
-  <h:commandLink id="searchProtocol" action="searchProtocol" value="Search Protocol" />
+  <h:commandLink id="addProtocol" action="#{protocolBean.addProtocol}" value="Add Protocol" />
+  <h:commandLink id="searchProtocol" action="searchProtocols" value="Search Protocol" />
 </h:form>

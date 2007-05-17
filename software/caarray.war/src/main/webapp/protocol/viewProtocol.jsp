@@ -12,6 +12,34 @@
 <body>
 <f:view>
   <h1>View Protocol</h1>
+  <%@include file="/mainMenu.jsp" %>
+  <h:form id="protocolForm">
+    <table>
+      <tr>
+        <th>Name</th>
+        <td><h:outputText value="#{protocolBean.protocol.name}" />
+      </tr>
+      <tr>
+        <th>Title</th>
+        <td><h:outputText value="#{protocolBean.protocol.title}" />
+      </tr>
+      <tr>
+        <th>Text</th>
+        <td><h:outputText value="#{protocolBean.protocol.text}" />
+      </tr>
+      <tr>
+        <th>URL</th>
+        <td><h:outputText value="#{protocolBean.protocol.url}" />
+      </tr>
+      <tr>
+        <th>Type</th>
+        <td><h:outputText value="#{protocolBean.protocol.type.value}" /></td>
+      </tr>
+      <tr>
+        <td colspan="2"><h:commandButton id="modifyButton" value="Modify" action="editProtocol" /></td>
+      </tr>
+    </table>
+  </h:form>
 </f:view>
 </body>
 </html>

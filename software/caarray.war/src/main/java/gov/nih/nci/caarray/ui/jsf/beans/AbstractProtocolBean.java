@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.ui.jsf.beans;
 
-import gov.nih.nci.caarray.application.ApplicationServiceException;
 import gov.nih.nci.caarray.application.ServiceLocator;
 import gov.nih.nci.caarray.application.protocol.ProtocolService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
@@ -97,18 +96,15 @@ import javax.ejb.EJB;
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
- * JSF backing bean for protocol creation and editing.
+ * Base class for backing beans that need to use protocol information.
  *
  * @author tavelae
  */
-public final class EditProtocolBean implements Serializable {
+public abstract class AbstractProtocolBean implements Serializable {
 
     private static final long serialVersionUID = -7548806609762035864L;
-
-    private static final Log LOG = LogFactory.getLog(EditProtocolBean.class);
 
     private Protocol protocol;
     private List<Term> protocolTypes;
@@ -122,7 +118,7 @@ public final class EditProtocolBean implements Serializable {
     /**
      * Creates a new instance.
      */
-    public EditProtocolBean() {
+    AbstractProtocolBean() {
         super();
     }
 
@@ -131,9 +127,9 @@ public final class EditProtocolBean implements Serializable {
      *
      * @return the protocol types.
      */
-    public List<SelectItem> getProtocolTypeItems() {
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("getProtocolTypes()");
+    public final List<SelectItem> getProtocolTypeItems() {
+        if (getLog().isTraceEnabled()) {
+            getLog().trace("getProtocolTypes()");
         }
         List<SelectItem> protocolTypeItems = new ArrayList<SelectItem>(getProtocolTypes().size());
         for (int i = 0; i < getProtocolTypes().size(); i++) {
@@ -143,12 +139,14 @@ public final class EditProtocolBean implements Serializable {
         return protocolTypeItems;
     }
 
+    abstract Log getLog();
+
     private List<Term> getProtocolTypes() {
         if (protocolTypes == null) {
             try {
                 protocolTypes = getVocabularyService().getTerms("ProtocolType");
             } catch (Exception e) {
-                LOG.error("Couldn't retrieve ProtocolTypes", e);
+                getLog().error("Couldn't retrieve ProtocolTypes", e);
                 return null;
             }
         }
@@ -156,14 +154,11 @@ public final class EditProtocolBean implements Serializable {
     }
 
     /**
-     * Returns the current protocol for editing, creating a new instance if none has been set.
+     * Returns the current protocol for editing or viewing.
      *
      * @return the protocol
      */
-    public Protocol getProtocol() {
-        if (protocol == null) {
-            protocol = new Protocol();
-        }
+    public final Protocol getProtocol() {
         return protocol;
     }
 
@@ -172,27 +167,8 @@ public final class EditProtocolBean implements Serializable {
      *
      * @param protocol the protocol to set
      */
-    public void setProtocol(Protocol protocol) {
+    public final void setProtocol(Protocol protocol) {
         this.protocol = protocol;
-    }
-
-    /**
-     * Saves the current protocol.
-     *
-     * @return JSF navigation target
-     */
-    public String save() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("save()");
-        }
-        try {
-            getProtocolService().save(getProtocol());
-        } catch (ApplicationServiceException e) {
-            // TODO REMOVE ApplicationServiceException!!!!!!!!!!!!
-            LOG.error("Couldn't save protocol.", e);
-            return "error";
-        }
-        return "success";
     }
 
     private VocabularyService getVocabularyService() {
@@ -202,15 +178,8 @@ public final class EditProtocolBean implements Serializable {
         return vocabularyService;
     }
 
-    void setVocabularyService(VocabularyService vocabularyService) {
+    final void setVocabularyService(VocabularyService vocabularyService) {
         this.vocabularyService = vocabularyService;
-    }
-
-    private ProtocolService getProtocolService() {
-        if (protocolService == null) {
-            protocolService = (ProtocolService) ServiceLocator.getInstance().lookup(ProtocolService.JNDI_NAME);
-        }
-        return protocolService;
     }
 
     /**
@@ -218,9 +187,9 @@ public final class EditProtocolBean implements Serializable {
      *
      * @return the protocolTypeId
      */
-    public Long getProtocolTypeId() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("getProtocolTypeId()");
+    public final Long getProtocolTypeId() {
+        if (getLog().isDebugEnabled()) {
+            getLog().debug("getProtocolTypeId()");
         }
         if (getProtocol().getType() != null) {
             return getProtocol().getType().getId();
@@ -234,9 +203,9 @@ public final class EditProtocolBean implements Serializable {
      *
      * @param protocolTypeId the protocolTypeId to set
      */
-    public void setProtocolTypeId(Long protocolTypeId) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("setProtocolTypeId(" + protocolTypeId + ")");
+    public final void setProtocolTypeId(Long protocolTypeId) {
+        if (getLog().isDebugEnabled()) {
+            getLog().debug("setProtocolTypeId(" + protocolTypeId + ")");
         }
         getProtocol().setType(getProtocolType(protocolTypeId));
     }
@@ -248,6 +217,13 @@ public final class EditProtocolBean implements Serializable {
             }
         }
         return null;
+    }
+
+    final ProtocolService getProtocolService() {
+        if (protocolService == null) {
+            protocolService = (ProtocolService) ServiceLocator.getInstance().lookup(ProtocolService.JNDI_NAME);
+        }
+        return protocolService;
     }
 
 }
