@@ -106,9 +106,9 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
 
     /**
-     * 
+     *
      */
-    private static final String UNABLE_TO_RETRIEVE_ENTITY_MESSASGE = "Unable to retrieve entity";
+    private static final String UNABLE_TO_RETRIEVE_ENTITY_MESSAGE = "Unable to retrieve entity";
 
     /**
      * Returns the current Hibernate Session.
@@ -129,7 +129,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     public void save(AbstractCaArrayEntity caArrayEntity) throws DAOException {
         try {
             getCurrentSession().saveOrUpdate(caArrayEntity);
-        } catch (Exception e) {
+        } catch (HibernateException e) {
             getLog().error("Unable to save entity", e);
            throw new DAOException("Unable to save entity", e);
         }
@@ -167,16 +167,22 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
         List<AbstractCaArrayEntity> resultList = new ArrayList<AbstractCaArrayEntity>();
         List hibernateReturnedEntities = null;
-        Session mySession = HibernateUtil.getSessionForQueryMethod();
 
+        // Query on all present attributes except id (which is a random generated one).
+        if (entityToMatch == null) {
+            return resultList;
+        }
+        entityToMatch.setId(null);
+
+        Session mySession = HibernateUtil.getSessionForQueryMethod();
         try {
             // Query database for list of Protocols with this id.
             Criteria criteria = mySession.createCriteria(entityToMatch.getClass());
             criteria.add(Example.create(entityToMatch));
             hibernateReturnedEntities = criteria.list();
         } catch (HibernateException he) {
-            getLog().error(UNABLE_TO_RETRIEVE_ENTITY_MESSASGE, he);
-            throw new DAOException(UNABLE_TO_RETRIEVE_ENTITY_MESSASGE, he);
+            getLog().error(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
+            throw new DAOException(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
         } finally {
             HibernateUtil.returnSession(mySession);
         }
@@ -204,8 +210,8 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             hibernateReturnedEntities = mySession.createCriteria(entityToMatch.getClass()).add(
                 Restrictions.eq("id", entityToMatch.getId())).list();
         } catch (HibernateException he) {
-            getLog().error(UNABLE_TO_RETRIEVE_ENTITY_MESSASGE, he);
-            throw new DAOException(UNABLE_TO_RETRIEVE_ENTITY_MESSASGE, he);
+            getLog().error(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
+            throw new DAOException(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
         } finally {
             HibernateUtil.returnSession(mySession);
         }
