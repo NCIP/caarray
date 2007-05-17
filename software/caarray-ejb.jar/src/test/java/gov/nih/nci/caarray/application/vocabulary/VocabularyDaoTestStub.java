@@ -75,12 +75,11 @@ public class VocabularyDaoTestStub implements VocabularyDao {
         return new ArrayList<Term>();
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.VocabularyDao#getTermsRecursive(java.lang.String)
-     */
-    public Set<Term> getTermsRecursive(String categoryName) throws DAOException {
-        return null;
+    public void removeTerms(List<Term> caArrayEntities) throws DAOException {
+        // TODO Auto-generated method stub
+
     }
+
 
     /* (non-Javadoc)
      * @see gov.nih.nci.caarray.dao.VocabularyDao#getCategory(java.lang.String)
@@ -139,6 +138,13 @@ public class VocabularyDaoTestStub implements VocabularyDao {
      * @throws DAOException if matching entities could not be retrieved.
      */
     public AbstractCaArrayEntity queryEntityById(AbstractCaArrayEntity entityToMatch) throws DAOException {
+        return null;
+    }
+
+    /** (non-Javadoc)
+     * @see gov.nih.nci.caarray.dao.VocabularyDao#getTermsRecursive(java.lang.String)
+     */
+    public Set<Term> getTermsRecursive(String categoryName) throws DAOException {
         return null;
     }
 }
