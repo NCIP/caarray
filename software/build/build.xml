@@ -99,12 +99,14 @@
     </path>
 
     <!-- Datasource-configuration-related properties -->
-    <property name="cmt.transaction.factory" value="hibernate.transaction.factory_class org.hibernate.transaction.CMTTransactionFactory" />
     <property name="jta.transaction.factory" value="hibernate.transaction.factory_class org.hibernate.transaction.JTATransactionFactory" />
     <property name="jta.transaction.manager" value="hibernate.transaction.manager_lookup_class org.hibernate.transaction.JBossTransactionManagerLookup" />
+    <property name="datasource.connection.provider" value="hibernate.connection.provider_class org.hibernate.connection.DatasourceConnectionProvider" />
     <property name="jdbc.transaction.factory" value="hibernate.transaction.factory_class org.hibernate.transaction.JDBCTransactionFactory" />
     <property name="hibernate.session.context" value="hibernate.current_session_context_class thread" />
-
+    <property name="hibernate.connection.provider" value="hibernate.connection.provider_class org.hibernate.connection.C3P0ConnectionProvider" />
+    <property name="comment.start" value="&lt;!-- " />
+    <property name="comment.end" value=" -->" />
     <!-- Configuration files -->
     <property name="checkstyle.config" value="${resource.dir}/caarray_checks.xml" />
 
@@ -115,9 +117,9 @@
     <property name="jboss.deploy.dir" value="${jboss.home}/server/${jboss.server.name}/deploy" />
 
     <filterset id="caarray.filterset">
-    <filtersfile file="${build.dir}/local.properties" />
-    <filtersfile file="${build.dir}/default.properties" />
-  </filterset>
+        <filtersfile file="${build.dir}/local.properties" />
+        <filtersfile file="${build.dir}/default.properties" />
+    </filterset>
 
     <!-- ******************************************************************* -->
     <!-- ** IMPORTS                                                       ** -->
@@ -194,11 +196,11 @@
     <target name="prepare:create-local.properties"
       unless="local.properties.exists"
       depends="prepare:check-for-local.properties">
-      <touch file="${build.dir}/local.properties" />
+        <touch file="${build.dir}/local.properties" />
     </target>
 
     <target name="prepare:check-for-local.properties">
-    <available file="${build.dir}/local.properties" property="local.properties.exists" />
+        <available file="${build.dir}/local.properties" property="local.properties.exists" />
     </target>
 
     <!-- ******************************************************************* -->
@@ -212,14 +214,13 @@
             <fileset dir="${caarray-common.src.dir}" includes="**/*.hbm.xml" />
         </copy>
         <replace file="${caarray-common.classes.dir}/hibernate.cfg.xml">
-            <replacefilter token="@SERVERNAME@" value="${database.server}" />
-            <replacefilter token="@DBNAME@" value="${database.name}" />
-            <replacefilter token="@DBUSER@" value="${database.user}" />
-            <replacefilter token="@DBPASSWD@" value="${database.password}" />
+            <replacefilter token="@DATASOURCE_CONFIG_START@" value="${comment.end}" />
+            <replacefilter token="@DATASOURCE_CONFIG_END@" value="${comment.start}" />
         </replace>
         <replace file="${caarray-common.classes.dir}/hibernate.properties">
-            <replacefilter token="#@TRANSACTION_FACTORY@" value="${cmt.transaction.factory}" />
+            <replacefilter token="#@TRANSACTION_FACTORY@" value="${jta.transaction.factory}" />
             <replacefilter token="#@TRANSACTION_MANAGER@" value="${jta.transaction.manager}" />
+            <replacefilter token="#@CONNECTION_PROVIDER@" value="${datasource.connection.provider}" />
         </replace>
     </target>
 
@@ -229,6 +230,8 @@
             <fileset dir="${caarray-common.src.dir}" includes="**/*.hbm.xml" />
         </copy>
         <replace file="${caarray-common.test.classes.dir}/hibernate.cfg.xml">
+            <replacefilter token="@HIBERNATE_CONFIG_START@" value="${comment.end}" />
+            <replacefilter token="@HIBERNATE_CONFIG_END@" value="${comment.start}" />
             <replacefilter token="@SERVERNAME@" value="${database.server}" />
             <replacefilter token="@DBNAME@" value="${database.name}" />
             <replacefilter token="@DBUSER@" value="${database.user}" />
@@ -237,6 +240,7 @@
         <replace file="${caarray-common.test.classes.dir}/hibernate.properties">
             <replacefilter token="#@TRANSACTION_FACTORY@" value="${jdbc.transaction.factory}" />
             <replacefilter token="#@SESSION_CONTEXT@" value="${hibernate.session.context}" />
+            <replacefilter token="#@CONNECTION_PROVIDER@" value="${hibernate.connection.provider}" />
         </replace>
     </target>
 
@@ -546,12 +550,12 @@ classpath="${caarray-ejb.test.classes.dir};${caarray-ejb.classes.dir};${caarray-
     </target>
 
     <target name="test:selenium:run-tests" depends="test:selenium:compile-tests">
-      <antcall target="test:selenium:start-server" />
+        <antcall target="test:selenium:start-server" />
         <run-junit-tests
             test.src.dir="${test.src.dir}"
             xml.output.dir="${test.target.dir}/junit"
             classpath="${test.classes.dir};${selenium-server.jar};${selenium-java-client-driver.jar};${selenium-java-client-driver-tests.jar};${junit.jar}" />
-      <antcall target="test:selenium:stop-server" />
+        <antcall target="test:selenium:stop-server" />
     </target>
 
     <!-- ******************************************************************* -->
@@ -644,15 +648,15 @@ classpath="${caarray-ejb.test.classes.dir};${caarray-ejb.classes.dir};${caarray-
     <target name="deploy" depends="build:caarray.ear,prepare:create-local.properties">
         <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
         <copy file="${resource.dir}/deploy/caarray-mysql-ds.xml" todir="${jboss.deploy.dir}">
-        <filterset refid="caarray.filterset" />
-    </copy>
+            <filterset refid="caarray.filterset" />
+        </copy>
     </target>
 
     <target name="deploy:deploy-and-wait" depends="deploy">
-      <sleep seconds="5" />
-      <waitfor maxwait="30" maxwaitunit="second" checkevery="5" checkeveryunit="second">
-      <http url="http://localhost:${jboss.server.port}/caarray"/>
-    </waitfor>
+        <sleep seconds="5" />
+        <waitfor maxwait="30" maxwaitunit="second" checkevery="5" checkeveryunit="second">
+            <http url="http://localhost:${jboss.server.port}/caarray"/>
+        </waitfor>
     </target>
 
 </project>
