@@ -197,6 +197,9 @@ public class VocabularyServiceTest {
         public List<Term> getTerms(String categoryName) throws DAOException {
             return new ArrayList<Term>();
         }
+        public Set<Term> getTermsRecursive(String categoryName) throws DAOException {
+            throw new DAOException("This is a test exception");
+        }
 
         public Category getCategory(String name) throws DAOException {
             return null;
