@@ -197,6 +197,31 @@ public class VocabularyDaoTest {
     }
 
     /**
+     * Tests retrieving <code>Category</code> with the given name.
+     */
+    @Test
+    public void testGetCategory() {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            DAO_OBJECT.save(DUMMY_CATEGORY_1);
+            String categoryName = DUMMY_CATEGORY_1.getName();
+            Category retrievedCategory = DAO_OBJECT.getCategory(categoryName);
+            if ((retrievedCategory != null) && (categoryName.equals(retrievedCategory.getName()))) {
+                assertTrue(true);
+            } else {
+                fail("Did not retrieve the expected category.");
+            }
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception while getting category by name: " + e.getMessage());
+        } finally {
+            cleanUpCategory();
+        }
+    }
+
+    /**
      * Check if we got the expected terms, and accordingly pass or fail the test.
      *
      * @param retrievedTerms the <code>Term</code>s retrieved from the database.
@@ -257,16 +282,24 @@ public class VocabularyDaoTest {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of category: " + saveException.getMessage());
         } finally {
-            // Clean up by removing the dummy category.
-            try {
-                tx = HibernateUtil.getCurrentSession().beginTransaction();
-                DAO_OBJECT.remove(DUMMY_CATEGORY_1);
-                tx.commit();
-            } catch (DAOException deleteException) {
-                HibernateUtil.rollbackTransaction(tx);
-                LOG.error("Error cleaning up dummy category.", deleteException);
-                fail("DAO exception during deletion of category: " + deleteException.getMessage());
-            }
+            cleanUpCategory();
+        }
+    }
+
+    /**
+     * Clean up after test by removing the dummy category.
+     */
+    private void cleanUpCategory() {
+        Transaction tx = null;
+
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            DAO_OBJECT.remove(DUMMY_CATEGORY_1);
+            tx.commit();
+        } catch (DAOException deleteException) {
+            HibernateUtil.rollbackTransaction(tx);
+            LOG.error("Error cleaning up dummy category.", deleteException);
+            fail("DAO exception during deletion of category: " + deleteException.getMessage());
         }
     }
 

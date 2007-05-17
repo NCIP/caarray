@@ -59,6 +59,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
@@ -101,6 +102,34 @@ public class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements Vocabul
             matchingTerms.addAll(hibernateReturnedTerms);
         }
         return matchingTerms;
+    }
+
+
+    /**
+     * Returns the <code>Category</code> with the given name or null if none exists.
+     *
+     * @param name get <code>Category</code> matching this name
+     * @return the <code>Category</code> or null.
+     * @throws DAOException if there is a problem retrieving the <code>Category</code>.
+     */
+    public Category getCategory(String name) throws DAOException {
+        Session mySession = HibernateUtil.getSessionForQueryMethod();
+        List hibernateReturnedCategories = null;
+
+        try {
+            hibernateReturnedCategories = mySession.createCriteria(Category.class).add(
+                    Restrictions.eq("name", name)).list();
+        } catch (HibernateException he) {
+            getLog().error("Unable to retrieve categories", he);
+            throw new DAOException("Unable to retrieve categories", he);
+        } finally {
+            HibernateUtil.returnSession(mySession);
+        }
+        if ((hibernateReturnedCategories != null) && (hibernateReturnedCategories.size() >= 1)) {
+            return (Category) hibernateReturnedCategories.get(0);
+        } else {
+            return null;
+        }
     }
 
     @Override

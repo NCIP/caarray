@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.List;
@@ -103,4 +104,12 @@ public interface VocabularyDao extends CaArrayDao {
      */
     List<Term> getTerms(String categoryName) throws DAOException;
 
+    /**
+     * Returns the <code>Category</code> with the given name or null if none exists.
+     *
+     * @param name get <code>Category</code> matching this name
+     * @return the <code>Category</code> or null.
+     * @throws DAOException if there is a problem retrieving the <code>Category</code>.
+     */
+    Category getCategory(String name) throws DAOException;
 }
