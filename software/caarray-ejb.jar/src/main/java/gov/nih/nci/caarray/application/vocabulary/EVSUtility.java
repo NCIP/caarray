@@ -101,7 +101,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -348,7 +347,7 @@ public class EVSUtility {
             for (int i = 0; i < subConceptList.size(); i++) {
                 String subConcept = subConceptList.get(i);
                 evs = new EVSQueryImpl();
-                evs.searchDescLogicConcepts(vocabs.get(0).getName(), subConcept, MAX_NUM_RESULTS);
+                evs.getDescLogicConcept(vocabs.get(0).getName(), subConcept, Boolean.FALSE);
                 concepts.addAll((ArrayList<DescLogicConcept>) appService.evsSearch(evs));
             }
         } catch (ApplicationException e) {
@@ -469,13 +468,11 @@ public class EVSUtility {
     private void addConceptToTermList(Category category, DescLogicConcept concept, List<Term> terms) {
 
         Term aTerm = new Term();
-        aTerm.setId(createTermId());
         aTerm.setValue(concept.getName());
         aTerm.setDescription(getConceptPropertyValue(concept, EVSUtility.PROP_DEFINITION));
         aTerm.setCategory(category);
         aTerm.setSource(mgedSource);
 
-        // TODO need to add term to the category's Children
         terms.add(aTerm);
     }
 
@@ -487,13 +484,7 @@ public class EVSUtility {
         newSource.setUrl(APP_SERVICE_URL);
         return newSource;
     }
-    private long createTermId() {
-        return createId();
-    }
 
-    private long createId() {
-        return Math.abs(new Long(new Random().nextInt()));
-    }
 
     private Category fetchCategory(String categoryName) {
         if (categoryList.containsKey(categoryName)) {
@@ -512,7 +503,7 @@ public class EVSUtility {
         if (existingCategory == null) {
             existingCategory = new Category();
             existingCategory.setName(categoryName);
-            existingCategory.setId(createCategoryId());
+           // existingCategory.setId(createCategoryId());
         }
         return existingCategory;
     }
@@ -524,7 +515,5 @@ public class EVSUtility {
         }
 
     }
-    private long createCategoryId() {
-        return createId();
-    }
+
 }
