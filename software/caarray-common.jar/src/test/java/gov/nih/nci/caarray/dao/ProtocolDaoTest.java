@@ -93,6 +93,7 @@ import org.junit.Test;
 import org.hibernate.Transaction;
 
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.protocol.Parameter;
 import gov.nih.nci.caarray.domain.protocol.ParameterValue;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
@@ -298,6 +299,38 @@ public class ProtocolDaoTest {
             cleanUpProtocolApps();
         }
         assertTrue(true);
+    }
+
+    /**
+     * Tests searching for a <code>Protocol</code> by example.
+     */
+    @Test
+    public void testSearchProtocolByExample() {
+        Transaction tx = null;
+
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            DAO_OBJECT.save(DUMMY_PROTOCOL_1);
+            tx.commit();
+            Protocol exampleProtocol = new Protocol();
+            exampleProtocol.setTitle(DUMMY_PROTOCOL_1.getTitle());
+            Protocol retrievedProtocol = null;
+            List<AbstractCaArrayEntity> matchingProtocols = DAO_OBJECT.queryEntityByExample(exampleProtocol);
+            if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
+                retrievedProtocol = (Protocol) matchingProtocols.get(0);
+            }
+            if (DUMMY_PROTOCOL_1.equals(retrievedProtocol)) {
+                // The retrieved protocol is the same as the saved protocol. Test passed.
+                assertTrue(true);
+            } else {
+                fail("Retrieved protocol is different from saved protocol.");
+            }
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during search of protocol: " + e.getMessage());
+        } finally {
+            cleanUpProtocol();
+        }
     }
 
     /**
