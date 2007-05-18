@@ -97,6 +97,7 @@ import gov.nih.nci.system.applicationservice.ApplicationException;
 import gov.nih.nci.system.applicationservice.ApplicationService;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -191,6 +192,7 @@ public class EVSUtility {
             LOG.error(e.getMessage());
             throw createVocabException(e);
         }
+
         return terms;
     }
 
@@ -221,9 +223,9 @@ public class EVSUtility {
                 tempList.remove(0);
                 String newCatName = remainderList.get(0).getName();
                 Category newParent = fetchCategory(newCatName);
-                newParent.setParent(oldParent);
+                addParent(oldParent, newParent);
                 remainderList = (ArrayList<DescLogicConcept>)
-                getEVSConceptList(vocab, appService, remainderList.get(0));
+                        getEVSConceptList(vocab, appService, remainderList.get(0));
                 // when the tempList is empty, we're done
                 if (!tempList.isEmpty()) {
                     remainderList.addAll(tempList);
@@ -233,6 +235,16 @@ public class EVSUtility {
                 obtainConceptInstances(remainderList, terms, parentCategory);
             }
         }
+    }
+
+    /**
+     * @param oldParent
+     * @param newParent
+     */
+    private void addParent(Category oldParent, Category newParent) {
+        newParent.setParent(oldParent);
+        Collection children = (Collection) oldParent.getChildren();
+        children.add(newParent);
     }
 
     /**
@@ -257,18 +269,11 @@ public class EVSUtility {
     private void obtainConceptInstances(List<DescLogicConcept> subConcepts, List<Term> terms, Category parentCategory) {
         DescLogicConcept subConcept;
         List<DescLogicConcept> iteratorList = new ArrayList<DescLogicConcept>(subConcepts);
-        Category localParent = cloneCategory(parentCategory);
         for (Iterator<DescLogicConcept> conceptIter = iteratorList.iterator(); conceptIter.hasNext();) {
             subConcept = conceptIter.next();
             if (conceptIsInstance(subConcept)) {
-                addConceptToTermList(localParent, subConcept, terms);
+                addConceptToTermList(parentCategory, subConcept, terms);
                 subConcepts.remove(subConcept);
-            } else {
-                // we are going deeper. need to add to the category hierarchy
-                Category newCategory = fetchCategory(subConcept.getName());
-                newCategory.setParent(localParent);
-                localParent = newCategory;
-
             }
         }
     }
@@ -476,7 +481,6 @@ public class EVSUtility {
         terms.add(aTerm);
     }
 
-
     private Source getSourceForName(String source) {
         Source newSource = new Source();
         newSource.setId(new Long(0));
@@ -484,7 +488,6 @@ public class EVSUtility {
         newSource.setUrl(APP_SERVICE_URL);
         return newSource;
     }
-
 
     private Category fetchCategory(String categoryName) {
         if (categoryList.containsKey(categoryName)) {
@@ -503,11 +506,9 @@ public class EVSUtility {
         if (existingCategory == null) {
             existingCategory = new Category();
             existingCategory.setName(categoryName);
-           // existingCategory.setId(createCategoryId());
         }
         return existingCategory;
     }
-
 
     private void putCategoryInList(Category category) {
         if (!categoryList.containsKey(category.getName())) {
