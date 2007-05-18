@@ -167,12 +167,9 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
         List<AbstractCaArrayEntity> resultList = new ArrayList<AbstractCaArrayEntity>();
         List hibernateReturnedEntities = null;
-
-        // Query on all present attributes except id (which is a random generated one).
         if (entityToMatch == null) {
             return resultList;
         }
-        entityToMatch.setId(null);
 
         Session mySession = HibernateUtil.getSessionForQueryMethod();
         try {
