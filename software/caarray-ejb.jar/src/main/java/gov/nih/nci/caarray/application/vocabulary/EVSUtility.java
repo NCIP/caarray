@@ -267,12 +267,7 @@ public class EVSUtility {
             } else {
                 // we are going deeper. need to add to the category hierarchy
                 Category newCategory = fetchCategory(subConcept.getName());
-                if (newCategory == null) {
-                    newCategory = new Category();
-                    newCategory.setParent(localParent);
-                    newCategory.setName(subConcept.getName());
-                    newCategory.setId(createCategoryId());
-                }
+                newCategory.setParent(localParent);
                 localParent = newCategory;
 
             }
