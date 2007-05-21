@@ -118,6 +118,11 @@ public class VocabularyDaoTestStub implements VocabularyDao {
         return new ArrayList<AbstractCaArrayEntity>();
     }
 
+    public List<AbstractCaArrayEntity> queryEntityAndAssociationsByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
+        // TODO Auto-generated method stub
+        return new ArrayList<AbstractCaArrayEntity>();
+    }
+
     /**
      * Deletes the entity from persistent storage.
      *

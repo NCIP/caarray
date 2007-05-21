@@ -146,7 +146,7 @@ public class ProtocolServiceBean implements ProtocolService {
     public List<Protocol> find(Protocol protocolExample) {
         List<Protocol> protocols = null;
         try {
-            List<AbstractCaArrayEntity> results = getProtocolDao().queryEntityByExample(protocolExample);
+            List<AbstractCaArrayEntity> results = getProtocolDao().queryEntityAndAssociationsByExample(protocolExample);
             protocols = new ArrayList<Protocol>(results.size());
             for (AbstractCaArrayEntity entity : results) {
                 protocols.add((Protocol) entity);
