@@ -93,7 +93,7 @@ public class VocabularyServiceTest {
     */
     @Test
     public void getTermsProtocolType() {
-        VocabularyService vocab = new MockVocabularyServiceBean();
+        VocabularyService vocab = new VocabularyServiceBean();
         List<Term> terms = new ArrayList<Term>();
         try {
              terms =  vocab.getTerms("ProtocolType");
@@ -101,13 +101,6 @@ public class VocabularyServiceTest {
              assertTrue(terms.size() == NUM_PROT_TYPES);
         } catch (Exception e) {
              System.out.println(e.getMessage());
-        } finally {
-            try {
-                VocabularyDao vocabDao = new VocabularyDaoImpl();
-                vocabDao.removeTerms(terms);
-            } catch (DAOException de) {
-                 System.out.println(de.getCause());
-            }
         }
     }
 
