@@ -233,6 +233,9 @@ public class VocabularyServiceTest {
         public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
             return new ArrayList<AbstractCaArrayEntity>();
         }
+        public List<AbstractCaArrayEntity> queryEntityAndAssociationsByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
+            return new ArrayList<AbstractCaArrayEntity>();
+        }
         public AbstractCaArrayEntity queryEntityById(AbstractCaArrayEntity entityToMatch) throws DAOException {
             return null;
         }
