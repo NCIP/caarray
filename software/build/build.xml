@@ -660,5 +660,14 @@
             <http url="http://localhost:${jboss.server.port}/caarray"/>
         </waitfor>
     </target>
+    
+    <target name="deploy:stop-jboss">
+	    <java classname="org.jboss.Shutdown" fork="true" spawn="true" output="stop_out.txt">
+    		<arg line="-S" />
+			<classpath>
+				<pathelement location="${jboss.home}/bin/shutdown.jar" />
+			</classpath>
+	    </java>
+	</target>
 
 </project>
