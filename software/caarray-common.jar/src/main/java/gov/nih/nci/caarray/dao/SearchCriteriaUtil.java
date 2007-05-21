@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common.jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-common.jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-common.jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-common.jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common.jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -82,73 +82,114 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import java.util.Collection;
-import java.util.List;
-
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.util.HibernateUtil;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Locale;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Example;
+import org.hibernate.mapping.PersistentClass;
+import org.hibernate.mapping.Property;
 
 /**
- * Base interface for all caArray domain DAOs.
- * It provides methods to save, update, remove and query entities by example.
+ * Provides helper methods for search DAOs.
  *
- * @author ETavela
+ * @author Rashmi Srinivasa
  */
-public interface CaArrayDao {
+public final class SearchCriteriaUtil {
+    private static final Log LOG = LogFactory.getLog(SearchCriteriaUtil.class);
+    private static final String UNABLE_TO_GET_ASSOCIATION_VAL = "Unable to get association value";
+
+    private SearchCriteriaUtil() {
+    }
 
     /**
-     * Saves the entity to persistent storage, updating or inserting
-     * as necessary.
-     *
-     * @param caArrayEntity the entity to save
-     * @throws DAOException if the entity could not be saved.
+     * @param entityToMatch
+     * @param criteria
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
      */
-    void save(AbstractCaArrayEntity caArrayEntity) throws DAOException;
+    static void addCriteriaForAssociations(AbstractCaArrayEntity entityToMatch, Criteria criteria)
+      throws DAOException {
+        try {
+            PersistentClass pclass = HibernateUtil.getConfiguration().getClassMapping(
+                entityToMatch.getClass().getName());
+            Iterator properties = pclass.getPropertyIterator();
+            while (properties.hasNext()) {
+                Property prop = (Property) properties.next();
+                if (prop.getType().isAssociationType()) {
+                    addCriterionForAssociation(entityToMatch, criteria, prop);
+                }
+            }
+        } catch (IllegalAccessException iae) {
+            LOG.error(UNABLE_TO_GET_ASSOCIATION_VAL, iae);
+            throw new DAOException(UNABLE_TO_GET_ASSOCIATION_VAL, iae);
+        } catch (InvocationTargetException ite) {
+            LOG.error(UNABLE_TO_GET_ASSOCIATION_VAL, ite);
+            throw new DAOException(UNABLE_TO_GET_ASSOCIATION_VAL, ite);
+        }
+    }
 
     /**
-     * Saves the collection of entities to persistent storage, updating or inserting
-     * as necessary.
+     * Add one search criterion based on the association to be matched.
      *
-     * @param caArrayEntities the entity collection to save
-     * @throws DAOException if the entity collection could not be saved.
+     * @param entityToMatch the root entity being searched on.
+     * @param criteria the root Criteria to add to.
+     * @param prop the association to be matched.
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
      */
-    void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) throws DAOException;
+    private static void addCriterionForAssociation(AbstractCaArrayEntity entityToMatch, Criteria criteria,
+      Property prop) throws IllegalAccessException, InvocationTargetException {
+            Class objClass = entityToMatch.getClass();
+            String fieldName = prop.getName();
+            Method getterMethod = null;
+            String getterName = "get" + capitalizeFirstLetter(fieldName);
+            while (objClass != null) {
+                try {
+                    LOG.debug("Checking class: " + objClass.getName() + " for method: " + getterName);
+                    getterMethod = objClass.getDeclaredMethod(getterName, (Class[]) null);
+                    break;
+                } catch (NoSuchMethodException nsme) {
+                    LOG.debug("Will check if it is a method in a superclass.");
+                }
+                objClass = objClass.getSuperclass();
+            }
+            if (getterMethod == null) {
+                LOG.error("No such method: " + getterName);
+            } else {
+                Object valueOfAssociation = getterMethod.invoke(entityToMatch, (Object[]) null);
+                addCriterion(criteria, fieldName, valueOfAssociation);
+            }
+    }
 
     /**
-     * Deletes the entity from persistent storage.
+     * Add one search criterion based on the field name and the value to be matched.
      *
-     * @param caArrayEntity the entity to be deleted.
-     * @throws DAOException if unable to delete the entity.
+     * @param criteria the root Criteria to add to.
+     * @param fieldName the name of the field denoting the association.
+     * @param valueOfAssociation the value of the association that is to be matched.
      */
-    void remove(AbstractCaArrayEntity caArrayEntity) throws DAOException;
+    private static void addCriterion(Criteria criteria, String fieldName, Object valueOfAssociation) {
+        if (valueOfAssociation == null) {
+            return;
+        }
+        if ((valueOfAssociation instanceof Collection && ((Collection) valueOfAssociation).size() > 0)
+                || !(valueOfAssociation instanceof Collection)) {
+            Criteria childCriteria = criteria.createCriteria(fieldName);
+            childCriteria.add(Example.create(valueOfAssociation));
+        }
+    }
 
-    /**
-     * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity,
-     * or null if none exists.
-     *
-     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
-     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
-     * @throws DAOException if the list of matching entities could not be retrieved.
-     */
-    List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) throws DAOException;
-
-    /**
-     * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity
-     * and its associations, or null if none exists.
-     *
-     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
-     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
-     * @throws DAOException if the list of matching entities could not be retrieved.
-     */
-    List<AbstractCaArrayEntity> queryEntityAndAssociationsByExample(AbstractCaArrayEntity entityToMatch)
-      throws DAOException;
-
-    /**
-     * Returns the <code>AbstractCaArrayEntity</code> matching the given id,
-     * or null if none exists.
-     *
-     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this id.
-     * @return the retrieved <code>AbstractCaArrayEntity</code> or null.
-     * @throws DAOException if matching entities could not be retrieved.
-     */
-    AbstractCaArrayEntity queryEntityById(AbstractCaArrayEntity entityToMatch) throws DAOException;
+    private static String capitalizeFirstLetter(String inputString) {
+        String firstLetter = inputString.substring(0, 1);
+        return (firstLetter.toUpperCase(Locale.getDefault()) + inputString.substring(1));
+    }
 }

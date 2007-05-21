@@ -94,11 +94,13 @@ import org.hibernate.Transaction;
  * @author Rashmi Srinivasa
  */
 public final class HibernateUtil {
+    private static final Configuration HIBERNATE_CONFIG;
     private static final SessionFactory SESSION_FACTORY;
 
     static {
         try {
-            SESSION_FACTORY = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+            HIBERNATE_CONFIG = new Configuration();
+            SESSION_FACTORY = HIBERNATE_CONFIG.configure("hibernate.cfg.xml").buildSessionFactory();
         } catch (HibernateException e) {
             // TODO Log this error
             throw new ExceptionInInitializerError(e);
@@ -110,6 +112,15 @@ public final class HibernateUtil {
      * All callable methods are static methods.
      */
     private HibernateUtil() {
+    }
+
+    /**
+     * Returns the Hibernate configuration.
+     *
+     * @return a Hibernate configuration.
+     */
+    public static Configuration getConfiguration() {
+        return HIBERNATE_CONFIG;
     }
 
     /**

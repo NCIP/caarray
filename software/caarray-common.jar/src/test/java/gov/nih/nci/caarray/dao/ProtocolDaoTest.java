@@ -116,9 +116,11 @@ public class ProtocolDaoTest {
     private static final ParameterValue DUMMY_PARAMETER_VALUE_2 = new ParameterValue();
     private static final ParameterValue DUMMY_PARAMETER_VALUE_3 = new ParameterValue();
     private static final Category DUMMY_CATEGORY = new Category();
-    private static final Term DUMMY_TERM = new Term();
+    private static final Term DUMMY_TERM_1 = new Term();
+    private static final Term DUMMY_TERM_2 = new Term();
     private static final Protocol DUMMY_PROTOCOL_1 = new Protocol();
     private static final Protocol DUMMY_PROTOCOL_2 = new Protocol();
+    private static final Protocol DUMMY_PROTOCOL_3 = new Protocol();
     private static final ProtocolApplication DUMMY_PROTOCOL_APPLICATION_1 = new ProtocolApplication();
     private static final ProtocolApplication DUMMY_PROTOCOL_APPLICATION_2 = new ProtocolApplication();
 
@@ -167,26 +169,32 @@ public class ProtocolDaoTest {
     private static void initializeProtocols() {
         DUMMY_CATEGORY.setId(DUMMY_START_ID);
         DUMMY_CATEGORY.setName("DummyTestCategory");
-        DUMMY_TERM.setId(DUMMY_START_ID);
-        DUMMY_TERM.setDescription("DummyTestTerm");
-        DUMMY_TERM.setCategory(DUMMY_CATEGORY);
+        DUMMY_TERM_1.setId(DUMMY_START_ID);
+        DUMMY_TERM_1.setValue("DummyTestTerm1");
+        DUMMY_TERM_1.setCategory(DUMMY_CATEGORY);
+        DUMMY_TERM_2.setId(DUMMY_START_ID + 1);
+        DUMMY_TERM_2.setValue("DummyTestTerm2");
+        DUMMY_TERM_2.setCategory(DUMMY_CATEGORY);
 
-        DUMMY_PROTOCOL_1.setId(DUMMY_START_ID);
+        long id = DUMMY_START_ID;
+        DUMMY_PROTOCOL_1.setId(id);
         DUMMY_PROTOCOL_1.setName("DummyTestProtocol1");
-        DUMMY_PROTOCOL_1.setText("DummyTextForProtocol1");
+        DUMMY_PROTOCOL_1.setText("DummyTextForProtocol");
         DUMMY_PROTOCOL_1.setTitle("DummyTitleForProtocol1");
         DUMMY_PROTOCOL_1.setUrl("DummyUrlForProtocol1");
         DUMMY_PROTOCOL_1.setAccession("DummyAccessionForProtocol1");
-        DUMMY_PROTOCOL_1.setType(DUMMY_TERM);
+        DUMMY_PROTOCOL_1.setType(DUMMY_TERM_1);
         DUMMY_PROTOCOL_1.getParameters().add(DUMMY_PARAMETER_1);
         DUMMY_PROTOCOL_1.getParameters().add(DUMMY_PARAMETER_2);
-        DUMMY_PROTOCOL_2.setId(DUMMY_START_ID + 1);
+        DUMMY_PROTOCOL_2.setId(++id);
         DUMMY_PROTOCOL_2.setName("DummyTestProtocol2");
-        DUMMY_PROTOCOL_2.setText("DummyTextForProtocol2");
+        DUMMY_PROTOCOL_2.setText("DummyTextForProtocol");
         DUMMY_PROTOCOL_2.setTitle("DummyTitleForProtocol2");
-        DUMMY_PROTOCOL_2.setUrl("DummyUrlForProtocol2");
-        DUMMY_PROTOCOL_2.setAccession("DummyAccessionForProtocol2");
-        DUMMY_PROTOCOL_2.setType(DUMMY_TERM);
+        DUMMY_PROTOCOL_2.setType(DUMMY_TERM_1);
+        DUMMY_PROTOCOL_3.setId(++id);
+        DUMMY_PROTOCOL_3.setName("DummyTestProtocol3");
+        DUMMY_PROTOCOL_3.setText("DummyTextForProtocol");
+        DUMMY_PROTOCOL_3.setType(DUMMY_TERM_2);
     }
 
     /**
@@ -333,6 +341,56 @@ public class ProtocolDaoTest {
         }
     }
 
+
+    /**
+     * Tests searching for a <code>Protocol</code> by example, including associations
+     * in the search.
+     * Both dummy protocols 2 and 3 have the same text, but only protocol 3 has the matching type.
+     */
+    @Test
+    public void testDeepSearchProtocolByExample() {
+        Transaction tx = null;
+
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            DAO_OBJECT.save(DUMMY_PROTOCOL_2);
+            DAO_OBJECT.save(DUMMY_PROTOCOL_3);
+            tx.commit();
+            Protocol exampleProtocol = setupDeepSearchExample();
+            Protocol retrievedProtocol = null;
+            List<AbstractCaArrayEntity> matchingProtocols =
+                DAO_OBJECT.queryEntityAndAssociationsByExample(exampleProtocol);
+            if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
+                retrievedProtocol = (Protocol) matchingProtocols.get(0);
+            }
+            if (DUMMY_PROTOCOL_3.equals(retrievedProtocol)) {
+                // The retrieved protocol is the same as the saved protocol. Test passed.
+                assertTrue(true);
+            } else {
+                fail("Retrieved protocol is different from saved protocol.");
+            }
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during search of protocol: " + e.getMessage());
+        } finally {
+            cleanUpDeepSearch();
+        }
+    }
+
+    /**
+     * Set up example objects for deep search of protocol.
+     *
+     * @return the example Protocol object with search attributes and associations filled in.
+     */
+    private Protocol setupDeepSearchExample() {
+        Protocol exampleProtocol = new Protocol();
+        exampleProtocol.setText(DUMMY_PROTOCOL_2.getText());
+        Term exampleTerm = new Term();
+        exampleTerm.setValue(DUMMY_TERM_2.getValue());
+        exampleProtocol.setType(exampleTerm);
+        return exampleProtocol;
+    }
+
     /**
      * Clean up after a test by removing the dummy protocol.
      */
@@ -343,13 +401,33 @@ public class ProtocolDaoTest {
             DAO_OBJECT.remove(DUMMY_PARAMETER_1);
             DAO_OBJECT.remove(DUMMY_PARAMETER_2);
             DAO_OBJECT.remove(DUMMY_PROTOCOL_1);
-            DAO_OBJECT.remove(DUMMY_TERM);
+            DAO_OBJECT.remove(DUMMY_TERM_1);
             DAO_OBJECT.remove(DUMMY_CATEGORY);
             tx.commit();
         } catch (DAOException deleteException) {
             HibernateUtil.rollbackTransaction(tx);
             LOG.error("Error cleaning up dummy protocol.", deleteException);
             fail("DAO exception during deletion of protocol: " + deleteException.getMessage());
+        }
+    }
+
+    /**
+     * Clean up after deep search test by removing the dummy protocols.
+     */
+    private void cleanUpDeepSearch() {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            DAO_OBJECT.remove(DUMMY_PROTOCOL_2);
+            DAO_OBJECT.remove(DUMMY_PROTOCOL_3);
+            DAO_OBJECT.remove(DUMMY_TERM_1);
+            DAO_OBJECT.remove(DUMMY_TERM_2);
+            DAO_OBJECT.remove(DUMMY_CATEGORY);
+            tx.commit();
+        } catch (DAOException deleteException) {
+            HibernateUtil.rollbackTransaction(tx);
+            LOG.error("Error cleaning up dummy protocols.", deleteException);
+            fail("DAO exception during deletion of protocols: " + deleteException.getMessage());
         }
     }
 
@@ -384,7 +462,7 @@ public class ProtocolDaoTest {
             DAO_OBJECT.remove(DUMMY_PARAMETER_2);
             DAO_OBJECT.remove(DUMMY_PROTOCOL_1);
             DAO_OBJECT.remove(DUMMY_PROTOCOL_2);
-            DAO_OBJECT.remove(DUMMY_TERM);
+            DAO_OBJECT.remove(DUMMY_TERM_1);
             DAO_OBJECT.remove(DUMMY_CATEGORY);
             tx.commit();
         } catch (DAOException deleteException) {

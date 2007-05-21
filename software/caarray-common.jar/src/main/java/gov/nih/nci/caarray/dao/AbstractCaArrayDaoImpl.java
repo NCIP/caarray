@@ -105,10 +105,9 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
  */
 public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
 
-    /**
-     *
-     */
     private static final String UNABLE_TO_RETRIEVE_ENTITY_MESSAGE = "Unable to retrieve entity";
+
+    abstract Log getLog();
 
     /**
      * Returns the current Hibernate Session.
@@ -156,41 +155,6 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     }
 
     /**
-     * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity,
-     * or null if none exists.
-     *
-     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
-     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
-     * @throws DAOException if the list of matching entities could not be retrieved.
-     */
-    @SuppressWarnings("unchecked")
-    public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
-        List<AbstractCaArrayEntity> resultList = new ArrayList<AbstractCaArrayEntity>();
-        List hibernateReturnedEntities = null;
-        if (entityToMatch == null) {
-            return resultList;
-        }
-
-        Session mySession = HibernateUtil.getSessionForQueryMethod();
-        try {
-            // Query database for list of Protocols with this id.
-            Criteria criteria = mySession.createCriteria(entityToMatch.getClass());
-            criteria.add(Example.create(entityToMatch));
-            hibernateReturnedEntities = criteria.list();
-        } catch (HibernateException he) {
-            getLog().error(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
-            throw new DAOException(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
-        } finally {
-            HibernateUtil.returnSession(mySession);
-        }
-
-        if (hibernateReturnedEntities != null) {
-            resultList.addAll(hibernateReturnedEntities);
-        }
-        return resultList;
-    }
-
-    /**
      * Returns the <code>AbstractCaArrayEntity</code> matching the given id,
      * or null if none exists.
      *
@@ -234,6 +198,78 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         }
     }
 
-    abstract Log getLog();
+    /**
+     * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity,
+     * or null if none exists.
+     *
+     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
+     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
+     * @throws DAOException if the list of matching entities could not be retrieved.
+     */
+    @SuppressWarnings("unchecked")
+    public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
+        List<AbstractCaArrayEntity> resultList = new ArrayList<AbstractCaArrayEntity>();
+        List hibernateReturnedEntities = null;
+        if (entityToMatch == null) {
+            return resultList;
+        }
+
+        Session mySession = HibernateUtil.getSessionForQueryMethod();
+        try {
+            // Query database for list of entities matching the given entity's attributes.
+            Criteria criteria = mySession.createCriteria(entityToMatch.getClass());
+            criteria.add(Example.create(entityToMatch));
+            hibernateReturnedEntities = criteria.list();
+        } catch (HibernateException he) {
+            getLog().error(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
+            throw new DAOException(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
+        } finally {
+            HibernateUtil.returnSession(mySession);
+        }
+
+        if (hibernateReturnedEntities != null) {
+            resultList.addAll(hibernateReturnedEntities);
+        }
+        return resultList;
+    }
+
+
+    /**
+     * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity
+     * and its associations, or null if none exists.
+     *
+     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
+     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
+     * @throws DAOException if the list of matching entities could not be retrieved.
+     */
+    @SuppressWarnings("unchecked")
+    public List<AbstractCaArrayEntity> queryEntityAndAssociationsByExample(AbstractCaArrayEntity entityToMatch)
+      throws DAOException {
+        List<AbstractCaArrayEntity> resultList = new ArrayList<AbstractCaArrayEntity>();
+        List hibernateReturnedEntities = null;
+        if (entityToMatch == null) {
+            return resultList;
+        }
+
+        Session mySession = HibernateUtil.getSessionForQueryMethod();
+        try {
+            // Create search-criteria with the given entity's attributes.
+            Criteria criteria = mySession.createCriteria(entityToMatch.getClass());
+            criteria.add(Example.create(entityToMatch));
+            // Add search-criteria with the given entity's associations.
+            SearchCriteriaUtil.addCriteriaForAssociations(entityToMatch, criteria);
+            hibernateReturnedEntities = criteria.list();
+        } catch (HibernateException he) {
+            getLog().error(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
+            throw new DAOException(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
+        } finally {
+            HibernateUtil.returnSession(mySession);
+        }
+
+        if (hibernateReturnedEntities != null) {
+            resultList.addAll(hibernateReturnedEntities);
+        }
+        return resultList;
+    }
 
 }
