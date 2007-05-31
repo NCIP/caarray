@@ -150,9 +150,12 @@
       check,
       test:unit" />
 
-    <target name="nightly" depends="continuous-integration,
-      deploy:deploy-and-wait,
-      test:functional" />
+    <target name="nightly-build" depends="continuous-integration,
+        deploy:start-jboss,
+        deploy:deploy-and-wait,
+        test:functional,
+        deploy:stop-jboss,
+        test:check-functional-test-results" />
 
     <!-- ******************************************************************* -->
     <!-- ** CLEAN TARGETS                                                 ** -->
@@ -525,6 +528,10 @@
         <fail if="junit.failure" message="There were Selenium test failures." />
     </target>
 
+    <target name="test:check-functional-test-results">
+        <fail if="junit.failure" message="There were Selenium test failures." />
+    </target>
+
     <target name="test:selenium:start-server">
         <java jar="${selenium-server.jar}" fork="true" spawn="true">
             <arg line="-timeout 30"/>
@@ -657,17 +664,30 @@
     <target name="deploy:deploy-and-wait" depends="deploy">
         <sleep seconds="5" />
         <waitfor maxwait="30" maxwaitunit="second" checkevery="5" checkeveryunit="second">
-            <http url="http://localhost:${jboss.server.port}/caarray"/>
+            <http url="http://${jboss.server.hostname}:${jboss.server.port}/caarray"/>
         </waitfor>
     </target>
-    
+
     <target name="deploy:stop-jboss">
-	    <java classname="org.jboss.Shutdown" fork="true" spawn="true" output="stop_out.txt">
-    		<arg line="-S" />
-			<classpath>
-				<pathelement location="${jboss.home}/bin/shutdown.jar" />
-			</classpath>
-	    </java>
-	</target>
+        <java classname="org.jboss.Shutdown" fork="true" spawn="false">
+            <arg line="-s ${jboss.server.hostname} -S" />
+            <classpath>
+                <pathelement location="${jboss.home}/bin/shutdown.jar" />
+            </classpath>
+        </java>
+    </target>
+
+    <target name="deploy:start-jboss" depends="deploy:check-if-jboss-is-running" unless="jboss.running">
+        <exec executable="cmd" dir="${jboss.home}/bin" spawn="true">
+            <env key="NOPAUSE" value="true" />
+            <arg line="/c run.bat"/>
+        </exec>
+    </target>
+
+    <target name="deploy:check-if-jboss-is-running">
+        <condition property="jboss.running">
+            <socket port="${jboss.server.port}" server="${jboss.server.hostname}" />
+        </condition>
+    </target>
 
 </project>
