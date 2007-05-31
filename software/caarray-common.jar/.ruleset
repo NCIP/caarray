@@ -28,7 +28,7 @@
     </rule>
     <rule ref="rulesets/codesize.xml/CyclomaticComplexity">
         <properties>
-            <property name="reportLevel" value="6" />
+            <property name="reportLevel" value="7" />
         </properties>
     </rule>
 
@@ -36,6 +36,7 @@
 
     <rule ref="rulesets/design.xml">
         <exclude name="AbstractClassWithoutAbstractMethod" />
+        <exclude name="AvoidSynchronizedAtMethodLevel" />
         <exclude name="CloseResource" />
         <exclude name="ConfusingTernary" />
         <exclude name="MissingStaticMethodInNonInstantiatableClass" />
