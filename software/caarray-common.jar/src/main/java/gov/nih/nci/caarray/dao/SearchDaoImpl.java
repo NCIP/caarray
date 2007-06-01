@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common.jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-common.jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-common.jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-common.jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common.jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -82,36 +82,107 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.query.CQL2HQL;
+import gov.nih.nci.caarray.query.CQLQuery;
+import gov.nih.nci.caarray.query.HibernateQueryWrapper;
+import gov.nih.nci.caarray.query.QueryException;
+import gov.nih.nci.caarray.util.HibernateUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 /**
- * Factory interface used to retrieve DAO instances.
+ * DAO to search for entities using various types of criteria.
+ * Supports searching by example, CQL, HQL (Hibernate Query Language) string and
+ * Hibernate Detached Criteria.
  *
- * @author ETavela
+ * @author Rashmi Srinivasa
  */
-public interface CaArrayDaoFactory {
+public class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
+    private static final Log LOG = LogFactory.getLog(SearchDaoImpl.class);
 
     /**
-     * Factory instance for clients.
-     */
-    CaArrayDaoFactory INSTANCE = new CaArrayDaoFactoryImpl();
-
-    /**
-     * Returns a <code>ProtocolDao</code>.
+     * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity
+     * and its associations, or null if none exists.
      *
-     * @return a <code>ProtocolDao</code>.
+     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
+     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
+     * @throws DAOException if the list of matching entities could not be retrieved.
      */
-    ProtocolDao getProtocolDao();
+    public List<AbstractCaArrayEntity> query(AbstractCaArrayEntity entityToMatch) throws DAOException {
+        return queryEntityAndAssociationsByExample(entityToMatch);
+    }
 
     /**
-     * Returns a <code>VocabularyDao</code>.
+     * Returns the list of <code>AbstractCaArrayEntity</code> retrieved based on the
+     * given HQL (Hibernate Query Language) string.
      *
-     * @return a <code>VocabularyDao</code>.
+     * @param hqlString Hibernate Query Language string to use as search criteria.
+     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
+     * @throws DAOException if the list of matching entities could not be retrieved.
      */
-    VocabularyDao getVocabularyDao();
+    public List<AbstractCaArrayEntity> query(String hqlString) throws DAOException {
+        List params = new ArrayList();
+
+        return (runHqlQuery(hqlString, params));
+    }
 
     /**
-     * Returns a <code>SearchDao</code>.
+     * Returns the list of <code>AbstractCaArrayEntity</code> retrieved based on the
+     * given CQL query.
      *
-     * @return a <code>SearchDao</code>.
+     * @param cqlQuery CQL query to use as search criteria.
+     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
+     * @throws DAOException if the list of matching entities could not be retrieved.
      */
-    SearchDao getSearchDao();
+    public List<AbstractCaArrayEntity> query(CQLQuery cqlQuery) throws DAOException {
+        HibernateQueryWrapper hqlWrapper = null;
+        try {
+            hqlWrapper = CQL2HQL.translate(cqlQuery, true);
+        } catch (QueryException e) {
+            getLog().error("Unable to parse CQL query", e);
+            throw new DAOException("Unable to parse CQL query", e);
+        }
+        String hqlString = hqlWrapper.getHql();
+        List params = hqlWrapper.getParameters();
+
+        return (runHqlQuery(hqlString, params));
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<AbstractCaArrayEntity> runHqlQuery(String hqlString, List params) throws DAOException {
+        Session mySession = HibernateUtil.getSessionForQueryMethod();
+        List<AbstractCaArrayEntity> matchingEntities = new ArrayList<AbstractCaArrayEntity>();
+        List hibernateReturnedEntities = null;
+
+        try {
+            Query hqlQuery = mySession.createQuery(hqlString);
+            for (int i = 0; i < params.size(); i++) {
+                hqlQuery.setParameter(i, params.get(i));
+            }
+            hibernateReturnedEntities = hqlQuery.list();
+        } catch (HibernateException he) {
+            getLog().error("Unable to retrieve entities", he);
+            throw new DAOException("Unable to retrieve entities", he);
+        } finally {
+            HibernateUtil.returnSession(mySession);
+        }
+
+        if (hibernateReturnedEntities != null) {
+            matchingEntities.addAll(hibernateReturnedEntities);
+        }
+        return matchingEntities;
+    }
+
+    @Override
+    Log getLog() {
+        return LOG;
+    }
 }

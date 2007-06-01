@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-app
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-app Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-app Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-app Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-app Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,38 +80,163 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.dao;
+package gov.nih.nci.caarray.query;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
- * Factory interface used to retrieve DAO instances.
+ * CQL group.
+ * The substance of this class is taken from the caCORE SDK.
  *
- * @author ETavela
+ * @author Rashmi Srinivasa
  */
-public interface CaArrayDaoFactory {
+public class CQLGroup implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private Collection<CQLAssociation> associationCollection;
+    private Collection<CQLAttribute> attributeCollection;
+    private Collection<CQLGroup> groupCollection;
+    private CQLLogicalOperator logicalOperator;
 
     /**
-     * Factory instance for clients.
+     * Creates an empty CQLGroup object.
      */
-    CaArrayDaoFactory INSTANCE = new CaArrayDaoFactoryImpl();
+    public CQLGroup() {
+        super();
+    }
 
     /**
-     * Returns a <code>ProtocolDao</code>.
+     * Creates a CQLGroup object with the given associations, attributes, groups and logical operator.
      *
-     * @return a <code>ProtocolDao</code>.
+     * @param associationCollection the name of the attribute.
+     * @param attributeCollection the condition predicate of the attribute.
+     * @param groupCollection the value of the attribute.
+     * @param logicalOperator the value of the attribute.
      */
-    ProtocolDao getProtocolDao();
+    public CQLGroup(Collection<CQLAssociation> associationCollection, Collection<CQLAttribute> attributeCollection,
+            Collection<CQLGroup> groupCollection, CQLLogicalOperator logicalOperator) {
+        super();
+        this.associationCollection = associationCollection;
+        this.attributeCollection = attributeCollection;
+        this.groupCollection = groupCollection;
+        this.logicalOperator = logicalOperator;
+    }
 
     /**
-     * Returns a <code>VocabularyDao</code>.
+     * Gets the associations in this CQL group.
      *
-     * @return a <code>VocabularyDao</code>.
+     * @return associations in this CQL group.
      */
-    VocabularyDao getVocabularyDao();
+    public Collection getAssociationCollection() {
+        return associationCollection;
+    }
 
     /**
-     * Returns a <code>SearchDao</code>.
+     * Sets the associations in this CQL group.
      *
-     * @return a <code>SearchDao</code>.
+     * @param associationCollection the associations in this CQL group.
      */
-    SearchDao getSearchDao();
+    public void setAssociationCollection(Collection<CQLAssociation> associationCollection) {
+        this.associationCollection = associationCollection;
+    }
+
+    /**
+     * Gets the attributes in this CQL group.
+     *
+     * @return attributes in this CQL group.
+     */
+    public Collection getAttributeCollection() {
+        return attributeCollection;
+    }
+
+    /**
+     * Sets the attributes in this CQL group.
+     *
+     * @param attributeCollection the attributes in this CQL group.
+     */
+    public void setAttributeCollection(Collection<CQLAttribute> attributeCollection) {
+        this.attributeCollection = attributeCollection;
+    }
+
+    /**
+     * Gets the groups in this CQL group.
+     *
+     * @return groups in this CQL group.
+     */
+    public Collection getGroupCollection() {
+        return groupCollection;
+    }
+
+    /**
+     * Sets the groups in this CQL group.
+     *
+     * @param groupCollection the groups in this CQL group.
+     */
+    public void setGroupCollection(Collection<CQLGroup> groupCollection) {
+        this.groupCollection = groupCollection;
+    }
+
+    /**
+     * Gets the logical operator in this CQL group.
+     *
+     * @return logical operator in this CQL group.
+     */
+    public CQLLogicalOperator getLogicalOperator() {
+        return logicalOperator;
+    }
+
+    /**
+     * Sets the logical operator in this CQL group.
+     *
+     * @param logicalOperator the logical operator in this CQL group.
+     */
+    public void setLogicalOperator(CQLLogicalOperator logicalOperator) {
+        this.logicalOperator = logicalOperator;
+    }
+
+    /**
+     * Add an association to this CQL group.
+     *
+     * @param association the association to add.
+     */
+    public void addAssociation(CQLAssociation association) {
+        if (association == null) {
+            return;
+        }
+        if (this.associationCollection == null) {
+            associationCollection = new ArrayList<CQLAssociation>();
+        }
+        associationCollection.add(association);
+    }
+
+    /**
+     * Add a group to this CQL group.
+     *
+     * @param group the group to add.
+     */
+    public void addGroup(CQLGroup group) {
+        if (group == null) {
+            return;
+        }
+        if (this.groupCollection == null) {
+            groupCollection = new ArrayList<CQLGroup>();
+        }
+        groupCollection.add(group);
+    }
+
+    /**
+     * Add an attribute to this CQL group.
+     *
+     * @param attribute the attribute to add.
+     */
+    public void addAttribute(CQLAttribute attribute) {
+        if (attribute == null) {
+            return;
+        }
+        if (this.attributeCollection == null) {
+            attributeCollection = new ArrayList<CQLAttribute>();
+        }
+        attributeCollection.add(attribute);
+    }
 }

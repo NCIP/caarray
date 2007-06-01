@@ -107,4 +107,12 @@ public class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
         return new VocabularyDaoImpl();
     }
 
+    /**
+     * Returns a <code>SearchDao</code>.
+     *
+     * @return a <code>SearchDao</code>.
+     */
+    public SearchDao getSearchDao() {
+        return new SearchDaoImpl();
+    }
 }

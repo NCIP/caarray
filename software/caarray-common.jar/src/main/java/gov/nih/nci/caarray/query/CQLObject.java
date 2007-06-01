@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-app
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-app Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-app Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-app Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-app Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,38 +80,113 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.dao;
+package gov.nih.nci.caarray.query;
 
 /**
- * Factory interface used to retrieve DAO instances.
+ * Associated CQL object used as search criteria.
+ * The substance of this class is taken from the caCORE SDK.
  *
- * @author ETavela
+ * @author Rashmi Srinivasa
  */
-public interface CaArrayDaoFactory {
+public class CQLObject implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private CQLAttribute attribute;
+    private CQLAssociation association;
+    private CQLGroup group;
+    private java.lang.String name;
 
     /**
-     * Factory instance for clients.
+     * Creates an empty CQLObject.
      */
-    CaArrayDaoFactory INSTANCE = new CaArrayDaoFactoryImpl();
+    public CQLObject() {
+        super();
+    }
 
     /**
-     * Returns a <code>ProtocolDao</code>.
+     * Creates a CQLObject with the given association, attribute, group and name.
      *
-     * @return a <code>ProtocolDao</code>.
+     * @param association the association in this CQL object.
+     * @param attribute the attribute in this CQL object.
+     * @param group the group in this CQL object.
+     * @param name the name of this CQL object.
      */
-    ProtocolDao getProtocolDao();
+    public CQLObject(CQLAssociation association, CQLAttribute attribute, CQLGroup group, java.lang.String name) {
+        this.attribute = attribute;
+        this.association = association;
+        this.group = group;
+        this.name = name;
+    }
 
     /**
-     * Returns a <code>VocabularyDao</code>.
+     * Gets the attribute for this CQLObject.
      *
-     * @return a <code>VocabularyDao</code>.
+     * @return attribute for this CQL object.
      */
-    VocabularyDao getVocabularyDao();
+    public CQLAttribute getAttribute() {
+        return attribute;
+    }
 
     /**
-     * Returns a <code>SearchDao</code>.
+     * Sets the attribute for this CQLObject.
      *
-     * @return a <code>SearchDao</code>.
+     * @param attribute attribute for this CQL object.
      */
-    SearchDao getSearchDao();
+    public void setAttribute(CQLAttribute attribute) {
+        this.attribute = attribute;
+    }
+
+    /**
+     * Gets the association for this CQLObject.
+     *
+     * @return association for this CQLObject
+     */
+    public CQLAssociation getAssociation() {
+        return association;
+    }
+
+    /**
+     * Sets the association for this CQLObject.
+     *
+     * @param association association for this CQLObject
+     */
+    public void setAssociation(CQLAssociation association) {
+        this.association = association;
+    }
+
+    /**
+     * Gets the group for this CQLObject.
+     *
+     * @return group for this CQLObject
+     */
+    public CQLGroup getGroup() {
+        return group;
+    }
+
+    /**
+     * Sets the group for this CQLObject.
+     *
+     * @param group group for this CQLObject
+     */
+    public void setGroup(CQLGroup group) {
+        this.group = group;
+    }
+
+    /**
+     * Gets the name of this CQLObject.
+     *
+     * @return name of this CQLObject.
+     */
+    public java.lang.String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the name of this CQLObject.
+     *
+     * @param name name of this CQLObject.
+     */
+    public void setName(java.lang.String name) {
+        this.name = name;
+    }
 }

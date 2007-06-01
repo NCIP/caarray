@@ -84,12 +84,11 @@ package gov.nih.nci.caarray.dao;
 
 /**
  * This is the exception thrown by all DAO class methods.
- * It encapsulates an error message, a causing exception, or both
+ * It encapsulates an error message, and optionally, a causing exception.
  *
  * @author Rashmi Srinivasa
  */
 public class DAOException extends Exception {
-
     /**
      * The serial version UID for serialization.
      */

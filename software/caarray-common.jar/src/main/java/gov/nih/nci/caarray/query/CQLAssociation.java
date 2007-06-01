@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-app
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-app Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-app Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-app Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-app Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,38 +80,77 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.dao;
+package gov.nih.nci.caarray.query;
 
 /**
- * Factory interface used to retrieve DAO instances.
+ * CQL query association.
+ * The substance of this class is taken from the caCORE SDK.
  *
- * @author ETavela
+ * @author Rashmi Srinivasa
  */
-public interface CaArrayDaoFactory {
+public class CQLAssociation extends CQLObject implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
+    private String sourceRoleName;
+    private String targetRoleName;
 
     /**
-     * Factory instance for clients.
+     * Creates an empty CQLAssociation object.
      */
-    CaArrayDaoFactory INSTANCE = new CaArrayDaoFactoryImpl();
+    public CQLAssociation() {
+        super();
+    }
 
     /**
-     * Returns a <code>ProtocolDao</code>.
+     * Creates a CQLAssociation object with the given association, attribute, group, name, source role and target role.
      *
-     * @return a <code>ProtocolDao</code>.
+     * @param association the association in this CQL association.
+     * @param attribute the attribute in this CQL association.
+     * @param group the group in this CQL association.
+     * @param name the name of this CQL association.
+     * @param sourceRoleName the source role of this CQL association.
+     * @param targetRoleName the target role of this CQL association.
      */
-    ProtocolDao getProtocolDao();
+    @SuppressWarnings("PMD")
+    public CQLAssociation(CQLAssociation association, CQLAttribute attribute, CQLGroup group, String name,
+            String sourceRoleName, String targetRoleName) {
+        super(association, attribute, group, name);
+        this.sourceRoleName = sourceRoleName;
+        this.targetRoleName = targetRoleName;
+    }
 
     /**
-     * Returns a <code>VocabularyDao</code>.
+     * Gets the source role of this association.
      *
-     * @return a <code>VocabularyDao</code>.
+     * @return the source role of this association.
      */
-    VocabularyDao getVocabularyDao();
+    public String getSourceRoleName() {
+        return sourceRoleName;
+    }
 
     /**
-     * Returns a <code>SearchDao</code>.
+     * Sets the source role of this association.
      *
-     * @return a <code>SearchDao</code>.
+     * @param sourceRoleName the source role of this association.
      */
-    SearchDao getSearchDao();
+    public void setSourceRoleName(String sourceRoleName) {
+        this.sourceRoleName = sourceRoleName;
+    }
+
+    /**
+     * Gets the target role of this association.
+     *
+     * @return the target role of this association.
+     */
+    public String getTargetRoleName() {
+        return targetRoleName;
+    }
+
+    /**
+     * Sets the target role of this association.
+     *
+     * @param targetRoleName the target role of this association.
+     */
+    public void setTargetRoleName(String targetRoleName) {
+        this.targetRoleName = targetRoleName;
+    }
 }
