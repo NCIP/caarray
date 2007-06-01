@@ -55,6 +55,7 @@
     <property name="caarray-client.jar" value="${caarray-ear.target.dir}/caarray-client.jar" />
 
     <!-- Third-party -->
+    <property name="antlr.jar" value="${lib.dir}/antlr-2.7.6.jar" />
     <property name="asm.jar" value="${lib.dir}/asm.jar" />
     <property name="asm-2.2.1.jar" value="${lib.dir}/asm-2.2.1.jar" />
     <property name="asm-3.0.jar" value="${lib.dir}/asm-3.0.jar" />
@@ -437,7 +438,7 @@
       test.src.dir="${caarray-common.test.src.dir}"
       xml.output.dir="${caarray-common.target.dir}/junit"
       instrumented.classes="${caarray-common.instrumented.classes.dir}"
-      classpath="${caarray-common.test.classes.dir};${caarray-common.classes.dir};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${jta.jar};${junit.jar}" />
+      classpath="${caarray-common.test.classes.dir};${caarray-common.classes.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${jta.jar};${junit.jar}" />
     </target>
 
     <!-- caarray-ejb.jar -->
@@ -467,7 +468,7 @@
             test.src.dir="${caarray-ejb.test.src.dir}"
             xml.output.dir="${caarray-ejb.target.dir}/junit"
             instrumented.classes="${caarray-ejb.instrumented.classes.dir}"
-            classpath="${caarray-ejb.test.classes.dir};${caarray-ejb.classes.dir};${caarray-common.classes.dir};${cacore32-client.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar}" />
+            classpath="${caarray-ejb.test.classes.dir};${caarray-ejb.classes.dir};${caarray-common.classes.dir};${cacore32-client.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar}" />
     </target>
 
     <!-- caarray.war -->
