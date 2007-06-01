@@ -143,6 +143,9 @@ public final class CQL2HQL {
         if (targetAttr != null || targetAssoc != null || targetGrp != null) {
             processTarget(targetObj);
         }
+        HQL_HOLDER.set(null);
+        PARAMS_HOLDER.set(null);
+        CASE_HOLDER.set(null);
         return new HibernateQueryWrapper(hql.toString(), parameters);
     }
 
