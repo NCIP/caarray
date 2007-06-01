@@ -52,6 +52,7 @@
     <property name="caarray-ear.resources.dir" value="${caarray-ear.dir}/src/main/resources" />
     <property name="caarray-ear.target.dir" value="${caarray-ear.dir}/target" />
     <property name="caarray.ear" value="${caarray-ear.target.dir}/caarray.ear" />
+    <property name="caarray-client.jar" value="${caarray-ear.target.dir}/caarray-client.jar" />
 
     <!-- Third-party -->
     <property name="asm.jar" value="${lib.dir}/asm.jar" />
@@ -152,7 +153,7 @@
 
     <target name="nightly-build" depends="continuous-integration,
         deploy:start-jboss,
-        deploy:deploy-and-wait,
+      deploy:deploy-and-wait,
         test:functional,
         deploy:stop-jboss,
         test:check-functional-test-results" />
@@ -312,6 +313,19 @@
         <mkdir dir="${caarray-ejb.target.dir}"/>
         <jar destfile="${caarray-ejb.jar}">
             <fileset dir="${caarray-ejb.classes.dir}" />
+        </jar>
+    </target>
+
+    <target name="build:caarray-client.jar" depends="compile:caarray-common.jar,compile:caarray-ejb.jar">
+        <jar destfile="${caarray-client.jar}">
+            <fileset dir="${caarray-common.classes.dir}">
+                <include name="**/domain/*" />
+                <include name="**/domain/**/*" />
+                <include name="**/query/*" />
+            </fileset>
+            <fileset dir="${caarray-ejb.classes.dir}">
+                <include name="**/CaArraySearchService.class" />
+            </fileset>
         </jar>
     </target>
 
