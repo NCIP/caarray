@@ -18,8 +18,6 @@
         isAbstractNoId = true;
     }
 %>
-package <%=pkgName%>.impl;
-
 /**
  * The software subject to this notice and license includes both human readable
  * source code form and machine readable, binary, object code form. The caArray
@@ -103,6 +101,8 @@ package <%=pkgName%>.impl;
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
+package <%=pkgName%>.impl;
+
 <%=UML13JavaSourceHelper.getClassJavadoc(klass)%>
 public <% if (klass.isAbstract()) {%>abstract <%}%>class <%=klass.getName()%>Impl <% if (superClass != null) { %>
   extends <%=superPkgName%>.impl.<%=superClass.getName()%>Impl<% } %>
