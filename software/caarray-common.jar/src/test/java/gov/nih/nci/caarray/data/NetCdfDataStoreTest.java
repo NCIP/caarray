@@ -99,7 +99,7 @@ public class NetCdfDataStoreTest {
 
         NetcdfFileWriteable ncfile = null;
         try {
-        File file = new File(File.separatorChar + SUB_DIR + File.separatorChar + FILENAME);
+        File file = new File(FILENAME);
         file = file.getAbsoluteFile();
         ncfile = NetcdfFileWriteable.createNew(file.getPath(), false);
         Dimension dataDim = ncfile.addDimension("data", ROW_TEST_SIZE);
@@ -203,7 +203,7 @@ public class NetCdfDataStoreTest {
         Object value = null;
 
         try {
-            File file = new File(File.separatorChar + SUB_DIR + File.separatorChar + FILENAME);
+            File file = new File(FILENAME);
             file = file.getAbsoluteFile();
             NetcdfFile ncFile = null;
             try {
@@ -237,7 +237,7 @@ public class NetCdfDataStoreTest {
         NetCdfDataStore netCdfDS = null;
         Object[] value = null;
         try {
-            File file = new File(File.separatorChar + SUB_DIR + File.separatorChar + FILENAME);
+            File file = new File(FILENAME);
             file = file.getAbsoluteFile();
             NetcdfFile ncFile = null;
             try {
@@ -270,7 +270,7 @@ public class NetCdfDataStoreTest {
         NetCdfDataStore netCdfDS = null;
         Object[] value = null;
         try {
-            File file = new File(File.separatorChar + SUB_DIR + File.separatorChar + FILENAME);
+            File file = new File(FILENAME);
             file = file.getAbsoluteFile();
             NetcdfFile ncFile = null;
             try {
@@ -285,6 +285,7 @@ public class NetCdfDataStoreTest {
             value = netCdfDS.getValues(TEST_ROW);
         } catch (Exception e) {
             LOG.error("Error in testgetvaluesint", e);
+
         }
         assertNotNull(value);
         String testStr = (String) value[NetCdfDataStore.P_VAL_COL];
