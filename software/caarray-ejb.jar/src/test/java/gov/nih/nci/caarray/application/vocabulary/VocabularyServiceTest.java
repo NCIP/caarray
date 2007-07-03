@@ -65,9 +65,6 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.system.applicationservice.ApplicationService;
 
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 /**
@@ -79,10 +76,6 @@ public class VocabularyServiceTest {
 
     private static final int NUM_PROT_TYPES = 37;
 
-    /**
-     * LOG used by this class.
-     */
-    private static final Log LOG = LogFactory.getLog(VocabularyServiceTest.class);
 
 ////TEST METHODS///////////////////////////////////
 
@@ -112,9 +105,7 @@ public class VocabularyServiceTest {
     @Test(expected=IllegalArgumentException.class)
     public void getTermsNullCategory() throws VocabularyServiceException {
         VocabularyService vocab = new MockVocabularyServiceBean();
-        List<Term> terms = new ArrayList<Term>();
-        String arg = null;
-        terms =  vocab.getTerms(arg);
+        vocab.getTerms(null);
     }
 
 
@@ -144,18 +135,14 @@ public class VocabularyServiceTest {
     @Test(expected=VocabularyServiceException.class)
     public void getTermsEVSException() throws VocabularyServiceException {
         VocabularyService vocab = new MockVSBeanForEVSException();
-        List<Term> terms = new ArrayList<Term>();
-         terms = vocab.getTerms("ProtocolType");
+        vocab.getTerms("ProtocolType");
 
     }
 
     @Test(expected=DAOException.class)
     public void testDAOException() throws DAOException {
         VocabularyDao vocabDao = new MockVocabularyDaoForException();
-        List<Term> terms = new ArrayList<Term>();
-        terms = vocabDao.getTerms("ProtocolType");
-
-
+        vocabDao.getTerms("ProtocolType");
     }
 
 
