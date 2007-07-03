@@ -70,7 +70,7 @@ import ucar.nc2.Variable;
 public class NetCdfDataStore implements DataStore {
 
     private static final Log LOG = LogFactory.getLog(NetCdfDataStore.class);
-    private NetcdfFile netcdffile = null;
+    private final NetcdfFile netcdffile;
     private static final String X_VAR = "X_VAL_COL";
     private static final String Y_VAR = "Y_VAL_COL";
     private static final String PCT_VAR = "PCT_VAL_COL";
