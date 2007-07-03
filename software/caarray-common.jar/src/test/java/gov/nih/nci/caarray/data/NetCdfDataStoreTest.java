@@ -97,9 +97,10 @@ public class NetCdfDataStoreTest {
 
     private void initFile() {
 
+        NetcdfFileWriteable ncfile = null;
+        try {
         File file = new File(File.separatorChar + SUB_DIR + File.separatorChar + FILENAME);
         file = file.getAbsoluteFile();
-        NetcdfFileWriteable ncfile = null;
         ncfile = NetcdfFileWriteable.createNew(file.getPath(), false);
         Dimension dataDim = ncfile.addDimension("data", ROW_TEST_SIZE);
         Dimension svarLen = ncfile.addDimension("svar_len", S_VAR_LEN);
@@ -116,10 +117,11 @@ public class NetCdfDataStoreTest {
         ArrayFloat floatArrayPctVar = new ArrayFloat.D1(dataDim.getLength());
         loadFile(dataDim, floatArrayXVar, floatArrayYVar, stringArrayPVar, floatArrayPctVar);
 
-        try {
             writeDataToFile(ncfile, floatArrayXVar, floatArrayYVar, stringArrayPVar, floatArrayPctVar);
-        } catch (InvalidRangeException e) {
-            LOG.error("Error writing file");
+        } catch (InvalidRangeException ie) {
+            LOG.error("Error writing file", ie);
+        } catch (Exception e) {
+            LOG.error("Caught Exception", e);
         }
         closeFile(ncfile);
 
