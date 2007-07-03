@@ -97,7 +97,8 @@ public class NetCdfDataStoreTest {
 
     private void initFile() {
 
-        File file = new File("c:" + File.separatorChar + SUB_DIR + File.separatorChar + FILENAME);
+        File file = new File(File.separatorChar + SUB_DIR + File.separatorChar + FILENAME);
+        file = file.getAbsoluteFile();
         NetcdfFileWriteable ncfile = null;
         ncfile = NetcdfFileWriteable.createNew(file.getPath(), false);
         Dimension dataDim = ncfile.addDimension("data", ROW_TEST_SIZE);
@@ -200,8 +201,8 @@ public class NetCdfDataStoreTest {
         Object value = null;
 
         try {
-            File file = new File("c:" + File.separatorChar + SUB_DIR + File.separatorChar + FILENAME);
-
+            File file = new File(File.separatorChar + SUB_DIR + File.separatorChar + FILENAME);
+            file = file.getAbsoluteFile();
             NetcdfFile ncFile = null;
             try {
                 URL url = file.toURL();
@@ -234,8 +235,8 @@ public class NetCdfDataStoreTest {
         NetCdfDataStore netCdfDS = null;
         Object[] value = null;
         try {
-            File file = new File("c:" + File.separatorChar + SUB_DIR + File.separatorChar + FILENAME);
-
+            File file = new File(File.separatorChar + SUB_DIR + File.separatorChar + FILENAME);
+            file = file.getAbsoluteFile();
             NetcdfFile ncFile = null;
             try {
                 URL url = file.toURL();
@@ -267,8 +268,8 @@ public class NetCdfDataStoreTest {
         NetCdfDataStore netCdfDS = null;
         Object[] value = null;
         try {
-            File file = new File("c:" + File.separatorChar + SUB_DIR + File.separatorChar + FILENAME);
-
+            File file = new File(File.separatorChar + SUB_DIR + File.separatorChar + FILENAME);
+            file = file.getAbsoluteFile();
             NetcdfFile ncFile = null;
             try {
                 URL url = file.toURL();
