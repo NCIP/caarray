@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="gov.nih.nci.caarray.domain.contact.AbstractContact" table="CONTACT" polymorphism="implicit">
+        <id name="id" column="ID" type="long">
+            <generator class="assigned"/>
+        </id>
+        <discriminator>
+            <column name="DISCRIMINATOR"/>
+        </discriminator>
+        <property name="email" column="EMAIL" type="string" />
+        <property name="fax" column="FAX" type="string" />
+        <property name="phone" column="PHONE" type="string" />
+        <property name="url" column="URL" type="string" />
+        <many-to-one name="address" column="ADDRESS_ID" class="gov.nih.nci.caarray.domain.contact.Address" lazy="false" cascade="save-update" />
+        <subclass name="Person" discriminator-value="P">
+            <property name="firstName" column="FIRSTNAME" type="string" />
+            <property name="lastName" column="LASTNAME" type="string" />
+            <property name="middleInitial" column="MIDDLEINITIAL" type="string" />
+            <set name="affiliations" table="PERSONORGANIZATION" lazy="true">
+                <key column="PERSON_ID" />
+                <many-to-many class="gov.nih.nci.caarray.domain.contact.Organization" column="ORGANIZATION_ID" />
+            </set>
+        </subclass>
+        <subclass name="Organization" discriminator-value="O">
+            <property name="name" column="NAME" type="string" />
+        </subclass>
+    </class>
+</hibernate-mapping>
