@@ -433,6 +433,7 @@
                 <pathelement location="${commons-logging.jar}" />
                 <pathelement location="${junit.jar}" />
                 <pathelement location="${hibernate.jar}" />
+                <pathelement location="${netcdf.jar}" />
             </classpath>
         </javac>
     </target>
@@ -442,7 +443,7 @@
       test.src.dir="${caarray-common.test.src.dir}"
       xml.output.dir="${caarray-common.target.dir}/junit"
       instrumented.classes="${caarray-common.instrumented.classes.dir}"
-      classpath="${caarray-common.test.classes.dir};${caarray-common.classes.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${jta.jar};${junit.jar}" />
+      classpath="${caarray-common.test.classes.dir};${caarray-common.classes.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar}" />
     </target>
 
     <!-- caarray-ejb.jar -->
