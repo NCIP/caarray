@@ -55,8 +55,8 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,11 +65,9 @@ import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayFloat;
-import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
 
 
@@ -82,22 +80,22 @@ public class NetCdfDataStoreTest {
     private static final Log LOG = LogFactory.getLog(NetCdfDataStoreTest.class);
     private static final int COL_SIZE = 4;
     private static final int ROW_TEST_SIZE = 900;
-    private static final String X_VAR = "X_VAL_COL";
-    private static final String Y_VAR = "Y_VAL_COL";
-    private static final String P_VAR = "P_VAL_COL";
-    private static final String PCT_VAR = "PCT_VAL_COL";
 
     private static final int S_VAR_LEN = 80;
     private static final int TEST_VAL_1 = 100000;
     private static final int TEST_VAL_2 = 100;
     private static final int TEST_ROW = 10;
 
-    private static final String SUB_DIR = "NCDFFiles";
     private static final String FILENAME = "testNCDF.nc";
 
+    /**
+     *
+     */
     private void initFile() {
 
         NetcdfFileWriteable ncfile = null;
+        DataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
+
         try {
         File file = new File(FILENAME);
         file = file.getAbsoluteFile();
@@ -106,10 +104,18 @@ public class NetCdfDataStoreTest {
         Dimension svarLen = ncfile.addDimension("svar_len", S_VAR_LEN);
         Dimension[] dimList = {dataDim};
         Dimension[] dimStrList = {dataDim, svarLen};
-        ncfile.addVariable(X_VAR, DataType.FLOAT, dimList);
-        ncfile.addVariable(Y_VAR, DataType.FLOAT, dimList);
-        ncfile.addVariable(P_VAR, DataType.CHAR, dimStrList);
-        ncfile.addVariable(PCT_VAR, DataType.FLOAT, dimList);
+        List<Column> columns = descriptor.getColumns();
+
+        for (Iterator iter = columns.iterator(); iter.hasNext();) {
+            Column column = (Column) iter.next();
+            Dimension[] dimListToAdd = null;
+            if ((column.getType()).equals(ucar.ma2.DataType.CHAR)) {
+                dimListToAdd = dimStrList;
+            } else {
+                dimListToAdd = dimList;
+            }
+            ncfile.addVariable(column.getName(), column.getType(), dimListToAdd);
+        }
         createFile(ncfile);
         ArrayFloat floatArrayXVar = new ArrayFloat.D1(dataDim.getLength());
         ArrayFloat floatArrayYVar = new ArrayFloat.D1(dataDim.getLength());
@@ -117,7 +123,7 @@ public class NetCdfDataStoreTest {
         ArrayFloat floatArrayPctVar = new ArrayFloat.D1(dataDim.getLength());
         loadFile(dataDim, floatArrayXVar, floatArrayYVar, stringArrayPVar, floatArrayPctVar);
 
-            writeDataToFile(ncfile, floatArrayXVar, floatArrayYVar, stringArrayPVar, floatArrayPctVar);
+        writeDataToFile(ncfile, floatArrayXVar, floatArrayYVar, stringArrayPVar, floatArrayPctVar);
         } catch (InvalidRangeException ie) {
             LOG.error("Error writing file", ie);
         } catch (Exception e) {
@@ -137,10 +143,10 @@ public class NetCdfDataStoreTest {
     private void writeDataToFile(NetcdfFileWriteable ncfile, ArrayFloat floatArrayXVar,
             ArrayFloat floatArrayYVar, ArrayChar stringArrayPVar, ArrayFloat floatArrayPctVar)
             throws InvalidRangeException {
-        writeFile(ncfile, floatArrayXVar, X_VAR);
-        writeFile(ncfile, floatArrayYVar, Y_VAR);
-        writeFileStrings(ncfile, stringArrayPVar, P_VAR);
-        writeFile(ncfile, floatArrayPctVar, PCT_VAR);
+        writeFile(ncfile, floatArrayXVar, NetcdfDataStoreDescriptor.X_VAL_COL_NAME);
+        writeFile(ncfile, floatArrayYVar, NetcdfDataStoreDescriptor.Y_VAL_COL_NAME);
+        writeFileStrings(ncfile, stringArrayPVar, NetcdfDataStoreDescriptor.P_VAL_COL_NAME);
+        writeFile(ncfile, floatArrayPctVar, NetcdfDataStoreDescriptor.PCT_COL_NAME);
     }
     /**
      * @param dataDim
@@ -187,7 +193,7 @@ public class NetCdfDataStoreTest {
     private void writeFileStrings(NetcdfFileWriteable ncfile, Array testStrings, String varName)
         throws InvalidRangeException {
         try {
-            ncfile.write(varName, (ArrayChar) testStrings);
+            ncfile.write(varName, (ArrayChar.D2) testStrings);
           //  ncfile.writeStringData(varName, testStrings);
         } catch (IOException e) {
             LOG.error("ERROR writing file");
@@ -204,21 +210,13 @@ public class NetCdfDataStoreTest {
 
         try {
             File file = new File(FILENAME);
-            file = file.getAbsoluteFile();
-            NetcdfFile ncFile = null;
-            try {
-                URL url = file.toURL();
-                ncFile = NetcdfFile.open(url.getFile());
-            } catch (MalformedURLException me) {
-                throw new DataStoreException("Exception in getFile()--malformedURL", me);
-            } catch (IOException ie) {
-                throw new DataStoreException("Exception in getFile()--IO prob", ie);
-            }
-            netCdfDS = new NetCdfDataStore(ncFile);
+            DataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
+            DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
+            netCdfDS = (NetCdfDataStore) factory.createDataStore(descriptor, file);
 
             Column column = new Column();
-            column.setName(X_VAR);
-            column.setType(gov.nih.nci.caarray.data.DataType.FLOAT);
+            column.setName(NetcdfDataStoreDescriptor.X_VAL_COL_NAME);
+            column.setType(ucar.ma2.DataType.FLOAT);
             value = netCdfDS.getValue(TEST_ROW, column);
         } catch (Exception e) {
             LOG.error("Error in testGetValue", e);
@@ -238,21 +236,38 @@ public class NetCdfDataStoreTest {
         Object[] value = null;
         try {
             File file = new File(FILENAME);
-            file = file.getAbsoluteFile();
-            NetcdfFile ncFile = null;
-            try {
-                URL url = file.toURL();
-                ncFile = NetcdfFile.open(url.getFile());
-            } catch (MalformedURLException me) {
-                throw new DataStoreException("Exception in getFile()--malformedURL", me);
-            } catch (IOException ie) {
-                throw new DataStoreException("Exception in getFile()--IO prob", ie);
-            }
-            netCdfDS = new NetCdfDataStore(ncFile);
+            DataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
+            DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
+            netCdfDS = (NetCdfDataStore) factory.createDataStore(descriptor, file);
 
             Column column = new Column();
-            column.setName(X_VAR);
-            column.setType(gov.nih.nci.caarray.data.DataType.FLOAT);
+            column.setName(NetcdfDataStoreDescriptor.X_VAL_COL_NAME);
+            column.setType(ucar.ma2.DataType.FLOAT);
+            value = (Object[]) netCdfDS.getValues(column);
+        } catch (Exception e) {
+            LOG.error("Error in testGetValuesColumn", e);
+        }
+        assertNotNull(value);
+        assertTrue(value.length == ROW_TEST_SIZE);
+    }
+
+    /**
+     * Test method for {@link gov.nih.nci.caarray.data.NetCdfDataStore#getValues(gov.nih.nci.caarray.data.Column)}.
+     */
+    @Test
+    public void testGetValuesColumnString() {
+        initFile();
+        NetCdfDataStore netCdfDS = null;
+        Object[] value = null;
+        try {
+            File file = new File(FILENAME);
+            DataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
+            DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
+            netCdfDS = (NetCdfDataStore) factory.createDataStore(descriptor, file);
+
+            Column column = new Column();
+            column.setName(NetcdfDataStoreDescriptor.P_VAL_COL_NAME);
+            column.setType(ucar.ma2.DataType.CHAR);
             value = (Object[]) netCdfDS.getValues(column);
         } catch (Exception e) {
             LOG.error("Error in testGetValuesColumn", e);
@@ -271,17 +286,9 @@ public class NetCdfDataStoreTest {
         Object[] value = null;
         try {
             File file = new File(FILENAME);
-            file = file.getAbsoluteFile();
-            NetcdfFile ncFile = null;
-            try {
-                URL url = file.toURL();
-                ncFile = NetcdfFile.open(url.getFile());
-            } catch (MalformedURLException me) {
-                throw new DataStoreException("Exception in getFile()--malformedURL", me);
-            } catch (IOException ie) {
-                throw new DataStoreException("Exception in getFile()--IO prob", ie);
-            }
-            netCdfDS = new NetCdfDataStore(ncFile);
+            DataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
+            DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
+            netCdfDS = (NetCdfDataStore) factory.createDataStore(descriptor, file);
             value = netCdfDS.getValues(TEST_ROW);
         } catch (Exception e) {
             LOG.error("Error in testgetvaluesint", e);
