@@ -51,6 +51,7 @@
 package gov.nih.nci.caarray.data;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -71,10 +72,6 @@ public class NetCdfDataStore implements DataStore {
 
     private static final Log LOG = LogFactory.getLog(NetCdfDataStore.class);
     private final NetcdfFile netcdffile;
-    private static final String X_VAR = "X_VAL_COL";
-    private static final String Y_VAR = "Y_VAL_COL";
-    private static final String PCT_VAR = "PCT_VAL_COL";
-    private static final String P_VAR = "P_VAL_COL";
     /**
      *
      */
@@ -113,7 +110,7 @@ public class NetCdfDataStore implements DataStore {
      */
     public DataStoreDescriptor getDescriptor() {
         if (descriptor == null) {
-            descriptor = new DataStoreDescriptor();
+            descriptor = new NetcdfDataStoreDescriptor();
         }
         return descriptor;
     }
@@ -140,23 +137,18 @@ public class NetCdfDataStore implements DataStore {
     }
 
     /**
+     * Returns all of the row values for a given Column.
      * @see gov.nih.nci.caarray.data.DataStore#getValues(gov.nih.nci.caarray.data.Column)
      * @param column the Column
      * @throws DataStoreException an exception
      * @return Object[] an array
      */
     public Object[] getValues(Column column) throws DataStoreException {
-        Variable v = this.netcdffile.findVariable(column.getName());
         Object[] returnObj = null;
+        Variable var = this.netcdffile.findVariable(column.getName());
+        boolean isChar = var.getDataType().equals(ucar.ma2.DataType.CHAR);
         try {
-            Array dataArray = (Array) v.read();
-            Dimension d = v.getDimension(0);
-            returnObj = new Object[d.getLength()];
-            Index idx = dataArray.getIndex();
-
-            for (int i = 0; i < d.getLength(); i++) {
-                returnObj[i] = dataArray.getObject(idx.set(i));
-            }
+            returnObj = fillArrayValues(var, isChar);
         } catch (IOException ie) {
             throw new DataStoreException("Error reading file in getValues()", ie);
         } catch (Exception e) {
@@ -167,30 +159,62 @@ public class NetCdfDataStore implements DataStore {
     }
 
     /**
+     * @param returnObj
+     * @param var
+     * @param isChar
+     * @throws IOException
+     */
+    private Object[] fillArrayValues(Variable var, boolean isChar) throws IOException {
+        Array dataArray;
+        Index idx;
+        Dimension dim;
+        if (isChar) {
+            dataArray = (ArrayChar) var.read();
+        } else {
+            dataArray = (Array) var.read();
+        }
+        idx = dataArray.getIndex();
+        dim = var.getDimension(0);
+        Object[] returnObj = new Object[dim.getLength()];
+
+        for (int i = 0; i < dim.getLength(); i++) {
+            if (isChar) {
+                returnObj[i] = ((ArrayChar) dataArray).getString(idx.set(i, 0));
+            } else {
+                returnObj[i] = dataArray.getObject(idx.set(i));
+            }
+        }
+        return returnObj;
+    }
+
+    /**
+     * Returns all the Column values for the row at the argIndex.
      * @see gov.nih.nci.caarray.data.DataStore#getValues(int)
      * @param index an int
      * @throws DataStoreException exception
      * @return Object[] an array
      */
     public Object[] getValues(int index) throws DataStoreException {
-        Variable vXVar = this.netcdffile.findVariable(X_VAR);
-        Variable vYVar = this.netcdffile.findVariable(Y_VAR);
-        Variable vPVar = this.netcdffile.findVariable(P_VAR);
-        Variable vPctVar = this.netcdffile.findVariable(PCT_VAR);
+
         Object[] returnObj = new Object[this.getDescriptor().getColumns().size()];
+
         try {
-            Array dataArray = (Array) vXVar.read();
-            Index idx = dataArray.getIndex();
-            returnObj[X_VAL_COL] = dataArray.getObject(idx.set(index));
-            dataArray = (Array) vYVar.read();
-            idx = dataArray.getIndex();
-            returnObj[Y_VAL_COL] = dataArray.getObject(idx.set(index));
-            ArrayChar charArray = (ArrayChar) vPVar.read();
-            idx = charArray.getIndex();
-            returnObj[P_VAL_COL] = charArray.getString(idx.set(index, 0));
-            dataArray = (Array) vPctVar.read();
-            idx = dataArray.getIndex();
-            returnObj[PCT_VAL_COL] = dataArray.getObject(idx.set(index));
+            List variables = this.netcdffile.getVariables();
+            for (int i = 0; i < variables.size(); i++) {
+                Variable var = (Variable) variables.get(i);
+                Index idx = null;
+                if (var.getDataType().equals(ucar.ma2.DataType.CHAR)) {
+                    ArrayChar dataArray = (ArrayChar) var.read();
+                    idx = dataArray.getIndex();
+                    idx.set(index, 0);
+                    returnObj[i] = dataArray.getString(idx);
+                } else {
+                    Array dataArray = (Array) var.read();
+                    idx = dataArray.getIndex();
+                    idx.set(index);
+                    returnObj[i] = dataArray.getObject(idx);
+                }
+            }
         } catch (IOException ie) {
             throw new DataStoreException("Error reading file in getValues()", ie);
         } catch (Exception e) {

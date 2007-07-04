@@ -51,12 +51,21 @@
 package gov.nih.nci.caarray.data;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import ucar.nc2.NetcdfFile;
+
 
 /**
  * @author John Pike
  *
  */
 public class NetcdfDataStoreFactory implements DataStoreFactory {
+
+    private static final Log LOG = LogFactory.getLog(NetcdfDataStoreFactory.class);
 
     /**
      *
@@ -65,7 +74,7 @@ public class NetcdfDataStoreFactory implements DataStoreFactory {
         // TODO Auto-generated constructor stub
     }
 
-    NetcdfDataStoreFactory getInstance() {
+    static NetcdfDataStoreFactory getInstance() {
         return new NetcdfDataStoreFactory();
     }
 
@@ -77,9 +86,20 @@ public class NetcdfDataStoreFactory implements DataStoreFactory {
      */
     public DataStore createDataStore(DataStoreDescriptor descriptor, File file) {
 
+        NetcdfFile ncFile = null;
+        NetCdfDataStore netCdfDS = null;
+        try {
+            file.getAbsoluteFile();
+            URL url = file.toURL();
+            ncFile = NetcdfFile.open(url.getFile());
+            netCdfDS = new NetCdfDataStore(ncFile);
+        } catch (IOException ie) {
+            LOG.error("error getting file in createDataStore()", ie);
+        } catch (DataStoreException dse) {
+            LOG.error("error creating NetcdfDataStore in createDataStore()", dse);
+        }
+        return netCdfDS;
 
-        // TODO Auto-generated method stub
-        return null;
     }
 
     /**
@@ -88,8 +108,12 @@ public class NetcdfDataStoreFactory implements DataStoreFactory {
      * @param file the file
      */
     public DataStore getDataStore(File file) {
-        // TODO Auto-generated method stub
-        return null;
+        DataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
+        return createDataStore(descriptor, file);
     }
+
+
+
+
 
 }
