@@ -94,7 +94,7 @@ public class NetCdfDataStoreTest {
     private void initFile() {
 
         NetcdfFileWriteable ncfile = null;
-        DataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
+        NetcdfDataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
 
         try {
         File file = new File(FILENAME);
@@ -210,7 +210,7 @@ public class NetCdfDataStoreTest {
 
         try {
             File file = new File(FILENAME);
-            DataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
+            AbstractDataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
             DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
             netCdfDS = (NetCdfDataStore) factory.createDataStore(descriptor, file);
 
@@ -236,7 +236,7 @@ public class NetCdfDataStoreTest {
         Object[] value = null;
         try {
             File file = new File(FILENAME);
-            DataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
+            AbstractDataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
             DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
             netCdfDS = (NetCdfDataStore) factory.createDataStore(descriptor, file);
 
@@ -261,7 +261,7 @@ public class NetCdfDataStoreTest {
         Object[] value = null;
         try {
             File file = new File(FILENAME);
-            DataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
+            AbstractDataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
             DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
             netCdfDS = (NetCdfDataStore) factory.createDataStore(descriptor, file);
 
@@ -286,7 +286,7 @@ public class NetCdfDataStoreTest {
         Object[] value = null;
         try {
             File file = new File(FILENAME);
-            DataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
+            AbstractDataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
             DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
             netCdfDS = (NetCdfDataStore) factory.createDataStore(descriptor, file);
             value = netCdfDS.getValues(TEST_ROW);
