@@ -60,7 +60,7 @@ public interface DataStore {
     /**
      * @return DataStoreDescriptor
      */
-     DataStoreDescriptor getDescriptor();
+     AbstractDataStoreDescriptor getDescriptor();
 
     /**
      * @param index an int

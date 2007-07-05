@@ -57,7 +57,7 @@ import java.util.List;
  * @author John Pike
  *
  */
-public class NetcdfDataStoreDescriptor extends DataStoreDescriptor {
+public class NetcdfDataStoreDescriptor extends AbstractDataStoreDescriptor {
     /**
     *
     */

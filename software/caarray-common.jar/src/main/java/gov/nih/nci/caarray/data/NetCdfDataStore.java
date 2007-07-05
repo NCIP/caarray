@@ -89,7 +89,7 @@ public class NetCdfDataStore implements DataStore {
      */
     protected static final int PCT_VAL_COL = 3;
 
-    private DataStoreDescriptor descriptor;
+    private NetcdfDataStoreDescriptor descriptor;
 
 
 
@@ -108,7 +108,7 @@ public class NetCdfDataStore implements DataStore {
      * @see gov.nih.nci.caarray.data.DataStore#getDescription()
      * @return DataStoreDescriptor a descriptor
      */
-    public DataStoreDescriptor getDescriptor() {
+    public NetcdfDataStoreDescriptor getDescriptor() {
         if (descriptor == null) {
             descriptor = new NetcdfDataStoreDescriptor();
         }

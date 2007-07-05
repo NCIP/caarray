@@ -84,7 +84,7 @@ public class NetcdfDataStoreFactory implements DataStoreFactory {
      * @param file the file
      * @return DataStore
      */
-    public DataStore createDataStore(DataStoreDescriptor descriptor, File file) {
+    public DataStore createDataStore(AbstractDataStoreDescriptor descriptor, File file) {
 
         NetcdfFile ncFile = null;
         NetCdfDataStore netCdfDS = null;
@@ -108,7 +108,7 @@ public class NetcdfDataStoreFactory implements DataStoreFactory {
      * @param file the file
      */
     public DataStore getDataStore(File file) {
-        DataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
+        AbstractDataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
         return createDataStore(descriptor, file);
     }
 

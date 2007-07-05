@@ -56,7 +56,7 @@ import java.util.List;
  * @author John Pike
  *
  */
-public abstract class DataStoreDescriptor {
+public abstract class AbstractDataStoreDescriptor {
 
     /**
      * @return List of Columns

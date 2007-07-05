@@ -66,7 +66,7 @@ public interface DataStoreFactory {
      * @param file the File
      * @return DataStore
      */
-    DataStore createDataStore(DataStoreDescriptor descriptor, File file);
+    DataStore createDataStore(AbstractDataStoreDescriptor descriptor, File file);
     /**
      * @param file the file
      * @return DataStore
