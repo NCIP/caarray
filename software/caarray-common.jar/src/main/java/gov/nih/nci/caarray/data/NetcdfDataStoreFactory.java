@@ -57,6 +57,7 @@ import java.net.URL;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileWriteable;
 
 
 /**
@@ -79,6 +80,7 @@ public class NetcdfDataStoreFactory implements DataStoreFactory {
     }
 
     /**
+     * This method creates a new datastore in the file system, to be eventually populated.
      * @see gov.nih.nci.caarray.data.DataStoreFactory#createDataStore(DataStoreDescriptor, File)
      * @param descriptor the desciptor
      * @param file the file
@@ -86,6 +88,30 @@ public class NetcdfDataStoreFactory implements DataStoreFactory {
      */
     public DataStore createDataStore(AbstractDataStoreDescriptor descriptor, File file) {
 
+        NetcdfFile ncFile = null;
+        NetCdfDataStore netCdfDS = null;
+        try {
+            file.getAbsoluteFile();
+            URL url = file.toURL();
+            ncFile = NetcdfFileWriteable.createNew(url.getFile());
+            netCdfDS = new NetCdfDataStore(ncFile);
+        } catch (IOException ie) {
+            LOG.error("error getting file in createDataStore()", ie);
+        } catch (DataStoreException dse) {
+            LOG.error("error creating NetcdfDataStore in createDataStore()", dse);
+        }
+        return netCdfDS;
+
+    }
+
+    /**
+     * This method retrieves an existing ncdf file from the file system, converting
+     * it to a DataStore object.
+     * @see gov.nih.nci.caarray.data.DataStoreFactory#getDataStore(java.io.File)
+     * @return DataStore
+     * @param file the file
+     */
+    public DataStore getDataStore(File file) {
         NetcdfFile ncFile = null;
         NetCdfDataStore netCdfDS = null;
         try {
@@ -99,17 +125,6 @@ public class NetcdfDataStoreFactory implements DataStoreFactory {
             LOG.error("error creating NetcdfDataStore in createDataStore()", dse);
         }
         return netCdfDS;
-
-    }
-
-    /**
-     * @see gov.nih.nci.caarray.data.DataStoreFactory#getDataStore(java.io.File)
-     * @return DataStore
-     * @param file the file
-     */
-    public DataStore getDataStore(File file) {
-        AbstractDataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
-        return createDataStore(descriptor, file);
     }
 
 

@@ -222,9 +222,8 @@ public class NetCdfDataStoreTest {
 
         try {
             File file = new File(FILENAME);
-            AbstractDataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
             DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
-            netCdfDS = (NetCdfDataStore) factory.createDataStore(descriptor, file);
+            netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
 
             Column column = new Column();
             column.setName(NetcdfDataStoreDescriptor.X_VAL_COL_NAME);
@@ -247,9 +246,8 @@ public class NetCdfDataStoreTest {
         Object[] value = null;
         try {
             File file = new File(FILENAME);
-            AbstractDataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
             DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
-            netCdfDS = (NetCdfDataStore) factory.createDataStore(descriptor, file);
+            netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
 
             Column column = new Column();
             column.setName(NetcdfDataStoreDescriptor.X_VAL_COL_NAME);
@@ -271,9 +269,8 @@ public class NetCdfDataStoreTest {
         Object[] value = null;
         try {
             File file = new File(FILENAME);
-            AbstractDataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
             DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
-            netCdfDS = (NetCdfDataStore) factory.createDataStore(descriptor, file);
+            netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
 
             Column column = new Column();
             column.setName(NetcdfDataStoreDescriptor.P_VAL_COL_NAME);
@@ -295,9 +292,8 @@ public class NetCdfDataStoreTest {
         Object[] value = null;
         try {
             File file = new File(FILENAME);
-            AbstractDataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
             DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
-            netCdfDS = (NetCdfDataStore) factory.createDataStore(descriptor, file);
+            netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
             value = netCdfDS.getValues(TEST_ROW);
         } catch (Exception e) {
             LOG.error("Error in testgetvaluesint", e);
