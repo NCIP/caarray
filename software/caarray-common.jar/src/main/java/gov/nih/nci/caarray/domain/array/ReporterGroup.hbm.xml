@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="gov.nih.nci.caarray.domain.array.ReporterGroup" table="REPORTERGROUP" polymorphism="implicit">
+        <id name="id" column="ID" type="long">
+            <generator class="assigned"/>
+        </id>
+        <many-to-one name="reporterType" column="REPORTERTYPE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Term" lazy="false" cascade="save-update" />
+        <many-to-one name="strandType" column="STRANDTYPE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Term" lazy="false" cascade="save-update" />
+    </class>
+</hibernate-mapping>
