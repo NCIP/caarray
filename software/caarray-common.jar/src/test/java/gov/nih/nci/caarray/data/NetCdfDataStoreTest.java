@@ -60,6 +60,8 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import ucar.ma2.Array;
@@ -89,9 +91,20 @@ public class NetCdfDataStoreTest {
     private static final String FILENAME = "testNCDF.nc";
 
     /**
+    *
+    */
+   @After
+   public void deleteFile() {
+       File file = new File(FILENAME);
+       file = file.getAbsoluteFile();
+       file.delete();
+   }
+
+   /**
      *
      */
-    private void initFile() {
+    @Before
+    public void initFile() {
 
         NetcdfFileWriteable ncfile = null;
         NetcdfDataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
@@ -204,7 +217,6 @@ public class NetCdfDataStoreTest {
      */
     @Test
     public void testGetValue() {
-        initFile();
         NetCdfDataStore netCdfDS = null;
         Object value = null;
 
@@ -231,7 +243,6 @@ public class NetCdfDataStoreTest {
      */
     @Test
     public void testGetValuesColumn() {
-        initFile();
         NetCdfDataStore netCdfDS = null;
         Object[] value = null;
         try {
@@ -256,7 +267,6 @@ public class NetCdfDataStoreTest {
      */
     @Test
     public void testGetValuesColumnString() {
-        initFile();
         NetCdfDataStore netCdfDS = null;
         Object[] value = null;
         try {
@@ -281,7 +291,6 @@ public class NetCdfDataStoreTest {
      */
     @Test
     public void testGetValuesInt() {
-        initFile();
         NetCdfDataStore netCdfDS = null;
         Object[] value = null;
         try {
@@ -318,8 +327,6 @@ public class NetCdfDataStoreTest {
     }
 
 
-
-
     /**
      * @param ncfile
      */
@@ -330,6 +337,5 @@ public class NetCdfDataStoreTest {
             LOG.error("Error creating file");
         }
     }
-
 
 }
