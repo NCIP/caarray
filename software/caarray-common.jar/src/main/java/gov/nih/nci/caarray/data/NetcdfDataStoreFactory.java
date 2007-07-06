@@ -56,7 +56,6 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
 
 
@@ -88,12 +87,12 @@ public class NetcdfDataStoreFactory implements DataStoreFactory {
      */
     public DataStore createDataStore(AbstractDataStoreDescriptor descriptor, File file) {
 
-        NetcdfFile ncFile = null;
+        NetcdfFileWriteable ncFile = null;
         NetCdfDataStore netCdfDS = null;
         try {
             file.getAbsoluteFile();
             URL url = file.toURL();
-            ncFile = NetcdfFileWriteable.createNew(url.getFile());
+            ncFile = NetcdfFileWriteable.createNew(url.getFile(), false);
             netCdfDS = new NetCdfDataStore(ncFile);
         } catch (IOException ie) {
             LOG.error("error getting file in createDataStore()", ie);
@@ -112,12 +111,12 @@ public class NetcdfDataStoreFactory implements DataStoreFactory {
      * @param file the file
      */
     public DataStore getDataStore(File file) {
-        NetcdfFile ncFile = null;
+        NetcdfFileWriteable ncFile = null;
         NetCdfDataStore netCdfDS = null;
         try {
             file.getAbsoluteFile();
             URL url = file.toURL();
-            ncFile = NetcdfFile.open(url.getFile());
+            ncFile = NetcdfFileWriteable.openExisting(url.getPath());
             netCdfDS = new NetCdfDataStore(ncFile);
         } catch (IOException ie) {
             LOG.error("error getting file in createDataStore()", ie);
