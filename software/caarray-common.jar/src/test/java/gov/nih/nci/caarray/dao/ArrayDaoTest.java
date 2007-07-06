@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common.jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-common.jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-common.jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-common.jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common.jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -82,46 +82,99 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import static org.junit.Assert.*;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.hibernate.Transaction;
+
+import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.contact.Organization;
+
 /**
+ * Unit tests for the Array DAO.
  *
- *
- * @author ETavela
+ * @author Rashmi Srinivasa
  */
-public class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
+public class ArrayDaoTest {
+    private static final Log LOG = LogFactory.getLog(ArrayDaoTest.class);
+
+    private static final Long DUMMY_START_ID = new Long(150);
+    private static final Organization DUMMY_ORGANIZATION = new Organization();
+    private static final ArrayDesign DUMMY_ARRAYDESIGN_1 = new ArrayDesign();
+    private static final int NUM_FEATURES = 50000;
+
+    private static final ArrayDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getArrayDao();
 
     /**
-     * Returns a <code>ProtocolDao</code>.
-     *
-     * @return a <code>ProtocolDao</code>.
+     * Define the dummy objects that will be used by the tests.
      */
-    public ProtocolDao getProtocolDao() {
-        return new ProtocolDaoImpl();
+    @BeforeClass
+    public static void setUpBeforeClass() {
+        // Initialize all the dummy objects needed for the tests.
+        initializeArrayDesigns();
     }
 
     /**
-     * Returns a <code>VocabularyDao</code>.
-     *
-     * @return a <code>VocabularyDao</code>.
+     * Initialize the dummy <code>ArrayDesign</code> objects.
      */
-    public VocabularyDao getVocabularyDao() {
-        return new VocabularyDaoImpl();
+    private static void initializeArrayDesigns() {
+        long id = DUMMY_START_ID;
+        DUMMY_ORGANIZATION.setId(id);
+        DUMMY_ORGANIZATION.setName("DummyOrganization");
+        DUMMY_ARRAYDESIGN_1.setId(id);
+        DUMMY_ARRAYDESIGN_1.setName("DummyTestArrayDesign1");
+        DUMMY_ARRAYDESIGN_1.setAccession("DummyAccessionForArrayDesign");
+        DUMMY_ARRAYDESIGN_1.setVersion("2.0");
+        DUMMY_ARRAYDESIGN_1.setNumberOfFeatures(Integer.valueOf(NUM_FEATURES));
+        DUMMY_ARRAYDESIGN_1.setProvider(DUMMY_ORGANIZATION);
+    }
+
+
+    /**
+     * Tests retrieving the <code>ArrayDesign</code> with the given id.
+     * Test encompasses save and delete of a <code>ArrayDesign</code>.
+     */
+    @Test
+    public void testGetArrayDesign() {
+        Transaction tx = null;
+
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            DAO_OBJECT.save(DUMMY_ARRAYDESIGN_1);
+            tx.commit();
+            ArrayDesign retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getId());
+            if (DUMMY_ARRAYDESIGN_1.equals(retrievedArrayDesign)) {
+                // The retrieved arraydesign is the same as the saved arraydesign. Test passed.
+                assertTrue(true);
+            } else {
+                fail("Retrieved arraydesign is different from saved arraydesign.");
+            }
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());
+        } finally {
+            cleanUpArrayDesign();
+        }
     }
 
     /**
-     * Returns an <code>ArrayDao</code>.
-     *
-     * @return an <code>ArrayDao</code>.
+     * Clean up after a test by removing the dummy arraydesign.
      */
-    public ArrayDao getArrayDao() {
-        return new ArrayDaoImpl();
-    }
-
-    /**
-     * Returns a <code>SearchDao</code>.
-     *
-     * @return a <code>SearchDao</code>.
-     */
-    public SearchDao getSearchDao() {
-        return new SearchDaoImpl();
+    private void cleanUpArrayDesign() {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            DAO_OBJECT.remove(DUMMY_ARRAYDESIGN_1);
+            DAO_OBJECT.remove(DUMMY_ORGANIZATION);
+            tx.commit();
+        } catch (DAOException deleteException) {
+            HibernateUtil.rollbackTransaction(tx);
+            LOG.error("Error cleaning up dummy arraydesign.", deleteException);
+            fail("DAO exception during deletion of arraydesign: " + deleteException.getMessage());
+        }
     }
 }

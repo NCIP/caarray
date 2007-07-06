@@ -109,6 +109,13 @@ public interface CaArrayDaoFactory {
     VocabularyDao getVocabularyDao();
 
     /**
+     * Returns an <code>ArrayDao</code>.
+     *
+     * @return an <code>ArrayDao</code>.
+     */
+    ArrayDao getArrayDao();
+
+    /**
      * Returns a <code>SearchDao</code>.
      *
      * @return a <code>SearchDao</code>.

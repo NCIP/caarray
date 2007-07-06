@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC 
+<!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
@@ -14,12 +14,12 @@
         <property name="version" column="VERSION" type="string" />
         <many-to-one name="length" column="LENGTH_ID" class="gov.nih.nci.caarray.domain.measurement.DistanceMeasurement" lazy="false" cascade="save-update" />
         <many-to-one name="width" column="WIDTH_ID" class="gov.nih.nci.caarray.domain.measurement.DistanceMeasurement" lazy="false" cascade="save-update" />
-        <many-to-one name="sequencePolymerType" column="SEQUENCEPOLYMERTYPE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Term" lazy="false" />
-        <many-to-one name="substrateType" column="SUBSTRATETYPE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Term" lazy="false" />
-        <many-to-one name="surfaceType" column="SURFACETYPE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Term" lazy="false" />
-        <many-to-one name="technologyType" column="TECHNOLOGYTYPE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Term" lazy="false" />
+        <many-to-one name="sequencePolymerType" column="SEQUENCEPOLYMERTYPE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Term" lazy="false" cascade="save-update" />
+        <many-to-one name="substrateType" column="SUBSTRATETYPE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Term" lazy="false" cascade="save-update" />
+        <many-to-one name="surfaceType" column="SURFACETYPE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Term" lazy="false" cascade="save-update" />
+        <many-to-one name="technologyType" column="TECHNOLOGYTYPE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Term" lazy="false" cascade="save-update" />
         <many-to-one name="printing" column="PRINTING_ID" class="gov.nih.nci.caarray.domain.protocol.ProtocolApplication" lazy="false" />
-        <many-to-one name="provider" column="PROVIDER_ID" class="gov.nih.nci.caarray.domain.contact.Organization" lazy="false" />
+        <many-to-one name="provider" column="PROVIDER_ID" class="gov.nih.nci.caarray.domain.contact.Organization" lazy="false" cascade="save-update" />
         <set name="featureGroups" lazy="false" cascade="save-update">
             <key column="ARRAYDESIGN_ID" />
             <one-to-many class="gov.nih.nci.caarray.domain.array.FeatureGroup" />

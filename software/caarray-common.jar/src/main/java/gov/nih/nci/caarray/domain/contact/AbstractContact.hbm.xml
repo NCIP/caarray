@@ -16,7 +16,7 @@
         <property name="phone" column="PHONE" type="string" />
         <property name="url" column="URL" type="string" />
         <many-to-one name="address" column="ADDRESS_ID" class="gov.nih.nci.caarray.domain.contact.Address" lazy="false" cascade="save-update" />
-        <subclass name="Person" discriminator-value="P">
+        <subclass name="gov.nih.nci.caarray.domain.contact.Person" discriminator-value="P">
             <property name="firstName" column="FIRSTNAME" type="string" />
             <property name="lastName" column="LASTNAME" type="string" />
             <property name="middleInitial" column="MIDDLEINITIAL" type="string" />
@@ -25,7 +25,7 @@
                 <many-to-many class="gov.nih.nci.caarray.domain.contact.Organization" column="ORGANIZATION_ID" />
             </set>
         </subclass>
-        <subclass name="Organization" discriminator-value="O">
+        <subclass name="gov.nih.nci.caarray.domain.contact.Organization" discriminator-value="O">
             <property name="name" column="NAME" type="string" />
         </subclass>
     </class>
