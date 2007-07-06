@@ -84,8 +84,10 @@ public class NetcdfDataStoreFactory implements DataStoreFactory {
      * @param descriptor the desciptor
      * @param file the file
      * @return DataStore
+     * @throws DataStoreException exception
      */
-    public DataStore createDataStore(AbstractDataStoreDescriptor descriptor, File file) {
+    public DataStore createDataStore(AbstractDataStoreDescriptor descriptor, File file)
+            throws DataStoreException {
 
         NetcdfFileWriteable ncFile = null;
         NetCdfDataStore netCdfDS = null;
@@ -95,13 +97,18 @@ public class NetcdfDataStoreFactory implements DataStoreFactory {
             ncFile = NetcdfFileWriteable.createNew(url.getFile(), false);
             netCdfDS = new NetCdfDataStore(ncFile);
         } catch (IOException ie) {
+            closeFile(netCdfDS);
             LOG.error("error getting file in createDataStore()", ie);
+            throw new DataStoreException(ie.getMessage());
         } catch (DataStoreException dse) {
+            closeFile(netCdfDS);
             LOG.error("error creating NetcdfDataStore in createDataStore()", dse);
+            throw dse;
         }
         return netCdfDS;
 
     }
+
 
     /**
      * This method retrieves an existing ncdf file from the file system, converting
@@ -109,8 +116,9 @@ public class NetcdfDataStoreFactory implements DataStoreFactory {
      * @see gov.nih.nci.caarray.data.DataStoreFactory#getDataStore(java.io.File)
      * @return DataStore
      * @param file the file
+     * @throws DataStoreException exception
      */
-    public DataStore getDataStore(File file) {
+    public DataStore getDataStore(File file) throws DataStoreException {
         NetcdfFileWriteable ncFile = null;
         NetCdfDataStore netCdfDS = null;
         try {
@@ -119,14 +127,27 @@ public class NetcdfDataStoreFactory implements DataStoreFactory {
             ncFile = NetcdfFileWriteable.openExisting(url.getPath());
             netCdfDS = new NetCdfDataStore(ncFile);
         } catch (IOException ie) {
+            closeFile(netCdfDS);
             LOG.error("error getting file in createDataStore()", ie);
+            throw new DataStoreException(ie.getMessage(), ie);
         } catch (DataStoreException dse) {
+            closeFile(netCdfDS);
             LOG.error("error creating NetcdfDataStore in createDataStore()", dse);
+            throw dse;
         }
         return netCdfDS;
     }
 
 
+    private void closeFile(NetCdfDataStore dataStore) {
+        try {
+            if (dataStore != null) {
+                dataStore.closeFile();
+            }
+        } catch (DataStoreException e) {
+            LOG.error("Failure closing File");
+        }
+    }
 
 
 

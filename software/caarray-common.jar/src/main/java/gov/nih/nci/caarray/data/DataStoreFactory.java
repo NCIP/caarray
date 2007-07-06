@@ -65,13 +65,15 @@ public interface DataStoreFactory {
      * @param descriptor the DataStoreDescriptor
      * @param file the File
      * @return DataStore
+     * @throws DataStoreException exception
      */
-    DataStore createDataStore(AbstractDataStoreDescriptor descriptor, File file);
+    DataStore createDataStore(AbstractDataStoreDescriptor descriptor, File file) throws DataStoreException;
     /**
      * @param file the file
      * @return DataStore
+     * @throws DataStoreException exception
      */
-    DataStore getDataStore(File file);
+    DataStore getDataStore(File file) throws DataStoreException;
 
 }
 

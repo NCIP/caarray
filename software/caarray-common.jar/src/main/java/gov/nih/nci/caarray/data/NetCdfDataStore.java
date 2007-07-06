@@ -86,10 +86,16 @@ import ucar.nc2.Variable;
  * obtained from "index" point, and of index 0 (I could use any number here) in the
  * SVAR array...which are all CHAR arrays with lenght of SVAR_LEN.
  *
- * Usage of the NetcdfDataStore classes would be as follows:
- * 1.  createFile() -- creates a file of the correct structure in your file system
- * 2.  saveData() -- saves Arrays of column data to the file
- * 3.  closeFile() -- flushes the data from memory to the file system.
+ * Usage:  to create a new NetcdfDataStore, the procedure would be as follows:
+ * 1.  Factory.createDataStore()
+ * 2.  createFile() -- creates a file of the correct structure in your file system
+ * 3.  saveData() -- saves Arrays of column data to the file
+ * 4.  closeFile() -- flushes the data from memory to the file system.
+ *
+ * Usage:  to use an existing DataStore, the procedure is as follows:
+ * 1.  Factor.getDataStore()
+ * 2.  setValue()
+ * 3.  closeFile()
  *
  * @author John Pike
  *
@@ -152,17 +158,27 @@ public class NetCdfDataStore implements DataStore {
     /**
      * This method persists arrays of Column data into a previously
      * created NetCDF file.
+     * User should always call "closeFile()" after saving data.  In case of an exception,
+     * this method will close the file itself.
      * @param files list of files
      * @param colNames list of column names
+     * @throws DataStoreException exception
      */
-    public void saveData(List<Array> files, List<String> colNames) {
-        for (int i = 0; i < files.size(); i++) {
-            writeFile(files.get(i), colNames.get(i));
+    public void saveData(List<Array> files, List<String> colNames) throws DataStoreException {
+        try {
+            for (int i = 0; i < files.size(); i++) {
+                writeFile(files.get(i), colNames.get(i));
+            }
+        } catch (DataStoreException e) {
+            closeFile();
+            throw e;
         }
     }
 
 
     /**
+     * User shoudl always call "closeFile()" after calling this method.
+     * In case of exception, this method will close the file.
      *@param column the array to save
      *@throws DataStoreException exception
      */
@@ -173,23 +189,30 @@ public class NetCdfDataStore implements DataStore {
             netcdffile.write(column.getName(), array);
         } catch (IOException ie) {
             LOG.error("error writing file", ie);
+            closeFile();
             throw new DataStoreException(ie.getMessage());
         } catch (InvalidRangeException ire) {
             LOG.error("error writing file", ire);
+            closeFile();
             throw new DataStoreException(ire.getMessage());
+
         }
     }
     /**
      * This method will modify the value of a cell in the array, and currently will
      * also save the file at the same time.  Note the maneuvering to set a String value
      * (ie, DataType.CHAR).
+     *
+     * User of this method should always call "closeFIle" after invoking. In case of
+     * exception, this method will close the file.
      * @param index the row index
      * @param column the column of data
      * @param value to be saved
+     * @throws DataStoreException exception
      * TODO  This is inefficient, since we have to write to file after saving each value.
      */
     @SuppressWarnings("PMD")
-    public void setValue(int index, Column column, Object value) {
+    public void setValue(int index, Column column, Object value) throws DataStoreException {
         Variable var = netcdffile.findVariable(column.getName());
 
         try {
@@ -217,12 +240,19 @@ public class NetCdfDataStore implements DataStore {
             }
             //this sucks.  must write the file now.  not very efficient.
             writeFile(dataArray, var.getName());
-
+        } catch (DataStoreException dse) {
+            closeFile();
+            LOG.error("error writing file in setValue()", dse);
+            throw dse;
         } catch (IOException ie) {
+            closeFile();
             LOG.error("error reading variable in setValue()", ie);
+            throw new DataStoreException(ie.getMessage(), ie);
         } catch (ClassCastException cce) {
+            closeFile();
             LOG.error("value " + value + " is not of the same datatype as the column " + column.getType()
                     + " into which it is being saved", cce);
+            throw new DataStoreException(cce.getMessage(), cce);
         }
     }
     /**
@@ -266,7 +296,8 @@ public class NetCdfDataStore implements DataStore {
         } catch (IOException ie) {
             throw new DataStoreException("Error reading file in getValues()", ie);
         } catch (Exception e) {
-            LOG.error("Error in getvalues", e);
+            LOG.error("Exception in getvalues", e);
+            throw new DataStoreException(e.getMessage(), e);
         }
         return returnObj;
 
@@ -307,6 +338,7 @@ public class NetCdfDataStore implements DataStore {
             throw new DataStoreException("Error reading file in getValues()", ie);
         } catch (Exception e) {
             LOG.error("error in getValues", e);
+            throw new DataStoreException(e.getMessage(), e);
         }
         return returnObj;
     }
@@ -325,8 +357,9 @@ public class NetCdfDataStore implements DataStore {
      * Creates a netcdffile of the given rowSize, properly allocating the dimensions
      * and columns per the DataStoreDescriptor file.
      * @param size int
+     * @throws DataStoreException exception
      */
-    public void createFile(int size) {
+    public void createFile(int size) throws DataStoreException {
         Dimension dataDim = netcdffile.addDimension("data", size);
         Dimension svarLen = netcdffile.addDimension("svar_len", SVAR_LEN);
         Dimension[] dimList = {dataDim};
@@ -347,23 +380,26 @@ public class NetCdfDataStore implements DataStore {
             netcdffile.create();
         } catch (IOException e) {
             LOG.error("Error creating file");
+            throw new DataStoreException(e.getMessage(), e);
         }
     }
 
     /**
-     *
+     *@throws DataStoreException exception
      */
-    public void closeFile() {
+    public void closeFile() throws DataStoreException {
         try {
             if (netcdffile != null) {
                 netcdffile.close();
             }
         } catch (IOException e) {
             LOG.error("ERROR closing file");
+            throw new DataStoreException(e.getMessage(), e);
         }
+
     }
     @SuppressWarnings("PMD")
-    private void writeFile(Array array, String varName) {
+    private void writeFile(Array array, String varName) throws DataStoreException {
         String dataType = array.getElementType().getCanonicalName();
         try {
             if (dataType.equals(ucar.ma2.DataType.CHAR.toString())) {
@@ -386,12 +422,15 @@ public class NetCdfDataStore implements DataStore {
                 netcdffile.write(varName, (Array) array);
             }
         } catch (InvalidRangeException ire) {
-            LOG.error("ERROR writing file");
+            LOG.error("Invalid Range ERROR writing file");
+            throw new DataStoreException(ire.getMessage(), ire);
         } catch (IOException e) {
-            LOG.error("ERROR writing file");
+            LOG.error("Exception writing file");
+            throw new DataStoreException(e.getMessage(), e);
         } catch (ClassCastException cce) {
             LOG.error("value for " + varName + " is not of the same datatype as the column"
                     + " into which it is being saved", cce);
+            throw new DataStoreException(cce.getMessage(), cce);
         }
     }
 
