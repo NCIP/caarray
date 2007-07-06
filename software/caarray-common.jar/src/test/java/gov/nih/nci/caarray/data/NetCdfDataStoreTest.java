@@ -52,11 +52,8 @@ package gov.nih.nci.caarray.data;
 
 import static org.junit.Assert.*;
 
-
 import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,10 +65,6 @@ import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayFloat;
 import ucar.ma2.Index;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFileWriteable;
-
 
 /**
  * @author John Pike
@@ -80,87 +73,72 @@ import ucar.nc2.NetcdfFileWriteable;
 public class NetCdfDataStoreTest {
 
     private static final Log LOG = LogFactory.getLog(NetCdfDataStoreTest.class);
+
     private static final int COL_SIZE = 4;
+
     private static final int ROW_TEST_SIZE = 900;
 
     private static final int S_VAR_LEN = 80;
+
     private static final int TEST_VAL_1 = 100000;
+
     private static final int TEST_VAL_2 = 100;
+
     private static final int TEST_ROW = 10;
 
     private static final String FILENAME = "testNCDF.nc";
 
-    /**
-    *
-    */
-   @After
-   public void deleteFile() {
-       File file = new File(FILENAME);
-       file = file.getAbsoluteFile();
-       file.delete();
-   }
+    private static final float TEST_FLOAT_VAL_1 = 9999;
+    private static final String WOOHOO_STRING = "WOOHOO";
 
-   /**
+    /**
+     *
+     */
+    @After
+    public void deleteFile() {
+        File file = new File(FILENAME);
+        file = file.getAbsoluteFile();
+        file.delete();
+
+        File file2 = new File("test");
+        file2 = file2.getAbsoluteFile();
+        file2.delete();
+    }
+
+    /**
      *
      */
     @Before
     public void initFile() {
-
-        NetcdfFileWriteable ncfile = null;
         NetcdfDataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
-
+        NetCdfDataStore netCdfDS = null;
         try {
-        File file = new File(FILENAME);
-        file = file.getAbsoluteFile();
-        ncfile = NetcdfFileWriteable.createNew(file.getPath(), false);
-        Dimension dataDim = ncfile.addDimension("data", ROW_TEST_SIZE);
-        Dimension svarLen = ncfile.addDimension("svar_len", S_VAR_LEN);
-        Dimension[] dimList = {dataDim};
-        Dimension[] dimStrList = {dataDim, svarLen};
-        List<Column> columns = descriptor.getColumns();
-
-        for (Iterator iter = columns.iterator(); iter.hasNext();) {
-            Column column = (Column) iter.next();
-            Dimension[] dimListToAdd = null;
-            if ((column.getType()).equals(ucar.ma2.DataType.CHAR)) {
-                dimListToAdd = dimStrList;
-            } else {
-                dimListToAdd = dimList;
+            File file = new File(FILENAME).getAbsoluteFile();
+            DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
+            netCdfDS = (NetCdfDataStore) factory.createDataStore(descriptor, file);
+            netCdfDS.createFile(ROW_TEST_SIZE);
+            // here's where we actually load the file with data
+            ArrayFloat floatArrayXVar = new ArrayFloat.D1(ROW_TEST_SIZE);
+            ArrayFloat floatArrayYVar = new ArrayFloat.D1(ROW_TEST_SIZE);
+            ArrayChar stringArrayPVar = new ArrayChar.D2(ROW_TEST_SIZE, S_VAR_LEN);
+            ArrayFloat floatArrayPctVar = new ArrayFloat.D1(ROW_TEST_SIZE);
+            loadFile(ROW_TEST_SIZE, floatArrayXVar, floatArrayYVar, stringArrayPVar, floatArrayPctVar);
+            ArrayList<String> varList = new ArrayList<String>();
+            for (int i = 0; i < descriptor.getColumns().size(); i++) {
+                varList.add(descriptor.getColumns().get(i).getName());
             }
-            ncfile.addVariable(column.getName(), column.getType(), dimListToAdd);
+            ArrayList<Array> arrayList = new ArrayList<Array>();
+            arrayList.add(floatArrayXVar);
+            arrayList.add(floatArrayYVar);
+            arrayList.add(stringArrayPVar);
+            arrayList.add(floatArrayPctVar);
+            netCdfDS.saveData(arrayList, varList);
+            netCdfDS.closeFile();
+        } catch (DataStoreException dse) {
+            LOG.error("Exception init'ing file", dse);
         }
-        createFile(ncfile);
-        ArrayFloat floatArrayXVar = new ArrayFloat.D1(dataDim.getLength());
-        ArrayFloat floatArrayYVar = new ArrayFloat.D1(dataDim.getLength());
-        ArrayChar stringArrayPVar = new ArrayChar.D2(dataDim.getLength(), svarLen.getLength());
-        ArrayFloat floatArrayPctVar = new ArrayFloat.D1(dataDim.getLength());
-        loadFile(dataDim, floatArrayXVar, floatArrayYVar, stringArrayPVar, floatArrayPctVar);
-
-        writeDataToFile(ncfile, floatArrayXVar, floatArrayYVar, stringArrayPVar, floatArrayPctVar);
-        } catch (InvalidRangeException ie) {
-            LOG.error("Error writing file", ie);
-        } catch (Exception e) {
-            LOG.error("Caught Exception", e);
-        }
-        closeFile(ncfile);
-
     }
-    /**
-     * @param ncfile
-     * @param floatArrayXVar
-     * @param floatArrayYVar
-     * @param stringArrayPVar
-     * @param floatArrayPctVar
-     * @throws InvalidRangeException
-     */
-    private void writeDataToFile(NetcdfFileWriteable ncfile, ArrayFloat floatArrayXVar,
-            ArrayFloat floatArrayYVar, ArrayChar stringArrayPVar, ArrayFloat floatArrayPctVar)
-            throws InvalidRangeException {
-        writeFile(ncfile, floatArrayXVar, NetcdfDataStoreDescriptor.X_VAL_COL_NAME);
-        writeFile(ncfile, floatArrayYVar, NetcdfDataStoreDescriptor.Y_VAL_COL_NAME);
-        writeFileStrings(ncfile, stringArrayPVar, NetcdfDataStoreDescriptor.P_VAL_COL_NAME);
-        writeFile(ncfile, floatArrayPctVar, NetcdfDataStoreDescriptor.PCT_COL_NAME);
-    }
+
     /**
      * @param dataDim
      * @param floatArrayXVar
@@ -168,55 +146,118 @@ public class NetCdfDataStoreTest {
      * @param stringArrayPVar
      * @param floatArrayPctVar
      */
-    private void loadFile(Dimension dataDim, ArrayFloat floatArrayXVar, ArrayFloat floatArrayYVar,
-            ArrayChar stringArrayPVar, ArrayFloat floatArrayPctVar) {
+    private void loadFile(int rowSize, ArrayFloat floatArrayXVar, ArrayFloat floatArrayYVar, ArrayChar stringArrayPVar,
+            ArrayFloat floatArrayPctVar) {
         Index idx;
-        for (int i = 0; i < dataDim.getLength(); i++) {
+        for (int i = 0; i < rowSize; i++) {
             idx = floatArrayXVar.getIndex();
             floatArrayXVar.setFloat(idx.set(i), (float) (i * TEST_VAL_1 + i * TEST_VAL_2));
         }
-        for (int i = 0; i < dataDim.getLength(); i++) {
+        for (int i = 0; i < rowSize; i++) {
             idx = floatArrayYVar.getIndex();
             floatArrayYVar.setFloat(idx.set(i), (float) (i * TEST_VAL_1 + i * TEST_VAL_2));
         }
-        for (int i = 0; i < dataDim.getLength(); i++) {
+        for (int i = 0; i < rowSize; i++) {
             idx = stringArrayPVar.getIndex();
             stringArrayPVar.setString(i, "Test" + i);
         }
-        for (int i = 0; i < dataDim.getLength(); i++) {
+        for (int i = 0; i < rowSize; i++) {
             idx = floatArrayPctVar.getIndex();
             floatArrayPctVar.setFloat(idx.set(i), (float) (i * TEST_VAL_1 + i * TEST_VAL_2));
         }
     }
+
+
     /**
-     * @param ncfile
-     * @param testFloats
-     * @throws InvalidRangeException
+     *
      */
-    private void writeFile(NetcdfFileWriteable ncfile, ArrayFloat testFloats, String varName)
-        throws InvalidRangeException {
+    @Test
+    public void testSetValueFloat() {
+        NetCdfDataStore netCdfDS = null;
+        File file = new File(FILENAME);
+        Column column = new Column();
+        column.setName(NetcdfDataStoreDescriptor.X_VAL_COL_NAME);
+        column.setType(ucar.ma2.DataType.FLOAT);
+        DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
         try {
-            ncfile.write(varName, testFloats);
-        } catch (IOException e) {
-            LOG.error("ERROR writing file");
+            netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
+            netCdfDS.setValue(2, column, TEST_FLOAT_VAL_1);
+            netCdfDS.closeFile();
+        } catch (DataStoreException dse) {
+            LOG.error("error", dse);
         }
     }
 
+    /**
+    *
+    *
+    */
+   @Test
+   public void testSetValueString() {
+       NetCdfDataStore netCdfDS = null;
+       File file = new File(FILENAME);
+       Column column = new Column();
+       column.setName(NetcdfDataStoreDescriptor.P_VAL_COL_NAME);
+       column.setType(ucar.ma2.DataType.CHAR);
+       DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
+       String value = null;
+       try {
+           netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
+           netCdfDS.setValue(2, column, WOOHOO_STRING);
+           netCdfDS.save(column);
 
-    private void writeFileStrings(NetcdfFileWriteable ncfile, Array testStrings, String varName)
-        throws InvalidRangeException {
-        try {
-            ncfile.write(varName, (ArrayChar.D2) testStrings);
-          //  ncfile.writeStringData(varName, testStrings);
-        } catch (IOException e) {
-            LOG.error("ERROR writing file");
-        }
-    }
+           netCdfDS.closeFile();
+           netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
+           value = (String) netCdfDS.getValue(2, column);
+       } catch (DataStoreException dse) {
+           LOG.error("error", dse);
+       }
+
+       assertTrue(WOOHOO_STRING.equals(value));
+   }
+
+
+   /**
+   * @throws DataStoreException exception
+   */
+  @Test(expected = DataStoreException.class)
+  public void testSetValueStringInFloatColumn() throws DataStoreException {
+      NetCdfDataStore netCdfDS = null;
+      File file = new File(FILENAME);
+      Column column = new Column();
+      column.setName(NetcdfDataStoreDescriptor.X_VAL_COL_NAME);
+      column.setType(ucar.ma2.DataType.FLOAT);
+      DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
+
+      netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
+      netCdfDS.setValue(2, column, WOOHOO_STRING);
+      netCdfDS.closeFile();
+
+  }
+
+
+  /**
+   * @throws DataStoreException exception
+   */
+  @Test(expected = DataStoreException.class)
+  public void testSetValueBadFilename() throws DataStoreException {
+      NetCdfDataStore netCdfDS = null;
+      File file = new File("test");
+      Column column = new Column();
+      column.setName(NetcdfDataStoreDescriptor.X_VAL_COL_NAME);
+      column.setType(ucar.ma2.DataType.FLOAT);
+      DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
+
+      netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
+      netCdfDS.setValue(2, column, WOOHOO_STRING);
+      netCdfDS.closeFile();
+
+  }
     /**
      * Test method for {@link gov.nih.nci.caarray.data.NetCdfDataStore#getValue(int, gov.nih.nci.caarray.data.Column)}.
      */
     @Test
-    public void testGetValue() {
+    public void testGetValueFloat() {
         NetCdfDataStore netCdfDS = null;
         Object value = null;
 
@@ -235,6 +276,31 @@ public class NetCdfDataStoreTest {
         assertNotNull(value);
         double testVal = Double.parseDouble(String.valueOf(value));
         assertTrue(testVal > 0);
+    }
+
+    /**
+     * Test method for {@link gov.nih.nci.caarray.data.NetCdfDataStore#getValue(int, gov.nih.nci.caarray.data.Column)}.
+     */
+    @Test
+    public void testGetValueString() {
+        NetCdfDataStore netCdfDS = null;
+        Object value = null;
+
+        try {
+            File file = new File(FILENAME);
+            DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
+            netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
+
+            Column column = new Column();
+            column.setName(NetcdfDataStoreDescriptor.P_VAL_COL_NAME);
+            column.setType(ucar.ma2.DataType.CHAR);
+            value = netCdfDS.getValue(TEST_ROW, column);
+        } catch (Exception e) {
+            LOG.error("Error in testGetValue", e);
+        }
+        assertNotNull(value);
+        String testVal = (String) value;
+        assertTrue(("Test" + TEST_ROW).equals(testVal));
     }
 
     /**
@@ -307,31 +373,6 @@ public class NetCdfDataStoreTest {
         assertTrue(testFlt.floatValue() > TEST_VAL_1);
         assertTrue(value.length == COL_SIZE);
 
-    }
-
-
-
-    /**
-     * @param ncfile
-     */
-    private void closeFile(NetcdfFileWriteable ncfile) {
-        try {
-            ncfile.close();
-        } catch (IOException e) {
-            LOG.error("ERROR closing file");
-        }
-    }
-
-
-    /**
-     * @param ncfile
-     */
-    private void createFile(NetcdfFileWriteable ncfile) {
-        try {
-            ncfile.create();
-        } catch (IOException e) {
-            LOG.error("Error creating file");
-        }
     }
 
 }
