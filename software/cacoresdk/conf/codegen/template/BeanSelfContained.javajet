@@ -105,9 +105,7 @@
 package <%=pkgName%>;
 
 <%=UML13JavaSourceHelper.getClassJavadoc(klass)%>
-public <% if (klass.isAbstract()) {%>abstract <%}%>class <%=klass.getName()%> <% if (superClass != null) { %>
-  extends <%=superPkgName%>.<%=superClass.getName()%><% } %>
-  implements java.io.Serializable {
+public <% if (klass.isAbstract()) {%>abstract <%}%>class <%=klass.getName()%><% if (superClass != null) { %> extends <%=superPkgName%>.<%=superClass.getName()%><% } else { %> implements java.io.Serializable <% } %> {
     /**
      * The serial version UID for serialization.
      */
