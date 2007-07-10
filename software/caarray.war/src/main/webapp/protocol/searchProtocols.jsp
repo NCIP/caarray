@@ -21,13 +21,23 @@
       </tr>
 
       <tr>
-        <th><h:outputLabel for="protocolTitle" value="Title" /></th>
-        <td><h:inputText id="protocolTitle" value="#{searchProtocolsBean.protocol.title}" /></td>
+        <th><h:outputLabel for="protocolDescription" value="Description" /></th>
+        <td><h:inputText id="protocolDescription" value="#{searchProtocolsBean.protocol.description}" /></td>
       </tr>
 
       <tr>
-        <th><h:outputLabel for="protocolText" value="Text" /></th>
-        <td><h:inputTextarea id="protocolText" value="#{searchProtocolsBean.protocol.text}" /></td>
+        <th><h:outputLabel for="protocolContact" value="Contact" /></th>
+        <td><h:inputTextarea id="protocolContact" value="#{searchProtocolsBean.protocol.contact}" /></td>
+      </tr>
+
+      <tr>
+        <th><h:outputLabel for="protocolHardware" value="Hardware" /></th>
+        <td><h:inputTextarea id="protocolHardware" value="#{searchProtocolsBean.protocol.hardware}" /></td>
+      </tr>
+
+      <tr>
+        <th><h:outputLabel for="protocolSoftware" value="Software" /></th>
+        <td><h:inputTextarea id="protocolSoftware" value="#{searchProtocolsBean.protocol.software}" /></td>
       </tr>
 
       <tr>

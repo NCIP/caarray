@@ -132,11 +132,8 @@ public final class SearchProtocolsBean extends AbstractProtocolBean {
         if (StringUtils.isEmpty(getProtocol().getName())) {
             getProtocol().setName(null);
         }
-        if (StringUtils.isEmpty(getProtocol().getTitle())) {
-            getProtocol().setTitle(null);
-        }
-        if (StringUtils.isEmpty(getProtocol().getText())) {
-            getProtocol().setText(null);
+        if (StringUtils.isEmpty(getProtocol().getDescription())) {
+            getProtocol().setDescription(null);
         }
         if (StringUtils.isEmpty(getProtocol().getUrl())) {
             getProtocol().setUrl(null);

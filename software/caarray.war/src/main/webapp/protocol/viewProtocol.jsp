@@ -20,12 +20,20 @@
         <td><h:outputText value="#{protocolBean.protocol.name}" />
       </tr>
       <tr>
-        <th>Title</th>
-        <td><h:outputText value="#{protocolBean.protocol.title}" />
+        <th>Description</th>
+        <td><h:outputText value="#{protocolBean.protocol.description}" />
       </tr>
       <tr>
-        <th>Text</th>
-        <td><h:outputText value="#{protocolBean.protocol.text}" />
+        <th>Contact</th>
+        <td><h:outputText value="#{protocolBean.protocol.contact}" />
+      </tr>
+      <tr>
+        <th>Hardware</th>
+        <td><h:outputText value="#{protocolBean.protocol.hardware}" />
+      </tr>
+      <tr>
+        <th>Software</th>
+        <td><h:outputText value="#{protocolBean.protocol.software}" />
       </tr>
       <tr>
         <th>URL</th>
