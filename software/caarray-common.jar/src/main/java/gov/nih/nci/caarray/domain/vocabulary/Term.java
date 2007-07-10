@@ -1,7 +1,3 @@
-package gov.nih.nci.caarray.domain.vocabulary;
-
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-
 /**
  * The software subject to this notice and license includes both human readable
  * source code form and machine readable, binary, object code form. The caArray
@@ -85,6 +81,10 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
+package gov.nih.nci.caarray.domain.vocabulary;
+
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+
   /**
 
    */
@@ -117,7 +117,6 @@ public class Term extends AbstractCaArrayEntity {
     public void setDescription(final String descriptionVal) {
         this.description = descriptionVal;
     }
-
     /**
      * The value String.
      */
@@ -139,54 +138,6 @@ public class Term extends AbstractCaArrayEntity {
      */
     public void setValue(final String valueVal) {
         this.value = valueVal;
-    }
-
-    /**
-     * The source gov.nih.nci.caarray.domain.vocabulary.Source.
-     */
-    private gov.nih.nci.caarray.domain.vocabulary.Source source;
-
-    /**
-     * Gets the source.
-     *
-     * @return the source
-     */
-    public gov.nih.nci.caarray.domain.vocabulary.Source getSource() {
-        return source;    
-    }
-
-    /**
-     * Sets the source.
-     *
-     * @param sourceVal the source
-     */
-    public void setSource(final 
-      gov.nih.nci.caarray.domain.vocabulary.Source sourceVal) {
-        this.source = sourceVal;
-    }
-
-    /**
-     * The category gov.nih.nci.caarray.domain.vocabulary.Category.
-     */
-    private gov.nih.nci.caarray.domain.vocabulary.Category category;
-
-    /**
-     * Gets the category.
-     *
-     * @return the category
-     */
-    public gov.nih.nci.caarray.domain.vocabulary.Category getCategory() {
-        return category;    
-    }
-
-    /**
-     * Sets the category.
-     *
-     * @param categoryVal the category
-     */
-    public void setCategory(final 
-      gov.nih.nci.caarray.domain.vocabulary.Category categoryVal) {
-        this.category = categoryVal;
     }
 
     /**
@@ -214,6 +165,54 @@ public class Term extends AbstractCaArrayEntity {
     }
 
     /**
+     * The category gov.nih.nci.caarray.domain.vocabulary.Category.
+     */
+    private gov.nih.nci.caarray.domain.vocabulary.Category category;
+
+    /**
+     * Gets the category.
+     *
+     * @return the category
+     */
+    public gov.nih.nci.caarray.domain.vocabulary.Category getCategory() {
+        return category;    
+    }
+
+    /**
+     * Sets the category.
+     *
+     * @param categoryVal the category
+     */
+    public void setCategory(final 
+      gov.nih.nci.caarray.domain.vocabulary.Category categoryVal) {
+        this.category = categoryVal;
+    }
+
+    /**
+     * The source gov.nih.nci.caarray.domain.vocabulary.Source.
+     */
+    private gov.nih.nci.caarray.domain.vocabulary.Source source;
+
+    /**
+     * Gets the source.
+     *
+     * @return the source
+     */
+    public gov.nih.nci.caarray.domain.vocabulary.Source getSource() {
+        return source;    
+    }
+
+    /**
+     * Sets the source.
+     *
+     * @param sourceVal the source
+     */
+    public void setSource(final 
+      gov.nih.nci.caarray.domain.vocabulary.Source sourceVal) {
+        this.source = sourceVal;
+    }
+
+    /**
      * Checks if given object is equal to this object.
      *
      * @param obj the object to compare to this object
@@ -228,9 +227,9 @@ public class Term extends AbstractCaArrayEntity {
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;
             }
-            }
-            return theyAreEqual;
         }
+        return theyAreEqual;
+    }
 
     /**
      * Returns the hashcode for the object.
