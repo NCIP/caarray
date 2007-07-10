@@ -238,7 +238,7 @@ public class NetCdfDataStoreTest {
     *
     */
    @Test
-   public void testSetValueString() {
+   public void testSetValueCHAR() {
        NetCdfDataStore netCdfDS = null;
        File file = new File(FILENAME);
        Column column = new Column();
@@ -261,6 +261,33 @@ public class NetCdfDataStoreTest {
        assertTrue(WOOHOO_STRING.equals(value));
    }
 
+   /**
+   *
+   *
+   */
+  @Test
+  public void testSetValueString() {
+      NetCdfDataStore netCdfDS = null;
+      File file = new File(FILENAME);
+      Column column = new Column();
+      column.setName(P_VAL_COL_NAME);
+      column.setType(DataType.STRING);
+      DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
+      String value = null;
+      try {
+          netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
+          netCdfDS.setValue(2, column, WOOHOO_STRING);
+          netCdfDS.save(column);
+
+          netCdfDS.closeFile();
+          netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
+          value = (String) netCdfDS.getValue(2, column);
+      } catch (DataStoreException dse) {
+          LOG.error("error", dse);
+      }
+
+      assertTrue(WOOHOO_STRING.equals(value));
+  }
 
    /**
    * @throws DataStoreException exception
@@ -327,7 +354,7 @@ public class NetCdfDataStoreTest {
      * Test method for {@link gov.nih.nci.caarray.data.NetCdfDataStore#getValue(int, gov.nih.nci.caarray.data.Column)}.
      */
     @Test
-    public void testGetValueString() {
+    public void testGetValueCHAR() {
         NetCdfDataStore netCdfDS = null;
         Object value = null;
 
@@ -348,6 +375,31 @@ public class NetCdfDataStoreTest {
         assertTrue(("Test" + TEST_ROW).equals(testVal));
     }
 
+
+    /**
+     * Test method for {@link gov.nih.nci.caarray.data.NetCdfDataStore#getValue(int, gov.nih.nci.caarray.data.Column)}.
+     */
+    @Test
+    public void testGetValueString() {
+        NetCdfDataStore netCdfDS = null;
+        Object value = null;
+
+        try {
+            File file = new File(FILENAME);
+            DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
+            netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
+
+            Column column = new Column();
+            column.setName(P_VAL_COL_NAME);
+            column.setType(DataType.STRING);
+            value = netCdfDS.getValue(TEST_ROW, column);
+        } catch (Exception e) {
+            LOG.error("Error in testGetValue", e);
+        }
+        assertNotNull(value);
+        String testVal = (String) value;
+        assertTrue(("Test" + TEST_ROW).equals(testVal));
+    }
     /**
      * Test method for {@link gov.nih.nci.caarray.data.NetCdfDataStore#getValues(gov.nih.nci.caarray.data.Column)}.
      */

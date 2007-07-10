@@ -56,8 +56,9 @@ import java.util.List;
  * This class should be designed to match the structure of the data
  * to be stored on the file system.  For instance, if the file has
  * 4 columns all of type FLOAT and named a, b, c, and d, then the
- * Descriptor should be created with 4 columns of type ucar.m2.Float
- * and named a, b, c and d.
+ * Descriptor should be created with 4 columns with the names
+ * a, b, c and d; and using the DataType class, give them each a type
+ * of DataType.FLOAT
  * @author John Pike
  *
  */

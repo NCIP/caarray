@@ -80,9 +80,9 @@ public enum DataType {
          */
         CHAR  (ucar.ma2.DataType.CHAR),
         /**
-         *
+         *  String's implementation is CHAR in Netcdf.
          */
-        STRING  (ucar.ma2.DataType.STRING),
+        STRING  (ucar.ma2.DataType.CHAR),
         /**
          *
          */
