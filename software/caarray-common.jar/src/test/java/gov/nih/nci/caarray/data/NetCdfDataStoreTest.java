@@ -54,6 +54,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -330,6 +331,74 @@ public class NetCdfDataStoreTest {
      * Test method for {@link gov.nih.nci.caarray.data.NetCdfDataStore#getValues(gov.nih.nci.caarray.data.Column)}.
      */
     @Test
+    public void testSetColumnValuesString() {
+        NetCdfDataStore netCdfDS = null;
+        String[] value = null;
+        try {
+            File file = new File(FILENAME);
+            DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
+            netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
+
+            Column column = new Column();
+            column.setName(NetcdfDataStoreDescriptor.P_VAL_COL_NAME);
+            column.setType(ucar.ma2.DataType.STRING);
+            value = (String[]) netCdfDS.getValues(column);
+            List<String> strList = new ArrayList<String>();
+            ArrayList<String> colList = new ArrayList<String>();
+            List<ArrayList<?>> listOfLists = new ArrayList<ArrayList<?>>();
+            for (int i = 0; i < value.length; i++) {
+                strList.add(i, (String) (value[i]));
+            }
+            listOfLists.add((ArrayList<?>) strList);
+            colList.add(NetcdfDataStoreDescriptor.P_VAL_COL_NAME);
+
+
+            netCdfDS.saveColumnData(listOfLists, colList);
+
+        } catch (Exception e) {
+            LOG.error("Error in testGetValuesString", e);
+        }
+        assertNotNull(value);
+        assertTrue(value.length == ROW_TEST_SIZE);
+    }
+    /**
+     * Test method for {@link gov.nih.nci.caarray.data.NetCdfDataStore#getValues(gov.nih.nci.caarray.data.Column)}.
+     */
+    @Test
+    public void testSetColumnValuesFloat() {
+        NetCdfDataStore netCdfDS = null;
+        Float[] value = null;
+        try {
+            File file = new File(FILENAME);
+            DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
+            netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
+
+            Column column = new Column();
+            column.setName(NetcdfDataStoreDescriptor.X_VAL_COL_NAME);
+            column.setType(ucar.ma2.DataType.FLOAT);
+            value = (Float[]) netCdfDS.getValues(column);
+            List<Float> floatList = new ArrayList<Float>();
+            ArrayList<String> colList = new ArrayList<String>();
+            List<ArrayList<?>> listOfLists = new ArrayList<ArrayList<?>>();
+            for (int i = 0; i < value.length; i++) {
+                floatList.add(i, new Float((Float) (value[i])));
+            }
+            listOfLists.add((ArrayList<?>) floatList);
+            colList.add(NetcdfDataStoreDescriptor.X_VAL_COL_NAME);
+
+
+            netCdfDS.saveColumnData(listOfLists, colList);
+
+        } catch (Exception e) {
+            LOG.error("Error in testGetValuesColumn", e);
+        }
+        assertNotNull(value);
+        assertTrue(value.length == ROW_TEST_SIZE);
+    }
+    /**
+     * Test method for {@link gov.nih.nci.caarray.data.NetCdfDataStore#getValues(gov.nih.nci.caarray.data.Column)}.
+     */
+    @Test
     public void testGetValuesColumnString() {
         NetCdfDataStore netCdfDS = null;
         Object[] value = null;
@@ -343,7 +412,7 @@ public class NetCdfDataStoreTest {
             column.setType(ucar.ma2.DataType.CHAR);
             value = (Object[]) netCdfDS.getValues(column);
         } catch (Exception e) {
-            LOG.error("Error in testGetValuesColumn", e);
+            LOG.error("Error in testGetValuesColumnString", e);
         }
         assertNotNull(value);
         assertTrue(value.length == ROW_TEST_SIZE);

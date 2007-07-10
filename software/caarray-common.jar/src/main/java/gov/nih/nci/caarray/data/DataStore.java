@@ -75,7 +75,7 @@ public interface DataStore {
      * @throws DataStoreException data store exception
      * @return Object array
      */
-     Object[] getValues(Column column) throws DataStoreException;
+     Object getValues(Column column) throws DataStoreException;
     /**
      * @param index an int
      * @throws DataStoreException data store exception

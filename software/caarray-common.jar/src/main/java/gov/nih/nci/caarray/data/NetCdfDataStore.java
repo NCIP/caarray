@@ -51,6 +51,7 @@
 package gov.nih.nci.caarray.data;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -89,7 +90,8 @@ import ucar.nc2.Variable;
  * Usage:  to create a new NetcdfDataStore, the procedure would be as follows:
  * 1.  Factory.createDataStore()
  * 2.  createFile() -- creates a file of the correct structure in your file system
- * 3.  saveData() -- saves Arrays of column data to the file
+ * 3a.  saveData() -- saves Arrays of column data to the file;  OR,
+ * 3b.  saveColumnData() -- saves lists of native java types to the file
  * 4.  closeFile() -- flushes the data from memory to the file system.
  *
  * Usage:  to use an existing DataStore, the procedure is as follows:
@@ -97,6 +99,18 @@ import ucar.nc2.Variable;
  * 2.  setValue()
  * 3.  closeFile()
  *
+ * @author John Pike
+ *
+ */
+/**
+ * @author John Pike
+ *
+ */
+/**
+ * @author John Pike
+ *
+ */
+/**
  * @author John Pike
  *
  */
@@ -158,8 +172,22 @@ public class NetCdfDataStore implements DataStore {
     /**
      * This method persists arrays of Column data into a previously
      * created NetCDF file.
+     *
+     * This lists of "files" must be of type <code>ucar.ma2.Array</code>.
+     *
      * User should always call "closeFile()" after saving data.  In case of an exception,
      * this method will close the file itself.
+     *
+     * The List of Array objects are constructed to match the columns in the file,
+     * and must have a corresponding value in the List of colNames
+     *
+     *      ArrayList arrayList = new ArrayList();
+     *      arrayList.add(floatArrayXVar);
+     *      arrayList.add(floatArrayYVar);
+     *      arrayList.add(stringArrayPVar);
+     *      arrayList.add(floatArrayPctVar);
+     *      netCdfDS.saveData(arrayList, varList);
+     *      netCdfDS.closeFile();
      * @param files list of files
      * @param colNames list of column names
      * @throws DataStoreException exception
@@ -176,8 +204,32 @@ public class NetCdfDataStore implements DataStore {
     }
 
 
+    /**This is the preferred method of saving values to an existing netcdf file.  It allows the user
+     * to save lists of java objects, rather than objects of type <code>ucar.ma2.Array</code>
+     * It is much more efficient than setValue() for saving large numbers of values, in that
+     * the commit only happens once, rather than after each value.
+     *
+     * The values in the lists of column data should be of the following datatypes:
+     *   java.lang.Float, java.lang.Boolean, java.lang.Byte, java.lang.Short, java.lang.Integer,
+     *   java.lang.Double, java.lang.Char, java.lang.Long, java.lang.String.
+     *
+     * @param columns list of column data
+     * @param colNames list of columNames
+     * @throws DataStoreException exception
+     */
+    public void saveColumnData(List<ArrayList<?>> columns, List<String> colNames)
+            throws DataStoreException {
+
+        List<Array> files = columnsToArray(columns);
+        saveData(files, colNames);
+    }
+
+
+
+
+
     /**
-     * User shoudl always call "closeFile()" after calling this method.
+     * User should always call "closeFile()" after calling this method.
      * In case of exception, this method will close the file.
      *@param column the array to save
      *@throws DataStoreException exception
@@ -287,8 +339,8 @@ public class NetCdfDataStore implements DataStore {
      * @throws DataStoreException an exception
      * @return Object[] an array
      */
-    public Object[] getValues(Column column) throws DataStoreException {
-        Object[] returnObj = null;
+    public Object getValues(Column column) throws DataStoreException {
+        Object returnObj = null;
         Variable var = netcdffile.findVariable(column.getName());
         boolean isChar = isChar(var);
         try {
@@ -343,13 +395,7 @@ public class NetCdfDataStore implements DataStore {
         return returnObj;
     }
 
-    /**
-     * @param var
-     * @return
-     */
-    private boolean isChar(Variable var) {
-        return var.getDataType().equals(ucar.ma2.DataType.CHAR);
-    }
+
 
 
 
@@ -398,6 +444,85 @@ public class NetCdfDataStore implements DataStore {
         }
 
     }
+
+
+    /**
+     * @param var
+     * @return
+     */
+    private boolean isChar(Variable var) {
+        return (var.getDataType().equals(ucar.ma2.DataType.CHAR)
+                || var.getDataType().equals(ucar.ma2.DataType.STRING));
+    }
+
+
+    private List<Array> columnsToArray(List<ArrayList<?>> columns) {
+        List<Array> returnList = new ArrayList<Array>();
+        for (int i = 0; i < columns.size(); i++) {
+            ArrayList column = (ArrayList) columns.get(i);
+            String colType = column.get(0).getClass().getSimpleName();
+            if (colType.equals("Float")) {
+                ArrayFloat array = (ArrayFloat) Array.factory(float.class, new int[] {column.size()});
+                Index idx = array.getIndex();
+                for (int j = 0; j < column.size(); j++) {
+                    array.setFloat(idx.set(j), (Float) column.get(j));
+                }
+                returnList.add(array);
+            } else if (colType.equals("Integer")) {
+                ArrayInt array = (ArrayInt) Array.factory(int.class, new int[] {column.size()});
+                Index idx = array.getIndex();
+                for (int j = 0; j < column.size(); j++) {
+                    array.setInt(idx.set(j), (Integer) column.get(j));
+                }
+                returnList.add(array);
+            } else if (colType.equals("Short")) {
+                ArrayShort array = (ArrayShort) Array.factory(short.class, new int[] {column.size()});
+                Index idx = array.getIndex();
+                for (int j = 0; j < column.size(); j++) {
+                    array.setShort(idx.set(j), (Short) column.get(j));
+                }
+                returnList.add(array);
+            } else if (colType.equals("Double")) {
+                ArrayDouble array = (ArrayDouble) Array.factory(double.class, new int[] {column.size()});
+                Index idx = array.getIndex();
+                for (int j = 0; j < column.size(); j++) {
+                    array.setDouble(idx.set(j), (Double) column.get(j));
+                }
+                returnList.add(array);
+            } else if (colType.equals("Long")) {
+                ArrayLong array = (ArrayLong) Array.factory(long.class, new int[] {column.size()});
+                Index idx = array.getIndex();
+                for (int j = 0; j < column.size(); j++) {
+                    array.setLong(idx.set(j), (Long) column.get(j));
+                }
+                returnList.add(array);
+            } else if (colType.equals("Byte")) {
+                ArrayByte array = (ArrayByte) Array.factory(byte.class, new int[] {column.size()});
+                Index idx = array.getIndex();
+                for (int j = 0; j < column.size(); j++) {
+                    array.setByte(idx.set(j), (Byte) column.get(j));
+                }
+                returnList.add(array);
+            } else if (colType.equals("Boolean")) {
+                ArrayBoolean array = (ArrayBoolean) Array.factory(boolean.class, new int[] {column.size()});
+                Index idx = array.getIndex();
+                for (int j = 0; j < column.size(); j++) {
+                    array.setBoolean(idx.set(j), (Boolean) column.get(j));
+                }
+                returnList.add(array);
+            } else if (colType.equals("Char") || colType.equals("String")) {
+                ArrayChar array = (ArrayChar.D2) Array.factory(char.class, new int[] {column.size(), SVAR_LEN});
+                Index idx = array.getIndex();
+                for (int j = 0; j < column.size(); j++) {
+                    array.setString(idx.set(j, 0), (String) column.get(j));
+                }
+                returnList.add(array);
+            }
+        }
+        return returnList;
+    }
+
+
     @SuppressWarnings("PMD")
     private void writeFile(Array array, String varName) throws DataStoreException {
         String dataType = array.getElementType().getCanonicalName();
@@ -450,21 +575,55 @@ public class NetCdfDataStore implements DataStore {
         } else {
             dataArray = (Array) var.read();
         }
+        String dataType = dataArray.getElementType().getCanonicalName();
         idx = dataArray.getIndex();
         dim = var.getDimension(0);
-        Object[] returnObj = new Object[dim.getLength()];
+        Object[] returnObj = null;
+        returnObj = this.getType(dataType, dim.getLength());
 
         for (int i = 0; i < dim.getLength(); i++) {
             if (isChar) {
-                returnObj[i] = ((ArrayChar) dataArray).getString(idx.set(i, 0));
-            } else {
-                returnObj[i] = dataArray.getObject(idx.set(i));
+                returnObj[i] = ((ArrayChar.D2) dataArray).getString(idx.set(i, 0));
+            } else if (dataType.equals(ucar.ma2.DataType.FLOAT.toString())) {
+                returnObj[i] = ((ArrayFloat) dataArray).getFloat(idx.set(i));
+            } else if (dataType.equals(ucar.ma2.DataType.INT.toString())) {
+                returnObj[i] = ((ArrayInt) dataArray).getInt(idx.set(i));
+            } else if (dataType.equals(ucar.ma2.DataType.SHORT.toString())) {
+                returnObj[i] = ((ArrayShort) dataArray).getShort(idx.set(i));
+            } else if (dataType.equals(ucar.ma2.DataType.LONG.toString())) {
+                returnObj[i] = ((ArrayLong) dataArray).getLong(idx.set(i));
+            } else if (dataType.equals(ucar.ma2.DataType.DOUBLE.toString())) {
+                returnObj[i] = ((ArrayDouble) dataArray).getDouble(idx.set(i));
+            } else if (dataType.equals(ucar.ma2.DataType.BOOLEAN.toString())) {
+                returnObj[i] = ((ArrayBoolean) dataArray).getBoolean(idx.set(i));
+            } else if (dataType.equals(ucar.ma2.DataType.BYTE.toString())) {
+                returnObj[i] = ((ArrayByte) dataArray).getByte(idx.set(i));
             }
         }
         return returnObj;
     }
 
 
+    private Object[] getType(String dataType, int size) {
+        if (dataType.equals(ucar.ma2.DataType.CHAR.toString())) {
+            return new String[size];
+        } else if (dataType.equals(ucar.ma2.DataType.FLOAT.toString())) {
+            return new Float[size];
+        } else if (dataType.equals(ucar.ma2.DataType.INT.toString())) {
+            return new Integer[size];
+        } else if (dataType.equals(ucar.ma2.DataType.SHORT.toString())) {
+            return new Short[size];
+        } else if (dataType.equals(ucar.ma2.DataType.LONG.toString())) {
+            return new Long[size];
+        } else if (dataType.equals(ucar.ma2.DataType.DOUBLE.toString())) {
+            return new Double[size];
+        } else if (dataType.equals(ucar.ma2.DataType.BOOLEAN.toString())) {
+            return new Boolean[size];
+        } else if (dataType.equals(ucar.ma2.DataType.BYTE.toString())) {
+            return new Byte[size];
+        }
+        return new Object[size];
+    }
 
 
 }
