@@ -105,6 +105,7 @@ import gov.nih.nci.caarray.util.HibernateUtil;
  *
  * @author Rashmi Srinivasa
  */
+@SuppressWarnings("PMD")
 public class VocabularyDaoTest {
     private static final Log LOG = LogFactory.getLog(VocabularyDaoTest.class);
 
