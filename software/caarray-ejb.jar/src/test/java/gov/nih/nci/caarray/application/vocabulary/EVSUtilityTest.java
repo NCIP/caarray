@@ -77,21 +77,21 @@ public class EVSUtilityTest {
     * Tests basic search in EVS.
     */
     @Test public final void searchEVS() throws VocabularyServiceException {
-//        EVSUtility evs = new EVSUtility();
-//        List<Term> results = evs.getConcepts("ProtocolType");
-//        List<String> termNames = new ArrayList<String>();
-//        for (Iterator<Term> i = results.iterator(); i.hasNext();) {
-//            Term aTerm = i.next();
-//            termNames.add(aTerm.getValue());
-//        }
-//
-//        assertTrue(!termNames.isEmpty());
+        EVSUtility evs = new EVSUtility();
+        List<Term> results = evs.getConcepts("ProtocolType");
+        List<String> termNames = new ArrayList<String>();
+        for (Iterator<Term> i = results.iterator(); i.hasNext();) {
+            Term aTerm = i.next();
+            termNames.add(aTerm.getValue());
+        }
+
+        assertTrue(!termNames.isEmpty());
     }
 
     /**
      * Tests basic search in EVS, where search should return no results.
      */
-     public final void searchEVSNoResults() throws VocabularyServiceException {
+     @Test public final void searchEVSNoResults() throws VocabularyServiceException {
         EVSUtility evs = new EVSUtility();
         List<Term> results = evs.getConcepts("Foo");
 
