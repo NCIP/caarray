@@ -52,6 +52,8 @@ package gov.nih.nci.caarray.application.vocabulary;
 
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
