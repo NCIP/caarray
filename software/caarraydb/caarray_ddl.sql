@@ -83,10 +83,11 @@ CREATE TABLE PARAMETER
 CREATE TABLE PROTOCOL
 (
   ID                          BIGINT      NOT NULL,
-  ACCESSION                   VARCHAR(1000),
   NAME                        VARCHAR(1000),
-  TEXT                        VARCHAR(1000),
-  TITLE                       VARCHAR(1000),
+  DESCRIPTION                 VARCHAR(1000),
+  CONTACT                     VARCHAR(1000),
+  HARDWARE                    VARCHAR(1000),
+  SOFTWARE                    VARCHAR(1000),
   URL                         VARCHAR(1000),
   TYPE_ID                     BIGINT      NOT NULL,
   PRIMARY KEY                 (ID)
