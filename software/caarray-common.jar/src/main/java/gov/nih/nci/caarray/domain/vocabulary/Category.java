@@ -1,7 +1,3 @@
-package gov.nih.nci.caarray.domain.vocabulary;
-
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-
 /**
  * The software subject to this notice and license includes both human readable
  * source code form and machine readable, binary, object code form. The caArray
@@ -84,6 +80,10 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+ 
+package gov.nih.nci.caarray.domain.vocabulary;
+
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
   /**
 
@@ -119,6 +119,30 @@ public class Category extends AbstractCaArrayEntity {
     }
 
     /**
+     * The parent gov.nih.nci.caarray.domain.vocabulary.Category.
+     */
+    private gov.nih.nci.caarray.domain.vocabulary.Category parent;
+
+    /**
+     * Gets the parent.
+     *
+     * @return the parent
+     */
+    public gov.nih.nci.caarray.domain.vocabulary.Category getParent() {
+        return parent;    
+    }
+
+    /**
+     * Sets the parent.
+     *
+     * @param parentVal the parent
+     */
+    public void setParent(final 
+      gov.nih.nci.caarray.domain.vocabulary.Category parentVal) {
+        this.parent = parentVal;
+    }
+
+    /**
      * The children set.
      */
     private final java.util.Collection children = new java.util.HashSet();
@@ -140,31 +164,7 @@ public class Category extends AbstractCaArrayEntity {
     @SuppressWarnings("unchecked")
     public void setChildren(final java.util.Collection childrenVal) {
         this.children.addAll(childrenVal);
-    }
-
-    /**
-     * The parent gov.nih.nci.caarray.domain.vocabulary.Category.
-     */
-    private gov.nih.nci.caarray.domain.vocabulary.Category parent;
-
-    /**
-     * Gets the parent.
-     *
-     * @return the parent
-     */
-    public gov.nih.nci.caarray.domain.vocabulary.Category getParent() {
-        return parent;
-    }
-
-    /**
-     * Sets the parent.
-     *
-     * @param parentVal the parent
-     */
-    public void setParent(final
-      gov.nih.nci.caarray.domain.vocabulary.Category parentVal) {
-        this.parent = parentVal;
-    }
+    }    
 
     /**
      * Checks if given object is equal to this object.
@@ -176,14 +176,14 @@ public class Category extends AbstractCaArrayEntity {
         boolean theyAreEqual = false;
         if (obj instanceof gov.nih.nci.caarray.domain.vocabulary.Category) {
             final gov.nih.nci.caarray.domain.vocabulary.Category castObject =
-                (gov.nih.nci.caarray.domain.vocabulary.Category) obj;
-            Long thisId = getId();
+                (gov.nih.nci.caarray.domain.vocabulary.Category) obj;                  
+            Long thisId = getId();        
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;
             }
-            }
-            return theyAreEqual;
         }
+        return theyAreEqual;
+    }
 
     /**
      * Returns the hashcode for the object.
