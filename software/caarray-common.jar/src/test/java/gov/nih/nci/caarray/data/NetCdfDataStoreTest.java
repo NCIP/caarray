@@ -70,12 +70,29 @@ import ucar.ma2.Index;
 /**
  * @author John Pike
  *
+ * This test will create and test a file with the following structure:
+ *
+ * Col 1 -  name=xvalue; datatype="FLOAT"
+ * Col 2 -  name=yvalue; datatype="FLOAT"
+ * Col 3 -  name=pvalue; datatype="STRING"
+ * Col 4 -  name=pct;    datatype="FLOAT"
+ * It also presumes a row count of ROW_TEST_SIZE=900, and
+ * allows String columns to be maxLength of S_VAR_LEN = 80.
+ *
  */
 public class NetCdfDataStoreTest {
 
     private static final Log LOG = LogFactory.getLog(NetCdfDataStoreTest.class);
 
+    private static final String X_VAL_COL_NAME = "xvalue";
+
+    private static final String Y_VAL_COL_NAME = "yvalue";
+
+    private static final String PCT_COL_NAME = "pct";
+
+    private static final String P_VAL_COL_NAME = "pvalue";
     private static final int COL_SIZE = 4;
+
 
     private static final int ROW_TEST_SIZE = 900;
 
@@ -111,7 +128,8 @@ public class NetCdfDataStoreTest {
      */
     @Before
     public void initFile() {
-        NetcdfDataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
+        NetcdfDataStoreDescriptor descriptor = createDescriptor();
+
         NetCdfDataStore netCdfDS = null;
         try {
             File file = new File(FILENAME).getAbsoluteFile();
@@ -138,6 +156,32 @@ public class NetCdfDataStoreTest {
         } catch (DataStoreException dse) {
             LOG.error("Exception init'ing file", dse);
         }
+    }
+
+    private NetcdfDataStoreDescriptor createDescriptor() {
+        NetcdfDataStoreDescriptor descriptor = new NetcdfDataStoreDescriptor();
+        List<Column> columns = new ArrayList<Column>();
+        Column column = createColumn(X_VAL_COL_NAME, DataType.FLOAT);
+        columns.add(column);
+        column = createColumn(Y_VAL_COL_NAME, DataType.FLOAT);
+        columns.add(column);
+        column = createColumn(P_VAL_COL_NAME, DataType.CHAR);
+        columns.add(column);
+        column = createColumn(PCT_COL_NAME, DataType.FLOAT);
+        columns.add(column);
+
+        descriptor.setColumns(columns);
+        return descriptor;
+    }
+
+    /**
+     * @return
+     */
+    private Column createColumn(String name, DataType type) {
+        Column column = new Column();
+        column.setName(name);
+        column.setType(type);
+        return column;
     }
 
     /**
@@ -177,8 +221,8 @@ public class NetCdfDataStoreTest {
         NetCdfDataStore netCdfDS = null;
         File file = new File(FILENAME);
         Column column = new Column();
-        column.setName(NetcdfDataStoreDescriptor.X_VAL_COL_NAME);
-        column.setType(ucar.ma2.DataType.FLOAT);
+        column.setName(X_VAL_COL_NAME);
+        column.setType(DataType.FLOAT);
         DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
         try {
             netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
@@ -198,8 +242,8 @@ public class NetCdfDataStoreTest {
        NetCdfDataStore netCdfDS = null;
        File file = new File(FILENAME);
        Column column = new Column();
-       column.setName(NetcdfDataStoreDescriptor.P_VAL_COL_NAME);
-       column.setType(ucar.ma2.DataType.CHAR);
+       column.setName(P_VAL_COL_NAME);
+       column.setType(DataType.CHAR);
        DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
        String value = null;
        try {
@@ -226,8 +270,8 @@ public class NetCdfDataStoreTest {
       NetCdfDataStore netCdfDS = null;
       File file = new File(FILENAME);
       Column column = new Column();
-      column.setName(NetcdfDataStoreDescriptor.X_VAL_COL_NAME);
-      column.setType(ucar.ma2.DataType.FLOAT);
+      column.setName(X_VAL_COL_NAME);
+      column.setType(DataType.FLOAT);
       DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
 
       netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
@@ -245,8 +289,8 @@ public class NetCdfDataStoreTest {
       NetCdfDataStore netCdfDS = null;
       File file = new File("test");
       Column column = new Column();
-      column.setName(NetcdfDataStoreDescriptor.X_VAL_COL_NAME);
-      column.setType(ucar.ma2.DataType.FLOAT);
+      column.setName(X_VAL_COL_NAME);
+      column.setType(DataType.FLOAT);
       DataStoreFactory factory = NetcdfDataStoreFactory.getInstance();
 
       netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
@@ -268,8 +312,8 @@ public class NetCdfDataStoreTest {
             netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
 
             Column column = new Column();
-            column.setName(NetcdfDataStoreDescriptor.X_VAL_COL_NAME);
-            column.setType(ucar.ma2.DataType.FLOAT);
+            column.setName(X_VAL_COL_NAME);
+            column.setType(DataType.FLOAT);
             value = netCdfDS.getValue(TEST_ROW, column);
         } catch (Exception e) {
             LOG.error("Error in testGetValue", e);
@@ -293,8 +337,8 @@ public class NetCdfDataStoreTest {
             netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
 
             Column column = new Column();
-            column.setName(NetcdfDataStoreDescriptor.P_VAL_COL_NAME);
-            column.setType(ucar.ma2.DataType.CHAR);
+            column.setName(P_VAL_COL_NAME);
+            column.setType(DataType.CHAR);
             value = netCdfDS.getValue(TEST_ROW, column);
         } catch (Exception e) {
             LOG.error("Error in testGetValue", e);
@@ -317,8 +361,8 @@ public class NetCdfDataStoreTest {
             netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
 
             Column column = new Column();
-            column.setName(NetcdfDataStoreDescriptor.X_VAL_COL_NAME);
-            column.setType(ucar.ma2.DataType.FLOAT);
+            column.setName(X_VAL_COL_NAME);
+            column.setType(DataType.FLOAT);
             value = (Object[]) netCdfDS.getValues(column);
         } catch (Exception e) {
             LOG.error("Error in testGetValuesColumn", e);
@@ -340,8 +384,8 @@ public class NetCdfDataStoreTest {
             netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
 
             Column column = new Column();
-            column.setName(NetcdfDataStoreDescriptor.P_VAL_COL_NAME);
-            column.setType(ucar.ma2.DataType.STRING);
+            column.setName(P_VAL_COL_NAME);
+            column.setType(DataType.STRING);
             value = (String[]) netCdfDS.getValues(column);
             List<String> strList = new ArrayList<String>();
             ArrayList<String> colList = new ArrayList<String>();
@@ -350,7 +394,7 @@ public class NetCdfDataStoreTest {
                 strList.add(i, (String) (value[i]));
             }
             listOfLists.add((ArrayList<?>) strList);
-            colList.add(NetcdfDataStoreDescriptor.P_VAL_COL_NAME);
+            colList.add(P_VAL_COL_NAME);
 
 
             netCdfDS.saveColumnData(listOfLists, colList);
@@ -374,8 +418,8 @@ public class NetCdfDataStoreTest {
             netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
 
             Column column = new Column();
-            column.setName(NetcdfDataStoreDescriptor.X_VAL_COL_NAME);
-            column.setType(ucar.ma2.DataType.FLOAT);
+            column.setName(X_VAL_COL_NAME);
+            column.setType(DataType.FLOAT);
             value = (Float[]) netCdfDS.getValues(column);
             List<Float> floatList = new ArrayList<Float>();
             ArrayList<String> colList = new ArrayList<String>();
@@ -384,7 +428,7 @@ public class NetCdfDataStoreTest {
                 floatList.add(i, new Float((Float) (value[i])));
             }
             listOfLists.add((ArrayList<?>) floatList);
-            colList.add(NetcdfDataStoreDescriptor.X_VAL_COL_NAME);
+            colList.add(X_VAL_COL_NAME);
 
 
             netCdfDS.saveColumnData(listOfLists, colList);
@@ -408,8 +452,8 @@ public class NetCdfDataStoreTest {
             netCdfDS = (NetCdfDataStore) factory.getDataStore(file);
 
             Column column = new Column();
-            column.setName(NetcdfDataStoreDescriptor.P_VAL_COL_NAME);
-            column.setType(ucar.ma2.DataType.CHAR);
+            column.setName(P_VAL_COL_NAME);
+            column.setType(DataType.CHAR);
             value = (Object[]) netCdfDS.getValues(column);
         } catch (Exception e) {
             LOG.error("Error in testGetValuesColumnString", e);
