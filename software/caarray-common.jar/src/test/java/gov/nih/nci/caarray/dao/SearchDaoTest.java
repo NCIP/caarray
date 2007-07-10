@@ -171,10 +171,8 @@ public class SearchDaoTest {
         long id = DUMMY_START_ID;
         DUMMY_PROTOCOL_1.setId(id);
         DUMMY_PROTOCOL_1.setName("DummyTestProtocol1");
-        DUMMY_PROTOCOL_1.setText("DummyTextForProtocol");
-        DUMMY_PROTOCOL_1.setTitle("DummyTitleForProtocol1");
+        DUMMY_PROTOCOL_1.setDescription("DummyDescForProtocol");
         DUMMY_PROTOCOL_1.setUrl("DummyUrlForProtocol1");
-        DUMMY_PROTOCOL_1.setAccession("DummyAccessionForProtocol1");
         DUMMY_PROTOCOL_1.setType(DUMMY_TERM_1);
         DUMMY_PROTOCOL_1.getParameters().add(DUMMY_PARAMETER_1);
         DUMMY_PROTOCOL_1.getParameters().add(DUMMY_PARAMETER_2);
@@ -312,7 +310,7 @@ public class SearchDaoTest {
     @SuppressWarnings("unchecked")
     private Protocol setUpExampleProtocol() {
         Protocol exampleProtocol = new Protocol();
-        exampleProtocol.setTitle(DUMMY_PROTOCOL_1.getTitle());
+        exampleProtocol.setDescription(DUMMY_PROTOCOL_1.getDescription());
         Term exampleTerm = new Term();
         exampleTerm.setValue(DUMMY_TERM_1.getValue());
         exampleProtocol.setType(exampleTerm);

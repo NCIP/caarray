@@ -179,21 +179,18 @@ public class ProtocolDaoTest {
         long id = DUMMY_START_ID;
         DUMMY_PROTOCOL_1.setId(id);
         DUMMY_PROTOCOL_1.setName("DummyTestProtocol1");
-        DUMMY_PROTOCOL_1.setText("DummyTextForProtocol");
-        DUMMY_PROTOCOL_1.setTitle("DummyTitleForProtocol1");
+        DUMMY_PROTOCOL_1.setDescription("DummyDescForProtocol");
         DUMMY_PROTOCOL_1.setUrl("DummyUrlForProtocol1");
-        DUMMY_PROTOCOL_1.setAccession("DummyAccessionForProtocol1");
         DUMMY_PROTOCOL_1.setType(DUMMY_TERM_1);
         DUMMY_PROTOCOL_1.getParameters().add(DUMMY_PARAMETER_1);
         DUMMY_PROTOCOL_1.getParameters().add(DUMMY_PARAMETER_2);
         DUMMY_PROTOCOL_2.setId(++id);
         DUMMY_PROTOCOL_2.setName("DummyTestProtocol2");
-        DUMMY_PROTOCOL_2.setText("DummyTextForProtocol");
-        DUMMY_PROTOCOL_2.setTitle("DummyTitleForProtocol2");
+        DUMMY_PROTOCOL_2.setDescription("DummyDescForProtocol");
         DUMMY_PROTOCOL_2.setType(DUMMY_TERM_1);
         DUMMY_PROTOCOL_3.setId(++id);
         DUMMY_PROTOCOL_3.setName("DummyTestProtocol3");
-        DUMMY_PROTOCOL_3.setText("DummyTextForProtocol");
+        DUMMY_PROTOCOL_3.setDescription("DummyDescForProtocol");
         DUMMY_PROTOCOL_3.setType(DUMMY_TERM_2);
     }
 
@@ -321,7 +318,7 @@ public class ProtocolDaoTest {
             DAO_OBJECT.save(DUMMY_PROTOCOL_1);
             tx.commit();
             Protocol exampleProtocol = new Protocol();
-            exampleProtocol.setTitle(DUMMY_PROTOCOL_1.getTitle());
+            exampleProtocol.setDescription(DUMMY_PROTOCOL_1.getDescription());
             Protocol retrievedProtocol = null;
             List<AbstractCaArrayEntity> matchingProtocols = DAO_OBJECT.queryEntityByExample(exampleProtocol);
             if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
@@ -384,7 +381,7 @@ public class ProtocolDaoTest {
      */
     private Protocol setupDeepSearchExample() {
         Protocol exampleProtocol = new Protocol();
-        exampleProtocol.setText(DUMMY_PROTOCOL_2.getText());
+        exampleProtocol.setDescription(DUMMY_PROTOCOL_2.getDescription());
         Term exampleTerm = new Term();
         exampleTerm.setValue(DUMMY_TERM_2.getValue());
         exampleProtocol.setType(exampleTerm);

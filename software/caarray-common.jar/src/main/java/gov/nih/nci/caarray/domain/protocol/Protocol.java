@@ -1,7 +1,3 @@
-package gov.nih.nci.caarray.domain.protocol;
-
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-
 /**
  * The software subject to this notice and license includes both human readable
  * source code form and machine readable, binary, object code form. The caArray
@@ -85,6 +81,10 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+package gov.nih.nci.caarray.domain.protocol;
+
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+
   /**
 
    */
@@ -96,28 +96,71 @@ public class Protocol extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 
     /**
-     * The accession String.
+     * The contact java.lang.String.
      */
-    private String accession;
+    private java.lang.String contact;
 
     /**
-     * Gets the accession.
+     * Gets the contact.
      *
-     * @return the accession
+     * @return the contact
      */
-    public String getAccession() {
-        return accession;
+    public java.lang.String getContact() {
+        return contact;
     }
 
     /**
-     * Sets the accession.
+     * Sets the contact.
      *
-     * @param accessionVal the accession
+     * @param contactVal the contact
      */
-    public void setAccession(final String accessionVal) {
-        this.accession = accessionVal;
+    public void setContact(final java.lang.String contactVal) {
+        this.contact = contactVal;
+    }
+    /**
+     * The description java.lang.String.
+     */
+    private java.lang.String description;
+
+    /**
+     * Gets the description.
+     *
+     * @return the description
+     */
+    public java.lang.String getDescription() {
+        return description;
     }
 
+    /**
+     * Sets the description.
+     *
+     * @param descriptionVal the description
+     */
+    public void setDescription(final java.lang.String descriptionVal) {
+        this.description = descriptionVal;
+    }
+    /**
+     * The hardware java.lang.String.
+     */
+    private java.lang.String hardware;
+
+    /**
+     * Gets the hardware.
+     *
+     * @return the hardware
+     */
+    public java.lang.String getHardware() {
+        return hardware;
+    }
+
+    /**
+     * Sets the hardware.
+     *
+     * @param hardwareVal the hardware
+     */
+    public void setHardware(final java.lang.String hardwareVal) {
+        this.hardware = hardwareVal;
+    }
     /**
      * The name String.
      */
@@ -141,48 +184,26 @@ public class Protocol extends AbstractCaArrayEntity {
         this.name = nameVal;
     }
     /**
-     * The text String.
+     * The software java.lang.String.
      */
-    private String text;
+    private java.lang.String software;
 
     /**
-     * Gets the text.
+     * Gets the software.
      *
-     * @return the text
+     * @return the software
      */
-    public String getText() {
-        return text;
+    public java.lang.String getSoftware() {
+        return software;
     }
 
     /**
-     * Sets the text.
+     * Sets the software.
      *
-     * @param textVal the text
+     * @param softwareVal the software
      */
-    public void setText(final String textVal) {
-        this.text = textVal;
-    }
-    /**
-     * The title String.
-     */
-    private String title;
-
-    /**
-     * Gets the title.
-     *
-     * @return the title
-     */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
-     * Sets the title.
-     *
-     * @param titleVal the title
-     */
-    public void setTitle(final String titleVal) {
-        this.title = titleVal;
+    public void setSoftware(final java.lang.String softwareVal) {
+        this.software = softwareVal;
     }
     /**
      * The type gov.nih.nci.caarray.domain.vocabulary.Term.
