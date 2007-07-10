@@ -50,39 +50,58 @@
  */
 package gov.nih.nci.caarray.data;
 
-import java.util.List;
-
 /**
- * This class should be designed to match the structure of the data
- * to be stored on the file system.  For instance, if the file has
- * 4 columns all of type FLOAT and named a, b, c, and d, then the
- * Descriptor should be created with 4 columns of type ucar.m2.Float
- * and named a, b, c and d.
  * @author John Pike
  *
  */
-public class NetcdfDataStoreDescriptor extends AbstractDataStoreDescriptor {
+public enum DataType {
+        /**
+         *
+         */
+        FLOAT (ucar.ma2.DataType.FLOAT),
+        /**
+         *
+         */
+        SHORT   (ucar.ma2.DataType.SHORT),
+        /**
+         *
+         */
+        INT   (ucar.ma2.DataType.INT),
+        /**
+         *
+         */
+        LONG    (ucar.ma2.DataType.LONG),
+        /**
+         *
+         */
+        DOUBLE (ucar.ma2.DataType.DOUBLE),
+        /**
+         *
+         */
+        CHAR  (ucar.ma2.DataType.CHAR),
+        /**
+         *
+         */
+        STRING  (ucar.ma2.DataType.STRING),
+        /**
+         *
+         */
+        BOOLEAN  (ucar.ma2.DataType.BOOLEAN),
+        /**
+         *
+         */
+        BYTE (ucar.ma2.DataType.BYTE);
 
-    private List<Column> columns;
+        private ucar.ma2.DataType type;
 
-    NetcdfDataStoreDescriptor() {
-        super();
-    }
+        DataType(ucar.ma2.DataType className) {
+            type = className;
+        }
 
-    /**
-     * @return list of columns
-     */
-    public final List<Column> getColumns() {
-
-        return columns;
-    }
-
-    /**
-     * @param columns list of Columnn objs
-     */
-    public void setColumns(List<Column> columns) {
-        this.columns = columns;
-    }
-
-
+        /**
+         * @return ucar.ma2.DataType
+         */
+        public ucar.ma2.DataType getType() {
+            return type;
+        }
 }

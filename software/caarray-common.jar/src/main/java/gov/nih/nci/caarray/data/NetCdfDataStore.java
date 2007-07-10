@@ -114,6 +114,10 @@ import ucar.nc2.Variable;
  * @author John Pike
  *
  */
+/**
+ * @author John Pike
+ *
+ */
 @SuppressWarnings("PMD")
 public class NetCdfDataStore implements DataStore {
 
@@ -121,6 +125,8 @@ public class NetCdfDataStore implements DataStore {
     private final NetcdfFileWriteable netcdffile;
     private NetcdfDataStoreDescriptor descriptor;
     private static final int SVAR_LEN = 80;
+    private static final String DATA_DIM_STR = "data";
+    private static final String SVAR_LEN_STR = "svar_len";
     /**
      *
      */
@@ -143,31 +149,47 @@ public class NetCdfDataStore implements DataStore {
 
 
     /**
-     * @param file the file
+     * @param argFile the file
+     * @param argDescriptor the descriptor
      * @throws DataStoreException exception
      */
-    public NetCdfDataStore(NetcdfFileWriteable file) throws DataStoreException {
+    public NetCdfDataStore(NetcdfFileWriteable argFile, NetcdfDataStoreDescriptor argDescriptor)
+            throws DataStoreException {
         super();
 
-        netcdffile = file;
-        descriptor = getDescriptor();
+        netcdffile = argFile;
+        descriptor = argDescriptor;
     }
+
 
     /**
-     * This method obtains the column data that will describe the type of
-     * file (netcdf) being created here.  The file will have variables for
-     * each of the Descriptor's columns, each of the DataType described
-     * in the Column object.
-     * @see gov.nih.nci.caarray.data.DataStore#getDescription()
-     * @return DataStoreDescriptor a descriptor
+     * @param argFile the file
+     * @throws DataStoreException exception
      */
-    public final NetcdfDataStoreDescriptor getDescriptor() {
-        if (descriptor == null) {
-            descriptor = new NetcdfDataStoreDescriptor();
-        }
-        return descriptor;
+    public NetCdfDataStore(NetcdfFileWriteable argFile) throws DataStoreException {
+        super();
+
+        netcdffile = argFile;
+        createDescriptorFromFile(netcdffile);
+
     }
 
+    private void createDescriptorFromFile(NetcdfFileWriteable argFile) {
+        if (descriptor == null) {
+            descriptor = new NetcdfDataStoreDescriptor();
+            ArrayList<Column> columns = new ArrayList<Column>();
+            List variables = argFile.getVariables();
+
+            for (int i = 0; i < variables.size(); i++) {
+                Column column = new Column();
+                Variable variable = (Variable) variables.get(i);
+                column.setName(variable.getName());
+                column.setType(DataType.valueOf(variable.getDataType().toString().toUpperCase()));
+                columns.add(i, column);
+            }
+            descriptor.setColumns(columns);
+        }
+    }
 
     /**
      * This method persists arrays of Column data into a previously
@@ -193,6 +215,9 @@ public class NetCdfDataStore implements DataStore {
      * @throws DataStoreException exception
      */
     public void saveData(List<Array> files, List<String> colNames) throws DataStoreException {
+        if (files == null || colNames == null || (files.size() != colNames.size())) {
+            throw new DataStoreException("Illegal arguments to saveData().  Lists must be of same length");
+        }
         try {
             for (int i = 0; i < files.size(); i++) {
                 writeFile(files.get(i), colNames.get(i));
@@ -219,8 +244,10 @@ public class NetCdfDataStore implements DataStore {
      */
     public void saveColumnData(List<ArrayList<?>> columns, List<String> colNames)
             throws DataStoreException {
-
-        List<Array> files = columnsToArray(columns);
+        if (columns == null || colNames == null || (colNames.size() != colNames.size())) {
+            throw new DataStoreException("Illegal arguments to saveColumnData().  Lists must be of same length");
+        }
+        List<Array> files = columnsToArrays(columns);
         saveData(files, colNames);
     }
 
@@ -270,7 +297,7 @@ public class NetCdfDataStore implements DataStore {
         try {
             Array dataArray = var.read();
             Index indexObj = dataArray.getIndex();
-            ucar.ma2.DataType dataType = column.getType();
+            ucar.ma2.DataType dataType = column.getType().getType();
             if (dataType.equals(ucar.ma2.DataType.CHAR)) {
                 ((ArrayChar) dataArray).setString(indexObj.set(index, 0), (String) value);
             } else if (dataType.equals(ucar.ma2.DataType.SHORT)) {
@@ -290,7 +317,7 @@ public class NetCdfDataStore implements DataStore {
             } else {
                 ((Array) dataArray).setObject(indexObj.set(index), value);
             }
-            //this sucks.  must write the file now.  not very efficient.
+            //this is bad.  must write the file now.  not very efficient.
             writeFile(dataArray, var.getName());
         } catch (DataStoreException dse) {
             closeFile();
@@ -401,13 +428,15 @@ public class NetCdfDataStore implements DataStore {
 
     /**
      * Creates a netcdffile of the given rowSize, properly allocating the dimensions
-     * and columns per the DataStoreDescriptor file.
+     * and columns per the DataStoreDescriptor file.  For CHAR or STRING datatypes,
+     * this means creating a 2-dimension Character array, which is how Netcdf
+     * handles Strings.
      * @param size int
      * @throws DataStoreException exception
      */
     public void createFile(int size) throws DataStoreException {
-        Dimension dataDim = netcdffile.addDimension("data", size);
-        Dimension svarLen = netcdffile.addDimension("svar_len", SVAR_LEN);
+        Dimension dataDim = netcdffile.addDimension(DATA_DIM_STR, size);
+        Dimension svarLen = netcdffile.addDimension(SVAR_LEN_STR, SVAR_LEN);
         Dimension[] dimList = {dataDim};
         Dimension[] dimStrList = {dataDim, svarLen};
         List<Column> columns = descriptor.getColumns();
@@ -415,12 +444,13 @@ public class NetCdfDataStore implements DataStore {
         for (Iterator iter = columns.iterator(); iter.hasNext();) {
             Column column = (Column) iter.next();
             Dimension[] dimListToAdd = null;
-            if ((column.getType()).equals(ucar.ma2.DataType.CHAR)) {
+            if ((column.getType().getType()).equals(ucar.ma2.DataType.CHAR)
+                    || (column.getType().getType()).equals(ucar.ma2.DataType.STRING)) {
                 dimListToAdd = dimStrList;
             } else {
                 dimListToAdd = dimList;
             }
-            netcdffile.addVariable(column.getName(), column.getType(), dimListToAdd);
+            netcdffile.addVariable(column.getName(), column.getType().getType(), dimListToAdd);
         }
         try {
             netcdffile.create();
@@ -456,7 +486,7 @@ public class NetCdfDataStore implements DataStore {
     }
 
 
-    private List<Array> columnsToArray(List<ArrayList<?>> columns) {
+    private List<Array> columnsToArrays(List<ArrayList<?>> columns) {
         List<Array> returnList = new ArrayList<Array>();
         for (int i = 0; i < columns.size(); i++) {
             ArrayList column = (ArrayList) columns.get(i);
@@ -517,17 +547,25 @@ public class NetCdfDataStore implements DataStore {
                     array.setString(idx.set(j, 0), (String) column.get(j));
                 }
                 returnList.add(array);
+            } else {
+                Array array = Array.factory(Object.class, new int[] {column.size()});
+                Index idx = array.getIndex();
+                for (int j = 0; j < column.size(); j++) {
+                    array.setObject(idx.set(i), column.get(i));
+                }
+                returnList.add(array);
             }
         }
         return returnList;
     }
 
 
-    @SuppressWarnings("PMD")
+
     private void writeFile(Array array, String varName) throws DataStoreException {
         String dataType = array.getElementType().getCanonicalName();
         try {
-            if (dataType.equals(ucar.ma2.DataType.CHAR.toString())) {
+            if (dataType.equals(ucar.ma2.DataType.CHAR.toString())
+                    || dataType.equals(ucar.ma2.DataType.STRING)) {
                 netcdffile.write(varName, (ArrayChar.D2) array);
             } else if (dataType.equals(ucar.ma2.DataType.FLOAT.toString())) {
                 netcdffile.write(varName, (ArrayFloat) array);
@@ -544,7 +582,7 @@ public class NetCdfDataStore implements DataStore {
             } else if (dataType.equals(ucar.ma2.DataType.LONG.toString())) {
                 netcdffile.write(varName, (ArrayLong) array);
             } else {
-                netcdffile.write(varName, (Array) array);
+                netcdffile.write(varName, array);
             }
         } catch (InvalidRangeException ire) {
             LOG.error("Invalid Range ERROR writing file");
@@ -579,7 +617,7 @@ public class NetCdfDataStore implements DataStore {
         idx = dataArray.getIndex();
         dim = var.getDimension(0);
         Object[] returnObj = null;
-        returnObj = this.getType(dataType, dim.getLength());
+        returnObj = initArrayOfType(dataType, dim.getLength());
 
         for (int i = 0; i < dim.getLength(); i++) {
             if (isChar) {
@@ -598,14 +636,17 @@ public class NetCdfDataStore implements DataStore {
                 returnObj[i] = ((ArrayBoolean) dataArray).getBoolean(idx.set(i));
             } else if (dataType.equals(ucar.ma2.DataType.BYTE.toString())) {
                 returnObj[i] = ((ArrayByte) dataArray).getByte(idx.set(i));
+            } else {
+                returnObj[i] = dataArray.getObject(idx.set(i));
             }
         }
         return returnObj;
     }
 
 
-    private Object[] getType(String dataType, int size) {
-        if (dataType.equals(ucar.ma2.DataType.CHAR.toString())) {
+    private Object[] initArrayOfType(String dataType, int size) {
+        if (dataType.equals(ucar.ma2.DataType.CHAR.toString())
+            || dataType.equals(ucar.ma2.DataType.STRING)) {
             return new String[size];
         } else if (dataType.equals(ucar.ma2.DataType.FLOAT.toString())) {
             return new Float[size];
@@ -621,8 +662,33 @@ public class NetCdfDataStore implements DataStore {
             return new Boolean[size];
         } else if (dataType.equals(ucar.ma2.DataType.BYTE.toString())) {
             return new Byte[size];
+        } else {
+            return new Object[size];
         }
-        return new Object[size];
+    }
+
+
+    /**
+     * @return {@link NetcdfDataStoreDescriptor}
+     */
+    public NetcdfDataStoreDescriptor getDescriptor() {
+        return this.descriptor;
+    }
+
+
+    /**
+     * @param descriptor the DataStoreDescriptor
+     */
+    public void setDescriptor(NetcdfDataStoreDescriptor descriptor) {
+        this.descriptor = descriptor;
+    }
+
+
+    /**
+     * @return NetcdfFileWriteable the file
+     */
+    public NetcdfFileWriteable getNetcdffile() {
+        return this.netcdffile;
     }
 
 

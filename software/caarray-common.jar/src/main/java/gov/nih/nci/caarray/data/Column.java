@@ -61,7 +61,7 @@ package gov.nih.nci.caarray.data;
 public class Column {
 
     private String name;
-    private ucar.ma2.DataType type;
+    private DataType type;
 
 
     /**
@@ -85,13 +85,13 @@ public class Column {
     /**
      * @return DataType the type
      */
-    public ucar.ma2.DataType getType() {
-        return this.type;
+    public DataType getType() {
+        return type;
     }
     /**
      * @param type a DataType
      */
-    public void setType(ucar.ma2.DataType type) {
+    public void setType(DataType type) {
         this.type = type;
     }
 

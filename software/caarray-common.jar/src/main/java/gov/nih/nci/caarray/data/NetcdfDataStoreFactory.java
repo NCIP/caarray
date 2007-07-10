@@ -67,12 +67,7 @@ public class NetcdfDataStoreFactory implements DataStoreFactory {
 
     private static final Log LOG = LogFactory.getLog(NetcdfDataStoreFactory.class);
 
-    /**
-     *
-     */
-    public NetcdfDataStoreFactory() {
-        // TODO Auto-generated constructor stub
-    }
+
 
     static NetcdfDataStoreFactory getInstance() {
         return new NetcdfDataStoreFactory();
@@ -95,7 +90,7 @@ public class NetcdfDataStoreFactory implements DataStoreFactory {
             file.getAbsoluteFile();
             URL url = file.toURL();
             ncFile = NetcdfFileWriteable.createNew(url.getFile(), false);
-            netCdfDS = new NetCdfDataStore(ncFile);
+            netCdfDS = new NetCdfDataStore(ncFile, (NetcdfDataStoreDescriptor) descriptor);
         } catch (IOException ie) {
             closeFile(netCdfDS);
             LOG.error("error getting file in createDataStore()", ie);
