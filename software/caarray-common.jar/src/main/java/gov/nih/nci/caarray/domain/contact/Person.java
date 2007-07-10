@@ -138,26 +138,26 @@ public class Person extends AbstractContact {
         this.lastName = lastNameVal;
     }
     /**
-     * The middleInitial String.
+     * The middleInitials java.lang.String.
      */
-    private String middleInitial;
+    private java.lang.String middleInitials;
 
     /**
-     * Gets the middleInitial.
+     * Gets the middleInitials.
      *
-     * @return the middleInitial
+     * @return the middleInitials
      */
-    public String getMiddleInitial() {
-        return middleInitial;
+    public java.lang.String getMiddleInitials() {
+        return middleInitials;
     }
 
     /**
-     * Sets the middleInitial.
+     * Sets the middleInitials.
      *
-     * @param middleInitialVal the middleInitial
+     * @param middleInitialsVal the middleInitials
      */
-    public void setMiddleInitial(final String middleInitialVal) {
-        this.middleInitial = middleInitialVal;
+    public void setMiddleInitials(final java.lang.String middleInitialsVal) {
+        this.middleInitials = middleInitialsVal;
     }
 
     /**
