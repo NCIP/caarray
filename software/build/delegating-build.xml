@@ -2,7 +2,7 @@
 <!-- ** SCTR DELEGATING BUILD FILE FOR CRUISECONTROL                      ** -->
 <!-- *********************************************************************** -->
 
-<project name="caarray-cruisecontrol" default="continuous-integration" basedir="../..">
+<project name="caarray-cruisecontrol" default="build" basedir="../..">
 
     <taskdef resource="svntask.properties"/>
 
@@ -10,28 +10,14 @@
 
     <property file="${build.dir}/local.properties" />
 
-    <target name="continuous-integration">
+    <target name="build">
         <svn username="${svn.username}" password="${svn.password}">
             <update dir="${basedir}" />
         </svn>
-        <copy todir="${basedir}/../../.." file="software/build/cruisecontrol_config.xml" />
+        <copy todir="${basedir}/../.." file="software/build/cruisecontrol_config.xml" />
         <ant antfile="build/build.xml"
             dir="software"
             target="continuous-integration" />
-        <svn username="${svn.username}" password="${svn.password}">
-            <copy message="Tagging with ${label}"
-                srcurl="http://gforge.nci.nih.gov/svnroot/caarray2/trunk"
-                desturl="http://gforge.nci.nih.gov/svnroot/caarray2/tags/${label}" />
-        </svn>
-  </target>
-
-    <target name="nightly-build">
-        <svn username="${svn.username}" password="${svn.password}">
-            <update dir="${basedir}" />
-        </svn>
-        <ant antfile="build/build.xml"
-            dir="software"
-            target="nightly-build" />
         <svn username="${svn.username}" password="${svn.password}">
             <copy message="Tagging with ${label}"
                 srcurl="http://gforge.nci.nih.gov/svnroot/caarray2/trunk"

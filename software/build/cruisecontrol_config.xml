@@ -21,66 +21,30 @@
         <labelincrementer separator="_" defaultLabel="CAARRAY_BL_1" />
 
         <bootstrappers>
-            <currentbuildstatusbootstrapper file="logs/caarray2-continuous/buildstatus.txt" />
-            <svnbootstrapper localworkingcopy="projects/caarray2-continuous/caarray2" file="software\build\delegating-build.xml" />
+            <currentbuildstatusbootstrapper file="logs/caarray2/buildstatus.txt" />
+            <svnbootstrapper localworkingcopy="projects/caarray2" file="software\build\delegating-build.xml" />
         </bootstrappers>
 
         <modificationset quietperiod="30" ignoreFiles="trunk/docs/*">
-            <svn localworkingcopy="projects/caarray2-continuous/caarray2" />
+            <svn localworkingcopy="projects/caarray2" />
         </modificationset>
 
         <schedule interval="60">
             <ant anthome="C:\dev\tools\apache-ant-1.7.0"
-                buildfile="projects\caarray2-continuous\caarray2\software\build\delegating-build.xml" target="continuous-integration" uselogger="true"
+                buildfile="projects\caarray2\software\build\delegating-build.xml" target="build" uselogger="true"
                 usedebug="false">
             </ant>
         </schedule>
 
         <log dir="logs\caarray2">
-            <merge dir="projects\caarray2-continuous\caarray2\software\build\site\junit" />
+            <merge dir="projects\caarray2\software\build\site\junit" />
         </log>
 
         <publishers>
-            <artifactspublisher dir="projects\caarray2-continuous\caarray2\software\build\site" dest="artifacts\caarray2-continuous" />
-            <currentbuildstatuspublisher file="logs/caarray2-continuous/buildstatus.txt" />
-            <htmlemail buildresultsurl="${email.buildresultsurl.prefix}${project.name}" skipusers="true">
-                <!-- failure address="teamcaarray@5amsolutions.com" reportwhenfixed="true" / -->
-                <failure address="tavelae@mail.nih.gov" reportwhenfixed="true" />
-            </htmlemail>
-        </publishers>
-
-    </project>
-
-    <project name="caarray2-nightly" buildafterfailed="false">
-
-        <labelincrementer separator="_" defaultLabel="CAARRAY_NIGHTLY_1" />
-
-        <bootstrappers>
-            <currentbuildstatusbootstrapper file="logs/caarray2-nightly/buildstatus.txt" />
-            <svnbootstrapper localworkingcopy="projects/caarray2-nightly/caarray2" file="software\build\delegating-build.xml" />
-        </bootstrappers>
-
-        <modificationset quietperiod="30" ignoreFiles="trunk/docs/*">
-            <svn localworkingcopy="projects/caarray2-nightly/caarray2" />
-        </modificationset>
-
-        <schedule interval="60">
-            <ant anthome="C:\dev\tools\apache-ant-1.7.0"
-                buildfile="projects\caarray2-nightly\caarray2\software\build\delegating-build.xml" target="nightly-build" uselogger="true"
-                usedebug="false">
-            </ant>
-        </schedule>
-
-        <log dir="logs\caarray2">
-            <merge dir="projects\caarray2-nightly\caarray2\software\build\site\junit" />
-        </log>
-
-        <publishers>
-            <artifactspublisher dir="projects\caarray2-nightly\caarray2\software\build\site" dest="artifacts\caarray2-nightly" />
-            <currentbuildstatuspublisher file="logs/caarray2-nightly/buildstatus.txt" />
-            <htmlemail buildresultsurl="${email.buildresultsurl.prefix}${project.name}" skipusers="true">
-                <!-- failure address="teamcaarray@5amsolutions.com" reportwhenfixed="true" / -->
-                <failure address="tavelae@mail.nih.gov" reportwhenfixed="true" />
+            <artifactspublisher dir="projects\caarray2\software\build\site" dest="artifacts\caarray2" />
+            <currentbuildstatuspublisher file="logs/caarray2/buildstatus.txt" />
+            <htmlemail buildresultsurl="${email.buildresultsurl.prefix}${project.name}">
+                <failure address="teamcaarray@5amsolutions.com" reportwhenfixed="true" />
             </htmlemail>
         </publishers>
 
