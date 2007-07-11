@@ -43,8 +43,9 @@
         <publishers>
             <artifactspublisher dir="projects\caarray2-continuous\caarray2\software\build\site" dest="artifacts\caarray2-continuous" />
             <currentbuildstatuspublisher file="logs/caarray2-continuous/buildstatus.txt" />
-            <htmlemail buildresultsurl="${email.buildresultsurl.prefix}${project.name}">
-                <failure address="teamcaarray@5amsolutions.com" reportwhenfixed="true" />
+            <htmlemail buildresultsurl="${email.buildresultsurl.prefix}${project.name}" skipusers="true">
+                <!-- failure address="teamcaarray@5amsolutions.com" reportwhenfixed="true" / -->
+                <failure address="tavelae@mail.nih.gov" reportwhenfixed="true" />
             </htmlemail>
         </publishers>
 
@@ -77,8 +78,9 @@
         <publishers>
             <artifactspublisher dir="projects\caarray2-nightly\caarray2\software\build\site" dest="artifacts\caarray2-nightly" />
             <currentbuildstatuspublisher file="logs/caarray2-nightly/buildstatus.txt" />
-            <htmlemail buildresultsurl="${email.buildresultsurl.prefix}${project.name}">
-                <failure address="teamcaarray@5amsolutions.com" reportwhenfixed="true" />
+            <htmlemail buildresultsurl="${email.buildresultsurl.prefix}${project.name}" skipusers="true">
+                <!-- failure address="teamcaarray@5amsolutions.com" reportwhenfixed="true" / -->
+                <failure address="tavelae@mail.nih.gov" reportwhenfixed="true" />
             </htmlemail>
         </publishers>
 
