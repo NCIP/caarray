@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="gov.nih.nci.caarray.domain.project.FactorValue" table="FACTORVALUE" polymorphism="implicit">
+        <id name="id" column="ID" type="long">
+            <generator class="assigned"/>
+        </id>
+        <many-to-one name="factor" column="FACTOR_ID" class="gov.nih.nci.caarray.domain.project.Factor" lazy="false" />
+    </class>
+</hibernate-mapping>

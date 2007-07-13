@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="gov.nih.nci.caarray.domain.project.Investigation" table="INVESTIGATION" polymorphism="implicit">
+        <id name="id" column="ID" type="long">
+            <generator class="assigned"/>
+        </id>
+        <property name="title" column="TITLE" type="string" />
+        <property name="description" column="DESCRIPTION" type="string" />
+        <property name="dateOfExperiment" column="DATEOFEXPERIMENT" type="timestamp" />
+        <property name="publicReleaseDate" column="PUBLICRELEASEDATE" type="timestamp" />
+        <set name="arrayDesigns" table="INVESTIGATIONARRAYDESIGN" lazy="false" cascade="save-update">
+            <key column="INVESTIGATION_ID" />
+            <many-to-many class="gov.nih.nci.caarray.domain.array.ArrayDesign" column="ARRAYDESIGN_ID" />
+        </set>
+        <!-- -->
+        <set name="arrays" table="INVESTIGATIONARRAY" lazy="false" cascade="save-update">
+            <key column="INVESTIGATION_ID" />
+            <many-to-many class="gov.nih.nci.caarray.domain.array.Array" column="ARRAY_ID" />
+        </set>
+        <set name="normalizationTypes" table="NORMALIZATIONTYPE" lazy="false" cascade="save-update">
+            <key column="INVESTIGATION_ID" />
+            <many-to-many class="gov.nih.nci.caarray.domain.vocabulary.Term" column="TERM_ID" />
+        </set>
+        <set name="replicateTypes" table="REPLICATETYPE" lazy="false" cascade="save-update">
+            <key column="INVESTIGATION_ID" />
+            <many-to-many class="gov.nih.nci.caarray.domain.vocabulary.Term" column="TERM_ID" />
+        </set>
+        <set name="qualityControlTypes" table="QUALITYCONTROLTYPE" lazy="false" cascade="save-update">
+            <key column="INVESTIGATION_ID" />
+            <many-to-many class="gov.nih.nci.caarray.domain.vocabulary.Term" column="TERM_ID" />
+        </set>
+        <set name="factors" lazy="false" cascade="save-update">
+            <key column="INVESTIGATION_ID" />
+            <one-to-many class="gov.nih.nci.caarray.domain.project.Factor" />
+        </set>
+        <set name="publications" lazy="false" cascade="save-update">
+            <key column="INVESTIGATION_ID" />
+            <one-to-many class="gov.nih.nci.caarray.domain.publication.Publication" />
+        </set>
+        <set name="investigationContacts" lazy="false" cascade="save-update">
+            <key column="INVESTIGATION_ID" />
+            <one-to-many class="gov.nih.nci.caarray.domain.project.InvestigationContact" />
+        </set>
+    </class>
+</hibernate-mapping>

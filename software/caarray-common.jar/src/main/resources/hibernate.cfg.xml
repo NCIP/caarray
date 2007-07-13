@@ -33,7 +33,12 @@
         <mapping resource="gov/nih/nci/caarray/domain/array/ReporterGroup.hbm.xml"/>
         <mapping resource="gov/nih/nci/caarray/domain/array/ArrayDesign.hbm.xml"/>
         <mapping resource="gov/nih/nci/caarray/domain/array/Array.hbm.xml"/>
-        <!--
-        -->
+        <mapping resource="gov/nih/nci/caarray/domain/file/CaArrayFile.hbm.xml"/>
+        <mapping resource="gov/nih/nci/caarray/domain/project/Project.hbm.xml"/>
+        <mapping resource="gov/nih/nci/caarray/domain/project/Investigation.hbm.xml"/>
+        <mapping resource="gov/nih/nci/caarray/domain/publication/Publication.hbm.xml"/>
+        <mapping resource="gov/nih/nci/caarray/domain/project/InvestigationContact.hbm.xml"/>
+        <mapping resource="gov/nih/nci/caarray/domain/project/Factor.hbm.xml"/>
+        <mapping resource="gov/nih/nci/caarray/domain/project/FactorValue.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>

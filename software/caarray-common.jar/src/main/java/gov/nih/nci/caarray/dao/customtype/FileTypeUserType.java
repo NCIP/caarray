@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common.jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-common.jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-common.jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-common.jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common.jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,78 +80,159 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package gov.nih.nci.caarray.dao.customtype;
 
-package gov.nih.nci.caarray.domain.file;
+import gov.nih.nci.caarray.domain.file.FileType;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.Serializable;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 
-  /**
+import org.hibernate.usertype.UserType;
 
-   */
-public final class FileType implements java.io.Serializable  {
-    /**
-     * The serial version UID for serialization.
-     */
-    private static final long serialVersionUID = 1234567890L;
-
-    /**
-     * The file type of this instance.
-     */
-    private final String name;
-
-    /**
-     * The MAGE_TAB Array Design Format file type.
-     */
-    public static final FileType MAGE_TAB_ADF = new FileType("MAGE_TAB_ADF");
+/**
+ * Hibernate custom mapping type to persist <code>FileType</code>.
+ *
+ * @author Rashmi Srinivasa
+ */
+public class FileTypeUserType implements UserType {
+    private static final int[] SQL_TYPES = {Types.VARCHAR};
 
     /**
-     * The MAGE_TAB data file type.
-     */
-    public static final FileType MAGE_TAB_DATA_MATRIX = new FileType("MAGE_TAB_DATA_MATRIX");
-
-    /**
-     * The MAGE_TAB Investigation Description Format file type.
-     */
-    public static final FileType MAGE_TAB_IDF = new FileType("MAGE_TAB_IDF");
-
-    /**
-     * The MAGE_TAB Sample and Data Relationship Format file type.
-     */
-    public static final FileType MAGE_TAB_SDRF = new FileType("MAGE_TAB_SDRF");
-
-    /**
-     * A Map of all possible file types.
-     */
-    private static final Map<String, FileType> INSTANCES = new HashMap<String, FileType>();
-
-    static {
-        INSTANCES.put(MAGE_TAB_ADF.toString(), MAGE_TAB_ADF);
-        INSTANCES.put(MAGE_TAB_DATA_MATRIX.toString(), MAGE_TAB_DATA_MATRIX);
-        INSTANCES.put(MAGE_TAB_IDF.toString(), MAGE_TAB_IDF);
-        INSTANCES.put(MAGE_TAB_SDRF.toString(), MAGE_TAB_SDRF);
-    }
-
-    private FileType(String name) {
-        this.name = name;
-    }
-
-    /**
-     * Gets the file type.
+     * @see org.hibernate.usertype.UserType#sqlTypes()
      *
-     * @param nameVal the file type
-     * @return the file type instance
+     * @return the SQL types that the FileType object will be persisted as.
      */
-    public static FileType getInstance(String nameVal) {
-        return INSTANCES.get(nameVal);
+    @SuppressWarnings("PMD")
+    public int[] sqlTypes() {
+        return SQL_TYPES;
     }
 
     /**
-     * Returns the name of the file type.
+     * Returns the class of the object this user type is persisting.
+     * @see org.hibernate.usertype.UserType#returnedClass()
      *
-     * @return the name of the file type
+     * @return the class of the object this user type is persisting.
      */
-    public String toString() {
-        return name;
+    public Class returnedClass() {
+        return FileType.class;
+    }
+
+    /**
+     * Checks if the given objects are equal.
+     * @see org.hibernate.usertype.UserType#equals(Object, Object)
+     *
+     * @param x the first object to compare
+     * @param y the first object to compare
+     * @return true if they are equal, false if they are not
+     */
+    public boolean equals(Object x, Object y) {
+        if ((x == null) && (y == null)) {
+            return true;
+        }
+        if ((x != null) && (y != null) && x.equals(y)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @see org.hibernate.usertype.UserType#deepCopy(Object)
+     *
+     * @param value the object to copy
+     * @return the copied object
+     */
+    public Object deepCopy(Object value) {
+        return value;
+    }
+
+    /**
+     * @see org.hibernate.usertype.UserType#isMutable()
+     *
+     * @return false since the type is not mutable.
+     */
+    public boolean isMutable() {
+        return false;
+    }
+
+    /**
+     * Provides a null-safe get method from a ResultSet.
+     * @see org.hibernate.usertype.UserType#nullSafeGet(ResultSet, String[], Object)
+     *
+     * @param resultSet the SQL result set
+     * @param names a list of file type names
+     * @param owner the owner object
+     * @return null, or a FileType instance
+     * @throws SQLException if result set could not be accessed.
+     */
+    public Object nullSafeGet(ResultSet resultSet, String[] names, Object owner) throws SQLException {
+        String name = resultSet.getString(names[0]);
+        if (resultSet.wasNull()) {
+            return null;
+        } else {
+            return FileType.getInstance(name);
+        }
+    }
+
+    /**
+     * Provides a null-safe set method for a PreparedStatement.
+     * @see org.hibernate.usertype.UserType#nullSafeSet(PreparedStatement, Object, int)
+     *
+     * @param statement the SQL prepared statement to set values for
+     * @param value the value to set
+     * @param index the index of the parameter to set
+     * @throws SQLException if the prepared statement could not be modified.
+     */
+    public void nullSafeSet(PreparedStatement statement, Object value, int index) throws SQLException {
+        if (value == null) {
+            statement.setNull(index, Types.VARCHAR);
+        } else {
+            statement.setString(index, value.toString());
+        }
+    }
+
+    /**
+     * @see org.hibernate.usertype.UserType#assemble(java.io.Serializable, java.lang.Object)
+     *
+     * @param cached the cached object
+     * @param owner the owner object
+     * @return the cached object.
+     */
+    public Object assemble(Serializable cached, Object owner) {
+        return cached;
+    }
+
+    /**
+     * @see org.hibernate.usertype.UserType#disassemble(java.lang.Object)
+     *
+     * @param value the serializable object
+     * @return the serializable object.
+     */
+    public Serializable disassemble(Object value) {
+        return (Serializable) value;
+    }
+
+    /**
+     * @see org.hibernate.usertype.UserType#replace(java.lang.Object, java.lang.Object, java.lang.Object)
+     *
+     * @param original the original object
+     * @param target the target object
+     * @param owner the owner object
+     * @return the original object.
+     */
+    public Object replace(Object original, Object target, Object owner) {
+        return original;
+    }
+
+    /**
+     * @see org.hibernate.usertype.UserType#hashCode(java.lang.Object)
+     *
+     * @param x the object whose hashcode is desired
+     * @return the hashcode int.
+     */
+    public int hashCode(Object x) {
+        return x.hashCode();
     }
 }
