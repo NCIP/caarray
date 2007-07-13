@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.dao;
 
 /**
- *
+ * Factory used to retrieve DAO instances.
  *
  * @author ETavela
  */
@@ -114,6 +114,15 @@ public class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
      */
     public ArrayDao getArrayDao() {
         return new ArrayDaoImpl();
+    }
+
+    /**
+     * Returns a <code>ProjectDao</code>.
+     *
+     * @return a <code>ProjectDao</code>.
+     */
+    public ProjectDao getProjectDao() {
+        return new ProjectDaoImpl();
     }
 
     /**
