@@ -103,7 +103,7 @@ public class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao
      * @throws DAOException if there is a problem retrieving the <code>Project</code>.
      */
     public Project getProject(Long id) throws DAOException {
-        // Create an example arraydesign that has the desired id, and use it to retrieve matching arraydesigns.
+        // Create an example project that has the desired id, and use it to retrieve matching arraydesigns.
         Project projectToMatch = new Project();
         projectToMatch.setId(id);
         return (Project) queryEntityById(projectToMatch);
