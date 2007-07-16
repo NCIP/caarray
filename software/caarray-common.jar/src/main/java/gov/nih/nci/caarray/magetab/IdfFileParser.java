@@ -229,7 +229,7 @@ public final class IdfFileParser {
         List<String> pubDateList = ((ArrayList<String>) entityMap.getCollection(IdfDocument.PUBLIC_RELEASE_DATE));
         if (isNotEmpty(pubDateList.get(0))) {
             try {
-            document.setPublicReleaseDate((new java.text.SimpleDateFormat("yyyy-MM-dd")).parse(pubDateList.get(0)));
+            document.setPublicReleaseDate((new java.text.SimpleDateFormat("MM/dd/yyyy")).parse(pubDateList.get(0)));
             } catch (java.text.ParseException pe) {
                 throw new MageTabTextFileLoaderException("Invalid PubRelease Date", pe);
             }
@@ -253,9 +253,9 @@ public final class IdfFileParser {
         List<String> expDateList = ((ArrayList<String>) entityMap.getCollection(IdfDocument.EXPERIMENT_DATE));
         if (isNotEmpty(expDateList.get(0))) {
             try {
-                document.setExperimentDate((new java.text.SimpleDateFormat("yyyy-MM-dd")).parse(expDateList.get(0)));
+                document.setExperimentDate((new java.text.SimpleDateFormat("MM/dd/yyyy")).parse(expDateList.get(0)));
             } catch (java.text.ParseException pe) {
-                throw new MageTabTextFileLoaderException("Invalid PubRelease Date", pe);
+                throw new MageTabTextFileLoaderException("Invalid Experiment Date", pe);
             }
         }
     }
