@@ -197,7 +197,7 @@ CREATE TABLE FEATUREGROUP
 CREATE TABLE CAARRAYFILE
 (
   ID                          BIGINT      NOT NULL,
-  NAME                        VARCHAR(1000),
+  PATH                        VARCHAR(1000),
   TYPE                        VARCHAR(1000),
   PROJECT_ID                  BIGINT      NOT NULL,
   PRIMARY KEY                 (ID)
