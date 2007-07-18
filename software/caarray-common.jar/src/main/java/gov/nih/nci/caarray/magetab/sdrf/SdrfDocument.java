@@ -82,12 +82,13 @@
  */
 package gov.nih.nci.caarray.magetab.sdrf;
 
+import java.io.File;
 import java.util.List;
 
 import gov.nih.nci.caarray.magetab.AbstractMageTabDocument;
 
 /**
- * 
+ *
  *
  * @author tavelae
  */
@@ -97,6 +98,13 @@ public class SdrfDocument extends AbstractMageTabDocument {
 
     SdrfDocument() {
         super();
+    }
+
+    /**
+     *@param file the File
+     */
+    public void load(File file) {
+        // To be implemented
     }
 //
 //    void load() {
