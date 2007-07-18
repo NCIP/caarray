@@ -22,6 +22,7 @@
     <property name="caarray-common.src.dir" value="${caarray-common.dir}/src/main/java" />
     <property name="caarray-common.resources.dir" value="${caarray-common.dir}/src/main/resources" />
     <property name="caarray-common.test.src.dir" value="${caarray-common.dir}/src/test/java" />
+    <property name="caarray-common.test.files.dir" value="${caarray-common.dir}/src/test/resources" />
     <property name="caarray-common.target.dir" value="${caarray-common.dir}/target" />
     <property name="caarray-common.classes.dir" value="${caarray-common.target.dir}/classes" />
     <property name="caarray-common.instrumented.classes.dir" value="${caarray-common.target.dir}/instrumented-classes" />
@@ -86,7 +87,7 @@
     <property name="selenium-java-client-driver.jar" value="${lib.dir}/selenium-java-client-driver.jar" />
     <property name="selenium-java-client-driver-tests.jar" value="${lib.dir}/selenium-java-client-driver-tests.jar" />
     <property name="spring.jar" value="${lib.dir}/spring.jar" />
-  <property name="netcdf.jar" value="${lib.dir}/nc2.2.jar" />
+  	<property name="netcdf.jar" value="${lib.dir}/nc2.2.jar" />
 
     <!-- Test-related properties -->
     <property name="test.dir" value="${basedir}/test" />
@@ -269,7 +270,9 @@
 				<pathelement location="${commons-io.jar}" />
 				<pathelement location="${commons-lang.jar}" />
                 <pathelement location="${commons-logging.jar}" />
-        <pathelement location="${netcdf.jar}" />
+        		<pathelement location="${netcdf.jar}" />
+				<pathelement location="${caarray-common.resources.dir}" />
+				<pathelement location="${caarray-common.test.files.dir}" />
             </classpath>
         </javac>
     </target>
@@ -314,6 +317,7 @@
         <mkdir dir="${caarray-common.target.dir}"/>
         <jar destfile="${caarray-common.jar}">
             <fileset dir="${caarray-common.classes.dir}" />
+			<fileset dir="${caarray-common.test.files.dir}" />
         </jar>
     </target>
 
@@ -434,6 +438,9 @@
         <javac srcdir="${caarray-common.test.src.dir}" destdir="${caarray-common.test.classes.dir}" debug="true">
             <classpath>
                 <pathelement location="${caarray-common.classes.dir}" />
+				<pathelement location="${caarray-common.test.files.dir}" />
+			    <pathelement location="${caarray-common.resources.dir}" />
+				<pathelement location="${commons-io.jar}" />
                 <pathelement location="${commons-logging.jar}" />
                 <pathelement location="${junit.jar}" />
                 <pathelement location="${hibernate.jar}" />
@@ -447,7 +454,7 @@
       test.src.dir="${caarray-common.test.src.dir}"
       xml.output.dir="${caarray-common.target.dir}/junit"
       instrumented.classes="${caarray-common.instrumented.classes.dir}"
-      classpath="${caarray-common.test.classes.dir};${caarray-common.classes.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar}" />
+      classpath="${caarray-common.test.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar}" />
     </target>
 
     <!-- caarray-ejb.jar -->
@@ -477,7 +484,7 @@
             test.src.dir="${caarray-ejb.test.src.dir}"
             xml.output.dir="${caarray-ejb.target.dir}/junit"
             instrumented.classes="${caarray-ejb.instrumented.classes.dir}"
-            classpath="${caarray-ejb.test.classes.dir};${caarray-ejb.classes.dir};${caarray-common.classes.dir};${cacore32-client.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar}" />
+            classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-common.classes.dir};${cacore32-client.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar}" />
     </target>
 
     <!-- caarray.war -->
@@ -496,6 +503,7 @@
                 <pathelement location="${caarray-common.classes.dir}" />
                 <pathelement location="${caarray-ejb.classes.dir}" />
                 <pathelement location="${caarray-ejb.test.classes.dir}" />
+				<pathelement location="${caarray-common.test.files.dir}" />
                 <pathelement location="${myfaces-api.jar}" />
                 <pathelement location="${junit.jar}" />
             </classpath>
@@ -507,7 +515,7 @@
       test.src.dir="${caarray-war.test.src.dir}"
         xml.output.dir="${caarray-war.target.dir}/junit"
       instrumented.classes="${caarray-war.instrumented.classes.dir}"
-        classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-logging.jar};${caarray-ejb.test.classes.dir};${myfaces-api.jar};${junit.jar}" />
+        classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-logging.jar};${caarray-ejb.test.classes.dir};${myfaces-api.jar};${junit.jar}" />
     </target>
 
     <target name="test:junit-report">
@@ -607,7 +615,6 @@
                 <pathelement location="${caarray-common.jar}" />
                 <pathelement location="${caarray-ejb.jar}" />
                 <pathelement location="${caarray-war.classes.dir}" />
-                <pathelement location="${cacore32-client.jar}" />
                 <pathelement location="${cacore32-client.jar}" />
             </classpath>
             <formatter type="xml" tofile="${site.dir}/checkstyle/checkstyle.xml" />
