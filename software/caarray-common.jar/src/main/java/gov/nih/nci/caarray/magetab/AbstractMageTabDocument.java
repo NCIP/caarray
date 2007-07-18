@@ -50,7 +50,7 @@
  */
 package gov.nih.nci.caarray.magetab;
 
-import gov.nih.nci.caarray.util.file.TabDelimitedFile;
+import gov.nih.nci.caarray.data.file.TabDelimitedFile;
 
 import java.io.File;
 

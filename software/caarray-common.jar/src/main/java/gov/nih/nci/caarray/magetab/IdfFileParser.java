@@ -101,17 +101,18 @@ package gov.nih.nci.caarray.magetab;
 
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.util.file.TabDelimitedFile;
+import gov.nih.nci.caarray.data.file.TabDelimitedFile;
 
 import org.apache.commons.collections.map.MultiValueMap;
 
-import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+
 import org.apache.commons.lang.StringUtils;
 
 
@@ -123,27 +124,21 @@ import org.apache.commons.lang.StringUtils;
 @SuppressWarnings("PMD")
 public final class IdfFileParser {
 
-    private final File mageTabFile;
     private MultiValueMap entityMap;
     private List<TermSource> documentSrcs;
     private TabDelimitedFile fileUtil;
 
 
-    private IdfFileParser(File argMageTabFile) {
+    private IdfFileParser() {
         super();
-        if (argMageTabFile == null) {
-            throw new IllegalArgumentException("Null argument for mageTabFile.");
-        }
-        mageTabFile = argMageTabFile;
         documentSrcs = new ArrayList<TermSource>();
     }
 
     /**
-     * @param argMageTabFile the file
      * @return MageTabTextFileLoader
      */
-    public static IdfFileParser create(File argMageTabFile) {
-        return new IdfFileParser(argMageTabFile);
+    public static IdfFileParser create() {
+        return new IdfFileParser();
     }
 
     /**
@@ -700,7 +695,27 @@ public final class IdfFileParser {
 
     private void loadEntityMap() throws MageTabTextFileLoaderException {
         entityMap = new MultiValueMap();
-        fileUtil.handleFileData(this.mageTabFile, this.entityMap);
+        handleFileData();
+    }
+
+    /**
+
+     * @throws MageTabTextFileLoaderException excpetion
+     */
+    private void handleFileData() throws MageTabTextFileLoaderException {
+        List<String> currentLineContents;
+        while ((currentLineContents = fileUtil.nextRow()) != null) {
+            Iterator iter = currentLineContents.iterator();
+            String key = null;
+            if (iter.hasNext()) {
+                key = (String) iter.next();
+                while (iter.hasNext()) {
+                    String value = (String) iter.next();
+                    entityMap.put(key.toUpperCase(Locale.ENGLISH), value);
+                }
+            }
+        }
+
     }
 
 

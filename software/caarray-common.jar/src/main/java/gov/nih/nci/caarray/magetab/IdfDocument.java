@@ -51,7 +51,7 @@
 package gov.nih.nci.caarray.magetab;
 
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.util.file.TabDelimitedFile;
+import gov.nih.nci.caarray.data.file.TabDelimitedFile;
 
 import java.io.File;
 import java.net.URI;
@@ -285,19 +285,12 @@ public class IdfDocument extends AbstractMageTabDocument {
 
 
     /**
-     *
-     */
-    public IdfDocument() {
-        this.setFileUtil(new TabDelimitedFile());
-    }
-
-
-    /**
      * @param file the File
      * @throws MageTabTextFileLoaderException exception
      */
     public void load(File file) throws MageTabTextFileLoaderException {
-        IdfFileParser parser = IdfFileParser.create(file);
+        setFileUtil(new TabDelimitedFile(file));
+        IdfFileParser parser = IdfFileParser.create();
         parser.parseIdfDocument(this);
 
     }
