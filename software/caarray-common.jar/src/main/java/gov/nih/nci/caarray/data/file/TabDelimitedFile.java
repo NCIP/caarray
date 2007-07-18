@@ -83,9 +83,14 @@
 package gov.nih.nci.caarray.data.file;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
+import gov.nih.nci.caarray.magetab.MageTabTextFileLoaderException;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 /**
  * Provides iterator-like access, line by line, to the contents of a tab-delimited
  * file.
@@ -94,16 +99,28 @@ import java.util.List;
  */
 public class TabDelimitedFile {
 
-    @SuppressWarnings("PMD") // remove this suppression when file is used
     private final File file;
-
+    private List<String> currentLineContents;
+    private String currentLine;
+    /**
+     *
+     */
+    private static final char DELIMITER = '\t';
+    private static final char SEPARATOR = '"';
+    private LineIterator lineIterator;
     /**
      * Creates a new instance wrapping access to the given <code>File</code>.
      *
      * @param file the tab-delimited file
+     * @throws MageTabTextFileLoaderException exception
      */
-    public TabDelimitedFile(File file) {
+    public TabDelimitedFile(File file) throws MageTabTextFileLoaderException {
         this.file = file;
+        try {
+            lineIterator = FileUtils.lineIterator(this.file);
+        } catch (IOException ie) {
+            throw new MageTabTextFileLoaderException("error loading file", ie);
+        }
     }
 
     /**
@@ -112,7 +129,7 @@ public class TabDelimitedFile {
      * @return true if more lines to be read.
      */
     public boolean hasNext() {
-        return false;
+        return lineIterator.hasNext();
     }
 
     /**
@@ -122,7 +139,55 @@ public class TabDelimitedFile {
      * @return the contents of the current row.
      */
     public List<String> nextRow() {
-        return Collections.EMPTY_LIST;
+        return readLine();
     }
+
+
+
+
+    /**
+     * @param line the string to be parsed
+     * @return List of parsed strings
+     *
+     */
+    private List<String> parseLine(String line) {
+        if (line == null) {
+            return null;
+        }
+        List<String> values = new ArrayList<String>();
+        StringBuffer stringBuffer = new StringBuffer();
+        for (int currentIndex = 0; currentIndex < line.length(); currentIndex++) {
+            char currentChar = line.charAt(currentIndex);
+            if (currentChar == DELIMITER) {
+                values.add(stringBuffer.toString());
+                stringBuffer.setLength(0);
+            } else if (currentChar == SEPARATOR) {
+                continue;
+            } else {
+                stringBuffer.append(currentChar);
+            }
+        }
+        values.add(stringBuffer.toString());
+        return values;
+    }
+
+    /**
+     * @return a list of String
+     */
+    public List<String> readLine() {
+        if (lineIterator.hasNext()) {
+            currentLine = lineIterator.nextLine();
+            currentLineContents = parseLine(currentLine);
+            return currentLineContents;
+        } else {
+            currentLine = null;
+            currentLineContents = null;
+            return null;
+        }
+    }
+
+
+
+
 
 }
