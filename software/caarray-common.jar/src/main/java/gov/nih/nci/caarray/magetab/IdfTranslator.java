@@ -50,7 +50,6 @@
  */
 package gov.nih.nci.caarray.magetab;
 
-import gov.nih.nci.caarray.util.file.TabDelimitedFile;
 
 import java.io.File;
 
@@ -58,29 +57,23 @@ import java.io.File;
  * @author John Pike
  *
  */
-public abstract class AbstractMageTabDocument {
-
-    private TabDelimitedFile fileUtil;
+public class IdfTranslator extends AbstractMageTabTranslator {
 
     /**
-     * @param file the File
-     * @throws MageTabTextFileLoaderException exception
+     * @param file File object
+     * @return IdfDocument
      */
-    public abstract void load(File file) throws MageTabTextFileLoaderException;
+    public IdfDocument parse(File file) {
+        IdfDocument document = new IdfDocument();
+        try {
+            document.load(file);
+        } catch (MageTabTextFileLoaderException e) {
+            e.getCause();
 
-    /**
-     * @return TabDelimtedFile the file util class
-     */
-    public TabDelimitedFile getFileUtil() {
-        return this.fileUtil;
+        }
+
+        return document;
+
     }
-
-    /**
-     * @param fileUtil the arg
-     */
-    public void setFileUtil(TabDelimitedFile fileUtil) {
-        this.fileUtil = fileUtil;
-    }
-
 
 }

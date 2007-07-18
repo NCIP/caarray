@@ -50,37 +50,10 @@
  */
 package gov.nih.nci.caarray.magetab;
 
-import gov.nih.nci.caarray.util.file.TabDelimitedFile;
-
-import java.io.File;
-
 /**
  * @author John Pike
  *
  */
-public abstract class AbstractMageTabDocument {
-
-    private TabDelimitedFile fileUtil;
-
-    /**
-     * @param file the File
-     * @throws MageTabTextFileLoaderException exception
-     */
-    public abstract void load(File file) throws MageTabTextFileLoaderException;
-
-    /**
-     * @return TabDelimtedFile the file util class
-     */
-    public TabDelimitedFile getFileUtil() {
-        return this.fileUtil;
-    }
-
-    /**
-     * @param fileUtil the arg
-     */
-    public void setFileUtil(TabDelimitedFile fileUtil) {
-        this.fileUtil = fileUtil;
-    }
-
+public abstract class AbstractMageTabTranslator {
 
 }

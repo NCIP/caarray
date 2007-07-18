@@ -98,23 +98,20 @@
 
 package gov.nih.nci.caarray.magetab;
 
-import gov.nih.nci.caarray.data.file.LineSplitter;
+
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.util.file.TabDelimitedFile;
 
 import org.apache.commons.collections.map.MultiValueMap;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
-
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang.StringUtils;
 
 
@@ -128,10 +125,9 @@ public final class IdfFileParser {
 
     private final File mageTabFile;
     private MultiValueMap entityMap;
-    private IdfDocument document;
-    private LineIterator lineIterator;
-    private String currentLine;
-    private List<String> currentLineContents;
+    private List<TermSource> documentSrcs;
+    private TabDelimitedFile fileUtil;
+
 
     private IdfFileParser(File argMageTabFile) {
         super();
@@ -139,6 +135,7 @@ public final class IdfFileParser {
             throw new IllegalArgumentException("Null argument for mageTabFile.");
         }
         mageTabFile = argMageTabFile;
+        documentSrcs = new ArrayList<TermSource>();
     }
 
     /**
@@ -179,100 +176,108 @@ public final class IdfFileParser {
 
 
     /**
-     * @return IdfDocument  the Document
+     * @param document IdfDocument
      * @throws MageTabTextFileLoaderException exception
      */
-    public IdfDocument getIdfDocument() throws MageTabTextFileLoaderException {
+    public void parseIdfDocument(IdfDocument document) throws MageTabTextFileLoaderException {
 
-        if (document == null) {
-            createEntityMap();
+        fileUtil = document.getFileUtil();
 
-            document = new IdfDocument();
-            getTitle();
-            getExperimentDate();
-            getExperimentDescription();
-            getPublicReleaseDate();
-            getSdrfFiles();
-            addTermSources();
-            addProtocols();
-            addPersons();
-            addPublications();
-            addExperimentalFactors();
-           //   addComments(document, entity);entityMap
-            addQCTerms();
-            addReplicateTerms();
-            addNormalizationTerms();
-            addExperimentalDesigns();
-        }
-        return document;
+        createEntityMap();
+
+        document.setTitle(getTitle());
+        document.setExperimentDate(getExperimentDate());
+        document.setExperimentDescription(getExperimentDescription());
+        document.setPublicReleaseDate(getPublicReleaseDate());
+        document.addToSdrfFiles(getSdrfFiles());
+        document.setTermSources(getTermSources());
+        document.setProtocols(getProtocols());
+        document.setPersons(getPersons());
+        document.setPublications(getPublications());
+        document.setExperimentalFactors(getExperimentalFactors());
+        //   addComments(document, entity);entityMap
+        document.setQualityControls(getQCTerms());
+        document.setReplicates(getReplicateTerms());
+        document.setNormalizations(getNormalizationTerms());
+        document.setExperimentalDesigns(getExperimentalDesigns());
 
     }
 
     /**
      * @throws MageTabTextFileLoaderException
      */
-    private void getSdrfFiles() throws MageTabTextFileLoaderException {
+    private URI getSdrfFiles() throws MageTabTextFileLoaderException {
         List<String> sdrfFileList = ((ArrayList<String>) entityMap.getCollection(IdfDocument.SDRF_FILE));
         if (isNotEmpty(sdrfFileList.get(0))) {
             try {
-                document.addToSdrfFiles(new URI(sdrfFileList.get(0)));
+                return (new URI(sdrfFileList.get(0)));
             } catch (URISyntaxException se) {
                 throw new MageTabTextFileLoaderException("error with URI", se);
             }
+        } else {
+            return null;
         }
     }
 
     /**
      *
      */
-    private void getPublicReleaseDate() throws MageTabTextFileLoaderException {
+    private Date getPublicReleaseDate() throws MageTabTextFileLoaderException {
         List<String> pubDateList = ((ArrayList<String>) entityMap.getCollection(IdfDocument.PUBLIC_RELEASE_DATE));
         if (isNotEmpty(pubDateList.get(0))) {
             try {
-            document.setPublicReleaseDate((new java.text.SimpleDateFormat("MM/dd/yyyy")).parse(pubDateList.get(0)));
+                return (new java.text.SimpleDateFormat("MM/dd/yyyy")).parse(pubDateList.get(0));
             } catch (java.text.ParseException pe) {
                 throw new MageTabTextFileLoaderException("Invalid PubRelease Date", pe);
             }
+        } else {
+            return null;
         }
     }
 
     /**
      *
      */
-    private void getExperimentDescription() {
+    private String getExperimentDescription() {
         List<String> expDescr = ((ArrayList<String>) entityMap.getCollection(IdfDocument.EXPERIMENT_DESCRIPTION));
         if (isNotEmpty(expDescr.get(0))) {
-            document.setExperimentDescription(expDescr.get(0));
+            return expDescr.get(0);
+        } else {
+            return null;
         }
     }
 
     /**
      *
      */
-    private void getExperimentDate() throws MageTabTextFileLoaderException {
+    private Date getExperimentDate() throws MageTabTextFileLoaderException {
         List<String> expDateList = ((ArrayList<String>) entityMap.getCollection(IdfDocument.EXPERIMENT_DATE));
         if (isNotEmpty(expDateList.get(0))) {
             try {
-                document.setExperimentDate((new java.text.SimpleDateFormat("MM/dd/yyyy")).parse(expDateList.get(0)));
+                return (new java.text.SimpleDateFormat("MM/dd/yyyy")).parse(expDateList.get(0));
             } catch (java.text.ParseException pe) {
                 throw new MageTabTextFileLoaderException("Invalid Experiment Date", pe);
             }
+        } else {
+            return null;
         }
     }
 
     /**
      *
      */
-    private void getTitle() {
+    private String getTitle() {
         List<String> titleList = ((ArrayList<String>) entityMap.getCollection(IdfDocument.INVESTIGATION_TITLE));
         if (isNotEmpty(titleList.get(0))) {
-            document.setTitle(titleList.get(0));
+            return titleList.get(0);
+        } else {
+            return null;
         }
     }
 
 
 
-    private void addExperimentalDesigns() {
+    private List<Term> getExperimentalDesigns() {
         List<String> expDesigns = (ArrayList<String>) entityMap.getCollection(IdfDocument.EXPERIMENT_DESIGN);
 
         List<Term> expDesignList = new ArrayList<Term>();
@@ -283,15 +288,18 @@ public final class IdfFileParser {
                 canAdd = true;
                 Term term = new Term();
                 term.setValue(expDesigns.get(i));
+                Category cat = new Category();
+                cat.setName(IdfDocument.EXPERIMENTDESIGNTYPE);
+                term.setCategory(cat);
                 if (canAdd) {
                     expDesignList.add(term);
                 }
             }
         }
-        document.setExperimentalDesigns(expDesignList);
+        return expDesignList;
     }
 
-    private void addNormalizationTerms() {
+    private List<Semantic> getNormalizationTerms() {
         List<String> types = (ArrayList<String>) entityMap.getCollection(IdfDocument.NORMALIZATION_TYPE);
         List<String> typeSrcList = (ArrayList<String>) entityMap.getCollection(IdfDocument.NORMALIZATION_TERM_SRC);
 
@@ -304,6 +312,9 @@ public final class IdfFileParser {
                 Semantic type = new Semantic();
                 Term term = new Term();
                 term.setValue(types.get(i));
+                Category cat = new Category();
+                cat.setName(IdfDocument.NORMALIZATIONDESCRIPTIONTYPE);
+                term.setCategory(cat);
                 if (isNotEmpty(typeSrcList.get(i))) {
                     type.setSource(getSourceRef(typeSrcList.get(i)));
                 }
@@ -312,11 +323,11 @@ public final class IdfFileParser {
                 }
             }
         }
-        document.setNormalizations(normalizationList);
+        return normalizationList;
     }
 
 
-    private void addReplicateTerms() {
+    private List<Semantic> getReplicateTerms() {
         List<String> types = (ArrayList<String>) entityMap.getCollection(IdfDocument.REPLICATE_TYPE);
         List<String> typeSrcList = (ArrayList<String>) entityMap.getCollection(IdfDocument.REPLICATE_TERM_SRC);
 
@@ -329,6 +340,9 @@ public final class IdfFileParser {
                 Semantic type = new Semantic();
                 Term term = new Term();
                 term.setValue(types.get(i));
+                Category cat = new Category();
+                cat.setName(IdfDocument.REPLICATEDESCRIPTIONTYPE);
+                term.setCategory(cat);
                 if (isNotEmpty(typeSrcList.get(i))) {
                     type.setSource(getSourceRef(typeSrcList.get(i)));
                 }
@@ -337,11 +351,11 @@ public final class IdfFileParser {
                 }
             }
         }
-        document.setReplicates(replicateList);
+        return replicateList;
     }
 
 
-    private void addQCTerms() {
+    private List<Semantic> getQCTerms() {
         List<String> types = (ArrayList<String>) entityMap.getCollection(IdfDocument.QUALITY_CONTROL_TYPE);
         List<String> typeSrcList = (ArrayList<String>) entityMap.getCollection(IdfDocument.QUALITY_CONTROL_TERM_SRC);
 
@@ -354,6 +368,9 @@ public final class IdfFileParser {
                 Semantic type = new Semantic();
                 Term term = new Term();
                 term.setValue(types.get(i));
+                Category cat = new Category();
+                cat.setName(IdfDocument.QUALITYCONTROLDESCRIPTIONTYPE);
+                term.setCategory(cat);
                 if (isNotEmpty(typeSrcList.get(i))) {
                     type.setSource(getSourceRef(typeSrcList.get(i)));
                 }
@@ -362,10 +379,10 @@ public final class IdfFileParser {
                 }
             }
         }
-        document.setQualityControls(qcList);
+        return qcList;
     }
 
-    private void addExperimentalFactors() throws MageTabTextFileLoaderException {
+    private List<ExperimentalFactor> getExperimentalFactors() throws MageTabTextFileLoaderException {
 
         List<String> factors = (ArrayList<String>) entityMap.getCollection(IdfDocument.EXPERIMENT_FACTOR_NAME);
         List<String> types = (ArrayList<String>) entityMap.getCollection(IdfDocument.EXPERIMENT_FACTOR_TYPE);
@@ -382,6 +399,9 @@ public final class IdfFileParser {
                 Semantic type = new Semantic();
                 Term term = new Term();
                 term.setValue(types.get(i));
+                Category cat = new Category();
+                cat.setName(IdfDocument.EXPERIMENTALFACTORCATEGORY);
+                term.setCategory(cat);
                 type.setType(term);
                 if (isNotEmpty(typeSrcList.get(i))) {
                     type.setSource(getSourceRef(typeSrcList.get(i)));
@@ -392,11 +412,11 @@ public final class IdfFileParser {
                 factorList.add(factor);
             }
         }
-        document.setExperimentalFactors(factorList);
+        return factorList;
 
     }
     @SuppressWarnings("PMD")
-    private void addPublications() throws MageTabTextFileLoaderException {
+    private List<Publication> getPublications() throws MageTabTextFileLoaderException {
 
         List<String> titles = (ArrayList<String>) entityMap.getCollection(IdfDocument.PUBLICATION_TITLE);
         List<String> authors = (ArrayList<String>) entityMap.getCollection(IdfDocument.PUBLICATION_AUTHOR_LIST);
@@ -437,11 +457,11 @@ public final class IdfFileParser {
                 publicationList.add(publication);
             }
         }
-        document.setPublications(publicationList);
+        return publicationList;
     }
 
     @SuppressWarnings("PMD")
-    private void addPersons() throws MageTabTextFileLoaderException {
+    private List<Person> getPersons() throws MageTabTextFileLoaderException {
         List<String> firstNames = (ArrayList<String>) entityMap.getCollection(IdfDocument.PERSON_FIRST_NAME);
         List<String> lastNames = (ArrayList<String>) entityMap.getCollection(IdfDocument.PERSON_LAST_NAME);
         List<String> middleInits = (ArrayList<String>) entityMap.getCollection(IdfDocument.PERSON_MID_INITIAL);
@@ -488,6 +508,9 @@ public final class IdfFileParser {
                 Semantic role = new Semantic();
                 Term term = new Term();
                 term.setValue(roles.get(i));
+                Category cat = new Category();
+                cat.setName(IdfDocument.ROLES);
+                term.setCategory(cat);
                 role.setType(term);
                 if (isNotEmpty(rolesSrcList.get(i))) {
                     role.setSource(getSourceRef(rolesSrcList.get(i)));
@@ -498,25 +521,25 @@ public final class IdfFileParser {
                 personList.add(person);
             }
         }
-        document.setPersons(personList);
+        return personList;
 
     }
 
-    private void addTermSources() throws MageTabTextFileLoaderException {
+    private List<TermSource> getTermSources() throws MageTabTextFileLoaderException {
         List<String> termSourceNames = (ArrayList<String>) entityMap.getCollection(IdfDocument.TERM_SOURCE_NAME);
         List<String> termSourceFiles = (ArrayList<String>) entityMap.getCollection(IdfDocument.TERM_SOURCE_FILE);
         List<String> versions = (ArrayList<String>) entityMap.getCollection(IdfDocument.TERM_SOURCE_VERSION);
-        List<TermSource> termSourceList = new ArrayList<TermSource>();
+
         try {
             for (int i = 0; i < termSourceNames.size(); i++) {
                 boolean canAdd = false;
                 TermSource termSource = new TermSource();
                 canAdd = setTermSources(termSourceNames, termSourceFiles, versions, i, termSource);
                 if (canAdd) {
-                    termSourceList.add(termSource);
+                    this.documentSrcs.add(termSource);
                 }
             }
-            document.setTermSources(termSourceList);
+            return this.documentSrcs;
         } catch (Exception e) {
             throw new MageTabTextFileLoaderException("exception", e);
         }
@@ -550,7 +573,7 @@ public final class IdfFileParser {
         return canAdd;
     }
 
-    private void addProtocols() throws MageTabTextFileLoaderException {
+    private List<Protocol> getProtocols() throws MageTabTextFileLoaderException {
         List<Protocol> protocolList = new ArrayList<Protocol>();
         List<String> names = (ArrayList<String>) entityMap.getCollection(IdfDocument.PROTOCOL_NAME);
         List<String> types = (ArrayList<String>) entityMap.getCollection(IdfDocument.PROTOCOL_TYPE);
@@ -577,7 +600,7 @@ public final class IdfFileParser {
                 protocolList.add(protocol);
             }
         }
-        document.setProtocols(protocolList);
+        return protocolList;
     }
 
     /**
@@ -591,6 +614,9 @@ public final class IdfFileParser {
             Semantic protocolType = new Semantic();
             Term type = new Term();
             type.setValue(types.get(i));
+            Category cat = new Category();
+            cat.setName(IdfDocument.PROTOCOLTYPE);
+            type.setCategory(cat);
             protocolType.setType(type);
             if (isNotEmpty(typeSrcList.get(i))) {
                 protocolType.setSource(getSourceRef(typeSrcList.get(i)));
@@ -656,7 +682,6 @@ public final class IdfFileParser {
     }
 
     private TermSource getSourceRef(String argSource) {
-        List<TermSource> documentSrcs = document.getTermSources();
         Iterator<TermSource> iter = documentSrcs.iterator();
         while (iter.hasNext()) {
             TermSource trmSrc = iter.next();
@@ -675,46 +700,9 @@ public final class IdfFileParser {
 
     private void loadEntityMap() throws MageTabTextFileLoaderException {
         entityMap = new MultiValueMap();
-        handleFileData();
-    }
-
-    private void handleFileData() throws MageTabTextFileLoaderException {
-        try {
-            lineIterator = FileUtils.lineIterator(mageTabFile, "UTF-8");
-            getValues();
-        } catch (IOException e) {
-            throw new MageTabTextFileLoaderException(
-                "Couldn't load array design from TXT file " + mageTabFile.getAbsolutePath(), e);
-        }
-
+        fileUtil.handleFileData(this.mageTabFile, this.entityMap);
     }
 
 
-    private void getValues() throws MageTabTextFileLoaderException {
-        while ((currentLineContents = readLine()) != null) {
-            Iterator iter = currentLineContents.iterator();
-            String key = null;
-            if (iter.hasNext()) {
-                key = (String) iter.next();
-                while (iter.hasNext()) {
-                    String value = (String) iter.next();
-                    entityMap.put(key.toUpperCase(Locale.ENGLISH), value);
-                }
-            }
-        }
-    }
-
-
-    private List<String> readLine() {
-        if (lineIterator.hasNext()) {
-            currentLine = lineIterator.nextLine();
-            currentLineContents = LineSplitter.TAB_DELIMITED.split(currentLine);
-            return currentLineContents;
-        } else {
-            currentLine = null;
-            currentLineContents = null;
-            return null;
-        }
-    }
 
 }

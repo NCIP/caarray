@@ -51,7 +51,9 @@
 package gov.nih.nci.caarray.magetab;
 
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.util.file.TabDelimitedFile;
 
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
@@ -79,6 +81,34 @@ public class IdfDocument extends AbstractMageTabDocument {
     private List<Comment> comments;
     private List<Protocol> protocols;
 
+    /**
+     *
+     */
+    public static final String NORMALIZATIONDESCRIPTIONTYPE = "NormalizationDescriptionType";
+    /**
+     *
+     */
+    public static final String EXPERIMENTDESIGNTYPE = "ExperimentDesignType";
+    /**
+     *
+     */
+    public static final String EXPERIMENTALFACTORCATEGORY = "ExperimentalFactorCategory";
+    /**
+     *
+     */
+    public static final String ROLES = "Roles";
+    /**
+     *
+     */
+    public static final String QUALITYCONTROLDESCRIPTIONTYPE = "QualityControlDescriptionType";
+    /**
+     *
+     */
+    public static final String REPLICATEDESCRIPTIONTYPE = "ReplicateDescriptionType";
+    /**
+     *
+     */
+    public static final String PROTOCOLTYPE = "ProtocolType";
     /**
      *
      */
@@ -258,7 +288,18 @@ public class IdfDocument extends AbstractMageTabDocument {
      *
      */
     public IdfDocument() {
-        // TODO Auto-generated constructor stub
+        this.setFileUtil(new TabDelimitedFile());
+    }
+
+
+    /**
+     * @param file the File
+     * @throws MageTabTextFileLoaderException exception
+     */
+    public void load(File file) throws MageTabTextFileLoaderException {
+        IdfFileParser parser = IdfFileParser.create(file);
+        parser.parseIdfDocument(this);
+
     }
     /**
      * @return the experimentDate
