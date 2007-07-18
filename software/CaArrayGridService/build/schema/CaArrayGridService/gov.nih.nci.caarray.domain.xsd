@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="gme://caCORE.cabig/3.2/gov.nih.nci.caarray.domain" xmlns:gov.nih.nci.caarray.domain.protocol="gme://caCORE.cabig/3.2/gov.nih.nci.caarray.domain.protocol" xmlns:gov.nih.nci.caarray.domain.vocabulary="gme://caCORE.cabig/3.2/gov.nih.nci.caarray.domain.vocabulary" targetNamespace="gme://caCORE.cabig/3.2/gov.nih.nci.caarray.domain" elementFormDefault="qualified">
+  <xs:import namespace="gme://caCORE.cabig/3.2/gov.nih.nci.caarray.domain.vocabulary" schemaLocation="gov.nih.nci.caarray.domain.vocabulary.xsd" />
+  <xs:import namespace="gme://caCORE.cabig/3.2/gov.nih.nci.caarray.domain.protocol" schemaLocation="gov.nih.nci.caarray.domain.protocol.xsd" />
+  <xs:element name="AbstractCaArrayEntity" type="AbstractCaArrayEntity" />
+  <xs:complexType name="AbstractCaArrayEntity">
+    <xs:sequence />
+    <xs:attribute name="id" type="xs:long" />
+  </xs:complexType>
+</xs:schema>
+

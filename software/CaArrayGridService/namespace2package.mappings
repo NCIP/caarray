@@ -1,0 +1,16 @@
+http\://caarray.cagrid.nci.nih.gov/CaArrayGridService=gov.nih.nci.cagrid.caarray.stubs
+http\://caarray.cagrid.nci.nih.gov/CaArrayGridService/bindings=gov.nih.nci.cagrid.caarray.stubs.bindings
+http\://caarray.cagrid.nci.nih.gov/CaArrayGridService/service=gov.nih.nci.cagrid.caarray.stubs.service
+http\://security.introduce.cagrid.nci.nih.gov/ServiceSecurity=gov.nih.nci.cagrid.introduce.security.stubs
+
+gme\://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata=gov.nih.nci.cagrid.metadata
+gme\://caCORE.cabig/3.2/gov.nih.nci.caarray.domain=gov.nih.nci.caarray.domain
+gme\://caCORE.cabig/3.2/gov.nih.nci.caarray.domain.protocol=gov.nih.nci.caarray.domain.protocol
+gme\://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security=gov.nih.nci.cagrid.metadata.security
+http\://caarray.cagrid.nci.nih.gov/CaArrayGridService/types=gov.nih.nci.cagrid.caarray.stubs.types
+gme\://caCORE.cabig/3.2/gov.nih.nci.caarray.domain.vocabulary=gov.nih.nci.caarray.domain.vocabulary
+gme\://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.service=gov.nih.nci.cagrid.metadata.service
+
+
+
+gme\://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common=gov.nih.nci.cagrid.metadata.common
