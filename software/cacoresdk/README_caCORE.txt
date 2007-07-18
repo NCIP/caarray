@@ -19,6 +19,14 @@ How to generate POJOs and other artifacts for caArray using the caCORE SDK:
    package), keeping in mind that some of the files have been
    changed (either for functionality improvements or to pass
    code quality checks).
+   Note: If there is a problem in the generation of the POJOs,
+   look for the following common errors in your model:
+   (a) Are there any associations for which the direction is unspecified?
+   (b) Are there any associations for which the target end role is not named?
+   (c) Are there any classes for which there is an attribute and an association
+       named the same thing?
+   (d) Are there any associations for which the multiplicity is not
+       specified at both ends?
 5. From a Command prompt, cd to the "cacoresdk" directory and run
    "ant build-artifacts". The XSDs and castor xml-mapping.xml for
    the domain objects will be generated in cacoresdk/output/caarray/src.
