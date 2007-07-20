@@ -72,4 +72,8 @@ How to expose caArray services on caGRID:
    There is still a problem with getting this test client to work, purportedly because of problems
    in our castor mappings. (Look at the thread "Grid-ifying a non-caCORE-SDK-generated app" under
    the June 2007 archives of the CAGRID_USERS-L list, for the latest status.)
+11. Note that both the grid service and the grid client need caarray-client.jar, because they need POJOs
+   for the domain objects. We should not introduce any RMI-like code in the POJO classes themselves because
+   this will cause problems for the grid client. (This is a problem in caArray 1.5, and causes a hack where
+   different versions of teh same POJO are generated - one for the grid service and one for the grid client.)
 
