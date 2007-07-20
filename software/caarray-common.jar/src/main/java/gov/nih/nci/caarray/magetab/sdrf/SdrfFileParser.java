@@ -3,6 +3,7 @@ package gov.nih.nci.caarray.magetab.sdrf;
 import gov.nih.nci.caarray.data.file.TabDelimitedFile;
 import gov.nih.nci.caarray.magetab.MageTabTextFileLoaderException;
 
+import java.util.AbstractMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -16,19 +17,13 @@ import java.util.List;
 public final class SdrfFileParser {
     private TabDelimitedFile fileUtil;
     private List<String> currentLineContents;
-    private LinkedHashMap<Integer, SdrfColumn> headerList;
-    private LinkedHashMap<String, AbstractSdrfEntry> dataList;
-    private LinkedList<AbstractSdrfEntry> documentList = new LinkedList<AbstractSdrfEntry>();
+    private AbstractMap<Integer, SdrfColumn> headerList;
+    private AbstractMap<String, AbstractSdrfEntry> dataList;
+    private final List<AbstractSdrfEntry> documentList = new LinkedList<AbstractSdrfEntry>();
     private AbstractSdrfEntry nodeElement = null;
     private AbstractSdrfEntry termElement = null;
     private AbstractSdrfEntry attributeElement = null;
 
-    /**
-     * default constructor.
-     * 
-     */
-    public SdrfFileParser() {
-    }
 
     /**
      * 
@@ -46,8 +41,6 @@ public final class SdrfFileParser {
         try {
             getHeader();
             getValues();
-            int i = 1;
-            i = i;
         } catch (InstantiationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -74,7 +67,7 @@ public final class SdrfFileParser {
             }
         }
     }
-
+    @SuppressWarnings("PMD")
     private void getValues() throws MageTabTextFileLoaderException, InstantiationException, IllegalAccessException {
         dataList = new LinkedHashMap<String, AbstractSdrfEntry>();
         while ((currentLineContents = fileUtil.readLine()) != null) {
@@ -98,13 +91,10 @@ public final class SdrfFileParser {
                     }
                     // check if the object is already created
                     if (dataList.containsKey(key)) {
-                        System.out.println("found it in the list : " + key);
                         link(dataList.get(key));
                     } else {
                         // add to list
-                        if (object == null) {
-                            System.out.println("object is null ******************************* " + value);
-                        } else {
+                        if (object != null) {
                             AbstractSdrfEntry newInstance = object.newInstance();
                             newInstance.setValue(value);
                             newInstance.setColumn(headerList.get(columnPosition));
@@ -120,6 +110,7 @@ public final class SdrfFileParser {
     /**
      * @param object
      */
+    @SuppressWarnings("PMD")
     private void link(AbstractSdrfEntry currentElement) {
 
         if (nodeElement != null) {

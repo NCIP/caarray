@@ -106,7 +106,4 @@ public class MaterialType extends AbstractTerm {
         }
     }
 
-    void attach(AbstractSdrfEntry at) {
-        System.out.println("attach material Type" + at.getClass().getName());
-    }
 }

@@ -102,20 +102,15 @@ public class SdrfColumn {
      * @throws MageTabTextFileLoaderException exception
      */
     public SdrfColumn(String header) throws MageTabTextFileLoaderException {
-        try {
-            setHeader(header);
-            parseQualifier();
-            parseLsid();
-            for (SdrfColumnHeading element : SdrfColumnHeading.values()) {
-                if (getHeader().equalsIgnoreCase(element.getColumnName())) {
-                    heading = element;
-                    break;
-                }
-
+        setHeader(header);
+        parseQualifier();
+        parseLsid();
+        for (SdrfColumnHeading element : SdrfColumnHeading.values()) {
+            if (getHeader().equalsIgnoreCase(element.getColumnName())) {
+                heading = element;
+                break;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new MageTabTextFileLoaderException(header + " not found");
+
         }
     }
 
@@ -123,8 +118,8 @@ public class SdrfColumn {
      * 
      */
     private void parseLsid() {
-        int firstColon = header.indexOf(":");
-        int lastColon = header.lastIndexOf(":");
+        int firstColon = header.indexOf(':');
+        int lastColon = header.lastIndexOf(':');
         if (firstColon > 0) {
             if (lastColon == 0) {
                 lastColon = header.length();
@@ -141,8 +136,8 @@ public class SdrfColumn {
      * 
      */
     private void parseQualifier() {
-        int firstBracket = header.indexOf("[");
-        int lastBracket = header.indexOf("]");
+        int firstBracket = header.indexOf('[');
+        int lastBracket = header.indexOf(']');
         if (firstBracket > 0) {
             // get the text between the brackets []
             qualifier = header.substring(firstBracket + 1, lastBracket);
@@ -191,7 +186,7 @@ public class SdrfColumn {
      * 
      * @param header String
      */
-    public void setHeader(String header) {
+    public final void setHeader(String header) {
         this.header = header;
     }
 
@@ -223,7 +218,7 @@ public class SdrfColumn {
      * 
      * @param lsid String
      */
-    public void setLsid(String lsid) {
+    private void setLsid(String lsid) {
         this.lsid = lsid;
     }
 
