@@ -92,8 +92,7 @@ abstract class AbstractSdrfEntry {
     private String value;
     private SdrfColumn column;
 
-    AbstractSdrfEntry(){
-        
+    AbstractSdrfEntry() {
     }
     AbstractSdrfEntry(SdrfColumn column, String value) {
         this.column = column;
@@ -115,10 +114,13 @@ abstract class AbstractSdrfEntry {
     public void setValue(String value) {
         this.value = value;
     }
-    void link(AbstractSdrfEntry entry){
+    
+    /**
+     * Clients override this.
+     * @param linkTo item to link
+     */
+    void link(AbstractSdrfEntry linkTo) {
         // override
-    }
-    void attach(AbstractSdrfEntry at){
     }
 
 }

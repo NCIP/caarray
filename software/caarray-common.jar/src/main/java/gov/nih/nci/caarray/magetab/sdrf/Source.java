@@ -84,17 +84,17 @@ package gov.nih.nci.caarray.magetab.sdrf;
 
 /**
  * The source organism or cell line used in a genomic investigation.
- *
+ * 
  * @author tavelae
  */
 public class Source extends AbstractBioMaterial {
-    
+
     private Provider provider;
 
-    Source(){
+    Source() {
         super();
     }
-    
+
     Source(SdrfColumn column, String value) {
         super(column, value);
     }

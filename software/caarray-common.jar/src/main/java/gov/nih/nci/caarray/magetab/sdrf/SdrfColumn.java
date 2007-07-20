@@ -86,7 +86,7 @@ import gov.nih.nci.caarray.magetab.MageTabTextFileLoaderException;
 
 /**
  * A single column in an SDRF file.
- *
+ * 
  * @author tavelae
  */
 public class SdrfColumn {
@@ -96,6 +96,11 @@ public class SdrfColumn {
     private String qualifier;
     private String lsid;
 
+    /**
+     * 
+     * @param header string
+     * @throws MageTabTextFileLoaderException exception
+     */
     public SdrfColumn(String header) throws MageTabTextFileLoaderException {
         try {
             setHeader(header);
@@ -120,13 +125,15 @@ public class SdrfColumn {
     private void parseLsid() {
         int firstColon = header.indexOf(":");
         int lastColon = header.lastIndexOf(":");
-        if (firstColon > 0){
-            if (lastColon == 0)
+        if (firstColon > 0) {
+            if (lastColon == 0) {
                 lastColon = header.length();
-           lsid = header.substring(firstColon + 1, lastColon);
-           if (lsid != null)
-               setLsid(lsid.trim());
-           setHeader(header.substring(0, firstColon).trim());
+            }
+            lsid = header.substring(firstColon + 1, lastColon);
+            if (lsid != null) {
+                setLsid(lsid.trim());
+            }
+            setHeader(header.substring(0, firstColon).trim());
         }
     }
 
@@ -134,58 +141,88 @@ public class SdrfColumn {
      * 
      */
     private void parseQualifier() {
-       int firstBracket = header.indexOf("[");
-       int lastBracket = header.indexOf("]");
-       if (firstBracket > 0){
-           // get the text between the brackets []
-          qualifier = header.substring(firstBracket + 1, lastBracket);
-          setHeader(header.substring(0, firstBracket).trim());
-       }
-        
+        int firstBracket = header.indexOf("[");
+        int lastBracket = header.indexOf("]");
+        if (firstBracket > 0) {
+            // get the text between the brackets []
+            qualifier = header.substring(firstBracket + 1, lastBracket);
+            setHeader(header.substring(0, firstBracket).trim());
+        }
+
     }
-    public Class<? extends AbstractSdrfEntry> getTheClass(){
+
+    /**
+     * 
+     * @return AbstractSdrfEntry
+     */
+    public Class<? extends AbstractSdrfEntry> getTheClass() {
         Class<? extends AbstractSdrfEntry> theClass = null;
-        if (heading != null){
+        if (heading != null) {
             theClass = heading.getClazz();
         }
         return theClass;
     }
+
     /**
      * 
-     * @param heading TODO Used?
+     * @return SdrfColumnHeading
      */
-    public void SdrfColumn(SdrfColumnHeading heading) {
-        this.heading = heading;
-    }
-
     public SdrfColumnHeading getHeading() {
         return heading;
     }
 
+    /**
+     * 
+     * @param heading SdrfColumnHeading
+     */
     public void setHeading(SdrfColumnHeading heading) {
         this.heading = heading;
     }
 
+    /**
+     * 
+     * @return tring
+     */
     public String getHeader() {
         return header;
     }
 
+    /**
+     * 
+     * @param header String
+     */
     public void setHeader(String header) {
         this.header = header;
     }
 
+    /**
+     * 
+     * @return String
+     */
     public String getQualifier() {
         return qualifier;
     }
 
+    /**
+     * 
+     * @param qualifier String
+     */
     public void setQualifier(String qualifier) {
         this.qualifier = qualifier;
     }
 
+    /**
+     * 
+     * @return String
+     */
     public String getLsid() {
         return lsid;
     }
 
+    /**
+     * 
+     * @param lsid String
+     */
     public void setLsid(String lsid) {
         this.lsid = lsid;
     }

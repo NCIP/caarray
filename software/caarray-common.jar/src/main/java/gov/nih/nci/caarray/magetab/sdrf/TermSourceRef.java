@@ -108,6 +108,10 @@ public class TermSourceRef extends AbstractAttribute {
         return termSource;
     }
 
+    /**
+     * 
+     * @param termSource TermSource
+     */
     public void setTermSource(TermSource termSource) {
         this.termSource = termSource;
     }

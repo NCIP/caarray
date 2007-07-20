@@ -1,4 +1,5 @@
 package gov.nih.nci.caarray.magetab;
+
 /**
  *  The caArray Software License, Version 1.0
  *
@@ -50,11 +51,9 @@ package gov.nih.nci.caarray.magetab;
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-
-
 /**
  * @author John Pike
- *
+ * 
  */
 public class Protocol {
 
@@ -65,60 +64,70 @@ public class Protocol {
     private String hardware;
     private String software;
     private Semantic type;
+
     /**
      * @return the contact
      */
     public String getContact() {
         return this.contact;
     }
+
     /**
      * @param contact the contact to set
      */
     public void setContact(String contact) {
         this.contact = contact;
     }
+
     /**
      * @return the description
      */
     public String getDescription() {
         return this.description;
     }
+
     /**
      * @param description the description to set
      */
     public void setDescription(String description) {
         this.description = description;
     }
+
     /**
      * @return the hardware
      */
     public String getHardware() {
         return this.hardware;
     }
+
     /**
      * @param hardware the hardware to set
      */
     public void setHardware(String hardware) {
         this.hardware = hardware;
     }
+
     /**
      * @return the name
      */
     public String getName() {
         return this.name;
     }
+
     /**
      * @param name the name to set
      */
     public void setName(String name) {
         this.name = name;
     }
-     /**
+
+    /**
      * @return the software
      */
     public String getSoftware() {
         return this.software;
     }
+
     /**
      * @param software the software to set
      */
@@ -132,18 +141,25 @@ public class Protocol {
     public Semantic getType() {
         return this.type;
     }
+
     /**
      * @param type the type to set
      */
     public void setType(Semantic type) {
         this.type = type;
     }
+
+    /**
+     * @return String
+     */
     public String getParameters() {
         return parameters;
     }
+
+    /**
+     * @param parameters the parameters to set
+     */
     public void setParameters(String parameters) {
         this.parameters = parameters;
     }
 }
-
-

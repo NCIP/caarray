@@ -84,15 +84,17 @@ package gov.nih.nci.caarray.magetab.sdrf;
 
 /**
  * Extracted genomic material labeled for hybridization.
- *
+ * 
  * @author tavelae
  */
 public class LabeledExtract extends AbstractBioMaterial {
-    
+
     private Label label;
-    LabeledExtract(){
+
+    LabeledExtract() {
         super();
     }
+
     LabeledExtract(SdrfColumn column, String value) {
         super(column, value);
     }
@@ -103,6 +105,11 @@ public class LabeledExtract extends AbstractBioMaterial {
     public Label getLabel() {
         return label;
     }
+
+    /**
+     * 
+     * @param label the label
+     */
     public void setLabel(Label label) {
         this.label = label;
     }

@@ -86,15 +86,17 @@ import gov.nih.nci.caarray.magetab.Parameter;
 
 /**
  * The value for a protocol parameter for a particular application.
- *
+ * 
  * @author tavelae
  */
 public class ParameterValue extends AbstractAttribute {
-    
+
     private Parameter parameter;
-    ParameterValue(){
+
+    ParameterValue() {
         super();
     }
+
     ParameterValue(SdrfColumn column, String value) {
         super(column, value);
     }
@@ -106,8 +108,8 @@ public class ParameterValue extends AbstractAttribute {
         return parameter;
     }
 
-    void link (AbstractSdrfEntry linkTo){
-        ((ProtocolRef)(linkTo)).addParamterValue(this);
+    void link(AbstractSdrfEntry linkTo) {
+        ((ProtocolRef) (linkTo)).addParamterValue(this);
     }
 
 }

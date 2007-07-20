@@ -99,8 +99,5 @@ abstract class AbstractAttribute extends AbstractSdrfEntry {
     AbstractAttribute() {
         super();
     }
-    void link (AbstractSdrfEntry at){
-        
-     }
-
+    
 }

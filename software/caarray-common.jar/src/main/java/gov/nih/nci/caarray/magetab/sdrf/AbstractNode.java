@@ -126,8 +126,9 @@ abstract class AbstractNode extends AbstractSdrfEntry {
     }
 
     public void addProtocolRef(ProtocolRef pRef) {
-        if (protocolRefs == null)
+        if (protocolRefs == null) {
             protocolRefs = new ArrayList<ProtocolRef>();
+        }
         protocolRefs.add(pRef);
     }
 

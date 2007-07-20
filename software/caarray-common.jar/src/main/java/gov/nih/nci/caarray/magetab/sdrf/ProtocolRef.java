@@ -88,24 +88,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A reference to a protocol defined elsewhere; also equivalent to the application
- * of a given protocol.
- *
+ * A reference to a protocol defined elsewhere; also equivalent to the application of a given protocol.
+ * 
  * @author tavelae
  */
-public class ProtocolRef extends AbstractTerm{
+public class ProtocolRef extends AbstractTerm {
 
     private Protocol protocol;
     private List<ParameterValue> parameterValues;
-    
-    ProtocolRef(){
+
+    ProtocolRef() {
         super();
     }
-    
+
     ProtocolRef(SdrfColumn column, String value) {
         super(column, value);
     }
-
 
     /**
      * @return the protocol
@@ -113,19 +111,26 @@ public class ProtocolRef extends AbstractTerm{
     public Protocol getProtocol() {
         return protocol;
     }
-    void link (AbstractSdrfEntry linkTo){
-        ((AbstractNode)linkTo).addProtocolRef(this);
+
+    void link(AbstractSdrfEntry linkTo) {
+        ((AbstractNode) linkTo).addProtocolRef(this);
     }
-    
+
     List<ParameterValue> getParameterValues() {
         return parameterValues;
     }
-    void addParamterValue(ParameterValue pv){
-        if (parameterValues == null){
+
+    void addParamterValue(ParameterValue pv) {
+        if (parameterValues == null) {
             parameterValues = new ArrayList<ParameterValue>();
         }
         parameterValues.add(pv);
     }
+
+    /**
+     * 
+     * @param parameterValues parameterValues
+     */
     public void setParameterValues(List<ParameterValue> parameterValues) {
         this.parameterValues = parameterValues;
     }

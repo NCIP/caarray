@@ -98,12 +98,16 @@ public class SdrfDocument extends AbstractMageTabDocument {
 
     private List<SdrfColumn> columns;
 
-    public SdrfDocument() {
+    /**
+     * default constructor.
+     */
+    public SdrfDocument() { 
         super();
     }
 
     /**
      *@param file the File
+     *@throws MageTabTextFileLoaderException exception
      */
     public void load(File file) throws MageTabTextFileLoaderException {
         setFileUtil(new TabDelimitedFile(file));

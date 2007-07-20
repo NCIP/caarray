@@ -99,9 +99,9 @@ public class MaterialType extends AbstractTerm {
 
     void link(AbstractSdrfEntry at) {
         // System.out.println("Material Type *****************");
-        if (at instanceof TermSourceRef)
+        if (at instanceof TermSourceRef) {
             setTermSourceRef((TermSourceRef) (at));
-        else {
+        } else {
             ((AbstractBioMaterial) at).setMaterialType(this);
         }
     }

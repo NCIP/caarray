@@ -8,6 +8,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * 
+ * @author Bill Mason
+ * 
+ */
 public final class SdrfFileParser {
     private TabDelimitedFile fileUtil;
     private List<String> currentLineContents;
@@ -18,9 +23,19 @@ public final class SdrfFileParser {
     private AbstractSdrfEntry termElement = null;
     private AbstractSdrfEntry attributeElement = null;
 
+    /**
+     * default constructor.
+     * 
+     */
     public SdrfFileParser() {
     }
 
+    /**
+     * 
+     * @param document document to parse
+     * @return SdrfDocument
+     * @throws MageTabTextFileLoaderException exception
+     */
     public SdrfDocument parseSdrfDocument(SdrfDocument document) throws MageTabTextFileLoaderException {
         fileUtil = document.getFileUtil();
         handleData();
@@ -45,7 +60,8 @@ public final class SdrfFileParser {
 
     private void getHeader() throws MageTabTextFileLoaderException {
         headerList = new LinkedHashMap<Integer, SdrfColumn>();
-        if ((currentLineContents = fileUtil.readLine()) != null) {
+        currentLineContents = fileUtil.readLine();
+        if ((currentLineContents) != null) {
             Iterator iter = currentLineContents.iterator();
             int i = 0;
             if (iter.hasNext()) {
@@ -107,17 +123,17 @@ public final class SdrfFileParser {
     private void link(AbstractSdrfEntry currentElement) {
 
         if (nodeElement != null) {
-            if (currentElement instanceof AbstractNode){
+            if (currentElement instanceof AbstractNode) {
                 // link node to node
                 currentElement.link(nodeElement);
                 nodeElement = currentElement;
-            } else if (currentElement instanceof AbstractTerm){
+            } else if (currentElement instanceof AbstractTerm) {
                 currentElement.link(nodeElement);
                 termElement = currentElement;
-            }else if (currentElement instanceof AbstractAttribute){
+            } else if (currentElement instanceof AbstractAttribute) {
                 currentElement.link(termElement);
                 attributeElement = currentElement;
-            }else{
+            } else {
                 System.out.println("Found something that does not fit " + currentElement.getClass().getName());
             }
         }
@@ -128,6 +144,10 @@ public final class SdrfFileParser {
 
     }
 
+    /**
+     * 
+     * @return SdrfFileParser the parser
+     */
     public static SdrfFileParser create() {
         return new SdrfFileParser();
     }

@@ -84,15 +84,17 @@ package gov.nih.nci.caarray.magetab.sdrf;
 
 /**
  * A characteristic of a biological material.
- *
+ * 
  * @author tavelae
  */
 public class Characteristic extends AbstractTerm {
 
     private Unit unit;
-    Characteristic(){
+
+    Characteristic() {
         super();
     }
+
     Characteristic(SdrfColumn column, String value) {
         super(column, value);
     }
@@ -103,8 +105,9 @@ public class Characteristic extends AbstractTerm {
     public Unit getUnit() {
         return unit;
     }
-    void link (AbstractSdrfEntry linkTo){
-        ((AbstractBioMaterial)linkTo).addCharacteristic(this);
+
+    void link(AbstractSdrfEntry linkTo) {
+        ((AbstractBioMaterial) linkTo).addCharacteristic(this);
     }
 
 }

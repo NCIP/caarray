@@ -84,14 +84,15 @@ package gov.nih.nci.caarray.magetab.sdrf;
 
 /**
  * A biological sample taken from a source.
- *
+ * 
  * @author tavelae
  */
 public class Sample extends AbstractBioMaterial {
 
-    Sample(){
-        
+    Sample() {
+
     }
+
     Sample(SdrfColumn column, String value) {
         super(column, value);
     }

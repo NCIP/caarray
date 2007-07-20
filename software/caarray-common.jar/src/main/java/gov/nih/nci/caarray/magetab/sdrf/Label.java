@@ -97,6 +97,6 @@ public class Label extends AbstractTerm {
     }
 
     void link(AbstractSdrfEntry linkTo) {
-        ((LabeledExtract)linkTo).setLabel(this);
+        ((LabeledExtract) linkTo).setLabel(this);
     }
 }

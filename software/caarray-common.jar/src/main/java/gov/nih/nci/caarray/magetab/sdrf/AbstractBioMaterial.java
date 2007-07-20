@@ -129,13 +129,22 @@ public class AbstractBioMaterial extends AbstractNode {
         return materialType;
     }
 
+    /**
+     * 
+     * @param materialType the material type
+     */
     public void setMaterialType(MaterialType materialType) {
         this.materialType = materialType;
     }
 
+    /**
+     * 
+     * @param c the characteristic
+     */
     public void addCharacteristic(Characteristic c) {
-        if (characteristics == null)
+        if (characteristics == null) {
             characteristics = new ArrayList<Characteristic>();
+        }
         characteristics.add(c);
     }
 

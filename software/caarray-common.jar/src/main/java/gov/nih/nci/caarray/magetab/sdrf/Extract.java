@@ -84,14 +84,14 @@ package gov.nih.nci.caarray.magetab.sdrf;
 
 /**
  * Extracted RNA from a sample.
- *
+ * 
  * @author tavelae
  */
 public class Extract extends AbstractBioMaterial {
 
-    Extract(){
-        
+    Extract() {
     }
+
     Extract(SdrfColumn column, String value) {
         super(column, value);
     }
