@@ -61,7 +61,7 @@ public class Protocol {
     private String name;
     private String description;
     private String contact;
-    private Parameter parameters;
+    private String parameters;
     private String hardware;
     private String software;
     private Semantic type;
@@ -113,21 +113,7 @@ public class Protocol {
     public void setName(String name) {
         this.name = name;
     }
-    /**
-     * @return the parameters
-     */
-    public Parameter getParameters() {
-        return this.parameters;
-    }
-    /**
-     * @param argParms the parameters to set
-     */
-    public void setParameters(Parameter argParms) {
-        this.parameters = argParms;
-    }
-
-
-    /**
+     /**
      * @return the software
      */
     public String getSoftware() {
@@ -151,6 +137,12 @@ public class Protocol {
      */
     public void setType(Semantic type) {
         this.type = type;
+    }
+    public String getParameters() {
+        return parameters;
+    }
+    public void setParameters(String parameters) {
+        this.parameters = parameters;
     }
 }
 
