@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.magetab.sdrf;
 
 /**
  * An attribute of a node within an SDRF document.
- *
+ * 
  * @author tavelae
  */
 abstract class AbstractAttribute extends AbstractSdrfEntry {
@@ -92,5 +92,15 @@ abstract class AbstractAttribute extends AbstractSdrfEntry {
     AbstractAttribute(SdrfColumn column, String value) {
         super(column, value);
     }
+
+    /**
+     * 
+     */
+    AbstractAttribute() {
+        super();
+    }
+    void link (AbstractSdrfEntry at){
+        
+     }
 
 }

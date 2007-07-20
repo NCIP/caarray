@@ -86,12 +86,16 @@ import gov.nih.nci.caarray.magetab.TermSource;
 
 /**
  * A reference to a term source.
- *
+ * 
  * @author tavelae
  */
 public class TermSourceRef extends AbstractAttribute {
 
     private TermSource termSource;
+
+    TermSourceRef() {
+        super();
+    }
 
     TermSourceRef(SdrfColumn column, String value) {
         super(column, value);
@@ -104,4 +108,11 @@ public class TermSourceRef extends AbstractAttribute {
         return termSource;
     }
 
+    public void setTermSource(TermSource termSource) {
+        this.termSource = termSource;
+    }
+
+    void link(AbstractSdrfEntry linkTo) {
+        ((AbstractTerm) (linkTo)).setTermSourceRef(this);
+    }
 }

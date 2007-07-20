@@ -84,33 +84,50 @@ package gov.nih.nci.caarray.magetab.sdrf;
 
 import gov.nih.nci.caarray.magetab.Protocol;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A reference to a protocol defined elsewhere; also equivalent to the application
  * of a given protocol.
  *
  * @author tavelae
  */
-public class ProtocolRef extends AbstractAttribute {
+public class ProtocolRef extends AbstractTerm{
 
     private Protocol protocol;
-    private ParameterValue parameterValues;
-
+    private List<ParameterValue> parameterValues;
+    
+    ProtocolRef(){
+        super();
+    }
+    
     ProtocolRef(SdrfColumn column, String value) {
         super(column, value);
     }
 
-    /**
-     * @return the parameterValues
-     */
-    public ParameterValue getParameterValues() {
-        return parameterValues;
-    }
 
     /**
      * @return the protocol
      */
     public Protocol getProtocol() {
         return protocol;
+    }
+    void link (AbstractSdrfEntry linkTo){
+        ((AbstractNode)linkTo).addProtocolRef(this);
+    }
+    
+    List<ParameterValue> getParameterValues() {
+        return parameterValues;
+    }
+    void addParamterValue(ParameterValue pv){
+        if (parameterValues == null){
+            parameterValues = new ArrayList<ParameterValue>();
+        }
+        parameterValues.add(pv);
+    }
+    public void setParameterValues(List<ParameterValue> parameterValues) {
+        this.parameterValues = parameterValues;
     }
 
 }

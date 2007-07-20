@@ -92,7 +92,9 @@ import gov.nih.nci.caarray.magetab.Parameter;
 public class ParameterValue extends AbstractAttribute {
     
     private Parameter parameter;
-
+    ParameterValue(){
+        super();
+    }
     ParameterValue(SdrfColumn column, String value) {
         super(column, value);
     }
@@ -104,5 +106,8 @@ public class ParameterValue extends AbstractAttribute {
         return parameter;
     }
 
+    void link (AbstractSdrfEntry linkTo){
+        ((ProtocolRef)(linkTo)).addParamterValue(this);
+    }
 
 }

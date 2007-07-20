@@ -82,10 +82,12 @@
  */
 package gov.nih.nci.caarray.magetab.sdrf;
 
+import gov.nih.nci.caarray.data.file.TabDelimitedFile;
+import gov.nih.nci.caarray.magetab.AbstractMageTabDocument;
+import gov.nih.nci.caarray.magetab.MageTabTextFileLoaderException;
+
 import java.io.File;
 import java.util.List;
-
-import gov.nih.nci.caarray.magetab.AbstractMageTabDocument;
 
 /**
  *
@@ -96,15 +98,18 @@ public class SdrfDocument extends AbstractMageTabDocument {
 
     private List<SdrfColumn> columns;
 
-    SdrfDocument() {
+    public SdrfDocument() {
         super();
     }
 
     /**
      *@param file the File
      */
-    public void load(File file) {
-        // To be implemented
+    public void load(File file) throws MageTabTextFileLoaderException {
+        setFileUtil(new TabDelimitedFile(file));
+        SdrfFileParser parser = SdrfFileParser.create();
+        parser.parseSdrfDocument(this);
+
     }
 //
 //    void load() {

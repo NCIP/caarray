@@ -91,6 +91,10 @@ public class Source extends AbstractBioMaterial {
     
     private Provider provider;
 
+    Source(){
+        super();
+    }
+    
     Source(SdrfColumn column, String value) {
         super(column, value);
     }
@@ -101,5 +105,4 @@ public class Source extends AbstractBioMaterial {
     public Provider getProvider() {
         return provider;
     }
-
 }

@@ -89,23 +89,36 @@ package gov.nih.nci.caarray.magetab.sdrf;
  */
 abstract class AbstractSdrfEntry {
 
-    private final String value;
-    private final SdrfColumn column;
+    private String value;
+    private SdrfColumn column;
 
-    AbstractSdrfEntry(final SdrfColumn column, final String value) {
+    AbstractSdrfEntry(){
+        
+    }
+    AbstractSdrfEntry(SdrfColumn column, String value) {
         this.column = column;
         this.value = value;
     }
 
-    SdrfColumn getColumn() {
-        return this.column;
+    public SdrfColumn getColumn() {
+        return column;
     }
 
-    /**
-     * @return the value
-     */
+    public void setColumn(SdrfColumn column) {
+        this.column = column;
+    }
+
     public String getValue() {
-        return this.value;
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+    void link(AbstractSdrfEntry entry){
+        // override
+    }
+    void attach(AbstractSdrfEntry at){
     }
 
 }

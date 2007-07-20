@@ -82,20 +82,28 @@
  */
 package gov.nih.nci.caarray.magetab.sdrf;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A node within the directed acyclic graph maintained within an
- * SDRF document.
- *
+ * A node within the directed acyclic graph maintained within an SDRF document.
+ * 
  * @author tavelae
  */
 abstract class AbstractNode extends AbstractSdrfEntry {
 
     private List<ProtocolRef> protocolRefs;
+    private AbstractNode linkedNode;
 
     AbstractNode(SdrfColumn column, String value) {
         super(column, value);
+    }
+
+    /**
+     * 
+     */
+    AbstractNode() {
+        super();
     }
 
     /**
@@ -105,6 +113,24 @@ abstract class AbstractNode extends AbstractSdrfEntry {
         return protocolRefs;
     }
 
+    public AbstractNode getLinkedNode() {
+        return linkedNode;
+    }
 
+    public void setLinkedNode(AbstractNode linkedNode) {
+        this.linkedNode = linkedNode;
+    }
+
+    void link(AbstractSdrfEntry linkTo) {
+        addProtocolRef((ProtocolRef) linkTo);
+    }
+
+    public void addProtocolRef(ProtocolRef pRef) {
+        if (protocolRefs == null)
+            protocolRefs = new ArrayList<ProtocolRef>();
+        protocolRefs.add(pRef);
+    }
+
+    
 
 }

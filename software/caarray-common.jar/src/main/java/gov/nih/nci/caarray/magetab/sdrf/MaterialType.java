@@ -84,13 +84,29 @@ package gov.nih.nci.caarray.magetab.sdrf;
 
 /**
  * Term denoting the type of a given biological material.
- *
+ * 
  * @author tavelae
  */
 public class MaterialType extends AbstractTerm {
+
+    MaterialType() {
+        super();
+    }
 
     MaterialType(SdrfColumn column, String value) {
         super(column, value);
     }
 
+    void link(AbstractSdrfEntry at) {
+        // System.out.println("Material Type *****************");
+        if (at instanceof TermSourceRef)
+            setTermSourceRef((TermSourceRef) (at));
+        else {
+            ((AbstractBioMaterial) at).setMaterialType(this);
+        }
+    }
+
+    void attach(AbstractSdrfEntry at) {
+        System.out.println("attach material Type" + at.getClass().getName());
+    }
 }

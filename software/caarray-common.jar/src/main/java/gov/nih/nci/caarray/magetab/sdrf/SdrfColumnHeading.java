@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.magetab.sdrf;
 
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Enumeration of all permissible column headings in an SDRF file. Any given heading
@@ -90,51 +89,68 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author tavelae
  */
-public enum SdrfColumnHeading {
 
-    /**
-     * Source Name.
-     */
-    SOURCE_NAME,
-
-    /**
-     * Sample Name.
-     */
-    SAMPLE_NAME,
-
-    /**
-     * Extract Name.
-     */
-    EXTRACT_NAME;
-
-//  LABELED_EXTRACT_NAME,
-//  HYBRIDIZATION_NAME,
-//  SCAN_NAME,
-//  NORMALIZATION_NAME,
-//  ARRAY_DATA_FILE,
 //  DERIVED_ARRAY_DATA_FILE,
 //  ARRAY_DATA_MATRIX_FILE,
-//  DERIVED_ARRAY_DATA_MATRIX_FILE,
+
 //  IMAGE_FILE,
 //  ARRAY_DESIGN_FILE,
 //  ARRAY_DESIGN_REF,
-//  PROTOCOL_REF,
-//  CHARCTERISTICS,
 //  PROVIDER,
-//  MATERIAL_TYPE,
-//  LABEL,
 //  FACTOR_VALUE,
 //  PERFORMER,
 //  DATE,
-//  PARAMETER_VALUE,
 //  UNIT,
 //  DESCRIPTION,
-//  TERM_SOURCE_REF,
 //  COMMENT
 
-    @SuppressWarnings("PMD")
-    static SdrfColumnHeading get(String name) {
-        String enumName = StringUtils.replaceChars(name, ' ', '_').toUpperCase();
-        return valueOf(enumName);
+    /**
+     * Enumeration of all permissible column headings in an SDRF file. Any given
+     * heading should match exactly one of these prior to any qualifiers in brackets
+     * or parentheses.
+     * @author tavelae
+     * @version 1.0
+     * @created 18-Jul-2007 10:32:46 AM
+     */
+    public enum SdrfColumnHeading {
+        /**
+         * Enums 
+         */
+        SOURCE_NAME ("Source Name", Source.class),
+        SAMPLE_NAME ("Sample Name", Sample.class),
+        MATERIAL_TYPE ("Material Type", MaterialType.class),
+        TERM_SOURCE_REF ("Term Source Ref", TermSourceRef.class),
+        PROTOCOL_REF ("Protocol REF", ProtocolRef.class),
+        PARAMETER_VALUE("Parameter Value", ParameterValue.class),
+        EXTRACT_NAME("Extract Name", Extract.class),
+        LABELED_EXTRACT_NAME("Labeled Extract Name", LabeledExtract.class),
+        LABEL("Label", Label.class),
+        HYBRIDIZATION_NAME("Hybridization Name", null),
+        CHARACTERISTICS ("Characteristics", Characteristic.class),
+        
+        // Post Hybridization
+        ARRAY_DESIGN_REF ("Array Design REF", null),
+        SCAN_NAME ("Scan Name", null),
+        ARRAY_DATA_FILE ("Array Data File", null),
+        NORMALIZATION_NAME ("Normalization Name", null),
+        DERIVED_ARRAY_DATA_MATRIX_FILE ("Derived Array Data Matrix File", null),
+        FACTOR_VALUE ("Factor Value", null);
+
+        private final String name;
+        private final Class<? extends AbstractSdrfEntry> clazz;
+        
+        SdrfColumnHeading(String value, Class<? extends AbstractSdrfEntry> theClass){
+            name = value;
+            this.clazz = theClass;
+        }
+        /**
+         * 
+         * @param name
+         */
+        public String getColumnName(){
+            return name;
+        }
+        public Class<? extends AbstractSdrfEntry> getClazz(){
+            return clazz;
+        }
     }
-}

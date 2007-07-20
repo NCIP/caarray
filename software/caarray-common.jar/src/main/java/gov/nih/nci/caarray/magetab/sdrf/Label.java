@@ -84,14 +84,19 @@ package gov.nih.nci.caarray.magetab.sdrf;
 
 /**
  * The compound used to label a <code>LabeledExtract</code>.
- *
+ * 
  * @author tavelae
  */
 public class Label extends AbstractTerm {
+    Label() {
+        super();
+    }
 
     Label(SdrfColumn column, String value) {
         super(column, value);
     }
 
-
+    void link(AbstractSdrfEntry linkTo) {
+        ((LabeledExtract)linkTo).setLabel(this);
+    }
 }

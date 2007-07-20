@@ -89,6 +89,9 @@ package gov.nih.nci.caarray.magetab.sdrf;
  */
 public class Sample extends AbstractBioMaterial {
 
+    Sample(){
+        
+    }
     Sample(SdrfColumn column, String value) {
         super(column, value);
     }

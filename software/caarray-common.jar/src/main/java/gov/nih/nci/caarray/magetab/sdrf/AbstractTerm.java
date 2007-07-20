@@ -88,9 +88,25 @@ package gov.nih.nci.caarray.magetab.sdrf;
  * @author ETavela
  */
 abstract class AbstractTerm extends AbstractAttribute {
-
+    private TermSourceRef termSourceRef;
     AbstractTerm(SdrfColumn column, String value) {
         super(column, value);
     }
 
+    /**
+     * 
+     */
+    AbstractTerm() {
+        super();
+    }
+
+    public TermSourceRef getTermSourceRef() {
+        return termSourceRef;
+    }
+
+    public void setTermSourceRef(TermSourceRef termSourceRef) {
+        this.termSourceRef = termSourceRef;
+    }
+
+   
 }

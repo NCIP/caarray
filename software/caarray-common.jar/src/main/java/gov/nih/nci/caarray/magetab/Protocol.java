@@ -1,3 +1,4 @@
+package gov.nih.nci.caarray.magetab;
 /**
  *  The caArray Software License, Version 1.0
  *
@@ -48,7 +49,7 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab;
+
 
 
 /**
@@ -60,7 +61,7 @@ public class Protocol {
     private String name;
     private String description;
     private String contact;
-    private String parameters;
+    private Parameter parameters;
     private String hardware;
     private String software;
     private Semantic type;
@@ -115,13 +116,13 @@ public class Protocol {
     /**
      * @return the parameters
      */
-    public String getParameters() {
+    public Parameter getParameters() {
         return this.parameters;
     }
     /**
      * @param argParms the parameters to set
      */
-    public void setParameters(String argParms) {
+    public void setParameters(Parameter argParms) {
         this.parameters = argParms;
     }
 
@@ -152,3 +153,5 @@ public class Protocol {
         this.type = type;
     }
 }
+
+

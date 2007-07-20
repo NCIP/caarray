@@ -82,11 +82,12 @@
  */
 package gov.nih.nci.caarray.magetab.sdrf;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * A biological entity referenced within an SDRF document.
- *
+ * 
  * @author tavelae
  */
 public class AbstractBioMaterial extends AbstractNode {
@@ -97,6 +98,13 @@ public class AbstractBioMaterial extends AbstractNode {
 
     AbstractBioMaterial(SdrfColumn column, String value) {
         super(column, value);
+    }
+
+    /**
+     * 
+     */
+    public AbstractBioMaterial() {
+        super();
     }
 
     /**
@@ -117,8 +125,22 @@ public class AbstractBioMaterial extends AbstractNode {
      * @return the materialType
      */
     public MaterialType getMaterialType() {
+
         return materialType;
     }
 
+    public void setMaterialType(MaterialType materialType) {
+        this.materialType = materialType;
+    }
+
+    public void addCharacteristic(Characteristic c) {
+        if (characteristics == null)
+            characteristics = new ArrayList<Characteristic>();
+        characteristics.add(c);
+    }
+
+    void link(AbstractSdrfEntry linkTo) {
+            ((AbstractNode) linkTo).setLinkedNode(this);
+    }
 
 }
