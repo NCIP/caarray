@@ -90,6 +90,7 @@ package gov.nih.nci.caarray.magetab.sdrf;
 public class Extract extends AbstractBioMaterial {
 
     Extract() {
+        super();
     }
 
     Extract(SdrfColumn column, String value) {

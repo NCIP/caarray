@@ -9,12 +9,19 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * 
  * @author Bill Mason
  * 
  */
+@SuppressWarnings("PMD")
 public final class SdrfFileParser {
+    
+    private static final Log LOG = LogFactory.getLog(SdrfFileParser.class);
+    
     private TabDelimitedFile fileUtil;
     private List<String> currentLineContents;
     private AbstractMap<Integer, SdrfColumn> headerList;
@@ -22,7 +29,7 @@ public final class SdrfFileParser {
     private final List<AbstractSdrfEntry> documentList = new LinkedList<AbstractSdrfEntry>();
     private AbstractSdrfEntry nodeElement = null;
     private AbstractSdrfEntry termElement = null;
-    private AbstractSdrfEntry attributeElement = null;
+//    private AbstractSdrfEntry attributeElement = null;
 
 
     /**
@@ -42,11 +49,9 @@ public final class SdrfFileParser {
             getHeader();
             getValues();
         } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Unexpected exception in handleData()", e);
         } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Unexpected exception in handleData()", e);
         }
 
     }
@@ -67,6 +72,7 @@ public final class SdrfFileParser {
             }
         }
     }
+    
     @SuppressWarnings("PMD")
     private void getValues() throws MageTabTextFileLoaderException, InstantiationException, IllegalAccessException {
         dataList = new LinkedHashMap<String, AbstractSdrfEntry>();
@@ -123,7 +129,7 @@ public final class SdrfFileParser {
                 termElement = currentElement;
             } else if (currentElement instanceof AbstractAttribute) {
                 currentElement.link(termElement);
-                attributeElement = currentElement;
+                //attributeElement = currentElement;
             } else {
                 System.out.println("Found something that does not fit " + currentElement.getClass().getName());
             }

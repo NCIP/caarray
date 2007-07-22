@@ -93,7 +93,9 @@ abstract class AbstractSdrfEntry {
     private SdrfColumn column;
 
     AbstractSdrfEntry() {
+        super();
     }
+    
     AbstractSdrfEntry(SdrfColumn column, String value) {
         this.column = column;
         this.value = value;
