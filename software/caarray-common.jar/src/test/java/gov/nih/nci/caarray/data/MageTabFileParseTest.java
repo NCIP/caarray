@@ -69,6 +69,11 @@ import org.junit.Test;
 public class MageTabFileParseTest {
 
     private static final String FILENAME = "test1.idf";
+    private static final int SIZE_4 = 4;
+    private static final int SIZE_2 = 2;
+    private static final int SIZE_3 = 3;
+    private static final int SIZE_8 = 8;
+    private static final int SIZE_1 = 1;
 
     /**
      * Test method for {@link gov.nih.nci.caarray.data.file.mage.MageTabTextFileLoader#getArrayDesign()}.
@@ -76,8 +81,7 @@ public class MageTabFileParseTest {
      */
     @Test
     public void testGetArrayDesign() throws MageTabTextFileLoaderException {
-     //   String fileDir = CaArrayProperties.getProperty(CaArrayProperties.MAGE_TAB_TEST_FILE_DIR);
-     //   String path = fileDir + File.separator + FILENAME;
+
         URL url = ClassLoader.getSystemResource(FILENAME);
         if (url == null) {
             url = getClass().getResource(FILENAME);
@@ -88,6 +92,20 @@ public class MageTabFileParseTest {
         IdfDocument document = parser.parse(file);
 
         assertTrue(document != null);
+        assertTrue(document.getExperimentalFactors().size() == SIZE_2);
+        assertTrue(document.getExperimentalDesigns().size() == SIZE_1);
+        assertTrue(document.getExperimentDate() != null);
+        assertTrue(document.getExperimentDescription() != null);
+        assertTrue(document.getNormalizations().size() == SIZE_1);
+        assertTrue(document.getPersons().size() == SIZE_8);
+        assertTrue(document.getProtocols().size() == SIZE_3);
+        assertTrue(document.getPublications().size() == SIZE_1);
+        assertTrue(document.getPublicReleaseDate() != null);
+        assertTrue(document.getQualityControls().size() == SIZE_1);
+        assertTrue(document.getReplicates().size() == SIZE_1);
+        assertTrue(document.getSdrfFiles().size() == SIZE_1);
+        assertTrue(document.getTermSources().size() == SIZE_4);
+        assertTrue(document.getTitle() != null);
 
     }
 
