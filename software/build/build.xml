@@ -740,7 +740,7 @@
 	  <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/deployment.xml" target="uber-clean" />
       <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/deployment.xml" target="cargo" />
 	</target>
-    <property name="properties.dir" value="." />
+    <property name="properties.dir" value="${basedir}/build" />
 	<property name="keyfile.file" value="caarray2-key.properties" />
 	<property name="envproperties.file" value="default.properties" />	
     
