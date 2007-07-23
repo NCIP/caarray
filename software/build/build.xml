@@ -741,16 +741,18 @@
     <property name="properties.dir" value="." />
 	<property name="keyfile.file" value="caarray2-key.properties" />
 	<property name="envproperties.file" value="default.properties" />	
-    <get dest="${lib.dir}/nci-ant.jar" usetimestamp="true" 
-	  ignoreerrors="true" src="http://www.stelligent.com/resources/downloads/jars/nci-ant.jar">
-    </get>
-	<taskdef name="ncitask" classname="com.stelligent.nci.anttasks.PropertyChecker">
-	  <classpath>
-        <pathelement location="${lib.dir}/nci-ant.jar" />
-      </classpath>
-	</taskdef>
+    
 	<target name="validate-properties">
+	  <!--<get dest="${lib.dir}/nci-ant.jar" usetimestamp="true" 
+	    ignoreerrors="true" src="http://www.stelligent.com/resources/downloads/jars/nci-ant.jar">
+      </get>
+	  <taskdef name="ncitask" classname="com.stelligent.nci.anttasks.PropertyChecker">
+	    <classpath>
+          <pathelement location="${lib.dir}/nci-ant.jar" />
+        </classpath>
+	  </taskdef>
       <ncitask keyFile="${properties.dir}/${keyfile.file}" compareFile="${properties.dir}/${envproperties.file}"/>
+	  -->
 	</target>
 	<!-- END STELLIGENT ADD -->
 
