@@ -1,7 +1,7 @@
 package gov.nih.nci.caarray.tests.functional;
 import org.junit.Test;
 
-import gov.nih.nci.caarray.testcases.base.AbstractSeleniumTest;
+import gov.nih.nci.caarray.tests.base.AbstractSeleniumTest;
 
 /**
  * Test script for Add Protocol.
