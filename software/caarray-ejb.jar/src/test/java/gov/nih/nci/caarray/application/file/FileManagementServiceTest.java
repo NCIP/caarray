@@ -53,7 +53,7 @@ package gov.nih.nci.caarray.application.file;
 import java.io.File;
 import java.net.URL;
 
-//import org.junit.Test;
+import org.junit.Test;
 import static org.junit.Assert.*;
 
 import gov.nih.nci.caarray.business.fileaccess.FileAccessService;
@@ -72,7 +72,10 @@ public class FileManagementServiceTest {
 
     private static final String FILENAME = "test1.idf";
 
-
+    @Test
+    public void testNoOp() {
+        assertTrue(1 == 1);
+    }
     public void testService() {
        URL url = ClassLoader.getSystemResource(FILENAME);
         if (url == null) {
