@@ -30,6 +30,14 @@
 		</cargo>
 
 		<echo message="started jboss.." />
+        
+		<copy todir="${jboss.tmp.dir}">
+		  <fileset dir="${basedir}/caarray.ear/target">
+			  <include name="**/*" />
+		  </fileset>
+		</copy>
+
+
 		<sleep seconds="20" />
 		<echo message="...stopping jboss" />
 

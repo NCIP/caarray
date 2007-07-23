@@ -726,7 +726,7 @@
         </condition>
     </target>
 
-		<!-- BEGIN STELLIGENT ADD -->
+	<!-- BEGIN STELLIGENT ADD -->
 	<property name="cargo-jar" value="cargo-core-uberjar-0.9.jar" />
 	<property name="cargo-ant-jar" value="cargo-ant-0.9.jar" />
 	<property name="jboss.dir" value="${target.dir}/jboss" />
@@ -738,7 +738,7 @@
       <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/database-integration.xml" target="all" />
 	</target>
 
-    <target name="deploy-jboss" depends="clean">	
+    <target name="deploy-jboss" depends="build">	
 	  <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/deployment.xml" target="uber-clean" />
       <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/deployment.xml" target="cargo" />
 	</target>
@@ -748,7 +748,7 @@
     
 	<target name="validate-properties">
 	  <get dest="${lib.dir}/nci-ant.jar" usetimestamp="false" 
-	    ignoreerrors="true" src="http://www.stelligent.com/resources/downloads/jars/nci-ant.jar">
+	    ignoreerrors="true" src="${stelligent.download.site}/nci-ant.jar">
       </get>
 	  <taskdef name="ncitask" classname="com.stelligent.nci.anttasks.PropertyChecker">
 	    <classpath>
