@@ -3,6 +3,8 @@
 	<name>caarray-ejb.jar</name>
 	<comment></comment>
 	<projects>
+		<project>caarray-common.jar</project>
+		<project>lib</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

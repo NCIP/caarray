@@ -80,48 +80,36 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application;
-
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.query.CQLQuery;
-
-import java.util.List;
+package gov.nih.nci.caarray.application.protocol;
 
 /**
- * Search API for caArray, based on various types of criteria.
+ * This is the exception thrown by all application service class methods.
+ * It encapsulates an error message, a causing exception, or both.
  *
  * @author Rashmi Srinivasa
  */
-public interface CaArraySearchService {
+public class ApplicationServiceException extends RuntimeException {
     /**
-     * The JNDI name to look up the remote <code>CaArraySearch</code> service.
+     * The serial version UID for serialization.
      */
-    String JNDI_NAME = "caarray/CaArraySearchServiceBean/remote";
+    private static final long serialVersionUID = 1234567890L;
 
     /**
-     * Performs a query-by-example search based on the entity passed.
+     * Constructs an application service exception object with an error message.
      *
-     * @param entityExample find entities that match the non-null fields and associations of this example.
-     *
-     * @return the matching entities.
+     * @param message An error message describing the exception.
      */
-    List<AbstractCaArrayEntity> search(AbstractCaArrayEntity entityExample);
+    public ApplicationServiceException(String message) {
+        super(message);
+    }
 
     /**
-     * Searches for entities based on the given HQL (Hibernate Query Language) string.
+     * Constructs an application service exception object with an error message and a causing exception.
      *
-     * @param hqlString the HQL (Hibernate Query Language) string to use as search criteria.
-     *
-     * @return the matching entities.
+     * @param message An error message describing the exception.
+     * @param cause The underlying exception that caused this DAO exception.
      */
-    List<AbstractCaArrayEntity> search(String hqlString);
-
-    /**
-     * Searches for entities based on the given CQL query.
-     *
-     * @param cqlQuery the HQL (Hibernate Query Language) string to use as search criteria.
-     *
-     * @return the matching entities.
-     */
-    List<AbstractCaArrayEntity> search(CQLQuery cqlQuery);
+    public ApplicationServiceException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

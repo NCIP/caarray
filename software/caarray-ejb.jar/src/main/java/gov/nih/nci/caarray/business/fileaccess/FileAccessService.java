@@ -80,21 +80,46 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.file;
+package gov.nih.nci.caarray.business.fileaccess;
 
+import java.io.File;
+import java.util.Set;
+
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 
 /**
- * Provides file storage, validation and import services to the caArray application.
- * Interface to the FileManagement subsystem.
+ * Provides file storage and retrieval services to the system.
  */
-public interface FileManagementService {
-    
-    /**
-     * Imports the files provided.
-     * 
-     * @param fileSet the files to import.
-     */
-    void importFiles(CaArrayFileSet fileSet);
+public interface FileAccessService {
 
+    /**
+     * The default JNDI name to use to lookup <code>FileAccessService</code>.
+     */
+    String JNDI_NAME = "caarray/FileAccessServiceBean/local";
+
+    /**
+     * Adds a new file to caArray file storage.
+     * 
+     * @param file the file to store
+     * @return the caArray file object.
+     */
+    CaArrayFile add(File file);
+
+    /**
+     * Returns the underlying <code>java.io.File</code> for the <code>CaArrayFile</code> object provided.
+     * 
+     * @param caArrayFile retrieve contents of this file
+     * @return the file
+     */
+    File getFile(CaArrayFile caArrayFile);
+
+    /**
+     * Returns the underlying <code>java.io.Files</code> for the <code>CaArrayFiles</code> in the set provided.
+     *
+     * @param fileSet get files from this set.
+     * @return the files.
+     */
+    Set<File> getFiles(CaArrayFileSet fileSet);
+    
 }

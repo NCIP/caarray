@@ -80,21 +80,49 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.file;
+package gov.nih.nci.caarray.application.project;
 
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import java.io.File;
+import java.util.Set;
+
+import javax.ejb.Local;
+import javax.ejb.Stateless;
+
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.ProjectDao;
+import gov.nih.nci.caarray.domain.project.Project;
 
 /**
- * Provides file storage, validation and import services to the caArray application.
- * Interface to the FileManagement subsystem.
+ * Implementation entry point for the ProjectManagement subsystem.
  */
-public interface FileManagementService {
+@Local
+@Stateless
+public class ProjectManagementServiceBean implements ProjectManagementService {
     
     /**
-     * Imports the files provided.
+     * Returns the project corresponding to the id given.
      * 
-     * @param fileSet the files to import.
+     * @param id the project id
+     * @return the corresponding project.
      */
-    void importFiles(CaArrayFileSet fileSet);
+    public Project getProject(long id) {
+        return getProjectDao().getProject(id);
+    }
+
+    private ProjectDao getProjectDao() {
+        return CaArrayDaoFactory.INSTANCE.getProjectDao();
+    }
+
+    /**
+     * Associates files with a project. After calling this method, clients can expect a new
+     * <code>CaArrayFile</code> to be associated with the project for each file added.
+     * 
+     * @param project project to add files to
+     * @param files the files to add to the project
+     */
+    public void addFiles(Project project, Set<File> files) {
+        // TODO implement call to FileAccessService.add
+    }
+
 
 }

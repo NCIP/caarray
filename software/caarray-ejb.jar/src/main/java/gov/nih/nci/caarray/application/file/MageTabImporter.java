@@ -82,19 +82,54 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import java.io.File;
+import java.util.Set;
+
+import gov.nih.nci.caarray.business.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.dao.CaArrayDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.magetab.DocumentSet;
+import gov.nih.nci.caarray.magetab.IdfDocument;
+import gov.nih.nci.caarray.magetab.MageTabParser;
 
 /**
- * Provides file storage, validation and import services to the caArray application.
- * Interface to the FileManagement subsystem.
+ * Responsible for importing parsed MAGE-TAB data into caArray.
  */
-public interface FileManagementService {
-    
-    /**
-     * Imports the files provided.
-     * 
-     * @param fileSet the files to import.
-     */
-    void importFiles(CaArrayFileSet fileSet);
+class MageTabImporter {
+
+    private final CaArrayFileSet fileSet;
+    private final FileAccessService fileAccessService;
+
+    MageTabImporter(CaArrayFileSet fileSet, FileAccessService fileAccessService) {
+        this.fileSet = fileSet;
+        this.fileAccessService = fileAccessService;
+    }
+
+    void importFiles() {
+        Set<File> mageTabFiles = getFiles();
+        DocumentSet documentSet = MageTabParser.INSTANCE.parse(mageTabFiles);
+        importIdfs(documentSet);
+    }
+
+    private void importIdfs(DocumentSet documentSet) {
+        for (IdfDocument idfDocument : documentSet.getIdfDocuments()) {
+            importIdf(idfDocument);
+        }
+    }
+
+    private void importIdf(IdfDocument idfDocument) {
+        MageTabTranslator mageTabTranslator = new MageTabTranslator(idfDocument);
+        CaArrayDao caArrayDao = getCaArrayDao();
+        caArrayDao.save(mageTabTranslator.getCaArrayEntities());
+    }
+
+    private CaArrayDao getCaArrayDao() {
+        // TODO Implement DAO retrieval (or pass in from bean)
+        return null;
+    }
+
+    private Set<File> getFiles() {
+        return fileAccessService.getFiles(fileSet);
+    }
 
 }

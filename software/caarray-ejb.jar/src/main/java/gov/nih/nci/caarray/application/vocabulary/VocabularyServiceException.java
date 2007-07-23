@@ -73,7 +73,7 @@ public class VocabularyServiceException extends Exception {
      *
      */
     public VocabularyServiceException() {
-        // TODO Auto-generated constructor stub
+        super();
     }
 
     /**
@@ -81,7 +81,6 @@ public class VocabularyServiceException extends Exception {
      */
     public VocabularyServiceException(String message) {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -89,7 +88,6 @@ public class VocabularyServiceException extends Exception {
      */
     public VocabularyServiceException(Throwable cause) {
         super(cause);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -98,7 +96,6 @@ public class VocabularyServiceException extends Exception {
      */
     public VocabularyServiceException(String message, Throwable cause) {
         super(message, cause);
-        // TODO Auto-generated constructor stub
     }
 
     /**

@@ -80,21 +80,62 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.file;
+package gov.nih.nci.caarray.business.fileaccess;
 
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 
+import java.io.File;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.ejb.Local;
+import javax.ejb.Stateless;
+
 /**
- * Provides file storage, validation and import services to the caArray application.
- * Interface to the FileManagement subsystem.
+ * Implementation of the FileAccess subsystem.
  */
-public interface FileManagementService {
+@Local
+@Stateless
+public class FileAccessServiceBean implements FileAccessService {
+
+    /**
+     * Adds a new file to caArray file storage.
+     * 
+     * @param file the file to store
+     * @return the caArray file object.
+     */
+    public CaArrayFile add(File file) {
+        CaArrayFile caArrayFile = new CaArrayFile();
+        caArrayFile.setPath(file.getAbsolutePath());
+        // TODO -- add call to FileDao.save when implemented
+        return caArrayFile;
+    }
+
+    /**
+     * Returns the underlying file for the <code>CaArrayFile</code> object provided.
+     * 
+     * @param caArrayFile retrieve contents of this file
+     * @return the file
+     */
+    public File getFile(CaArrayFile caArrayFile) {
+        return new File(caArrayFile.getPath());
+    }
     
     /**
-     * Imports the files provided.
-     * 
-     * @param fileSet the files to import.
+     * Returns the underlying <code>java.io.Files</code> for the <code>CaArrayFiles</code> in the set provided.
+     *
+     * @param fileSet get files from this set.
+     * @return the files.
      */
-    void importFiles(CaArrayFileSet fileSet);
+    public Set<File> getFiles(CaArrayFileSet fileSet) {
+        Set<File> files = new HashSet<File>();
+        Iterator<CaArrayFile> iterator = fileSet.iterator();
+        while (iterator.hasNext()) {
+            files.add(getFile(iterator.next()));
+        }
+        return files;
+    }
 
 }

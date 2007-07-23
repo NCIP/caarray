@@ -82,19 +82,72 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import java.util.Iterator;
+
+import gov.nih.nci.caarray.business.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
+
+import javax.ejb.Local;
+import javax.ejb.Stateless;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
- * Provides file storage, validation and import services to the caArray application.
- * Interface to the FileManagement subsystem.
+ * EJB implementation of the entry point to the FileManagement subsystem.
  */
-public interface FileManagementService {
+@Local
+@Stateless
+public class FileManagementServiceBean implements FileManagementService {
     
+    private static final Log LOG = LogFactory.getLog(FileManagementServiceBean.class);
+
     /**
      * Imports the files provided.
      * 
      * @param fileSet the files to import.
      */
-    void importFiles(CaArrayFileSet fileSet);
+    public void importFiles(CaArrayFileSet fileSet) {
+        validate(fileSet);
+        if (fileSet.getStatus().equals(FileStatus.VALIDATED)) {
+            doImport(fileSet);
+        }
+    }
+
+    private void doImport(CaArrayFileSet fileSet) {
+        importArrayDesigns(fileSet);
+        importAnnontation(fileSet);
+        importArrayData(fileSet);
+    }
+
+    private void importArrayDesigns(CaArrayFileSet fileSet) {
+        LOG.warn("Need to implement importArrayDesigns: " + fileSet);
+        // TODO implement importArrayDesigns and delete extraneous logging statement below
+    }
+
+    private void importAnnontation(CaArrayFileSet fileSet) {
+        MageTabImporter mageTabImporter = new MageTabImporter(fileSet, getFileAccessService());
+        mageTabImporter.importFiles();
+    }
+
+    private void importArrayData(CaArrayFileSet fileSet) {
+        LOG.warn("Need to implement importArrayData: " + fileSet);
+        // TODO implement importArrayData and delete extraneous logging statement below
+    }
+
+    private void validate(CaArrayFileSet fileSet) {
+        Iterator<CaArrayFile> iterator = fileSet.iterator();
+        while (iterator.hasNext()) {
+            iterator.next().setStatus(FileStatus.VALIDATED);
+        }
+    }
+    
+    private FileAccessService getFileAccessService() {
+        // TODO See if this can be implemented differently with EJB3 dependency injection
+        return (FileAccessService) ServiceLocator.getInstance().lookup(FileAccessService.JNDI_NAME);
+    }
 
 }

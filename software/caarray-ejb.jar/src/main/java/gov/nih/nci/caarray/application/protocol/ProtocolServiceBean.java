@@ -90,7 +90,6 @@ import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.ProtocolDao;
-import gov.nih.nci.caarray.application.ApplicationServiceException;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -123,10 +122,9 @@ public class ProtocolServiceBean implements ProtocolService {
      * Saves the given protocol.
      *
      * @param protocol protocol to save.
-     * @throws ApplicationServiceException if the protocol could not be saved.
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void save(final Protocol protocol) throws ApplicationServiceException {
+    public void save(final Protocol protocol) {
         ProtocolDao dao = getProtocolDao();
         try {
             dao.save(protocol);

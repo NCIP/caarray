@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.application.protocol;
 import java.util.List;
 
 import gov.nih.nci.caarray.domain.protocol.Protocol;
-import gov.nih.nci.caarray.application.ApplicationServiceException;
 
 /**
  * Interface to caArray scientific protocol management.
@@ -103,9 +102,8 @@ public interface ProtocolService {
      * Saves the protocol given.
      *
      * @param protocol protocol to save.
-     * @throws ApplicationServiceException if the protocol could not be saved.
      */
-    void save(Protocol protocol) throws ApplicationServiceException;
+    void save(Protocol protocol);
 
     /**
      * Performs a query-by-example search based on the protocol object passed.

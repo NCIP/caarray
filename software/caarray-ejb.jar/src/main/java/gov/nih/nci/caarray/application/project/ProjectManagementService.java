@@ -80,55 +80,39 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application;
+package gov.nih.nci.caarray.application.project;
 
-import java.io.Serializable;
+import java.io.File;
+import java.util.Set;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import gov.nih.nci.caarray.domain.project.Project;
 
 /**
- * Looks up EJBs, Queues, etc. on behalf of clients.
- *
- * @author tavelae
+ * Provides project access and management functionality to the application. Interface to the
+ * ProjectManagement subsystem.
  */
-public final class ServiceLocator implements Serializable {
+public interface ProjectManagementService {
 
-    private static final long serialVersionUID = 7010735119922566807L;
-    
-    private static final Log LOG = LogFactory.getLog(ServiceLocator.class);
-    private static final ServiceLocator INSTANCE = new ServiceLocator();
-    
-    private ServiceLocator() {
-        super();
-    }
+    /**
+     * The default JNDI name to use to lookup <code>ProjectManagementService</code>.
+     */
+    String JNDI_NAME = "caarray/ProjectManagementServiceBean/local";
+
+    /**
+     * Returns the project corresponding to the id given.
+     * 
+     * @param id the project id
+     * @return the corresponding project.
+     */
+    Project getProject(long id);
     
     /**
-     * Returns the <code>ServiceLocator</code> singleton instance.
+     * Associates files with a project. After calling this method, clients can expect a new
+     * <code>CaArrayFile</code> to be associated with the project for each file added.
      * 
-     * @return the instance.
+     * @param project project to add files to
+     * @param files the files to add to the project
      */
-    public static ServiceLocator getInstance() {
-        return INSTANCE;
-    }
-    
-    /**
-     * Returns the resource at the JNDI name given.
-     * 
-     * @param jndiName get the resource for this name.
-     * @return the resource.
-     */
-    public Object lookup(String jndiName) {
-        try {
-            InitialContext initialContext = new InitialContext();
-            return initialContext.lookup(jndiName);
-        } catch (NamingException e) {
-            LOG.error("Couldn't get InitialContex", e);
-            throw new IllegalStateException(e);
-        }
-    }
+    void addFiles(Project project, Set<File> files);
 
 }

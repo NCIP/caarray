@@ -71,13 +71,11 @@ public class VocabularyDaoTestStub implements VocabularyDao {
      * @see gov.nih.nci.caarray.dao.VocabularyDao#getTerms(java.lang.String)
      */
     public List<Term> getTerms(String categoryName) throws DAOException {
-        // TODO Auto-generated method stub
         return new ArrayList<Term>();
     }
 
     public void removeTerms(List<Term> caArrayEntities) throws DAOException {
-        // TODO Auto-generated method stub
-
+        // no-op
     }
 
 
@@ -85,7 +83,6 @@ public class VocabularyDaoTestStub implements VocabularyDao {
      * @see gov.nih.nci.caarray.dao.VocabularyDao#getCategory(java.lang.String)
      */
     public Category getCategory(String name) throws DAOException {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -93,16 +90,14 @@ public class VocabularyDaoTestStub implements VocabularyDao {
      * @see gov.nih.nci.caarray.dao.CaArrayDao#save(gov.nih.nci.caarray.domain.AbstractCaArrayEntity)
      */
     public void save(AbstractCaArrayEntity caArrayEntity) throws DAOException {
-        // TODO Auto-generated method stub
-
+        // no-op
     }
 
     /* (non-Javadoc)
      * @see gov.nih.nci.caarray.dao.CaArrayDao#save(java.util.Collection)
      */
     public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) throws DAOException {
-        // TODO Auto-generated method stub
-
+        // no-op
     }
 
     /**
@@ -114,12 +109,10 @@ public class VocabularyDaoTestStub implements VocabularyDao {
      * @throws DAOException if the list of matching entities could not be retrieved.
      */
     public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
-        // TODO Auto-generated method stub
         return new ArrayList<AbstractCaArrayEntity>();
     }
 
     public List<AbstractCaArrayEntity> queryEntityAndAssociationsByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
-        // TODO Auto-generated method stub
         return new ArrayList<AbstractCaArrayEntity>();
     }
 
@@ -130,8 +123,7 @@ public class VocabularyDaoTestStub implements VocabularyDao {
      * @throws DAOException if unable to delete the entity.
      */
     public void remove(AbstractCaArrayEntity caArrayEntity) throws DAOException {
-        // TODO Auto-generated method stub
-
+        // no-op
     }
 
     /**
