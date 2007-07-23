@@ -123,9 +123,8 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * as necessary.
      *
      * @param caArrayEntity the entity to save
-     * @throws DAOException if the entity could not be saved.
      */
-    public void save(AbstractCaArrayEntity caArrayEntity) throws DAOException {
+    public void save(AbstractCaArrayEntity caArrayEntity) {
         try {
             getCurrentSession().saveOrUpdate(caArrayEntity);
         } catch (HibernateException e) {
@@ -139,9 +138,8 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * as necessary.
      *
      * @param caArrayEntities the entity collection to save
-     * @throws DAOException if the entity collection could not be saved.
      */
-    public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) throws DAOException {
+    public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) {
         try {
             Iterator<? extends AbstractCaArrayEntity> iterator = caArrayEntities.iterator();
             while (iterator.hasNext()) {
@@ -160,9 +158,8 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      *
      * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this id.
      * @return the retrieved <code>AbstractCaArrayEntity</code> or null.
-     * @throws DAOException if matching entities could not be retrieved.
      */
-    public AbstractCaArrayEntity queryEntityById(AbstractCaArrayEntity entityToMatch) throws DAOException {
+    public AbstractCaArrayEntity queryEntityById(AbstractCaArrayEntity entityToMatch) {
         List hibernateReturnedEntities = null;
         Session mySession = HibernateUtil.getSessionForQueryMethod();
 
@@ -187,9 +184,9 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * Deletes the entity from persistent storage.
      *
      * @param caArrayEntity the entity to be deleted.
-     * @throws DAOException if unable to delete the entity.
+     * @if unable to delete the entity.
      */
-    public void remove(AbstractCaArrayEntity caArrayEntity) throws DAOException {
+    public void remove(AbstractCaArrayEntity caArrayEntity) {
         try {
             getCurrentSession().delete(caArrayEntity);
         } catch (HibernateException he) {
@@ -204,10 +201,10 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      *
      * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
-     * @throws DAOException if the list of matching entities could not be retrieved.
+     * @if the list of matching entities could not be retrieved.
      */
     @SuppressWarnings("unchecked")
-    public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
+    public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) {
         List<AbstractCaArrayEntity> resultList = new ArrayList<AbstractCaArrayEntity>();
         List hibernateReturnedEntities = null;
         if (entityToMatch == null) {
@@ -240,11 +237,11 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      *
      * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
-     * @throws DAOException if the list of matching entities could not be retrieved.
+     * @if the list of matching entities could not be retrieved.
      */
     @SuppressWarnings("unchecked")
     public List<AbstractCaArrayEntity> queryEntityAndAssociationsByExample(AbstractCaArrayEntity entityToMatch)
-      throws DAOException {
+      {
         List<AbstractCaArrayEntity> resultList = new ArrayList<AbstractCaArrayEntity>();
         List hibernateReturnedEntities = null;
         if (entityToMatch == null) {

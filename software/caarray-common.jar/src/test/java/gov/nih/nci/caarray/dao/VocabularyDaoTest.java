@@ -533,7 +533,7 @@ public class VocabularyDaoTest {
         assertTrue(true);
     }
 
-    private void checkIfExpectedTerm() throws DAOException {
+    private void checkIfExpectedTerm() {
         Term retrievedTerm = (Term) DAO_OBJECT.queryEntityById(DUMMY_TERM_1);
         if (DUMMY_TERM_1.equals(retrievedTerm)) {
             // The retrieved term is the same as the saved term. Save and retrieve test passed.
@@ -543,7 +543,7 @@ public class VocabularyDaoTest {
         }
     }
 
-    private void checkIfExpectedCategory() throws DAOException {
+    private void checkIfExpectedCategory() {
         Category retrievedCategory = (Category) DAO_OBJECT.queryEntityById(DUMMY_CATEGORY_1);
         if (DUMMY_CATEGORY_1.equals(retrievedCategory)) {
             // The retrieved category is the same as the saved category. Save and retrieve test passed.
@@ -553,7 +553,7 @@ public class VocabularyDaoTest {
         }
     }
 
-    private void checkIfExpectedSource() throws DAOException {
+    private void checkIfExpectedSource() {
         Source retrievedSource = (Source) DAO_OBJECT.queryEntityById(DUMMY_SOURCE_1);
         if (DUMMY_SOURCE_1.equals(retrievedSource)) {
             // The retrieved source is the same as the saved source. Save and retrieve test passed.
@@ -563,7 +563,7 @@ public class VocabularyDaoTest {
         }
     }
 
-    private void checkIfExpectedAccession() throws DAOException {
+    private void checkIfExpectedAccession() {
         Accession retrievedAccession = (Accession) DAO_OBJECT.queryEntityById(DUMMY_ACCESSION_1);
         if (DUMMY_ACCESSION_1.equals(retrievedAccession)) {
             // The retrieved accession is the same as the saved accession. Save and retrieve test passed.
@@ -576,12 +576,12 @@ public class VocabularyDaoTest {
     /**
      * Save dummy entities in the database to prepare for tests.
      */
-    private void setupTestGetTerms() throws DAOException {
+    private void setupTestGetTerms() {
         DAO_OBJECT.save(DUMMY_TERM_1);
         DAO_OBJECT.save(DUMMY_TERM_2);
     }
 
-    private void setupTestGetTermsRecursive() throws DAOException {
+    private void setupTestGetTermsRecursive() {
         DAO_OBJECT.save(DUMMY_TERM_1);
         DAO_OBJECT.save(DUMMY_TERM_2);
         DAO_OBJECT.save(DUMMY_TERM_3);

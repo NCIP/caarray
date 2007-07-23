@@ -101,33 +101,29 @@ public interface VocabularyDao extends CaArrayDao {
      *
      * @param categoryName get terms for this category
      * @return all matching terms or an empty <code>List</code> if no matches.
-     * @exception DAOException exception
      */
-    List<Term> getTerms(String categoryName) throws DAOException;
+    List<Term> getTerms(String categoryName);
     
     /**
      * Removes a given list of terms from the db.
      *
      * @param termList list of temrs
-     * @exception DAOException exception
      */    
-    void removeTerms(List<Term> termList) throws DAOException;
+    void removeTerms(List<Term> termList);
 
     /**
      * Gets all the <code>Terms</code> in the given category and all sub-categories.
      *
      * @param categoryName get terms for this category and all sub-categories.
      * @return all matching terms or an empty <code>Set</code> if no matches.
-     * @exception DAOException exception
      */
-    Set<Term> getTermsRecursive(String categoryName) throws DAOException;
+    Set<Term> getTermsRecursive(String categoryName);
 
     /**
      * Returns the <code>Category</code> with the given name or null if none exists.
      *
      * @param name get <code>Category</code> matching this name
      * @return the <code>Category</code> or null.
-     * @throws DAOException if there is a problem retrieving the <code>Category</code>.
      */
-    Category getCategory(String name) throws DAOException;
+    Category getCategory(String name);
 }

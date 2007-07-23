@@ -81,10 +81,9 @@ public class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements Vocabul
      *
      * @param categoryName get terms for this category
      * @return all matching terms or an empty <code>List</code> if no matches.
-     * @exception DAOException exception
      */
     @SuppressWarnings("unchecked")
-    public List<Term> getTerms(String categoryName) throws DAOException {
+    public List<Term> getTerms(String categoryName) {
         Session mySession = HibernateUtil.getSessionForQueryMethod();
         List<Term> matchingTerms = new ArrayList<Term>();
         List hibernateReturnedTerms = null;
@@ -111,10 +110,9 @@ public class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements Vocabul
      * given.
      *
      * @param termList list of terms
-     * @exception DAOException exception
      */
     @SuppressWarnings("unchecked")
-    public void removeTerms(List<Term> termList) throws DAOException {
+    public void removeTerms(List<Term> termList) {
         Term aTerm = null;
 
         try {
@@ -131,9 +129,8 @@ public class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements Vocabul
      *
      * @param categoryName get terms for this category and all sub-categories.
      * @return all matching terms or an empty <code>Set</code> if no matches.
-     * @exception DAOException exception
      */
-    public Set<Term> getTermsRecursive(String categoryName) throws DAOException {
+    public Set<Term> getTermsRecursive(String categoryName) {
         Session mySession = HibernateUtil.getSessionForQueryMethod();
         Set<Term> matchingTerms = new HashSet<Term>();
 
@@ -166,9 +163,8 @@ public class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements Vocabul
      *
      * @param name get <code>Category</code> matching this name
      * @return the <code>Category</code> or null.
-     * @throws DAOException if there is a problem retrieving the <code>Category</code>.
      */
-    public Category getCategory(String name) throws DAOException {
+    public Category getCategory(String name) {
         Session mySession = HibernateUtil.getSessionForQueryMethod();
         Category retrievedCategory = null;
 

@@ -66,7 +66,7 @@ public abstract class AbstractMageTabDocument {
      * @param file the File
      * @throws MageTabTextFileLoaderException exception
      */
-    public abstract void load(File file) throws MageTabTextFileLoaderException;
+    protected abstract void load(File file) throws MageTabTextFileLoaderException;
 
     /**
      * @return TabDelimtedFile the file util class

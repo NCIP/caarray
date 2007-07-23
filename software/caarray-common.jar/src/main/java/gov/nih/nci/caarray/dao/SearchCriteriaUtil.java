@@ -117,7 +117,7 @@ public final class SearchCriteriaUtil {
      * @throws InvocationTargetException
      */
     static void addCriteriaForAssociations(AbstractCaArrayEntity entityToMatch, Criteria criteria)
-      throws DAOException {
+      {
         try {
             PersistentClass pclass = HibernateUtil.getConfiguration().getClassMapping(
                 entityToMatch.getClass().getName());

@@ -95,7 +95,6 @@ public interface ProjectDao extends CaArrayDao {
      *
      * @param id get <code>Project</code> matching this id
      * @return the <code>Project</code> or null.
-     * @throws DAOException if there is a problem retrieving the <code>Project</code>.
      */
-    Project getProject(Long id) throws DAOException;
+    Project getProject(Long id);
 }

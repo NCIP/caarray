@@ -88,7 +88,7 @@ package gov.nih.nci.caarray.dao;
  *
  * @author Rashmi Srinivasa
  */
-public class DAOException extends Exception {
+public class DAOException extends RuntimeException {
     /**
      * The serial version UID for serialization.
      */

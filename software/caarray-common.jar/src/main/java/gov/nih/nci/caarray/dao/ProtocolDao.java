@@ -86,8 +86,6 @@ import gov.nih.nci.caarray.domain.protocol.Protocol;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.protocol</code> package.
- *
- * @author ETavela
  */
 public interface ProtocolDao extends CaArrayDao {
 
@@ -96,8 +94,7 @@ public interface ProtocolDao extends CaArrayDao {
      *
      * @param id get <code>Protocol</code> matching this id
      * @return the <code>Protocol</code> or null.
-     * @throws DAOException if there is a problem retrieving the <code>Protocol</code>.
      */
-    Protocol getProtocol(Long id) throws DAOException;
+    Protocol getProtocol(Long id);
 
 }

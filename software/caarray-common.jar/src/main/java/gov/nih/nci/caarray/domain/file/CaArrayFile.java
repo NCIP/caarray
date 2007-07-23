@@ -85,27 +85,22 @@ package gov.nih.nci.caarray.domain.file;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
-  /**
-
-   */
-
+/**
+ */
 public class CaArrayFile extends AbstractCaArrayEntity {
-    /**
-     * The serial version UID for serialization.
-     */
+
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The path java.lang.String.
-     */
-    private java.lang.String path;
+    private String path;
+    private FileType type;
+    private FileStatus status = FileStatus.UPLOADED;
 
     /**
      * Gets the path.
      *
      * @return the path
      */
-    public java.lang.String getPath() {
+    public String getPath() {
         return path;
     }
 
@@ -114,21 +109,16 @@ public class CaArrayFile extends AbstractCaArrayEntity {
      *
      * @param pathVal the path
      */
-    public void setPath(final java.lang.String pathVal) {
+    public void setPath(final String pathVal) {
         this.path = pathVal;
     }
-
-    /**
-     * The type gov.nih.nci.caarray.domain.file.FileType.
-     */
-    private gov.nih.nci.caarray.domain.file.FileType type;
 
     /**
      * Gets the type.
      *
      * @return the type
      */
-    public gov.nih.nci.caarray.domain.file.FileType getType() {
+    public FileType getType() {
         return type;
     }
 
@@ -137,9 +127,22 @@ public class CaArrayFile extends AbstractCaArrayEntity {
      *
      * @param typeVal the type
      */
-    public void setType(final
-      gov.nih.nci.caarray.domain.file.FileType typeVal) {
+    public void setType(final FileType typeVal) {
         this.type = typeVal;
+    }
+
+    /**
+     * @return the status
+     */
+    public FileStatus getStatus() {
+        return status;
+    }
+
+    /**
+     * @param status the status to set
+     */
+    public void setStatus(FileStatus status) {
+        this.status = status;
     }
 
     /**
@@ -150,9 +153,9 @@ public class CaArrayFile extends AbstractCaArrayEntity {
      */
     public boolean equals(final Object obj) {
         boolean theyAreEqual = false;
-        if (obj instanceof gov.nih.nci.caarray.domain.file.CaArrayFile) {
-            final gov.nih.nci.caarray.domain.file.CaArrayFile castObject =
-                (gov.nih.nci.caarray.domain.file.CaArrayFile) obj;
+        if (obj instanceof CaArrayFile) {
+            final CaArrayFile castObject =
+                (CaArrayFile) obj;
             Long thisId = getId();
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;

@@ -101,9 +101,8 @@ public interface SearchDao {
      *
      * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
-     * @throws DAOException if the list of matching entities could not be retrieved.
      */
-    List<AbstractCaArrayEntity> query(AbstractCaArrayEntity entityToMatch) throws DAOException;
+    List<AbstractCaArrayEntity> query(AbstractCaArrayEntity entityToMatch);
 
     /**
      * Returns the list of <code>AbstractCaArrayEntity</code> retrieved based on the
@@ -111,9 +110,8 @@ public interface SearchDao {
      *
      * @param hqlString Hibernate Query Language string to use as search crietria.
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
-     * @throws DAOException if the list of matching entities could not be retrieved.
      */
-    List<AbstractCaArrayEntity> query(String hqlString) throws DAOException;
+    List<AbstractCaArrayEntity> query(String hqlString);
 
     /**
      * Returns the list of <code>AbstractCaArrayEntity</code> retrieved based on the
@@ -121,7 +119,7 @@ public interface SearchDao {
      *
      * @param cqlQuery CQL query to use as search criteria.
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
-     * @throws DAOException if the list of matching entities could not be retrieved.
      */
-    List<AbstractCaArrayEntity> query(CQLQuery cqlQuery) throws DAOException;
+    List<AbstractCaArrayEntity> query(CQLQuery cqlQuery);
+
 }

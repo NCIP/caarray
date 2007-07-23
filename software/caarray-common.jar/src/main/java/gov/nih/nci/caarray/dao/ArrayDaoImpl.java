@@ -100,9 +100,8 @@ public class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      *
      * @param id get <code>ArrayDesign</code> matching this id
      * @return the <code>ArrayDesign</code> or null.
-     * @throws DAOException if there is a problem retrieving the <code>ArrayDesign</code>.
      */
-    public ArrayDesign getArrayDesign(Long id) throws DAOException {
+    public ArrayDesign getArrayDesign(Long id) {
         // Create an example arraydesign that has the desired id, and use it to retrieve matching arraydesigns.
         ArrayDesign arrayDesignToMatch = new ArrayDesign();
         arrayDesignToMatch.setId(id);

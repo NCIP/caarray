@@ -114,9 +114,8 @@ public class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
      *
      * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
-     * @throws DAOException if the list of matching entities could not be retrieved.
      */
-    public List<AbstractCaArrayEntity> query(AbstractCaArrayEntity entityToMatch) throws DAOException {
+    public List<AbstractCaArrayEntity> query(AbstractCaArrayEntity entityToMatch) {
         return queryEntityAndAssociationsByExample(entityToMatch);
     }
 
@@ -126,9 +125,8 @@ public class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
      *
      * @param hqlString Hibernate Query Language string to use as search criteria.
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
-     * @throws DAOException if the list of matching entities could not be retrieved.
      */
-    public List<AbstractCaArrayEntity> query(String hqlString) throws DAOException {
+    public List<AbstractCaArrayEntity> query(String hqlString) {
         List params = new ArrayList();
 
         return (runHqlQuery(hqlString, params));
@@ -140,9 +138,8 @@ public class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
      *
      * @param cqlQuery CQL query to use as search criteria.
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
-     * @throws DAOException if the list of matching entities could not be retrieved.
      */
-    public List<AbstractCaArrayEntity> query(CQLQuery cqlQuery) throws DAOException {
+    public List<AbstractCaArrayEntity> query(CQLQuery cqlQuery) {
         HibernateQueryWrapper hqlWrapper = null;
         try {
             hqlWrapper = CQL2HQL.translate(cqlQuery, true);
@@ -157,7 +154,7 @@ public class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     }
 
     @SuppressWarnings("unchecked")
-    private List<AbstractCaArrayEntity> runHqlQuery(String hqlString, List params) throws DAOException {
+    private List<AbstractCaArrayEntity> runHqlQuery(String hqlString, List params) {
         Session mySession = HibernateUtil.getSessionForQueryMethod();
         List<AbstractCaArrayEntity> matchingEntities = new ArrayList<AbstractCaArrayEntity>();
         List hibernateReturnedEntities = null;

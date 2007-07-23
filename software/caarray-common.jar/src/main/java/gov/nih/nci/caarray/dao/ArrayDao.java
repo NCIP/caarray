@@ -95,7 +95,6 @@ public interface ArrayDao extends CaArrayDao {
      *
      * @param id get <code>ArrayDesign</code> matching this id
      * @return the <code>ArrayDesign</code> or null.
-     * @throws DAOException if there is a problem retrieving the <code>ArrayDesign</code>.
      */
-    ArrayDesign getArrayDesign(Long id) throws DAOException;
+    ArrayDesign getArrayDesign(Long id);
 }

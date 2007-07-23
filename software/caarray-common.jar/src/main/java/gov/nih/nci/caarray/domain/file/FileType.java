@@ -83,13 +83,13 @@
 
 package gov.nih.nci.caarray.domain.file;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-  /**
-
-   */
-public final class FileType implements java.io.Serializable  {
+/**
+ */
+public final class FileType implements Serializable  {
     /**
      * The serial version UID for serialization.
      */
