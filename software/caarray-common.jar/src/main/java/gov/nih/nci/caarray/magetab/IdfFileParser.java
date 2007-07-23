@@ -398,9 +398,10 @@ public final class IdfFileParser {
                 cat.setName(IdfDocument.EXPERIMENTALFACTORCATEGORY);
                 term.setCategory(cat);
                 type.setType(term);
-                if (isNotEmpty(typeSrcList.get(i))) {
-                    type.setSource(getSourceRef(typeSrcList.get(i)));
-                }
+
+                // is there only one source type value for ALL of the terms??
+                type.setSource(getSourceRef(typeSrcList.get(0)));
+
                 factor.setType(type);
             }
             if (canAdd) {
