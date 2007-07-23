@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.ui.jsf.beans;
 
-import gov.nih.nci.caarray.application.ApplicationServiceException;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 
 import org.apache.commons.logging.Log;
@@ -125,13 +124,7 @@ public final class ProtocolBean extends AbstractProtocolBean {
         if (LOG.isDebugEnabled()) {
             LOG.debug("save()");
         }
-        try {
-            getProtocolService().save(getProtocol());
-        } catch (ApplicationServiceException e) {
-            // TODO REMOVE ApplicationServiceException!!!!!!!!!!!!
-            LOG.error("Couldn't save protocol.", e);
-            return "error";
-        }
+        getProtocolService().save(getProtocol());
         return "success";
     }
 
