@@ -85,21 +85,27 @@ package gov.nih.nci.caarray.domain.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
-  /**
-
-   */
-
+/**
+ * 
+ */
 public class Investigation extends AbstractCaArrayEntity {
+    
     /**
      * The serial version UID for serialization.
      */
     private static final long serialVersionUID = 1234567890L;
     private static final String UNCHECKED = "unchecked";
 
-    /**
-     * The dateOfExperiment java.util.Date.
-     */
     private java.util.Date dateOfExperiment;
+
+    /**
+     * Creates a new, empty <code>Investigation</code>.
+     * 
+     * @return the initialized <code>Investigation</code>.
+     */
+    public static Investigation createNew() {
+        return new Investigation();
+    }
 
     /**
      * Gets the dateOfExperiment.

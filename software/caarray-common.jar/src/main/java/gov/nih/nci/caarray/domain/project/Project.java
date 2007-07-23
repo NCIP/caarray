@@ -85,28 +85,35 @@ package gov.nih.nci.caarray.domain.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
-  /**
-
-   */
-
+ /**
+  * A microarray project.
+  */
 public class Project extends AbstractCaArrayEntity {
+
     /**
      * The serial version UID for serialization.
      */
     private static final long serialVersionUID = 1234567890L;
 
-
     /**
-     * The experiment gov.nih.nci.caarray.domain.project.Investigation.
+     * Initializes a new, empty project.
+     * 
+     * @return the new Project.
      */
-    private gov.nih.nci.caarray.domain.project.Investigation experiment;
+    public static Project createNew() {
+        Project project = new Project();
+        project.setExperiment(Investigation.createNew());
+        return project;
+    }
+    
+    private Investigation experiment;
 
     /**
      * Gets the experiment.
      *
      * @return the experiment
      */
-    public gov.nih.nci.caarray.domain.project.Investigation getExperiment() {
+    public Investigation getExperiment() {
         return experiment;
     }
 
@@ -115,8 +122,7 @@ public class Project extends AbstractCaArrayEntity {
      *
      * @param experimentVal the experiment
      */
-    public void setExperiment(final
-      gov.nih.nci.caarray.domain.project.Investigation experimentVal) {
+    public void setExperiment(final Investigation experimentVal) {
         this.experiment = experimentVal;
     }
 
