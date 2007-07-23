@@ -85,7 +85,9 @@ package gov.nih.nci.caarray.domain.file;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  */
@@ -121,15 +123,35 @@ public final class FileType implements Serializable  {
     public static final FileType MAGE_TAB_SDRF = new FileType("MAGE_TAB_SDRF");
 
     /**
+     * Affymetrix native array design file.
+     */
+    public static final FileType AFFYMETRIX_CDF = new FileType("AFFYMETRIX_CDF");
+
+    /**
+     * Affymetrix native CEL data format.
+     */
+    public static final FileType AFFYMETRIX_CEL = new FileType("AFFYMETRIX_CEL");
+
+    /**
      * A Map of all possible file types.
      */
     private static final Map<String, FileType> INSTANCES = new HashMap<String, FileType>();
 
+    private static final Set<FileType> ARRAY_DESIGN_FILE_TYPES = new HashSet<FileType>();
+
+    private static final Set<FileType> ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
+
+    
     static {
         INSTANCES.put(MAGE_TAB_ADF.toString(), MAGE_TAB_ADF);
         INSTANCES.put(MAGE_TAB_DATA_MATRIX.toString(), MAGE_TAB_DATA_MATRIX);
         INSTANCES.put(MAGE_TAB_IDF.toString(), MAGE_TAB_IDF);
         INSTANCES.put(MAGE_TAB_SDRF.toString(), MAGE_TAB_SDRF);
+        INSTANCES.put(AFFYMETRIX_CDF.toString(), AFFYMETRIX_CDF);
+        INSTANCES.put(AFFYMETRIX_CEL.toString(), AFFYMETRIX_CEL);
+        
+        ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CDF);
+        ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
     }
 
     private FileType(String name) {
@@ -153,5 +175,19 @@ public final class FileType implements Serializable  {
      */
     public String toString() {
         return name;
+    }
+
+    /**
+     * @return true if this file type is an array design.
+     */
+    public boolean isArrayDesign() {
+        return ARRAY_DESIGN_FILE_TYPES.contains(this);
+    }
+
+    /**
+     * @return true if this file type is array data.
+     */
+    public boolean isArrayData() {
+        return ARRAY_DATA_FILE_TYPES.contains(this);
     }
 }

@@ -83,24 +83,57 @@
 
 package gov.nih.nci.caarray.domain.array;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.measurement.DistanceMeasurement;
+import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
-  /**
-
-   */
-
+/**
+ * The design details for a type of microarray.
+ */
 @SuppressWarnings("PMD")
 public class ArrayDesign extends AbstractCaArrayEntity {
-    /**
-     * The serial version UID for serialization.
-     */
+
     private static final long serialVersionUID = 1234567890L;
     private static final String UNCHECKED = "unchecked";
 
-    /**
-     * The accession String.
-     */
+    private DistanceMeasurement length;
+    private String name;
+    private ProtocolApplication printing;
     private String accession;
+    private Term sequencePolymerType;
+    private Integer numberOfFeatures;
+    private Term substrateType;
+    private Term surfaceType;
+    private Term technologyType;
+    private String version;
+    private DistanceMeasurement width;
+    private final Collection featureGroups = new HashSet();
+    private CaArrayFile designFile;
+    
+    /**
+     * The provider gov.nih.nci.caarray.domain.contact.Organization.
+     */
+    private gov.nih.nci.caarray.domain.contact.Organization provider;
+
+    /**
+     * The compositeElements set.
+     */
+    private final Collection compositeElements = new HashSet();
+
+    /**
+     * The reporterGroups set.
+     */
+    private final Collection reporterGroups = new HashSet();
+
+    /**
+     * The blocks set.
+     */
+    private final Collection blocks = new HashSet();
 
     /**
      * Gets the accession.
@@ -119,17 +152,13 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     public void setAccession(final String accessionVal) {
         this.accession = accessionVal;
     }
-    /**
-     * The length gov.nih.nci.caarray.domain.measurement.DistanceMeasurement.
-     */
-    private gov.nih.nci.caarray.domain.measurement.DistanceMeasurement length;
-
+    
     /**
      * Gets the length.
      *
      * @return the length
      */
-    public gov.nih.nci.caarray.domain.measurement.DistanceMeasurement getLength() {
+    public DistanceMeasurement getLength() {
         return length;
     }
 
@@ -138,13 +167,9 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @param lengthVal the length
      */
-    public void setLength(final gov.nih.nci.caarray.domain.measurement.DistanceMeasurement lengthVal) {
+    public void setLength(final DistanceMeasurement lengthVal) {
         this.length = lengthVal;
     }
-    /**
-     * The name String.
-     */
-    private String name;
 
     /**
      * Gets the name.
@@ -163,17 +188,13 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     public void setName(final String nameVal) {
         this.name = nameVal;
     }
-    /**
-     * The numberOfFeatures java.lang.Integer.
-     */
-    private java.lang.Integer numberOfFeatures;
 
     /**
      * Gets the numberOfFeatures.
      *
      * @return the numberOfFeatures
      */
-    public java.lang.Integer getNumberOfFeatures() {
+    public Integer getNumberOfFeatures() {
         return numberOfFeatures;
     }
 
@@ -182,20 +203,15 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @param numberOfFeaturesVal the numberOfFeatures
      */
-    public void setNumberOfFeatures(final java.lang.Integer numberOfFeaturesVal) {
+    public void setNumberOfFeatures(final Integer numberOfFeaturesVal) {
         this.numberOfFeatures = numberOfFeaturesVal;
     }
-    /**
-     * The sequencePolymerType gov.nih.nci.caarray.domain.vocabulary.Term.
-     */
-    private gov.nih.nci.caarray.domain.vocabulary.Term sequencePolymerType;
-
     /**
      * Gets the sequencePolymerType.
      *
      * @return the sequencePolymerType
      */
-    public gov.nih.nci.caarray.domain.vocabulary.Term getSequencePolymerType() {
+    public Term getSequencePolymerType() {
         return sequencePolymerType;
     }
 
@@ -204,20 +220,15 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @param sequencePolymerTypeVal the sequencePolymerType
      */
-    public void setSequencePolymerType(final gov.nih.nci.caarray.domain.vocabulary.Term sequencePolymerTypeVal) {
+    public void setSequencePolymerType(final Term sequencePolymerTypeVal) {
         this.sequencePolymerType = sequencePolymerTypeVal;
     }
-    /**
-     * The substrateType gov.nih.nci.caarray.domain.vocabulary.Term.
-     */
-    private gov.nih.nci.caarray.domain.vocabulary.Term substrateType;
-
     /**
      * Gets the substrateType.
      *
      * @return the substrateType
      */
-    public gov.nih.nci.caarray.domain.vocabulary.Term getSubstrateType() {
+    public Term getSubstrateType() {
         return substrateType;
     }
 
@@ -226,20 +237,15 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @param substrateTypeVal the substrateType
      */
-    public void setSubstrateType(final gov.nih.nci.caarray.domain.vocabulary.Term substrateTypeVal) {
+    public void setSubstrateType(final Term substrateTypeVal) {
         this.substrateType = substrateTypeVal;
     }
-    /**
-     * The surfaceType gov.nih.nci.caarray.domain.vocabulary.Term.
-     */
-    private gov.nih.nci.caarray.domain.vocabulary.Term surfaceType;
-
     /**
      * Gets the surfaceType.
      *
      * @return the surfaceType
      */
-    public gov.nih.nci.caarray.domain.vocabulary.Term getSurfaceType() {
+    public Term getSurfaceType() {
         return surfaceType;
     }
 
@@ -248,20 +254,15 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @param surfaceTypeVal the surfaceType
      */
-    public void setSurfaceType(final gov.nih.nci.caarray.domain.vocabulary.Term surfaceTypeVal) {
+    public void setSurfaceType(final Term surfaceTypeVal) {
         this.surfaceType = surfaceTypeVal;
     }
-    /**
-     * The technologyType gov.nih.nci.caarray.domain.vocabulary.Term.
-     */
-    private gov.nih.nci.caarray.domain.vocabulary.Term technologyType;
-
     /**
      * Gets the technologyType.
      *
      * @return the technologyType
      */
-    public gov.nih.nci.caarray.domain.vocabulary.Term getTechnologyType() {
+    public Term getTechnologyType() {
         return technologyType;
     }
 
@@ -270,20 +271,15 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @param technologyTypeVal the technologyType
      */
-    public void setTechnologyType(final gov.nih.nci.caarray.domain.vocabulary.Term technologyTypeVal) {
+    public void setTechnologyType(final Term technologyTypeVal) {
         this.technologyType = technologyTypeVal;
     }
-    /**
-     * The version java.lang.String.
-     */
-    private java.lang.String version;
-
     /**
      * Gets the version.
      *
      * @return the version
      */
-    public java.lang.String getVersion() {
+    public String getVersion() {
         return version;
     }
 
@@ -292,20 +288,15 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @param versionVal the version
      */
-    public void setVersion(final java.lang.String versionVal) {
+    public void setVersion(final String versionVal) {
         this.version = versionVal;
     }
-    /**
-     * The width gov.nih.nci.caarray.domain.measurement.DistanceMeasurement.
-     */
-    private gov.nih.nci.caarray.domain.measurement.DistanceMeasurement width;
-
     /**
      * Gets the width.
      *
      * @return the width
      */
-    public gov.nih.nci.caarray.domain.measurement.DistanceMeasurement getWidth() {
+    public DistanceMeasurement getWidth() {
         return width;
     }
 
@@ -314,14 +305,9 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @param widthVal the width
      */
-    public void setWidth(final gov.nih.nci.caarray.domain.measurement.DistanceMeasurement widthVal) {
+    public void setWidth(final DistanceMeasurement widthVal) {
         this.width = widthVal;
     }
-
-    /**
-     * The provider gov.nih.nci.caarray.domain.contact.Organization.
-     */
-    private gov.nih.nci.caarray.domain.contact.Organization provider;
 
     /**
      * Gets the provider.
@@ -343,16 +329,11 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     }
 
     /**
-     * The featureGroups set.
-     */
-    private final java.util.Collection featureGroups = new java.util.HashSet();
-
-    /**
      * Gets the featureGroups.
      *
      * @return the featureGroups
      */
-    public java.util.Collection getFeatureGroups() {
+    public Collection getFeatureGroups() {
         return featureGroups;
     }
 
@@ -362,21 +343,16 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      * @param featureGroupsVal the featureGroups
      */
     @SuppressWarnings(UNCHECKED)
-    public void setFeatureGroups(final java.util.Collection featureGroupsVal) {
+    public void setFeatureGroups(final Collection featureGroupsVal) {
         this.featureGroups.addAll(featureGroupsVal);
     }
-
-    /**
-     * The compositeElements set.
-     */
-    private final java.util.Collection compositeElements = new java.util.HashSet();
 
     /**
      * Gets the compositeElements.
      *
      * @return the compositeElements
      */
-    public java.util.Collection getCompositeElements() {
+    public Collection getCompositeElements() {
         return compositeElements;
     }
 
@@ -386,21 +362,16 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      * @param compositeElementsVal the compositeElements
      */
     @SuppressWarnings(UNCHECKED)
-    public void setCompositeElements(final java.util.Collection compositeElementsVal) {
+    public void setCompositeElements(final Collection compositeElementsVal) {
         this.compositeElements.addAll(compositeElementsVal);
     }
-
-    /**
-     * The reporterGroups set.
-     */
-    private final java.util.Collection reporterGroups = new java.util.HashSet();
 
     /**
      * Gets the reporterGroups.
      *
      * @return the reporterGroups
      */
-    public java.util.Collection getReporterGroups() {
+    public Collection getReporterGroups() {
         return reporterGroups;
     }
 
@@ -410,21 +381,16 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      * @param reporterGroupsVal the reporterGroups
      */
     @SuppressWarnings(UNCHECKED)
-    public void setReporterGroups(final java.util.Collection reporterGroupsVal) {
+    public void setReporterGroups(final Collection reporterGroupsVal) {
         this.reporterGroups.addAll(reporterGroupsVal);
     }
-
-    /**
-     * The blocks set.
-     */
-    private final java.util.Collection blocks = new java.util.HashSet();
 
     /**
      * Gets the blocks.
      *
      * @return the blocks
      */
-    public java.util.Collection getBlocks() {
+    public Collection getBlocks() {
         return blocks;
     }
 
@@ -434,21 +400,16 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      * @param blocksVal the blocks
      */
     @SuppressWarnings(UNCHECKED)
-    public void setBlocks(final java.util.Collection blocksVal) {
+    public void setBlocks(final Collection blocksVal) {
         this.blocks.addAll(blocksVal);
     }
-
-    /**
-     * The printing gov.nih.nci.caarray.domain.protocol.ProtocolApplication.
-     */
-    private gov.nih.nci.caarray.domain.protocol.ProtocolApplication printing;
 
     /**
      * Gets the printing.
      *
      * @return the printing
      */
-    public gov.nih.nci.caarray.domain.protocol.ProtocolApplication getPrinting() {
+    public ProtocolApplication getPrinting() {
         return printing;
     }
 
@@ -458,8 +419,22 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      * @param printingVal the printing
      */
     public void setPrinting(final
-      gov.nih.nci.caarray.domain.protocol.ProtocolApplication printingVal) {
+      ProtocolApplication printingVal) {
         this.printing = printingVal;
+    }
+
+    /**
+     * @return the designFile
+     */
+    public CaArrayFile getDesignFile() {
+        return designFile;
+    }
+
+    /**
+     * @param designFile the designFile to set
+     */
+    public void setDesignFile(CaArrayFile designFile) {
+        this.designFile = designFile;
     }
 
     /**

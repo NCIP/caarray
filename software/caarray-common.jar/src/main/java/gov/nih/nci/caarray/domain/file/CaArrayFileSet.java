@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.domain.file;
 
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -107,12 +106,12 @@ public final class CaArrayFileSet implements Serializable {
     }
     
     /**
-     * Returns an iterator for the contained files.
+     * Returns the contained files.
      * 
-     * @return the iterator.
+     * @return the files.
      */
-    public Iterator<CaArrayFile> iterator() {
-        return files.iterator();
+    public Set<CaArrayFile> getFiles() {
+        return files;
     }
     
     /**
