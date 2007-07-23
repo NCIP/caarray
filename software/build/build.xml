@@ -56,6 +56,7 @@
     <property name="caarray-client.jar" value="${caarray-ear.target.dir}/caarray-client.jar" />
 
     <!-- Third-party -->
+    <property name="affxfusion.jar" value="${lib.dir}/AffxFusion.jar" />
     <property name="antlr.jar" value="${lib.dir}/antlr-2.7.6.jar" />
     <property name="asm.jar" value="${lib.dir}/asm.jar" />
     <property name="asm-2.2.1.jar" value="${lib.dir}/asm-2.2.1.jar" />
@@ -285,6 +286,7 @@
                 <pathelement location="${cacore32-client.jar}" />
                 <pathelement location="${commons-logging.jar}" />
                 <pathelement location="${javaee.jar}" />
+                <pathelement location="${affxfusion.jar}" />
           <pathelement location="${netcdf.jar}" />
             </classpath>
         </javac>
@@ -485,7 +487,7 @@
             test.src.dir="${caarray-ejb.test.src.dir}"
             xml.output.dir="${caarray-ejb.target.dir}/junit"
             instrumented.classes="${caarray-ejb.instrumented.classes.dir}"
-            classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-common.classes.dir};${cacore32-client.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar}" />
+            classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-common.classes.dir};${cacore32-client.jar};${affxfusion.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar}" />
     </target>
 
     <!-- caarray.war -->
