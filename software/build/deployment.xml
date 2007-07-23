@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project default="cargo" name="jboss-deploy" basedir=".">
+
+	<property name="cargo-jar" value="cargo-core-uberjar-0.9.jar" />
+	<property name="cargo-ant-jar" value="cargo-ant-0.9.jar" />
+	<property name="jboss.dir" value="${target.dir}/jboss" />
+	<property name="jboss.tmp.dir" value="${target.dir}/jboss" />
+	<property name="jboss.refid" value="tmptmct01" />
+	<property name="jboss.installer.url" value="http://downloads.sourceforge.net/jboss/jboss-4.0.4.GA.zip" />
+
+    <target name="uber-clean">
+  	  <delete dir="${local.cargo.jboss}" />	
+	</target>
+
+	<target name="cargo">
+		<taskdef resource="cargo.tasks">
+			<classpath>
+				<pathelement location="${lib.dir}/${cargo-jar}" />
+				<pathelement location="${lib.dir}/${cargo-ant-jar}" />
+			</classpath>
+		</taskdef>
+
+		<!-- id is used to ref a stop task below -->
+		<cargo containerId="jboss4x" action="start" wait="false" id="${jboss.refid}">
+			<zipurlinstaller installurl="${jboss.installer.url}" />
+			<configuration type="standalone" home="${jboss.tmp.dir}">
+				<!-- nothing is needed at this point-->
+			</configuration>
+		</cargo>
+
+		<echo message="started jboss.." />
+		<sleep seconds="20" />
+		<echo message="...stopping jboss" />
+
+		<cargo containerId="jboss4x" action="stop" refid="${jboss.refid}" />
+	</target>
+</project>
