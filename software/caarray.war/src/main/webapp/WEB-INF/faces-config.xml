@@ -44,5 +44,17 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
+    <managed-bean>
+        <managed-bean-name>projectProposalBean</managed-bean-name>
+        <managed-bean-class>gov.nih.nci.caarray.ui.jsf.beans.project.ProjectProposalBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>startProjectProposal</from-outcome>
+            <to-view-id>/project/projectProposal.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
 
 </faces-config>
