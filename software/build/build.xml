@@ -743,7 +743,7 @@
 	<property name="envproperties.file" value="default.properties" />	
     
 	<target name="validate-properties">
-	  <!--<get dest="${lib.dir}/nci-ant.jar" usetimestamp="true" 
+	  <get dest="${lib.dir}/nci-ant.jar" usetimestamp="false" 
 	    ignoreerrors="true" src="http://www.stelligent.com/resources/downloads/jars/nci-ant.jar">
       </get>
 	  <taskdef name="ncitask" classname="com.stelligent.nci.anttasks.PropertyChecker">
@@ -752,7 +752,6 @@
         </classpath>
 	  </taskdef>
       <ncitask keyFile="${properties.dir}/${keyfile.file}" compareFile="${properties.dir}/${envproperties.file}"/>
-	  -->
 	</target>
 	<!-- END STELLIGENT ADD -->
 
