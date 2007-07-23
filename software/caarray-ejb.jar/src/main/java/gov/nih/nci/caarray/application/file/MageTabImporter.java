@@ -87,6 +87,7 @@ import java.util.Set;
 
 import gov.nih.nci.caarray.business.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDao;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.magetab.DocumentSet;
 import gov.nih.nci.caarray.magetab.IdfDocument;
@@ -99,10 +100,12 @@ class MageTabImporter {
 
     private final CaArrayFileSet fileSet;
     private final FileAccessService fileAccessService;
+    private final CaArrayDaoFactory daoFactory;
 
-    MageTabImporter(CaArrayFileSet fileSet, FileAccessService fileAccessService) {
+    MageTabImporter(CaArrayFileSet fileSet, FileAccessService fileAccessService, CaArrayDaoFactory daoFactory) {
         this.fileSet = fileSet;
         this.fileAccessService = fileAccessService;
+        this.daoFactory = daoFactory;
     }
 
     void importFiles() {
@@ -124,8 +127,7 @@ class MageTabImporter {
     }
 
     private CaArrayDao getCaArrayDao() {
-        // TODO Implement DAO retrieval (or pass in from bean)
-        return null;
+        return daoFactory.getProjectDao();
     }
 
     private Set<File> getFiles() {

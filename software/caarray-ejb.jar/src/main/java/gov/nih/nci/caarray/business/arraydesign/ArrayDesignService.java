@@ -87,9 +87,9 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
 /**
  * Provides array design detail parsing, storage, and retrieval functionality. Interface to the
- * ArrayDesignManagement subsystem.
+ * ArrayDesign subsystem.
  */
-public interface ArrayDesignManagementService {
+public interface ArrayDesignService {
 
     /**
      * Imports a new array design into the system from an array design file.

@@ -10,5 +10,10 @@
 	<classpathentry kind="lib" path="/lib/log4j-1.2.13.jar"/>
 	<classpathentry kind="lib" path="/lib/spring.jar"/>
 	<classpathentry kind="lib" path="/lib/commons-logging-1.1.jar" sourcepath="/lib/commons-logging-1.1-src.jar"/>
+	<classpathentry kind="lib" path="/lib/AffxFusion.jar" sourcepath="/lib/AffxFusion-src.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/dev/tools/fusion_sdk_109/affy/sdk/java/AffxFusion/dist/javadoc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

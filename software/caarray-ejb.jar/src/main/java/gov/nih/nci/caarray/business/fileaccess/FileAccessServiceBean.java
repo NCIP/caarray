@@ -87,7 +87,6 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 
 import java.io.File;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.ejb.Local;
@@ -131,9 +130,8 @@ public class FileAccessServiceBean implements FileAccessService {
      */
     public Set<File> getFiles(CaArrayFileSet fileSet) {
         Set<File> files = new HashSet<File>();
-        Iterator<CaArrayFile> iterator = fileSet.iterator();
-        while (iterator.hasNext()) {
-            files.add(getFile(iterator.next()));
+        for (CaArrayFile caArrayFile : fileSet.getFiles()) {
+            files.add(getFile(caArrayFile));
         }
         return files;
     }
