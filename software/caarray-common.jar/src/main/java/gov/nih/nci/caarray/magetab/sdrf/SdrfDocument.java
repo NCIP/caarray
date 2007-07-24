@@ -90,8 +90,8 @@ import java.io.File;
 import java.util.List;
 
 /**
- *
- *
+ * 
+ * 
  * @author tavelae
  */
 public class SdrfDocument extends AbstractMageTabDocument {
@@ -101,44 +101,46 @@ public class SdrfDocument extends AbstractMageTabDocument {
     /**
      * default constructor.
      */
-    public SdrfDocument() { 
+    public SdrfDocument() {
         super();
     }
 
+
     /**
-     *@param file the File
-     *@throws MageTabTextFileLoaderException exception
+     * @param file the File
+     * @throws MageTabTextFileLoaderException exception
      */
-    protected void load(File file) throws MageTabTextFileLoaderException {
+    public void load(File file) throws MageTabTextFileLoaderException {
         setFileUtil(new TabDelimitedFile(file));
         SdrfFileParser parser = SdrfFileParser.create();
         parser.parseSdrfDocument(this);
 
     }
-//
-//    void load() {
-//        // To be implemented
-//    }
-//
-//    private void loadColumns() {
-//        // To be implemented
-//    }
-//
-//    private void loadRows() {
-//        // To be implemented
-//    }
-//
-//    private void loadRow() {
-//        // To be implemented
-//    }
-//
-//    private void handleNode(SdrfColumn column, String value) {
-//        // To be implemented
-//    }
-//
-//    private AbstractNode lookupNode(Class nodeClass, String name) {
-//        return null;
-//    }
+
+    //
+    // void load() {
+    // // To be implemented
+    // }
+    //
+    // private void loadColumns() {
+    // // To be implemented
+    // }
+    //
+    // private void loadRows() {
+    // // To be implemented
+    // }
+    //
+    // private void loadRow() {
+    // // To be implemented
+    // }
+    //
+    // private void handleNode(SdrfColumn column, String value) {
+    // // To be implemented
+    // }
+    //
+    // private AbstractNode lookupNode(Class nodeClass, String name) {
+    // return null;
+    // }
 
     /**
      * @return the columns

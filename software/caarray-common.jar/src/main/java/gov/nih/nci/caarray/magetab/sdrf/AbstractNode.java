@@ -83,7 +83,9 @@
 package gov.nih.nci.caarray.magetab.sdrf;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A node within the directed acyclic graph maintained within an SDRF document.
@@ -94,6 +96,7 @@ abstract class AbstractNode extends AbstractSdrfEntry {
 
     private List<ProtocolRef> protocolRefs;
     private AbstractNode linkedNode;
+    private Set<AbstractNode> linkedNodes;
 
     AbstractNode(SdrfColumn column, String value) {
         super(column, value);
@@ -118,7 +121,18 @@ abstract class AbstractNode extends AbstractSdrfEntry {
     }
 
     public void setLinkedNode(AbstractNode linkedNode) {
-        this.linkedNode = linkedNode;
+        addNode(linkedNode);
+    }
+
+    /**
+     * @param linkedNode2
+     */
+    private void addNode(AbstractNode theNode) {
+        if (linkedNodes == null) {
+            linkedNodes = new HashSet<AbstractNode>();
+        }
+        linkedNodes.add(theNode);
+        
     }
 
     void link(AbstractSdrfEntry linkTo) {
@@ -130,6 +144,10 @@ abstract class AbstractNode extends AbstractSdrfEntry {
             protocolRefs = new ArrayList<ProtocolRef>();
         }
         protocolRefs.add(pRef);
+    }
+
+    public Set<AbstractNode> getLinkedNodes() {
+        return linkedNodes;
     }
 
     
