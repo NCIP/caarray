@@ -88,7 +88,7 @@ import java.util.List;
 
 import javax.faces.model.SelectItem;
 
-import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceTestStub;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceTestStub;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 
 import org.junit.Test;

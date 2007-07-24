@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.ui.jsf.beans;
 
 import gov.nih.nci.caarray.application.protocol.ProtocolService;
-import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
