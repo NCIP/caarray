@@ -89,7 +89,7 @@
     <property name="selenium-java-client-driver.jar" value="${lib.dir}/selenium-java-client-driver.jar" />
     <property name="selenium-java-client-driver-tests.jar" value="${lib.dir}/selenium-java-client-driver-tests.jar" />
     <property name="spring.jar" value="${lib.dir}/spring.jar" />
-  	<property name="netcdf.jar" value="${lib.dir}/nc2.2.jar" />
+    <property name="netcdf.jar" value="${lib.dir}/nc2.2.jar" />
 
     <!-- Test-related properties -->
     <property name="test.dir" value="${basedir}/test" />
@@ -222,7 +222,7 @@
     <target name="configure-datasource-for-deploy">
         <copy todir="${caarray-common.classes.dir}" overwrite="true">
             <fileset dir="${caarray-common.resources.dir}" includes="hibernate*" />
-            <fileset dir="${caarray-common.src.dir}" includes="**/*.hbm.xml" />
+            <fileset dir="${caarray-common.resources.dir}" includes="**/*.hbm.xml" />
         </copy>
         <replace file="${caarray-common.classes.dir}/hibernate.cfg.xml">
             <replacefilter token="@DATASOURCE_CONFIG_START@" value="${comment.end}" />
@@ -238,7 +238,7 @@
     <target name="configure-datasource-for-test">
         <copy todir="${caarray-common.test.classes.dir}" overwrite="true">
             <fileset dir="${caarray-common.resources.dir}" includes="hibernate*" />
-            <fileset dir="${caarray-common.src.dir}" includes="**/*.hbm.xml" />
+            <fileset dir="${caarray-common.resources.dir}" includes="**/*.hbm.xml" />
         </copy>
         <replace file="${caarray-common.test.classes.dir}/hibernate.cfg.xml">
             <replacefilter token="@HIBERNATE_CONFIG_START@" value="${comment.end}" />
@@ -268,13 +268,13 @@
         <javac srcdir="${caarray-common.src.dir}" destdir="${caarray-common.classes.dir}" debug="true">
             <classpath>
                 <pathelement location="${hibernate.jar}" />
-				<pathelement location="${commons-collections.jar}" />
-				<pathelement location="${commons-io.jar}" />
-				<pathelement location="${commons-lang.jar}" />
+        <pathelement location="${commons-collections.jar}" />
+        <pathelement location="${commons-io.jar}" />
+        <pathelement location="${commons-lang.jar}" />
                 <pathelement location="${commons-logging.jar}" />
-        		<pathelement location="${netcdf.jar}" />
-				<pathelement location="${caarray-common.resources.dir}" />
-				<pathelement location="${caarray-common.test.files.dir}" />
+            <pathelement location="${netcdf.jar}" />
+        <pathelement location="${caarray-common.resources.dir}" />
+        <pathelement location="${caarray-common.test.files.dir}" />
             </classpath>
         </javac>
     </target>
@@ -312,7 +312,7 @@
     <!-- ******************************************************************* -->
 
         <target name="build" depends="validate-properties,
-		build:caarray-common.jar,
+    build:caarray-common.jar,
         build:caarray-ejb.jar,
         build:caarray.war,
         build:caarray.ear" />
@@ -321,7 +321,7 @@
         <mkdir dir="${caarray-common.target.dir}"/>
         <jar destfile="${caarray-common.jar}">
             <fileset dir="${caarray-common.classes.dir}" />
-			<fileset dir="${caarray-common.resources.dir}" />
+      <fileset dir="${caarray-common.resources.dir}" />
         </jar>
     </target>
 
@@ -442,9 +442,9 @@
         <javac srcdir="${caarray-common.test.src.dir}" destdir="${caarray-common.test.classes.dir}" debug="true">
             <classpath>
                 <pathelement location="${caarray-common.classes.dir}" />
-				<pathelement location="${caarray-common.test.files.dir}" />
-			    <pathelement location="${caarray-common.resources.dir}" />
-				<pathelement location="${commons-io.jar}" />
+        <pathelement location="${caarray-common.test.files.dir}" />
+          <pathelement location="${caarray-common.resources.dir}" />
+        <pathelement location="${commons-io.jar}" />
                 <pathelement location="${commons-logging.jar}" />
                 <pathelement location="${junit.jar}" />
                 <pathelement location="${hibernate.jar}" />
@@ -476,8 +476,8 @@
                 <pathelement location="${caarray-ejb.classes.dir}" />
                 <pathelement location="${caarray-common.classes.dir}" />
                 <pathelement location="${cacore32-client.jar}" />
-			    <pathelement location="${commons-logging.jar}" />
-			    <pathelement location="${commons-io.jar}" />
+          <pathelement location="${commons-logging.jar}" />
+          <pathelement location="${commons-io.jar}" />
                 <pathelement location="${javaee.jar}" />
                 <pathelement location="${junit.jar}" />
             </classpath>
@@ -508,7 +508,7 @@
                 <pathelement location="${caarray-common.classes.dir}" />
                 <pathelement location="${caarray-ejb.classes.dir}" />
                 <pathelement location="${caarray-ejb.test.classes.dir}" />
-				<pathelement location="${caarray-common.test.files.dir}" />
+        <pathelement location="${caarray-common.test.files.dir}" />
                 <pathelement location="${myfaces-api.jar}" />
                 <pathelement location="${junit.jar}" />
             </classpath>
@@ -726,37 +726,37 @@
         </condition>
     </target>
 
-	<!-- BEGIN STELLIGENT ADD -->
-	<property name="cargo-jar" value="cargo-core-uberjar-0.9.jar" />
-	<property name="cargo-ant-jar" value="cargo-ant-0.9.jar" />
-	<property name="jboss.dir" value="${target.dir}/jboss" />
-	<property name="jboss.tmp.dir" value="${target.dir}/jboss-test" />
-	<property name="jboss.refid" value="tmptmct01" />
-	<property name="jboss.installer.url" value="http://downloads.sourceforge.net/jboss/jboss-4.0.4.GA.zip" />
+  <!-- BEGIN STELLIGENT ADD -->
+  <property name="cargo-jar" value="cargo-core-uberjar-0.9.jar" />
+  <property name="cargo-ant-jar" value="cargo-ant-0.9.jar" />
+  <property name="jboss.dir" value="${target.dir}/jboss" />
+  <property name="jboss.tmp.dir" value="${target.dir}/jboss-test" />
+  <property name="jboss.refid" value="tmptmct01" />
+  <property name="jboss.installer.url" value="http://downloads.sourceforge.net/jboss/jboss-4.0.4.GA.zip" />
 
     <target name="integrate-db">
       <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/database-integration.xml" target="all" />
-	</target>
+  </target>
 
-    <target name="deploy-jboss" depends="build">	
-	  <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/deployment.xml" target="uber-clean" />
+    <target name="deploy-jboss" depends="build">
+    <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/deployment.xml" target="uber-clean" />
       <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/deployment.xml" target="cargo" />
-	</target>
+  </target>
     <property name="properties.dir" value="${basedir}/build" />
-	<property name="keyfile.file" value="caarray2-key.properties" />
-	<property name="envproperties.file" value="default.properties" />	
-    
-	<target name="validate-properties">
-	  <get dest="${lib.dir}/nci-ant.jar" usetimestamp="false" 
-	    ignoreerrors="true" src="${stelligent.download.site}/nci-ant.jar">
+  <property name="keyfile.file" value="caarray2-key.properties" />
+  <property name="envproperties.file" value="default.properties" />
+
+  <target name="validate-properties">
+    <get dest="${lib.dir}/nci-ant.jar" usetimestamp="false"
+      ignoreerrors="true" src="${stelligent.download.site}/nci-ant.jar">
       </get>
-	  <taskdef name="ncitask" classname="com.stelligent.nci.anttasks.PropertyChecker">
-	    <classpath>
+    <taskdef name="ncitask" classname="com.stelligent.nci.anttasks.PropertyChecker">
+      <classpath>
           <pathelement location="${lib.dir}/nci-ant.jar" />
         </classpath>
-	  </taskdef>
+    </taskdef>
       <ncitask keyFile="${properties.dir}/${keyfile.file}" compareFile="${properties.dir}/${envproperties.file}"/>
-	</target>
-	<!-- END STELLIGENT ADD -->
+  </target>
+  <!-- END STELLIGENT ADD -->
 
 </project>
