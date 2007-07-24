@@ -105,7 +105,6 @@ public class ArrayDaoTest {
     private static final Long DUMMY_START_ID = new Long(150);
     private static final Organization DUMMY_ORGANIZATION = new Organization();
     private static final ArrayDesign DUMMY_ARRAYDESIGN_1 = new ArrayDesign();
-    private static final int NUM_FEATURES = 50000;
 
     private static final ArrayDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getArrayDao();
 
@@ -127,9 +126,7 @@ public class ArrayDaoTest {
         DUMMY_ORGANIZATION.setName("DummyOrganization");
         DUMMY_ARRAYDESIGN_1.setId(id);
         DUMMY_ARRAYDESIGN_1.setName("DummyTestArrayDesign1");
-        DUMMY_ARRAYDESIGN_1.setAccession("DummyAccessionForArrayDesign");
         DUMMY_ARRAYDESIGN_1.setVersion("2.0");
-        DUMMY_ARRAYDESIGN_1.setNumberOfFeatures(Integer.valueOf(NUM_FEATURES));
         DUMMY_ARRAYDESIGN_1.setProvider(DUMMY_ORGANIZATION);
     }
 

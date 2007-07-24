@@ -83,93 +83,29 @@
 
 package gov.nih.nci.caarray.domain.array;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.measurement.DistanceMeasurement;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 /**
  * The design details for a type of microarray.
  */
-@SuppressWarnings("PMD")
 public class ArrayDesign extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
-    private static final String UNCHECKED = "unchecked";
 
-    private DistanceMeasurement length;
     private String name;
     private ProtocolApplication printing;
-    private String accession;
-    private Term sequencePolymerType;
+    private Term polymerType;
     private Integer numberOfFeatures;
     private Term substrateType;
     private Term surfaceType;
     private Term technologyType;
     private String version;
-    private DistanceMeasurement width;
-    private final Collection featureGroups = new HashSet();
     private CaArrayFile designFile;
-    
-    /**
-     * The provider gov.nih.nci.caarray.domain.contact.Organization.
-     */
-    private gov.nih.nci.caarray.domain.contact.Organization provider;
-
-    /**
-     * The compositeElements set.
-     */
-    private final Collection compositeElements = new HashSet();
-
-    /**
-     * The reporterGroups set.
-     */
-    private final Collection reporterGroups = new HashSet();
-
-    /**
-     * The blocks set.
-     */
-    private final Collection blocks = new HashSet();
-
-    /**
-     * Gets the accession.
-     *
-     * @return the accession
-     */
-    public String getAccession() {
-        return accession;
-    }
-
-    /**
-     * Sets the accession.
-     *
-     * @param accessionVal the accession
-     */
-    public void setAccession(final String accessionVal) {
-        this.accession = accessionVal;
-    }
-    
-    /**
-     * Gets the length.
-     *
-     * @return the length
-     */
-    public DistanceMeasurement getLength() {
-        return length;
-    }
-
-    /**
-     * Sets the length.
-     *
-     * @param lengthVal the length
-     */
-    public void setLength(final DistanceMeasurement lengthVal) {
-        this.length = lengthVal;
-    }
+    private Organization provider;
 
     /**
      * Gets the name.
@@ -207,21 +143,21 @@ public class ArrayDesign extends AbstractCaArrayEntity {
         this.numberOfFeatures = numberOfFeaturesVal;
     }
     /**
-     * Gets the sequencePolymerType.
+     * Gets the polymerType.
      *
-     * @return the sequencePolymerType
+     * @return the polymerType
      */
-    public Term getSequencePolymerType() {
-        return sequencePolymerType;
+    public Term getPolymerType() {
+        return polymerType;
     }
 
     /**
-     * Sets the sequencePolymerType.
+     * Sets the polymerType.
      *
-     * @param sequencePolymerTypeVal the sequencePolymerType
+     * @param polymerTypeVal the polymerType
      */
-    public void setSequencePolymerType(final Term sequencePolymerTypeVal) {
-        this.sequencePolymerType = sequencePolymerTypeVal;
+    public void setPolymerType(final Term polymerTypeVal) {
+        this.polymerType = polymerTypeVal;
     }
     /**
      * Gets the substrateType.
@@ -291,30 +227,13 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     public void setVersion(final String versionVal) {
         this.version = versionVal;
     }
-    /**
-     * Gets the width.
-     *
-     * @return the width
-     */
-    public DistanceMeasurement getWidth() {
-        return width;
-    }
-
-    /**
-     * Sets the width.
-     *
-     * @param widthVal the width
-     */
-    public void setWidth(final DistanceMeasurement widthVal) {
-        this.width = widthVal;
-    }
 
     /**
      * Gets the provider.
      *
      * @return the provider
      */
-    public gov.nih.nci.caarray.domain.contact.Organization getProvider() {
+    public Organization getProvider() {
         return provider;
     }
 
@@ -324,84 +243,8 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      * @param providerVal the provider
      */
     public void setProvider(final
-      gov.nih.nci.caarray.domain.contact.Organization providerVal) {
+      Organization providerVal) {
         this.provider = providerVal;
-    }
-
-    /**
-     * Gets the featureGroups.
-     *
-     * @return the featureGroups
-     */
-    public Collection getFeatureGroups() {
-        return featureGroups;
-    }
-
-    /**
-     * Sets the featureGroups.
-     *
-     * @param featureGroupsVal the featureGroups
-     */
-    @SuppressWarnings(UNCHECKED)
-    public void setFeatureGroups(final Collection featureGroupsVal) {
-        this.featureGroups.addAll(featureGroupsVal);
-    }
-
-    /**
-     * Gets the compositeElements.
-     *
-     * @return the compositeElements
-     */
-    public Collection getCompositeElements() {
-        return compositeElements;
-    }
-
-    /**
-     * Sets the compositeElements.
-     *
-     * @param compositeElementsVal the compositeElements
-     */
-    @SuppressWarnings(UNCHECKED)
-    public void setCompositeElements(final Collection compositeElementsVal) {
-        this.compositeElements.addAll(compositeElementsVal);
-    }
-
-    /**
-     * Gets the reporterGroups.
-     *
-     * @return the reporterGroups
-     */
-    public Collection getReporterGroups() {
-        return reporterGroups;
-    }
-
-    /**
-     * Sets the reporterGroups.
-     *
-     * @param reporterGroupsVal the reporterGroups
-     */
-    @SuppressWarnings(UNCHECKED)
-    public void setReporterGroups(final Collection reporterGroupsVal) {
-        this.reporterGroups.addAll(reporterGroupsVal);
-    }
-
-    /**
-     * Gets the blocks.
-     *
-     * @return the blocks
-     */
-    public Collection getBlocks() {
-        return blocks;
-    }
-
-    /**
-     * Sets the blocks.
-     *
-     * @param blocksVal the blocks
-     */
-    @SuppressWarnings(UNCHECKED)
-    public void setBlocks(final Collection blocksVal) {
-        this.blocks.addAll(blocksVal);
     }
 
     /**
