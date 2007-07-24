@@ -117,8 +117,10 @@ import gov.nih.nci.caarray.magetab.Semantic;
 import gov.nih.nci.caarray.magetab.TermSource;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -134,6 +136,7 @@ public final class MageTabTranslator {
     private static final Log LOG = LogFactory.getLog(MageTabTranslator.class);
 
     private final IdfDocument document;
+    private Map<TermSource, Source> sourceTranslations;
 
     // Getting Vocabulary DAO because there is no generic DAO that lets you do deep-query by example.
     private static final VocabularyDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
@@ -206,6 +209,7 @@ public final class MageTabTranslator {
        List<Source> sources = new ArrayList<Source>();
        List<TermSource> idfSources = document.getTermSources();
        Iterator<TermSource> iterator = idfSources.iterator();
+       sourceTranslations = new HashMap<TermSource, Source>();
        while (iterator.hasNext()) {
            TermSource idfSource = iterator.next();
            Source source = new Source();
@@ -213,6 +217,7 @@ public final class MageTabTranslator {
            source.setUrl(idfSource.getFile().toString());
            source = (Source) replaceIfExists(source);
            sources.add(source);
+           sourceTranslations.put(idfSource, source);
        }
        return sources;
    }
@@ -329,9 +334,8 @@ public final class MageTabTranslator {
      */
     private Term semanticToTerm(Semantic idfSemantic) {
         TermSource idfSource = idfSemantic.getSource();
-        Source source = new Source();
-        source.setName(idfSource.getName());
-        source.setUrl(idfSource.getFile().toString());
+        // This Term Source should already be in the list of Term Sources we translated before.
+        Source source = sourceTranslations.get(idfSource);
         Term term = idfSemantic.getType();
         term.setSource(source);
         term = (Term) replaceIfExists(term);
@@ -349,15 +353,15 @@ public final class MageTabTranslator {
      */
     private AbstractCaArrayEntity replaceIfExists(AbstractCaArrayEntity entityToMatch) {
         try {
-        List<AbstractCaArrayEntity> matchingEntities =
-            DAO_OBJECT.queryEntityAndAssociationsByExample(entityToMatch);
-        if (matchingEntities.size() == 1) {
-            // Exactly one match; use existing object in database.
-            return matchingEntities.get(0);
-        } else {
-            // Either no matches, or ambiguous match; return original entity.
-            return entityToMatch;
-        }
+            List<AbstractCaArrayEntity> matchingEntities = DAO_OBJECT
+                    .queryEntityAndAssociationsByExample(entityToMatch);
+            if (matchingEntities.size() == 1) {
+                // Exactly one match; use existing object in database.
+                return matchingEntities.get(0);
+            } else {
+                // Either no matches, or ambiguous match; return original entity.
+                return entityToMatch;
+            }
         } catch (DAOException e) {
             LOG.error("Error while searching database.", e);
         }
