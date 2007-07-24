@@ -150,6 +150,11 @@ public final class SearchCriteriaUtil {
       Property prop) throws IllegalAccessException, InvocationTargetException {
             Class objClass = entityToMatch.getClass();
             String fieldName = prop.getName();
+            boolean isCollectionType = prop.getType().isCollectionType();
+            if (isCollectionType) {
+                // If the association is a collection, don't add it to the search criteria.
+                return;
+            }
             Method getterMethod = null;
             String getterName = "get" + capitalizeFirstLetter(fieldName);
             while (objClass != null) {
