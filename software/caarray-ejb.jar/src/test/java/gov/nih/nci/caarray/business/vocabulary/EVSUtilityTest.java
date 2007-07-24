@@ -50,8 +50,6 @@
  */
 package gov.nih.nci.caarray.business.vocabulary;
 
-import gov.nih.nci.caarray.business.vocabulary.EVSUtility;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.List;

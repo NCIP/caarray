@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.business.vocabulary;
 
-
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 

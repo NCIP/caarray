@@ -57,10 +57,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import gov.nih.nci.caarray.business.vocabulary.EVSUtility;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceBean;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dao.VocabularyDaoImpl;
