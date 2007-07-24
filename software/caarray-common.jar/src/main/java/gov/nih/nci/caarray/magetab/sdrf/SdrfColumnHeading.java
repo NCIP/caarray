@@ -149,7 +149,7 @@ public enum SdrfColumnHeading {
     /**
      * HYBRIDIZATION_NAME.
      */
-    HYBRIDIZATION_NAME("Hybridization Name", null),
+    HYBRIDIZATION_NAME("Hybridization Name", Hybridization.class),
     /**
      * CHARACTERISTICS.
      */

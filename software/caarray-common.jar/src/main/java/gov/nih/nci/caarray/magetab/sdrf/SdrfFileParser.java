@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,7 +17,8 @@ import org.apache.commons.logging.LogFactory;
  * @author Bill Mason
  * 
  */
-@SuppressWarnings("PMD") // has a Cyclomatic Complexity of 4 
+@SuppressWarnings("PMD")
+// has a Cyclomatic Complexity of 4
 public final class SdrfFileParser {
 
     private static final Log LOG = LogFactory.getLog(SdrfFileParser.class);
@@ -80,20 +80,17 @@ public final class SdrfFileParser {
         }
     }
 
-
     private void getValues() throws MageTabTextFileLoaderException, InstantiationException, IllegalAccessException {
         dataList = new LinkedHashMap<String, AbstractSdrfEntry>();
         Class<? extends AbstractSdrfEntry> currentObject;
         String key;
         int columnPosition;
         while ((currentLineContents = fileUtil.readLine()) != null) {
-            if (row != null) {
-                if (!linked) {
-                    sdrfDocument.add((LinkedHashMap<String, AbstractSdrfEntry>) row);
-                    nodeElement = null;
-                    termElement = null;
-                }
+            if (row != null && !linked) {
+                sdrfDocument.add((LinkedHashMap<String, AbstractSdrfEntry>) row);
             }
+            nodeElement = null;
+            termElement = null;
             linked = false;
             row = new LinkedHashMap<String, AbstractSdrfEntry>();
 
@@ -112,14 +109,10 @@ public final class SdrfFileParser {
                         LOG.debug("Did not find : \n column name - " + headerList.get(columnPosition).getHeader()
                                 + " \n columnPosition = " + columnPosition);
                     }
-                    // check if the object is already created
-                    LinkedHashMap<String, AbstractSdrfEntry> hasObject = hasObject(key);
 
-                    if (hasObject != null) {
-                        System.out.println("found a node " + key);
+                    // see if the object can be reused
+                    if (dataList.containsKey(key)) {
                         linked = true;
-                        link(hasObject.get(key));
-                    } else if (dataList.containsKey(key)) {
                         link(dataList.get(key));
                     } else {
                         // add to list
@@ -175,19 +168,6 @@ public final class SdrfFileParser {
         return element.getClass().getName() + "_" + element.getValue();
     }
 
-    private LinkedHashMap<String, AbstractSdrfEntry> hasObject(String key) {
-
-        ListIterator<LinkedHashMap<String, AbstractSdrfEntry>> itr = sdrfDocument.listIterator();
-        while (itr.hasNext()) {
-            LinkedHashMap<String, AbstractSdrfEntry> element = itr.next();
-            if (element.containsKey(key)) {
-                return element;
-            }
-        }
-
-        return null;
-    }
-
     /**
      * 
      * @return SdrfFileParser the parser
@@ -196,5 +176,4 @@ public final class SdrfFileParser {
         return new SdrfFileParser();
     }
 
-
- }
+}
