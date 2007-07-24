@@ -159,7 +159,7 @@ public final class MageTabTranslator {
     @SuppressWarnings("unchecked")
     public List<AbstractCaArrayEntity> getCaArrayEntities() {
         Investigation investigation = translateInvestigationSummary();
-        List<Source> sources = translateSources();
+        translateSources();
         List<gov.nih.nci.caarray.domain.publication.Publication> publications = translatePublications();
         investigation.getPublications().addAll(publications);
         List<Factor> factors = translateFactors();
@@ -180,7 +180,6 @@ public final class MageTabTranslator {
         List<AbstractCaArrayEntity> caArrayEntityList = new ArrayList<AbstractCaArrayEntity>();
         caArrayEntityList.add(investigation);
         //TODO Should we return Term Sources, Protocols etc. which are not referenced by the experiment?
-        caArrayEntityList.addAll(sources);
         return caArrayEntityList;
     }
 
@@ -202,11 +201,9 @@ public final class MageTabTranslator {
     /**
      * Reads the term source information from the <code>IdfDocument</code>
      * and stores it into caArray <code>Source</code> entities.
-     *
-     * @return the List of caArray term sources contained in the IDF document.
+     * Updates the IDF-Source-to-caArray-Source map.
     */
-   private List<Source> translateSources() {
-       List<Source> sources = new ArrayList<Source>();
+   private void translateSources() {
        List<TermSource> idfSources = document.getTermSources();
        Iterator<TermSource> iterator = idfSources.iterator();
        sourceTranslations = new HashMap<TermSource, Source>();
@@ -216,10 +213,8 @@ public final class MageTabTranslator {
            source.setName(idfSource.getName());
            source.setUrl(idfSource.getFile().toString());
            source = (Source) replaceIfExists(source);
-           sources.add(source);
            sourceTranslations.put(idfSource, source);
        }
-       return sources;
    }
 
    /**
