@@ -286,6 +286,7 @@ public final class IdfFileParser {
                 Category cat = new Category();
                 cat.setName(IdfDocument.EXPERIMENTDESIGNTYPE);
                 term.setCategory(cat);
+               // term.setSource(getSourceRef())
                 if (canAdd) {
                     expDesignList.add(term);
                 }
@@ -310,9 +311,8 @@ public final class IdfFileParser {
                 Category cat = new Category();
                 cat.setName(IdfDocument.NORMALIZATIONDESCRIPTIONTYPE);
                 term.setCategory(cat);
-                if (isNotEmpty(typeSrcList.get(i))) {
-                    type.setSource(getSourceRef(typeSrcList.get(i)));
-                }
+                type.setSource(getSourceRef(typeSrcList.get(0)));
+                type.setType(term);
                 if (canAdd) {
                     normalizationList.add(type);
                 }
@@ -338,9 +338,8 @@ public final class IdfFileParser {
                 Category cat = new Category();
                 cat.setName(IdfDocument.REPLICATEDESCRIPTIONTYPE);
                 term.setCategory(cat);
-                if (isNotEmpty(typeSrcList.get(i))) {
-                    type.setSource(getSourceRef(typeSrcList.get(i)));
-                }
+                type.setSource(getSourceRef(typeSrcList.get(0)));
+                type.setType(term);
                 if (canAdd) {
                     replicateList.add(type);
                 }
@@ -366,9 +365,8 @@ public final class IdfFileParser {
                 Category cat = new Category();
                 cat.setName(IdfDocument.QUALITYCONTROLDESCRIPTIONTYPE);
                 term.setCategory(cat);
-                if (isNotEmpty(typeSrcList.get(i))) {
-                    type.setSource(getSourceRef(typeSrcList.get(i)));
-                }
+                type.setSource(getSourceRef(typeSrcList.get(0)));
+                type.setType(term);
                 if (canAdd) {
                     qcList.add(type);
                 }
@@ -444,9 +442,7 @@ public final class IdfFileParser {
                 Term term = new Term();
                 term.setValue(statusS.get(i));
                 status.setType(term);
-                if (isNotEmpty(statusSrcList.get(i))) {
-                    status.setSource(getSourceRef(statusSrcList.get(i)));
-                }
+                status.setSource(getSourceRef(statusSrcList.get(0)));
                 publication.setStatus(status);
             }
             if (canAdd) {
@@ -508,9 +504,7 @@ public final class IdfFileParser {
                 cat.setName(IdfDocument.ROLES);
                 term.setCategory(cat);
                 role.setType(term);
-                if (isNotEmpty(rolesSrcList.get(i))) {
-                    role.setSource(getSourceRef(rolesSrcList.get(i)));
-                }
+                role.setSource(getSourceRef(rolesSrcList.get(0)));
                 person.setRole(role);
             }
             if (canAdd) {
@@ -564,7 +558,7 @@ public final class IdfFileParser {
         }
         if (isNotEmpty(versions.get(i))) {
             canAdd = true;
-            termSource.setVersion(versions.get(0));
+            termSource.setVersion(versions.get(i));
         }
         return canAdd;
     }
@@ -614,10 +608,8 @@ public final class IdfFileParser {
             cat.setName(IdfDocument.PROTOCOLTYPE);
             type.setCategory(cat);
             protocolType.setType(type);
-            if (isNotEmpty(typeSrcList.get(i))) {
-                protocolType.setSource(getSourceRef(typeSrcList.get(i)));
+            protocolType.setSource(getSourceRef(typeSrcList.get(0)));
 
-            }
             protocol.setType(protocolType);
         }
     }
