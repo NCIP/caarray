@@ -20,7 +20,7 @@
             <property name="firstName" column="FIRSTNAME" type="string" />
             <property name="lastName" column="LASTNAME" type="string" />
             <property name="middleInitials" column="MIDDLEINITIAL" type="string" />
-            <set name="affiliations" table="PERSONORGANIZATION" lazy="true">
+            <set name="affiliations" table="PERSONORGANIZATION" lazy="true" cascade="save-update">
                 <key column="PERSON_ID" />
                 <many-to-many class="gov.nih.nci.caarray.domain.contact.Organization" column="ORGANIZATION_ID" />
             </set>
