@@ -88,6 +88,7 @@ import java.io.File;
 import java.io.IOException;
 
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 
@@ -97,7 +98,11 @@ import org.junit.Test;
 
 /**
  * Test class for ArrayDesignService subsystem.
+ * 
+ * TODO Add complete details to tests
+ * TODO Add test for largest Affymetrix design
  */
+@SuppressWarnings("PMD")
 public class ArrayDesignServiceTest {
     
     private ArrayDesignService arrayDesignService;
@@ -119,20 +124,30 @@ public class ArrayDesignServiceTest {
      * @throws IOException 
      */
     @Test
-    public void testImportAffymetrixGeneExpressionDesign() throws IOException {
+    public void testImportDesign_AffymetrixGeneExpression() throws IOException {
+        CaArrayFile caArrayFile = getAffymetrixGeneExpressionFile();
+        ArrayDesign arrayDesign = arrayDesignService.importDesign(caArrayFile);
+        assertEquals("Test3", arrayDesign.getName());
+    }
+    
+    @Test
+    public void testGetDesignDetails_AffymetrixGeneExpression() throws IOException {
+        CaArrayFile caArrayFile = getAffymetrixGeneExpressionFile();
+        ArrayDesign arrayDesign = arrayDesignService.importDesign(caArrayFile);
+        ArrayDesignDetails details = arrayDesignService.getDesignDetails(arrayDesign);
+        assertNotNull(details);
+        assertEquals(15876, details.getFeatures().size());
+    }
+
+    private CaArrayFile getAffymetrixGeneExpressionFile() throws IOException {
         CaArrayFile caArrayFile = new CaArrayFile();
-        // TODO make this path property based, or otherwise dynamic.
         File tempDir = new File(System.getProperty("java.io.tmpdir"));
         File tempFile = new File(tempDir, "Test3.CDF");
-        try {
-            FileUtils.copyURLToFile(getClass().getResource("/Test3.CDF"), tempFile);
-            caArrayFile.setPath(tempFile.getAbsolutePath());
-            caArrayFile.setType(FileType.AFFYMETRIX_CDF);
-            ArrayDesign arrayDesign = arrayDesignService.importDesign(caArrayFile);
-            assertEquals("Test3", arrayDesign.getName());
-        } finally {
-            tempFile.delete();
-        }
+        tempFile.deleteOnExit();
+        FileUtils.copyURLToFile(getClass().getResource("/Test3.CDF"), tempFile);
+        caArrayFile.setPath(tempFile.getAbsolutePath());
+        caArrayFile.setType(FileType.AFFYMETRIX_CDF);
+        return caArrayFile;
     }
 
 }

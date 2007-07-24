@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.business.arraydesign;
 
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
 /**
@@ -98,5 +99,14 @@ public interface ArrayDesignService {
      * @return the new array design.
      */
     ArrayDesign importDesign(CaArrayFile designFile);
+    
+    /**
+     * Returns the element-level details (features, reporters, and composite elements) for
+     * an array design.
+     * 
+     * @param arrayDesign retrieve details for this array design
+     * @return the design details.
+     */
+    ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign);
     
 }

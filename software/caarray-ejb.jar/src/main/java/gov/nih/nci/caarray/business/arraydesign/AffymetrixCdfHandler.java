@@ -83,15 +83,28 @@
 package gov.nih.nci.caarray.business.arraydesign;
 
 import affymetrix.fusion.cdf.FusionCDFData;
+import affymetrix.fusion.cdf.FusionCDFHeader;
+import affymetrix.fusion.cdf.FusionCDFProbeGroupInformation;
+import affymetrix.fusion.cdf.FusionCDFProbeInformation;
+import affymetrix.fusion.cdf.FusionCDFProbeSetInformation;
+import affymetrix.fusion.cdf.FusionCDFQCProbeInformation;
+import affymetrix.fusion.cdf.FusionCDFQCProbeSetInformation;
 import gov.nih.nci.caarray.business.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.domain.array.CompositeElement;
+import gov.nih.nci.caarray.domain.array.Feature;
+import gov.nih.nci.caarray.domain.array.Reporter;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
 /**
  * Contains logic to read Affymetrix CDF files.
  */
 class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
+
+    private boolean[][] featureCreated;
+    private FusionCDFData fusionCDFData;
 
     AffymetrixCdfHandler(CaArrayFile designFile, VocabularyService vocabularyService, 
             FileAccessService fileAccessService) {
@@ -100,10 +113,121 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
 
     @Override
     void load(ArrayDesign arrayDesign) {
-        FusionCDFData fusionCDFData = new FusionCDFData();
+        arrayDesign.setName(getFusionCDFData().getChipType());
+    }
+
+    @Override
+    ArrayDesignDetails getDesignDetails() {
+        ArrayDesignDetails designDetails = new ArrayDesignDetails();
+        initializeFeaturesCreated(getFusionCDFHeader());
+        handleProbeSets(designDetails);
+        handleQCProbeSets(designDetails);
+        createMissingFeatures(designDetails);
+        return designDetails;
+    }
+
+    private void initializeFeaturesCreated(FusionCDFHeader fusionCDFHeader) {
+        featureCreated = new boolean[fusionCDFHeader.getCols()][fusionCDFHeader.getRows()];
+    }
+
+    private void handleProbeSets(ArrayDesignDetails designDetails) {
+        int numProbeSets = getFusionCDFHeader().getNumProbeSets();
+        FusionCDFProbeSetInformation probeSetInformation = new FusionCDFProbeSetInformation();
+        for (int index = 0; index < numProbeSets; index++) {
+            fusionCDFData.getProbeSetInformation(index, probeSetInformation);
+            handleProbeSet(probeSetInformation, fusionCDFData.getProbeSetName(index), designDetails);
+        }   
+    }
+
+    private void handleProbeSet(FusionCDFProbeSetInformation probeSetInformation, String probeSetName, 
+            ArrayDesignDetails designDetails) {
+        CompositeElement compositeElement = new CompositeElement(getFusionCDFData().getChipType() + "." + probeSetName);
+        designDetails.getCompositeElements().add(compositeElement);
+        int numLists = probeSetInformation.getNumLists();
+        for (int listIndex = 0; listIndex < numLists; listIndex++) {
+            Reporter reporter = new Reporter(probeSetName + ".ProbePair" + listIndex);
+            designDetails.getReporters().add(reporter);
+        }
+        int numGroups = probeSetInformation.getNumGroups();
+        FusionCDFProbeGroupInformation probeGroupInformation = new FusionCDFProbeGroupInformation();
+        for (int index = 0; index < numGroups; index++) {
+            probeSetInformation.getGroup(index, probeGroupInformation);
+            handleProbeGroup(probeGroupInformation, designDetails);
+        }
+    }
+
+    private void handleProbeGroup(FusionCDFProbeGroupInformation probeGroupInformation, 
+            ArrayDesignDetails designDetails) {
+        int numCells = probeGroupInformation.getNumCells();
+        FusionCDFProbeInformation probeInformation = new FusionCDFProbeInformation();
+        for (int index = 0; index < numCells; index++) {
+            probeGroupInformation.getCell(index, probeInformation);
+            handleProbe(probeInformation, designDetails);
+        }
+    }
+
+    private void handleProbe(FusionCDFProbeInformation probeInformation, ArrayDesignDetails designDetails) {
+        Feature feature = createFeature(probeInformation.getX(), probeInformation.getY());
+        designDetails.getFeatures().add(feature);
+    }
+
+    private Feature createFeature(int x, int y) {
+        Feature feature = new Feature(getFusionCDFData().getChipType() + ".Probe(" + x + "," + y + ")");
+        feature.setColumn(x);
+        feature.setRow(y);
+        featureCreated[x][y] = true; 
+        return feature;
+    }
+
+    private void handleQCProbeSets(ArrayDesignDetails designDetails) {
+        int numQCProbeSets = getFusionCDFHeader().getNumQCProbeSets();
+        FusionCDFQCProbeSetInformation qcProbeSetInformation = new FusionCDFQCProbeSetInformation();
+        for (int index = 0; index < numQCProbeSets; index++) {
+            getFusionCDFData().getQCProbeSetInformation(index, qcProbeSetInformation);
+            handleQCProbeSet(qcProbeSetInformation, designDetails);
+        }
+    }
+
+    private void handleQCProbeSet(FusionCDFQCProbeSetInformation qcProbeSetInformation, 
+            ArrayDesignDetails designDetails) {
+        int numCells = qcProbeSetInformation.getNumCells();
+        FusionCDFQCProbeInformation qcProbeInformation = new FusionCDFQCProbeInformation();
+        for (int index = 0; index < numCells; index++) {
+            qcProbeSetInformation.getCell(index, qcProbeInformation);
+            handleQCProbe(qcProbeInformation, designDetails);
+        }
+    }
+
+    private void handleQCProbe(FusionCDFQCProbeInformation qcProbeInformation, ArrayDesignDetails designDetails) {
+        Feature feature = createFeature(qcProbeInformation.getX(), qcProbeInformation.getY());
+        designDetails.getFeatures().add(feature);
+    }
+
+    private void createMissingFeatures(ArrayDesignDetails designDetails) {
+        for (int x = 0; x < featureCreated.length; x++) {
+            for (int y = 0; y < featureCreated[x].length; y++) {
+                if (!featureCreated[x][y]) {
+                    designDetails.getFeatures().add(createFeature(x, y));
+                }
+            }
+        }
+    }
+
+    private FusionCDFData getFusionCDFData() {
+        if (fusionCDFData == null) {
+            loadFusionCDFData();
+        }
+        return fusionCDFData;
+    }
+    
+    private FusionCDFHeader getFusionCDFHeader() {
+        return getFusionCDFData().getHeader();
+    }
+
+    private void loadFusionCDFData() {
+        fusionCDFData = new FusionCDFData();
         fusionCDFData.setFileName(getFile(getDesignFile()).getAbsolutePath());
         fusionCDFData.read();
-        arrayDesign.setName(fusionCDFData.getChipType());
     }
 
 }

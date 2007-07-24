@@ -87,6 +87,7 @@ import java.io.File;
 import gov.nih.nci.caarray.business.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
 /**
@@ -126,5 +127,7 @@ abstract class AbstractArrayDesignHandler {
     }
 
     abstract void load(ArrayDesign arrayDesign);
+
+    abstract ArrayDesignDetails getDesignDetails();
 
 }

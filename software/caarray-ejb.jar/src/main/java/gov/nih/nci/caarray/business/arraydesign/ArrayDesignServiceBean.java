@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 
@@ -116,6 +117,18 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         ArrayDesign design = handler.getArrayDesign();
         getArrayDao().save(design);
         return design;
+    }
+    
+    /**
+     * Returns the element-level details (features, reporters, and composite elements) for
+     * an array design.
+     * 
+     * @param arrayDesign retrieve details for this array design
+     * @return the design details.
+     */
+    public ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign) {
+        AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile());
+        return handler.getDesignDetails();
     }
 
     private AbstractArrayDesignHandler getHandler(CaArrayFile designFile) {
