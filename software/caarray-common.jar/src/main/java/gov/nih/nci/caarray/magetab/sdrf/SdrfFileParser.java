@@ -18,7 +18,7 @@ import org.apache.commons.logging.LogFactory;
  * @author Bill Mason
  * 
  */
-
+@SuppressWarnings("PMD") // has a Cyclomatic Complexity of 4 
 public final class SdrfFileParser {
 
     private static final Log LOG = LogFactory.getLog(SdrfFileParser.class);
@@ -80,7 +80,7 @@ public final class SdrfFileParser {
         }
     }
 
-    @SuppressWarnings("PMD")
+
     private void getValues() throws MageTabTextFileLoaderException, InstantiationException, IllegalAccessException {
         dataList = new LinkedHashMap<String, AbstractSdrfEntry>();
         Class<? extends AbstractSdrfEntry> currentObject;
