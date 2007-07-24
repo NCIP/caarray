@@ -183,7 +183,7 @@ CREATE TABLE PUBLICATION
   DOI                         VARCHAR(1000),
   PUBMEDID                    VARCHAR(1000),
   STATUS_ID                   BIGINT,
-  INVESTIGATION_ID            BIGINT      NOT NULL,
+  INVESTIGATION_ID            BIGINT,
   PRIMARY KEY                 (ID)
 );
 
@@ -191,7 +191,7 @@ CREATE TABLE INVESTIGATIONCONTACT
 (
   ID                          BIGINT      NOT NULL,
   CONTACT_ID                  BIGINT,
-  INVESTIGATION_ID            BIGINT      NOT NULL,
+  INVESTIGATION_ID            BIGINT,
   PRIMARY KEY                 (ID)
 );
 
@@ -207,7 +207,7 @@ CREATE TABLE FACTOR
   ID                          BIGINT      NOT NULL,
   NAME                        VARCHAR(1000),
   TYPE_ID                     BIGINT,
-  INVESTIGATION_ID            BIGINT      NOT NULL,
+  INVESTIGATION_ID            BIGINT,
   PRIMARY KEY                 (ID)
 );
 
