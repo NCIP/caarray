@@ -48,61 +48,67 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.vocabulary;
+package gov.nih.nci.caarray.business.vocabulary;
 
-import gov.nih.nci.caarray.domain.vocabulary.Term;
-
-import java.util.List;
-
-import org.junit.Test;
-import static org.junit.Assert.*;
-
-/**
+/**A specific exception caught in the vocabularyservice component.
  * @author John Pike
  *
  */
-@SuppressWarnings("PMD")
-public class EVSUtilityTest {
+public class VocabularyServiceException extends Exception {
 
+    private static final long serialVersionUID = 1901721771982992506L;
+    
     /**
-     * Create the test case.
-     *
-     *
-     */
-    public EVSUtilityTest() {
-
-    }
-
-    /**
-    * Tests basic search in EVS.
+    *
     */
-  //  @Test public final void searchEVS() throws VocabularyServiceException {
-  //      EVSUtility evs = new EVSUtility();
-  //      List<Term> results = evs.getConcepts("ProtocolType");
-  //      List<String> termNames = new ArrayList<String>();
-  //      for (Iterator<Term> i = results.iterator(); i.hasNext();) {
-  //          Term aTerm = i.next();
-  //          termNames.add(aTerm.getValue());
-  //      }
-//
- //       assertTrue(!termNames.isEmpty());
- //   }
+    public static final int BAD_EVS_SVC_RESPONSE = 1;
+    /**
+     *
+     */
+    public static final int TERM_NOT_FOUND = 2;
+    private int errorCode;
+
 
     /**
-     * Tests basic search in EVS, where search should return no results.
+     *
      */
-     @Test public final void searchEVSNoResults() throws VocabularyServiceException {
-        EVSUtility evs = new EVSUtility();
-        List<Term> results = evs.getConcepts("Foo");
-
-        assertTrue(results.isEmpty());
-
+    public VocabularyServiceException() {
+        super();
     }
 
+    /**
+     * @param message msg
+     */
+    public VocabularyServiceException(String message) {
+        super(message);
+    }
 
+    /**
+     * @param cause throwable
+     */
+    public VocabularyServiceException(Throwable cause) {
+        super(cause);
+    }
 
+    /**
+     * @param message msg
+     * @param cause throwable
+     */
+    public VocabularyServiceException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
+    /**
+     * @return errorCode
+     */
+    public int getErrorCode() {
+        return this.errorCode;
+    }
 
-
-
+    /**
+     * @param errorCode the error
+     */
+    public void setErrorCode(int errorCode) {
+        this.errorCode = errorCode;
+    }
 }

@@ -84,8 +84,8 @@ package gov.nih.nci.caarray.business.arraydesign;
 
 import java.util.List;
 
-import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
-import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceException;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 /**

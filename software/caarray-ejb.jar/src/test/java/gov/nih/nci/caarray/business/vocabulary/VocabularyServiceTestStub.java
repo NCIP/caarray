@@ -80,9 +80,10 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.vocabulary;
+package gov.nih.nci.caarray.business.vocabulary;
 
 
+import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
@@ -97,7 +98,7 @@ import java.util.List;
 public class VocabularyServiceTestStub implements VocabularyService {
 
     /** Test stub.
-     * @see gov.nih.nci.caarray.application.vocabulary.VocabularyService#getTerms(java.lang.String)
+     * @see gov.nih.nci.caarray.business.vocabulary.VocabularyService#getTerms(java.lang.String)
      * @param categoryName arg
      */
     public List<Term> getTerms(String categoryName) {

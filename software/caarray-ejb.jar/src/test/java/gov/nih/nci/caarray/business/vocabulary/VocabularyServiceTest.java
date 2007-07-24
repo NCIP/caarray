@@ -48,7 +48,7 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.vocabulary;
+package gov.nih.nci.caarray.business.vocabulary;
 
 import static org.junit.Assert.*;
 
@@ -57,6 +57,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import gov.nih.nci.caarray.business.vocabulary.EVSUtility;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceBean;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dao.VocabularyDaoImpl;
@@ -81,7 +85,7 @@ public class VocabularyServiceTest {
 
     /**
      * Test to ensure that 37 entries are returned for the categoryName "ProtocolType".
-     * Test method for {@link gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean#getTerms
+     * Test method for {@link gov.nih.nci.caarray.business.vocabulary.VocabularyServiceBean#getTerms
      * (java.lang.String)}.
     */
     @Test
@@ -111,7 +115,7 @@ public class VocabularyServiceTest {
 
     /**  Test to ensure that no results are found for the category "Foo",
      *   and that this will return an empty list.
-     * Test method for {@link gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean#getTerms
+     * Test method for {@link gov.nih.nci.caarray.business.vocabulary.VocabularyServiceBean#getTerms
      * (java.lang.String)}.
      */
     @Test
@@ -129,7 +133,7 @@ public class VocabularyServiceTest {
     /**
      * Test to ensure that when the EVS service goes haywire, the getTerms() method will create
      * a VocabServiceException
-     * Test method for {@link gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean#getTerms
+     * Test method for {@link gov.nih.nci.caarray.business.vocabulary.VocabularyServiceBean#getTerms
      * (java.lang.String)}.
      */
     @Test(expected=VocabularyServiceException.class)

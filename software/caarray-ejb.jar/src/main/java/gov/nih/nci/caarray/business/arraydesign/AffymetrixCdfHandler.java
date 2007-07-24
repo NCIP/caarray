@@ -83,8 +83,8 @@
 package gov.nih.nci.caarray.business.arraydesign;
 
 import affymetrix.fusion.cdf.FusionCDFData;
-import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
