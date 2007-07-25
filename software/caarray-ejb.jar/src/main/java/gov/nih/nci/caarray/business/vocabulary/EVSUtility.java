@@ -224,8 +224,7 @@ public class EVSUtility {
                 String newCatName = remainderList.get(0).getName();
                 Category newParent = fetchCategory(newCatName);
                 addParent(oldParent, newParent);
-                remainderList = (ArrayList<DescLogicConcept>)
-                        getEVSConceptList(vocab, appService, remainderList.get(0));
+                remainderList = getEVSConceptList(vocab, appService, remainderList.get(0));
                 // when the tempList is empty, we're done
                 if (!tempList.isEmpty()) {
                     remainderList.addAll(tempList);
@@ -243,7 +242,7 @@ public class EVSUtility {
      */
     private void addParent(Category oldParent, Category newParent) {
         newParent.setParent(oldParent);
-        Collection children = (Collection) oldParent.getChildren();
+        Collection children = oldParent.getChildren();
         children.add(newParent);
     }
 
@@ -289,7 +288,7 @@ public class EVSUtility {
             throws ApplicationException {
         List<String> subConcepts;
         evs.getSubConcepts(concept.getVocabulary().getName(), concept.getName(), Boolean.FALSE, Boolean.FALSE);
-        subConcepts = (ArrayList<String>) appService.evsSearch(evs);
+        subConcepts = appService.evsSearch(evs);
         return subConcepts;
     }
 
@@ -315,7 +314,7 @@ public class EVSUtility {
         List<DescLogicConcept> concepts = new ArrayList<DescLogicConcept>();
         for (Vocabulary vocab : vocabs) {
             evs.searchDescLogicConcepts(vocab.getName(), conceptName, MAX_NUM_RESULTS);
-            concepts = (ArrayList<DescLogicConcept>) appService.evsSearch(evs);
+            concepts = appService.evsSearch(evs);
             // I found the concept
             if (!concepts.isEmpty()) {
                 break;
@@ -353,7 +352,7 @@ public class EVSUtility {
                 String subConcept = subConceptList.get(i);
                 evs = new EVSQueryImpl();
                 evs.getDescLogicConcept(vocabs.get(0).getName(), subConcept, Boolean.FALSE);
-                concepts.addAll((ArrayList<DescLogicConcept>) appService.evsSearch(evs));
+                concepts.addAll(appService.evsSearch(evs));
             }
         } catch (ApplicationException e) {
             throw new ApplicationException(e);
@@ -377,7 +376,7 @@ public class EVSUtility {
             throws ApplicationException {
 
         evs.getAllVocabularies();
-        return (ArrayList<Vocabulary>) appService.evsSearch(evs);
+        return appService.evsSearch(evs);
     }
 
     /**
@@ -403,7 +402,7 @@ public class EVSUtility {
             final String name) throws ApplicationException {
 
         evs.getVocabularyByName(name);
-        return (ArrayList<Vocabulary>) appService.evsSearch(evs);
+        return appService.evsSearch(evs);
     }
 
     /**
@@ -483,7 +482,7 @@ public class EVSUtility {
 
     private Source getSourceForName(String source) {
         Source newSource = new Source();
-        newSource.setId(new Long(0));
+        newSource.setId(0L);
         newSource.setName(source);
         newSource.setUrl(APP_SERVICE_URL);
         return newSource;

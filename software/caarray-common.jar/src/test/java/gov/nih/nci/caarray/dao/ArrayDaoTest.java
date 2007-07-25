@@ -102,7 +102,7 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 public class ArrayDaoTest {
     private static final Log LOG = LogFactory.getLog(ArrayDaoTest.class);
 
-    private static final Long DUMMY_START_ID = new Long(150);
+    private static final Long DUMMY_START_ID = 150L;
     private static final Organization DUMMY_ORGANIZATION = new Organization();
     private static final ArrayDesign DUMMY_ARRAYDESIGN_1 = new ArrayDesign();
 

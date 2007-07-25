@@ -196,11 +196,11 @@ public class NetCdfDataStoreTest {
         Index idx;
         for (int i = 0; i < rowSize; i++) {
             idx = floatArrayXVar.getIndex();
-            floatArrayXVar.setFloat(idx.set(i), (float) (i * TEST_VAL_1 + i * TEST_VAL_2));
+            floatArrayXVar.setFloat(idx.set(i), (i * TEST_VAL_1 + i * TEST_VAL_2));
         }
         for (int i = 0; i < rowSize; i++) {
             idx = floatArrayYVar.getIndex();
-            floatArrayYVar.setFloat(idx.set(i), (float) (i * TEST_VAL_1 + i * TEST_VAL_2));
+            floatArrayYVar.setFloat(idx.set(i), (i * TEST_VAL_1 + i * TEST_VAL_2));
         }
         for (int i = 0; i < rowSize; i++) {
             idx = stringArrayPVar.getIndex();
@@ -208,7 +208,7 @@ public class NetCdfDataStoreTest {
         }
         for (int i = 0; i < rowSize; i++) {
             idx = floatArrayPctVar.getIndex();
-            floatArrayPctVar.setFloat(idx.set(i), (float) (i * TEST_VAL_1 + i * TEST_VAL_2));
+            floatArrayPctVar.setFloat(idx.set(i), (i * TEST_VAL_1 + i * TEST_VAL_2));
         }
     }
 
@@ -443,7 +443,7 @@ public class NetCdfDataStoreTest {
             ArrayList<String> colList = new ArrayList<String>();
             List<ArrayList<?>> listOfLists = new ArrayList<ArrayList<?>>();
             for (int i = 0; i < value.length; i++) {
-                strList.add(i, (String) (value[i]));
+                strList.add(i, (value[i]));
             }
             listOfLists.add((ArrayList<?>) strList);
             colList.add(P_VAL_COL_NAME);
@@ -477,7 +477,7 @@ public class NetCdfDataStoreTest {
             ArrayList<String> colList = new ArrayList<String>();
             List<ArrayList<?>> listOfLists = new ArrayList<ArrayList<?>>();
             for (int i = 0; i < value.length; i++) {
-                floatList.add(i, new Float((Float) (value[i])));
+                floatList.add(i, new Float((value[i])));
             }
             listOfLists.add((ArrayList<?>) floatList);
             colList.add(X_VAL_COL_NAME);

@@ -315,7 +315,7 @@ public class NetCdfDataStore implements DataStore {
             } else if (dataType.equals(ucar.ma2.DataType.BYTE)) {
                 ((ArrayByte) dataArray).setByte(indexObj.set(index), ((Byte) value).byteValue());
             } else {
-                ((Array) dataArray).setObject(indexObj.set(index), value);
+                (dataArray).setObject(indexObj.set(index), value);
             }
             //this is bad.  must write the file now.  not very efficient.
             writeFile(dataArray, var.getName());
@@ -407,7 +407,7 @@ public class NetCdfDataStore implements DataStore {
                     idx.set(index, 0);
                     returnObj[i] = dataArray.getString(idx);
                 } else {
-                    Array dataArray = (Array) var.read();
+                    Array dataArray = var.read();
                     idx = dataArray.getIndex();
                     idx.set(index);
                     returnObj[i] = dataArray.getObject(idx);
@@ -489,7 +489,7 @@ public class NetCdfDataStore implements DataStore {
     private List<Array> columnsToArrays(List<ArrayList<?>> columns) {
         List<Array> returnList = new ArrayList<Array>();
         for (int i = 0; i < columns.size(); i++) {
-            ArrayList column = (ArrayList) columns.get(i);
+            ArrayList column = columns.get(i);
             String colType = column.get(0).getClass().getSimpleName();
             if (colType.equals("Float")) {
                 ArrayFloat array = (ArrayFloat) Array.factory(float.class, new int[] {column.size()});
@@ -566,21 +566,21 @@ public class NetCdfDataStore implements DataStore {
         try {
             if (dataType.equals(ucar.ma2.DataType.CHAR.toString())
                     || dataType.equals(ucar.ma2.DataType.STRING)) {
-                netcdffile.write(varName, (ArrayChar.D2) array);
+                netcdffile.write(varName, array);
             } else if (dataType.equals(ucar.ma2.DataType.FLOAT.toString())) {
-                netcdffile.write(varName, (ArrayFloat) array);
+                netcdffile.write(varName, array);
             } else if (dataType.equals(ucar.ma2.DataType.BOOLEAN.toString())) {
-                netcdffile.write(varName, (ArrayBoolean) array);
+                netcdffile.write(varName, array);
             } else if (dataType.equals(ucar.ma2.DataType.BYTE.toString())) {
-                netcdffile.write(varName, (ArrayByte) array);
+                netcdffile.write(varName, array);
             } else if (dataType.equals(ucar.ma2.DataType.DOUBLE.toString())) {
-                netcdffile.write(varName, (ArrayDouble) array);
+                netcdffile.write(varName, array);
             } else if (dataType.equals(ucar.ma2.DataType.INT.toString())) {
-                netcdffile.write(varName, (ArrayInt) array);
+                netcdffile.write(varName, array);
             } else if (dataType.equals(ucar.ma2.DataType.SHORT.toString())) {
-                netcdffile.write(varName, (ArrayShort) array);
+                netcdffile.write(varName, array);
             } else if (dataType.equals(ucar.ma2.DataType.LONG.toString())) {
-                netcdffile.write(varName, (ArrayLong) array);
+                netcdffile.write(varName, array);
             } else {
                 netcdffile.write(varName, array);
             }
@@ -609,9 +609,9 @@ public class NetCdfDataStore implements DataStore {
         Index idx;
         Dimension dim;
         if (isChar) {
-            dataArray = (ArrayChar) var.read();
+            dataArray = var.read();
         } else {
-            dataArray = (Array) var.read();
+            dataArray = var.read();
         }
         String dataType = dataArray.getElementType().getCanonicalName();
         idx = dataArray.getIndex();

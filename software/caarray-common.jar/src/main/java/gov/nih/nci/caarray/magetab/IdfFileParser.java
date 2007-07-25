@@ -550,11 +550,11 @@ public final class IdfFileParser {
         boolean canAdd = false;
         if (isNotEmpty(termSourceNames.get(i))) {
             canAdd = true;
-            termSource.setName((String) termSourceNames.get(i));
+            termSource.setName(termSourceNames.get(i));
         }
         if (isNotEmpty(termSourceFiles.get(i))) {
             canAdd = true;
-            termSource.setFile(new URI((String) termSourceFiles.get(i)));
+            termSource.setFile(new URI(termSourceFiles.get(i)));
         }
         if (isNotEmpty(versions.get(i))) {
             canAdd = true;

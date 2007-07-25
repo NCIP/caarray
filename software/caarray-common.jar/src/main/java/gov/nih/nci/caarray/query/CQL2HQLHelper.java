@@ -189,7 +189,7 @@ public final class CQL2HQLHelper {
      */
     static String convertPredicate(CQLPredicate p) {
         initPredicateValues();
-        return (String) predicateValues.get(p);
+        return predicateValues.get(p);
     }
 
     private static synchronized void initPredicateValues() {
@@ -207,7 +207,7 @@ public final class CQL2HQLHelper {
 
     static Class getClassFromCache(String name) throws ClassNotFoundException {
         initClassCache();
-        Class klass = (Class) classCache.get(name);
+        Class klass = classCache.get(name);
         if (klass == null) {
             klass = Class.forName(name);
             classCache.put(name, klass);
@@ -224,7 +224,7 @@ public final class CQL2HQLHelper {
     static Field[] getFieldsOfTypeFromCache(Class klass, String name) {
         String key = klass.getName() + "," + name;
         initFieldCache();
-        Field[] fieldCollection = (Field[]) fieldCache.get(name);
+        Field[] fieldCollection = fieldCache.get(name);
         if (fieldCollection == null) {
             fieldCollection = getFieldsOfType(klass, name);
             fieldCache.put(key, fieldCollection);
@@ -241,7 +241,7 @@ public final class CQL2HQLHelper {
     static Method[] getSettersForTypeFromCache(Class klass, String name) {
         String key = klass.getName() + "," + name;
         initSetterMethodCache();
-        Method[] methodCollection = (Method[]) setterMethodCache.get(name);
+        Method[] methodCollection = setterMethodCache.get(name);
         if (methodCollection == null) {
             methodCollection = getSettersForType(klass, name);
             setterMethodCache.put(key, methodCollection);

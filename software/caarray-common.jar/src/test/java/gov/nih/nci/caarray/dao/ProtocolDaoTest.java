@@ -109,7 +109,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 public class ProtocolDaoTest {
     private static final Log LOG = LogFactory.getLog(ProtocolDaoTest.class);
 
-    private static final Long DUMMY_START_ID = new Long(150);
+    private static final Long DUMMY_START_ID = 150L;
     private static final Parameter DUMMY_PARAMETER_1 = new Parameter();
     private static final Parameter DUMMY_PARAMETER_2 = new Parameter();
     private static final ParameterValue DUMMY_PARAMETER_VALUE_1 = new ParameterValue();

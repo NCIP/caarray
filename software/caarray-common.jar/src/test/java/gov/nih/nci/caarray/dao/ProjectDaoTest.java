@@ -119,7 +119,7 @@ public class ProjectDaoTest {
 
     // Investigation
     private static final String UNCHECKED = "unchecked";
-    private static final Long DUMMY_START_ID = new Long(150);
+    private static final Long DUMMY_START_ID = 150L;
     private static final Project DUMMY_PROJECT_1 = new Project();
     private static final Investigation DUMMY_INVESTIGATION_1 = new Investigation();
     private static final Source DUMMY_SOURCE = new Source();

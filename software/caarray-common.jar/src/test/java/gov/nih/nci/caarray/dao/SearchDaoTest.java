@@ -114,7 +114,7 @@ public class SearchDaoTest {
     private static final Log LOG = LogFactory.getLog(SearchDaoTest.class);
 
     private static final String FAIL_NO_MATCH = "Retrieved protocol is different from saved protocol.";
-    private static final Long DUMMY_START_ID = new Long(150);
+    private static final Long DUMMY_START_ID = 150L;
     private static final Parameter DUMMY_PARAMETER_1 = new Parameter();
     private static final Parameter DUMMY_PARAMETER_2 = new Parameter();
     private static final Category DUMMY_CATEGORY = new Category();

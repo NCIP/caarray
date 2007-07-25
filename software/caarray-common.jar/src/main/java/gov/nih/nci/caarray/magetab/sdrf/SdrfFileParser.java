@@ -51,7 +51,7 @@ public final class SdrfFileParser {
         try {
             getHeader();
             getValues();
-            rows.add((AbstractSdrfEntry) row.get(0));
+            rows.add(row.get(0));
         } catch (InstantiationException e) {
             LOG.error("Unexpected exception in handleData()", e);
         } catch (IllegalAccessException e) {
@@ -83,7 +83,7 @@ public final class SdrfFileParser {
         int columnPosition;
         while ((currentLineContents = fileUtil.readLine()) != null) {
             if (row != null && !linked) {
-                rows.add((AbstractSdrfEntry) row.get(0));
+                rows.add(row.get(0));
             }
             nodeElement = null;
             termElement = null;
