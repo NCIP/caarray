@@ -83,7 +83,13 @@
 package gov.nih.nci.caarray.magetab2.idf;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import gov.nih.nci.caarray.magetab2.AbstractMageTabDocument;
 import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
@@ -104,7 +110,8 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private static final long serialVersionUID = 149154919398572572L;
     private final Investigation investigation = new Investigation();
-
+    private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+    private static final Log LOG = LogFactory.getLog(IdfDocument.class);
     /**
      * Creates a new IDF from an existing file.
      *
@@ -168,79 +175,79 @@ public final class IdfDocument extends AbstractMageTabDocument {
             handleExperimentalFactorTermSourceRef(value, valueIndex);
             break;
         case PERSON_LAST_NAME:
-            // TODO Implement
+            handlePersonLastName(value, valueIndex);
             break;
         case PERSON_FIRST_NAME:
-            // TODO Implement
+            handlePersonFirstName(value, valueIndex);
             break;
         case PERSON_MID_INITIALS:
-            // TODO Implement
+            handlePersonMidInit(value, valueIndex);
             break;
         case PERSON_EMAIL:
-            // TODO Implement
+            handlePersonEmail(value, valueIndex);
             break;
         case PERSON_PHONE:
-            // TODO Implement
+            handlePersonPhone(value, valueIndex);
             break;
         case PERSON_FAX:
-            // TODO Implement
+            handlePersonFax(value, valueIndex);
             break;
         case PERSON_ADDRESS:
-            // TODO Implement
+            handlePersonAddress(value, valueIndex);
             break;
         case PERSON_AFFILIATION:
-            // TODO Implement
+            handlePersonAffiliation(value, valueIndex);
             break;
         case PERSON_ROLES:
-            // TODO Implement
+            handlePersonRole(value, valueIndex);
             break;
         case PERSON_ROLES_TERM_SOURCE_REF:
-            // TODO Implement
+            handlePersonRoleTermSourceRef(value, valueIndex);
             break;
         case QUALITY_CONTROL_TYPE:
-            // TODO Implement
+            handleQualityControlType(value, valueIndex);
             break;
         case QUALITY_CONTROL_TERM_SOURCE_REF:
-            // TODO Implement
+            handleQualityControlTermSourceRef(value, valueIndex);
             break;
         case REPLICATE_TYPE:
-            // TODO Implement
+            handleReplicateType(value, valueIndex);
             break;
         case REPLICATE_TERM_SOURCE_REF:
-            // TODO Implement
+            handleReplicateTypeTermSourceRef(value, valueIndex);
             break;
         case NORMALIZATION_TYPE:
-            // TODO Implement
+            handleNormalizationType(value, valueIndex);
             break;
         case NORMALIZATION_TERM_SOURCE_REF:
-            // TODO Implement
+            handleNormalizationTypeTermSourceRef(value, valueIndex);
             break;
         case DATE_OF_EXPERIMENT:
-            // TODO Implement
+            handleExperimentDate(value);
             break;
         case PUBLIC_RELEASE_DATE:
-            // TODO Implement
+            handlePublicReleaseDate(value);
             break;
         case PUBMED_ID:
-            // TODO Implement
+            handlePubMedId(value, valueIndex);
             break;
         case PUBLICATION_DOI:
-            // TODO Implement
+            handlePublicationDoi(value, valueIndex);
             break;
         case PUBLICATION_AUTHOR_LIST:
-            // TODO Implement
+            handlePublicationAuthorList(value, valueIndex);
             break;
         case PUBLICATION_TITLE:
-            // TODO Implement
+            handlePublicationTitle(value, valueIndex);
             break;
         case PUBLICATION_STATUS:
-            // TODO Implement
+            handlePublicationStatus(value, valueIndex);
             break;
         case PUBLICATION_STATUS_TERM_SOURCE_REF:
-            // TODO Implement
+            handlePublicationStatusTermSourceRef(value, valueIndex);
             break;
         case EXPERIMENT_DESCRIPTION:
-            // TODO Implement
+            handleExperimentDescription(value);
             break;
         case PROTOCOL_NAME:
             handleProtocolName(value, valueIndex);
@@ -267,7 +274,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
             handleProtocolTermSourceRef(value, valueIndex);
             break;
         case SDRF_FILE:
-            // TODO Implement
+           // TODO handleSdrfFile(value, valueIndex);
             break;
         case TERM_SOURCE_NAME:
             // TODO Implement
@@ -282,6 +289,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
             throw new IllegalArgumentException("Unknown IdfRowHeading " + rowHeading);
         }
     }
+
 
     private void handleProtocolName(String protocolId, int valueIndex) {
         Protocol protocol = investigation.getOrCreateProtcol(valueIndex);
@@ -328,6 +336,26 @@ public final class IdfDocument extends AbstractMageTabDocument {
         investigation.setTitle(title);
     }
 
+    private void handleExperimentDescription(String description) {
+        investigation.setDescription(description);
+    }
+
+    private void handleExperimentDate(String dateString) {
+        try {
+            investigation.setDateOfExperiment(format.parse(dateString));
+        } catch (ParseException pe) {
+            LOG.error("Error parsing experiment date", pe);
+        }
+    }
+
+    private void handlePublicReleaseDate(String dateString) {
+        try {
+            investigation.setPublicReleaseDate(format.parse(dateString));
+        } catch (ParseException pe) {
+            LOG.error("Error parsing PubRelease Date", pe);
+        }
+    }
+
     private void handleExperimentalDesign(String value) {
         investigation.getDesigns().add(getOntologyTerm(IdfOntologyCategory.EXPERIMENTAL_DESIGN_TYPE, value));
     }
@@ -348,6 +376,101 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private OntologyTerm getOntologyTerm(IdfOntologyCategory category, String value) {
         return getOntologyTerm(category.getCategoryName(), value);
+    }
+
+    private void handlePersonLastName(String value, int valueIndex) {
+        investigation.getOrCreatePerson(valueIndex).setLastName(value);
+    }
+
+    private void handlePersonFirstName(String value, int valueIndex) {
+        investigation.getOrCreatePerson(valueIndex).setFirstName(value);
+    }
+
+    private void handlePersonMidInit(String value, int valueIndex) {
+        investigation.getOrCreatePerson(valueIndex).setMidInitials(value);
+    }
+
+    private void handlePersonEmail(String value, int valueIndex) {
+        investigation.getOrCreatePerson(valueIndex).setEmail(value);
+    }
+
+    private void handlePersonPhone(String value, int valueIndex) {
+        investigation.getOrCreatePerson(valueIndex).setPhone(value);
+    }
+
+    private void handlePersonFax(String value, int valueIndex) {
+        investigation.getOrCreatePerson(valueIndex).setFax(value);
+    }
+
+    private void handlePersonAddress(String value, int valueIndex) {
+        investigation.getOrCreatePerson(valueIndex).setAddress(value);
+    }
+
+    private void handlePersonAffiliation(String value, int valueIndex) {
+        investigation.getOrCreatePerson(valueIndex).setAffiliation(value);
+    }
+
+    private void handlePersonRole(String value, int valueIndex) {
+        investigation.getOrCreatePerson(valueIndex).getRoles()
+                .add(getOntologyTerm(IdfOntologyCategory.PERSON_ROLE, value));
+    }
+
+    private void handlePersonRoleTermSourceRef(String value, int valueIndex) {
+        Person person = investigation.getPersons().get(valueIndex);
+        person.getRoles().get(valueIndex).setTermSource(getTermSource(value));
+    }
+
+    private void handlePubMedId(String value, int valueIndex) {
+        investigation.getOrCreatePublication(valueIndex).setPubMedId(value);
+    }
+
+    private void handlePublicationDoi(String value, int valueIndex) {
+        investigation.getOrCreatePublication(valueIndex).setDoi(value);
+    }
+
+    private void handlePublicationAuthorList(String value, int valueIndex) {
+        investigation.getOrCreatePublication(valueIndex).setAuthorList(value);
+    }
+
+    private void handlePublicationTitle(String value, int valueIndex) {
+        investigation.getOrCreatePublication(valueIndex).setTitle(value);
+    }
+
+    private void handlePublicationStatus(String value, int valueIndex) {
+        investigation.getOrCreatePublication(valueIndex)
+            .setStatus(getOntologyTerm(IdfOntologyCategory.PUBLICATION_STATUS, value));
+    }
+
+    private void handlePublicationStatusTermSourceRef(String value, int valueIndex) {
+        investigation.getOrCreatePublication(valueIndex).getStatus().setTermSource(getTermSource(value));
+    }
+
+        private void handleSdrfFile(String value, int valueIndex) {
+
+    }
+
+    private void handleQualityControlType(String value, int valueIndex) {
+        investigation.getQualityControlTypes().add(getOntologyTerm(IdfOntologyCategory.QUALITY_CONTROL_TYPE, value));
+    }
+
+    private void handleQualityControlTermSourceRef(String value, int valueIndex) {
+        investigation.getQualityControlTypes().get(valueIndex).setTermSource(getTermSource(value));
+    }
+
+    private void handleReplicateType(String value, int valueIndex) {
+        investigation.getReplicateTypes().add(getOntologyTerm(IdfOntologyCategory.REPLICATE_TYPE, value));
+    }
+
+    private void handleReplicateTypeTermSourceRef(String value, int valueIndex) {
+        investigation.getReplicateTypes().get(valueIndex).setTermSource(getTermSource(value));
+    }
+
+    private void handleNormalizationType(String value, int valueIndex) {
+        investigation.getNormalizationTypes().add(getOntologyTerm(IdfOntologyCategory.NORMALIZATION_TYPE, value));
+    }
+
+    private void handleNormalizationTypeTermSourceRef(String value, int valueIndex) {
+        investigation.getNormalizationTypes().get(valueIndex).setTermSource(getTermSource(value));
     }
 
     /**

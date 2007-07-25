@@ -156,10 +156,34 @@ public final class Investigation implements Serializable {
     }
 
     /**
+     * @param term a new or existing term
+     * @param index of the value to create/return
+     * @return the term at the correct index
+     */
+    public OntologyTerm getOrCreateQualityControlType(OntologyTerm term, int index) {
+        while (qualityControlTypes.size() <= index) {
+            qualityControlTypes.add(term);
+        }
+        return qualityControlTypes.get(index);
+    }
+
+    /**
      * @return the replicateTypes
      */
     public List<OntologyTerm> getReplicateTypes() {
         return replicateTypes;
+    }
+
+    /**
+     * @param term a new or existing term
+     * @param index of the value to create/return
+     * @return the term at the correct index
+     */
+    public OntologyTerm getOrCreateReplicateType(OntologyTerm term, int index) {
+        while (replicateTypes.size() <= index) {
+            replicateTypes.add(term);
+        }
+        return replicateTypes.get(index);
     }
 
     /**
@@ -169,6 +193,13 @@ public final class Investigation implements Serializable {
         return publications;
     }
 
+
+    Publication getOrCreatePublication(int index) {
+        while (publications.size() <= index) {
+            publications.add(new Publication());
+        }
+        return publications.get(index);
+    }
     /**
      * @return the dateOfExperiment
      */
@@ -238,6 +269,14 @@ public final class Investigation implements Serializable {
         }
         return factors.get(index);
     }
+
+    Person getOrCreatePerson(int index) {
+        while (persons.size() <= index) {
+            persons.add(new Person());
+        }
+        return persons.get(index);
+    }
+
 
     Protocol getOrCreateProtcol(int index) {
         while (protocols.size() <= index) {
