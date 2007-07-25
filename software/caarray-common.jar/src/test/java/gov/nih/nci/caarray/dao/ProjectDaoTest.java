@@ -84,7 +84,10 @@ package gov.nih.nci.caarray.dao;
 
 import static org.junit.Assert.*;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -93,20 +96,55 @@ import org.junit.Test;
 import org.hibernate.Transaction;
 
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.contact.Person;
+import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Investigation;
+import gov.nih.nci.caarray.domain.project.InvestigationContact;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.publication.Publication;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
+import gov.nih.nci.caarray.domain.vocabulary.Source;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 /**
  * Unit tests for the Project DAO.
  *
  * @author Rashmi Srinivasa
  */
+@SuppressWarnings("PMD.CyclomaticComplexity")
 public class ProjectDaoTest {
     private static final Log LOG = LogFactory.getLog(ProjectDaoTest.class);
 
+    // Investigation
+    private static final String UNCHECKED = "unchecked";
     private static final Long DUMMY_START_ID = new Long(150);
     private static final Project DUMMY_PROJECT_1 = new Project();
     private static final Investigation DUMMY_INVESTIGATION_1 = new Investigation();
+    private static final Source DUMMY_SOURCE = new Source();
+    private static final Category DUMMY_CATEGORY = new Category();
+
+    // Contacts
+    private static final InvestigationContact DUMMY_INVESTIGATION_CONTACT = new InvestigationContact();
+    private static final Person DUMMY_PERSON = new Person();
+    private static final Organization DUMMY_ORGANIZATION = new Organization();
+
+    // Annotations
+    private static final Term DUMMY_REPLICATE_TYPE = new Term();
+    private static final Term DUMMY_NORMALIZATION_TYPE = new Term();
+    private static final Term DUMMY_QUALITY_CTRL_TYPE = new Term();
+
+    // Factors
+    private static final Term DUMMY_FACTOR_TYPE_1 = new Term();
+    private static final Term DUMMY_FACTOR_TYPE_2 = new Term();
+    private static final Factor DUMMY_FACTOR_1 = new Factor();
+    private static final Factor DUMMY_FACTOR_2 = new Factor();
+
+    // Publications
+    private static final Publication DUMMY_PUBLICATION_1 = new Publication();
+    private static final Publication DUMMY_PUBLICATION_2 = new Publication();
+    private static final Term DUMMY_PUBLICATION_STATUS = new Term();
 
     private static final ProjectDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getProjectDao();
 
@@ -124,14 +162,87 @@ public class ProjectDaoTest {
      */
     private static void initializeProjects() {
         long id = DUMMY_START_ID;
+        setInvestigationSummary(id);
+        setInvestigationContacts();
+        DUMMY_SOURCE.setName("Dummy MGED Ontology");
+        DUMMY_CATEGORY.setName("Dummy Category");
+        setInvestigationAnnotations();
+        setExperimentalFactors();
+        setPublications();
+        DUMMY_PROJECT_1.setId(id);
+        DUMMY_PROJECT_1.setExperiment(DUMMY_INVESTIGATION_1);
+    }
+
+    private static void setInvestigationSummary(long id) {
         DUMMY_INVESTIGATION_1.setId(id);
         DUMMY_INVESTIGATION_1.setTitle("DummyInvestigation1");
         DUMMY_INVESTIGATION_1.setDescription("DummyInvestigation1Desc");
         Date currDate = new Date();
         DUMMY_INVESTIGATION_1.setDateOfExperiment(currDate);
         DUMMY_INVESTIGATION_1.setPublicReleaseDate(currDate);
-        DUMMY_PROJECT_1.setId(id);
-        DUMMY_PROJECT_1.setExperiment(DUMMY_INVESTIGATION_1);
+    }
+
+    @SuppressWarnings(UNCHECKED)
+    private static void setInvestigationContacts() {
+        DUMMY_ORGANIZATION.setName("DummyOrganization1");
+        DUMMY_PERSON.setFirstName("DummyFirstName1");
+        DUMMY_PERSON.setLastName("DummyLastName1");
+        DUMMY_PERSON.getAffiliations().add(DUMMY_ORGANIZATION);
+        DUMMY_INVESTIGATION_CONTACT.setContact(DUMMY_PERSON);
+        DUMMY_INVESTIGATION_1.getInvestigationContacts().add(DUMMY_INVESTIGATION_CONTACT);
+    }
+
+    @SuppressWarnings(UNCHECKED)
+    private static void setInvestigationAnnotations() {
+        DUMMY_REPLICATE_TYPE.setValue("Dummy Replicate Type");
+        DUMMY_REPLICATE_TYPE.setSource(DUMMY_SOURCE);
+        DUMMY_REPLICATE_TYPE.setCategory(DUMMY_CATEGORY);
+        DUMMY_NORMALIZATION_TYPE.setValue("Dummy Normalization Type");
+        DUMMY_NORMALIZATION_TYPE.setSource(DUMMY_SOURCE);
+        DUMMY_NORMALIZATION_TYPE.setCategory(DUMMY_CATEGORY);
+        DUMMY_QUALITY_CTRL_TYPE.setValue("Dummy Quality Control Type");
+        DUMMY_QUALITY_CTRL_TYPE.setSource(DUMMY_SOURCE);
+        DUMMY_QUALITY_CTRL_TYPE.setCategory(DUMMY_CATEGORY);
+        DUMMY_INVESTIGATION_1.getReplicateTypes().add(DUMMY_REPLICATE_TYPE);
+        DUMMY_INVESTIGATION_1.getNormalizationTypes().add(DUMMY_NORMALIZATION_TYPE);
+        DUMMY_INVESTIGATION_1.getQualityControlTypes().add(DUMMY_QUALITY_CTRL_TYPE);
+    }
+
+    @SuppressWarnings(UNCHECKED)
+    private static void setExperimentalFactors() {
+        DUMMY_FACTOR_TYPE_1.setCategory(DUMMY_CATEGORY);
+        DUMMY_FACTOR_TYPE_1.setSource(DUMMY_SOURCE);
+        DUMMY_FACTOR_TYPE_1.setValue("Dummy Factor Type 1");
+        DUMMY_FACTOR_TYPE_2.setCategory(DUMMY_CATEGORY);
+        DUMMY_FACTOR_TYPE_2.setSource(DUMMY_SOURCE);
+        DUMMY_FACTOR_TYPE_2.setValue("Dummy Factor Type 2");
+        DUMMY_FACTOR_1.setName("Dummy Factor 1");
+        DUMMY_FACTOR_1.setType(DUMMY_FACTOR_TYPE_1);
+        DUMMY_FACTOR_2.setName("Dummy Factor 2");
+        DUMMY_FACTOR_2.setType(DUMMY_FACTOR_TYPE_2);
+        DUMMY_INVESTIGATION_1.getFactors().add(DUMMY_FACTOR_1);
+        DUMMY_INVESTIGATION_1.getFactors().add(DUMMY_FACTOR_2);
+    }
+
+    @SuppressWarnings(UNCHECKED)
+    private static void setPublications() {
+        DUMMY_PUBLICATION_1.setTitle("DummyPublicationTitle1");
+        DUMMY_PUBLICATION_1.setAuthors("DummyAuthors1");
+        DUMMY_PUBLICATION_1.setDoi("DummyDoi1");
+        DUMMY_PUBLICATION_1.setPubMedId("DummyPubMedId1");
+        DUMMY_PUBLICATION_2.setTitle("DummyPublicationTitle2");
+        DUMMY_PUBLICATION_2.setAuthors("DummyAuthors2");
+        DUMMY_PUBLICATION_2.setDoi("DummyDoi2");
+        DUMMY_PUBLICATION_2.setPubMedId("DummyPubMedId2");
+
+        DUMMY_PUBLICATION_STATUS.setCategory(DUMMY_CATEGORY);
+        DUMMY_PUBLICATION_STATUS.setSource(DUMMY_SOURCE);
+        DUMMY_PUBLICATION_STATUS.setValue("Dummy Status: Published");
+        DUMMY_PUBLICATION_1.setStatus(DUMMY_PUBLICATION_STATUS);
+        DUMMY_PUBLICATION_2.setStatus(DUMMY_PUBLICATION_STATUS);
+
+        DUMMY_INVESTIGATION_1.getPublications().add(DUMMY_PUBLICATION_1);
+        DUMMY_INVESTIGATION_1.getPublications().add(DUMMY_PUBLICATION_2);
     }
 
 
@@ -149,8 +260,10 @@ public class ProjectDaoTest {
             tx.commit();
             Project retrievedProject = DAO_OBJECT.getProject(DUMMY_PROJECT_1.getId());
             if (DUMMY_PROJECT_1.equals(retrievedProject)) {
-                // The retrieved project is the same as the saved project. Test passed.
-                assertTrue(true);
+                if (compareInvestigations(retrievedProject.getExperiment(), DUMMY_PROJECT_1.getExperiment())) {
+                    // The retrieved project is the same as the saved project. Test passed.
+                    assertTrue(true);
+                }
             } else {
                 fail("Retrieved project is different from saved project.");
             }
@@ -163,19 +276,137 @@ public class ProjectDaoTest {
     }
 
     /**
+     * Compare 2 investigations to check if they are the same.
+     *
+     * @return true if the 2 investigations are the same and false otherwise.
+     */
+    @SuppressWarnings("PMD")
+    private boolean compareInvestigations(Investigation retrievedInv, Investigation dummyInv) {
+        // Investigation summary.
+        if (!dummyInv.getTitle().equals(retrievedInv.getTitle())) {
+            return false;
+        }
+        // Contacts
+        Collection contacts = retrievedInv.getInvestigationContacts();
+        if (contacts.isEmpty() || contacts.size() != 1) {
+            return false;
+        }
+        Iterator i = contacts.iterator();
+        Person person = (Person) ((InvestigationContact) i.next()).getContact();
+        if (!DUMMY_PERSON.getFirstName().equals(person.getFirstName())) {
+            return false;
+        }
+        // Annotations
+        Collection retrievedNormTypes = retrievedInv.getNormalizationTypes();
+        if (retrievedNormTypes.isEmpty() || retrievedNormTypes.size() != 1) {
+            return false;
+        }
+        i = retrievedNormTypes.iterator();
+        Term retrievedNormType = (Term) i.next();
+        if (!DUMMY_NORMALIZATION_TYPE.getValue().equals(retrievedNormType.getValue())) {
+            return false;
+        }
+        // Factors
+        Collection factors = retrievedInv.getFactors();
+        if (factors.isEmpty() || factors.size() != 2) {
+            return false;
+        }
+
+        // Publications
+        Collection publications = retrievedInv.getPublications();
+        if (publications.isEmpty() || publications.size() != 2) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Clean up after a test by removing the dummy project.
      */
+    @SuppressWarnings("PMD")
     private void cleanUpProject() {
         Transaction tx = null;
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             DAO_OBJECT.remove(DUMMY_PROJECT_1);
+            DAO_OBJECT.remove(DUMMY_INVESTIGATION_CONTACT);
             DAO_OBJECT.remove(DUMMY_INVESTIGATION_1);
+            DAO_OBJECT.remove(DUMMY_PERSON);
+            DAO_OBJECT.remove(DUMMY_ORGANIZATION);
+
+            DAO_OBJECT.remove(DUMMY_REPLICATE_TYPE);
+            DAO_OBJECT.remove(DUMMY_NORMALIZATION_TYPE);
+            DAO_OBJECT.remove(DUMMY_QUALITY_CTRL_TYPE);
+
+            DAO_OBJECT.remove(DUMMY_FACTOR_1);
+            DAO_OBJECT.remove(DUMMY_FACTOR_2);
+            DAO_OBJECT.remove(DUMMY_FACTOR_TYPE_1);
+            DAO_OBJECT.remove(DUMMY_FACTOR_TYPE_2);
+
+            DAO_OBJECT.remove(DUMMY_PUBLICATION_1);
+            DAO_OBJECT.remove(DUMMY_PUBLICATION_2);
+            DAO_OBJECT.remove(DUMMY_PUBLICATION_STATUS);
+
+            DAO_OBJECT.remove(DUMMY_SOURCE);
+            DAO_OBJECT.remove(DUMMY_CATEGORY);
             tx.commit();
         } catch (DAOException deleteException) {
             HibernateUtil.rollbackTransaction(tx);
             LOG.error("Error cleaning up dummy project.", deleteException);
             fail("DAO exception during deletion of project: " + deleteException.getMessage());
+        }
+    }
+
+    /**
+     * Tests searching for a <code>Person</code> by example, including associations
+     * in the search.
+     */
+    @SuppressWarnings(UNCHECKED)
+    @Test
+    public void testDeepSearchPersonByExample() {
+        Transaction tx = null;
+
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            DAO_OBJECT.save(DUMMY_PERSON);
+            tx.commit();
+            Person examplePerson = new Person();
+            examplePerson.setLastName(DUMMY_PERSON.getLastName());
+            examplePerson.getAffiliations().add(DUMMY_ORGANIZATION);
+            Person retrievedPerson = null;
+            List<AbstractCaArrayEntity> matchingPersons =
+                DAO_OBJECT.queryEntityAndAssociationsByExample(examplePerson);
+            if ((matchingPersons != null) && (matchingPersons.size() >= 1)) {
+                retrievedPerson = (Person) matchingPersons.get(0);
+            }
+            if (DUMMY_PERSON.equals(retrievedPerson)) {
+                // The retrieved person is the same as the saved person. Test passed.
+                assertTrue(true);
+            } else {
+                fail("Retrieved person is different from saved person.");
+            }
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during search of person: " + e.getMessage());
+        } finally {
+            cleanUpDeepSearch();
+        }
+    }
+
+    /**
+     * Clean up after deep search test by removing the dummy person.
+     */
+    private void cleanUpDeepSearch() {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            DAO_OBJECT.remove(DUMMY_PERSON);
+            DAO_OBJECT.remove(DUMMY_ORGANIZATION);
+            tx.commit();
+        } catch (DAOException deleteException) {
+            HibernateUtil.rollbackTransaction(tx);
+            LOG.error("Error cleaning up dummy person.", deleteException);
+            fail("DAO exception during deletion of person: " + deleteException.getMessage());
         }
     }
 }
