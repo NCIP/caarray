@@ -25,36 +25,33 @@ public final class SdrfFileParser {
 
     private TabDelimitedFile fileUtil;
     private List<String> currentLineContents;
-    private AbstractMap<Integer, SdrfColumn> headerList;
+    private List<SdrfColumn> headerList;
     private AbstractMap<String, AbstractSdrfEntry> dataList;
-    private AbstractMap<String, AbstractSdrfEntry> row = null;
-    private List<LinkedHashMap<String, AbstractSdrfEntry>> sdrfDocument;
+    private List<AbstractSdrfEntry> row = null;
+    private List<AbstractSdrfEntry> rows;
     private AbstractSdrfEntry nodeElement = null;
     private AbstractSdrfEntry termElement = null;
+    private AbstractSdrfEntry theRow = null;
     private boolean linked = false;
-
-    // private AbstractSdrfEntry attributeElement = null;
 
     /**
      * 
      * @param document document to parse
-     * @return SdrfDocument
      * @throws MageTabTextFileLoaderException exception
      */
-    public SdrfDocument parseSdrfDocument(SdrfDocument document) throws MageTabTextFileLoaderException {
+    public void parseSdrfDocument(SdrfDocument document) throws MageTabTextFileLoaderException {
         fileUtil = document.getFileUtil();
-        sdrfDocument = new ArrayList<LinkedHashMap<String, AbstractSdrfEntry>>();
+        rows = new ArrayList<AbstractSdrfEntry>();
         handleData();
-        return null;
+        document.setHeaders(headerList);
+        document.setRows(rows);
     }
 
     private void handleData() throws MageTabTextFileLoaderException {
         try {
             getHeader();
             getValues();
-            if (!linked) {
-                sdrfDocument.add((LinkedHashMap<String, AbstractSdrfEntry>) row);
-            }
+            rows.add((AbstractSdrfEntry) row.get(0));
         } catch (InstantiationException e) {
             LOG.error("Unexpected exception in handleData()", e);
         } catch (IllegalAccessException e) {
@@ -64,17 +61,16 @@ public final class SdrfFileParser {
     }
 
     private void getHeader() throws MageTabTextFileLoaderException {
-        headerList = new LinkedHashMap<Integer, SdrfColumn>();
+        headerList = new ArrayList<SdrfColumn>();
         currentLineContents = fileUtil.readLine();
         if ((currentLineContents) != null) {
             Iterator iter = currentLineContents.iterator();
-            int i = 0;
             if (iter.hasNext()) {
                 while (iter.hasNext()) {
                     String value = (String) iter.next();
                     SdrfColumn column = new SdrfColumn(value);
                     // Exception happens if no column match with Enum class
-                    headerList.put(i++, column);
+                    headerList.add(column);
                 }
             }
         }
@@ -87,12 +83,12 @@ public final class SdrfFileParser {
         int columnPosition;
         while ((currentLineContents = fileUtil.readLine()) != null) {
             if (row != null && !linked) {
-                sdrfDocument.add((LinkedHashMap<String, AbstractSdrfEntry>) row);
+                rows.add((AbstractSdrfEntry) row.get(0));
             }
             nodeElement = null;
             termElement = null;
             linked = false;
-            row = new LinkedHashMap<String, AbstractSdrfEntry>();
+            row = new ArrayList<AbstractSdrfEntry>();
 
             Iterator<String> iter = currentLineContents.iterator();
             columnPosition = -1;
@@ -102,17 +98,18 @@ public final class SdrfFileParser {
                 while (iter.hasNext()) {
                     String value = iter.next();
                     try {
-                        key = getObjectKey(headerList.get(++columnPosition).getTheClass(), value);
+                        key = headerList.get(++columnPosition).getTheClass().getName() + "_" + value;
                         currentObject = headerList.get(columnPosition).getTheClass();
                     } catch (Exception ex) {
                         // Continuing for now since we are only doing the values before Hybridization
                         LOG.debug("Did not find : \n column name - " + headerList.get(columnPosition).getHeader()
                                 + " \n columnPosition = " + columnPosition);
+                        continue;
                     }
-
                     // see if the object can be reused
                     if (dataList.containsKey(key)) {
                         linked = true;
+                        System.out.println("found " + key);
                         link(dataList.get(key));
                     } else {
                         // add to list
@@ -150,22 +147,10 @@ public final class SdrfFileParser {
             }
         }
         if (currentElement instanceof AbstractNode) {
-            row.put(getObjectKey(currentElement), currentElement);
+            row.add(currentElement);
             nodeElement = currentElement;
         }
 
-    }
-
-    /**
-     * 
-     */
-    private String getObjectKey(Class<? extends AbstractSdrfEntry> c, String value) {
-        return c.getName() + "_" + value;
-    }
-
-    private String getObjectKey(AbstractSdrfEntry element) {
-
-        return element.getClass().getName() + "_" + element.getValue();
     }
 
     /**

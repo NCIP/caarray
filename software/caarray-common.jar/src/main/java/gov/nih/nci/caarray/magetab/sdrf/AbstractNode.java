@@ -134,10 +134,13 @@ abstract class AbstractNode extends AbstractSdrfEntry {
         linkedNodes.add(theNode);
         
     }
-
     void link(AbstractSdrfEntry linkTo) {
-        addProtocolRef((ProtocolRef) linkTo);
-    }
+        ((AbstractNode) linkTo).setLinkedNode(this);
+}
+
+//    void link(AbstractSdrfEntry linkTo) {
+//        addProtocolRef((ProtocolRef) linkTo);
+//    }
 
     public void addProtocolRef(ProtocolRef pRef) {
         if (protocolRefs == null) {

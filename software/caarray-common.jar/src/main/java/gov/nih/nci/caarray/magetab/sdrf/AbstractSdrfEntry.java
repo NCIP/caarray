@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.magetab.sdrf;
 
 /**
  * A thing that can be represented in a cell within an SDRF document.
- *
+ * 
  * @author tavelae
  */
 abstract class AbstractSdrfEntry {
@@ -95,7 +95,7 @@ abstract class AbstractSdrfEntry {
     AbstractSdrfEntry() {
         super();
     }
-    
+
     AbstractSdrfEntry(SdrfColumn column, String value) {
         this.column = column;
         this.value = value;
@@ -116,13 +116,12 @@ abstract class AbstractSdrfEntry {
     public void setValue(String value) {
         this.value = value;
     }
-    
+
     /**
      * Clients override this.
+     * 
      * @param linkTo item to link
      */
-    void link(AbstractSdrfEntry linkTo) {
-        // override
-    }
+    abstract void link(AbstractSdrfEntry linkTo);
 
 }

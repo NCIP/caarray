@@ -96,7 +96,8 @@ import java.util.List;
  */
 public class SdrfDocument extends AbstractMageTabDocument {
 
-    private List<SdrfColumn> columns;
+    private List<SdrfColumn> headers;
+    private List<AbstractSdrfEntry> rows;
 
     /**
      * default constructor.
@@ -104,7 +105,6 @@ public class SdrfDocument extends AbstractMageTabDocument {
     public SdrfDocument() {
         super();
     }
-
 
     /**
      * @param file the File
@@ -115,6 +115,26 @@ public class SdrfDocument extends AbstractMageTabDocument {
         SdrfFileParser parser = SdrfFileParser.create();
         parser.parseSdrfDocument(this);
 
+    }
+
+    List<SdrfColumn> getHeaders() {
+        return headers;
+    }
+
+    void setHeaders(List<SdrfColumn> headers) {
+        this.headers = headers;
+    }
+
+    /**
+     * @param rows
+     */
+    void setRows(List<AbstractSdrfEntry> rows) {
+        this.rows = rows;
+
+    }
+
+    List<AbstractSdrfEntry> getRows() {
+        return rows;
     }
 
     //
@@ -141,12 +161,5 @@ public class SdrfDocument extends AbstractMageTabDocument {
     // private AbstractNode lookupNode(Class nodeClass, String name) {
     // return null;
     // }
-
-    /**
-     * @return the columns
-     */
-    List<SdrfColumn> getColumns() {
-        return columns;
-    }
 
 }

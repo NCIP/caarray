@@ -148,8 +148,5 @@ public class AbstractBioMaterial extends AbstractNode {
         characteristics.add(c);
     }
 
-    void link(AbstractSdrfEntry linkTo) {
-            ((AbstractNode) linkTo).setLinkedNode(this);
-    }
 
 }
