@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.magetab2;
 
 import static org.junit.Assert.*;
 import gov.nih.nci.caarray.magetab2.idf.Investigation;
+import gov.nih.nci.caarray.magetab2.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.tests.data.magetab.MageTabDataFiles;
 
 import org.junit.Test;
@@ -94,6 +95,7 @@ import org.junit.Test;
 @SuppressWarnings("PMD")
 public class MageTabParserTest {
     
+    private static final int SIX = 6;
     private MageTabParser parser = MageTabParser.INSTANCE;
 
     /**
@@ -118,6 +120,9 @@ public class MageTabParserTest {
         assertEquals(1, documentSet.getInvestigations().size());
         Investigation investigation = documentSet.getInvestigations().iterator().next();
         assertEquals("University of Heidelberg H sapiens TK6", investigation.getTitle());
+        SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
+        assertNotNull(sdrfDocument);
+        assertEquals(SIX, sdrfDocument.getLeftmostNodes().size());
     }
 
     private MageTabInputFileSet getSpecificationSampleFileSet() {

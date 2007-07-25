@@ -82,68 +82,111 @@
  */
 package gov.nih.nci.caarray.magetab2.sdrf;
 
-import gov.nih.nci.caarray.magetab2.ProtocolApplication;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 /**
- * An entity within an SDRF document -- may be a bio material, hybridization, or
- * data object.
+ * A single column in an SDRF file.
  */
-public abstract class AbstractSampleDataRelationshipNode implements Serializable {
+class SdrfColumn {
 
-    private static final long serialVersionUID = -2710483246399354549L;
+    private String header;
+    private SdrfColumnHeading heading;
+    private String qualifier;
+    private String lsid;
 
-    private final List<ProtocolApplication> protocolApplications =
-        new ArrayList<ProtocolApplication>();
-    private final Set<AbstractSampleDataRelationshipNode> predecessors = 
-        new HashSet<AbstractSampleDataRelationshipNode>();
-    private final Set<AbstractSampleDataRelationshipNode> successors = 
-        new HashSet<AbstractSampleDataRelationshipNode>();
-    private String name;
+    SdrfColumn(String header) {
+        setHeader(header);
+        parseQualifier();
+        parseLsid();
+        heading = SdrfColumnHeading.get(this.header);
+    }
 
-    /**
-     * @return the name
-     */
-    public final String getName() {
-        return name;
+    private void parseLsid() {
+        int firstColon = header.indexOf(':');
+        int lastColon = header.lastIndexOf(':');
+        if (firstColon > 0) {
+            if (lastColon == 0) {
+                lastColon = header.length();
+            }
+            lsid = header.substring(firstColon + 1, lastColon);
+            if (lsid != null) {
+                setLsid(lsid.trim());
+            }
+            setHeader(header.substring(0, firstColon).trim());
+        }
+    }
+
+    private void parseQualifier() {
+        int firstBracket = header.indexOf('[');
+        int lastBracket = header.indexOf(']');
+        if (firstBracket > 0) {
+            // get the text between the brackets []
+            qualifier = header.substring(firstBracket + 1, lastBracket);
+            setHeader(header.substring(0, firstBracket).trim());
+        }
+
     }
 
     /**
-     * @param name the name to set
+     * 
+     * @return SdrfColumnHeading
      */
-    public final void setName(String name) {
-        this.name = name;
+    public SdrfColumnHeading getHeading() {
+        return heading;
     }
 
     /**
-     * @return the protocolApplications
+     * 
+     * @param heading SdrfColumnHeading
      */
-    public List<ProtocolApplication> getProtocolApplications() {
-        return protocolApplications;
+    public void setHeading(SdrfColumnHeading heading) {
+        this.heading = heading;
     }
 
     /**
-     * @return the successors
+     * 
+     * @return tring
      */
-    public Set<AbstractSampleDataRelationshipNode> getSuccessors() {
-        return successors;
+    public String getHeader() {
+        return header;
     }
 
     /**
-     * @return the predecessors
+     * 
+     * @param header String
      */
-    public Set<AbstractSampleDataRelationshipNode> getPredecessors() {
-        return predecessors;
+    public final void setHeader(String header) {
+        this.header = header;
     }
 
-    void link(AbstractSampleDataRelationshipNode predecessorNode) {
-        predecessors.add(predecessorNode);
-        predecessorNode.getSuccessors().add(this);
+    /**
+     * 
+     * @return String
+     */
+    public String getQualifier() {
+        return qualifier;
+    }
+
+    /**
+     * 
+     * @param qualifier String
+     */
+    public void setQualifier(String qualifier) {
+        this.qualifier = qualifier;
+    }
+
+    /**
+     * 
+     * @return String
+     */
+    public String getLsid() {
+        return lsid;
+    }
+
+    /**
+     * 
+     * @param lsid String
+     */
+    private void setLsid(String lsid) {
+        this.lsid = lsid;
     }
 
 }

@@ -82,68 +82,165 @@
  */
 package gov.nih.nci.caarray.magetab2.sdrf;
 
-import gov.nih.nci.caarray.magetab2.ProtocolApplication;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.apache.commons.lang.StringUtils;
 
 /**
- * An entity within an SDRF document -- may be a bio material, hybridization, or
- * data object.
+ * Enumeration of legal row headings in an IDF document.
  */
-public abstract class AbstractSampleDataRelationshipNode implements Serializable {
-
-    private static final long serialVersionUID = -2710483246399354549L;
-
-    private final List<ProtocolApplication> protocolApplications =
-        new ArrayList<ProtocolApplication>();
-    private final Set<AbstractSampleDataRelationshipNode> predecessors = 
-        new HashSet<AbstractSampleDataRelationshipNode>();
-    private final Set<AbstractSampleDataRelationshipNode> successors = 
-        new HashSet<AbstractSampleDataRelationshipNode>();
-    private String name;
+enum SdrfColumnHeading {
+    
+    /**
+     * Source Name.
+     */
+    SOURCE_NAME(Source.class),
 
     /**
-     * @return the name
+     * Sample Name.
      */
-    public final String getName() {
-        return name;
-    }
+    SAMPLE_NAME(Sample.class),
 
     /**
-     * @param name the name to set
+     * Extract Name.
      */
-    public final void setName(String name) {
-        this.name = name;
-    }
+    EXTRACT_NAME(Extract.class),
 
     /**
-     * @return the protocolApplications
+     * Labeled Extract Name.
      */
-    public List<ProtocolApplication> getProtocolApplications() {
-        return protocolApplications;
-    }
+    LABELED_EXTRACT_NAME(LabeledExtract.class),
 
     /**
-     * @return the successors
+     * Hybridization Name.
      */
-    public Set<AbstractSampleDataRelationshipNode> getSuccessors() {
-        return successors;
-    }
+    HYBRIDIZATION_NAME(Hybridization.class),
 
     /**
-     * @return the predecessors
+     * Scan Name.
      */
-    public Set<AbstractSampleDataRelationshipNode> getPredecessors() {
-        return predecessors;
+    SCAN_NAME(Scan.class),
+
+    /**
+     * Normalization Name.
+     */
+    NORMALIZATION_NAME(Normalization.class),
+
+    /**
+     * Array Data File.
+     */
+    ARRAY_DATA_FILE(ArrayDataFile.class),
+
+    /**
+     * Derived Array Data File.
+     */
+    DERIVED_ARRAY_DATA_FILE(DerivedArrayDataFile.class),
+
+    /**
+     * Array Data Matrix File.
+     */
+    ARRAY_DATA_MATRIX_FILE,
+
+    /**
+     * Derived Array Data Matrix File.
+     */
+    DERIVED_ARRAY_DATA_MATRIX_FILE,
+
+    /**
+     * Image File.
+     */
+    IMAGE_FILE(Image.class),
+
+    /**
+     * Array Design File.
+     */
+    ARRAY_DESIGN_FILE,
+
+    /**
+     * Array Design REF.
+     */
+    ARRAY_DESIGN_REF,
+
+    /**
+     * Protocol REF.
+     */
+    PROTOCOL_REF,
+
+    /**
+     * Characteristics.
+     */
+    CHARACTERISTICS,
+
+    /**
+     * Provider.
+     */
+    PROVIDER,
+
+    /**
+     * Material Type.
+     */
+    MATERIAL_TYPE,
+
+    /**
+     * Label.
+     */
+    LABEL,
+
+    /**
+     * Factor Value.
+     */
+    FACTOR_VALUE,
+
+    /**
+     * Performer.
+     */
+    PERFORMER,
+
+    /**
+     * Date.
+     */
+    DATE,
+
+    /**
+     * Parameter Value.
+     */
+    PARAMETER_VALUE,
+
+    /**
+     * Unit.
+     */
+    UNIT,
+
+    /**
+     * Description.
+     */
+    DESCRIPTION,
+
+    /**
+     * Term Source REF.
+     */
+    TERM_SOURCE_REF,
+
+    /**
+     * Comment.
+     */
+    COMMENT;
+    
+    private final Class nodeClass;
+
+    SdrfColumnHeading() {
+        this(null);
     }
 
-    void link(AbstractSampleDataRelationshipNode predecessorNode) {
-        predecessors.add(predecessorNode);
-        predecessorNode.getSuccessors().add(this);
+    SdrfColumnHeading(Class nodeClass) {
+        this.nodeClass = nodeClass;
+    }
+
+    static SdrfColumnHeading get(String name) {
+        String enumName = StringUtils.replaceChars(name, ' ', '_').toUpperCase();
+        return valueOf(enumName);
+    }
+
+    Class getNodeClass() {
+        return nodeClass;
     }
 
 }

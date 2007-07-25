@@ -80,153 +80,17 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab2;
-
-import gov.nih.nci.caarray.magetab2.idf.IdfDocument;
-import gov.nih.nci.caarray.magetab2.idf.Investigation;
-import gov.nih.nci.caarray.magetab2.sdrf.SdrfDocument;
-import gov.nih.nci.caarray.util.io.FileUtility;
-
-import java.io.File;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+package gov.nih.nci.caarray.magetab2.sdrf;
 
 /**
- * A set of parsed, interrelated MAGE-TAB documents. This class provides access to the files and
- * the entities defined within them.
+ * Indicates a programming error or otherwise unexpected runtime exception in MAGE-TAB parsing.
  */
-public final class MageTabDocumentSet implements Serializable {
+public class MageTabParsingRuntimeException extends RuntimeException {
 
-    private static final long serialVersionUID = -2836359210806454994L;
-    
-    private final Set<IdfDocument> idfDocuments = new HashSet<IdfDocument>();
-    private final Set<SdrfDocument> sdrfDocuments = new HashSet<SdrfDocument>();
-    private final Map<String, OntologyTerm> termCache = new HashMap<String, OntologyTerm>();
-    private final Map<String, TermSource> termSourceCache = new HashMap<String, TermSource>();
+    private static final long serialVersionUID = -8373094799214834514L;
 
-    MageTabDocumentSet(MageTabInputFileSet inputFileSet) {
-        initializeFromFileSet(inputFileSet);
-    }
-    
-    /**
-     * Returns all <code>Investigations</code> defined in the document set.
-     * 
-     * @return the investigations.
-     */
-    public Set<Investigation> getInvestigations() {
-        Set<Investigation> investigations = new HashSet<Investigation>(idfDocuments.size());
-        for (IdfDocument idfDocument : idfDocuments) {
-            investigations.add(idfDocument.getInvestigation());
-        }
-        return investigations;
+    MageTabParsingRuntimeException(Throwable cause) {
+        super(cause);
     }
 
-    private void initializeFromFileSet(MageTabInputFileSet inputFileSet) {
-        initializeIdfs(inputFileSet);
-        initializeAdfs(inputFileSet);
-        initializeSdrfs(inputFileSet);
-        initializeDataMatrixes(inputFileSet);
-        initializeNativeDataFiles(inputFileSet);
-    }
-
-    private void initializeIdfs(MageTabInputFileSet inputFileSet) {
-        for (File file : inputFileSet.getIdfFiles()) {
-            idfDocuments.add(new IdfDocument(this, file));
-        }
-    }
-
-    private void initializeAdfs(MageTabInputFileSet inputFileSet) {
-        for (File file : inputFileSet.getAdfFiles()) {
-            // TODO Implement initializeAdfs and remove placeholder line below
-            FileUtility.checkFileExists(file);
-        }
-    }
-
-    private void initializeSdrfs(MageTabInputFileSet inputFileSet) {
-        for (File file : inputFileSet.getSdrfFiles()) {
-            sdrfDocuments.add(new SdrfDocument(this, file));
-        }
-    }
-
-    private void initializeDataMatrixes(MageTabInputFileSet inputFileSet) {
-        for (File file : inputFileSet.getDataMatrixFiles()) {
-            // TODO Implement initializeDataMatrixes and remove placeholder line below
-            FileUtility.checkFileExists(file);
-        }
-    }
-
-    private void initializeNativeDataFiles(MageTabInputFileSet inputFileSet) {
-        for (File file : inputFileSet.getNativeDataFiles()) {
-            // TODO Implement initializeNativeDataFiles and remove placeholder line below
-            FileUtility.checkFileExists(file);
-        }
-    }
-
-    void parse() throws MageTabParsingException {
-        parse(idfDocuments);
-//        parse(adfDocuments);
-        parse(sdrfDocuments);
-//        parse(dataMatrixFiles);
-    }
-
-    private void parse(Set<? extends AbstractMageTabDocument> documents) throws MageTabParsingException {
-        for (AbstractMageTabDocument document : documents) {
-            document.parse();
-        }
-    }
-
-
-    /**
-     * Returns an <code>OntologyTerm</code> matching the category and name given. Reuses an
-     * existing matching <code>OntologyTerm</code> in the document set if one exists, 
-     * otherwise creates one.
-     * 
-     * @param category category of the term
-     * @param value value of the term
-     * @return the new or matching term.
-     */
-    OntologyTerm getOntologyTerm(String category, String value) {
-        String key = getTermCacheKey(category, value);
-        OntologyTerm term = termCache.get(key);
-        if (term == null) {
-            term = new OntologyTerm();
-            term.setCategory(category);
-            term.setValue(value);
-            termCache.put(key, term);
-        }
-        return term;
-    }
-
-    private String getTermCacheKey(String category, String value) {
-        return category + ":" + value;
-    }
-
-    TermSource getTermSource(String name) {
-        TermSource termSource = termSourceCache.get(name);
-        if (termSource ==  null) {
-            termSource = new TermSource();
-            termSource.setName(name);
-            termSourceCache.put(name, termSource);
-        }
-        return termSource;
-    }
-
-    /**
-     * @return the idfDocuments
-     */
-    public Set<IdfDocument> getIdfDocuments() {
-        return idfDocuments;
-    }
-
-    /**
-     * @return the sdrfDocuments
-     */
-    public Set<SdrfDocument> getSdrfDocuments() {
-        return sdrfDocuments;
-    }
-
-    
 }
