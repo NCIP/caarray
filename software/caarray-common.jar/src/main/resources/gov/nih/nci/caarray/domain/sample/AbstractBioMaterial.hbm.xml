@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="gov.nih.nci.caarray.domain.sample.AbstractBioMaterial" table="BIOMATERIAL" polymorphism="implicit">
+        <id name="id" column="ID" type="long">
+            <generator class="assigned"/>
+        </id>
+        <discriminator>
+            <column name="DISCRIMINATOR"/>
+        </discriminator>
+        <property name="name" column="NAME" type="string" />
+        <property name="description" column="DESCRIPTION" type="string" />
+        <many-to-one name="materialType" column="MATERIAL_TYPE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Term" lazy="false" cascade="save-update" />
+        <set name="characteristics" lazy="false" cascade="save-update">
+            <key column="BIOMATERIAL_ID" />
+            <one-to-many class="gov.nih.nci.caarray.domain.sample.Characteristic" />
+        </set>
+        <set name="protocolApplications" lazy="false" cascade="save-update">
+            <key column="BIOMATERIAL_ID" />
+            <one-to-many class="gov.nih.nci.caarray.domain.protocol.ProtocolApplication" />
+        </set>
+        <subclass name="gov.nih.nci.caarray.domain.sample.Source" discriminator-value="SO">
+            <set name="providers" table="SOURCEPROVIDER" lazy="false" cascade="save-update">
+                <key column="SOURCE_ID" />
+                <many-to-many class="gov.nih.nci.caarray.domain.contact.AbstractContact" column="CONTACT_ID" />
+            </set>
+            <set name="samples" table="SOURCESAMPLE" lazy="false">
+                <key column="SOURCE_ID" />
+                <many-to-many class="gov.nih.nci.caarray.domain.sample.Sample" column="SAMPLE_ID" />
+            </set>
+        </subclass>
+        <subclass name="gov.nih.nci.caarray.domain.sample.Sample" discriminator-value="SA">
+            <set name="sources" table="SOURCESAMPLE" lazy="false" cascade="save-update" inverse="true">
+                <key column="SAMPLE_ID" />
+                <many-to-many class="gov.nih.nci.caarray.domain.sample.Source" column="SOURCE_ID" />
+            </set>
+            <set name="extracts" table="SAMPLEEXTRACT" lazy="false">
+                <key column="SAMPLE_ID" />
+                <many-to-many class="gov.nih.nci.caarray.domain.sample.Extract" column="EXTRACT_ID" />
+            </set>
+        </subclass>
+        <subclass name="gov.nih.nci.caarray.domain.sample.Extract" discriminator-value="EX">
+            <set name="samples" table="SAMPLEEXTRACT" lazy="false" cascade="save-update" inverse="true">
+                <key column="EXTRACT_ID" />
+                <many-to-many class="gov.nih.nci.caarray.domain.sample.Sample" column="SAMPLE_ID" />
+            </set>
+            <set name="labeledExtracts" table="EXTRACTLABELEDEXTRACT" lazy="false">
+                <key column="EXTRACT_ID" />
+                <many-to-many class="gov.nih.nci.caarray.domain.sample.LabeledExtract" column="LABELEDEXTRACT_ID" />
+            </set>
+        </subclass>
+        <subclass name="gov.nih.nci.caarray.domain.sample.LabeledExtract" discriminator-value="LA">
+            <set name="extracts" table="EXTRACTLABELEDEXTRACT" lazy="false" cascade="save-update" inverse="true">
+                <key column="LABELEDEXTRACT_ID" />
+                <many-to-many class="gov.nih.nci.caarray.domain.sample.Extract" column="EXTRACT_ID" />
+            </set>
+            <many-to-one name="label" column="LABEL_ID" class="gov.nih.nci.caarray.domain.sample.Compound" lazy="false" cascade="save-update" />
+        </subclass>
+    </class>
+</hibernate-mapping>
