@@ -437,14 +437,15 @@
         </cobertura-instrument>
     </target>
 
-    <target name="test:compile:caarray-common.test.classes" depends="compile:caarray-common.jar">
+    <target name="test:compile:caarray-common.test.classes" depends="compile:caarray-common.jar,test:functional:compile-tests">
         <mkdir dir="${caarray-common.test.classes.dir}" />
         <javac srcdir="${caarray-common.test.src.dir}" destdir="${caarray-common.test.classes.dir}" debug="true">
             <classpath>
+    			<pathelement location="${test.classes.dir}" />
                 <pathelement location="${caarray-common.classes.dir}" />
-        <pathelement location="${caarray-common.test.files.dir}" />
-          <pathelement location="${caarray-common.resources.dir}" />
-        <pathelement location="${commons-io.jar}" />
+		        <pathelement location="${caarray-common.test.files.dir}" />
+		        <pathelement location="${caarray-common.resources.dir}" />
+		        <pathelement location="${commons-io.jar}" />
                 <pathelement location="${commons-logging.jar}" />
                 <pathelement location="${junit.jar}" />
                 <pathelement location="${hibernate.jar}" />
@@ -458,7 +459,7 @@
       test.src.dir="${caarray-common.test.src.dir}"
       xml.output.dir="${caarray-common.target.dir}/junit"
       instrumented.classes="${caarray-common.instrumented.classes.dir}"
-      classpath="${caarray-common.test.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-common.resources.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar}" />
+      classpath="${caarray-common.test.classes.dir};${test.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-common.resources.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar}" />
     </target>
 
     <!-- caarray-ejb.jar -->
@@ -561,7 +562,7 @@
 
     <!-- Functional (Selenium) Test Targets -->
 
-    <target name="test:functional" depends="test:selenium:run-tests">
+    <target name="test:functional" depends="test:functional:run-tests">
         <fail if="junit.failure" message="There were Selenium test failures." />
     </target>
 
@@ -584,7 +585,7 @@
         <echo taskname="selenium-shutdown" message="DGF Errors during shutdown are expected" />
     </target>
 
-    <target name="test:selenium:compile-tests">
+    <target name="test:functional:compile-tests">
         <mkdir dir="${test.classes.dir}" />
         <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}" debug="true">
             <classpath>
@@ -595,7 +596,9 @@
         </javac>
     </target>
 
-    <target name="test:selenium:run-tests" depends="test:selenium:compile-tests">
+    <target name="test:functional:run-tests" depends="test:selenium:run-tests" />
+
+    <target name="test:selenium:run-tests" depends="test:functional:compile-tests">
         <antcall target="test:selenium:start-server" />
         <run-junit-tests
             test.src.dir="${test.src.dir}"
