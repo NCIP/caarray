@@ -172,7 +172,8 @@
         clean:caarray-ejb.jar,
         clean:caarray.war,
         clean:caarray.ear,
-       clean:site.dir,
+        clean:site.dir,
+        clean:test.classes.dir,
         clean:target.dir" />
 
     <target name="clean:caarray-common.jar">
@@ -189,6 +190,10 @@
 
     <target name="clean:caarray.ear">
         <delete dir="${caarray-ear.target.dir}" />
+    </target>
+
+    <target name="clean:test.classes.dir">
+        <delete dir="${test.classes.dir}}" />
     </target>
 
     <target name="clean:site.dir">
@@ -441,11 +446,11 @@
         <mkdir dir="${caarray-common.test.classes.dir}" />
         <javac srcdir="${caarray-common.test.src.dir}" destdir="${caarray-common.test.classes.dir}" debug="true">
             <classpath>
-    			<pathelement location="${test.classes.dir}" />
+          <pathelement location="${test.classes.dir}" />
                 <pathelement location="${caarray-common.classes.dir}" />
-		        <pathelement location="${caarray-common.test.files.dir}" />
-		        <pathelement location="${caarray-common.resources.dir}" />
-		        <pathelement location="${commons-io.jar}" />
+            <pathelement location="${caarray-common.test.files.dir}" />
+            <pathelement location="${caarray-common.resources.dir}" />
+            <pathelement location="${commons-io.jar}" />
                 <pathelement location="${commons-logging.jar}" />
                 <pathelement location="${junit.jar}" />
                 <pathelement location="${hibernate.jar}" />
