@@ -205,19 +205,19 @@ public final class IdfDocument extends AbstractMageTabDocument {
             handlePersonRoleTermSourceRef(value, valueIndex);
             break;
         case QUALITY_CONTROL_TYPE:
-            handleQualityControlType(value, valueIndex);
+            handleQualityControlType(value);
             break;
         case QUALITY_CONTROL_TERM_SOURCE_REF:
             handleQualityControlTermSourceRef(value, valueIndex);
             break;
         case REPLICATE_TYPE:
-            handleReplicateType(value, valueIndex);
+            handleReplicateType(value);
             break;
         case REPLICATE_TERM_SOURCE_REF:
             handleReplicateTypeTermSourceRef(value, valueIndex);
             break;
         case NORMALIZATION_TYPE:
-            handleNormalizationType(value, valueIndex);
+            handleNormalizationType(value);
             break;
         case NORMALIZATION_TERM_SOURCE_REF:
             handleNormalizationTypeTermSourceRef(value, valueIndex);
@@ -253,7 +253,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
             handleProtocolName(value, valueIndex);
             break;
         case PROTOCOL_TYPE:
-            handleProtocolName(value, valueIndex);
+            handleProtocolType(value, valueIndex);
             break;
         case PROTOCOL_DESCRIPTION:
             handleProtocolDescription(value, valueIndex);
@@ -327,9 +327,15 @@ public final class IdfDocument extends AbstractMageTabDocument {
         protocol.setContact(value);
     }
 
-    private void handleProtocolTermSourceRef(String value, int valueIndex) {
+    private void handleProtocolType(String value, int valueIndex) {
         Protocol protocol = investigation.getOrCreateProtcol(valueIndex);
-        protocol.setTermSource(getTermSource(value));
+        protocol.setType(getOntologyTerm(IdfOntologyCategory.PROTOCOL_TYPE, value));
+    }
+
+
+    private void handleProtocolTermSourceRef(String value, int valueIndex) {
+        investigation.getProtocols().get(valueIndex).setTermSource(getTermSource(value));
+
     }
 
     private void handleTitle(String title) {
@@ -445,11 +451,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
         investigation.getOrCreatePublication(valueIndex).getStatus().setTermSource(getTermSource(value));
     }
 
-        private void handleSdrfFile(String value, int valueIndex) {
-
-    }
-
-    private void handleQualityControlType(String value, int valueIndex) {
+    private void handleQualityControlType(String value) {
         investigation.getQualityControlTypes().add(getOntologyTerm(IdfOntologyCategory.QUALITY_CONTROL_TYPE, value));
     }
 
@@ -457,7 +459,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
         investigation.getQualityControlTypes().get(valueIndex).setTermSource(getTermSource(value));
     }
 
-    private void handleReplicateType(String value, int valueIndex) {
+    private void handleReplicateType(String value) {
         investigation.getReplicateTypes().add(getOntologyTerm(IdfOntologyCategory.REPLICATE_TYPE, value));
     }
 
@@ -465,7 +467,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
         investigation.getReplicateTypes().get(valueIndex).setTermSource(getTermSource(value));
     }
 
-    private void handleNormalizationType(String value, int valueIndex) {
+    private void handleNormalizationType(String value) {
         investigation.getNormalizationTypes().add(getOntologyTerm(IdfOntologyCategory.NORMALIZATION_TYPE, value));
     }
 

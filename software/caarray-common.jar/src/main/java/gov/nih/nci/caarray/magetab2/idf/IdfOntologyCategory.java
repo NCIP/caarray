@@ -91,10 +91,6 @@ enum IdfOntologyCategory {
      * ExperimentDesignType category.
      */
     EXPERIMENTAL_DESIGN_TYPE("ExperimentDesignType"),
-
-    /**
-     * ExperimentalFactorCategory category.
-     */
     /**
      *
      */
@@ -121,7 +117,12 @@ enum IdfOntologyCategory {
     /**
      *
      */
-    PUBLICATION_STATUS("PublicationStatus");
+    PUBLICATION_STATUS("PublicationStatus"),
+
+    /**
+     *
+     */
+    PROTOCOL_TYPE("ProtocolType");
 
     private final String categoryName;
 
