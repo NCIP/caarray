@@ -24,7 +24,7 @@
       </h:outputLabel>
     </th>
     <td>
-      <h:inputText id="ztitle" value="#{projectProposalBean.proposal.project.experiment.title}"/>
+      <h:inputText id="ztitle" value="#{projectProposalBean.proposal.project.investigation.title}"/>
     </td>
   </tr>
   <tr>

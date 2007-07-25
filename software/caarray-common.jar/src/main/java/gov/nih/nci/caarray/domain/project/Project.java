@@ -97,33 +97,33 @@ public class Project extends AbstractCaArrayEntity {
 
     /**
      * Initializes a new, empty project.
-     * 
+     *
      * @return the new Project.
      */
     public static Project createNew() {
         Project project = new Project();
-        project.setExperiment(Investigation.createNew());
+        project.setInvestigation(Investigation.createNew());
         return project;
     }
-    
-    private Investigation experiment;
+
+    private Investigation investigation;
 
     /**
-     * Gets the experiment.
+     * Gets the investigation.
      *
-     * @return the experiment
+     * @return the investigation
      */
-    public Investigation getExperiment() {
-        return experiment;
+    public Investigation getInvestigation() {
+        return investigation;
     }
 
     /**
-     * Sets the experiment.
+     * Sets the investigation.
      *
-     * @param experimentVal the experiment
+     * @param investigationVal the investigation
      */
-    public void setExperiment(final Investigation experimentVal) {
-        this.experiment = experimentVal;
+    public void setInvestigation(final Investigation investigationVal) {
+        this.investigation = investigationVal;
     }
 
     /**

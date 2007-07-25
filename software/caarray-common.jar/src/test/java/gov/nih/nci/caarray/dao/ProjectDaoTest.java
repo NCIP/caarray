@@ -170,7 +170,7 @@ public class ProjectDaoTest {
         setExperimentalFactors();
         setPublications();
         DUMMY_PROJECT_1.setId(id);
-        DUMMY_PROJECT_1.setExperiment(DUMMY_INVESTIGATION_1);
+        DUMMY_PROJECT_1.setInvestigation(DUMMY_INVESTIGATION_1);
     }
 
     private static void setInvestigationSummary(long id) {
@@ -260,7 +260,7 @@ public class ProjectDaoTest {
             tx.commit();
             Project retrievedProject = DAO_OBJECT.getProject(DUMMY_PROJECT_1.getId());
             if (DUMMY_PROJECT_1.equals(retrievedProject)) {
-                if (compareInvestigations(retrievedProject.getExperiment(), DUMMY_PROJECT_1.getExperiment())) {
+                if (compareInvestigations(retrievedProject.getInvestigation(), DUMMY_PROJECT_1.getInvestigation())) {
                     // The retrieved project is the same as the saved project. Test passed.
                     assertTrue(true);
                 }

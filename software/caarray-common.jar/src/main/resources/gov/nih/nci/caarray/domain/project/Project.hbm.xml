@@ -8,7 +8,7 @@
         <id name="id" column="ID" type="long">
             <generator class="assigned"/>
         </id>
-        <many-to-one name="experiment" column="EXPERIMENT_ID" class="gov.nih.nci.caarray.domain.project.Investigation" lazy="false" cascade="save-update" />
+        <many-to-one name="investigation" column="INVESTIGATION_ID" class="gov.nih.nci.caarray.domain.project.Investigation" lazy="false" cascade="save-update" />
         <set name="files" lazy="false" cascade="save-update">
             <key column="PROJECT_ID" />
             <one-to-many class="gov.nih.nci.caarray.domain.file.CaArrayFile" />
