@@ -13,6 +13,27 @@
 <h1>Welcome to caArray 2</h1>
 <f:view>
 <%@include file="/navigation/menu.jsp" %>
+
+<h:form>
+<h:messages/>
+<table>
+  <tr>
+    <th>
+      <h:outputLabel for="ztitle">
+        <h:outputText value="Title for new project:"/>
+      </h:outputLabel>
+    </th>
+    <td>
+      <h:inputText id="ztitle" value="#{projectProposalBean.proposal.project.experiment.title}"/>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <h:commandButton value="Submit" action="#{projectProposalBean.submitNew}"/>
+    </td>
+  </tr>
+</table>
+</h:form>
 </f:view>
 </body>
 </html>

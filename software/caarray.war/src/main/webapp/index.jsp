@@ -13,6 +13,7 @@
 <h1>Welcome to caArray 2</h1>
 <f:view>
 <%@include file="/navigation/menu.jsp" %>
+<h:messages/>
 </f:view>
 </body>
 </html>

@@ -149,6 +149,12 @@
         classname="net.sourceforge.pmd.ant.PMDTask"
         classpath="${pmd.jar};${jaxen.jar};${asm.jar};${backport-util-concurrent}" />
 
+    <taskdef name="for" classname="net.sf.antcontrib.logic.ForTask">
+        <classpath>
+            <fileset dir="${lib.dir}" />
+        </classpath>
+    </taskdef>
+
     <!-- ******************************************************************* -->
     <!-- ** MAIN TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
@@ -327,7 +333,6 @@
         <mkdir dir="${caarray-common.target.dir}"/>
         <jar destfile="${caarray-common.jar}">
             <fileset dir="${caarray-common.classes.dir}" />
-      <fileset dir="${caarray-common.resources.dir}" />
         </jar>
     </target>
 
@@ -706,6 +711,11 @@
         </copy>
     </target>
 
+    <target name="undeploy">
+        <delete file="${jboss.deploy.dir}/caarray-mysql-ds.xml"/>
+        <delete file="${jboss.deploy.dir}/caarray.ear"/>
+    </target>
+
     <target name="deploy:deploy-and-wait" depends="deploy">
         <sleep seconds="5" />
         <waitfor maxwait="60" maxwaitunit="second" checkevery="5" checkeveryunit="second">
@@ -733,6 +743,21 @@
         <condition property="jboss.running">
             <socket port="${jboss.server.port}" server="${jboss.server.hostname}" />
         </condition>
+    </target>
+
+    <target name="copy-jsp" description="Copies the jsp's over to the unpacked war directory in jboss">
+        <for param="toDir">
+          <path>
+            <dirset dir="${jboss.deploy.dir}/../tmp/deploy" includes="tmp*caarray.ear-contents/caarray-exp.war"/>
+          </path>
+          <sequential>
+              <copy todir="@{toDir}">
+                  <fileset dir="${caarray-war.webapp.dir}">
+                      <include name="**/*.jsp"/>
+                  </fileset>
+              </copy>
+          </sequential>
+        </for>
     </target>
 
   <!-- BEGIN STELLIGENT ADD -->

@@ -49,11 +49,17 @@
         <managed-bean-class>gov.nih.nci.caarray.ui.jsf.beans.project.ProjectProposalBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-    
+
     <navigation-rule>
         <navigation-case>
             <from-outcome>startProjectProposal</from-outcome>
             <to-view-id>/project/projectProposal.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <from-view-id>/project/projectProposal.jsp</from-view-id>
+        <navigation-case>
+            <to-view-id>/index.jsp</to-view-id>
         </navigation-case>
     </navigation-rule>
 
