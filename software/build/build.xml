@@ -95,6 +95,7 @@
     <property name="test.dir" value="${basedir}/test" />
     <property name="test.target.dir" value="${test.dir}/target" />
     <property name="test.src.dir" value="${test.dir}/src/test/java" />
+    <property name="test.data.dir" value="${test.dir}/src/test/data" />
     <property name="test.classes.dir" value="${test.target.dir}/test-classes" />
 
     <path id="cobertura.classpath">
@@ -446,7 +447,7 @@
         <mkdir dir="${caarray-common.test.classes.dir}" />
         <javac srcdir="${caarray-common.test.src.dir}" destdir="${caarray-common.test.classes.dir}" debug="true">
             <classpath>
-          <pathelement location="${test.classes.dir}" />
+                <pathelement location="${test.classes.dir}" />
                 <pathelement location="${caarray-common.classes.dir}" />
             <pathelement location="${caarray-common.test.files.dir}" />
             <pathelement location="${caarray-common.resources.dir}" />
@@ -464,7 +465,7 @@
       test.src.dir="${caarray-common.test.src.dir}"
       xml.output.dir="${caarray-common.target.dir}/junit"
       instrumented.classes="${caarray-common.instrumented.classes.dir}"
-      classpath="${caarray-common.test.classes.dir};${test.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-common.resources.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar}" />
+      classpath="${caarray-common.test.classes.dir};${test.data.dir};${test.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-common.resources.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar}" />
     </target>
 
     <!-- caarray-ejb.jar -->
