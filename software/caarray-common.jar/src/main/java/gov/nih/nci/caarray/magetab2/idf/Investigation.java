@@ -110,7 +110,7 @@ public final class Investigation implements Serializable {
     private final List<Publication> publications = new ArrayList<Publication>();
     private String description;
     private final List<Protocol> protocols = new ArrayList<Protocol>();
-    private final List<AbstractSampleDataRelationshipNode> entryNodes = 
+    private final List<AbstractSampleDataRelationshipNode> entryNodes =
         new ArrayList<AbstractSampleDataRelationshipNode>();
 
     /**
@@ -237,6 +237,13 @@ public final class Investigation implements Serializable {
             factors.add(new ExperimentalFactor());
         }
         return factors.get(index);
+    }
+
+    Protocol getOrCreateProtcol(int index) {
+        while (protocols.size() <= index) {
+            protocols.add(new Protocol());
+        }
+        return protocols.get(index);
     }
 
 }

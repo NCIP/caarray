@@ -64,13 +64,13 @@ import java.io.Serializable;
 public abstract class AbstractMageTabDocument implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     private final MageTabDocumentSet documentSet;
     private final File file;
 
     /**
      * Creates a new MAGE-TAB document from an existing file.
-     * 
+     *
      * @param documentSet the MAGE-TAB document set the MAGE-TAB document belongs to.
      * @param file the file containing the MAGE-TAB document content.
      */
@@ -103,7 +103,7 @@ public abstract class AbstractMageTabDocument implements Serializable {
 
     /**
      * Instantiates a tab-delimited file reader to use to parse the contents.
-     * 
+     *
      * @return the reader.
      * @throws MageTabParsingException if the reader couldn't be created.
      */
@@ -117,9 +117,9 @@ public abstract class AbstractMageTabDocument implements Serializable {
 
     /**
      * Returns an <code>OntologyTerm</code> matching the category and name given. Reuses an
-     * existing matching <code>OntologyTerm</code> in the document set if one exists, 
+     * existing matching <code>OntologyTerm</code> in the document set if one exists,
      * otherwise creates one.
-     * 
+     *
      * @param category category of the term
      * @param value value of the term
      * @return the new or matching term.
@@ -131,12 +131,31 @@ public abstract class AbstractMageTabDocument implements Serializable {
     /**
      * Returns a <code>TermSource</code> that has the given name. Reuses an existing matching
      * <code>TermSource</code> if one exists, otherwise creates one.
-     * 
+     *
      * @param termSourceName the name of the source
      * @return the term source
      */
     protected TermSource getTermSource(String termSourceName) {
         return getDocumentSet().getTermSource(termSourceName);
+    }
+
+    /**
+     * Adds a new Protocol to the document set.
+     *
+     * @param protocol the new protocol.
+     */
+    protected final void addProtocol(Protocol protocol) {
+        getDocumentSet().addProtocol(protocol);
+    }
+
+    /**
+     * Returns the protocol with the id (name) provided.
+     *
+     * @param protocolId find protocol with this name.
+     * @return the matching protocol or null if none exists for name.
+     */
+    protected final Protocol getProtocol(String protocolId) {
+        return getDocumentSet().getProtocol(protocolId);
     }
 
 }
