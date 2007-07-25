@@ -119,7 +119,6 @@ public final class ProjectProposalBean implements Serializable {
 
     /**
      * Action method for submitting new projects.
-     * @param event the faces event
      * @return success or failure
      */
     public String submitNew() {
