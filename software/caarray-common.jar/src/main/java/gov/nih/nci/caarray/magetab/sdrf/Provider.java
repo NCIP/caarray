@@ -82,15 +82,22 @@
  */
 package gov.nih.nci.caarray.magetab.sdrf;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * The contact who provided source biological material.
  *
  * @author tavelae
  */
 public class Provider extends AbstractAttribute {
+    private static final Log LOG = LogFactory.getLog(Provider.class);
 
     Provider(SdrfColumn column, String value) {
         super(column, value);
+    }
+    void link(AbstractSdrfEntry linkTo) {
+        LOG.debug("Provider link method - need to implement");
     }
 
 }

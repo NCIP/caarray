@@ -108,8 +108,10 @@ public final class SdrfFileParser {
                     }
                     // see if the object can be reused
                     if (dataList.containsKey(key)) {
-                        linked = true;
-                        System.out.println("found " + key);
+                        if (dataList.get(key) instanceof AbstractNode) {
+                            linked = true;
+                        }
+                        LOG.debug("found " + key);
                         link(dataList.get(key));
                     } else {
                         // add to list
@@ -138,6 +140,10 @@ public final class SdrfFileParser {
                 currentElement.link(nodeElement);
                 nodeElement = currentElement;
             } else if (currentElement instanceof AbstractTerm) {
+                if (currentElement instanceof Label) {
+                    termElement = currentElement;
+
+                }
                 currentElement.link(nodeElement);
                 termElement = currentElement;
             } else if (currentElement instanceof AbstractAttribute) {

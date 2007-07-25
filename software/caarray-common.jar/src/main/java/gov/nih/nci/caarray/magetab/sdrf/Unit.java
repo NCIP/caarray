@@ -82,15 +82,23 @@
  */
 package gov.nih.nci.caarray.magetab.sdrf;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * A unit of measurement.
  *
  * @author tavelae
  */
 public class Unit extends AbstractTerm {
-
+    private static final Log LOG = LogFactory.getLog(Unit.class);
+    
     Unit(SdrfColumn column, String value) {
         super(column, value);
+    }
+
+    void link(AbstractSdrfEntry linkTo) {
+        LOG.debug("Unit link method - need to implement");
     }
 
 
