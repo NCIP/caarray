@@ -90,7 +90,7 @@ import java.util.List;
 /**
  * A biomaterial defined in a MAGE-TAB SDRF.
  */
-public abstract class AbstractBioMaterial extends AbstractNode {
+public abstract class AbstractBioMaterial extends AbstractSampleDataRelationshipNode {
 
     private static final long serialVersionUID = 690334748116662920L;
 

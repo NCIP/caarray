@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.magetab2.sdrf;
 /**
  * The act of hybridizing biomaterials to a microarray.
  */
-public final class Hybridization extends AbstractNode {
+public final class Hybridization extends AbstractSampleDataRelationshipNode {
 
     private static final long serialVersionUID = -244337508880218634L;
 

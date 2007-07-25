@@ -80,52 +80,56 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab2;
+package gov.nih.nci.caarray.magetab2.sdrf;
 
-import gov.nih.nci.caarray.magetab2.idf.Investigation;
+import gov.nih.nci.caarray.magetab2.ProtocolApplication;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
- * Provides access to the object graph of entities produced by parsing a set of
- * MAGE-TAB documents.
+ * An entity within an SDRF document -- may be a bio material, hybridization, or
+ * data object.
  */
-public class ParsingResult {
+public abstract class AbstractSampleDataRelationshipNode implements Serializable {
+
+    private static final long serialVersionUID = -2710483246399354549L;
+
+    private final List<ProtocolApplication> protocolApplications =
+        new ArrayList<ProtocolApplication>();
+    private final Set<AbstractSampleDataRelationshipNode> successors = 
+        new HashSet<AbstractSampleDataRelationshipNode>();
+    private String name;
 
     /**
-     * Returns all <code>Investigations</code> defined in the document set (one per IDF file).
-     *
-     * @return the <code>Investigations</code>.
+     * @return the name
      */
-    public Set<Investigation> getInvestigations() {
-        return null;
+    public final String getName() {
+        return name;
     }
 
     /**
-     * Returns all <code>TermSources</code> defined in the document set.
-     *
-     * @return the <code>TermSources</code>.
+     * @param name the name to set
      */
-    public Set<TermSource> getTermSources() {
-        return null;
+    public final void setName(String name) {
+        this.name = name;
     }
 
     /**
-     * Returns all <code>OntologyTerms</code> defined in the document set.
-     *
-     * @return the <code>OntologyTerms</code>.
+     * @return the protocolApplications
      */
-    public Set<OntologyTerm> getOntologyTerms() {
-        return null;
+    public List<ProtocolApplication> getProtocolApplications() {
+        return protocolApplications;
     }
 
     /**
-     * Returns all <code>Protocols</code> defined in the document set.
-     *
-     * @return the <code>Protocols</code>.
+     * @return the successors
      */
-    public Set<Protocol> getProtocols() {
-        return null;
+    public Set<AbstractSampleDataRelationshipNode> getSuccessors() {
+        return successors;
     }
 
 }

@@ -90,20 +90,28 @@ package gov.nih.nci.caarray.magetab2;
 public interface MageTabParser {
 
     /**
+     * Instance of the MAGE-TAB parsing subsystem.
+     */
+    MageTabParser INSTANCE = new MageTabParserImplementation();
+
+    /**
      * Validates the documents contained in the MAGE-TAB file set.
      *
      * @param fileSet the documents to validate
      * @return the validation result
+     * @throws MageTabParsingException if I/O failed reading the MAGE-TAB file.
      */
-    ValidationResult validate(MageTabFileSet fileSet);
+    ValidationResult validate(MageTabInputFileSet fileSet) throws MageTabParsingException;
 
     /**
      * Parses the content of the documents contained in the MAGE-TAB file set to produce
-     * an object graph of the contents.
+     * an object model representation of the documents and the entities contained within
+     * them.
      *
      * @param fileSet the documents to parse
-     * @return the validation result
+     * @return the parsed result.
+     * @throws MageTabParsingException if I/O failed reading the MAGE-TAB file.
      */
-    ParsingResult parse(MageTabFileSet fileSet);
+    MageTabDocumentSet parse(MageTabInputFileSet fileSet) throws MageTabParsingException;
 
 }

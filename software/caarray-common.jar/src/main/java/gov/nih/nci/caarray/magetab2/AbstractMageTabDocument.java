@@ -50,10 +50,93 @@
  */
 package gov.nih.nci.caarray.magetab2;
 
+import gov.nih.nci.caarray.util.io.DelimitedFileReader;
+import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
+import gov.nih.nci.caarray.util.io.FileUtility;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
+
 /**
  * Base class for all MAGE-TAB documents.
  */
-public abstract class AbstractMageTabDocument {
+public abstract class AbstractMageTabDocument implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+    
+    private final MageTabDocumentSet documentSet;
+    private final File file;
+
+    /**
+     * Creates a new MAGE-TAB document from an existing file.
+     * 
+     * @param documentSet the MAGE-TAB document set the MAGE-TAB document belongs to.
+     * @param file the file containing the MAGE-TAB document content.
+     */
+   protected AbstractMageTabDocument(final MageTabDocumentSet documentSet, final File file) {
+        FileUtility.checkFileExists(file);
+        this.documentSet = documentSet;
+        this.file = file;
+    }
+
+    /**
+     * @return the file
+     */
+    public final File getFile() {
+        return file;
+    }
+
+    /**
+     * @return the documentSet
+     */
+    public final MageTabDocumentSet getDocumentSet() {
+        return documentSet;
+    }
+
+    /**
+     * Parses the MAGE-TAB document, creating the object graph of entities.
+     *
+     * @throws MageTabParsingException if I/O failed reading the MAGE-TAB file.
+     */
+    protected abstract void parse() throws MageTabParsingException;
+
+    /**
+     * Instantiates a tab-delimited file reader to use to parse the contents.
+     * 
+     * @return the reader.
+     * @throws MageTabParsingException if the reader couldn't be created.
+     */
+    protected final DelimitedFileReader createTabDelimitedReader() throws MageTabParsingException {
+        try {
+            return DelimitedFileReaderFactory.INSTANCE.getTabDelimitedReader(getFile());
+        } catch (IOException e) {
+            throw new MageTabParsingException("Couldn't create the tab-delimited file reader", e);
+        }
+    }
+
+    /**
+     * Returns an <code>OntologyTerm</code> matching the category and name given. Reuses an
+     * existing matching <code>OntologyTerm</code> in the document set if one exists, 
+     * otherwise creates one.
+     * 
+     * @param category category of the term
+     * @param value value of the term
+     * @return the new or matching term.
+     */
+    protected final OntologyTerm getOntologyTerm(String category, String value) {
+        return getDocumentSet().getOntologyTerm(category, value);
+    }
+
+    /**
+     * Returns a <code>TermSource</code> that has the given name. Reuses an existing matching
+     * <code>TermSource</code> if one exists, otherwise creates one.
+     * 
+     * @param termSourceName the name of the source
+     * @return the term source
+     */
+    protected TermSource getTermSource(String termSourceName) {
+        return getDocumentSet().getTermSource(termSourceName);
+    }
 
 }

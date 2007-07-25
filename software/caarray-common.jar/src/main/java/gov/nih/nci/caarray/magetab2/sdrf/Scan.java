@@ -82,38 +82,11 @@
  */
 package gov.nih.nci.caarray.magetab2.sdrf;
 
-import gov.nih.nci.caarray.magetab2.ProtocolApplication;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 /**
- * An entity within an SDRF document -- may be a bio material, hybridization, or
- * data object.
+ * The act of scanning a hybridization to acquire an image.
  */
-public abstract class AbstractNode implements Serializable {
+public final class Scan extends AbstractSampleDataRelationshipNode {
 
-    private static final long serialVersionUID = -2710483246399354549L;
-
-    private final List<ProtocolApplication> protocolApplications =
-        new ArrayList<ProtocolApplication>();
-    private final Set<AbstractNode> successors = new HashSet<AbstractNode>();
-
-    /**
-     * @return the protocolApplications
-     */
-    public List<ProtocolApplication> getProtocolApplications() {
-        return protocolApplications;
-    }
-
-    /**
-     * @return the successors
-     */
-    public Set<AbstractNode> getSuccessors() {
-        return successors;
-    }
+    private static final long serialVersionUID = -244337508880218634L;
 
 }

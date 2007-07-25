@@ -80,163 +80,108 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab2.idf;
+package gov.nih.nci.caarray.util.io;
 
-import gov.nih.nci.caarray.magetab2.OntologyTerm;
-import gov.nih.nci.caarray.magetab2.Protocol;
-import gov.nih.nci.caarray.magetab2.sdrf.AbstractSampleDataRelationshipNode;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
+import java.io.File;
 import java.util.List;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
+
 /**
- * A microarray investigation.
+ * Provides iterator-like access, line by line, to the contents of a delimited
+ * file.
+ * 
+ * TODO Reimplement
  */
-public final class Investigation implements Serializable {
+class DelimitedFileReaderImpl implements DelimitedFileReader {
 
-    private static final long serialVersionUID = -345179453106139343L;
+    private final char delimiter;
+    private final char separator;
 
-    private String title;
-    private final List<OntologyTerm> designs = new ArrayList<OntologyTerm>();
-    private final List<ExperimentalFactor> factors = new ArrayList<ExperimentalFactor>();
-    private final List<Person> persons = new ArrayList<Person>();
-    private final List<OntologyTerm> qualityControlTypes = new ArrayList<OntologyTerm>();
-    private final List<OntologyTerm> replicateTypes = new ArrayList<OntologyTerm>();
-    private final List<OntologyTerm> normalizationTypes = new ArrayList<OntologyTerm>();
-    private Date dateOfExperiment;
-    private Date publicReleaseDate;
-    private final List<Publication> publications = new ArrayList<Publication>();
-    private String description;
-    private final List<Protocol> protocols = new ArrayList<Protocol>();
-    private final List<AbstractSampleDataRelationshipNode> entryNodes = 
-        new ArrayList<AbstractSampleDataRelationshipNode>();
-
+    private final File file;
+    private List<String> currentLineContents;
+    private String currentLine;
+    
+    private LineIterator lineIterator;
+    
     /**
-     * @return the designs
+     * Creates a new instance wrapping access to the given <code>File</code>.
+     *
+     * @param file the delimited file
+     * @param separator the field separator
+     * @param delimiter the field delimiter
+     * @throws IOException if the file couldn't be opened for reading
      */
-    public List<OntologyTerm> getDesigns() {
-        return designs;
+    public DelimitedFileReaderImpl(File file, char separator, char delimiter) throws IOException {
+        FileUtility.checkFileExists(file);
+        this.file = file;
+        this.separator = separator;
+        this.delimiter = delimiter;
+        lineIterator = FileUtils.lineIterator(file);
     }
 
     /**
-     * @return the title
+     * Indicates whether there are more lines in the file.
+     *
+     * @return true if more lines to be read.
      */
-    public String getTitle() {
-        return title;
+    public boolean hasNextLine() {
+        return lineIterator.hasNext();
     }
 
     /**
-     * @param title the title to set
+     * @param line the string to be parsed
+     * @return List of parsed strings
+     *
      */
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    /**
-     * @return the persons
-     */
-    public List<Person> getPersons() {
-        return persons;
-    }
-
-    /**
-     * @return the normalizationTypes
-     */
-    public List<OntologyTerm> getNormalizationTypes() {
-        return normalizationTypes;
-    }
-
-    /**
-     * @return the qualityControlTypes
-     */
-    public List<OntologyTerm> getQualityControlTypes() {
-        return qualityControlTypes;
-    }
-
-    /**
-     * @return the replicateTypes
-     */
-    public List<OntologyTerm> getReplicateTypes() {
-        return replicateTypes;
-    }
-
-    /**
-     * @return the publications
-     */
-    public List<Publication> getPublications() {
-        return publications;
-    }
-
-    /**
-     * @return the dateOfExperiment
-     */
-    public Date getDateOfExperiment() {
-        return dateOfExperiment;
-    }
-
-    /**
-     * @param dateOfExperiment the dateOfExperiment to set
-     */
-    public void setDateOfExperiment(Date dateOfExperiment) {
-        this.dateOfExperiment = dateOfExperiment;
-    }
-
-    /**
-     * @return the description
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * @return the publicReleaseDate
-     */
-    public Date getPublicReleaseDate() {
-        return publicReleaseDate;
-    }
-
-    /**
-     * @param publicReleaseDate the publicReleaseDate to set
-     */
-    public void setPublicReleaseDate(Date publicReleaseDate) {
-        this.publicReleaseDate = publicReleaseDate;
-    }
-
-    /**
-     * @return the protocols
-     */
-    public List<Protocol> getProtocols() {
-        return protocols;
-    }
-
-    /**
-     * @return the entryNodes
-     */
-    public List<AbstractSampleDataRelationshipNode> getEntryNodes() {
-        return entryNodes;
-    }
-
-    /**
-     * @return the factors
-     */
-    public List<ExperimentalFactor> getFactors() {
-        return factors;
-    }
-
-    ExperimentalFactor getOrCreateFactor(int index) {
-        while (factors.size() <= index) {
-            factors.add(new ExperimentalFactor());
+    private List<String> parseLine(String line) {
+        if (line == null) {
+            return null;
         }
-        return factors.get(index);
+        List<String> values = new ArrayList<String>();
+        StringBuffer stringBuffer = new StringBuffer();
+        for (int currentIndex = 0; currentIndex < line.length(); currentIndex++) {
+            char currentChar = line.charAt(currentIndex);
+            if (currentChar == separator) {
+                values.add(stringBuffer.toString());
+                stringBuffer.setLength(0);
+            } else if (currentChar == delimiter) {
+                continue;
+            } else {
+                stringBuffer.append(currentChar);
+            }
+        }
+        values.add(stringBuffer.toString());
+        return values;
+    }
+
+    /**
+     * Returns the contents of the current row and positions the reader
+     * at the next row.
+     *
+     * @return the contents of the current row.
+     */
+    public List<String> nextLine() {
+        if (lineIterator.hasNext()) {
+            currentLine = lineIterator.nextLine();
+            currentLineContents = parseLine(currentLine);
+            return currentLineContents;
+        } else {
+            currentLine = null;
+            currentLineContents = null;
+            return null;
+        }
+    }
+
+    public void reset() throws IOException {
+        currentLine = null;
+        currentLineContents = null;
+        LineIterator.closeQuietly(lineIterator);
+        lineIterator = FileUtils.lineIterator(file);
     }
 
 }

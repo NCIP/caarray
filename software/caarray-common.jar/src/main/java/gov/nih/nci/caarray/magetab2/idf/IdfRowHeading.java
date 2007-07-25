@@ -82,161 +82,226 @@
  */
 package gov.nih.nci.caarray.magetab2.idf;
 
-import gov.nih.nci.caarray.magetab2.OntologyTerm;
-import gov.nih.nci.caarray.magetab2.Protocol;
-import gov.nih.nci.caarray.magetab2.sdrf.AbstractSampleDataRelationshipNode;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import org.apache.commons.lang.StringUtils;
 
 /**
- * A microarray investigation.
+ * Enumeration of legal row headings in an IDF document.
  */
-public final class Investigation implements Serializable {
-
-    private static final long serialVersionUID = -345179453106139343L;
-
-    private String title;
-    private final List<OntologyTerm> designs = new ArrayList<OntologyTerm>();
-    private final List<ExperimentalFactor> factors = new ArrayList<ExperimentalFactor>();
-    private final List<Person> persons = new ArrayList<Person>();
-    private final List<OntologyTerm> qualityControlTypes = new ArrayList<OntologyTerm>();
-    private final List<OntologyTerm> replicateTypes = new ArrayList<OntologyTerm>();
-    private final List<OntologyTerm> normalizationTypes = new ArrayList<OntologyTerm>();
-    private Date dateOfExperiment;
-    private Date publicReleaseDate;
-    private final List<Publication> publications = new ArrayList<Publication>();
-    private String description;
-    private final List<Protocol> protocols = new ArrayList<Protocol>();
-    private final List<AbstractSampleDataRelationshipNode> entryNodes = 
-        new ArrayList<AbstractSampleDataRelationshipNode>();
+enum IdfRowHeading {
 
     /**
-     * @return the designs
+     * Investigation Title.
      */
-    public List<OntologyTerm> getDesigns() {
-        return designs;
-    }
+    INVESTIGATION_TITLE,
 
     /**
-     * @return the title
+     * Experimental Design.
      */
-    public String getTitle() {
-        return title;
-    }
+    EXPERIMENTAL_DESIGN,
 
     /**
-     * @param title the title to set
+     * Experimental Factor Name.
      */
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    EXPERIMENTAL_FACTOR_NAME,
 
     /**
-     * @return the persons
+     * Experimental Factor Type.
      */
-    public List<Person> getPersons() {
-        return persons;
-    }
+     EXPERIMENTAL_FACTOR_TYPE,
 
     /**
-     * @return the normalizationTypes
+     * Experimental Factor Term Source REF.
      */
-    public List<OntologyTerm> getNormalizationTypes() {
-        return normalizationTypes;
-    }
+     EXPERIMENTAL_FACTOR_TERM_SOURCE_REF,
 
     /**
-     * @return the qualityControlTypes
+     * Person Last Name.
      */
-    public List<OntologyTerm> getQualityControlTypes() {
-        return qualityControlTypes;
-    }
+     PERSON_LAST_NAME,
 
     /**
-     * @return the replicateTypes
+     * Person First Name.
      */
-    public List<OntologyTerm> getReplicateTypes() {
-        return replicateTypes;
-    }
+     PERSON_FIRST_NAME,
 
     /**
-     * @return the publications
+     * Person Mid Initials.
      */
-    public List<Publication> getPublications() {
-        return publications;
-    }
+     PERSON_MID_INITIALS,
 
     /**
-     * @return the dateOfExperiment
+     * Person Email.
      */
-    public Date getDateOfExperiment() {
-        return dateOfExperiment;
-    }
+     PERSON_EMAIL,
 
     /**
-     * @param dateOfExperiment the dateOfExperiment to set
+     * Person Phone.
      */
-    public void setDateOfExperiment(Date dateOfExperiment) {
-        this.dateOfExperiment = dateOfExperiment;
-    }
+     PERSON_PHONE,
 
     /**
-     * @return the description
+     * Person Fax.
      */
-    public String getDescription() {
-        return description;
-    }
+     PERSON_FAX,
 
     /**
-     * @param description the description to set
+     * Person Address.
      */
-    public void setDescription(String description) {
-        this.description = description;
-    }
+     PERSON_ADDRESS,
 
     /**
-     * @return the publicReleaseDate
+     * Person Affiliation.
      */
-    public Date getPublicReleaseDate() {
-        return publicReleaseDate;
-    }
+     PERSON_AFFILIATION,
 
     /**
-     * @param publicReleaseDate the publicReleaseDate to set
+     * Person Roles.
      */
-    public void setPublicReleaseDate(Date publicReleaseDate) {
-        this.publicReleaseDate = publicReleaseDate;
-    }
+     PERSON_ROLES,
 
     /**
-     * @return the protocols
+     * Person Roles Term Source REF.
      */
-    public List<Protocol> getProtocols() {
-        return protocols;
-    }
+     PERSON_ROLES_TERM_SOURCE_REF,
 
     /**
-     * @return the entryNodes
+     * Quality Control Type.
      */
-    public List<AbstractSampleDataRelationshipNode> getEntryNodes() {
-        return entryNodes;
-    }
+     QUALITY_CONTROL_TYPE,
 
     /**
-     * @return the factors
+     * Quality Control Term Source REF.
      */
-    public List<ExperimentalFactor> getFactors() {
-        return factors;
-    }
+     QUALITY_CONTROL_TERM_SOURCE_REF,
 
-    ExperimentalFactor getOrCreateFactor(int index) {
-        while (factors.size() <= index) {
-            factors.add(new ExperimentalFactor());
-        }
-        return factors.get(index);
+    /**
+     * Replicate Type.
+     */
+     REPLICATE_TYPE,
+
+    /**
+     * Replicate Term Source REF.
+     */
+     REPLICATE_TERM_SOURCE_REF,
+
+    /**
+     * Normalization Type.
+     */
+     NORMALIZATION_TYPE,
+
+    /**
+     * Normalization Term Source REF.
+     */
+     NORMALIZATION_TERM_SOURCE_REF,
+
+    /**
+     * Date of Experiment.
+     */
+     DATE_OF_EXPERIMENT,
+
+    /**
+     * Public Release Date.
+     */
+    PUBLIC_RELEASE_DATE,
+
+    /**
+     * PubMed ID.
+     */
+     PUBMED_ID,
+
+    /**
+     * Publication DOI.
+     */
+     PUBLICATION_DOI,
+
+    /**
+     * Publication Author List.
+     */
+     PUBLICATION_AUTHOR_LIST,
+
+    /**
+     * Publication Title.
+     */
+     PUBLICATION_TITLE,
+
+    /**
+     * Publication Status.
+     */
+     PUBLICATION_STATUS,
+
+    /**
+     * Publication Status Term Source REF.
+     */
+     PUBLICATION_STATUS_TERM_SOURCE_REF,
+
+    /**
+     * Experiment Description.
+     */
+     EXPERIMENT_DESCRIPTION,
+
+    /**
+     * Protocol Name.
+     */
+     PROTOCOL_NAME,
+
+    /**
+     * Protocol Type.
+     */
+     PROTOCOL_TYPE,
+
+    /**
+     * Protocol Description.
+     */
+     PROTOCOL_DESCRIPTION,
+
+    /**
+     * Protocol Parameters.
+     */
+     PROTOCOL_PARAMETERS,
+
+    /**
+     * Protocol Hardware.
+     */
+     PROTOCOL_HARDWARE,
+
+    /**
+     * Protocol Software.
+     */
+     PROTOCOL_SOFTWARE,
+
+    /**
+     * Protocol Contact.
+     */
+     PROTOCOL_CONTACT,
+
+    /**
+     * Protocol Term Source REF.
+     */
+     PROTOCOL_TERM_SOURCE_REF,
+
+    /**
+     * SDRF File.
+     */
+     SDRF_FILE,
+
+    /**
+     * Term Source Name.
+     */
+     TERM_SOURCE_NAME,
+
+    /**
+     * Term Source File.
+     */
+     TERM_SOURCE_FILE,
+
+    /**
+     * Term Source Version.
+     */
+     TERM_SOURCE_VERSION;
+
+    static IdfRowHeading get(String name) {
+        String enumName = StringUtils.replaceChars(name, ' ', '_').toUpperCase();
+        return valueOf(enumName);
     }
 
 }

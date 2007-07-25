@@ -94,8 +94,8 @@ import org.apache.commons.io.LineIterator;
 /**
  * Provides iterator-like access, line by line, to the contents of a tab-delimited
  * file.
- *
- * @author tavelae
+ * 
+ * TODO Flagged for destruction as soon as TabDelimitedReader is implemented and MAGE-TAB refactored.
  */
 public class TabDelimitedFile {
 

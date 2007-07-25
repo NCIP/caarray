@@ -80,163 +80,100 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab2.idf;
+package gov.nih.nci.caarray.magetab2;
 
-import gov.nih.nci.caarray.magetab2.OntologyTerm;
-import gov.nih.nci.caarray.magetab2.Protocol;
-import gov.nih.nci.caarray.magetab2.sdrf.AbstractSampleDataRelationshipNode;
+import gov.nih.nci.caarray.util.io.FileUtility;
 
+import java.io.File;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * A microarray investigation.
+ * An set of potentially interrelated MAGE-TAB document files to be validated or parsed.
  */
-public final class Investigation implements Serializable {
+public final class MageTabInputFileSet implements Serializable {
 
-    private static final long serialVersionUID = -345179453106139343L;
+    private static final long serialVersionUID = 7824150081647257549L;
 
-    private String title;
-    private final List<OntologyTerm> designs = new ArrayList<OntologyTerm>();
-    private final List<ExperimentalFactor> factors = new ArrayList<ExperimentalFactor>();
-    private final List<Person> persons = new ArrayList<Person>();
-    private final List<OntologyTerm> qualityControlTypes = new ArrayList<OntologyTerm>();
-    private final List<OntologyTerm> replicateTypes = new ArrayList<OntologyTerm>();
-    private final List<OntologyTerm> normalizationTypes = new ArrayList<OntologyTerm>();
-    private Date dateOfExperiment;
-    private Date publicReleaseDate;
-    private final List<Publication> publications = new ArrayList<Publication>();
-    private String description;
-    private final List<Protocol> protocols = new ArrayList<Protocol>();
-    private final List<AbstractSampleDataRelationshipNode> entryNodes = 
-        new ArrayList<AbstractSampleDataRelationshipNode>();
+    private final Set<File> idfFiles = new HashSet<File>();
+    private final Set<File> adfFiles = new HashSet<File>();
+    private final Set<File> sdrfFiles = new HashSet<File>();
+    private final Set<File> dataMatrixFiles = new HashSet<File>();
+    private final Set<File> nativeDataFiles = new HashSet<File>();
 
     /**
-     * @return the designs
+     * Adds the file as an IDF to the document set to be parsed.
+     *
+     * @param file the IDF
      */
-    public List<OntologyTerm> getDesigns() {
-        return designs;
+    public void addIdf(File file) {
+        checkFile(file);
+        idfFiles.add(file);
     }
 
     /**
-     * @return the title
+     * Adds the file as an ADF to the document set to be parsed.
+     *
+     * @param file the ADF
      */
-    public String getTitle() {
-        return title;
+    public void addAdf(File file) {
+        checkFile(file);
+        adfFiles.add(file);
     }
 
     /**
-     * @param title the title to set
+     * Adds the file as an SDRF to the document set to be parsed.
+     *
+     * @param file the SDRF
      */
-    public void setTitle(String title) {
-        this.title = title;
+    public void addSdrf(File file) {
+        checkFile(file);
+        sdrfFiles.add(file);
     }
 
     /**
-     * @return the persons
+     * Adds the file as a data matrix file to the document set to be parsed.
+     *
+     * @param file the data matrix file
      */
-    public List<Person> getPersons() {
-        return persons;
+    public void addDataMatrix(File file) {
+        checkFile(file);
+        dataMatrixFiles.add(file);
     }
 
     /**
-     * @return the normalizationTypes
+     * Adds the file as a native data file to the document set to be parsed.
+     *
+     * @param file the native data file
      */
-    public List<OntologyTerm> getNormalizationTypes() {
-        return normalizationTypes;
+    public void addNativeData(File file) {
+        checkFile(file);
+        nativeDataFiles.add(file);
     }
 
-    /**
-     * @return the qualityControlTypes
-     */
-    public List<OntologyTerm> getQualityControlTypes() {
-        return qualityControlTypes;
+    private void checkFile(File file) {
+        FileUtility.checkFileExists(file);
     }
 
-    /**
-     * @return the replicateTypes
-     */
-    public List<OntologyTerm> getReplicateTypes() {
-        return replicateTypes;
+    Set<File> getAdfFiles() {
+        return this.adfFiles;
     }
 
-    /**
-     * @return the publications
-     */
-    public List<Publication> getPublications() {
-        return publications;
+    Set<File> getDataMatrixFiles() {
+        return this.dataMatrixFiles;
     }
 
-    /**
-     * @return the dateOfExperiment
-     */
-    public Date getDateOfExperiment() {
-        return dateOfExperiment;
+    Set<File> getIdfFiles() {
+        return this.idfFiles;
     }
 
-    /**
-     * @param dateOfExperiment the dateOfExperiment to set
-     */
-    public void setDateOfExperiment(Date dateOfExperiment) {
-        this.dateOfExperiment = dateOfExperiment;
+    Set<File> getNativeDataFiles() {
+        return this.nativeDataFiles;
     }
 
-    /**
-     * @return the description
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * @return the publicReleaseDate
-     */
-    public Date getPublicReleaseDate() {
-        return publicReleaseDate;
-    }
-
-    /**
-     * @param publicReleaseDate the publicReleaseDate to set
-     */
-    public void setPublicReleaseDate(Date publicReleaseDate) {
-        this.publicReleaseDate = publicReleaseDate;
-    }
-
-    /**
-     * @return the protocols
-     */
-    public List<Protocol> getProtocols() {
-        return protocols;
-    }
-
-    /**
-     * @return the entryNodes
-     */
-    public List<AbstractSampleDataRelationshipNode> getEntryNodes() {
-        return entryNodes;
-    }
-
-    /**
-     * @return the factors
-     */
-    public List<ExperimentalFactor> getFactors() {
-        return factors;
-    }
-
-    ExperimentalFactor getOrCreateFactor(int index) {
-        while (factors.size() <= index) {
-            factors.add(new ExperimentalFactor());
-        }
-        return factors.get(index);
+    Set<File> getSdrfFiles() {
+        return this.sdrfFiles;
     }
 
 }

@@ -80,102 +80,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab2;
-
-import java.io.File;
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+package gov.nih.nci.caarray.magetab2.sdrf;
 
 /**
- * An set of MAGE-TAB documents that may contain interrelationships.
+ * Raw array data in native format.
  */
-public final class MageTabFileSet implements Serializable {
+public final class ArrayDataFile extends AbstractNativeFormatFile {
 
-    private static final long serialVersionUID = 7824150081647257549L;
-
-    private final Set<File> idfFiles = new HashSet<File>();
-    private final Set<File> adfFiles = new HashSet<File>();
-    private final Set<File> sdrfFiles = new HashSet<File>();
-    private final Set<File> dataMatrixFiles = new HashSet<File>();
-    private final Set<File> nativeDataFiles = new HashSet<File>();
-
-    /**
-     * Adds the file as an IDF to the document set to be parsed.
-     *
-     * @param file the IDF
-     */
-    public void addIdf(File file) {
-        checkFile(file);
-        idfFiles.add(file);
-    }
-
-    /**
-     * Adds the file as an ADF to the document set to be parsed.
-     *
-     * @param file the ADF
-     */
-    public void addAdf(File file) {
-        checkFile(file);
-        adfFiles.add(file);
-    }
-
-    /**
-     * Adds the file as an SDRF to the document set to be parsed.
-     *
-     * @param file the SDRF
-     */
-    public void addSdrf(File file) {
-        checkFile(file);
-        sdrfFiles.add(file);
-    }
-
-    /**
-     * Adds the file as a data matrix file to the document set to be parsed.
-     *
-     * @param file the data matrix file
-     */
-    public void addDataMatrix(File file) {
-        checkFile(file);
-        dataMatrixFiles.add(file);
-    }
-
-    /**
-     * Adds the file as a native data file to the document set to be parsed.
-     *
-     * @param file the native data file
-     */
-    public void addNativeData(File file) {
-        checkFile(file);
-        nativeDataFiles.add(file);
-    }
-
-    private void checkFile(File file) {
-        if (file == null) {
-            throw new IllegalArgumentException("MAGE-TAB file argument was null");
-        } else if (!file.exists()) {
-            throw new IllegalArgumentException("MAGE-TAB file doesn't exist");
-        }
-    }
-
-    Set<File> getAdfFiles() {
-        return this.adfFiles;
-    }
-
-    Set<File> getDataMatrixFiles() {
-        return this.dataMatrixFiles;
-    }
-
-    Set<File> getIdfFiles() {
-        return this.idfFiles;
-    }
-
-    Set<File> getNativeDataFiles() {
-        return this.nativeDataFiles;
-    }
-
-    Set<File> getSdrfFiles() {
-        return this.sdrfFiles;
-    }
+    private static final long serialVersionUID = -244337508880218634L;
 
 }
