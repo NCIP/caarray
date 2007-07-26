@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -82,32 +82,34 @@
  */
 package gov.nih.nci.caarray.util.io;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.LineIterator;
+import com.csvreader.CsvReader;
 
 /**
- * Provides iterator-like access, line by line, to the contents of a delimited
- * file.
- * 
- * TODO Reimplement
+ * Implementation based off of the open source library.  This class is not thread safe.
+ *
+ * @author Todd Parnell
  */
-class DelimitedFileReaderImpl implements DelimitedFileReader {
+final class CSVReaderDelimitedFileReader implements DelimitedFileReader {
 
-    private final char delimiter;
-    private final char separator;
+    private static final Log LOG = LogFactory.getLog(CSVReaderDelimitedFileReader.class);
 
+    private CsvReader reader;
+    /** Next values from the <i>client's</i> perspective. */
+    private List<String> nextValues;
     private final File file;
-    private List<String> currentLineContents;
-    private String currentLine;
-    
-    private LineIterator lineIterator;
-    
+    private final char separator;
+    private final char delimiter;
+
     /**
      * Creates a new instance wrapping access to the given <code>File</code>.
      *
@@ -116,72 +118,52 @@ class DelimitedFileReaderImpl implements DelimitedFileReader {
      * @param delimiter the field delimiter
      * @throws IOException if the file couldn't be opened for reading
      */
-    public DelimitedFileReaderImpl(File file, char separator, char delimiter) throws IOException {
-        FileUtility.checkFileExists(file);
+    public CSVReaderDelimitedFileReader(File file, char separator, char delimiter) throws IOException {
         this.file = file;
         this.separator = separator;
         this.delimiter = delimiter;
-        lineIterator = FileUtils.lineIterator(file);
+        reset();
     }
 
     /**
-     * Indicates whether there are more lines in the file.
-     *
-     * @return true if more lines to be read.
+     * {@inheritDoc}
      */
-    public boolean hasNextLine() {
-        return lineIterator.hasNext();
+    public boolean hasNextLine()  {
+        return nextValues != null;
     }
 
     /**
-     * @param line the string to be parsed
-     * @return List of parsed strings
-     *
-     */
-    private List<String> parseLine(String line) {
-        if (line == null) {
-            return null;
-        }
-        List<String> values = new ArrayList<String>();
-        StringBuffer stringBuffer = new StringBuffer();
-        for (int currentIndex = 0; currentIndex < line.length(); currentIndex++) {
-            char currentChar = line.charAt(currentIndex);
-            if (currentChar == separator) {
-                values.add(stringBuffer.toString());
-                stringBuffer.setLength(0);
-            } else if (currentChar == delimiter) {
-                continue;
-            } else {
-                stringBuffer.append(currentChar);
-            }
-        }
-        values.add(stringBuffer.toString());
-        return values;
-    }
-
-    /**
-     * Returns the contents of the current row and positions the reader
-     * at the next row.
-     *
-     * @return the contents of the current row.
+     * {@inheritDoc}
      */
     public List<String> nextLine() {
-        if (lineIterator.hasNext()) {
-            currentLine = lineIterator.nextLine();
-            currentLineContents = parseLine(currentLine);
-            return currentLineContents;
-        } else {
-            currentLine = null;
-            currentLineContents = null;
-            return null;
+        List<String> result = nextValues;
+
+        try {
+            if (reader.readRecord()) {
+                nextValues = Arrays.asList(reader.getValues());
+            } else {
+                nextValues = null;
+                reader.close();
+            }
+        } catch (IOException ioe) {
+            LOG.error("Error during nextLine: " + ioe.getMessage(), ioe);
+            nextValues = null;
+            reader.close();
         }
+
+        return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void reset() throws IOException {
-        currentLine = null;
-        currentLineContents = null;
-        LineIterator.closeQuietly(lineIterator);
-        lineIterator = FileUtils.lineIterator(file);
+        if (reader != null) {
+            reader.close();
+        }
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        reader = new CsvReader(br, separator);
+        reader.setTextQualifier(delimiter);
+        nextLine();
     }
-
 }
