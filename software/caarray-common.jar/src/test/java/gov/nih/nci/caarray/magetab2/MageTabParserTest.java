@@ -97,6 +97,7 @@ public class MageTabParserTest {
 
     private static final int SIX = 6;
     private static final int THREE = 3;
+    private static final int TWO = 2;
     private MageTabParser parser = MageTabParser.INSTANCE;
 
     /**
@@ -122,7 +123,8 @@ public class MageTabParserTest {
         Investigation investigation =
             documentSet.getIdfDocument(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()).getInvestigation();
         assertTrue(investigation.getProtocols().size() == THREE);
-        assertEquals("submitter;investigator", investigation.getPersons().get(0).getRoles().get(0).getValue());
+        assertEquals("submitter", investigation.getPersons().get(0).getRoles().get(0).getValue());
+        assertTrue(investigation.getPersons().get(0).getRoles().size() == TWO);
         assertEquals("http://mged.sourceforge.net/ontologies/MGEDontology.php",
                 investigation.getProtocols().get(0).getType().getTermSource().getFile());
         assertEquals("University of Heidelberg H sapiens TK6", investigation.getTitle());

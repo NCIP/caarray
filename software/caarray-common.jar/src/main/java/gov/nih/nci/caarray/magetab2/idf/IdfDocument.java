@@ -222,19 +222,19 @@ public final class IdfDocument extends AbstractMageTabDocument {
             handleQualityControlType(value);
             break;
         case QUALITY_CONTROL_TERM_SOURCE_REF:
-            handleQualityControlTermSourceRef(value, valueIndex);
+            handleQualityControlTermSourceRef(value);
             break;
         case REPLICATE_TYPE:
             handleReplicateType(value);
             break;
         case REPLICATE_TERM_SOURCE_REF:
-            handleReplicateTypeTermSourceRef(value, valueIndex);
+            handleReplicateTypeTermSourceRef(value);
             break;
         case NORMALIZATION_TYPE:
             handleNormalizationType(value);
             break;
         case NORMALIZATION_TERM_SOURCE_REF:
-            handleNormalizationTypeTermSourceRef(value, valueIndex);
+            handleNormalizationTypeTermSourceRef(value);
             break;
         case DATE_OF_EXPERIMENT:
             handleExperimentDate(value);
@@ -258,7 +258,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
             handlePublicationStatus(value, valueIndex);
             break;
         case PUBLICATION_STATUS_TERM_SOURCE_REF:
-            handlePublicationStatusTermSourceRef(value, valueIndex);
+            handlePublicationStatusTermSourceRef(value);
             break;
         case EXPERIMENT_DESCRIPTION:
             handleExperimentDescription(value);
@@ -285,7 +285,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
             handleProtocolContact(value, valueIndex);
             break;
         case PROTOCOL_TERM_SOURCE_REF:
-            handleProtocolTermSourceRef(value, valueIndex);
+            handleProtocolTermSourceRef(value);
             break;
         case SDRF_FILE:
            // TODO handleSdrfFile(value, valueIndex);
@@ -347,9 +347,13 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
 
-    private void handleProtocolTermSourceRef(String value, int valueIndex) {
-        investigation.getProtocols().get(valueIndex).getType().setTermSource(getTermSource(value));
-
+    private void handleProtocolTermSourceRef(String value) {
+        if (!value.trim().equals("")) {
+            Iterator<Protocol> protocols = investigation.getProtocols().iterator();
+            while (protocols.hasNext()) {
+                protocols.next().getType().setTermSource(getTermSource(value));
+            }
+        }
     }
 
     private void handleTitle(String title) {
@@ -433,13 +437,23 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handlePersonRole(String value, int valueIndex) {
-        investigation.getOrCreatePerson(valueIndex).getRoles()
-                .add(getMgedOntologyTerm(IdfOntologyCategory.PERSON_ROLE, value));
+        List<String> roles = new ArrayList<String>();
+        java.util.Scanner scanner = new java.util.Scanner(value).useDelimiter(";");
+        while (scanner.hasNext()) {
+            roles.add(scanner.next());
+        }
+        Iterator<String> rolesIter = roles.iterator();
+        while (rolesIter.hasNext()) {
+            investigation.getOrCreatePerson(valueIndex).getRoles()
+                .add(getMgedOntologyTerm(IdfOntologyCategory.PERSON_ROLE, rolesIter.next()));
+        }
     }
 
     private void handlePersonRoleTermSourceRef(String value, int valueIndex) {
-        Person person = investigation.getPersons().get(valueIndex);
-        person.getRoles().get(valueIndex).setTermSource(getTermSource(value));
+        Iterator<OntologyTerm> roles = investigation.getPersons().get(valueIndex).getRoles().iterator();
+        while (roles.hasNext()) {
+            roles.next().setTermSource(getTermSource(value));
+        }
     }
 
     private void handlePubMedId(String value, int valueIndex) {
@@ -463,8 +477,13 @@ public final class IdfDocument extends AbstractMageTabDocument {
             .setStatus(getMgedOntologyTerm(IdfOntologyCategory.PUBLICATION_STATUS, value));
     }
 
-    private void handlePublicationStatusTermSourceRef(String value, int valueIndex) {
-        investigation.getOrCreatePublication(valueIndex).getStatus().setTermSource(getTermSource(value));
+    private void handlePublicationStatusTermSourceRef(String value) {
+        if (!value.trim().equals("")) {
+            Iterator<Publication> publications = investigation.getPublications().iterator();
+            while (publications.hasNext()) {
+                publications.next().getStatus().setTermSource(getTermSource(value));
+            }
+        }
     }
 
     private void handleQualityControlType(String value) {
@@ -472,24 +491,39 @@ public final class IdfDocument extends AbstractMageTabDocument {
                 getMgedOntologyTerm(IdfOntologyCategory.QUALITY_CONTROL_TYPE, value));
     }
 
-    private void handleQualityControlTermSourceRef(String value, int valueIndex) {
-        investigation.getQualityControlTypes().get(valueIndex).setTermSource(getTermSource(value));
+    private void handleQualityControlTermSourceRef(String value) {
+        if (!value.trim().equals("")) {
+            Iterator<OntologyTerm> qcTypes = investigation.getQualityControlTypes().iterator();
+            while (qcTypes.hasNext()) {
+                qcTypes.next().setTermSource(getTermSource(value));
+            }
+        }
     }
 
     private void handleReplicateType(String value) {
         investigation.getReplicateTypes().add(getMgedOntologyTerm(IdfOntologyCategory.REPLICATE_TYPE, value));
     }
 
-    private void handleReplicateTypeTermSourceRef(String value, int valueIndex) {
-        investigation.getReplicateTypes().get(valueIndex).setTermSource(getTermSource(value));
+    private void handleReplicateTypeTermSourceRef(String value) {
+        if (!value.trim().equals("")) {
+            Iterator<OntologyTerm> replTypes = investigation.getReplicateTypes().iterator();
+            while (replTypes.hasNext()) {
+                replTypes.next().setTermSource(getTermSource(value));
+            }
+        }
     }
 
     private void handleNormalizationType(String value) {
         investigation.getNormalizationTypes().add(getMgedOntologyTerm(IdfOntologyCategory.NORMALIZATION_TYPE, value));
     }
 
-    private void handleNormalizationTypeTermSourceRef(String value, int valueIndex) {
-        investigation.getNormalizationTypes().get(valueIndex).setTermSource(getTermSource(value));
+    private void handleNormalizationTypeTermSourceRef(String value) {
+        if (!value.trim().equals("")) {
+            Iterator<OntologyTerm> normTypes = investigation.getNormalizationTypes().iterator();
+            while (normTypes.hasNext()) {
+                normTypes.next().setTermSource(getTermSource(value));
+            }
+        }
     }
 
     private void handleTermSourceName(String value, int valueIndex) {
