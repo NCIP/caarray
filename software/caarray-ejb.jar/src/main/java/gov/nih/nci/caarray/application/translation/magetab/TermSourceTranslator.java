@@ -82,12 +82,9 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 
-import gov.nih.nci.caarray.dao.VocabularyDao;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.vocabulary.Source;
 import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab2.TermSource;
@@ -100,13 +97,13 @@ final class TermSourceTranslator {
 
     private final MageTabDocumentSet documentSet;
     private final MageTabTranslationResult translationResult;
-    private final VocabularyDao vocabularyDao;
+    private final VocabularyService vocabularyService;
 
     TermSourceTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
-            VocabularyDao vocabularyDao) {
+            VocabularyService vocabularyService) {
                 this.documentSet = documentSet;
                 this.translationResult = translationResult;
-                this.vocabularyDao = vocabularyDao;
+                this.vocabularyService = vocabularyService;
     }
 
     void translate() {
@@ -122,19 +119,11 @@ final class TermSourceTranslator {
         } else {
             updateSource(source, termSource);
         }
-        translationResult.addTerm(termSource, source);
+        translationResult.addSource(termSource, source);
     }
 
     private Source getExistingSource(TermSource termSource) {
-        Source searchSource = new Source();
-        // TODO Implement based on LSID
-        searchSource.setName(termSource.getName());
-        List<AbstractCaArrayEntity> sources = vocabularyDao.queryEntityByExample(searchSource);
-        if (sources.isEmpty()) {
-            return null;
-        } else {
-            return (Source) sources.get(0);
-        }
+        return vocabularyService.getSource(termSource.getName());
     }
 
     private Source createSource(TermSource termSource) {

@@ -106,7 +106,7 @@ final class TermTranslator {
                 this.service = service;
     }
 
-    void translateTerms() {
+    void translate() {
         for (OntologyTerm ontologyTerm : documentSet.getTerms()) {
             translateTerm(ontologyTerm);
         }
@@ -114,23 +114,27 @@ final class TermTranslator {
 
     private void translateTerm(OntologyTerm ontologyTerm) {
         Source source = service.getSource(ontologyTerm.getTermSource().getName());
-        Category category = getOrAddCategory(source, ontologyTerm.getCategory());
-        Term term = getOrAddTerm(source, category, ontologyTerm.getValue());
+        Category category = getOrCreateCategory(source, ontologyTerm.getCategory());
+        Term term = getOrCreateTerm(source, category, ontologyTerm.getValue());
         translationResult.addTerm(ontologyTerm, term);
     }
 
-    private Category getOrAddCategory(Source source, String categoryName) {
+    private Category getOrCreateCategory(Source source, String categoryName) {
         Category category = service.getCategory(source, categoryName);
         if (category == null) {
-            category = service.createCategory(source, categoryName);
+            category = new Category();
+            category.setName(categoryName);
         }
         return category;
     }
 
-    private Term getOrAddTerm(Source source, Category category, String value) {
+    private Term getOrCreateTerm(Source source, Category category, String value) {
         Term term = service.getTerm(source, category, value);
         if (term == null) {
-            term = service.createTerm(source, category, value);
+            term = new Term();
+            term.setSource(source);
+            term.setCategory(category);
+            term.setValue(value);
         }
         return term;
     }
