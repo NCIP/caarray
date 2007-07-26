@@ -73,6 +73,7 @@ public class NetcdfDataStoreDescriptor extends AbstractDataStoreDescriptor {
     /**
      * @return list of columns
      */
+    @Override
     public final List<Column> getColumns() {
 
         return columns;

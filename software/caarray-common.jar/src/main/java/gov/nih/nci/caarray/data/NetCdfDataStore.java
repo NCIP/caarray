@@ -489,7 +489,7 @@ public class NetCdfDataStore implements DataStore {
     private List<Array> columnsToArrays(List<ArrayList<?>> columns) {
         List<Array> returnList = new ArrayList<Array>();
         for (int i = 0; i < columns.size(); i++) {
-            ArrayList column = columns.get(i);
+            ArrayList<?> column = columns.get(i);
             String colType = column.get(0).getClass().getSimpleName();
             if (colType.equals("Float")) {
                 ArrayFloat array = (ArrayFloat) Array.factory(float.class, new int[] {column.size()});

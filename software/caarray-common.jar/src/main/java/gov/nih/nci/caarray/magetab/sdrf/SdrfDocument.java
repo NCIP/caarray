@@ -110,6 +110,7 @@ public class SdrfDocument extends AbstractMageTabDocument {
      * @param file the File
      * @throws MageTabTextFileLoaderException exception
      */
+    @Override
     public void load(File file) throws MageTabTextFileLoaderException {
         setFileUtil(new TabDelimitedFile(file));
         SdrfFileParser parser = SdrfFileParser.create();

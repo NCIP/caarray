@@ -194,6 +194,7 @@ public class Array extends AbstractCaArrayEntity {
      * @param obj the object to compare to this object
      * @return true if they are equal, false if they are not
      */
+    @Override
     public boolean equals(final Object obj) {
         boolean theyAreEqual = false;
         if (obj instanceof gov.nih.nci.caarray.domain.array.Array) {
@@ -212,6 +213,7 @@ public class Array extends AbstractCaArrayEntity {
      *
      * @return the int hashcode
      */
+    @Override
     public int hashCode() {
         int theHashCode = 0;
         if (getId() != null) {

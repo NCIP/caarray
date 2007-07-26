@@ -97,6 +97,7 @@ public class Unit extends AbstractTerm {
         super(column, value);
     }
 
+    @Override
     void link(AbstractSdrfEntry linkTo) {
         LOG.debug("Unit link method - need to implement");
     }

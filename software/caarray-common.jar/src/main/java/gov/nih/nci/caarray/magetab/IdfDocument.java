@@ -288,6 +288,7 @@ public class IdfDocument extends AbstractMageTabDocument {
      * @param file the File
      * @throws MageTabTextFileLoaderException exception
      */
+    @Override
     public void load(File file) throws MageTabTextFileLoaderException {
         setFileUtil(new TabDelimitedFile(file));
         IdfFileParser parser = IdfFileParser.create();

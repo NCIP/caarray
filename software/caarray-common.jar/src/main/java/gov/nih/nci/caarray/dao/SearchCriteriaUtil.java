@@ -148,7 +148,7 @@ public final class SearchCriteriaUtil {
      */
     private static void addCriterionForAssociation(AbstractCaArrayEntity entityToMatch, Criteria criteria,
       Property prop) throws IllegalAccessException, InvocationTargetException {
-            Class objClass = entityToMatch.getClass();
+            Class<?> objClass = entityToMatch.getClass();
             String fieldName = prop.getName();
             boolean isCollectionType = prop.getType().isCollectionType();
             if (isCollectionType) {

@@ -83,7 +83,11 @@
 
 package gov.nih.nci.caarray.domain.project;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
  /**
   * A microarray project.
@@ -129,14 +133,14 @@ public class Project extends AbstractCaArrayEntity {
     /**
      * The files set.
      */
-    private final java.util.Collection files = new java.util.HashSet();
+    private final Collection<CaArrayFile> files = new HashSet<CaArrayFile>();
 
     /**
      * Gets the files.
      *
      * @return the files
      */
-    public java.util.Collection getFiles() {
+    public Collection<CaArrayFile> getFiles() {
         return files;
     }
 
@@ -145,8 +149,7 @@ public class Project extends AbstractCaArrayEntity {
      *
      * @param filesVal the files
      */
-    @SuppressWarnings("unchecked")
-    public void setFiles(final java.util.Collection filesVal) {
+    public void setFiles(final Collection<CaArrayFile> filesVal) {
         this.files.addAll(filesVal);
     }
 
@@ -156,6 +159,7 @@ public class Project extends AbstractCaArrayEntity {
      * @param obj the object to compare to this object
      * @return true if they are equal, false if they are not
      */
+    @Override
     public boolean equals(final Object obj) {
         boolean theyAreEqual = false;
         if (obj instanceof gov.nih.nci.caarray.domain.project.Project) {
@@ -174,6 +178,7 @@ public class Project extends AbstractCaArrayEntity {
      *
      * @return the int hashcode
      */
+    @Override
     public int hashCode() {
         int theHashCode = 0;
         if (getId() != null) {

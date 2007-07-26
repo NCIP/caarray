@@ -153,20 +153,24 @@ public class VocabularyServiceTest {
      *
      */
     class MockEVSUtility extends EVSUtility {
+        @Override
         public ApplicationService getApplicationInstance() {
             return ApplicationService.getRemoteInstance("http://yahoo.com");
         }
     }
 
     class MockVSBeanForEVSException extends VocabularyServiceBean {
+        @Override
         public VocabularyDao getVocabularyDao() {
             return new MockVocabularyDao();
         }
+        @Override
         public EVSUtility getEVSUtility() {
             return new MockEVSUtility();
         }
     }
     class MockVocabularyServiceBean extends VocabularyServiceBean {
+        @Override
         public VocabularyDao getVocabularyDao() {
             return new MockVocabularyDao();
         }
@@ -174,31 +178,41 @@ public class VocabularyServiceTest {
     public class MockVocabularyDao extends VocabularyDaoImpl {
 
 
+        @Override
         public List<Term> getTerms(String categoryName) throws DAOException {
             return new ArrayList<Term>();
         }
+        @Override
         public Set<Term> getTermsRecursive(String categoryName) throws DAOException {
             throw new DAOException("This is a test exception");
         }
 
+        @Override
         public Category getCategory(String name) throws DAOException {
             return null;
         }
+        @Override
         public void save(AbstractCaArrayEntity caArrayEntity) throws DAOException {
         }
+        @Override
         public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) throws DAOException {
         }
+        @Override
         public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
             return new ArrayList<AbstractCaArrayEntity>();
         }
+        @Override
         public List<AbstractCaArrayEntity> queryEntityAndAssociationsByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
             return new ArrayList<AbstractCaArrayEntity>();
         }
+        @Override
         public AbstractCaArrayEntity queryEntityById(AbstractCaArrayEntity entityToMatch) throws DAOException {
             return null;
         }
+        @Override
         public void remove(AbstractCaArrayEntity caArrayEntity) throws DAOException {
         }
+        @Override
         public void removeTerms(List<Term> entityList) throws DAOException {
         }
     }

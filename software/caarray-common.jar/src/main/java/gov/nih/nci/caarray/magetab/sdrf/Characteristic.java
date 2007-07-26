@@ -106,6 +106,7 @@ public class Characteristic extends AbstractTerm {
         return unit;
     }
 
+    @Override
     void link(AbstractSdrfEntry linkTo) {
         ((AbstractBioMaterial) linkTo).addCharacteristic(this);
     }

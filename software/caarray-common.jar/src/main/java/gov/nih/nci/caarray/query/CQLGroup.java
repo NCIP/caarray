@@ -128,7 +128,7 @@ public class CQLGroup implements java.io.Serializable {
      *
      * @return associations in this CQL group.
      */
-    public Collection getAssociationCollection() {
+    public Collection<CQLAssociation> getAssociationCollection() {
         return associationCollection;
     }
 
@@ -146,7 +146,7 @@ public class CQLGroup implements java.io.Serializable {
      *
      * @return attributes in this CQL group.
      */
-    public Collection getAttributeCollection() {
+    public Collection<CQLAttribute> getAttributeCollection() {
         return attributeCollection;
     }
 
@@ -164,7 +164,7 @@ public class CQLGroup implements java.io.Serializable {
      *
      * @return groups in this CQL group.
      */
-    public Collection getGroupCollection() {
+    public Collection<CQLGroup> getGroupCollection() {
         return groupCollection;
     }
 

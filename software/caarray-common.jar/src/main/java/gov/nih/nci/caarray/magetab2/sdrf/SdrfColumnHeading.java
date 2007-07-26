@@ -88,7 +88,7 @@ import org.apache.commons.lang.StringUtils;
  * Enumeration of legal row headings in an IDF document.
  */
 enum SdrfColumnHeading {
-    
+
     /**
      * Source Name.
      */
@@ -223,14 +223,14 @@ enum SdrfColumnHeading {
      * Comment.
      */
     COMMENT;
-    
-    private final Class nodeClass;
+
+    private final Class<?> nodeClass;
 
     SdrfColumnHeading() {
         this(null);
     }
 
-    SdrfColumnHeading(Class nodeClass) {
+    SdrfColumnHeading(Class<?> nodeClass) {
         this.nodeClass = nodeClass;
     }
 
@@ -239,7 +239,7 @@ enum SdrfColumnHeading {
         return valueOf(enumName);
     }
 
-    Class getNodeClass() {
+    Class<?> getNodeClass() {
         return nodeClass;
     }
 

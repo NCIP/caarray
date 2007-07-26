@@ -80,8 +80,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package gov.nih.nci.caarray.domain.data;
+
+import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
+
+import java.util.Collection;
+import java.util.HashSet;
 
   /**
 
@@ -119,14 +124,14 @@ public class Image extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
     /**
      * The protocolApplications set.
      */
-    private final java.util.Collection protocolApplications = new java.util.HashSet();
+    private final Collection<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
 
     /**
      * Gets the protocolApplications.
      *
      * @return the protocolApplications
      */
-    public java.util.Collection getProtocolApplications() {
+    public Collection<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }
 
@@ -135,10 +140,9 @@ public class Image extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
      *
      * @param protocolApplicationsVal the protocolApplications
      */
-    @SuppressWarnings("unchecked")
-    public void setProtocolApplications(final java.util.Collection protocolApplicationsVal) {
+    public void setProtocolApplications(final Collection<ProtocolApplication> protocolApplicationsVal) {
         this.protocolApplications.addAll(protocolApplicationsVal);
-    }    
+    }
 
     /**
      * The imageFile gov.nih.nci.caarray.domain.file.CaArrayFile.
@@ -151,7 +155,7 @@ public class Image extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
      * @return the imageFile
      */
     public gov.nih.nci.caarray.domain.file.CaArrayFile getImageFile() {
-        return imageFile;    
+        return imageFile;
     }
 
     /**
@@ -159,7 +163,7 @@ public class Image extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
      *
      * @param imageFileVal the imageFile
      */
-    public void setImageFile(final 
+    public void setImageFile(final
       gov.nih.nci.caarray.domain.file.CaArrayFile imageFileVal) {
         this.imageFile = imageFileVal;
     }
@@ -170,12 +174,13 @@ public class Image extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
      * @param obj the object to compare to this object
      * @return true if they are equal, false if they are not
      */
+    @Override
     public boolean equals(final Object obj) {
         boolean theyAreEqual = false;
         if (obj instanceof gov.nih.nci.caarray.domain.data.Image) {
             final gov.nih.nci.caarray.domain.data.Image castObject =
-                (gov.nih.nci.caarray.domain.data.Image) obj;                  
-            Long thisId = getId();        
+                (gov.nih.nci.caarray.domain.data.Image) obj;
+            Long thisId = getId();
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;
             }
@@ -188,6 +193,7 @@ public class Image extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
      *
      * @return the int hashcode
      */
+    @Override
     public int hashCode() {
         int theHashCode = 0;
         if (getId() != null) {

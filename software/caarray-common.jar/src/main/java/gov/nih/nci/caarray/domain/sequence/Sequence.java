@@ -80,10 +80,14 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package gov.nih.nci.caarray.domain.sequence;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.vocabulary.Accession;
 
 /**
  */
@@ -166,14 +170,14 @@ public class Sequence extends AbstractCaArrayEntity  {
     /**
      * The accessions set.
      */
-    private final java.util.Collection accessions = new java.util.HashSet();
+    private final Collection<Accession> accessions = new HashSet<Accession>();
 
     /**
      * Gets the accessions.
      *
      * @return the accessions
      */
-    public java.util.Collection getAccessions() {
+    public Collection<Accession> getAccessions() {
         return accessions;
     }
 
@@ -182,10 +186,9 @@ public class Sequence extends AbstractCaArrayEntity  {
      *
      * @param accessionsVal the accessions
      */
-    @SuppressWarnings("unchecked")
-    public void setAccessions(final java.util.Collection accessionsVal) {
+    public void setAccessions(final Collection<Accession> accessionsVal) {
         this.accessions.addAll(accessionsVal);
-    }    
+    }
 
     /**
      * Checks if given object is equal to this object.
@@ -193,12 +196,13 @@ public class Sequence extends AbstractCaArrayEntity  {
      * @param obj the object to compare to this object
      * @return true if they are equal, false if they are not
      */
+    @Override
     public boolean equals(final Object obj) {
         boolean theyAreEqual = false;
         if (obj instanceof gov.nih.nci.caarray.domain.sequence.Sequence) {
             final gov.nih.nci.caarray.domain.sequence.Sequence castObject =
-                (gov.nih.nci.caarray.domain.sequence.Sequence) obj;                  
-            Long thisId = getId();        
+                (gov.nih.nci.caarray.domain.sequence.Sequence) obj;
+            Long thisId = getId();
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;
             }
@@ -211,6 +215,7 @@ public class Sequence extends AbstractCaArrayEntity  {
      *
      * @return the int hashcode
      */
+    @Override
     public int hashCode() {
         int theHashCode = 0;
         if (getId() != null) {

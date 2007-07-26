@@ -96,6 +96,7 @@ public class Provider extends AbstractAttribute {
     Provider(SdrfColumn column, String value) {
         super(column, value);
     }
+    @Override
     void link(AbstractSdrfEntry linkTo) {
         LOG.debug("Provider link method - need to implement");
     }

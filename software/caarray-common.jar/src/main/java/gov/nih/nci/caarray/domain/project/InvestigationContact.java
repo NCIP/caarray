@@ -83,7 +83,11 @@
 
 package gov.nih.nci.caarray.domain.project;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
   /**
 
@@ -123,14 +127,14 @@ public class InvestigationContact extends AbstractCaArrayEntity {
     /**
      * The roles set.
      */
-    private final java.util.Collection roles = new java.util.HashSet();
+    private final Collection<Term> roles = new HashSet<Term>();
 
     /**
      * Gets the roles.
      *
      * @return the roles
      */
-    public java.util.Collection getRoles() {
+    public Collection<Term> getRoles() {
         return roles;
     }
 
@@ -139,8 +143,7 @@ public class InvestigationContact extends AbstractCaArrayEntity {
      *
      * @param rolesVal the roles
      */
-    @SuppressWarnings("unchecked")
-    public void setRoles(final java.util.Collection rolesVal) {
+    public void setRoles(final Collection<Term> rolesVal) {
         this.roles.addAll(rolesVal);
     }
 
@@ -150,6 +153,7 @@ public class InvestigationContact extends AbstractCaArrayEntity {
      * @param obj the object to compare to this object
      * @return true if they are equal, false if they are not
      */
+    @Override
     public boolean equals(final Object obj) {
         boolean theyAreEqual = false;
         if (obj instanceof gov.nih.nci.caarray.domain.project.InvestigationContact) {
@@ -168,6 +172,7 @@ public class InvestigationContact extends AbstractCaArrayEntity {
      *
      * @return the int hashcode
      */
+    @Override
     public int hashCode() {
         int theHashCode = 0;
         if (getId() != null) {

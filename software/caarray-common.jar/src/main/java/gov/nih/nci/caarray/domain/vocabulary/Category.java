@@ -80,8 +80,11 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package gov.nih.nci.caarray.domain.vocabulary;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
@@ -129,7 +132,7 @@ public class Category extends AbstractCaArrayEntity {
      * @return the parent
      */
     public gov.nih.nci.caarray.domain.vocabulary.Category getParent() {
-        return parent;    
+        return parent;
     }
 
     /**
@@ -137,7 +140,7 @@ public class Category extends AbstractCaArrayEntity {
      *
      * @param parentVal the parent
      */
-    public void setParent(final 
+    public void setParent(final
       gov.nih.nci.caarray.domain.vocabulary.Category parentVal) {
         this.parent = parentVal;
     }
@@ -145,14 +148,14 @@ public class Category extends AbstractCaArrayEntity {
     /**
      * The children set.
      */
-    private final java.util.Collection children = new java.util.HashSet();
+    private final Collection<Category> children = new HashSet<Category>();
 
     /**
      * Gets the children.
      *
      * @return the children
      */
-    public java.util.Collection getChildren() {
+    public Collection<Category> getChildren() {
         return children;
     }
 
@@ -161,10 +164,9 @@ public class Category extends AbstractCaArrayEntity {
      *
      * @param childrenVal the children
      */
-    @SuppressWarnings("unchecked")
-    public void setChildren(final java.util.Collection childrenVal) {
+    public void setChildren(final Collection<Category> childrenVal) {
         this.children.addAll(childrenVal);
-    }    
+    }
 
     /**
      * Checks if given object is equal to this object.
@@ -172,12 +174,13 @@ public class Category extends AbstractCaArrayEntity {
      * @param obj the object to compare to this object
      * @return true if they are equal, false if they are not
      */
+    @Override
     public boolean equals(final Object obj) {
         boolean theyAreEqual = false;
         if (obj instanceof gov.nih.nci.caarray.domain.vocabulary.Category) {
             final gov.nih.nci.caarray.domain.vocabulary.Category castObject =
-                (gov.nih.nci.caarray.domain.vocabulary.Category) obj;                  
-            Long thisId = getId();        
+                (gov.nih.nci.caarray.domain.vocabulary.Category) obj;
+            Long thisId = getId();
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;
             }
@@ -190,6 +193,7 @@ public class Category extends AbstractCaArrayEntity {
      *
      * @return the int hashcode
      */
+    @Override
     public int hashCode() {
         int theHashCode = 0;
         if (getId() != null) {

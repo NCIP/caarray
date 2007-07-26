@@ -160,6 +160,7 @@ public final class CQLPredicate implements java.io.Serializable {
      * @param obj the CQL condition predicate to compare to this one.
      * @return true if the two condition predicates have the same value, and false otherwise.
      */
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof CQLPredicate) {
             return ((CQLPredicate) obj).getValue().equals(value);
@@ -173,6 +174,7 @@ public final class CQLPredicate implements java.io.Serializable {
      *
      * @return a hashcode for this CQL condition predicate.
      */
+    @Override
     public int hashCode() {
         return toString().hashCode();
     }
@@ -182,6 +184,7 @@ public final class CQLPredicate implements java.io.Serializable {
      *
      * @return a String representation of this CQL condition predicate.
      */
+    @Override
     public String toString() {
         return value;
     }

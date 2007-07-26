@@ -124,6 +124,7 @@ public final class CQLLogicalOperator implements java.io.Serializable {
      * @param obj the CQL logical operator to compare to this one.
      * @return true if the two logical operators have the same value, and false otherwise.
      */
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof CQLLogicalOperator) {
             return ((CQLLogicalOperator) obj).getValue().equals(value);
@@ -137,6 +138,7 @@ public final class CQLLogicalOperator implements java.io.Serializable {
      *
      * @return a hashcode for this CQL logical operator.
      */
+    @Override
     public int hashCode() {
         return toString().hashCode();
     }
@@ -146,6 +148,7 @@ public final class CQLLogicalOperator implements java.io.Serializable {
      *
      * @return a String representation of this CQL logical operator.
      */
+    @Override
     public String toString() {
         return value;
     }

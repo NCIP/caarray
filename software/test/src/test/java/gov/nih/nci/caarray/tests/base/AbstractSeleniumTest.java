@@ -92,6 +92,7 @@ import com.thoughtworks.selenium.SeleneseTestCase;
  */
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
+    @Override
     public void setUp() throws Exception {
         System.setProperty("selenium.port", "8081");
         String hostname = System.getProperty("test.hostname", "localhost");

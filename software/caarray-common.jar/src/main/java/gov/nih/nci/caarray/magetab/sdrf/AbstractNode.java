@@ -134,6 +134,7 @@ abstract class AbstractNode extends AbstractSdrfEntry {
         linkedNodes.add(theNode);
         
     }
+    @Override
     void link(AbstractSdrfEntry linkTo) {
         ((AbstractNode) linkTo).setLinkedNode(this);
 }

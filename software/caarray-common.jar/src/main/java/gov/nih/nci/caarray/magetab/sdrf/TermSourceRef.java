@@ -116,6 +116,7 @@ public class TermSourceRef extends AbstractAttribute {
         this.termSource = termSource;
     }
 
+    @Override
     void link(AbstractSdrfEntry linkTo) {
         ((AbstractTerm) (linkTo)).setTermSourceRef(this);
     }

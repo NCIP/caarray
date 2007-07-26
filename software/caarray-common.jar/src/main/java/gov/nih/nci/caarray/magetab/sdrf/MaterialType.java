@@ -97,6 +97,7 @@ public class MaterialType extends AbstractTerm {
         super(column, value);
     }
 
+    @Override
     void link(AbstractSdrfEntry at) {
         if (at instanceof TermSourceRef) {
             setTermSourceRef((TermSourceRef) (at));

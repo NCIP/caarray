@@ -80,8 +80,15 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package gov.nih.nci.caarray.domain.hybridization;
+
+import gov.nih.nci.caarray.domain.data.Image;
+import gov.nih.nci.caarray.domain.project.FactorValue;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+
+import java.util.Collection;
+import java.util.HashSet;
 
   /**
 
@@ -119,14 +126,14 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
     /**
      * The images set.
      */
-    private final java.util.Collection images = new java.util.HashSet();
+    private final Collection<Image> images = new HashSet<Image>();
 
     /**
      * Gets the images.
      *
      * @return the images
      */
-    public java.util.Collection getImages() {
+    public Collection<Image> getImages() {
         return images;
     }
 
@@ -135,10 +142,9 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
      *
      * @param imagesVal the images
      */
-    @SuppressWarnings("unchecked")
-    public void setImages(final java.util.Collection imagesVal) {
+    public void setImages(final Collection<Image> imagesVal) {
         this.images.addAll(imagesVal);
-    }    
+    }
 
     /**
      * The arrayData gov.nih.nci.caarray.domain.data.RawArrayData.
@@ -151,7 +157,7 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
      * @return the arrayData
      */
     public gov.nih.nci.caarray.domain.data.RawArrayData getArrayData() {
-        return arrayData;    
+        return arrayData;
     }
 
     /**
@@ -159,7 +165,7 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
      *
      * @param arrayDataVal the arrayData
      */
-    public void setArrayData(final 
+    public void setArrayData(final
       gov.nih.nci.caarray.domain.data.RawArrayData arrayDataVal) {
         this.arrayData = arrayDataVal;
     }
@@ -175,7 +181,7 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
      * @return the array
      */
     public gov.nih.nci.caarray.domain.array.Array getArray() {
-        return array;    
+        return array;
     }
 
     /**
@@ -183,7 +189,7 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
      *
      * @param arrayVal the array
      */
-    public void setArray(final 
+    public void setArray(final
       gov.nih.nci.caarray.domain.array.Array arrayVal) {
         this.array = arrayVal;
     }
@@ -199,7 +205,7 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
      * @return the derivedData
      */
     public gov.nih.nci.caarray.domain.data.DerivedArrayData getDerivedData() {
-        return derivedData;    
+        return derivedData;
     }
 
     /**
@@ -207,7 +213,7 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
      *
      * @param derivedDataVal the derivedData
      */
-    public void setDerivedData(final 
+    public void setDerivedData(final
       gov.nih.nci.caarray.domain.data.DerivedArrayData derivedDataVal) {
         this.derivedData = derivedDataVal;
     }
@@ -215,14 +221,14 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
     /**
      * The factorValues set.
      */
-    private final java.util.Collection factorValues = new java.util.HashSet();
+    private final Collection<FactorValue> factorValues = new HashSet<FactorValue>();
 
     /**
      * Gets the factorValues.
      *
      * @return the factorValues
      */
-    public java.util.Collection getFactorValues() {
+    public Collection<FactorValue> getFactorValues() {
         return factorValues;
     }
 
@@ -231,10 +237,9 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
      *
      * @param factorValuesVal the factorValues
      */
-    @SuppressWarnings("unchecked")
-    public void setFactorValues(final java.util.Collection factorValuesVal) {
+    public void setFactorValues(final Collection<FactorValue> factorValuesVal) {
         this.factorValues.addAll(factorValuesVal);
-    }    
+    }
 
     /**
      * The protocolApplication gov.nih.nci.caarray.domain.protocol.ProtocolApplication.
@@ -247,7 +252,7 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
      * @return the protocolApplication
      */
     public gov.nih.nci.caarray.domain.protocol.ProtocolApplication getProtocolApplication() {
-        return protocolApplication;    
+        return protocolApplication;
     }
 
     /**
@@ -255,7 +260,7 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
      *
      * @param protocolApplicationVal the protocolApplication
      */
-    public void setProtocolApplication(final 
+    public void setProtocolApplication(final
       gov.nih.nci.caarray.domain.protocol.ProtocolApplication protocolApplicationVal) {
         this.protocolApplication = protocolApplicationVal;
     }
@@ -263,14 +268,14 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
     /**
      * The labeledExtract set.
      */
-    private final java.util.Collection labeledExtract = new java.util.HashSet();
+    private final Collection<LabeledExtract> labeledExtract = new HashSet<LabeledExtract>();
 
     /**
      * Gets the labeledExtract.
      *
      * @return the labeledExtract
      */
-    public java.util.Collection getLabeledExtract() {
+    public Collection<LabeledExtract> getLabeledExtract() {
         return labeledExtract;
     }
 
@@ -279,10 +284,9 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
      *
      * @param labeledExtractVal the labeledExtract
      */
-    @SuppressWarnings("unchecked")
-    public void setLabeledExtract(final java.util.Collection labeledExtractVal) {
+    public void setLabeledExtract(final Collection<LabeledExtract> labeledExtractVal) {
         this.labeledExtract.addAll(labeledExtractVal);
-    }    
+    }
 
     /**
      * Checks if given object is equal to this object.
@@ -290,12 +294,13 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
      * @param obj the object to compare to this object
      * @return true if they are equal, false if they are not
      */
+    @Override
     public boolean equals(final Object obj) {
         boolean theyAreEqual = false;
         if (obj instanceof gov.nih.nci.caarray.domain.hybridization.Hybridization) {
             final gov.nih.nci.caarray.domain.hybridization.Hybridization castObject =
-                (gov.nih.nci.caarray.domain.hybridization.Hybridization) obj;                  
-            Long thisId = getId();        
+                (gov.nih.nci.caarray.domain.hybridization.Hybridization) obj;
+            Long thisId = getId();
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;
             }
@@ -308,6 +313,7 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
      *
      * @return the int hashcode
      */
+    @Override
     public int hashCode() {
         int theHashCode = 0;
         if (getId() != null) {

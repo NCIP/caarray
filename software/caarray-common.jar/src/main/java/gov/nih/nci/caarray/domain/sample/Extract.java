@@ -80,8 +80,11 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package gov.nih.nci.caarray.domain.sample;
+
+import java.util.Collection;
+import java.util.HashSet;
 
   /**
 
@@ -97,14 +100,14 @@ public class Extract extends AbstractBioMaterial {
     /**
      * The samples set.
      */
-    private final java.util.Collection samples = new java.util.HashSet();
+    private final Collection<Sample> samples = new HashSet<Sample>();
 
     /**
      * Gets the samples.
      *
      * @return the samples
      */
-    public java.util.Collection getSamples() {
+    public Collection<Sample> getSamples() {
         return samples;
     }
 
@@ -113,22 +116,21 @@ public class Extract extends AbstractBioMaterial {
      *
      * @param samplesVal the samples
      */
-    @SuppressWarnings("unchecked")
-    public void setSamples(final java.util.Collection samplesVal) {
+    public void setSamples(final Collection<Sample> samplesVal) {
         this.samples.addAll(samplesVal);
-    }    
+    }
 
     /**
      * The labeledExtracts set.
      */
-    private final java.util.Collection labeledExtracts = new java.util.HashSet();
+    private final Collection<LabeledExtract> labeledExtracts = new HashSet<LabeledExtract>();
 
     /**
      * Gets the labeledExtracts.
      *
      * @return the labeledExtracts
      */
-    public java.util.Collection getLabeledExtracts() {
+    public Collection<LabeledExtract> getLabeledExtracts() {
         return labeledExtracts;
     }
 
@@ -137,10 +139,9 @@ public class Extract extends AbstractBioMaterial {
      *
      * @param labeledExtractsVal the labeledExtracts
      */
-    @SuppressWarnings("unchecked")
-    public void setLabeledExtracts(final java.util.Collection labeledExtractsVal) {
+    public void setLabeledExtracts(final Collection<LabeledExtract> labeledExtractsVal) {
         this.labeledExtracts.addAll(labeledExtractsVal);
-    }    
+    }
 
     /**
      * Checks if given object is equal to this object.
@@ -148,12 +149,13 @@ public class Extract extends AbstractBioMaterial {
      * @param obj the object to compare to this object
      * @return true if they are equal, false if they are not
      */
+    @Override
     public boolean equals(final Object obj) {
         boolean theyAreEqual = false;
         if (obj instanceof gov.nih.nci.caarray.domain.sample.Extract) {
             final gov.nih.nci.caarray.domain.sample.Extract castObject =
-                (gov.nih.nci.caarray.domain.sample.Extract) obj;                  
-            Long thisId = getId();        
+                (gov.nih.nci.caarray.domain.sample.Extract) obj;
+            Long thisId = getId();
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;
             }
@@ -166,6 +168,7 @@ public class Extract extends AbstractBioMaterial {
      *
      * @return the int hashcode
      */
+    @Override
     public int hashCode() {
         int theHashCode = 0;
         if (getId() != null) {

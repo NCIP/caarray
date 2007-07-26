@@ -108,6 +108,7 @@ public class ParameterValue extends AbstractAttribute {
         return parameter;
     }
 
+    @Override
     void link(AbstractSdrfEntry linkTo) {
         ((ProtocolRef) (linkTo)).addParamterValue(this);
     }

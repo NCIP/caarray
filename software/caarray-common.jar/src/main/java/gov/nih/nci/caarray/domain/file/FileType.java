@@ -173,6 +173,7 @@ public final class FileType implements Serializable  {
      *
      * @return the name of the file type
      */
+    @Override
     public String toString() {
         return name;
     }

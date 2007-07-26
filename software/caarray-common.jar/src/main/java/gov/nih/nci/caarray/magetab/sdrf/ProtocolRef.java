@@ -112,6 +112,7 @@ public class ProtocolRef extends AbstractTerm {
         return protocol;
     }
 
+    @Override
     void link(AbstractSdrfEntry linkTo) {
         ((AbstractNode) linkTo).addProtocolRef(this);
     }

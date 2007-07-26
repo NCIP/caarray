@@ -83,24 +83,30 @@
 
 package gov.nih.nci.caarray.domain.project;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.array.Array;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.publication.Publication;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 /**
- * 
+ *
  */
 public class Investigation extends AbstractCaArrayEntity {
-    
+
     /**
      * The serial version UID for serialization.
      */
     private static final long serialVersionUID = 1234567890L;
-    private static final String UNCHECKED = "unchecked";
 
     private java.util.Date dateOfExperiment;
 
     /**
      * Creates a new, empty <code>Investigation</code>.
-     * 
+     *
      * @return the initialized <code>Investigation</code>.
      */
     public static Investigation createNew() {
@@ -194,14 +200,14 @@ public class Investigation extends AbstractCaArrayEntity {
     /**
      * The qualityControlTypes set.
      */
-    private final java.util.Collection qualityControlTypes = new java.util.HashSet();
+    private final Collection<Term> qualityControlTypes = new HashSet<Term>();
 
     /**
      * Gets the qualityControlTypes.
      *
      * @return the qualityControlTypes
      */
-    public java.util.Collection getQualityControlTypes() {
+    public Collection<Term> getQualityControlTypes() {
         return qualityControlTypes;
     }
 
@@ -210,22 +216,21 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param qualityControlTypesVal the qualityControlTypes
      */
-    @SuppressWarnings(UNCHECKED)
-    public void setQualityControlTypes(final java.util.Collection qualityControlTypesVal) {
+    public void setQualityControlTypes(final Collection<Term> qualityControlTypesVal) {
         this.qualityControlTypes.addAll(qualityControlTypesVal);
     }
 
     /**
      * The publications set.
      */
-    private final java.util.Collection publications = new java.util.HashSet();
+    private final Collection<Publication> publications = new HashSet<Publication>();
 
     /**
      * Gets the publications.
      *
      * @return the publications
      */
-    public java.util.Collection getPublications() {
+    public Collection<Publication> getPublications() {
         return publications;
     }
 
@@ -234,22 +239,21 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param publicationsVal the publications
      */
-    @SuppressWarnings(UNCHECKED)
-    public void setPublications(final java.util.Collection publicationsVal) {
+    public void setPublications(final Collection<Publication> publicationsVal) {
         this.publications.addAll(publicationsVal);
     }
 
     /**
      * The replicateTypes set.
      */
-    private final java.util.Collection replicateTypes = new java.util.HashSet();
+    private final Collection<Term> replicateTypes = new HashSet<Term>();
 
     /**
      * Gets the replicateTypes.
      *
      * @return the replicateTypes
      */
-    public java.util.Collection getReplicateTypes() {
+    public Collection<Term> getReplicateTypes() {
         return replicateTypes;
     }
 
@@ -258,22 +262,21 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param replicateTypesVal the replicateTypes
      */
-    @SuppressWarnings(UNCHECKED)
-    public void setReplicateTypes(final java.util.Collection replicateTypesVal) {
+    public void setReplicateTypes(final Collection<Term> replicateTypesVal) {
         this.replicateTypes.addAll(replicateTypesVal);
     }
 
     /**
      * The arrayDesigns set.
      */
-    private final java.util.Collection arrayDesigns = new java.util.HashSet();
+    private final Collection<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
 
     /**
      * Gets the arrayDesigns.
      *
      * @return the arrayDesigns
      */
-    public java.util.Collection getArrayDesigns() {
+    public Collection<ArrayDesign> getArrayDesigns() {
         return arrayDesigns;
     }
 
@@ -282,22 +285,21 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param arrayDesignsVal the arrayDesigns
      */
-    @SuppressWarnings(UNCHECKED)
-    public void setArrayDesigns(final java.util.Collection arrayDesignsVal) {
+    public void setArrayDesigns(final Collection<ArrayDesign> arrayDesignsVal) {
         this.arrayDesigns.addAll(arrayDesignsVal);
     }
 
     /**
      * The investigationContacts set.
      */
-    private final java.util.Collection investigationContacts = new java.util.HashSet();
+    private final Collection<InvestigationContact> investigationContacts = new HashSet<InvestigationContact>();
 
     /**
      * Gets the investigationContacts.
      *
      * @return the investigationContacts
      */
-    public java.util.Collection getInvestigationContacts() {
+    public Collection<InvestigationContact> getInvestigationContacts() {
         return investigationContacts;
     }
 
@@ -306,22 +308,21 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param investigationContactsVal the investigationContacts
      */
-    @SuppressWarnings(UNCHECKED)
-    public void setInvestigationContacts(final java.util.Collection investigationContactsVal) {
+    public void setInvestigationContacts(final Collection<InvestigationContact> investigationContactsVal) {
         this.investigationContacts.addAll(investigationContactsVal);
     }
 
     /**
      * The factors set.
      */
-    private final java.util.Collection factors = new java.util.HashSet();
+    private final Collection<Factor> factors = new HashSet<Factor>();
 
     /**
      * Gets the factors.
      *
      * @return the factors
      */
-    public java.util.Collection getFactors() {
+    public Collection<Factor> getFactors() {
         return factors;
     }
 
@@ -330,22 +331,21 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param factorsVal the factors
      */
-    @SuppressWarnings(UNCHECKED)
-    public void setFactors(final java.util.Collection factorsVal) {
+    public void setFactors(final Collection<Factor> factorsVal) {
         this.factors.addAll(factorsVal);
     }
 
     /**
      * The normalizationTypes set.
      */
-    private final java.util.Collection normalizationTypes = new java.util.HashSet();
+    private final Collection<Term> normalizationTypes = new HashSet<Term>();
 
     /**
      * Gets the normalizationTypes.
      *
      * @return the normalizationTypes
      */
-    public java.util.Collection getNormalizationTypes() {
+    public Collection<Term> getNormalizationTypes() {
         return normalizationTypes;
     }
 
@@ -354,22 +354,21 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param normalizationTypesVal the normalizationTypes
      */
-    @SuppressWarnings(UNCHECKED)
-    public void setNormalizationTypes(final java.util.Collection normalizationTypesVal) {
+    public void setNormalizationTypes(final Collection<Term> normalizationTypesVal) {
         this.normalizationTypes.addAll(normalizationTypesVal);
     }
 
     /**
      * The arrays set.
      */
-    private final java.util.Collection arrays = new java.util.HashSet();
+    private final Collection<Array> arrays = new HashSet<Array>();
 
     /**
      * Gets the arrays.
      *
      * @return the arrays
      */
-    public java.util.Collection getArrays() {
+    public Collection<Array> getArrays() {
         return arrays;
     }
 
@@ -378,8 +377,7 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param arraysVal the arrays
      */
-    @SuppressWarnings(UNCHECKED)
-    public void setArrays(final java.util.Collection arraysVal) {
+    public void setArrays(final Collection<Array> arraysVal) {
         this.arrays.addAll(arraysVal);
     }
 
@@ -389,6 +387,7 @@ public class Investigation extends AbstractCaArrayEntity {
      * @param obj the object to compare to this object
      * @return true if they are equal, false if they are not
      */
+    @Override
     public boolean equals(final Object obj) {
         boolean theyAreEqual = false;
         if (obj instanceof gov.nih.nci.caarray.domain.project.Investigation) {
@@ -407,6 +406,7 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @return the int hashcode
      */
+    @Override
     public int hashCode() {
         int theHashCode = 0;
         if (getId() != null) {

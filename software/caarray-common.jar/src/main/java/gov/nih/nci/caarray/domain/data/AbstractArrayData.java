@@ -80,8 +80,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package gov.nih.nci.caarray.domain.data;
+
+import java.util.Collection;
+import java.util.HashSet;
+
+import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 
   /**
 
@@ -119,14 +124,14 @@ public abstract class AbstractArrayData extends gov.nih.nci.caarray.domain.Abstr
     /**
      * The protocolApplications set.
      */
-    private final java.util.Collection protocolApplications = new java.util.HashSet();
+    private final Collection<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
 
     /**
      * Gets the protocolApplications.
      *
      * @return the protocolApplications
      */
-    public java.util.Collection getProtocolApplications() {
+    public Collection<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }
 
@@ -135,10 +140,9 @@ public abstract class AbstractArrayData extends gov.nih.nci.caarray.domain.Abstr
      *
      * @param protocolApplicationsVal the protocolApplications
      */
-    @SuppressWarnings("unchecked")
-    public void setProtocolApplications(final java.util.Collection protocolApplicationsVal) {
+    public void setProtocolApplications(final Collection<ProtocolApplication> protocolApplicationsVal) {
         this.protocolApplications.addAll(protocolApplicationsVal);
-    }    
+    }
 
     /**
      * Checks if given object is equal to this object.
@@ -146,12 +150,13 @@ public abstract class AbstractArrayData extends gov.nih.nci.caarray.domain.Abstr
      * @param obj the object to compare to this object
      * @return true if they are equal, false if they are not
      */
+    @Override
     public boolean equals(final Object obj) {
         boolean theyAreEqual = false;
         if (obj instanceof gov.nih.nci.caarray.domain.data.AbstractArrayData) {
             final gov.nih.nci.caarray.domain.data.AbstractArrayData castObject =
-                (gov.nih.nci.caarray.domain.data.AbstractArrayData) obj;                  
-            Long thisId = getId();        
+                (gov.nih.nci.caarray.domain.data.AbstractArrayData) obj;
+            Long thisId = getId();
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;
             }
@@ -164,6 +169,7 @@ public abstract class AbstractArrayData extends gov.nih.nci.caarray.domain.Abstr
      *
      * @return the int hashcode
      */
+    @Override
     public int hashCode() {
         int theHashCode = 0;
         if (getId() != null) {

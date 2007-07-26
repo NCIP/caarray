@@ -80,9 +80,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package gov.nih.nci.caarray.domain.sample;
 
+import java.util.Collection;
+import java.util.HashSet;
+
+import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
   /**
@@ -165,14 +169,14 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
     /**
      * The characteristics set.
      */
-    private final java.util.Collection characteristics = new java.util.HashSet();
+    private final Collection<Characteristic> characteristics = new HashSet<Characteristic>();
 
     /**
      * Gets the characteristics.
      *
      * @return the characteristics
      */
-    public java.util.Collection getCharacteristics() {
+    public Collection<Characteristic> getCharacteristics() {
         return characteristics;
     }
 
@@ -181,22 +185,21 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @param characteristicsVal the characteristics
      */
-    @SuppressWarnings("unchecked")
-    public void setCharacteristics(final java.util.Collection characteristicsVal) {
+    public void setCharacteristics(final Collection<Characteristic> characteristicsVal) {
         this.characteristics.addAll(characteristicsVal);
-    }    
+    }
 
     /**
      * The protocolApplications set.
      */
-    private final java.util.Collection protocolApplications = new java.util.HashSet();
+    private final Collection<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
 
     /**
      * Gets the protocolApplications.
      *
      * @return the protocolApplications
      */
-    public java.util.Collection getProtocolApplications() {
+    public Collection<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }
 
@@ -205,10 +208,9 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @param protocolApplicationsVal the protocolApplications
      */
-    @SuppressWarnings("unchecked")
-    public void setProtocolApplications(final java.util.Collection protocolApplicationsVal) {
+    public void setProtocolApplications(final Collection<ProtocolApplication> protocolApplicationsVal) {
         this.protocolApplications.addAll(protocolApplicationsVal);
-    }    
+    }
 
     /**
      * Checks if given object is equal to this object.
@@ -216,12 +218,13 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      * @param obj the object to compare to this object
      * @return true if they are equal, false if they are not
      */
+    @Override
     public boolean equals(final Object obj) {
         boolean theyAreEqual = false;
         if (obj instanceof AbstractBioMaterial) {
             final AbstractBioMaterial castObject =
-                (AbstractBioMaterial) obj;                  
-            Long thisId = getId();        
+                (AbstractBioMaterial) obj;
+            Long thisId = getId();
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;
             }
@@ -234,6 +237,7 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @return the int hashcode
      */
+    @Override
     public int hashCode() {
         int theHashCode = 0;
         if (getId() != null) {

@@ -104,7 +104,7 @@ public final class CQL2HQL {
     private static final String SOURCE_ASSOC_ALIAS = "parent";
     private static final String TARGET_ASSOC_ALIAS = "child";
     private static final ThreadLocal<StringBuffer> HQL_HOLDER = new ThreadLocal<StringBuffer>();
-    private static final ThreadLocal<List> PARAMS_HOLDER = new ThreadLocal<List>();
+    private static final ThreadLocal<List<Object>> PARAMS_HOLDER = new ThreadLocal<List<Object>>();
     private static final ThreadLocal<Boolean> CASE_HOLDER = new ThreadLocal<Boolean>();
 
     /**
@@ -128,7 +128,7 @@ public final class CQL2HQL {
             throws QueryException {
         StringBuffer hql = new StringBuffer();
         HQL_HOLDER.set(hql);
-        List parameters = new ArrayList();
+        List<Object> parameters = new ArrayList<Object>();
         PARAMS_HOLDER.set(parameters);
         Boolean caseSensitivity = Boolean.valueOf(caseSensitive);
         CASE_HOLDER.set(caseSensitivity);
@@ -439,10 +439,10 @@ public final class CQL2HQL {
     private static void processGroups(String parentName, CQLGroup group, boolean useAlias,
       String logicalOp) throws QueryException {
         StringBuffer hql = HQL_HOLDER.get();
-        Iterator iterator = group.getGroupCollection().iterator();
+        Iterator<CQLGroup> iterator = group.getGroupCollection().iterator();
         while (iterator.hasNext()) {
             hql.append("( ");
-            processGroup(parentName, (CQLGroup) iterator.next(), useAlias);
+            processGroup(parentName, iterator.next(), useAlias);
             hql.append(" )");
             if (iterator.hasNext()) {
                 hql.append(" " + logicalOp + " ");
@@ -454,10 +454,10 @@ public final class CQL2HQL {
       boolean useAlias, String logicalOp) throws QueryException {
         StringBuffer hql = HQL_HOLDER.get();
         boolean logicalOpClauseNeeded = false;
-        Iterator iterator = group.getAssociationCollection().iterator();
+        Iterator<CQLAssociation> iterator = group.getAssociationCollection().iterator();
         while (iterator.hasNext()) {
             logicalOpClauseNeeded = true;
-            processAssociation(parentName, (CQLAssociation) iterator.next(), useAlias);
+            processAssociation(parentName, iterator.next(), useAlias);
             if (iterator.hasNext()) {
                 hql.append(" " + logicalOp + " ");
             }
@@ -470,10 +470,10 @@ public final class CQL2HQL {
         StringBuffer hql = HQL_HOLDER.get();
         boolean logicalOpClauseNeeded = false;
 
-        Iterator iterator = group.getAttributeCollection().iterator();
+        Iterator<CQLAttribute> iterator = group.getAttributeCollection().iterator();
         while (iterator.hasNext()) {
             logicalOpClauseNeeded = true;
-            processAttribute(parentName, (CQLAttribute) iterator.next(), useAlias);
+            processAttribute(parentName, iterator.next(), useAlias);
             if (iterator.hasNext()) {
                 hql.append(" " + logicalOp + " ");
             }

@@ -116,7 +116,7 @@ public class FileTypeUserType implements UserType {
      *
      * @return the class of the object this user type is persisting.
      */
-    public Class returnedClass() {
+    public Class<?> returnedClass() {
         return FileType.class;
     }
 

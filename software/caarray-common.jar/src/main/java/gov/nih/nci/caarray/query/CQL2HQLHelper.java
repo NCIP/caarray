@@ -101,7 +101,7 @@ import java.util.Set;
  */
 public final class CQL2HQLHelper {
     private static Map<CQLPredicate, String> predicateValues;
-    private static Map<String, Class> classCache;
+    private static Map<String, Class<?>> classCache;
     private static Map<String, Field[]> fieldCache;
     private static Map<String, Method[]> setterMethodCache;
     private static final int NUM_LETTERS_IN_SET = 3;
@@ -125,7 +125,7 @@ public final class CQL2HQLHelper {
         String roleName = assoc.getTargetRoleName();
         if (roleName == null) {
             // determine role based on object's type
-            Class parentClass = getParentClass(parentName);
+            Class<?> parentClass = getParentClass(parentName);
             String associationTypeName = assoc.getName();
 
             // search the fields of the right type
@@ -139,7 +139,7 @@ public final class CQL2HQLHelper {
         return roleName;
     }
 
-    private static String searchSetterMethods(Class parentClass, String associationTypeName) throws QueryException {
+    private static String searchSetterMethods(Class<?> parentClass, String associationTypeName) throws QueryException {
         String roleName = null;
 
         Method[] setters = getSettersForTypeFromCache(parentClass, associationTypeName);
@@ -158,7 +158,7 @@ public final class CQL2HQLHelper {
         return roleName;
     }
 
-    private static String searchFields(Class parentClass, String associationTypeName)
+    private static String searchFields(Class<?> parentClass, String associationTypeName)
       throws QueryException {
         String roleName = null;
 
@@ -174,8 +174,8 @@ public final class CQL2HQLHelper {
         return roleName;
     }
 
-    private static Class getParentClass(String parentName) throws QueryException {
-        Class parentClass = null;
+    private static Class<?> getParentClass(String parentName) throws QueryException {
+        Class<?> parentClass = null;
         try {
             parentClass = getClassFromCache(parentName);
         } catch (Exception ex) {
@@ -205,9 +205,9 @@ public final class CQL2HQLHelper {
         }
     }
 
-    static Class getClassFromCache(String name) throws ClassNotFoundException {
+    static Class<?> getClassFromCache(String name) throws ClassNotFoundException {
         initClassCache();
-        Class klass = classCache.get(name);
+        Class<?> klass = classCache.get(name);
         if (klass == null) {
             klass = Class.forName(name);
             classCache.put(name, klass);
@@ -217,11 +217,11 @@ public final class CQL2HQLHelper {
 
     private static synchronized void initClassCache() {
         if (classCache == null) {
-            classCache = new HashMap<String, Class>();
+            classCache = new HashMap<String, Class<?>>();
         }
     }
 
-    static Field[] getFieldsOfTypeFromCache(Class klass, String name) {
+    static Field[] getFieldsOfTypeFromCache(Class<?> klass, String name) {
         String key = klass.getName() + "," + name;
         initFieldCache();
         Field[] fieldCollection = fieldCache.get(name);
@@ -238,7 +238,7 @@ public final class CQL2HQLHelper {
         }
     }
 
-    static Method[] getSettersForTypeFromCache(Class klass, String name) {
+    static Method[] getSettersForTypeFromCache(Class<?> klass, String name) {
         String key = klass.getName() + "," + name;
         initSetterMethodCache();
         Method[] methodCollection = setterMethodCache.get(name);
@@ -262,17 +262,17 @@ public final class CQL2HQLHelper {
      * @param typeName the name of the type to search for.
      * @return an array of fields from the class and its superclasses, of the given type.
      */
-    static Field[] getFieldsOfType(Class clazz, String typeName) {
+    static Field[] getFieldsOfType(Class<?> clazz, String typeName) {
         Set<Field> allFields = new HashSet<Field>();
-        Class checkClass = clazz;
+        Class<?> checkClass = clazz;
         while (checkClass != null) {
             addDeclaredFields(allFields, checkClass);
             checkClass = checkClass.getSuperclass();
         }
         List<Field> namedFields = new ArrayList<Field>();
-        Iterator fieldIter = allFields.iterator();
+        Iterator<Field> fieldIter = allFields.iterator();
         while (fieldIter.hasNext()) {
-            Field field = (Field) fieldIter.next();
+            Field field = fieldIter.next();
             if (field.getType().getName().equals(typeName)) {
                 namedFields.add(field);
             }
@@ -282,7 +282,7 @@ public final class CQL2HQLHelper {
         return fieldArray;
     }
 
-    private static void addDeclaredFields(Set<Field> allFields, Class checkClass) {
+    private static void addDeclaredFields(Set<Field> allFields, Class<?> checkClass) {
         Field[] classFields = checkClass.getDeclaredFields();
         if (classFields != null) {
             for (int i = 0; i < classFields.length; i++) {
@@ -291,9 +291,9 @@ public final class CQL2HQLHelper {
         }
     }
 
-    static Method[] getSettersForType(Class clazz, String typeName) {
+    static Method[] getSettersForType(Class<?> clazz, String typeName) {
         Set<Method> allMethods = new HashSet<Method>();
-        Class checkClass = clazz;
+        Class<?> checkClass = clazz;
         while (checkClass != null) {
             addDeclaredMethods(typeName, allMethods, checkClass);
             checkClass = checkClass.getSuperclass();
@@ -303,7 +303,7 @@ public final class CQL2HQLHelper {
         return methodArray;
     }
 
-    private static void addDeclaredMethods(String typeName, Set<Method> allMethods, Class checkClass) {
+    private static void addDeclaredMethods(String typeName, Set<Method> allMethods, Class<?> checkClass) {
         Method[] classMethods = checkClass.getDeclaredMethods();
         for (int i = 0; i < classMethods.length; i++) {
             Method current = classMethods[i];
@@ -313,7 +313,7 @@ public final class CQL2HQLHelper {
 
     private static void addIfPublicAndHasRightParamType(String typeName, Set<Method> allMethods, Method current) {
         if ((current.getName().startsWith("set")) && (Modifier.isPublic(current.getModifiers()))) {
-            Class[] paramTypes = current.getParameterTypes();
+            Class<?>[] paramTypes = current.getParameterTypes();
             if ((paramTypes.length == 1) && (paramTypes[0].getName().equals(typeName))) {
                 allMethods.add(current);
             }
@@ -322,8 +322,8 @@ public final class CQL2HQLHelper {
 
     static boolean existInheritance(String parent, String child) throws QueryException {
         try {
-            Class parentClass = getClassFromCache(parent);
-            Class childClass = getClassFromCache(child);
+            Class<?> parentClass = getClassFromCache(parent);
+            Class<?> childClass = getClassFromCache(child);
             if (childClass.getSuperclass().getName().equals(parent)
                     || parentClass.getSuperclass().getName().equals(child)) {
                 return true;
@@ -340,9 +340,9 @@ public final class CQL2HQLHelper {
      * @param clazz the class to explore for typed fields.
      * @return an array of fields from the class and its superclasses.
      */
-    static Field[] getFields(Class clazz) {
+    static Field[] getFields(Class<?> clazz) {
         Set<Field> allFields = new HashSet<Field>();
-        Class checkClass = clazz;
+        Class<?> checkClass = clazz;
         while (checkClass != null) {
             Field[] classFields = checkClass.getDeclaredFields();
             if (classFields != null) {
@@ -379,7 +379,7 @@ public final class CQL2HQLHelper {
             classFields = getFields(getClassFromCache(className));
             for (int i = 0; i < classFields.length; i++) {
                 if (classFields[i].getName().equals(attribName)) {
-                    Class type = classFields[i].getType();
+                    Class<?> type = classFields[i].getType();
                     if ("java.util.Collection".equals(type.getName())) {
                         return true;
                     }

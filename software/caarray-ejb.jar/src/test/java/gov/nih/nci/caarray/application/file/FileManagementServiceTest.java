@@ -99,6 +99,7 @@ public class FileManagementServiceTest {
     }
 
     class FileServiceBeanStub extends FileManagementServiceBean {
+        @Override
         public FileAccessService getFileAccessService() {
             return new FileAccessBeanStub();
         }
