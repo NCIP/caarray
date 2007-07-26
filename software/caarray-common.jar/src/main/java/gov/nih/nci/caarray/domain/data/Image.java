@@ -85,8 +85,8 @@ package gov.nih.nci.caarray.domain.data;
 
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
   /**
 
@@ -99,16 +99,16 @@ public class Image extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 
     /**
-     * The name java.lang.String.
+     * The name String.
      */
-    private java.lang.String name;
+    private String name;
 
     /**
      * Gets the name.
      *
      * @return the name
      */
-    public java.lang.String getName() {
+    public String getName() {
         return name;
     }
 
@@ -117,21 +117,21 @@ public class Image extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
      *
      * @param nameVal the name
      */
-    public void setName(final java.lang.String nameVal) {
+    public void setName(final String nameVal) {
         this.name = nameVal;
     }
 
     /**
      * The protocolApplications set.
      */
-    private final Collection<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
+    private Set<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
 
     /**
      * Gets the protocolApplications.
      *
      * @return the protocolApplications
      */
-    public Collection<ProtocolApplication> getProtocolApplications() {
+    public Set<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }
 
@@ -140,8 +140,9 @@ public class Image extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
      *
      * @param protocolApplicationsVal the protocolApplications
      */
-    public void setProtocolApplications(final Collection<ProtocolApplication> protocolApplicationsVal) {
-        this.protocolApplications.addAll(protocolApplicationsVal);
+    @SuppressWarnings("unused")
+    private void setProtocolApplications(final Set<ProtocolApplication> protocolApplicationsVal) { // NOPMD
+        this.protocolApplications = protocolApplicationsVal;
     }
 
     /**

@@ -80,7 +80,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package gov.nih.nci.caarray.domain.sample;
 
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -118,16 +118,16 @@ public class Characteristic extends gov.nih.nci.caarray.domain.AbstractCaArrayEn
         this.term = termVal;
     }
     /**
-     * The value java.lang.String.
+     * The value String.
      */
-    private java.lang.String value;
+    private String value;
 
     /**
      * Gets the value.
      *
      * @return the value
      */
-    public java.lang.String getValue() {
+    public String getValue() {
         return value;
     }
 
@@ -136,7 +136,7 @@ public class Characteristic extends gov.nih.nci.caarray.domain.AbstractCaArrayEn
      *
      * @param valueVal the value
      */
-    public void setValue(final java.lang.String valueVal) {
+    public void setValue(final String valueVal) {
         this.value = valueVal;
     }
     /**
@@ -173,8 +173,8 @@ public class Characteristic extends gov.nih.nci.caarray.domain.AbstractCaArrayEn
         boolean theyAreEqual = false;
         if (obj instanceof gov.nih.nci.caarray.domain.sample.Characteristic) {
             final gov.nih.nci.caarray.domain.sample.Characteristic castObject =
-                (gov.nih.nci.caarray.domain.sample.Characteristic) obj;                  
-            Long thisId = getId();        
+                (gov.nih.nci.caarray.domain.sample.Characteristic) obj;
+            Long thisId = getId();
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;
             }

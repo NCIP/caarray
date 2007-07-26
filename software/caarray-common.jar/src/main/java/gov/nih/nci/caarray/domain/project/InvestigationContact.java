@@ -83,11 +83,11 @@
 
 package gov.nih.nci.caarray.domain.project;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+
+import java.util.HashSet;
+import java.util.Set;
 
   /**
 
@@ -127,14 +127,14 @@ public class InvestigationContact extends AbstractCaArrayEntity {
     /**
      * The roles set.
      */
-    private final Collection<Term> roles = new HashSet<Term>();
+    private Set<Term> roles = new HashSet<Term>();
 
     /**
      * Gets the roles.
      *
      * @return the roles
      */
-    public Collection<Term> getRoles() {
+    public Set<Term> getRoles() {
         return roles;
     }
 
@@ -143,8 +143,8 @@ public class InvestigationContact extends AbstractCaArrayEntity {
      *
      * @param rolesVal the roles
      */
-    public void setRoles(final Collection<Term> rolesVal) {
-        this.roles.addAll(rolesVal);
+    public void setRoles(final Set<Term> rolesVal) {
+        this.roles = rolesVal;
     }
 
     /**

@@ -83,6 +83,9 @@
 
 package gov.nih.nci.caarray.domain.contact;
 
+import java.util.Collection;
+import java.util.HashSet;
+
   /**
 
    */
@@ -138,16 +141,16 @@ public class Person extends AbstractContact {
         this.lastName = lastNameVal;
     }
     /**
-     * The middleInitials java.lang.String.
+     * The middleInitials String.
      */
-    private java.lang.String middleInitials;
+    private String middleInitials;
 
     /**
      * Gets the middleInitials.
      *
      * @return the middleInitials
      */
-    public java.lang.String getMiddleInitials() {
+    public String getMiddleInitials() {
         return middleInitials;
     }
 
@@ -156,21 +159,21 @@ public class Person extends AbstractContact {
      *
      * @param middleInitialsVal the middleInitials
      */
-    public void setMiddleInitials(final java.lang.String middleInitialsVal) {
+    public void setMiddleInitials(final String middleInitialsVal) {
         this.middleInitials = middleInitialsVal;
     }
 
     /**
      * The affiliations set.
      */
-    private final java.util.Collection affiliations = new java.util.HashSet();
+    private final Collection<Object> affiliations = new HashSet<Object>();
 
     /**
      * Gets the affiliations.
      *
      * @return the affiliations
      */
-    public java.util.Collection getAffiliations() {
+    public Collection<Object> getAffiliations() {
         return affiliations;
     }
 
@@ -180,7 +183,7 @@ public class Person extends AbstractContact {
      * @param affiliationsVal the affiliations
      */
     @SuppressWarnings("unchecked")
-    public void setAffiliations(final java.util.Collection affiliationsVal) {
+    public void setAffiliations(final Collection<Object> affiliationsVal) {
         this.affiliations.addAll(affiliationsVal);
     }
 

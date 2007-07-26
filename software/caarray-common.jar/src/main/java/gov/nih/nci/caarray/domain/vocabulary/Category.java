@@ -83,10 +83,10 @@
 
 package gov.nih.nci.caarray.domain.vocabulary;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+
+import java.util.HashSet;
+import java.util.Set;
 
   /**
 
@@ -148,14 +148,14 @@ public class Category extends AbstractCaArrayEntity {
     /**
      * The children set.
      */
-    private final Collection<Category> children = new HashSet<Category>();
+    private Set<Category> children = new HashSet<Category>();
 
     /**
      * Gets the children.
      *
      * @return the children
      */
-    public Collection<Category> getChildren() {
+    public Set<Category> getChildren() {
         return children;
     }
 
@@ -164,8 +164,9 @@ public class Category extends AbstractCaArrayEntity {
      *
      * @param childrenVal the children
      */
-    public void setChildren(final Collection<Category> childrenVal) {
-        this.children.addAll(childrenVal);
+    @SuppressWarnings("unused")
+    private void setChildren(final Set<Category> childrenVal) { // NOPMD
+        this.children = childrenVal;
     }
 
     /**

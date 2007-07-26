@@ -83,8 +83,8 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
   /**
 
@@ -100,14 +100,14 @@ public class Sample extends AbstractBioMaterial {
     /**
      * The sources set.
      */
-    private final Collection<Source> sources = new HashSet<Source>();
+    private Set<Source> sources = new HashSet<Source>();
 
     /**
      * Gets the sources.
      *
      * @return the sources
      */
-    public Collection<Source> getSources() {
+    public Set<Source> getSources() {
         return sources;
     }
 
@@ -116,21 +116,22 @@ public class Sample extends AbstractBioMaterial {
      *
      * @param sourcesVal the sources
      */
-    public void setSources(final Collection<Source> sourcesVal) {
-        this.sources.addAll(sourcesVal);
+    @SuppressWarnings("unused")
+    private void setSources(final Set<Source> sourcesVal) { // NOPMD
+        this.sources = sourcesVal;
     }
 
     /**
      * The extracts set.
      */
-    private final Collection<Extract> extracts = new HashSet<Extract>();
+    private Set<Extract> extracts = new HashSet<Extract>();
 
     /**
      * Gets the extracts.
      *
      * @return the extracts
      */
-    public Collection<Extract> getExtracts() {
+    public Set<Extract> getExtracts() {
         return extracts;
     }
 
@@ -139,8 +140,9 @@ public class Sample extends AbstractBioMaterial {
      *
      * @param extractsVal the extracts
      */
-    public void setExtracts(final Collection<Extract> extractsVal) {
-        this.extracts.addAll(extractsVal);
+    @SuppressWarnings("unused")
+    private void setExtracts(final Set<Extract> extractsVal) { // NOPMD
+        this.extracts = extractsVal;
     }
 
     /**

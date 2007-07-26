@@ -186,7 +186,7 @@ public final class SearchCriteriaUtil {
         if (valueOfAssociation == null) {
             return;
         }
-        if ((valueOfAssociation instanceof Collection && ((Collection) valueOfAssociation).size() > 0)
+        if ((valueOfAssociation instanceof Collection && ((Collection<?>) valueOfAssociation).size() > 0)
                 || !(valueOfAssociation instanceof Collection)) {
             Criteria childCriteria = criteria.createCriteria(fieldName);
             childCriteria.add(Example.create(valueOfAssociation));

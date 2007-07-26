@@ -85,6 +85,9 @@ package gov.nih.nci.caarray.domain.protocol;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
+import java.util.HashSet;
+import java.util.Set;
+
   /**
 
    */
@@ -96,16 +99,16 @@ public class Protocol extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 
     /**
-     * The contact java.lang.String.
+     * The contact String.
      */
-    private java.lang.String contact;
+    private String contact;
 
     /**
      * Gets the contact.
      *
      * @return the contact
      */
-    public java.lang.String getContact() {
+    public String getContact() {
         return contact;
     }
 
@@ -114,20 +117,20 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @param contactVal the contact
      */
-    public void setContact(final java.lang.String contactVal) {
+    public void setContact(final String contactVal) {
         this.contact = contactVal;
     }
     /**
-     * The description java.lang.String.
+     * The description String.
      */
-    private java.lang.String description;
+    private String description;
 
     /**
      * Gets the description.
      *
      * @return the description
      */
-    public java.lang.String getDescription() {
+    public String getDescription() {
         return description;
     }
 
@@ -136,20 +139,20 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @param descriptionVal the description
      */
-    public void setDescription(final java.lang.String descriptionVal) {
+    public void setDescription(final String descriptionVal) {
         this.description = descriptionVal;
     }
     /**
-     * The hardware java.lang.String.
+     * The hardware String.
      */
-    private java.lang.String hardware;
+    private String hardware;
 
     /**
      * Gets the hardware.
      *
      * @return the hardware
      */
-    public java.lang.String getHardware() {
+    public String getHardware() {
         return hardware;
     }
 
@@ -158,7 +161,7 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @param hardwareVal the hardware
      */
-    public void setHardware(final java.lang.String hardwareVal) {
+    public void setHardware(final String hardwareVal) {
         this.hardware = hardwareVal;
     }
     /**
@@ -184,16 +187,16 @@ public class Protocol extends AbstractCaArrayEntity {
         this.name = nameVal;
     }
     /**
-     * The software java.lang.String.
+     * The software String.
      */
-    private java.lang.String software;
+    private String software;
 
     /**
      * Gets the software.
      *
      * @return the software
      */
-    public java.lang.String getSoftware() {
+    public String getSoftware() {
         return software;
     }
 
@@ -202,7 +205,7 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @param softwareVal the software
      */
-    public void setSoftware(final java.lang.String softwareVal) {
+    public void setSoftware(final String softwareVal) {
         this.software = softwareVal;
     }
     /**
@@ -253,14 +256,14 @@ public class Protocol extends AbstractCaArrayEntity {
     /**
      * The parameters set.
      */
-    private final java.util.Collection parameters = new java.util.HashSet();
+    private Set<Object> parameters = new HashSet<Object>();
 
     /**
      * Gets the parameters.
      *
      * @return the parameters
      */
-    public java.util.Collection getParameters() {
+    public Set<Object> getParameters() {
         return parameters;
     }
 
@@ -269,9 +272,9 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @param parametersVal the parameters
      */
-    @SuppressWarnings("unchecked")
-    public void setParameters(final java.util.Collection parametersVal) {
-        this.parameters.addAll(parametersVal);
+    @SuppressWarnings("unused")
+    private void setParameters(final Set<Object> parametersVal) { // NOPMD
+        this.parameters = parametersVal;
     }
 
     /**

@@ -83,11 +83,11 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+
+import java.util.HashSet;
+import java.util.Set;
 
   /**
 
@@ -122,16 +122,16 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
         this.materialType = materialTypeVal;
     }
     /**
-     * The name java.lang.String.
+     * The name String.
      */
-    private java.lang.String name;
+    private String name;
 
     /**
      * Gets the name.
      *
      * @return the name
      */
-    public java.lang.String getName() {
+    public String getName() {
         return name;
     }
 
@@ -140,20 +140,20 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @param nameVal the name
      */
-    public void setName(final java.lang.String nameVal) {
+    public void setName(final String nameVal) {
         this.name = nameVal;
     }
     /**
-     * The description java.lang.String.
+     * The description String.
      */
-    private java.lang.String description;
+    private String description;
 
     /**
      * Gets the description.
      *
      * @return the description
      */
-    public java.lang.String getDescription() {
+    public String getDescription() {
         return description;
     }
 
@@ -162,21 +162,21 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @param descriptionVal the description
      */
-    public void setDescription(final java.lang.String descriptionVal) {
+    public void setDescription(final String descriptionVal) {
         this.description = descriptionVal;
     }
 
     /**
      * The characteristics set.
      */
-    private final Collection<Characteristic> characteristics = new HashSet<Characteristic>();
+    private Set<Characteristic> characteristics = new HashSet<Characteristic>();
 
     /**
      * Gets the characteristics.
      *
      * @return the characteristics
      */
-    public Collection<Characteristic> getCharacteristics() {
+    public Set<Characteristic> getCharacteristics() {
         return characteristics;
     }
 
@@ -185,21 +185,22 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @param characteristicsVal the characteristics
      */
-    public void setCharacteristics(final Collection<Characteristic> characteristicsVal) {
-        this.characteristics.addAll(characteristicsVal);
+    @SuppressWarnings("unused")
+    private void setCharacteristics(final Set<Characteristic> characteristicsVal) { // NOPMD
+        this.characteristics = characteristicsVal;
     }
 
     /**
      * The protocolApplications set.
      */
-    private final Collection<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
+    private Set<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
 
     /**
      * Gets the protocolApplications.
      *
      * @return the protocolApplications
      */
-    public Collection<ProtocolApplication> getProtocolApplications() {
+    public Set<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }
 
@@ -208,8 +209,9 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @param protocolApplicationsVal the protocolApplications
      */
-    public void setProtocolApplications(final Collection<ProtocolApplication> protocolApplicationsVal) {
-        this.protocolApplications.addAll(protocolApplicationsVal);
+    @SuppressWarnings("unused")
+    private void setProtocolApplications(final Set<ProtocolApplication> protocolApplicationsVal) { // NOPMD
+        this.protocolApplications = protocolApplicationsVal;
     }
 
     /**

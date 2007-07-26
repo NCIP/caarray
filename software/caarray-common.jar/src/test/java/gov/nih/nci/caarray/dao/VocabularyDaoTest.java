@@ -521,9 +521,9 @@ public class VocabularyDaoTest {
     }
 
     private void checkIfExpectedTermsRecursive(Set<Term> retrievedTerms) {
-        Iterator iterator = retrievedTerms.iterator();
+        Iterator<Term> iterator = retrievedTerms.iterator();
         while (iterator.hasNext()) {
-            Term term = (Term) iterator.next();
+            Term term = iterator.next();
             if (!(DUMMY_TERM_1.equals(term) || DUMMY_TERM_2.equals(term)
                     || DUMMY_TERM_3.equals(term))) {
                 fail("Did not retrieve the expected terms.");

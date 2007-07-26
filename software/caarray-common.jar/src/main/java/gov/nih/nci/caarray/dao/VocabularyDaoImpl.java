@@ -225,11 +225,11 @@ public class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements Vocabul
      */
     private void addCategoryAndChildren(Set<Long> categoryIdList, Category category) {
         categoryIdList.add(category.getId());
-        Collection childCategories = category.getChildren();
+        Collection<Category> childCategories = category.getChildren();
         if (childCategories != null) {
-            Iterator iterator = childCategories.iterator();
+            Iterator<Category> iterator = childCategories.iterator();
             while (iterator.hasNext()) {
-                Category childCategory = (Category) iterator.next();
+                Category childCategory = iterator.next();
                 addCategoryAndChildren(categoryIdList, childCategory);
             }
         }

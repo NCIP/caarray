@@ -96,16 +96,16 @@ public class Publication extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 
     /**
-     * The authors java.lang.String.
+     * The authors String.
      */
-    private java.lang.String authors;
+    private String authors;
 
     /**
      * Gets the authors.
      *
      * @return the authors
      */
-    public java.lang.String getAuthors() {
+    public String getAuthors() {
         return authors;
     }
 
@@ -114,20 +114,20 @@ public class Publication extends AbstractCaArrayEntity {
      *
      * @param authorsVal the authors
      */
-    public void setAuthors(final java.lang.String authorsVal) {
+    public void setAuthors(final String authorsVal) {
         this.authors = authorsVal;
     }
     /**
-     * The doi java.lang.String.
+     * The doi String.
      */
-    private java.lang.String doi;
+    private String doi;
 
     /**
      * Gets the doi.
      *
      * @return the doi
      */
-    public java.lang.String getDoi() {
+    public String getDoi() {
         return doi;
     }
 
@@ -136,20 +136,20 @@ public class Publication extends AbstractCaArrayEntity {
      *
      * @param doiVal the doi
      */
-    public void setDoi(final java.lang.String doiVal) {
+    public void setDoi(final String doiVal) {
         this.doi = doiVal;
     }
     /**
-     * The pubMedId java.lang.String.
+     * The pubMedId String.
      */
-    private java.lang.String pubMedId;
+    private String pubMedId;
 
     /**
      * Gets the pubMedId.
      *
      * @return the pubMedId
      */
-    public java.lang.String getPubMedId() {
+    public String getPubMedId() {
         return pubMedId;
     }
 
@@ -158,7 +158,7 @@ public class Publication extends AbstractCaArrayEntity {
      *
      * @param pubMedIdVal the pubMedId
      */
-    public void setPubMedId(final java.lang.String pubMedIdVal) {
+    public void setPubMedId(final String pubMedIdVal) {
         this.pubMedId = pubMedIdVal;
     }
     /**
@@ -184,16 +184,16 @@ public class Publication extends AbstractCaArrayEntity {
         this.status = statusVal;
     }
     /**
-     * The title java.lang.String.
+     * The title String.
      */
-    private java.lang.String title;
+    private String title;
 
     /**
      * Gets the title.
      *
      * @return the title
      */
-    public java.lang.String getTitle() {
+    public String getTitle() {
         return title;
     }
 
@@ -202,7 +202,7 @@ public class Publication extends AbstractCaArrayEntity {
      *
      * @param titleVal the title
      */
-    public void setTitle(final java.lang.String titleVal) {
+    public void setTitle(final String titleVal) {
         this.title = titleVal;
     }
 

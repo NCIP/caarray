@@ -287,33 +287,33 @@ public class ProjectDaoTest {
             return false;
         }
         // Contacts
-        Collection contacts = retrievedInv.getInvestigationContacts();
+        Collection<InvestigationContact> contacts = retrievedInv.getInvestigationContacts();
         if (contacts.isEmpty() || contacts.size() != 1) {
             return false;
         }
-        Iterator i = contacts.iterator();
-        Person person = (Person) ((InvestigationContact) i.next()).getContact();
+        Iterator<InvestigationContact> i = contacts.iterator();
+        Person person = (Person) i.next().getContact();
         if (!DUMMY_PERSON.getFirstName().equals(person.getFirstName())) {
             return false;
         }
         // Annotations
-        Collection retrievedNormTypes = retrievedInv.getNormalizationTypes();
+        Collection<Term> retrievedNormTypes = retrievedInv.getNormalizationTypes();
         if (retrievedNormTypes.isEmpty() || retrievedNormTypes.size() != 1) {
             return false;
         }
-        i = retrievedNormTypes.iterator();
-        Term retrievedNormType = (Term) i.next();
+        Iterator<Term> i2 = retrievedNormTypes.iterator();
+        Term retrievedNormType = i2.next();
         if (!DUMMY_NORMALIZATION_TYPE.getValue().equals(retrievedNormType.getValue())) {
             return false;
         }
         // Factors
-        Collection factors = retrievedInv.getFactors();
+        Collection<Factor> factors = retrievedInv.getFactors();
         if (factors.isEmpty() || factors.size() != 2) {
             return false;
         }
 
         // Publications
-        Collection publications = retrievedInv.getPublications();
+        Collection<Publication> publications = retrievedInv.getPublications();
         if (publications.isEmpty() || publications.size() != 2) {
             return false;
         }

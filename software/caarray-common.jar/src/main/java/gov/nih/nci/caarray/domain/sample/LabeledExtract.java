@@ -83,8 +83,8 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
   /**
 
@@ -124,14 +124,14 @@ public class LabeledExtract extends AbstractBioMaterial {
     /**
      * The extracts set.
      */
-    private final Collection<Extract> extracts = new HashSet<Extract>();
+    private Set<Extract> extracts = new HashSet<Extract>();
 
     /**
      * Gets the extracts.
      *
      * @return the extracts
      */
-    public Collection<Extract> getExtracts() {
+    public Set<Extract> getExtracts() {
         return extracts;
     }
 
@@ -140,8 +140,9 @@ public class LabeledExtract extends AbstractBioMaterial {
      *
      * @param extractsVal the extracts
      */
-    public void setExtracts(final Collection<Extract> extractsVal) {
-        this.extracts.addAll(extractsVal);
+    @SuppressWarnings("unused")
+    private void setExtracts(final Set<Extract> extractsVal) { // NOPMD
+        this.extracts = extractsVal;
     }
 
     /**

@@ -83,8 +83,8 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
   /**
 
@@ -100,14 +100,14 @@ public class Source extends AbstractBioMaterial {
     /**
      * The samples set.
      */
-    private final Collection<Sample> samples = new HashSet<Sample>();
+    private Set<Sample> samples = new HashSet<Sample>();
 
     /**
      * Gets the samples.
      *
      * @return the samples
      */
-    public Collection<Sample> getSamples() {
+    public Set<Sample> getSamples() {
         return samples;
     }
 
@@ -116,21 +116,22 @@ public class Source extends AbstractBioMaterial {
      *
      * @param samplesVal the samples
      */
-    public void setSamples(final Collection<Sample> samplesVal) {
-        this.samples.addAll(samplesVal);
+    @SuppressWarnings("unused")
+    private void setSamples(final Set<Sample> samplesVal) { // NOPMD
+        this.samples = samplesVal;
     }
 
     /**
      * The providers set.
      */
-    private final java.util.Collection providers = new java.util.HashSet();
+    private Set<Object> providers = new HashSet<Object>();
 
     /**
      * Gets the providers.
      *
      * @return the providers
      */
-    public java.util.Collection getProviders() {
+    public Set<Object> getProviders() {
         return providers;
     }
 
@@ -139,9 +140,9 @@ public class Source extends AbstractBioMaterial {
      *
      * @param providersVal the providers
      */
-    @SuppressWarnings("unchecked")
-    public void setProviders(final java.util.Collection providersVal) {
-        this.providers.addAll(providersVal);
+    @SuppressWarnings("unused")
+    private void setProviders(final Set<Object> providersVal) { // NOPMD
+        this.providers = providersVal;
     }
 
     /**

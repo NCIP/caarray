@@ -142,7 +142,7 @@ public class EVSUtility {
 
     private final Source mgedSource;
 
-    private final Map categoryList;
+    private final Map<String, Category> categoryList;
 
     /**
      * Creates a new instance.
@@ -151,7 +151,7 @@ public class EVSUtility {
         super();
 
         mgedSource = getSourceForName(MGED_VOCAB);
-        categoryList = new HashMap();
+        categoryList = new HashMap<String, Category>();
 
     }
 
@@ -242,7 +242,7 @@ public class EVSUtility {
      */
     private void addParent(Category oldParent, Category newParent) {
         newParent.setParent(oldParent);
-        Collection children = oldParent.getChildren();
+        Collection<Category> children = oldParent.getChildren();
         children.add(newParent);
     }
 
@@ -454,7 +454,7 @@ public class EVSUtility {
 
     private Category cloneCategory(Category oldCategory) {
         Category newCategory = new Category();
-        newCategory.setChildren(oldCategory.getChildren());
+        newCategory.getChildren().addAll(oldCategory.getChildren());
         newCategory.setId(oldCategory.getId());
         newCategory.setName(oldCategory.getName());
         newCategory.setParent(oldCategory.getParent());
@@ -490,7 +490,7 @@ public class EVSUtility {
 
     private Category fetchCategory(String categoryName) {
         if (categoryList.containsKey(categoryName)) {
-            return (Category) categoryList.get(categoryName);
+            return categoryList.get(categoryName);
         }
         VocabularyDao vocabDao = new VocabularyDaoImpl();
         Category existingCategory = null;

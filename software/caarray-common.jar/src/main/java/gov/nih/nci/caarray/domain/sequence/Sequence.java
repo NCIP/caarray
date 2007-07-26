@@ -83,11 +83,11 @@
 
 package gov.nih.nci.caarray.domain.sequence;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.vocabulary.Accession;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  */
@@ -170,14 +170,14 @@ public class Sequence extends AbstractCaArrayEntity  {
     /**
      * The accessions set.
      */
-    private final Collection<Accession> accessions = new HashSet<Accession>();
+    private Set<Accession> accessions = new HashSet<Accession>();
 
     /**
      * Gets the accessions.
      *
      * @return the accessions
      */
-    public Collection<Accession> getAccessions() {
+    public Set<Accession> getAccessions() {
         return accessions;
     }
 
@@ -186,8 +186,9 @@ public class Sequence extends AbstractCaArrayEntity  {
      *
      * @param accessionsVal the accessions
      */
-    public void setAccessions(final Collection<Accession> accessionsVal) {
-        this.accessions.addAll(accessionsVal);
+    @SuppressWarnings("unused")
+    private void setAccessions(final Set<Accession> accessionsVal) { // NOPMD
+        this.accessions = accessionsVal;
     }
 
     /**

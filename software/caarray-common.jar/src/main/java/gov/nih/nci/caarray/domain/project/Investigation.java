@@ -83,19 +83,20 @@
 
 package gov.nih.nci.caarray.domain.project;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  *
  */
 public class Investigation extends AbstractCaArrayEntity {
+    private static final String UNUSED = "unused";
 
     /**
      * The serial version UID for serialization.
@@ -131,16 +132,16 @@ public class Investigation extends AbstractCaArrayEntity {
         this.dateOfExperiment = dateOfExperimentVal;
     }
     /**
-     * The description java.lang.String.
+     * The description String.
      */
-    private java.lang.String description;
+    private String description;
 
     /**
      * Gets the description.
      *
      * @return the description
      */
-    public java.lang.String getDescription() {
+    public String getDescription() {
         return description;
     }
 
@@ -149,7 +150,7 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param descriptionVal the description
      */
-    public void setDescription(final java.lang.String descriptionVal) {
+    public void setDescription(final String descriptionVal) {
         this.description = descriptionVal;
     }
     /**
@@ -175,16 +176,16 @@ public class Investigation extends AbstractCaArrayEntity {
         this.publicReleaseDate = publicReleaseDateVal;
     }
     /**
-     * The title java.lang.String.
+     * The title String.
      */
-    private java.lang.String title;
+    private String title;
 
     /**
      * Gets the title.
      *
      * @return the title
      */
-    public java.lang.String getTitle() {
+    public String getTitle() {
         return title;
     }
 
@@ -193,21 +194,21 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param titleVal the title
      */
-    public void setTitle(final java.lang.String titleVal) {
+    public void setTitle(final String titleVal) {
         this.title = titleVal;
     }
 
     /**
      * The qualityControlTypes set.
      */
-    private final Collection<Term> qualityControlTypes = new HashSet<Term>();
+    private Set<Term> qualityControlTypes = new HashSet<Term>();
 
     /**
      * Gets the qualityControlTypes.
      *
      * @return the qualityControlTypes
      */
-    public Collection<Term> getQualityControlTypes() {
+    public Set<Term> getQualityControlTypes() {
         return qualityControlTypes;
     }
 
@@ -216,21 +217,22 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param qualityControlTypesVal the qualityControlTypes
      */
-    public void setQualityControlTypes(final Collection<Term> qualityControlTypesVal) {
-        this.qualityControlTypes.addAll(qualityControlTypesVal);
+    @SuppressWarnings(UNUSED)
+    private void setQualityControlTypes(final Set<Term> qualityControlTypesVal) { // NOPMD
+        this.qualityControlTypes = qualityControlTypesVal;
     }
 
     /**
      * The publications set.
      */
-    private final Collection<Publication> publications = new HashSet<Publication>();
+    private Set<Publication> publications = new HashSet<Publication>();
 
     /**
      * Gets the publications.
      *
      * @return the publications
      */
-    public Collection<Publication> getPublications() {
+    public Set<Publication> getPublications() {
         return publications;
     }
 
@@ -239,21 +241,22 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param publicationsVal the publications
      */
-    public void setPublications(final Collection<Publication> publicationsVal) {
-        this.publications.addAll(publicationsVal);
+    @SuppressWarnings(UNUSED)
+    private void setPublications(final Set<Publication> publicationsVal) {  // NOPMD
+        this.publications = publicationsVal;
     }
 
     /**
      * The replicateTypes set.
      */
-    private final Collection<Term> replicateTypes = new HashSet<Term>();
+    private Set<Term> replicateTypes = new HashSet<Term>();
 
     /**
      * Gets the replicateTypes.
      *
      * @return the replicateTypes
      */
-    public Collection<Term> getReplicateTypes() {
+    public Set<Term> getReplicateTypes() {
         return replicateTypes;
     }
 
@@ -262,21 +265,22 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param replicateTypesVal the replicateTypes
      */
-    public void setReplicateTypes(final Collection<Term> replicateTypesVal) {
-        this.replicateTypes.addAll(replicateTypesVal);
+    @SuppressWarnings(UNUSED)
+    private void setReplicateTypes(final Set<Term> replicateTypesVal) {  // NOPMD
+        this.replicateTypes = replicateTypesVal;
     }
 
     /**
      * The arrayDesigns set.
      */
-    private final Collection<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
+    private Set<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
 
     /**
      * Gets the arrayDesigns.
      *
      * @return the arrayDesigns
      */
-    public Collection<ArrayDesign> getArrayDesigns() {
+    public Set<ArrayDesign> getArrayDesigns() {
         return arrayDesigns;
     }
 
@@ -285,21 +289,22 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param arrayDesignsVal the arrayDesigns
      */
-    public void setArrayDesigns(final Collection<ArrayDesign> arrayDesignsVal) {
-        this.arrayDesigns.addAll(arrayDesignsVal);
+    @SuppressWarnings(UNUSED)
+    private void setArrayDesigns(final Set<ArrayDesign> arrayDesignsVal) {  // NOPMD
+        this.arrayDesigns = arrayDesignsVal;
     }
 
     /**
      * The investigationContacts set.
      */
-    private final Collection<InvestigationContact> investigationContacts = new HashSet<InvestigationContact>();
+    private Set<InvestigationContact> investigationContacts = new HashSet<InvestigationContact>();
 
     /**
      * Gets the investigationContacts.
      *
      * @return the investigationContacts
      */
-    public Collection<InvestigationContact> getInvestigationContacts() {
+    public Set<InvestigationContact> getInvestigationContacts() {
         return investigationContacts;
     }
 
@@ -308,21 +313,22 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param investigationContactsVal the investigationContacts
      */
-    public void setInvestigationContacts(final Collection<InvestigationContact> investigationContactsVal) {
-        this.investigationContacts.addAll(investigationContactsVal);
+    @SuppressWarnings(UNUSED)
+    private void setInvestigationContacts(final Set<InvestigationContact> investigationContactsVal) {  // NOPMD
+        this.investigationContacts = investigationContactsVal;
     }
 
     /**
      * The factors set.
      */
-    private final Collection<Factor> factors = new HashSet<Factor>();
+    private Set<Factor> factors = new HashSet<Factor>();
 
     /**
      * Gets the factors.
      *
      * @return the factors
      */
-    public Collection<Factor> getFactors() {
+    public Set<Factor> getFactors() {
         return factors;
     }
 
@@ -331,21 +337,22 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param factorsVal the factors
      */
-    public void setFactors(final Collection<Factor> factorsVal) {
-        this.factors.addAll(factorsVal);
+    @SuppressWarnings(UNUSED)
+    private void setFactors(final Set<Factor> factorsVal) {  // NOPMD
+        this.factors = factorsVal;
     }
 
     /**
      * The normalizationTypes set.
      */
-    private final Collection<Term> normalizationTypes = new HashSet<Term>();
+    private Set<Term> normalizationTypes = new HashSet<Term>();
 
     /**
      * Gets the normalizationTypes.
      *
      * @return the normalizationTypes
      */
-    public Collection<Term> getNormalizationTypes() {
+    public Set<Term> getNormalizationTypes() {
         return normalizationTypes;
     }
 
@@ -354,21 +361,22 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param normalizationTypesVal the normalizationTypes
      */
-    public void setNormalizationTypes(final Collection<Term> normalizationTypesVal) {
-        this.normalizationTypes.addAll(normalizationTypesVal);
+    @SuppressWarnings(UNUSED)
+    private void setNormalizationTypes(final Set<Term> normalizationTypesVal) {  // NOPMD
+        this.normalizationTypes = normalizationTypesVal;
     }
 
     /**
      * The arrays set.
      */
-    private final Collection<Array> arrays = new HashSet<Array>();
+    private Set<Array> arrays = new HashSet<Array>();
 
     /**
      * Gets the arrays.
      *
      * @return the arrays
      */
-    public Collection<Array> getArrays() {
+    public Set<Array> getArrays() {
         return arrays;
     }
 
@@ -377,8 +385,9 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param arraysVal the arrays
      */
-    public void setArrays(final Collection<Array> arraysVal) {
-        this.arrays.addAll(arraysVal);
+    @SuppressWarnings(UNUSED)
+    private void setArrays(final Set<Array> arraysVal) {  // NOPMD
+        this.arrays = arraysVal;
     }
 
     /**

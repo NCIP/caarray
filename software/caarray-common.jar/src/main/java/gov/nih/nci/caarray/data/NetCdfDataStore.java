@@ -441,8 +441,8 @@ public class NetCdfDataStore implements DataStore {
         Dimension[] dimStrList = {dataDim, svarLen};
         List<Column> columns = descriptor.getColumns();
 
-        for (Iterator iter = columns.iterator(); iter.hasNext();) {
-            Column column = (Column) iter.next();
+        for (Iterator<Column> iter = columns.iterator(); iter.hasNext();) {
+            Column column = iter.next();
             Dimension[] dimListToAdd = null;
             if ((column.getType().getType()).equals(ucar.ma2.DataType.CHAR)
                     || (column.getType().getType()).equals(ucar.ma2.DataType.STRING)) {

@@ -83,8 +83,8 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
   /**
 
@@ -100,14 +100,14 @@ public class Extract extends AbstractBioMaterial {
     /**
      * The samples set.
      */
-    private final Collection<Sample> samples = new HashSet<Sample>();
+    private Set<Sample> samples = new HashSet<Sample>();
 
     /**
      * Gets the samples.
      *
      * @return the samples
      */
-    public Collection<Sample> getSamples() {
+    public Set<Sample> getSamples() {
         return samples;
     }
 
@@ -116,21 +116,22 @@ public class Extract extends AbstractBioMaterial {
      *
      * @param samplesVal the samples
      */
-    public void setSamples(final Collection<Sample> samplesVal) {
-        this.samples.addAll(samplesVal);
+    @SuppressWarnings("unused")
+    private void setSamples(final Set<Sample> samplesVal) { // NOPMD
+        this.samples = samplesVal;
     }
 
     /**
      * The labeledExtracts set.
      */
-    private final Collection<LabeledExtract> labeledExtracts = new HashSet<LabeledExtract>();
+    private Set<LabeledExtract> labeledExtracts = new HashSet<LabeledExtract>();
 
     /**
      * Gets the labeledExtracts.
      *
      * @return the labeledExtracts
      */
-    public Collection<LabeledExtract> getLabeledExtracts() {
+    public Set<LabeledExtract> getLabeledExtracts() {
         return labeledExtracts;
     }
 
@@ -139,8 +140,9 @@ public class Extract extends AbstractBioMaterial {
      *
      * @param labeledExtractsVal the labeledExtracts
      */
-    public void setLabeledExtracts(final Collection<LabeledExtract> labeledExtractsVal) {
-        this.labeledExtracts.addAll(labeledExtractsVal);
+    @SuppressWarnings("unused")
+    private void setLabeledExtracts(final Set<LabeledExtract> labeledExtractsVal) { // NOPMD
+        this.labeledExtracts = labeledExtractsVal;
     }
 
     /**

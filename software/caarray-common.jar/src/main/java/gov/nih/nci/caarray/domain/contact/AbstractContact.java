@@ -96,16 +96,16 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 
     /**
-     * The email java.lang.String.
+     * The email String.
      */
-    private java.lang.String email;
+    private String email;
 
     /**
      * Gets the email.
      *
      * @return the email
      */
-    public java.lang.String getEmail() {
+    public String getEmail() {
         return email;
     }
 
@@ -114,7 +114,7 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
      *
      * @param emailVal the email
      */
-    public void setEmail(final java.lang.String emailVal) {
+    public void setEmail(final String emailVal) {
         this.email = emailVal;
     }
     /**
@@ -162,16 +162,16 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
         this.phone = phoneVal;
     }
     /**
-     * The url java.lang.String.
+     * The url String.
      */
-    private java.lang.String url;
+    private String url;
 
     /**
      * Gets the url.
      *
      * @return the url
      */
-    public java.lang.String getUrl() {
+    public String getUrl() {
         return url;
     }
 
@@ -180,7 +180,7 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
      *
      * @param urlVal the url
      */
-    public void setUrl(final java.lang.String urlVal) {
+    public void setUrl(final String urlVal) {
         this.url = urlVal;
     }
 

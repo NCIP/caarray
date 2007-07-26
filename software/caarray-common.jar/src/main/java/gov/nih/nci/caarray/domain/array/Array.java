@@ -96,16 +96,16 @@ public class Array extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 
     /**
-     * The batch java.lang.String.
+     * The batch String.
      */
-    private java.lang.String batch;
+    private String batch;
 
     /**
      * Gets the batch.
      *
      * @return the batch
      */
-    public java.lang.String getBatch() {
+    public String getBatch() {
         return batch;
     }
 
@@ -114,20 +114,20 @@ public class Array extends AbstractCaArrayEntity {
      *
      * @param batchVal the batch
      */
-    public void setBatch(final java.lang.String batchVal) {
+    public void setBatch(final String batchVal) {
         this.batch = batchVal;
     }
     /**
-     * The serialNumber java.lang.String.
+     * The serialNumber String.
      */
-    private java.lang.String serialNumber;
+    private String serialNumber;
 
     /**
      * Gets the serialNumber.
      *
      * @return the serialNumber
      */
-    public java.lang.String getSerialNumber() {
+    public String getSerialNumber() {
         return serialNumber;
     }
 
@@ -136,7 +136,7 @@ public class Array extends AbstractCaArrayEntity {
      *
      * @param serialNumberVal the serialNumber
      */
-    public void setSerialNumber(final java.lang.String serialNumberVal) {
+    public void setSerialNumber(final String serialNumberVal) {
         this.serialNumber = serialNumberVal;
     }
 

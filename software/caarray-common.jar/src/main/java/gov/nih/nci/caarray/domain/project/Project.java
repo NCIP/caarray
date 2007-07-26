@@ -83,11 +83,11 @@
 
 package gov.nih.nci.caarray.domain.project;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+
+import java.util.HashSet;
+import java.util.Set;
 
  /**
   * A microarray project.
@@ -133,14 +133,14 @@ public class Project extends AbstractCaArrayEntity {
     /**
      * The files set.
      */
-    private final Collection<CaArrayFile> files = new HashSet<CaArrayFile>();
+    private Set<CaArrayFile> files = new HashSet<CaArrayFile>();
 
     /**
      * Gets the files.
      *
      * @return the files
      */
-    public Collection<CaArrayFile> getFiles() {
+    public Set<CaArrayFile> getFiles() {
         return files;
     }
 
@@ -149,8 +149,9 @@ public class Project extends AbstractCaArrayEntity {
      *
      * @param filesVal the files
      */
-    public void setFiles(final Collection<CaArrayFile> filesVal) {
-        this.files.addAll(filesVal);
+    @SuppressWarnings("unused")
+    private void setFiles(final Set<CaArrayFile> filesVal) { // NOPMD
+        this.files = filesVal;
     }
 
     /**

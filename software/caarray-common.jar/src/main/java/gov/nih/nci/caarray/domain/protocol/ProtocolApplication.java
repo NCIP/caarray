@@ -1,9 +1,9 @@
 package gov.nih.nci.caarray.domain.protocol;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -125,14 +125,14 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
     /**
      * The values set.
      */
-    private final Collection<ParameterValue> values = new HashSet<ParameterValue>();
+    private Set<ParameterValue> values = new HashSet<ParameterValue>();
 
     /**
      * Gets the values.
      *
      * @return the values
      */
-    public Collection<ParameterValue> getValues() {
+    public Set<ParameterValue> getValues() {
         return values;
     }
 
@@ -141,8 +141,9 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      *
      * @param valuesVal the values
      */
-    public void setValues(final Collection<ParameterValue> valuesVal) {
-        this.values.addAll(valuesVal);
+    @SuppressWarnings("unused")
+    private void setValues(final Set<ParameterValue> valuesVal) { // NOPMD
+        this.values = valuesVal;
     }
 
     /**

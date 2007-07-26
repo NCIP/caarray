@@ -87,8 +87,8 @@ import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
   /**
 
@@ -101,16 +101,16 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
     private static final long serialVersionUID = 1234567890L;
 
     /**
-     * The name java.lang.String.
+     * The name String.
      */
-    private java.lang.String name;
+    private String name;
 
     /**
      * Gets the name.
      *
      * @return the name
      */
-    public java.lang.String getName() {
+    public String getName() {
         return name;
     }
 
@@ -119,21 +119,21 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
      *
      * @param nameVal the name
      */
-    public void setName(final java.lang.String nameVal) {
+    public void setName(final String nameVal) {
         this.name = nameVal;
     }
 
     /**
      * The images set.
      */
-    private final Collection<Image> images = new HashSet<Image>();
+    private Set<Image> images = new HashSet<Image>();
 
     /**
      * Gets the images.
      *
      * @return the images
      */
-    public Collection<Image> getImages() {
+    public Set<Image> getImages() {
         return images;
     }
 
@@ -142,8 +142,9 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
      *
      * @param imagesVal the images
      */
-    public void setImages(final Collection<Image> imagesVal) {
-        this.images.addAll(imagesVal);
+    @SuppressWarnings("unused")
+    private void setImages(final Set<Image> imagesVal) {  // NOPMD
+        this.images = imagesVal;
     }
 
     /**
@@ -221,14 +222,14 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
     /**
      * The factorValues set.
      */
-    private final Collection<FactorValue> factorValues = new HashSet<FactorValue>();
+    private Set<FactorValue> factorValues = new HashSet<FactorValue>();
 
     /**
      * Gets the factorValues.
      *
      * @return the factorValues
      */
-    public Collection<FactorValue> getFactorValues() {
+    public Set<FactorValue> getFactorValues() {
         return factorValues;
     }
 
@@ -237,8 +238,9 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
      *
      * @param factorValuesVal the factorValues
      */
-    public void setFactorValues(final Collection<FactorValue> factorValuesVal) {
-        this.factorValues.addAll(factorValuesVal);
+    @SuppressWarnings("unused")
+    private void setFactorValues(final Set<FactorValue> factorValuesVal) { // NOPMD
+        this.factorValues = factorValuesVal;
     }
 
     /**
@@ -268,14 +270,14 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
     /**
      * The labeledExtract set.
      */
-    private final Collection<LabeledExtract> labeledExtract = new HashSet<LabeledExtract>();
+    private Set<LabeledExtract> labeledExtract = new HashSet<LabeledExtract>();
 
     /**
      * Gets the labeledExtract.
      *
      * @return the labeledExtract
      */
-    public Collection<LabeledExtract> getLabeledExtract() {
+    public Set<LabeledExtract> getLabeledExtract() {
         return labeledExtract;
     }
 
@@ -284,8 +286,9 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
      *
      * @param labeledExtractVal the labeledExtract
      */
-    public void setLabeledExtract(final Collection<LabeledExtract> labeledExtractVal) {
-        this.labeledExtract.addAll(labeledExtractVal);
+    @SuppressWarnings("unused")
+    private void setLabeledExtract(final Set<LabeledExtract> labeledExtractVal) {  // NOPMD
+        this.labeledExtract = labeledExtractVal;
     }
 
     /**

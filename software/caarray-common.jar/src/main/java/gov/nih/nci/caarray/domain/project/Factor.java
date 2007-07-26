@@ -83,10 +83,10 @@
 
 package gov.nih.nci.caarray.domain.project;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+
+import java.util.HashSet;
+import java.util.Set;
 
   /**
 
@@ -146,14 +146,14 @@ public class Factor extends AbstractCaArrayEntity {
     /**
      * The factorValues set.
      */
-    private final Collection<FactorValue> factorValues = new HashSet<FactorValue>();
+    private Set<FactorValue> factorValues = new HashSet<FactorValue>();
 
     /**
      * Gets the factorValues.
      *
      * @return the factorValues
      */
-    public Collection<FactorValue> getFactorValues() {
+    public Set<FactorValue> getFactorValues() {
         return factorValues;
     }
 
@@ -162,8 +162,9 @@ public class Factor extends AbstractCaArrayEntity {
      *
      * @param factorValuesVal the factorValues
      */
-    public void setFactorValues(final Collection<FactorValue> factorValuesVal) {
-        this.factorValues.addAll(factorValuesVal);
+    @SuppressWarnings("unused")
+    private void setFactorValues(final Set<FactorValue> factorValuesVal) { // NOPMD
+        this.factorValues = factorValuesVal;
     }
 
     /**
