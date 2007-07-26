@@ -343,7 +343,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleProtocolType(String value, int valueIndex) {
         Protocol protocol = investigation.getOrCreateProtcol(valueIndex);
-        protocol.setType(getOntologyTerm(IdfOntologyCategory.PROTOCOL_TYPE, value));
+        protocol.setType(getMgedOntologyTerm(IdfOntologyCategory.PROTOCOL_TYPE, value));
     }
 
 
@@ -377,7 +377,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handleExperimentalDesign(String value) {
-        investigation.getDesigns().add(getOntologyTerm(IdfOntologyCategory.EXPERIMENTAL_DESIGN_TYPE, value));
+        investigation.getDesigns().add(getMgedOntologyTerm(IdfOntologyCategory.EXPERIMENTAL_DESIGN_TYPE, value));
     }
 
     private void handleExperimentalFactorName(String value, int valueIndex) {
@@ -386,7 +386,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleExperimentalFactorType(String value, int valueIndex) {
         ExperimentalFactor factor = investigation.getOrCreateFactor(valueIndex);
-        factor.setType(getOntologyTerm(IdfOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY, value));
+        factor.setType(getMgedOntologyTerm(IdfOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY, value));
     }
 
     private void handleExperimentalFactorTermSourceRef(String value, int valueIndex) {
@@ -394,8 +394,10 @@ public final class IdfDocument extends AbstractMageTabDocument {
         factor.getType().setTermSource(getTermSource(value));
     }
 
-    private OntologyTerm getOntologyTerm(IdfOntologyCategory category, String value) {
-        return getOntologyTerm(category.getCategoryName(), value);
+    private OntologyTerm getMgedOntologyTerm(IdfOntologyCategory category, String value) {
+        OntologyTerm term = getOntologyTerm(category.getCategoryName(), value);
+        term.setTermSource(getTermSource("MO"));
+        return term;
     }
 
     private void handlePersonLastName(String value, int valueIndex) {
@@ -432,7 +434,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handlePersonRole(String value, int valueIndex) {
         investigation.getOrCreatePerson(valueIndex).getRoles()
-                .add(getOntologyTerm(IdfOntologyCategory.PERSON_ROLE, value));
+                .add(getMgedOntologyTerm(IdfOntologyCategory.PERSON_ROLE, value));
     }
 
     private void handlePersonRoleTermSourceRef(String value, int valueIndex) {
@@ -458,7 +460,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handlePublicationStatus(String value, int valueIndex) {
         investigation.getOrCreatePublication(valueIndex)
-            .setStatus(getOntologyTerm(IdfOntologyCategory.PUBLICATION_STATUS, value));
+            .setStatus(getMgedOntologyTerm(IdfOntologyCategory.PUBLICATION_STATUS, value));
     }
 
     private void handlePublicationStatusTermSourceRef(String value, int valueIndex) {
@@ -466,7 +468,8 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handleQualityControlType(String value) {
-        investigation.getQualityControlTypes().add(getOntologyTerm(IdfOntologyCategory.QUALITY_CONTROL_TYPE, value));
+        investigation.getQualityControlTypes().add(
+                getMgedOntologyTerm(IdfOntologyCategory.QUALITY_CONTROL_TYPE, value));
     }
 
     private void handleQualityControlTermSourceRef(String value, int valueIndex) {
@@ -474,7 +477,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handleReplicateType(String value) {
-        investigation.getReplicateTypes().add(getOntologyTerm(IdfOntologyCategory.REPLICATE_TYPE, value));
+        investigation.getReplicateTypes().add(getMgedOntologyTerm(IdfOntologyCategory.REPLICATE_TYPE, value));
     }
 
     private void handleReplicateTypeTermSourceRef(String value, int valueIndex) {
@@ -482,7 +485,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handleNormalizationType(String value) {
-        investigation.getNormalizationTypes().add(getOntologyTerm(IdfOntologyCategory.NORMALIZATION_TYPE, value));
+        investigation.getNormalizationTypes().add(getMgedOntologyTerm(IdfOntologyCategory.NORMALIZATION_TYPE, value));
     }
 
     private void handleNormalizationTypeTermSourceRef(String value, int valueIndex) {

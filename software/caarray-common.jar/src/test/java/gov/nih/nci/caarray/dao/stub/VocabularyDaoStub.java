@@ -80,55 +80,50 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab2;
+package gov.nih.nci.caarray.dao.stub;
 
-import static org.junit.Assert.*;
-import gov.nih.nci.caarray.magetab2.idf.Investigation;
-import gov.nih.nci.caarray.magetab2.sdrf.SdrfDocument;
-import gov.nih.nci.caarray.tests.data.magetab.MageTabDataFiles;
+import java.util.List;
+import java.util.Set;
 
-import org.junit.Test;
+import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 /**
- * Tests for the MageTabParser subsystem.
+ *
  */
-@SuppressWarnings("PMD")
-public class MageTabParserTest {
-
-    private static final int SIX = 6;
-    private static final int THREE = 3;
-    private MageTabParser parser = MageTabParser.INSTANCE;
+public class VocabularyDaoStub extends AbstractDaoStub implements VocabularyDao {
 
     /**
-     * @throws MageTabParsingException .
+     * {@inheritDoc}
      */
-    @Test
-    public void testValidate() throws MageTabParsingException {
-        MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET;
-        ValidationResult result = parser.validate(fileSet);
-        assertTrue(result.isValid());
+    public Category getCategory(String name) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     /**
-     * @throws MageTabParsingException .
-     *
+     * {@inheritDoc}
      */
-    @Test
-    public void testParse() throws MageTabParsingException {
-        MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET;
-        MageTabDocumentSet documentSet = parser.parse(fileSet);
-        assertNotNull(documentSet);
-        assertEquals(1, documentSet.getIdfDocuments().size());
-        Investigation investigation =
-            documentSet.getIdfDocument(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()).getInvestigation();
-        assertTrue(investigation.getProtocols().size() == THREE);
-        assertEquals("submitter;investigator", investigation.getPersons().get(0).getRoles().get(0).getValue());
-        assertEquals("http://mged.sourceforge.net/ontologies/MGEDontology.php",
-                investigation.getProtocols().get(0).getType().getTermSource().getFile());
-        assertEquals("University of Heidelberg H sapiens TK6", investigation.getTitle());
-        SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
-        assertNotNull(sdrfDocument);
-        assertEquals(SIX, sdrfDocument.getLeftmostNodes().size());
+    public List<Term> getTerms(String categoryName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Set<Term> getTermsRecursive(String categoryName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void removeTerms(List<Term> termList) {
+        // TODO Auto-generated method stub
+
     }
 
 }

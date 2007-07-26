@@ -80,7 +80,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package gov.nih.nci.caarray.domain.vocabulary;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
@@ -151,7 +151,7 @@ public class Term extends AbstractCaArrayEntity {
      * @return the accession
      */
     public gov.nih.nci.caarray.domain.vocabulary.Accession getAccession() {
-        return accession;    
+        return accession;
     }
 
     /**
@@ -159,7 +159,7 @@ public class Term extends AbstractCaArrayEntity {
      *
      * @param accessionVal the accession
      */
-    public void setAccession(final 
+    public void setAccession(final
       gov.nih.nci.caarray.domain.vocabulary.Accession accessionVal) {
         this.accession = accessionVal;
     }
@@ -175,7 +175,7 @@ public class Term extends AbstractCaArrayEntity {
      * @return the category
      */
     public gov.nih.nci.caarray.domain.vocabulary.Category getCategory() {
-        return category;    
+        return category;
     }
 
     /**
@@ -183,7 +183,7 @@ public class Term extends AbstractCaArrayEntity {
      *
      * @param categoryVal the category
      */
-    public void setCategory(final 
+    public void setCategory(final
       gov.nih.nci.caarray.domain.vocabulary.Category categoryVal) {
         this.category = categoryVal;
     }
@@ -199,7 +199,7 @@ public class Term extends AbstractCaArrayEntity {
      * @return the source
      */
     public gov.nih.nci.caarray.domain.vocabulary.Source getSource() {
-        return source;    
+        return source;
     }
 
     /**
@@ -207,7 +207,7 @@ public class Term extends AbstractCaArrayEntity {
      *
      * @param sourceVal the source
      */
-    public void setSource(final 
+    public void setSource(final
       gov.nih.nci.caarray.domain.vocabulary.Source sourceVal) {
         this.source = sourceVal;
     }
@@ -223,8 +223,8 @@ public class Term extends AbstractCaArrayEntity {
         boolean theyAreEqual = false;
         if (obj instanceof gov.nih.nci.caarray.domain.vocabulary.Term) {
             final gov.nih.nci.caarray.domain.vocabulary.Term castObject =
-                (gov.nih.nci.caarray.domain.vocabulary.Term) obj;                  
-            Long thisId = getId();        
+                (gov.nih.nci.caarray.domain.vocabulary.Term) obj;
+            Long thisId = getId();
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;
             }
@@ -244,5 +244,25 @@ public class Term extends AbstractCaArrayEntity {
             theHashCode += getId().hashCode();
         }
         return theHashCode;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append(super.toString());
+        stringBuffer.append(" source=");
+        if (source == null) {
+            stringBuffer.append("null");
+        } else {
+            stringBuffer.append(source.getName());
+        }
+        stringBuffer.append(" category=");
+        stringBuffer.append(getCategory().getName());
+        stringBuffer.append(" value=");
+        stringBuffer.append(getValue());
+        return stringBuffer.toString();
     }
 }

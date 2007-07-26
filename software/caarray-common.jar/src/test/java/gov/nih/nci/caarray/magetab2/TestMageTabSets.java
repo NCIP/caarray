@@ -82,53 +82,41 @@
  */
 package gov.nih.nci.caarray.magetab2;
 
-import static org.junit.Assert.*;
-import gov.nih.nci.caarray.magetab2.idf.Investigation;
-import gov.nih.nci.caarray.magetab2.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.tests.data.magetab.MageTabDataFiles;
 
-import org.junit.Test;
-
 /**
- * Tests for the MageTabParser subsystem.
+ * MAGE-TAB document sets to be used as test data.
  */
-@SuppressWarnings("PMD")
-public class MageTabParserTest {
+public final class TestMageTabSets {
 
-    private static final int SIX = 6;
-    private static final int THREE = 3;
-    private MageTabParser parser = MageTabParser.INSTANCE;
-
-    /**
-     * @throws MageTabParsingException .
-     */
-    @Test
-    public void testValidate() throws MageTabParsingException {
-        MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET;
-        ValidationResult result = parser.validate(fileSet);
-        assertTrue(result.isValid());
+    private TestMageTabSets() {
+        super();
     }
 
     /**
-     * @throws MageTabParsingException .
-     *
+     * Example set of documents included with MAGE-TAB specification.
      */
-    @Test
-    public void testParse() throws MageTabParsingException {
-        MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET;
-        MageTabDocumentSet documentSet = parser.parse(fileSet);
-        assertNotNull(documentSet);
-        assertEquals(1, documentSet.getIdfDocuments().size());
-        Investigation investigation =
-            documentSet.getIdfDocument(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()).getInvestigation();
-        assertTrue(investigation.getProtocols().size() == THREE);
-        assertEquals("submitter;investigator", investigation.getPersons().get(0).getRoles().get(0).getValue());
-        assertEquals("http://mged.sourceforge.net/ontologies/MGEDontology.php",
-                investigation.getProtocols().get(0).getType().getTermSource().getFile());
-        assertEquals("University of Heidelberg H sapiens TK6", investigation.getTitle());
-        SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
-        assertNotNull(sdrfDocument);
-        assertEquals(SIX, sdrfDocument.getLeftmostNodes().size());
+    public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_INPUT_SET = getSpecificationInputSet();
+
+    /**
+     * Document set parsed from the MAGE-TAB specification example files.
+     */
+    public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_SET = getSet(MAGE_TAB_SPECIFICATION_INPUT_SET);
+
+    private static MageTabDocumentSet getSet(MageTabInputFileSet inputSet) {
+        try {
+            return MageTabParser.INSTANCE.parse(inputSet);
+        } catch (MageTabParsingException e) {
+            e.printStackTrace(System.err);
+            return null;
+        }
+    }
+
+    private static MageTabInputFileSet getSpecificationInputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
+        return fileSet;
     }
 
 }

@@ -80,55 +80,61 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab2;
+package gov.nih.nci.caarray.dao.stub;
 
-import static org.junit.Assert.*;
-import gov.nih.nci.caarray.magetab2.idf.Investigation;
-import gov.nih.nci.caarray.magetab2.sdrf.SdrfDocument;
-import gov.nih.nci.caarray.tests.data.magetab.MageTabDataFiles;
-
-import org.junit.Test;
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.ProjectDao;
+import gov.nih.nci.caarray.dao.ProtocolDao;
+import gov.nih.nci.caarray.dao.SampleDao;
+import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.dao.VocabularyDao;
 
 /**
- * Tests for the MageTabParser subsystem.
+ * Base adapter for DAO Stubs.
  */
-@SuppressWarnings("PMD")
-public class MageTabParserTest {
-
-    private static final int SIX = 6;
-    private static final int THREE = 3;
-    private MageTabParser parser = MageTabParser.INSTANCE;
+public class DaoFactoryStub implements CaArrayDaoFactory {
 
     /**
-     * @throws MageTabParsingException .
+     * {@inheritDoc}
      */
-    @Test
-    public void testValidate() throws MageTabParsingException {
-        MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET;
-        ValidationResult result = parser.validate(fileSet);
-        assertTrue(result.isValid());
+    public ArrayDao getArrayDao() {
+        return new ArrayDaoStub();
     }
 
     /**
-     * @throws MageTabParsingException .
-     *
+     * {@inheritDoc}
      */
-    @Test
-    public void testParse() throws MageTabParsingException {
-        MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET;
-        MageTabDocumentSet documentSet = parser.parse(fileSet);
-        assertNotNull(documentSet);
-        assertEquals(1, documentSet.getIdfDocuments().size());
-        Investigation investigation =
-            documentSet.getIdfDocument(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()).getInvestigation();
-        assertTrue(investigation.getProtocols().size() == THREE);
-        assertEquals("submitter;investigator", investigation.getPersons().get(0).getRoles().get(0).getValue());
-        assertEquals("http://mged.sourceforge.net/ontologies/MGEDontology.php",
-                investigation.getProtocols().get(0).getType().getTermSource().getFile());
-        assertEquals("University of Heidelberg H sapiens TK6", investigation.getTitle());
-        SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
-        assertNotNull(sdrfDocument);
-        assertEquals(SIX, sdrfDocument.getLeftmostNodes().size());
+    public ProjectDao getProjectDao() {
+        return new ProjectDaoStub();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public ProtocolDao getProtocolDao() {
+        return new ProtocolDaoStub();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public SearchDao getSearchDao() {
+        return new SearchDaoStub();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public VocabularyDao getVocabularyDao() {
+        return new VocabularyDaoStub();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public SampleDao getSampleDao() {
+        return new SampleDaoStub();
     }
 
 }
