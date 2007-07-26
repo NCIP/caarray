@@ -80,13 +80,31 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab2.datamatrix;
+package gov.nih.nci.caarray.magetab2.data;
+
+import java.io.File;
+
+import gov.nih.nci.caarray.magetab2.AbstractMageTabDocument;
+import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
 
 /**
- * A data matrix containing raw array data.
+ * Base class for MAGE-TAB data matrix files.
  */
-public final class ArrayDataMatrix extends AbstractDataMatrix {
+public abstract class AbstractDataMatrix extends AbstractMageTabDocument {
 
-    private static final long serialVersionUID = -3266714211172321498L;
+    private static final long serialVersionUID = 1L;
 
+    AbstractDataMatrix(MageTabDocumentSet documentSet, File file) {
+        super(documentSet, file);
+    }
+
+    /**
+     * Returns a reader that can be used to iterate through all of the data in the matrix.
+     * 
+     * @return the reader.
+     */
+    public DataMatrixReader getDataReader() {
+        return new DataMatrixReaderImplementation(this);
+    }
+    
 }

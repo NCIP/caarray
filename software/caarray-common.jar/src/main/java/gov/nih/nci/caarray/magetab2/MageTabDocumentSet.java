@@ -82,13 +82,17 @@
  */
 package gov.nih.nci.caarray.magetab2;
 
+import gov.nih.nci.caarray.magetab2.adf.AdfDocument;
+import gov.nih.nci.caarray.magetab2.data.ArrayDataMatrix;
+import gov.nih.nci.caarray.magetab2.data.DerivedArrayDataMatrix;
+import gov.nih.nci.caarray.magetab2.data.NativeDataFile;
 import gov.nih.nci.caarray.magetab2.idf.IdfDocument;
-import gov.nih.nci.caarray.magetab2.idf.Investigation;
 import gov.nih.nci.caarray.magetab2.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.util.io.FileUtility;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -104,6 +108,10 @@ public final class MageTabDocumentSet implements Serializable {
 
     private final Set<IdfDocument> idfDocuments = new HashSet<IdfDocument>();
     private final Set<SdrfDocument> sdrfDocuments = new HashSet<SdrfDocument>();
+    private final Set<AdfDocument> adfDocuments = new HashSet<AdfDocument>();
+    private final Set<ArrayDataMatrix> arrayDataMatrixes = new HashSet<ArrayDataMatrix>();
+    private final Set<DerivedArrayDataMatrix> derivedArrayDataMatrixes = new HashSet<DerivedArrayDataMatrix>();
+    private final Set<NativeDataFile> nativeDataFiles = new HashSet<NativeDataFile>();
     private final Map<String, OntologyTerm> termCache = new HashMap<String, OntologyTerm>();
     private final Map<String, TermSource> termSourceCache = new HashMap<String, TermSource>();
     private final Map<String, Protocol> protocolCache = new HashMap<String, Protocol>();
@@ -113,16 +121,63 @@ public final class MageTabDocumentSet implements Serializable {
     }
 
     /**
-     * Returns all <code>Investigations</code> defined in the document set.
-     *
-     * @return the investigations.
+     * @return the idfDocuments
      */
-    public Set<Investigation> getInvestigations() {
-        Set<Investigation> investigations = new HashSet<Investigation>(idfDocuments.size());
-        for (IdfDocument idfDocument : idfDocuments) {
-            investigations.add(idfDocument.getInvestigation());
-        }
-        return investigations;
+    public Set<IdfDocument> getIdfDocuments() {
+        return idfDocuments;
+    }
+
+    /**
+     * @return the sdrfDocuments
+     */
+    public Set<SdrfDocument> getSdrfDocuments() {
+        return sdrfDocuments;
+    }
+
+    /**
+     * @return the adfDocuments
+     */
+    public Set<AdfDocument> getAdfDocuments() {
+        return adfDocuments;
+    }
+
+    /**
+     * @return the arrayDataMatrixes
+     */
+    public Set<ArrayDataMatrix> getArrayDataMatrixes() {
+        return arrayDataMatrixes;
+    }
+
+    /**
+     * @return the derivedArrayDataMatrixes
+     */
+    public Set<DerivedArrayDataMatrix> getDerivedArrayDataMatrixes() {
+        return derivedArrayDataMatrixes;
+    }
+
+    /**
+     * @return the nativeDataFiles
+     */
+    public Set<NativeDataFile> getNativeDataFiles() {
+        return nativeDataFiles;
+    }
+    
+    /**
+     * Returns all <code>TermSources</code> used in the document set.
+     * 
+     * @return the <code>TermSources</code>.
+     */
+    public Collection<TermSource> getTermSources() {
+        return termSourceCache.values();
+    }
+    
+    /**
+     * Returns all <code>OntologyTerms</code> used in the document set.
+     * 
+     * @return the <code>OntologyTerms</code>.
+     */
+    public Collection<OntologyTerm> getTerms() {
+        return termCache.values();
     }
 
     private void initializeFromFileSet(MageTabInputFileSet inputFileSet) {
@@ -216,20 +271,6 @@ public final class MageTabDocumentSet implements Serializable {
     }
 
     /**
-     * @return the idfDocuments
-     */
-    public Set<IdfDocument> getIdfDocuments() {
-        return idfDocuments;
-    }
-
-    /**
-     * @return the sdrfDocuments
-     */
-    public Set<SdrfDocument> getSdrfDocuments() {
-        return sdrfDocuments;
-    }
-
-    /**
      * Adds a new Protocol to the document set.
      *
      * @param protocol the new protocol.
@@ -249,6 +290,75 @@ public final class MageTabDocumentSet implements Serializable {
      */
     Protocol getProtocol(String protocolId) {
         return protocolCache.get(protocolId);
+    }
+    
+    /**
+     * Returns the <code>IdfDocument</code> that matches the filename provided, or null if none match.
+     * 
+     * @param filename locate <code>IdfDocument</code> with this filename
+     * @return the <code>IdfDocument</code>.
+     */
+    public IdfDocument getIdfDocument(String filename) {
+        return (IdfDocument) getDocument(idfDocuments, filename);
+    }
+    
+    /**
+     * Returns the <code>SdrfDocument</code> that matches the filename provided, or null if none match.
+     * 
+     * @param filename locate <code>SdrfDocument</code> with this filename
+     * @return the <code>SdrfDocument</code>.
+     */
+    public SdrfDocument getSdrfDocument(String filename) {
+        return (SdrfDocument) getDocument(sdrfDocuments, filename);
+    }
+    
+    /**
+     * Returns the <code>AdfDocument</code> that matches the filename provided, or null if none match.
+     * 
+     * @param filename locate <code>AdfDocument</code> with this filename
+     * @return the <code>AdfDocument</code>.
+     */
+    public AdfDocument getAdfDocument(String filename) {
+        return (AdfDocument) getDocument(adfDocuments, filename);
+    }
+    
+    /**
+     * Returns the <code>ArrayDataMatrix</code> that matches the filename provided, or null if none match.
+     * 
+     * @param filename locate <code>ArrayDataMatrix</code> with this filename
+     * @return the <code>ArrayDataMatrix</code>.
+     */
+    public ArrayDataMatrix getArrayDataMatrix(String filename) {
+        return (ArrayDataMatrix) getDocument(arrayDataMatrixes, filename);
+    }
+    
+    /**
+     * Returns the <code>DerivedArrayDataMatrix</code> that matches the filename provided, or null if none match.
+     * 
+     * @param filename locate <code>DerivedArrayDataMatrix</code> with this filename
+     * @return the <code>DerivedArrayDataMatrix</code>.
+     */
+    public DerivedArrayDataMatrix getDerivedArrayDataMatrix(String filename) {
+        return (DerivedArrayDataMatrix) getDocument(derivedArrayDataMatrixes, filename);
+    }
+    
+    /**
+     * Returns the <code>NativeDataFile</code> that matches the filename provided, or null if none match.
+     * 
+     * @param filename locate <code>NativeDataFile</code> with this filename
+     * @return the <code>NativeDataFile</code>.
+     */
+    public NativeDataFile getNativeDataFile(String filename) {
+        return (NativeDataFile) getDocument(nativeDataFiles, filename);
+    }
+
+    private AbstractMageTabDocument getDocument(Set<? extends AbstractMageTabDocument> documents, String filename) {
+        for (AbstractMageTabDocument document : documents) {
+            if (document.getFile().getName().equals(filename)) {
+                return document;
+            }
+        }
+        return null;
     }
 
 

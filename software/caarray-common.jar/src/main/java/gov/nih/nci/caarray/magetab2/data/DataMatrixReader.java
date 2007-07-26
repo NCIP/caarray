@@ -80,17 +80,11 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab2.sdrf;
+package gov.nih.nci.caarray.magetab2.data;
 
 /**
- * Indicates a programming error or otherwise unexpected runtime exception in MAGE-TAB parsing.
+ * Used to iterate efficiently through data in a MAGE-TAB data matrix.
  */
-public class MageTabParsingRuntimeException extends RuntimeException {
-
-    private static final long serialVersionUID = -8373094799214834514L;
-
-    MageTabParsingRuntimeException(Throwable cause) {
-        super(cause);
-    }
+public interface DataMatrixReader {
 
 }

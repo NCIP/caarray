@@ -82,55 +82,20 @@
  */
 package gov.nih.nci.caarray.magetab2;
 
-import static org.junit.Assert.*;
-import gov.nih.nci.caarray.magetab2.idf.Investigation;
-import gov.nih.nci.caarray.magetab2.sdrf.SdrfDocument;
-import gov.nih.nci.caarray.tests.data.magetab.MageTabDataFiles;
-
-import org.junit.Test;
-
 /**
- * Tests for the MageTabParser subsystem.
+ * Indicates a programming error or otherwise unexpected runtime exception in MAGE-TAB parsing.
  */
-@SuppressWarnings("PMD")
-public class MageTabParserTest {
-    
-    private static final int SIX = 6;
-    private MageTabParser parser = MageTabParser.INSTANCE;
+public class MageTabParsingRuntimeException extends RuntimeException {
+
+    private static final long serialVersionUID = -8373094799214834514L;
 
     /**
-     * @throws MageTabParsingException .
+     * Creates a parsing exception from an originating <code>Throwable</code>.
+     * 
+     * @param cause the cause
      */
-    @Test
-    public void testValidate() throws MageTabParsingException {
-        MageTabInputFileSet fileSet = getSpecificationSampleFileSet();
-        ValidationResult result = parser.validate(fileSet);
-        assertTrue(result.isValid());
-    }
-
-    /**
-     * @throws MageTabParsingException .
-     *
-     */
-    @Test
-    public void testParse() throws MageTabParsingException {
-        MageTabInputFileSet fileSet = getSpecificationSampleFileSet();
-        MageTabDocumentSet documentSet = parser.parse(fileSet);
-        assertNotNull(documentSet);
-        assertEquals(1, documentSet.getIdfDocuments().size());
-        Investigation investigation = 
-            documentSet.getIdfDocument(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()).getInvestigation();
-        assertEquals("University of Heidelberg H sapiens TK6", investigation.getTitle());
-        SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
-        assertNotNull(sdrfDocument);
-        assertEquals(SIX, sdrfDocument.getLeftmostNodes().size());
-    }
-
-    private MageTabInputFileSet getSpecificationSampleFileSet() {
-        MageTabInputFileSet fileSet = new MageTabInputFileSet();
-        fileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-        fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
-        return fileSet;
+    public MageTabParsingRuntimeException(Throwable cause) {
+        super(cause);
     }
 
 }

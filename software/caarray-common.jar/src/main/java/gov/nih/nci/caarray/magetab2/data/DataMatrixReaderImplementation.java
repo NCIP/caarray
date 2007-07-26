@@ -80,11 +80,20 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab2.datamatrix;
+package gov.nih.nci.caarray.magetab2.data;
 
 /**
- * Used to iterate efficiently through data in a MAGE-TAB data matrix.
+ * Default implementation of the <code>DataMatrixReader</code>.
+ * 
+ * TODO Implement and remove PMD warning suppression
  */
-public interface DataMatrixReader {
+@SuppressWarnings("PMD")
+class DataMatrixReaderImplementation implements DataMatrixReader {
+
+    private final AbstractDataMatrix matrix;
+
+    DataMatrixReaderImplementation(AbstractDataMatrix matrix) {
+        this.matrix = matrix;
+    }
 
 }

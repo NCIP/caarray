@@ -80,57 +80,36 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab2;
+package gov.nih.nci.caarray.magetab2.data;
 
-import static org.junit.Assert.*;
-import gov.nih.nci.caarray.magetab2.idf.Investigation;
-import gov.nih.nci.caarray.magetab2.sdrf.SdrfDocument;
-import gov.nih.nci.caarray.tests.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab2.MageTabParsingException;
 
-import org.junit.Test;
+import java.io.File;
 
 /**
- * Tests for the MageTabParser subsystem.
+ * A data matrix containing raw array data.
  */
-@SuppressWarnings("PMD")
-public class MageTabParserTest {
-    
-    private static final int SIX = 6;
-    private MageTabParser parser = MageTabParser.INSTANCE;
+public final class ArrayDataMatrix extends AbstractDataMatrix {
+
+    private static final long serialVersionUID = -3266714211172321498L;
 
     /**
-     * @throws MageTabParsingException .
+     * Creates a new data matrix from an existing file.
+     * 
+     * @param documentSet the document set containing the data file
+     * @param file the data file
      */
-    @Test
-    public void testValidate() throws MageTabParsingException {
-        MageTabInputFileSet fileSet = getSpecificationSampleFileSet();
-        ValidationResult result = parser.validate(fileSet);
-        assertTrue(result.isValid());
+    public ArrayDataMatrix(MageTabDocumentSet documentSet, File file) {
+        super(documentSet, file);
     }
 
     /**
-     * @throws MageTabParsingException .
-     *
+     * {@inheritDoc}
      */
-    @Test
-    public void testParse() throws MageTabParsingException {
-        MageTabInputFileSet fileSet = getSpecificationSampleFileSet();
-        MageTabDocumentSet documentSet = parser.parse(fileSet);
-        assertNotNull(documentSet);
-        assertEquals(1, documentSet.getIdfDocuments().size());
-        Investigation investigation = 
-            documentSet.getIdfDocument(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()).getInvestigation();
-        assertEquals("University of Heidelberg H sapiens TK6", investigation.getTitle());
-        SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
-        assertNotNull(sdrfDocument);
-        assertEquals(SIX, sdrfDocument.getLeftmostNodes().size());
-    }
-
-    private MageTabInputFileSet getSpecificationSampleFileSet() {
-        MageTabInputFileSet fileSet = new MageTabInputFileSet();
-        fileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-        fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
-        return fileSet;
+    @Override
+    protected void parse() throws MageTabParsingException {
+        // TODO Auto-generated method stub        
     }
 
 }

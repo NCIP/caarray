@@ -109,9 +109,11 @@ import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 public final class IdfDocument extends AbstractMageTabDocument {
 
     private static final long serialVersionUID = 149154919398572572L;
+    private static final Log LOG = LogFactory.getLog(IdfDocument.class);
+
     private final Investigation investigation = new Investigation();
     private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-    private static final Log LOG = LogFactory.getLog(IdfDocument.class);
+    
     /**
      * Creates a new IDF from an existing file.
      *
@@ -120,6 +122,13 @@ public final class IdfDocument extends AbstractMageTabDocument {
      */
     public IdfDocument(MageTabDocumentSet documentSet, File file) {
         super(documentSet, file);
+    }
+
+    /**
+     * @return the investigation
+     */
+    public Investigation getInvestigation() {
+        return investigation;
     }
 
     /**
@@ -473,13 +482,6 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleNormalizationTypeTermSourceRef(String value, int valueIndex) {
         investigation.getNormalizationTypes().get(valueIndex).setTermSource(getTermSource(value));
-    }
-
-    /**
-     * @return the investigation
-     */
-    public Investigation getInvestigation() {
-        return investigation;
     }
 
 }

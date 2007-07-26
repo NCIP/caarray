@@ -80,41 +80,43 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab2.datamatrix;
+package gov.nih.nci.caarray.magetab2.adf;
 
 import java.io.File;
-import java.io.Serializable;
+
+import gov.nih.nci.caarray.magetab2.AbstractMageTabDocument;
+import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab2.MageTabParsingException;
 
 /**
- * Base class for MAGE-TAB data matrix types.
+ * Represents an Array Design Format (ADF) file - a tab-delimited file defining each array 
+ * type used. An ADF file describes the design of an array, e.g., what sequence is located at 
+ * each position on an array and what the annotation of this sequence is. If the investigation 
+ * uses arrays for which a description has been previously provided, such as a standard commercial 
+ * array, cross-references to entries in a public repository (e.g., an ArrayExpress accession number) 
+ * can be included instead of explicit array descriptions.
  */
-public abstract class AbstractDataMatrix implements Serializable {
+public final class AdfDocument extends AbstractMageTabDocument {
 
-    private static final long serialVersionUID = 1L;
-
-    private File file;
+    private static final long serialVersionUID = 2340826408569786767L;
 
     /**
-     * @return the file
-     */
-    public File getFile() {
-        return file;
-    }
-
-    /**
-     * @param file the file to set
-     */
-    public void setFile(File file) {
-        this.file = file;
-    }
-    
-    /**
-     * Returns a reader that can be used to iterate through all of the data in the matrix.
+     * Instantiates a new <code>AdfDocument</code> from an existing file.
      * 
-     * @return the reader.
+     * @param documentSet the document set the ADF belongs to
+     * @param file thd ADF
      */
-    public DataMatrixReader getDataReader() {
-        return new DataMatrixReaderImplementation(this);
+    public AdfDocument(MageTabDocumentSet documentSet, File file) {
+        super(documentSet, file);
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void parse() throws MageTabParsingException {
+        // TODO Auto-generated method stub
+
+    }
+
 }

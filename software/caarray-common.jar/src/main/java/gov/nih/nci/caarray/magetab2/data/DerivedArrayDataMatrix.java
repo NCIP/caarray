@@ -80,7 +80,12 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab2.datamatrix;
+package gov.nih.nci.caarray.magetab2.data;
+
+import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab2.MageTabParsingException;
+
+import java.io.File;
 
 /**
  * A data matrix containing processed array data.
@@ -88,5 +93,23 @@ package gov.nih.nci.caarray.magetab2.datamatrix;
 public final class DerivedArrayDataMatrix extends AbstractDataMatrix {
 
     private static final long serialVersionUID = -3266714211172321498L;
+
+    /**
+     * Creates a new data matrix from an existing file.
+     * 
+     * @param documentSet the document set containing the data file
+     * @param file the data file
+     */
+    public DerivedArrayDataMatrix(MageTabDocumentSet documentSet, File file) {
+        super(documentSet, file);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void parse() throws MageTabParsingException {
+        // TODO Auto-generated method stub        
+    }
 
 }

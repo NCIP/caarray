@@ -74,7 +74,11 @@ public abstract class AbstractMageTabDocument implements Serializable {
      * @param documentSet the MAGE-TAB document set the MAGE-TAB document belongs to.
      * @param file the file containing the MAGE-TAB document content.
      */
-   protected AbstractMageTabDocument(final MageTabDocumentSet documentSet, final File file) {
+    protected AbstractMageTabDocument(final MageTabDocumentSet documentSet, final File file) {
+        super();
+        if (documentSet == null) {
+            throw new IllegalArgumentException("documentSet was null");
+        }
         FileUtility.checkFileExists(file);
         this.documentSet = documentSet;
         this.file = file;

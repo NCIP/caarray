@@ -80,20 +80,37 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab2.datamatrix;
+package gov.nih.nci.caarray.magetab2.data;
+
+import java.io.File;
+
+import gov.nih.nci.caarray.magetab2.AbstractMageTabDocument;
+import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab2.MageTabParsingException;
 
 /**
- * Default implementation of the <code>DataMatrixReader</code>.
- * 
- * TODO Implement and remove PMD warning suppression
+ * A raw or derived data file in original, native format.
  */
-@SuppressWarnings("PMD")
-class DataMatrixReaderImplementation implements DataMatrixReader {
+public final class NativeDataFile extends AbstractMageTabDocument {
 
-    private final AbstractDataMatrix matrix;
+    private static final long serialVersionUID = 7535068841248711861L;
 
-    DataMatrixReaderImplementation(AbstractDataMatrix matrix) {
-        this.matrix = matrix;
+    /**
+     * Creates a new data file instance from an existing file.
+     * 
+     * @param documentSet document set containing the file
+     * @param file the file
+     */
+    public NativeDataFile(MageTabDocumentSet documentSet, File file) {
+        super(documentSet, file);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void parse() throws MageTabParsingException {
+        // TODO Auto-generated method stub
     }
 
 }

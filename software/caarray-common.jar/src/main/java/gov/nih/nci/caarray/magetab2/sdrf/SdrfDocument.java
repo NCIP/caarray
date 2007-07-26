@@ -91,6 +91,7 @@ import java.util.Map;
 import gov.nih.nci.caarray.magetab2.AbstractMageTabDocument;
 import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab2.MageTabParsingException;
+import gov.nih.nci.caarray.magetab2.MageTabParsingRuntimeException;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 
 /**
