@@ -44,6 +44,9 @@ DROP TABLE IF EXISTS EXTRACTLABELEDEXTRACT;
 CREATE TABLE TERM
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   DESCRIPTION                 VARCHAR(1000),
   VALUE                       VARCHAR(1000),
   CATEGORY_ID                 BIGINT      NOT NULL,
@@ -55,6 +58,9 @@ CREATE TABLE TERM
 CREATE TABLE CATEGORY
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   NAME                        VARCHAR(1000),
   PARENT_ID                   BIGINT,
   PRIMARY KEY                 (ID)
@@ -63,6 +69,9 @@ CREATE TABLE CATEGORY
 CREATE TABLE ACCESSION
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   URL                         VARCHAR(1000),
   VALUE                       VARCHAR(1000),
   SOURCE_ID                   BIGINT      NOT NULL,
@@ -72,6 +81,9 @@ CREATE TABLE ACCESSION
 CREATE TABLE SOURCE
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   NAME                        VARCHAR(1000),
   URL                         VARCHAR(1000),
   VERSION                     VARCHAR(1000),
@@ -81,6 +93,9 @@ CREATE TABLE SOURCE
 CREATE TABLE PROTOCOLAPPLICATION
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   PROTOCOL_ID                 BIGINT      NOT NULL,
   BIOMATERIAL_ID              BIGINT,
   PRIMARY KEY                 (ID)
@@ -89,6 +104,9 @@ CREATE TABLE PROTOCOLAPPLICATION
 CREATE TABLE PARAMETERVALUE
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   UNIT                        VARCHAR(1000),
   VALUE                       VARCHAR(1000),
   PROTOCOL_APPLICATION_ID     BIGINT,
@@ -99,6 +117,9 @@ CREATE TABLE PARAMETERVALUE
 CREATE TABLE PARAMETER
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   NAME                        VARCHAR(1000),
   PROTOCOL_ID                 BIGINT      NOT NULL,
   DEFAULT_VALUE_ID            BIGINT,
@@ -108,6 +129,9 @@ CREATE TABLE PARAMETER
 CREATE TABLE PROTOCOL
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   NAME                        VARCHAR(1000),
   DESCRIPTION                 VARCHAR(1000),
   CONTACT                     VARCHAR(1000),
@@ -121,6 +145,9 @@ CREATE TABLE PROTOCOL
 CREATE TABLE CONTACT
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   EMAIL                       VARCHAR(1000),
   FAX                         VARCHAR(1000),
   PHONE                       VARCHAR(1000),
@@ -144,6 +171,9 @@ CREATE TABLE PERSONORGANIZATION
 CREATE TABLE ADDRESS
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   CITY                        VARCHAR(1000),
   STATE                       VARCHAR(1000),
   STREETADDRESS1              VARCHAR(1000),
@@ -155,6 +185,9 @@ CREATE TABLE ADDRESS
 CREATE TABLE ARRAY
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   BATCH                       VARCHAR(1000),
   SERIALNUMBER                VARCHAR(1000),
   DESIGN_ID                   BIGINT      NOT NULL,
@@ -165,6 +198,9 @@ CREATE TABLE ARRAY
 CREATE TABLE ARRAYDESIGN
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   NAME                        VARCHAR(1000),
   POLYMERTYPE_ID      BIGINT,
   SUBSTRATETYPE_ID            BIGINT,
@@ -179,6 +215,9 @@ CREATE TABLE ARRAYDESIGN
 CREATE TABLE CAARRAYFILE
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   PATH                        VARCHAR(1000),
   TYPE                        VARCHAR(1000),
   PROJECT_ID                  BIGINT      NOT NULL,
@@ -188,6 +227,9 @@ CREATE TABLE CAARRAYFILE
 CREATE TABLE PUBLICATION
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   TITLE                       VARCHAR(1000),
   AUTHORS                     VARCHAR(1000),
   DOI                         VARCHAR(1000),
@@ -200,6 +242,9 @@ CREATE TABLE PUBLICATION
 CREATE TABLE INVESTIGATIONCONTACT
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   CONTACT_ID                  BIGINT,
   INVESTIGATION_ID            BIGINT,
   PRIMARY KEY                 (ID)
@@ -215,6 +260,9 @@ CREATE TABLE INVESTIGATIONCONTACTROLE
 CREATE TABLE FACTOR
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   NAME                        VARCHAR(1000),
   TYPE_ID                     BIGINT,
   INVESTIGATION_ID            BIGINT,
@@ -224,6 +272,9 @@ CREATE TABLE FACTOR
 CREATE TABLE FACTORVALUE
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   FACTOR_ID                   BIGINT      NOT NULL,
   PRIMARY KEY                 (ID)
 );
@@ -231,6 +282,9 @@ CREATE TABLE FACTORVALUE
 CREATE TABLE PROPOSAL
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   PROJECT_ID                  BIGINT      NOT NULL,
   PRIMARY KEY                 (ID)
 );
@@ -238,6 +292,9 @@ CREATE TABLE PROPOSAL
 CREATE TABLE PROJECT
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   INVESTIGATION_ID            BIGINT      NOT NULL,
   PRIMARY KEY                 (ID)
 );
@@ -245,6 +302,9 @@ CREATE TABLE PROJECT
 CREATE TABLE INVESTIGATION
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   TITLE                       VARCHAR(1000),
   DESCRIPTION                 VARCHAR(1000),
   DATEOFEXPERIMENT            DATETIME,
@@ -290,6 +350,9 @@ CREATE TABLE QUALITYCONTROLTYPE
 CREATE TABLE CHARACTERISTIC
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   VALUE                       VARCHAR(1000),
   TERM_ID                     BIGINT,
   UNIT_ID                     BIGINT,
@@ -300,12 +363,18 @@ CREATE TABLE CHARACTERISTIC
 CREATE TABLE COMPOUND
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   PRIMARY KEY                 (ID)
 );
 
 CREATE TABLE BIOMATERIAL
 (
   ID                          BIGINT      NOT NULL,
+  LSIDAUTHORITY               VARCHAR(1000),
+  LSIDNAMESPACE               VARCHAR(1000),
+  LSIDOBJECTID                VARCHAR(1000),
   NAME                        VARCHAR(1000),
   DESCRIPTION                 VARCHAR(1000),
   MATERIAL_TYPE_ID            BIGINT,
