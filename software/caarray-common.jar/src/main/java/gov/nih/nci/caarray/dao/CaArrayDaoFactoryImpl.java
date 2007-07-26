@@ -117,6 +117,15 @@ public class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
     }
 
     /**
+     * Returns a <code>SampleDao</code>.
+     *
+     * @return a <code>SampleDao</code>.
+     */
+    public SampleDao getSampleDao() {
+        return new SampleDaoImpl();
+    }
+
+    /**
      * Returns a <code>ProjectDao</code>.
      *
      * @return a <code>ProjectDao</code>.
