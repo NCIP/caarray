@@ -85,6 +85,8 @@ package gov.nih.nci.caarray.magetab2.idf;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -97,6 +99,7 @@ import gov.nih.nci.caarray.magetab2.MageTabParsingException;
 import gov.nih.nci.caarray.magetab2.OntologyTerm;
 import gov.nih.nci.caarray.magetab2.Parameter;
 import gov.nih.nci.caarray.magetab2.Protocol;
+import gov.nih.nci.caarray.magetab2.TermSource;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 
 /**
@@ -113,7 +116,8 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private final Investigation investigation = new Investigation();
     private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-    
+    private final List<TermSource> docTermSources = new ArrayList<TermSource>();
+
     /**
      * Creates a new IDF from an existing file.
      *
@@ -142,6 +146,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
         while (tabDelimitedReader.hasNextLine()) {
             handleLine(tabDelimitedReader.nextLine());
         }
+        updateTermSourceRefs();
     }
 
     private void handleLine(List<String> lineContents) {
@@ -286,13 +291,13 @@ public final class IdfDocument extends AbstractMageTabDocument {
            // TODO handleSdrfFile(value, valueIndex);
             break;
         case TERM_SOURCE_NAME:
-            // TODO Implement
+            handleTermSourceName(value, valueIndex);
             break;
         case TERM_SOURCE_FILE:
-            // TODO Implement
+            handleTermSourceFile(value, valueIndex);
             break;
         case TERM_SOURCE_VERSION:
-            // TODO Implement
+            handleTermSourceVersion(value, valueIndex);
             break;
         default:
             throw new IllegalArgumentException("Unknown IdfRowHeading " + rowHeading);
@@ -343,7 +348,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
 
     private void handleProtocolTermSourceRef(String value, int valueIndex) {
-        investigation.getProtocols().get(valueIndex).setTermSource(getTermSource(value));
+        investigation.getProtocols().get(valueIndex).getType().setTermSource(getTermSource(value));
 
     }
 
@@ -482,6 +487,48 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleNormalizationTypeTermSourceRef(String value, int valueIndex) {
         investigation.getNormalizationTypes().get(valueIndex).setTermSource(getTermSource(value));
+    }
+
+    private void handleTermSourceName(String value, int valueIndex) {
+
+        if (docTermSources.size() <= valueIndex) {
+            TermSource trmSource = new TermSource();
+            trmSource.setName(value);
+            docTermSources.add(trmSource);
+        } else {
+            docTermSources.get(valueIndex).setName(value);
+        }
+    }
+
+
+    private void handleTermSourceFile(String value, int valueIndex) {
+
+        if (docTermSources.size() > valueIndex) {
+            docTermSources.get(valueIndex).setFile(value);
+        }
+    }
+
+    private void handleTermSourceVersion(String value, int valueIndex) {
+
+        if (docTermSources.size() > valueIndex) {
+            docTermSources.get(valueIndex).setVersion(value);
+        }
+    }
+
+
+    private void updateTermSourceRefs() {
+        Iterator<TermSource> docSetSources = getDocumentSet().getTermSources().iterator();
+        while (docSetSources.hasNext()) {
+            TermSource docSetTrmSrc = docSetSources.next();
+            Iterator<TermSource> idfSources = docTermSources.iterator();
+            while (idfSources.hasNext()) {
+                TermSource idfSource = idfSources.next();
+                if (idfSource.getName().equals(docSetTrmSrc.getName())) {
+                    docSetTrmSrc.setFile(idfSource.getFile());
+                    docSetTrmSrc.setVersion(idfSource.getVersion());
+                }
+            }
+        }
     }
 
 }
