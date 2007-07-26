@@ -19,10 +19,19 @@
             <key column="INVESTIGATION_ID" />
             <many-to-many class="gov.nih.nci.caarray.domain.array.ArrayDesign" column="ARRAYDESIGN_ID" />
         </set>
-        <!-- -->
         <set name="arrays" table="INVESTIGATIONARRAY" lazy="false" cascade="save-update">
             <key column="INVESTIGATION_ID" />
             <many-to-many class="gov.nih.nci.caarray.domain.array.Array" column="ARRAY_ID" />
+        </set>
+        <!--
+        <set name="sources" table="INVESTIGATIONSOURCE" lazy="false" cascade="save-update">
+            <key column="INVESTIGATION_ID" />
+            <many-to-many class="gov.nih.nci.caarray.domain.sample.Source" column="SOURCE_ID" />
+        </set>
+        -->
+        <set name="samples" table="INVESTIGATIONSAMPLE" lazy="false" cascade="save-update">
+            <key column="INVESTIGATION_ID" />
+            <many-to-many class="gov.nih.nci.caarray.domain.sample.Sample" column="SAMPLE_ID" />
         </set>
         <set name="normalizationTypes" table="NORMALIZATIONTYPE" lazy="false" cascade="save-update">
             <key column="INVESTIGATION_ID" />

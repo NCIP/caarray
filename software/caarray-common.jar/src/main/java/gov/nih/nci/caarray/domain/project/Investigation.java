@@ -87,6 +87,8 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.publication.Publication;
+import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.HashSet;
@@ -268,6 +270,54 @@ public class Investigation extends AbstractCaArrayEntity {
     @SuppressWarnings(UNUSED)
     private void setReplicateTypes(final Set<Term> replicateTypesVal) {  // NOPMD
         this.replicateTypes = replicateTypesVal;
+    }
+
+    /**
+     * The sources set.
+     */
+    private Set<Source> sources = new HashSet<Source>();
+
+    /**
+     * Gets the sources.
+     *
+     * @return the sources
+     */
+    public Set<Source> getSources() {
+        return sources;
+    }
+
+    /**
+     * Sets the sources.
+     *
+     * @param sourcesVal the sources
+     */
+    @SuppressWarnings(UNUSED)
+    private void setSources(final Set<Source> sourcesVal) {  // NOPMD
+        this.sources = sourcesVal;
+    }
+
+    /**
+     * The samples set.
+     */
+    private Set<Sample> samples = new HashSet<Sample>();
+
+    /**
+     * Gets the samples.
+     *
+     * @return the samples
+     */
+    public Set<Sample> getSamples() {
+        return samples;
+    }
+
+    /**
+     * Sets the samples.
+     *
+     * @param samplesVal the sources
+     */
+    @SuppressWarnings(UNUSED)
+    private void setSamples(final Set<Sample> samplesVal) {  // NOPMD
+        this.samples = samplesVal;
     }
 
     /**
