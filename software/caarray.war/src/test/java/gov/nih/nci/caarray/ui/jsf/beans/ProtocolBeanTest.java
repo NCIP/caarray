@@ -88,7 +88,7 @@ import java.util.List;
 
 import javax.faces.model.SelectItem;
 
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceTestStub;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 
 import org.junit.Test;
@@ -106,15 +106,15 @@ public class ProtocolBeanTest {
     @Test
     public void testGetProtocolTypes() {
         ProtocolBean bean = new ProtocolBean();
-        bean.setVocabularyService(new VocabularyServiceTestStub());
+        bean.setVocabularyService(new VocabularyServiceStub());
         List<SelectItem> selectItems = bean.getProtocolTypeItems();
-        assertEquals(3, selectItems.size());
-        assertEquals("term1", selectItems.get(0).getLabel());
-        assertEquals("term2", selectItems.get(1).getLabel());
-        assertEquals("term3", selectItems.get(2).getLabel());
+        assertEquals(10, selectItems.size());
+        assertEquals("term0", selectItems.get(0).getLabel());
+        assertEquals("term1", selectItems.get(1).getLabel());
+        assertEquals("term2", selectItems.get(2).getLabel());
         assertEquals(0, selectItems.get(0).getValue());
         assertEquals(1, selectItems.get(1).getValue());
-        assertEquals(99, selectItems.get(2).getValue());
+        assertEquals(9, selectItems.get(9).getValue());
     }
 
     /**
@@ -137,13 +137,13 @@ public class ProtocolBeanTest {
     public void testSetProtocolTypeId() {
         ProtocolBean bean = new ProtocolBean();
         bean.addProtocol();
-        bean.setVocabularyService(new VocabularyServiceTestStub());
+        bean.setVocabularyService(new VocabularyServiceStub());
         assertNull(bean.getProtocol().getType());
         assertNull(bean.getProtocolTypeId());
-        bean.setProtocolTypeId(99L);
+        bean.setProtocolTypeId(9L);
         assertNotNull(bean.getProtocol().getType());
-        assertEquals(99L, bean.getProtocolTypeId());
-        assertEquals("term3", bean.getProtocol().getType().getValue());
+        assertEquals(9L, bean.getProtocolTypeId());
+        assertEquals("term9", bean.getProtocol().getType().getValue());
     }
 
 }
