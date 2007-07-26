@@ -8,6 +8,9 @@
         <id name="id" column="ID" type="long">
             <generator class="assigned"/>
         </id>
+        <property name="lsidAuthority" column="LSIDAUTHORITY" type="string" />
+        <property name="lsidNamespace" column="LSIDNAMESPACE" type="string" />
+        <property name="lsidObjectId" column="LSIDOBJECTID" type="string" />
         <property name="path" column="PATH" type="string" />
         <property name="type" column="TYPE" type="gov.nih.nci.caarray.dao.customtype.FileTypeUserType" />
     </class>

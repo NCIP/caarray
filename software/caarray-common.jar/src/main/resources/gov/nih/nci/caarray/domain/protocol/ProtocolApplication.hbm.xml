@@ -8,6 +8,9 @@
         <id name="id" column="ID" type="long">
             <generator class="assigned"/>
         </id>
+        <property name="lsidAuthority" column="LSIDAUTHORITY" type="string" />
+        <property name="lsidNamespace" column="LSIDNAMESPACE" type="string" />
+        <property name="lsidObjectId" column="LSIDOBJECTID" type="string" />
         <many-to-one name="protocol" column="PROTOCOL_ID" class="gov.nih.nci.caarray.domain.protocol.Protocol" lazy="false" cascade="save-update" />
         <set name="values" lazy="false" cascade="save-update">
             <key column="PROTOCOL_APPLICATION_ID" />

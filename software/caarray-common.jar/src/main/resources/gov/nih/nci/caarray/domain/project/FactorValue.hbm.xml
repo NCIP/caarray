@@ -8,6 +8,9 @@
         <id name="id" column="ID" type="long">
             <generator class="assigned"/>
         </id>
+        <property name="lsidAuthority" column="LSIDAUTHORITY" type="string" />
+        <property name="lsidNamespace" column="LSIDNAMESPACE" type="string" />
+        <property name="lsidObjectId" column="LSIDOBJECTID" type="string" />
         <many-to-one name="factor" column="FACTOR_ID" class="gov.nih.nci.caarray.domain.project.Factor" lazy="false" />
     </class>
 </hibernate-mapping>

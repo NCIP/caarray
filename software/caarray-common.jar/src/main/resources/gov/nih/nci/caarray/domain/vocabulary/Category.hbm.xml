@@ -8,6 +8,9 @@
         <id name="id" column="ID" type="long">
             <generator class="assigned"/>
         </id>
+        <property name="lsidAuthority" column="LSIDAUTHORITY" type="string" />
+        <property name="lsidNamespace" column="LSIDNAMESPACE" type="string" />
+        <property name="lsidObjectId" column="LSIDOBJECTID" type="string" />
         <property name="name" column="NAME" type="string" />
         <many-to-one name="parent" column="PARENT_ID" class="gov.nih.nci.caarray.domain.vocabulary.Category" lazy="false" cascade="save-update" />
         <set name="children" lazy="false" cascade="save-update">

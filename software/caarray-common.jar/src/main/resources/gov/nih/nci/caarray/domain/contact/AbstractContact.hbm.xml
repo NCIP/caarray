@@ -11,6 +11,9 @@
         <discriminator>
             <column name="DISCRIMINATOR"/>
         </discriminator>
+        <property name="lsidAuthority" column="LSIDAUTHORITY" type="string" />
+        <property name="lsidNamespace" column="LSIDNAMESPACE" type="string" />
+        <property name="lsidObjectId" column="LSIDOBJECTID" type="string" />
         <property name="email" column="EMAIL" type="string" />
         <property name="fax" column="FAX" type="string" />
         <property name="phone" column="PHONE" type="string" />

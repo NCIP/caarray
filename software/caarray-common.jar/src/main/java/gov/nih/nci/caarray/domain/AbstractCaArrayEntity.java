@@ -96,6 +96,10 @@ public abstract class AbstractCaArrayEntity implements Serializable {
 
     private Long id;
 
+    private java.lang.String lsidAuthority;
+    private java.lang.String lsidNamespace;
+    private java.lang.String lsidObjectId;
+
     /**
      * Constructor.
      */
@@ -120,6 +124,60 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      */
     public final void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     * Returns the LSID authority.
+     *
+     * @return the LSID authority
+     */
+    public final String getLsidAuthority() {
+        return lsidAuthority;
+    }
+
+    /**
+     * Sets the LSID authority.
+     *
+     * @param lsidAuthorityVal the LSID authority to set
+     */
+    public final void setLsidAuthority(String lsidAuthorityVal) {
+        this.lsidAuthority = lsidAuthorityVal;
+    }
+
+    /**
+     * Returns the LSID namespace.
+     *
+     * @return the LSID namespace
+     */
+    public final String getLsidNamespace() {
+        return lsidNamespace;
+    }
+
+    /**
+     * Sets the LSID namespace.
+     *
+     * @param lsidNamespaceVal the LSID namespace to set
+     */
+    public final void setLsidNamespace(String lsidNamespaceVal) {
+        this.lsidNamespace = lsidNamespaceVal;
+    }
+
+    /**
+     * Returns the LSID object ID.
+     *
+     * @return the LSID object ID
+     */
+    public final String getLsidObjectId() {
+        return lsidObjectId;
+    }
+
+    /**
+     * Sets the LSID object ID.
+     *
+     * @param lsidObjectIdVal the LSID object ID to set
+     */
+    public final void setLsidObjectId(String lsidObjectIdVal) {
+        this.lsidObjectId = lsidObjectIdVal;
     }
 
     // Random number generator seeded with current time for more
