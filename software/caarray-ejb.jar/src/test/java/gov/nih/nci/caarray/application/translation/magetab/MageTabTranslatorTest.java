@@ -82,83 +82,75 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-
+import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.vocabulary.Source;
-import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
-import gov.nih.nci.caarray.magetab2.TermSource;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.magetab2.TestMageTabSets;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * Translates MAGE-TAB <code>TermSources</code> to caArray <code>Sources</code>.
+ *
  */
 @SuppressWarnings("PMD")
-final class TermSourceTranslator {
+public class MageTabTranslatorTest {
 
-    private final MageTabDocumentSet documentSet;
-    private final MageTabTranslationResult translationResult;
-    private final VocabularyDao vocabularyDao;
+    private MageTabTranslator translator;
+    private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
+    private final LocalVocabularyServiceStub vocabularyServiceStub = new LocalVocabularyServiceStub();
 
-    TermSourceTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
-            VocabularyDao vocabularyDao) {
-                this.documentSet = documentSet;
-                this.translationResult = translationResult;
-                this.vocabularyDao = vocabularyDao;
-    }
-
-    void translate() {
-        for (TermSource termSource : documentSet.getTermSources()) {
-            translate(termSource);
-        }
-    }
-
-    private void translate(TermSource termSource) {
-        Source source = getExistingSource(termSource);
-        if (source == null) {
-            source = createSource(termSource);
-        } else {
-            updateSource(source, termSource);
-        }
-        translationResult.addTerm(termSource, source);
-    }
-
-    private Source getExistingSource(TermSource termSource) {
-        Source searchSource = new Source();
-        // TODO Implement based on LSID
-        searchSource.setName(termSource.getName());
-        List<AbstractCaArrayEntity> sources = vocabularyDao.queryEntityByExample(searchSource);
-        if (sources.isEmpty()) {
-            return null;
-        } else {
-            return (Source) sources.get(0);
-        }
-    }
-
-    private Source createSource(TermSource termSource) {
-        Source source = new Source();
-        source.setName(termSource.getName());
-        source.setUrl(termSource.getFile());
-        source.setVersion(termSource.getVersion());
-        return source;
+    /**
+     * Prepares the translator implementation, stubbing out dependencies.
+     */
+    @Before
+    public void setupTranslator() {
+        MageTabTranslatorBean mageTabTranslatorBean = new MageTabTranslatorBean();
+        mageTabTranslatorBean.setDaoFactory(daoFactoryStub );
+        mageTabTranslatorBean.setVocabularyService(vocabularyServiceStub);
+        translator = mageTabTranslatorBean;
     }
 
     /**
-     * @param source
-     * @param termSource
+     * Test method for {@link gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator#translate(gov.nih.nci.caarray.magetab2.MageTabDocumentSet)}.
      */
-    private void updateSource(Source source, TermSource termSource) {
-        if (StringUtils.isEmpty(source.getName())) {
-            source.setName(termSource.getName());
+    @Test
+    public void testTranslate() {
+        CaArrayTranslationResult result = translator.translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
+        assertEquals(9, result.getTerms().size());
+    }
+
+    private static class LocalDaoFactoryStub extends DaoFactoryStub {
+
+        public VocabularyDao getVocabularyDao() {
+            return new LocalVocabularyDaoStub();
         }
-        if (StringUtils.isEmpty(source.getVersion())) {
-            source.setVersion(termSource.getVersion());
+
+    }
+
+    private static class LocalVocabularyDaoStub extends VocabularyDaoStub {
+
+        @Override
+        public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) {
+            Source searchSource = (Source) entityToMatch;
+            System.out.println("Searching for " + searchSource);
+            return new ArrayList<AbstractCaArrayEntity>();
         }
-        if (StringUtils.isEmpty(source.getUrl())) {
-            source.setUrl(termSource.getFile());
-        }
+
+    }
+
+    private static class LocalVocabularyServiceStub extends VocabularyServiceStub {
+
+
     }
 
 }

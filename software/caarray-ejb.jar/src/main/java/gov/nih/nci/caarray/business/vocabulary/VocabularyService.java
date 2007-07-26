@@ -82,14 +82,14 @@
  */
 package gov.nih.nci.caarray.business.vocabulary;
 
+import gov.nih.nci.caarray.domain.vocabulary.Category;
+import gov.nih.nci.caarray.domain.vocabulary.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.List;
 
 /**
  * Interface to the controlled vocabulary lookup service.
- *
- * @author tavelae
  */
 public interface VocabularyService {
 
@@ -98,15 +98,62 @@ public interface VocabularyService {
      */
     String JNDI_NAME = "caarray/VocabularyServiceBean/local";
 
-
     /**
      * Returns all terms that belong to the category for the name given (including all
      * subcategories).
+     *
+     * TODO getTerms should take Source as argument
      *
      * @param categoryName find entries that match this category.
      * @return the matching Terms.
      * @throws VocabularyServiceException exception
      */
     List<Term> getTerms(String categoryName) throws VocabularyServiceException;
+
+    /**
+     * Returns the requested term source, if it exists.
+     *
+     * @param name name of the source
+     * @return the matching source.
+     */
+    Source getSource(String name);
+
+    /**
+     * Returns the category with the matching name for the given source.
+     *
+     * @param source the source
+     * @param categoryName the name of the category
+     * @return the category
+     */
+    Category getCategory(Source source, String categoryName);
+
+    /**
+     * Registers a new category with the vocabulary service.
+     *
+     * @param source the source to add the category to
+     * @param categoryName the name of the new category
+     * @return the new category
+     */
+    Category createCategory(Source source, String categoryName);
+
+    /**
+     * Returns the term that matches the given criteria.
+     *
+     * @param source source of the term.
+     * @param category category of the term.
+     * @param value value of the term.
+     * @return the matching term or null.
+     */
+    Term getTerm(Source source, Category category, String value);
+
+    /**
+     * Adds a new term to the vocabulary service.
+     *
+     * @param source the source to add the term to
+     * @param category the category the term belongs to
+     * @param value the value of the new term
+     * @return the new term
+     */
+    Term createTerm(Source source, Category category, String value);
 
 }

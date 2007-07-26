@@ -82,40 +82,60 @@
  */
 package gov.nih.nci.caarray.business.vocabulary;
 
-import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
-
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Stub implementation of <code>VocabularyService</code> for use by test clients.
- *
- * @author ETavela
- */
-public class VocabularyServiceTestStub implements VocabularyService {
+import gov.nih.nci.caarray.domain.vocabulary.Category;
+import gov.nih.nci.caarray.domain.vocabulary.Source;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
-    /** Test stub.
-     * @see gov.nih.nci.caarray.business.vocabulary.VocabularyService#getTerms(java.lang.String)
-     * @param categoryName arg
+/**
+ * Basic stub for tests.
+ */
+public class VocabularyServiceStub implements VocabularyService {
+
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.application.vocabulary.VocabularyService#getTerms(java.lang.String)
      */
-    public List<Term> getTerms(String categoryName) {
+    public List<Term> getTerms(String categoryName) throws VocabularyServiceException {
         ArrayList<Term> terms = new ArrayList<Term>();
-        Category category = new Category();
-        category.setName(categoryName);
-        terms.add(createTerm(0, category, "term1"));
-        terms.add(createTerm(1, category, "term2"));
-        terms.add(createTerm(99, category, "term3"));
+        Source source = getSource("MO");
+        for (int i = 0; i < 10; i++) {
+            Term term = getTerm(source, getCategory(source, categoryName), "term" + i);
+            term.setId((long) i);
+            terms.add(term);
+        }
         return terms;
     }
 
+    public Source getSource(String name) {
+        Source source = new Source();
+        source.setName(name);
+        return source;
+    }
 
-    private Term createTerm(long id, Category category, String value) {
+    public Term getTerm(Source source, Category category, String value) {
         Term term = new Term();
-        term.setId(id);
+        term.setSource(source);
         term.setCategory(category);
         term.setValue(value);
         return term;
+    }
+
+    public Category createCategory(Source source, String categoryName) {
+        Category category = new Category();
+        category.setName(categoryName);
+        return category;
+    }
+
+    public Term createTerm(Source source, Category category, String value) {
+        return getTerm(source, category, value);
+    }
+
+    public Category getCategory(Source source, String categoryName) {
+        Category category = new Category();
+        category.setName(categoryName);
+        return category;
     }
 
 }

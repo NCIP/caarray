@@ -83,6 +83,9 @@
 package gov.nih.nci.caarray.business.vocabulary;
 
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
+import gov.nih.nci.caarray.domain.vocabulary.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
@@ -91,6 +94,7 @@ import gov.nih.nci.caarray.dao.VocabularyDao;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -105,8 +109,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Entry point into implementation of the vocabulary service subsystem.
- *
- * @author tavelae, pikej
  */
 @Local(VocabularyService.class)
 @Stateless
@@ -167,7 +169,7 @@ public class VocabularyServiceBean implements VocabularyService {
             throw new IllegalArgumentException("TermList is null or emptylist");
         }
 
-        VocabularyDao vocabDao = this.getVocabularyDao();
+        VocabularyDao vocabDao = getVocabularyDao();
         try {
             vocabDao.save(termList);
         } catch (DAOException de) {
@@ -196,6 +198,73 @@ public class VocabularyServiceBean implements VocabularyService {
      */
     public EVSUtility getEVSUtility() {
         return new EVSUtility();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Source getSource(String name) {
+        Source querySource = new Source();
+        querySource.setName(name);
+        Collection<AbstractCaArrayEntity> result = getVocabularyDao().queryEntityByExample(querySource);
+        if (result.isEmpty()) {
+            return null;
+        } else {
+            return (Source) result.iterator().next();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Category getCategory(Source source, String categoryName) {
+        Category queryCategory = new Category();
+        queryCategory.setName(categoryName);
+        Collection<AbstractCaArrayEntity> result = getVocabularyDao().queryEntityByExample(queryCategory);
+        if (result.isEmpty()) {
+            return null;
+        } else {
+            return (Category) result.iterator().next();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Category createCategory(Source source, String categoryName) {
+        Category category = new Category();
+        category.setName(categoryName);
+        getVocabularyDao().save(category);
+        return category;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Term createTerm(Source source, Category category, String value) {
+        Term term = new Term();
+        term.setSource(source);
+        term.setCategory(category);
+        term.setValue(value);
+        getVocabularyDao().save(term);
+        return term;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Term getTerm(Source source, Category category, String value) {
+        Term queryTerm = new Term();
+        queryTerm.setCategory(category);
+        queryTerm.setSource(source);
+        queryTerm.setValue(value);
+        Collection<AbstractCaArrayEntity> result =
+            getVocabularyDao().queryEntityAndAssociationsByExample(queryTerm);
+        if (result.isEmpty()) {
+            return null;
+        } else {
+            return (Term) result.iterator().next();
+        }
     }
 
 

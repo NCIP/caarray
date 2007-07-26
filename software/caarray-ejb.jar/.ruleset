@@ -70,7 +70,9 @@
 
     <rule ref="rulesets/strictexception.xml" />
 
-    <rule ref="rulesets/strings.xml" />
+    <rule ref="rulesets/strings.xml">
+        <exclude name="InsufficientStringBufferDeclaration" />
+    </rule>
 
     <rule ref="rulesets/sunsecure.xml" />
 

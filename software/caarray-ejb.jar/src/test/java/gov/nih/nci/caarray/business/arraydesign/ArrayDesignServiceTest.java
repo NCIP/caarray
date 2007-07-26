@@ -87,6 +87,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 
+import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
