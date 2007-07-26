@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
+import org.apache.commons.lang.StringUtils;
+
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Source;
@@ -113,10 +115,26 @@ final class TermTranslator {
     }
 
     private void translateTerm(OntologyTerm ontologyTerm) {
-        Source source = service.getSource(ontologyTerm.getTermSource().getName());
+        String sourceName;
+        if (ontologyTerm.getTermSource() == null || StringUtils.isEmpty(ontologyTerm.getTermSource().getName())) {
+            // TODO Create enum to hold known term sources (MGED and local caArray)
+            sourceName = "caarray";
+        } else {
+            sourceName = ontologyTerm.getTermSource().getName();
+        }
+        Source source = getOrCreateSource(sourceName);
         Category category = getOrCreateCategory(source, ontologyTerm.getCategory());
         Term term = getOrCreateTerm(source, category, ontologyTerm.getValue());
         translationResult.addTerm(ontologyTerm, term);
+    }
+
+    private Source getOrCreateSource(String name) {
+        Source source = service.getSource(name);
+        if (source == null) {
+            source = new Source();
+            source.setName(name);
+        }
+        return source;
     }
 
     private Category getOrCreateCategory(Source source, String categoryName) {

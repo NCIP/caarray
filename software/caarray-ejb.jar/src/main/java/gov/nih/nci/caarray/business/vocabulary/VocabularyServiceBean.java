@@ -168,7 +168,6 @@ public class VocabularyServiceBean implements VocabularyService {
         if (termList == null || termList.isEmpty()) {
             throw new IllegalArgumentException("TermList is null or emptylist");
         }
-
         VocabularyDao vocabDao = getVocabularyDao();
         try {
             vocabDao.save(termList);
@@ -212,6 +211,15 @@ public class VocabularyServiceBean implements VocabularyService {
         } else {
             return (Source) result.iterator().next();
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Source createSource(String name) {
+        Source source = new Source();
+        source.setName(name);
+        return source;
     }
 
     /**

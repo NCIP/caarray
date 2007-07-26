@@ -138,4 +138,8 @@ public class VocabularyServiceStub implements VocabularyService {
         return category;
     }
 
+    public Source createSource(String name) {
+        return getSource(name);
+    }
+
 }

@@ -119,6 +119,14 @@ public interface VocabularyService {
     Source getSource(String name);
 
     /**
+     * Creates a new term source with the given name.
+     *
+     * @param name name of the new source
+     * @return the new source.
+     */
+    Source createSource(String name);
+
+    /**
      * Returns the category with the matching name for the given source.
      *
      * @param source the source
