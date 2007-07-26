@@ -83,13 +83,14 @@
 package gov.nih.nci.caarray.magetab2.sdrf;
 
 import gov.nih.nci.caarray.magetab2.OntologyTerm;
+import gov.nih.nci.caarray.magetab2.Unitable;
 
 import java.io.Serializable;
 
 /**
  * A characteristic of a bio-material.
  */
-public final class Characteristic implements Serializable {
+public final class Characteristic implements Serializable, Unitable {
 
     private static final long serialVersionUID = 2872802845635671179L;
 

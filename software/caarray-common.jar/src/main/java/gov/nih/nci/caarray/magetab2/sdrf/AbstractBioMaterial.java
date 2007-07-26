@@ -96,6 +96,7 @@ public abstract class AbstractBioMaterial extends AbstractSampleDataRelationship
 
     private final List<Characteristic> characteristics = new ArrayList<Characteristic>();
     private OntologyTerm materialType;
+    private OntologyTerm term;
     private String description;
 
     /**
@@ -131,6 +132,20 @@ public abstract class AbstractBioMaterial extends AbstractSampleDataRelationship
      */
     public void setMaterialType(OntologyTerm materialType) {
         this.materialType = materialType;
+    }
+
+    /**
+     * @return OntologyTerm term
+     */
+    public OntologyTerm getTerm() {
+        return term;
+    }
+
+    /**
+     * @param term OntologyTerm
+     */
+    public void setTerm(OntologyTerm term) {
+        this.term = term;
     }
 
 }

@@ -87,7 +87,7 @@ import java.io.Serializable;
 /**
  * A term from a controlled vocabulary.
  */
-public final class OntologyTerm implements Serializable {
+public final class OntologyTerm implements Serializable, TermSourceable {
 
     private static final long serialVersionUID = -6171998480909384500L;
 

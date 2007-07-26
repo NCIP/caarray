@@ -82,6 +82,10 @@
  */
 package gov.nih.nci.caarray.magetab2.sdrf;
 
+import gov.nih.nci.caarray.magetab2.OntologyTerm;
+import gov.nih.nci.caarray.magetab2.ParameterValue;
+import gov.nih.nci.caarray.magetab2.TermSource;
+
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -167,7 +171,7 @@ enum SdrfColumnHeading {
     /**
      * Characteristics.
      */
-    CHARACTERISTICS,
+    CHARACTERISTICS (Characteristic.class),
 
     /**
      * Provider.
@@ -177,7 +181,7 @@ enum SdrfColumnHeading {
     /**
      * Material Type.
      */
-    MATERIAL_TYPE,
+    MATERIAL_TYPE (OntologyTerm.class),
 
     /**
      * Label.
@@ -202,7 +206,7 @@ enum SdrfColumnHeading {
     /**
      * Parameter Value.
      */
-    PARAMETER_VALUE,
+    PARAMETER_VALUE (ParameterValue.class),
 
     /**
      * Unit.
@@ -217,10 +221,10 @@ enum SdrfColumnHeading {
     /**
      * Term Source REF.
      */
-    TERM_SOURCE_REF,
+    TERM_SOURCE_REF (TermSource.class),
 
     /**
-     * Comment.
+     * Comment. 
      */
     COMMENT;
 
