@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.magetab2.MageTabParsingException;
 import gov.nih.nci.caarray.magetab2.MageTabParsingRuntimeException;
 import gov.nih.nci.caarray.magetab2.OntologyTerm;
 import gov.nih.nci.caarray.magetab2.ParameterValue;
+import gov.nih.nci.caarray.magetab2.Protocol;
 import gov.nih.nci.caarray.magetab2.ProtocolApplication;
 import gov.nih.nci.caarray.magetab2.TermSource;
 import gov.nih.nci.caarray.magetab2.TermSourceable;
@@ -124,7 +125,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private final List<AbstractSampleDataRelationshipNode> leftmostNodes =
         new ArrayList<AbstractSampleDataRelationshipNode>();
     private ProtocolApplication currentProtocolApp;
-    
+    private final List<Characteristic> characteristicsList = new ArrayList<Characteristic>();
+   
     private final List<Source> allSources = new ArrayList<Source>();
     private final List<Sample> allSamples = new ArrayList<Sample>();
     private final List<Extract> allExtracts = new ArrayList<Extract>();
@@ -202,7 +204,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             handleProvider(value);
             break;
         case PROTOCOL_REF:
-            handleProtocolRef(value);
+            handleProtocolRef(value, getNextColumn(column));
             break;
         case CHARACTERISTICS:
             handleCharacteristic(value, column, getNextColumn(column));
@@ -298,28 +300,46 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     private void handleCharacteristic(String value, SdrfColumn currentColumn, SdrfColumn nextColumn) {
         Characteristic characteristic = new Characteristic();
-        ((AbstractBioMaterial) currentNode).getCharacteristics().add(characteristic);
-        if (nextColumn != null && nextColumn.getHeading() == SdrfColumnHeading.TERM_SOURCE_REF) {
-            // set the characteristic value as the term since the next column is
-            // a term source ref
-            OntologyTerm term = getOntologyTerm(currentColumn.getHeader(), value);
-            characteristic.setTerm(term);
-            currentTermSourceable = term;
+        characteristic.setValue(value);
+        //  if the next column is a CHARACTERISTICS column add to the list
+        if (nextColumn != null && nextColumn.getHeading() == SdrfColumnHeading.CHARACTERISTICS) {
+            characteristicsList.add(characteristic);
         } else {
-            characteristic.setValue(value);
+            if (nextColumn != null && nextColumn.getHeading() == SdrfColumnHeading.TERM_SOURCE_REF) {
+                characteristicsList.add(characteristic);
+                createCharacteristicTerms(currentColumn);
+            } else {
+                // no Term Source to add to this CHARACTERISTIC.
+                ((AbstractBioMaterial) currentNode).getCharacteristics().add(characteristic);
+            }
+        } 
+    }
+
+   private void createCharacteristicTerms(SdrfColumn currentColumn) {
+        for (Characteristic aCharacteristic : characteristicsList) {
+            ((AbstractBioMaterial) currentNode).getCharacteristics().add(aCharacteristic);
+            // set the characteristic value as the term since the next column is a term source ref
+            OntologyTerm term = getOntologyTerm(currentColumn.getHeader(), aCharacteristic.getValue());
+            // the value becomes the term so clear out the value
+            aCharacteristic.setValue(null);
+            aCharacteristic.setTerm(term);
+            currentTermSourceable = term;
         }
     }
 
-    private void handleProtocolRef(String value) {
+
+    private void handleProtocolRef(String value, SdrfColumn nextColumn) {
         ProtocolApplication protocolApp = new ProtocolApplication();
         protocolApp.setProtocol(getProtocol(value));
         currentNode.getProtocolApplications().add(protocolApp);
         currentProtocolApp = protocolApp;
-        // TODO the protocol can have a Term Source Ref. Need to set
-        // the next TermSourcable here.
-        // Currently, any TermSourceRef associated with a Protocol is not set
-        // on the protocol rather onto the last TermSourceable which does not belong
-        // to the protocol.
+        if (protocolApp.getProtocol() == null) {
+            protocolApp.setProtocol(new Protocol());
+            protocolApp.getProtocol().setName(value);
+        }
+        if (nextColumn != null && nextColumn.getHeading() == SdrfColumnHeading.TERM_SOURCE_REF) {
+            currentTermSourceable = protocolApp.getProtocol();
+        }
     }
 
     private void handleParameterValue(String value) {
