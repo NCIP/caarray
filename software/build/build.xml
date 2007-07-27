@@ -298,7 +298,8 @@
         <javac srcdir="${caarray-ejb.src.dir}" destdir="${caarray-ejb.classes.dir}" debug="true">
             <classpath>
                 <pathelement location="${caarray-common.classes.dir}" />
-                <pathelement location="${commons-lang.jar}" />
+			    <pathelement location="${commons-lang.jar}" />
+			    <pathelement location="${commons-io.jar}" />
                 <pathelement location="${cacore32-client.jar}" />
                 <pathelement location="${javaee.jar}" />
                 <pathelement location="${affxfusion.jar}" />
@@ -490,6 +491,7 @@
                 <pathelement location="${caarray-ejb.classes.dir}" />
                 <pathelement location="${caarray-common.classes.dir}" />
                 <pathelement location="${caarray-common.test.classes.dir}" />
+                <pathelement location="${test.classes.dir}" />
                 <pathelement location="${cacore32-client.jar}" />
                 <pathelement location="${commons-lang.jar}" />
                 <pathelement location="${commons-logging.jar}" />
