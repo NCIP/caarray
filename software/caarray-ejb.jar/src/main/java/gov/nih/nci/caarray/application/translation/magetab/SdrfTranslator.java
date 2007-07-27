@@ -86,7 +86,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
+import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab2.sdrf.SdrfDocument;
 
 /**
  * Translates entities in SDRF documents.
@@ -103,10 +107,48 @@ final class SdrfTranslator extends AbstractTranslator {
 
     @Override
     void translate() {
-        // TODO Auto-generated method stub
-
+        for (SdrfDocument document : getDocumentSet().getSdrfDocuments()) {
+            translateSdrf(document);
+        }
     }
 
+    private void translateSdrf(SdrfDocument document) {
+        translateNodesToEntities(document);
+        linkNodes(document);
+    }
+
+    private void translateNodesToEntities(SdrfDocument document) {
+        translateSources(document);
+        translateSamples(document);
+        // TODO etc...
+    }
+
+    private void translateSources(SdrfDocument document) {
+        for (gov.nih.nci.caarray.magetab2.sdrf.Source sdrfSource : document.getAllSources()) {
+            Source source = new Source();
+            translateBioMaterial(source, sdrfSource);
+        }
+    }
+
+    private void translateSamples(SdrfDocument document) {
+        for (gov.nih.nci.caarray.magetab2.sdrf.Sample sdrfSample : document.getAllSamples()) {
+            Sample sample = new Sample();
+            translateBioMaterial(sample, sdrfSample);
+        }
+    }
+
+    private void translateBioMaterial(AbstractBioMaterial bioMaterial, 
+            gov.nih.nci.caarray.magetab2.sdrf.AbstractBioMaterial sdrfBiomaterial) {
+        bioMaterial.setName(sdrfBiomaterial.getName());
+        bioMaterial.setDescription(sdrfBiomaterial.getDescription());
+        bioMaterial.setMaterialType(getTerm(sdrfBiomaterial.getMaterialType()));
+        // TODO Translate characteristics
+    }
+    
+    @SuppressWarnings("PMD.UnusedFormalParameter")
+    private void linkNodes(SdrfDocument document) {
+        // TODO Implement and remove SuppressWarnings
+    }
 
     @Override
     Log getLog() {
