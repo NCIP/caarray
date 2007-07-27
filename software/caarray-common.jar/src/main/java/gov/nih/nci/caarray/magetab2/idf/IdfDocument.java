@@ -100,6 +100,7 @@ import gov.nih.nci.caarray.magetab2.OntologyTerm;
 import gov.nih.nci.caarray.magetab2.Parameter;
 import gov.nih.nci.caarray.magetab2.Protocol;
 import gov.nih.nci.caarray.magetab2.TermSource;
+import gov.nih.nci.caarray.magetab2.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 
 /**
@@ -117,6 +118,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
     private final Investigation investigation = new Investigation();
     private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
     private final List<TermSource> docTermSources = new ArrayList<TermSource>();
+    private final List<SdrfDocument> sdrfDocuments = new ArrayList<SdrfDocument>();
 
     /**
      * Creates a new IDF from an existing file.
@@ -288,7 +290,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
             handleProtocolTermSourceRef(value);
             break;
         case SDRF_FILE:
-           // TODO handleSdrfFile(value, valueIndex);
+           handleSdrfFile(value);
             break;
         case TERM_SOURCE_NAME:
             handleTermSourceName(value, valueIndex);
@@ -304,6 +306,11 @@ public final class IdfDocument extends AbstractMageTabDocument {
         }
     }
 
+    private void handleSdrfFile(String value) {
+        SdrfDocument sdrfDocument = getDocumentSet().getSdrfDocument(value);
+        getSdrfDocuments().add(sdrfDocument);
+        sdrfDocument.setIdfDocument(this);
+    }
 
     private void handleProtocolName(String protocolId, int valueIndex) {
         Protocol protocol = investigation.getOrCreateProtcol(valueIndex);
@@ -566,6 +573,15 @@ public final class IdfDocument extends AbstractMageTabDocument {
                 }
             }
         }
+    }
+
+    /**
+     * Returns all the SDRF files referenced by the IDF.
+     *
+     * @return all related SDRF documents.
+     */
+    public List<SdrfDocument> getSdrfDocuments() {
+        return sdrfDocuments;
     }
 
 }

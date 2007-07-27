@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.magetab2;
 
 import static org.junit.Assert.*;
+import gov.nih.nci.caarray.magetab2.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab2.idf.Investigation;
 import gov.nih.nci.caarray.magetab2.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.tests.data.magetab.MageTabDataFiles;
@@ -120,8 +121,8 @@ public class MageTabParserTest {
         MageTabDocumentSet documentSet = parser.parse(fileSet);
         assertNotNull(documentSet);
         assertEquals(1, documentSet.getIdfDocuments().size());
-        Investigation investigation =
-            documentSet.getIdfDocument(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()).getInvestigation();
+        IdfDocument idfDocument = documentSet.getIdfDocument(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
+        Investigation investigation = idfDocument.getInvestigation();
         assertTrue(investigation.getProtocols().size() == THREE);
         assertEquals("submitter", investigation.getPersons().get(0).getRoles().get(0).getValue());
         assertTrue(investigation.getPersons().get(0).getRoles().size() == TWO);
@@ -130,6 +131,8 @@ public class MageTabParserTest {
         assertEquals("University of Heidelberg H sapiens TK6", investigation.getTitle());
         SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
         assertNotNull(sdrfDocument);
+        assertTrue(idfDocument.getSdrfDocuments().contains(sdrfDocument));
+        assertEquals(idfDocument, sdrfDocument.getIdfDocument());
         assertEquals(SIX, sdrfDocument.getLeftmostNodes().size());
     }
 

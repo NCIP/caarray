@@ -96,6 +96,7 @@ import gov.nih.nci.caarray.magetab2.Unitable;
 import gov.nih.nci.caarray.magetab2.adf.ArrayDesign;
 import gov.nih.nci.caarray.magetab2.data.ArrayDataMatrix;
 import gov.nih.nci.caarray.magetab2.data.DerivedArrayDataMatrix;
+import gov.nih.nci.caarray.magetab2.idf.IdfDocument;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 
 import java.io.File;
@@ -116,6 +117,7 @@ import java.util.Map;
 public final class SdrfDocument extends AbstractMageTabDocument {
 
     private static final long serialVersionUID = 1116542609494378874L;
+    private IdfDocument idfDocument;
     private final List<SdrfColumn> columns = new ArrayList<SdrfColumn>();
     private final Map<NodeKey, AbstractSampleDataRelationshipNode> nodeCache =
         new HashMap<NodeKey, AbstractSampleDataRelationshipNode>();
@@ -126,7 +128,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         new ArrayList<AbstractSampleDataRelationshipNode>();
     private ProtocolApplication currentProtocolApp;
     private final List<Characteristic> characteristicsList = new ArrayList<Characteristic>();
-   
+
     private final List<Source> allSources = new ArrayList<Source>();
     private final List<Sample> allSamples = new ArrayList<Sample>();
     private final List<Extract> allExtracts = new ArrayList<Extract>();
@@ -316,7 +318,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
                 // no Term Source to add to this CHARACTERISTIC.
                 ((AbstractBioMaterial) currentNode).getCharacteristics().add(characteristic);
             }
-        } 
+        }
     }
 
    private void createCharacteristicTerms(SdrfColumn currentColumn) {
@@ -528,6 +530,20 @@ public final class SdrfDocument extends AbstractMageTabDocument {
      */
     public List<ArrayDataFile> getAllArrayDataFiles() {
         return allArrayDataFiles;
+    }
+
+    /**
+     * @return the idfDocument
+     */
+    public IdfDocument getIdfDocument() {
+        return idfDocument;
+    }
+
+    /**
+     * @param idfDocument the idfDocument to set
+     */
+    public void setIdfDocument(IdfDocument idfDocument) {
+        this.idfDocument = idfDocument;
     }
 
 }
