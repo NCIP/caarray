@@ -83,6 +83,8 @@
 
 package gov.nih.nci.caarray.domain.project;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
   /**
@@ -152,5 +154,13 @@ public class FactorValue extends AbstractCaArrayEntity {
             theHashCode += getId().hashCode();
         }
         return theHashCode;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

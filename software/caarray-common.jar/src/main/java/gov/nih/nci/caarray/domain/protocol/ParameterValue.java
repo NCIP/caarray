@@ -1,5 +1,7 @@
 package gov.nih.nci.caarray.domain.protocol;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
 /**
@@ -84,7 +86,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
   /**
 
    */
@@ -151,7 +153,7 @@ public class ParameterValue  extends AbstractCaArrayEntity {
      * @return the parameter
      */
     public gov.nih.nci.caarray.domain.protocol.Parameter getParameter() {
-        return parameter;    
+        return parameter;
     }
 
     /**
@@ -159,7 +161,7 @@ public class ParameterValue  extends AbstractCaArrayEntity {
      *
      * @param parameterVal the parameter
      */
-    public void setParameter(final 
+    public void setParameter(final
       gov.nih.nci.caarray.domain.protocol.Parameter parameterVal) {
         this.parameter = parameterVal;
     }
@@ -175,8 +177,8 @@ public class ParameterValue  extends AbstractCaArrayEntity {
         boolean theyAreEqual = false;
         if (obj instanceof gov.nih.nci.caarray.domain.protocol.ParameterValue) {
             final gov.nih.nci.caarray.domain.protocol.ParameterValue castObject =
-                (gov.nih.nci.caarray.domain.protocol.ParameterValue) obj;                  
-            Long thisId = getId();        
+                (gov.nih.nci.caarray.domain.protocol.ParameterValue) obj;
+            Long thisId = getId();
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;
             }
@@ -196,5 +198,13 @@ public class ParameterValue  extends AbstractCaArrayEntity {
             theHashCode += getId().hashCode();
         }
         return theHashCode;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

@@ -89,6 +89,8 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
   /**
 
    */
@@ -179,5 +181,13 @@ public class InvestigationContact extends AbstractCaArrayEntity {
             theHashCode += getId().hashCode();
         }
         return theHashCode;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

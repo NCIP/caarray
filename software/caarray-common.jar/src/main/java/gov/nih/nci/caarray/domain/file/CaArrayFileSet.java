@@ -90,6 +90,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * Provides functionality to handle multiple <code>CaArrayFiles</code> as a single set.
@@ -190,4 +191,11 @@ public final class CaArrayFileSet implements Serializable {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }

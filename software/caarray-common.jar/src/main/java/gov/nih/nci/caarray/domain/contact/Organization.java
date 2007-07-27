@@ -83,6 +83,8 @@
 
 package gov.nih.nci.caarray.domain.contact;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
   /**
 
    */
@@ -148,5 +150,13 @@ public class Organization extends AbstractContact {
             theHashCode += getId().hashCode();
         }
         return theHashCode;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

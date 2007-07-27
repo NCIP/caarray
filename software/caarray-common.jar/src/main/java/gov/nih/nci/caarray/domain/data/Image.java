@@ -88,6 +88,8 @@ import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
   /**
 
    */
@@ -201,5 +203,13 @@ public class Image extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
             theHashCode += getId().hashCode();
         }
         return theHashCode;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

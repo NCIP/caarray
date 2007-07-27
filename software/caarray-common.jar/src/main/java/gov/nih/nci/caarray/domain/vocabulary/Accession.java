@@ -1,5 +1,7 @@
 package gov.nih.nci.caarray.domain.vocabulary;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
 /**
@@ -196,5 +198,13 @@ public class Accession extends AbstractCaArrayEntity {
             theHashCode += getId().hashCode();
         }
         return theHashCode;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

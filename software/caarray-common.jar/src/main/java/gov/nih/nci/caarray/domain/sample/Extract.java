@@ -86,6 +86,8 @@ package gov.nih.nci.caarray.domain.sample;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
   /**
 
    */
@@ -177,5 +179,13 @@ public class Extract extends AbstractBioMaterial {
             theHashCode += getId().hashCode();
         }
         return theHashCode;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toStringExclude(this, "samples");
     }
 }

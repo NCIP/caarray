@@ -88,6 +88,8 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
   /**
 
    */
@@ -201,5 +203,13 @@ public class Category extends AbstractCaArrayEntity {
             theHashCode += getId().hashCode();
         }
         return theHashCode;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toStringExclude(this, new String[] {"children", "parent"});
     }
 }

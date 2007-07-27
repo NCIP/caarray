@@ -93,6 +93,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
  /**
   * A microarray project.
@@ -220,5 +221,13 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         return new CompareToBuilder()
             .append(getId(), o.getId())
             .toComparison();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

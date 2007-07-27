@@ -80,8 +80,10 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 package gov.nih.nci.caarray.domain.data;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
 
   /**
 
@@ -105,7 +107,7 @@ public class RawArrayData extends gov.nih.nci.caarray.domain.AbstractCaArrayEnti
      * @return the dataFile
      */
     public gov.nih.nci.caarray.domain.file.CaArrayFile getDataFile() {
-        return dataFile;    
+        return dataFile;
     }
 
     /**
@@ -113,7 +115,7 @@ public class RawArrayData extends gov.nih.nci.caarray.domain.AbstractCaArrayEnti
      *
      * @param dataFileVal the dataFile
      */
-    public void setDataFile(final 
+    public void setDataFile(final
       gov.nih.nci.caarray.domain.file.CaArrayFile dataFileVal) {
         this.dataFile = dataFileVal;
     }
@@ -129,8 +131,8 @@ public class RawArrayData extends gov.nih.nci.caarray.domain.AbstractCaArrayEnti
         boolean theyAreEqual = false;
         if (obj instanceof gov.nih.nci.caarray.domain.data.RawArrayData) {
             final gov.nih.nci.caarray.domain.data.RawArrayData castObject =
-                (gov.nih.nci.caarray.domain.data.RawArrayData) obj;                  
-            Long thisId = getId();        
+                (gov.nih.nci.caarray.domain.data.RawArrayData) obj;
+            Long thisId = getId();
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;
             }
@@ -150,5 +152,13 @@ public class RawArrayData extends gov.nih.nci.caarray.domain.AbstractCaArrayEnti
             theHashCode += getId().hashCode();
         }
         return theHashCode;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

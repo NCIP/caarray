@@ -90,6 +90,8 @@ import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
   /**
 
    */
@@ -323,5 +325,13 @@ public class Hybridization extends gov.nih.nci.caarray.domain.AbstractCaArrayEnt
             theHashCode += getId().hashCode();
         }
         return theHashCode;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

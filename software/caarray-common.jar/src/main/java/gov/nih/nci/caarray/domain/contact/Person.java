@@ -86,6 +86,8 @@ package gov.nih.nci.caarray.domain.contact;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
   /**
 
    */
@@ -219,5 +221,13 @@ public class Person extends AbstractContact {
             theHashCode += getId().hashCode();
         }
         return theHashCode;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }
