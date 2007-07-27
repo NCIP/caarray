@@ -135,6 +135,8 @@ public class MageTabTranslatorTest {
         assertEquals(17, result.getTerms().size());
         assertEquals(1, result.getInvestigations().size());
         Investigation investigation = result.getInvestigations().iterator().next();
+        assertEquals(6, investigation.getSources().size());
+        assertEquals(6, investigation.getSamples().size());
         IdfDocument idf = TestMageTabSets.MAGE_TAB_SPECIFICATION_SET.getIdfDocuments().iterator().next();
         assertEquals(idf.getInvestigation().getTitle(), investigation.getTitle());
     }
