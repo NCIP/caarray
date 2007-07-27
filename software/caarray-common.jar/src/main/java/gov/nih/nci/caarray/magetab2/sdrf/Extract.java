@@ -97,4 +97,9 @@ public final class Extract extends AbstractBioMaterial {
         return SdrfNodeType.EXTRACT;
     }
 
+    @Override
+    void addToSdrfList(SdrfDocument document) {
+        document.getAllExtracts().add(this);
+    }
+
 }

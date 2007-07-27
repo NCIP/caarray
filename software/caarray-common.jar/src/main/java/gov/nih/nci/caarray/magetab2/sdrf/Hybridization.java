@@ -97,4 +97,9 @@ public final class Hybridization extends AbstractSampleDataRelationshipNode {
         return SdrfNodeType.HYBRIDIZATION;
     }
 
+    @Override
+    void addToSdrfList(SdrfDocument document) {
+        document.getAllHybridizations().add(this);
+    }
+
 }

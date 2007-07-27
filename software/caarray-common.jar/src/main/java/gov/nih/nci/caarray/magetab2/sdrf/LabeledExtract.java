@@ -117,4 +117,9 @@ public final class LabeledExtract extends AbstractBioMaterial {
         return SdrfNodeType.LABELED_EXTRACT;
     }
 
+    @Override
+    void addToSdrfList(SdrfDocument document) {
+        document.getAllLabeledExtracts().add(this);
+    }
+
 }

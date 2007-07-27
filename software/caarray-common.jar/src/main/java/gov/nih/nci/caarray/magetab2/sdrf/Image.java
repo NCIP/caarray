@@ -97,4 +97,9 @@ public final class Image extends AbstractNativeFormatFile {
         return SdrfNodeType.IMAGE;
     }
 
+    @Override
+    void addToSdrfList(SdrfDocument document) {
+        document.getAllImages().add(this);
+    }
+
 }

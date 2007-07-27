@@ -97,4 +97,9 @@ public final class Scan extends AbstractSampleDataRelationshipNode {
         return SdrfNodeType.SCAN;
     }
 
+    @Override
+    void addToSdrfList(SdrfDocument document) {
+        document.getAllScans().add(this);
+    }
+
 }

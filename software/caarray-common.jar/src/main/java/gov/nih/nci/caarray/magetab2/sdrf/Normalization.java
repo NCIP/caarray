@@ -97,4 +97,9 @@ public final class Normalization extends AbstractSampleDataRelationshipNode {
         return SdrfNodeType.NORMALIZATION;
     }
 
+    @Override
+    void addToSdrfList(SdrfDocument document) {
+        document.getAllNormalizations().add(this);
+    }
+
 }

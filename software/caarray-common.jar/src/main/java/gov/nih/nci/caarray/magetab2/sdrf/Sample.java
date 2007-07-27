@@ -97,4 +97,9 @@ public final class Sample extends AbstractBioMaterial {
         return SdrfNodeType.SAMPLE;
     }
 
+    @Override
+    void addToSdrfList(SdrfDocument document) {
+        document.getAllSamples().add(this);
+    }
+
 }

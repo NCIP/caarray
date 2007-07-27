@@ -97,4 +97,9 @@ public final class ArrayDataFile extends AbstractNativeFormatFile {
         return SdrfNodeType.ARRAY_DATA_FILE;
     }
 
+    @Override
+    void addToSdrfList(SdrfDocument document) {
+        document.getAllArrayDataFiles().add(this);
+    }
+
 }

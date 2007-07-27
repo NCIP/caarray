@@ -92,6 +92,9 @@ import gov.nih.nci.caarray.magetab2.ProtocolApplication;
 import gov.nih.nci.caarray.magetab2.TermSource;
 import gov.nih.nci.caarray.magetab2.TermSourceable;
 import gov.nih.nci.caarray.magetab2.Unitable;
+import gov.nih.nci.caarray.magetab2.adf.ArrayDesign;
+import gov.nih.nci.caarray.magetab2.data.ArrayDataMatrix;
+import gov.nih.nci.caarray.magetab2.data.DerivedArrayDataMatrix;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 
 import java.io.File;
@@ -108,7 +111,7 @@ import java.util.Map;
  * experimental designs, constructing the SDRF file is straightforward, and even complex loop designs can be expressed
  * in this format.
  */
-@SuppressWarnings("PMD.CyclomaticComplexity")
+@SuppressWarnings("PMD")  // Exception to PMD checking due to cycolmetric complexity and number of fields
 public final class SdrfDocument extends AbstractMageTabDocument {
 
     private static final long serialVersionUID = 1116542609494378874L;
@@ -121,6 +124,20 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private final List<AbstractSampleDataRelationshipNode> leftmostNodes =
         new ArrayList<AbstractSampleDataRelationshipNode>();
     private ProtocolApplication currentProtocolApp;
+    
+    private final List<Source> allSources = new ArrayList<Source>();
+    private final List<Sample> allSamples = new ArrayList<Sample>();
+    private final List<Extract> allExtracts = new ArrayList<Extract>();
+    private final List<LabeledExtract> allLabeledExtracts = new ArrayList<LabeledExtract>();
+    private final List<Hybridization> allHybridizations = new ArrayList<Hybridization>();
+    private final List<Scan> allScans = new ArrayList<Scan>();
+    private final List<Normalization> allNormalizations = new ArrayList<Normalization>();
+    private final List<ArrayDataFile> allArrayDataFiles = new ArrayList<ArrayDataFile>();
+    private final List<DerivedArrayDataFile> allDerivedArrayDataFiles = new ArrayList<DerivedArrayDataFile>();
+    private final List<ArrayDataMatrix> allArrayDataMatrixs = new ArrayList<ArrayDataMatrix>();
+    private final List<DerivedArrayDataMatrix> allDerivedArrayDataMatrixs = new ArrayList<DerivedArrayDataMatrix>();
+    private final List<Image> allImages = new ArrayList<Image>();
+    private final List<ArrayDesign> allArrayDesigns = new ArrayList<ArrayDesign>();
 
     /**
      * Creates a new SDRF from an existing file.
@@ -338,6 +355,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             AbstractSampleDataRelationshipNode node = (AbstractSampleDataRelationshipNode) column.getHeading()
                     .getNodeClass().newInstance();
             node.setName(value);
+            node.addToSdrfList(this);
             return node;
         } catch (InstantiationException e) {
             throw new MageTabParsingRuntimeException(e);
@@ -395,6 +413,97 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             return nodeClass.hashCode() + nodeName.hashCode();
         }
 
+    }
+
+    /**
+     * @return the allArrayDataMatrixs
+     */
+    public List<ArrayDataMatrix> getAllArrayDataMatrixs() {
+        return allArrayDataMatrixs;
+    }
+
+    /**
+     * @return the allArrayDesigns
+     */
+    public List<ArrayDesign> getAllArrayDesigns() {
+        return allArrayDesigns;
+    }
+
+    /**
+     * @return the allDerivedArrayDataFiles
+     */
+    public List<DerivedArrayDataFile> getAllDerivedArrayDataFiles() {
+        return allDerivedArrayDataFiles;
+    }
+
+    /**
+     * @return the allDerivedArrayDataMatrixs
+     */
+    public List<DerivedArrayDataMatrix> getAllDerivedArrayDataMatrixs() {
+        return allDerivedArrayDataMatrixs;
+    }
+
+    /**
+     * @return the allExtracts
+     */
+    public List<Extract> getAllExtracts() {
+        return allExtracts;
+    }
+
+    /**
+     * @return the allHybridizations
+     */
+    public List<Hybridization> getAllHybridizations() {
+        return allHybridizations;
+    }
+
+    /**
+     * @return the allImages
+     */
+    public List<Image> getAllImages() {
+        return allImages;
+    }
+
+    /**
+     * @return the allLabeledExtracts
+     */
+    public List<LabeledExtract> getAllLabeledExtracts() {
+        return allLabeledExtracts;
+    }
+
+    /**
+     * @return the allNormalizations
+     */
+    public List<Normalization> getAllNormalizations() {
+        return allNormalizations;
+    }
+
+    /**
+     * @return the allSamples
+     */
+    public List<Sample> getAllSamples() {
+        return allSamples;
+    }
+
+    /**
+     * @return the allScans
+     */
+    public List<Scan> getAllScans() {
+        return allScans;
+    }
+
+    /**
+     * @return the allSources
+     */
+    public List<Source> getAllSources() {
+        return allSources;
+    }
+
+    /**
+     * @return the allArrayDataFiles
+     */
+    public List<ArrayDataFile> getAllArrayDataFiles() {
+        return allArrayDataFiles;
     }
 
 }

@@ -114,4 +114,9 @@ public final class Source extends AbstractBioMaterial {
         return SdrfNodeType.SOURCE;
     }
 
+    @Override
+    void addToSdrfList(SdrfDocument document) {
+        document.getAllSources().add(this);
+    }
+
 }

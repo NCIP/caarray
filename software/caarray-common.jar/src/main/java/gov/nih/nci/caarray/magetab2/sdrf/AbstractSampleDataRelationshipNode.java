@@ -311,6 +311,8 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
             result.add((Image) node);
         }
         return result;
-    } 
+    }
+
+    abstract void addToSdrfList(SdrfDocument document);
 
 }

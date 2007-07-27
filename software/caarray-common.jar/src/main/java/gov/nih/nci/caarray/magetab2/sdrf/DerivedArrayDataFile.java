@@ -97,4 +97,9 @@ public final class DerivedArrayDataFile extends AbstractNativeFormatFile {
         return SdrfNodeType.DERIVED_ARRAY_DATA_FILE;
     }
 
+    @Override
+    void addToSdrfList(SdrfDocument document) {
+        document.getAllDerivedArrayDataFiles().add(this);
+    }
+
 }
