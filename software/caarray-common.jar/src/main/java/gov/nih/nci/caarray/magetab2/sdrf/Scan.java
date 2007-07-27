@@ -89,4 +89,12 @@ public final class Scan extends AbstractSampleDataRelationshipNode {
 
     private static final long serialVersionUID = -244337508880218634L;
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SdrfNodeType getNodeType() {
+        return SdrfNodeType.SCAN;
+    }
+
 }

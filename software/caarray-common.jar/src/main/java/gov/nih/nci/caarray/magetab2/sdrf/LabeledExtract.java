@@ -109,4 +109,12 @@ public final class LabeledExtract extends AbstractBioMaterial {
         this.label = label;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SdrfNodeType getNodeType() {
+        return SdrfNodeType.LABELED_EXTRACT;
+    }
+
 }

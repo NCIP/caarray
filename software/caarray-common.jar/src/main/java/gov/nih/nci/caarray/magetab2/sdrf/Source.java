@@ -106,4 +106,12 @@ public final class Source extends AbstractBioMaterial {
         this.provider = provider;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SdrfNodeType getNodeType() {
+        return SdrfNodeType.SOURCE;
+    }
+
 }

@@ -89,4 +89,12 @@ public final class Extract extends AbstractBioMaterial {
 
     private static final long serialVersionUID = 7180426686673666046L;
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SdrfNodeType getNodeType() {
+        return SdrfNodeType.EXTRACT;
+    }
+
 }
