@@ -108,7 +108,7 @@ class ArrayDesignImporter {
     }
 
     private boolean isArrayDesign(CaArrayFile file) {
-        return file.getType().isArrayDesign();
+        return file.getType() != null && file.getType().isArrayDesign();
     }
 
     private void importArrayDesign(CaArrayFile file) {

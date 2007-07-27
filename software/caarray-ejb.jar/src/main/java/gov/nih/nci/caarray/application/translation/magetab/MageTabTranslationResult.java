@@ -105,13 +105,13 @@ final class MageTabTranslationResult implements CaArrayTranslationResult {
     private final Map<OntologyTerm, Term> termMap = new HashMap<OntologyTerm, Term>();
     private final Map<TermSource, Source> termSourceMap = new HashMap<TermSource, Source>();
     private final Collection<Investigation> investigations = new HashSet<Investigation>();
+    private final Collection<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
 
     /**
      * {@inheritDoc}
      */
     public Collection<ArrayDesign> getArrayDesigns() {
-        // TODO Auto-generated method stub
-        return null;
+        return arrayDesigns;
     }
 
     /* (non-Javadoc)
