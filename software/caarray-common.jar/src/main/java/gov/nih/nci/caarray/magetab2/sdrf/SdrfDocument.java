@@ -295,6 +295,10 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     private void handleTermSourceRef(String value) {
         TermSource term = getTermSource(value);
+        for (Characteristic aCharacteristic : characteristicsList) {
+            aCharacteristic.getTerm().setTermSource(term);
+        }
+        characteristicsList.clear();
         currentTermSourceable.setTermSource(term);
     }
 
