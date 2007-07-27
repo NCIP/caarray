@@ -153,7 +153,6 @@ public class FileManagementServiceBean implements FileManagementService {
     private void doImport(Project targetProject, CaArrayFileSet fileSet) {
         validate(fileSet);
         if (fileSet.getStatus().equals(FileStatus.VALIDATED)) {
-            doImport(fileSet);
             importArrayDesigns(fileSet);
             importAnnontation(targetProject, fileSet);
             importArrayData(fileSet);
