@@ -82,23 +82,48 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.Investigation;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab2.sdrf.AbstractSampleDataRelationshipNode;
 import gov.nih.nci.caarray.magetab2.sdrf.SdrfDocument;
+import gov.nih.nci.caarray.magetab2.sdrf.SdrfNodeType;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Translates entities in SDRF documents.
  */
+@SuppressWarnings("PMD")
 final class SdrfTranslator extends AbstractTranslator {
 
     private static final Log LOG = LogFactory.getLog(SdrfTranslator.class);
 
+    private static final String GENERATED_SAMPLE_PREFIX = "GeneratedSample.";
+    private static final String GENERATED_EXTRACT_PREFIX = "GeneratedExtract.";
+    private static final String GENERATED_LABELED_EXTRACT_PREFIX = "GeneratedLabeledExtract.";
+
+    private final Map<AbstractSampleDataRelationshipNode, AbstractCaArrayEntity> nodeTranslations =
+        new HashMap<AbstractSampleDataRelationshipNode, AbstractCaArrayEntity>();
+    private final Map<AbstractSampleDataRelationshipNode, Boolean> isNodeLinked =
+        new HashMap<AbstractSampleDataRelationshipNode, Boolean>();
+    private final List<Source> allSources = new ArrayList<Source>();
+    private final List<Sample> allSamples = new ArrayList<Sample>();
+    private final List<Extract> allExtracts = new ArrayList<Extract>();
+    private final List<LabeledExtract> allLabeledExtracts = new ArrayList<LabeledExtract>();
 
     SdrfTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
             CaArrayDaoFactory daoFactory) {
@@ -115,11 +140,22 @@ final class SdrfTranslator extends AbstractTranslator {
     private void translateSdrf(SdrfDocument document) {
         translateNodesToEntities(document);
         linkNodes(document);
+        String investigationTitle = document.getIdfDocument().getInvestigation().getTitle();
+        for (Investigation investigation : getTranslationResult().getInvestigations()) {
+            if (investigationTitle.equals(investigation.getTitle())) {
+                investigation.getSources().addAll(allSources);
+                investigation.getSamples().addAll(allSamples);
+                // TODO Add all extracts and labeled extracts. Not in Investigation POJO or DDL yet.
+            }
+        }
     }
 
     private void translateNodesToEntities(SdrfDocument document) {
         translateSources(document);
         translateSamples(document);
+        translateExtracts(document);
+        translateLabeledExtracts(document);
+        translateHybridizations(document);
         // TODO etc...
     }
 
@@ -127,6 +163,9 @@ final class SdrfTranslator extends AbstractTranslator {
         for (gov.nih.nci.caarray.magetab2.sdrf.Source sdrfSource : document.getAllSources()) {
             Source source = new Source();
             translateBioMaterial(source, sdrfSource);
+            // TODO Translate the providers of the source.
+            nodeTranslations.put(sdrfSource, source);
+            allSources.add(source);
         }
     }
 
@@ -134,25 +173,180 @@ final class SdrfTranslator extends AbstractTranslator {
         for (gov.nih.nci.caarray.magetab2.sdrf.Sample sdrfSample : document.getAllSamples()) {
             Sample sample = new Sample();
             translateBioMaterial(sample, sdrfSample);
+            nodeTranslations.put(sdrfSample, sample);
+            allSamples.add(sample);
         }
     }
 
-    private void translateBioMaterial(AbstractBioMaterial bioMaterial, 
+    private void translateExtracts(SdrfDocument document) {
+        for (gov.nih.nci.caarray.magetab2.sdrf.Extract sdrfExtract : document.getAllExtracts()) {
+            Extract extract = new Extract();
+            translateBioMaterial(extract, sdrfExtract);
+            nodeTranslations.put(sdrfExtract, extract);
+            allExtracts.add(extract);
+        }
+    }
+
+    private void translateLabeledExtracts(SdrfDocument document) {
+        for (gov.nih.nci.caarray.magetab2.sdrf.LabeledExtract sdrfLabeledExtract : document.getAllLabeledExtracts()) {
+            LabeledExtract labeledExtract = new LabeledExtract();
+            translateBioMaterial(labeledExtract, sdrfLabeledExtract);
+            // TODO Translate the label into a caArray Compound. Compound is empty right now.
+            nodeTranslations.put(sdrfLabeledExtract, labeledExtract);
+            allLabeledExtracts.add(labeledExtract);
+        }
+    }
+
+    private void translateHybridizations(SdrfDocument document) {
+        for (gov.nih.nci.caarray.magetab2.sdrf.Hybridization sdrfHybridization : document.getAllHybridizations()) {
+            Hybridization hybridization = new Hybridization();
+            hybridization.setName(sdrfHybridization.getName());
+            nodeTranslations.put(sdrfHybridization, hybridization);
+        }
+    }
+
+    private void translateBioMaterial(AbstractBioMaterial bioMaterial,
             gov.nih.nci.caarray.magetab2.sdrf.AbstractBioMaterial sdrfBiomaterial) {
         bioMaterial.setName(sdrfBiomaterial.getName());
         bioMaterial.setDescription(sdrfBiomaterial.getDescription());
         bioMaterial.setMaterialType(getTerm(sdrfBiomaterial.getMaterialType()));
         // TODO Translate characteristics
     }
-    
-    @SuppressWarnings("PMD.UnusedFormalParameter")
+
     private void linkNodes(SdrfDocument document) {
-        // TODO Implement and remove SuppressWarnings
+        for (AbstractSampleDataRelationshipNode currNode : document.getLeftmostNodes()) {
+            linkNode(currNode);
+        }
+
+    }
+
+    // Recursively link this node to its successors.
+    private void linkNode(AbstractSampleDataRelationshipNode node) {
+        // Check if we already linked this node before.
+        Boolean isLinked = isNodeLinked.get(node);
+        if ((isLinked != null) && (isLinked.booleanValue())) {
+            return;
+        }
+        for (AbstractSampleDataRelationshipNode successor : node.getSuccessors()) {
+            // Recursively link all successors of this node.
+            linkNode(successor);
+            // Link this node to its successor.
+            linkTwoNodes(node, successor);
+        }
+        // Finished linking node. Mark it so that we don't do it again.
+        isNodeLinked.put(node, Boolean.TRUE);
+    }
+
+    // Link a node with one successor.
+    private void linkTwoNodes(AbstractSampleDataRelationshipNode leftNode,
+        AbstractSampleDataRelationshipNode rightNode) {
+        AbstractCaArrayEntity leftCaArrayNode = nodeTranslations.get(leftNode);
+        AbstractCaArrayEntity rightCaArrayNode = nodeTranslations.get(rightNode);
+        SdrfNodeType leftNodeType = leftNode.getNodeType();
+        SdrfNodeType rightNodeType = rightNode.getNodeType();
+        if (isBioMaterial(leftNodeType)) {
+            // Use the left node's name as part of any generated biomaterial names.
+            String baseGeneratedNodeName = ((AbstractBioMaterial) leftCaArrayNode).getName();
+            linkBioMaterial(leftCaArrayNode, rightCaArrayNode, leftNodeType, rightNodeType, baseGeneratedNodeName);
+        }
+        // TODO Linkage of nodes where left node is not a BioMaterial is not yet implemented.
+    }
+
+    /**
+     * Links a BioMaterial node with one successor.
+     * If a node is missing in the chain Source -> Sample -> Extract -> LabeledExtract -> Hybridization,
+     * appropriate intermediate nodes will be generated to complete the chain. The number of nodes
+     * generated depends on the left side of the graph. E.g., 1 Source going to 3 Extracts will result
+     * in 1 Sample being generated. On the other hand, 3 Sources going to 1 Extract will result in 3 Samples
+     * being generated.
+     */
+    @SuppressWarnings("PMD")
+    private void linkBioMaterial(AbstractCaArrayEntity leftCaArrayNode, AbstractCaArrayEntity rightCaArrayNode,
+            SdrfNodeType leftNodeType, SdrfNodeType rightNodeType, String baseGeneratedNodeName) {
+        if (leftNodeType.equals(SdrfNodeType.SOURCE)) {
+            if (rightNodeType.equals(SdrfNodeType.SAMPLE)) {
+                linkSourceAndSample((Source) leftCaArrayNode, (Sample) rightCaArrayNode);
+            } else {
+                Sample generatedSample = generateSampleAndLink(baseGeneratedNodeName, (Source) leftCaArrayNode);
+                linkBioMaterial(generatedSample, rightCaArrayNode, SdrfNodeType.SAMPLE, rightNodeType,
+                        baseGeneratedNodeName);
+            }
+        } else if (leftNodeType.equals(SdrfNodeType.SAMPLE)) {
+            if (rightNodeType.equals(SdrfNodeType.EXTRACT)) {
+                linkSampleAndExtract((Sample) leftCaArrayNode, (Extract) rightCaArrayNode);
+            } else {
+                Extract generatedExtract = generateExtractAndLink(baseGeneratedNodeName, (Sample) leftCaArrayNode);
+                linkBioMaterial(generatedExtract, rightCaArrayNode, SdrfNodeType.EXTRACT, rightNodeType,
+                        baseGeneratedNodeName);
+            }
+        } else if (leftNodeType.equals(SdrfNodeType.EXTRACT)) {
+            if (rightNodeType.equals(SdrfNodeType.LABELED_EXTRACT)) {
+                linkExtractAndLabeledExtract((Extract) leftCaArrayNode, (LabeledExtract) rightCaArrayNode);
+            } else {
+                LabeledExtract generatedLabeledExtract = generateLabeledExtractAndLink(baseGeneratedNodeName,
+                        (Extract) leftCaArrayNode);
+                linkBioMaterial(generatedLabeledExtract, rightCaArrayNode, SdrfNodeType.LABELED_EXTRACT, rightNodeType,
+                        baseGeneratedNodeName);
+            }
+        } else if ((leftNodeType.equals(SdrfNodeType.LABELED_EXTRACT))
+                && (rightNodeType.equals(SdrfNodeType.HYBRIDIZATION))) {
+            linkLabeledExtractAndHybridization((LabeledExtract) leftCaArrayNode, (Hybridization) rightCaArrayNode);
+        }
+    }
+
+    private Sample generateSampleAndLink(String baseGeneratedNodeName, Source source) {
+        Sample generatedSample = new Sample();
+        generatedSample.setName(GENERATED_SAMPLE_PREFIX + baseGeneratedNodeName);
+        linkSourceAndSample(source, generatedSample);
+        allSamples.add(generatedSample);
+        return generatedSample;
+    }
+
+    private Extract generateExtractAndLink(String baseGeneratedNodeName, Sample generatedSample) {
+        Extract generatedExtract = new Extract();
+        generatedExtract.setName(GENERATED_EXTRACT_PREFIX + baseGeneratedNodeName);
+        linkSampleAndExtract(generatedSample, generatedExtract);
+        allExtracts.add(generatedExtract);
+        return generatedExtract;
+    }
+
+    private LabeledExtract generateLabeledExtractAndLink(String baseGeneratedNodeName, Extract generatedExtract) {
+        LabeledExtract generatedLabeledExtract = new LabeledExtract();
+        generatedLabeledExtract.setName(GENERATED_LABELED_EXTRACT_PREFIX + baseGeneratedNodeName);
+        linkExtractAndLabeledExtract(generatedExtract, generatedLabeledExtract);
+        allLabeledExtracts.add(generatedLabeledExtract);
+        return generatedLabeledExtract;
+    }
+
+    private void linkSourceAndSample(Source source, Sample sample) {
+        source.getSamples().add((Sample) sample);
+        sample.getSources().add((Source) source);
+    }
+
+    private void linkSampleAndExtract(Sample sample, Extract extract) {
+        sample.getExtracts().add((Extract) extract);
+        extract.getSamples().add((Sample) sample);
+    }
+
+    private void linkExtractAndLabeledExtract(Extract extract, LabeledExtract labeledExtract) {
+        extract.getLabeledExtracts().add((LabeledExtract) labeledExtract);
+        labeledExtract.getExtracts().add((Extract) extract);
+    }
+
+    private void linkLabeledExtractAndHybridization(LabeledExtract labeledExtract, Hybridization hybridization) {
+        hybridization.getLabeledExtract().add((LabeledExtract) labeledExtract);
+    }
+
+    private boolean isBioMaterial(SdrfNodeType nodeType) {
+        if (nodeType.equals(SdrfNodeType.SOURCE) || nodeType.equals(SdrfNodeType.SAMPLE)
+            || nodeType.equals(SdrfNodeType.EXTRACT) || nodeType.equals(SdrfNodeType.LABELED_EXTRACT)) {
+            return true;
+        }
+        return false;
     }
 
     @Override
     Log getLog() {
         return LOG;
     }
-
 }
