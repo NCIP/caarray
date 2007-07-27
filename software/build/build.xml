@@ -410,6 +410,7 @@
                 <include name="commons-logging-1.1.jar" />
                 <include name="commons-discovery-0.2.jar" />
                 <include name="dom4j-1.6.1.jar" />
+                <include name="javacsv.jar" />
                 <include name="jaxrpc.jar" />
                 <include name="jta.jar" />
                 <include name="log4j-1.2.13.jar" />
