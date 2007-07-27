@@ -165,7 +165,7 @@ public class VocabularyServiceTest {
             return new MockVocabularyDao();
         }
         @Override
-        public EVSUtility getEVSUtility() {
+        EVSUtility getEVSUtility() {
             return new MockEVSUtility();
         }
     }

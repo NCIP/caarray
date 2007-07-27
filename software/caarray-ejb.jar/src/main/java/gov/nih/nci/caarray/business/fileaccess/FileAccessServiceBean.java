@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.business.fileaccess;
 
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.io.File;
 import java.util.HashSet;
@@ -92,12 +93,17 @@ import java.util.Set;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Implementation of the FileAccess subsystem.
  */
 @Local
 @Stateless
 public class FileAccessServiceBean implements FileAccessService {
+    
+    private static final Log LOG = LogFactory.getLog(FileAccessServiceBean.class);
 
     /**
      * Adds a new file to caArray file storage.
@@ -106,9 +112,15 @@ public class FileAccessServiceBean implements FileAccessService {
      * @return the caArray file object.
      */
     public CaArrayFile add(File file) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, file);
+        }
         CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setPath(file.getAbsolutePath());
         // TODO -- add call to FileDao.save when implemented
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
         return caArrayFile;
     }
 
@@ -119,6 +131,12 @@ public class FileAccessServiceBean implements FileAccessService {
      * @return the file
      */
     public File getFile(CaArrayFile caArrayFile) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, caArrayFile);
+        }
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
         return new File(caArrayFile.getPath());
     }
     
@@ -129,9 +147,15 @@ public class FileAccessServiceBean implements FileAccessService {
      * @return the files.
      */
     public Set<File> getFiles(CaArrayFileSet fileSet) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, fileSet);
+        }
         Set<File> files = new HashSet<File>();
         for (CaArrayFile caArrayFile : fileSet.getFiles()) {
             files.add(getFile(caArrayFile));
+        }
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
         }
         return files;
     }

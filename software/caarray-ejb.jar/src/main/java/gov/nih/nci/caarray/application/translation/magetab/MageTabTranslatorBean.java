@@ -83,18 +83,28 @@
 package gov.nih.nci.caarray.application.translation.magetab;
 
 import javax.ejb.EJB;
+import javax.ejb.Local;
+import javax.ejb.Stateless;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
+import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 /**
  * Implementation of the MAGE-TAB translation component.
  */
 @SuppressWarnings("PMD")
+@Local
+@Stateless
 public class MageTabTranslatorBean implements MageTabTranslator {
+    
+    private static final Log LOG = LogFactory.getLog(MageTabTranslatorBean.class);
 
     @EJB private VocabularyService vocabularyService;
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
@@ -103,11 +113,17 @@ public class MageTabTranslatorBean implements MageTabTranslator {
      * {@inheritDoc}
      */
     public CaArrayTranslationResult translate(MageTabDocumentSet documentSet) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, documentSet);
+        }
         MageTabTranslationResult translationResult = new MageTabTranslationResult();
         translateTermSources(documentSet, translationResult, getDaoFactory().getVocabularyDao());
         translateTerms(documentSet, translationResult, getVocabularyService());
         translateIdfs(documentSet, translationResult);
         translateSdrfs(documentSet, translationResult);
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
         return translationResult;
     }
 

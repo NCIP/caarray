@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.VocabularyDao;
@@ -91,13 +91,16 @@ import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.CaArrayEntityTestUtility;
 import gov.nih.nci.caarray.domain.project.Investigation;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Source;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab2.TestMageTabSets;
 import gov.nih.nci.caarray.magetab2.idf.IdfDocument;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -157,6 +160,56 @@ public class MageTabTranslatorTest {
 
     private static class LocalVocabularyServiceStub extends VocabularyServiceStub {
 
+        @Override
+        public Source getSource(String name) {
+            assertFalse(StringUtils.isEmpty(name));
+            if ("caarray".equals(name)) {
+                return null;
+            } else {
+                return super.getSource(name);
+            }
+        }
+
+        @Override
+        public Category getCategory(Source source, String categoryName) {
+            assertFalse(StringUtils.isEmpty(source.getName()));
+            assertFalse(StringUtils.isEmpty(categoryName));
+            if ("MO".equals(source.getName())) {
+                return super.getCategory(source, categoryName);
+            } else {
+                return null;
+            }
+        }
+        
+        @Override
+        public Term getTerm(Source source, Category category, String value) {
+            assertFalse(StringUtils.isEmpty(source.getName()));
+            assertFalse(StringUtils.isEmpty(category.getName()));
+            assertFalse(StringUtils.isEmpty(value));
+            if ("MO".equals(source.getName())) {
+                return super.getTerm(source, category, value);
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        public Source createSource(String name) {
+            assertFalse("MO".equals(name));
+            return super.createSource(name);
+        }
+
+        @Override
+        public Category createCategory(Source source, String categoryName) {
+            assertFalse("MO".equals(source.getName()));
+            return super.createCategory(source, categoryName);
+        }
+        
+        @Override
+        public Term createTerm(Source source, Category category, String value) {
+            assertFalse("MO".equals(source.getName()));
+            return super.createTerm(source, category, value);
+        }
 
     }
 

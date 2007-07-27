@@ -90,10 +90,14 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.Proposal;
+import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 /**
  * Implementation entry point for the ProjectManagement subsystem.
@@ -101,6 +105,8 @@ import gov.nih.nci.caarray.domain.project.Proposal;
 @Local
 @Stateless
 public class ProjectManagementServiceBean implements ProjectManagementService {
+    
+    private static final Log LOG = LogFactory.getLog(ProjectManagementServiceBean.class);
 
     /**
      * Returns the project corresponding to the id given.
@@ -124,14 +130,26 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * @param files the files to add to the project
      */
     public void addFiles(Project project, Set<File> files) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, project, files);
+        }
         // TODO implement call to FileAccessService.add
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void submitProposal(Proposal p) {
-        getProjectDao().save(p);
+    public void submitProposal(Proposal proposal) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, proposal);
+        }
+        getProjectDao().save(proposal);
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
     }
 }

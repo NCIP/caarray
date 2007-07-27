@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 
 import java.util.ArrayList;
@@ -114,10 +115,8 @@ import org.apache.commons.logging.LogFactory;
 @Stateless
 public class VocabularyServiceBean implements VocabularyService {
 
-    /**
-     * LOG used by this class.
-     */
     private static final Log LOG = LogFactory.getLog(VocabularyServiceBean.class);
+    
     /**
      * Creates a new instance.
      */
@@ -141,6 +140,9 @@ public class VocabularyServiceBean implements VocabularyService {
     */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public List<Term> getTerms(final String categoryName) throws VocabularyServiceException {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, categoryName);
+        }
         if (categoryName == null) {
             throw new IllegalArgumentException("CategoryName is null");
         }
@@ -151,7 +153,9 @@ public class VocabularyServiceBean implements VocabularyService {
                 saveTermsLocally(termList);
             }
         }
-
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
         return termList;
     }
 
@@ -175,6 +179,7 @@ public class VocabularyServiceBean implements VocabularyService {
             throw new VocabularyServiceException(de);
         }
     }
+    
     /**
      * Returns all terms that belong to the category for the name given
      * from the EVS vocab service.
@@ -192,10 +197,8 @@ public class VocabularyServiceBean implements VocabularyService {
         }
         return evsTerms;
     }
-    /**
-     * @return evsUtility
-     */
-    public EVSUtility getEVSUtility() {
+
+    EVSUtility getEVSUtility() {
         return new EVSUtility();
     }
 
@@ -203,9 +206,15 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     public Source getSource(String name) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, name);
+        }
         Source querySource = new Source();
         querySource.setName(name);
         Collection<AbstractCaArrayEntity> result = getVocabularyDao().queryEntityByExample(querySource);
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
         if (result.isEmpty()) {
             return null;
         } else {
@@ -217,8 +226,14 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     public Source createSource(String name) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, name);
+        }
         Source source = new Source();
         source.setName(name);
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
         return source;
     }
 
@@ -226,9 +241,15 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     public Category getCategory(Source source, String categoryName) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, source, categoryName);
+        }
         Category queryCategory = new Category();
         queryCategory.setName(categoryName);
         Collection<AbstractCaArrayEntity> result = getVocabularyDao().queryEntityByExample(queryCategory);
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
         if (result.isEmpty()) {
             return null;
         } else {
@@ -240,9 +261,15 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     public Category createCategory(Source source, String categoryName) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, source, categoryName);
+        }
         Category category = new Category();
         category.setName(categoryName);
         getVocabularyDao().save(category);
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
         return category;
     }
 
@@ -250,11 +277,17 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     public Term createTerm(Source source, Category category, String value) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, source, category, value);
+        }
         Term term = new Term();
         term.setSource(source);
         term.setCategory(category);
         term.setValue(value);
         getVocabularyDao().save(term);
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
         return term;
     }
 
@@ -262,12 +295,18 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     public Term getTerm(Source source, Category category, String value) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, source, category, value);
+        }
         Term queryTerm = new Term();
         queryTerm.setCategory(category);
         queryTerm.setSource(source);
         queryTerm.setValue(value);
         Collection<AbstractCaArrayEntity> result =
             getVocabularyDao().queryEntityAndAssociationsByExample(queryTerm);
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
         if (result.isEmpty()) {
             return null;
         } else {

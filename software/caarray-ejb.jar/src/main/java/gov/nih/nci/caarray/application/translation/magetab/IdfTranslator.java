@@ -83,9 +83,6 @@
 package gov.nih.nci.caarray.application.translation.magetab;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.DAOException;
-import gov.nih.nci.caarray.dao.ProjectDao;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.contact.Address;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.project.Factor;
@@ -110,6 +107,7 @@ import org.apache.commons.logging.LogFactory;
  * Translates entities found in and IDF document.
  */
 final class IdfTranslator extends AbstractTranslator {
+    
     private static final Log LOG = LogFactory.getLog(IdfTranslator.class);
 
     IdfTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
@@ -220,35 +218,8 @@ final class IdfTranslator extends AbstractTranslator {
         investigation.getInvestigationContacts().addAll(contacts);
     }
 
-    /**
-     * Checks database to see if a matching caArray entity already exists.
-     * If a matching entity exists, it is returned. If no match is found, or if there
-     * is an error while searching the database, the new entity is returned
-     * without any modification. Searches database for attributes and one level of associations.
-     *
-     * @param entityToMatch the caArray entity to match.
-     * @return a matching caArray that already exists in the database.
-     */
-    private AbstractCaArrayEntity replaceIfExists(AbstractCaArrayEntity entityToMatch) {
-        try {
-            List<AbstractCaArrayEntity> matchingEntities = getProjectDao()
-                .queryEntityAndAssociationsByExample(entityToMatch);
-            if (matchingEntities.size() == 1) {
-                // Exactly one match; use existing object in database.
-                return matchingEntities.get(0);
-            } else {
-                // Either no matches, or ambiguous match; return original entity.
-                return entityToMatch;
-            }
-        } catch (DAOException e) {
-            LOG.error("Error while searching database.", e);
-        }
-
-        // Error searching database; return original entity.
-        return entityToMatch;
-    }
-
-    private ProjectDao getProjectDao() {
-        return getDaoFactory().getProjectDao();
+    @Override
+    Log getLog() {
+        return LOG;
     }
 }

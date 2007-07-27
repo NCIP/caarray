@@ -82,13 +82,19 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
 
 /**
- *
+ * Translates entities in SDRF documents.
  */
 final class SdrfTranslator extends AbstractTranslator {
+
+    private static final Log LOG = LogFactory.getLog(SdrfTranslator.class);
+
 
     SdrfTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
             CaArrayDaoFactory daoFactory) {
@@ -99,6 +105,12 @@ final class SdrfTranslator extends AbstractTranslator {
     void translate() {
         // TODO Auto-generated method stub
 
+    }
+
+
+    @Override
+    Log getLog() {
+        return LOG;
     }
 
 }

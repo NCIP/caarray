@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.magetab2.MageTabParsingException;
+import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import javax.ejb.EJB;
 import javax.ejb.Local;
@@ -121,9 +122,15 @@ public class FileManagementServiceBean implements FileManagementService {
      * @param fileSet the files to import.
      */
     public void importFiles(CaArrayFileSet fileSet) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, fileSet);
+        }
         validate(fileSet);
         if (fileSet.getStatus().equals(FileStatus.VALIDATED)) {
             doImport(fileSet);
+        }
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
         }
     }
 

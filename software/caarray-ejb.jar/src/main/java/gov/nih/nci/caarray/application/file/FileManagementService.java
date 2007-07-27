@@ -89,7 +89,12 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
  * Interface to the FileManagement subsystem.
  */
 public interface FileManagementService {
-    
+
+    /**
+     * The default JNDI name to use to lookup <code>ProjectManagementService</code>.
+     */
+    String JNDI_NAME = "caarray/FileManagementServiceBean/local";
+
     /**
      * Imports the files provided.
      * 

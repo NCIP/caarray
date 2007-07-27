@@ -86,6 +86,9 @@ import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import gov.nih.nci.caarray.business.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.ArrayDao;
@@ -94,6 +97,7 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 /**
  * Implementation entry point for the ArrayDesign subsystem.
@@ -101,6 +105,8 @@ import gov.nih.nci.caarray.domain.file.FileType;
 @Local(ArrayDesignService.class)
 @Stateless
 public class ArrayDesignServiceBean implements ArrayDesignService {
+    
+    private static final Log LOG = LogFactory.getLog(ArrayDesignServiceBean.class);
     
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
     @EJB private VocabularyService vocabularyService;
@@ -113,12 +119,18 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      * @return the new array design.
      */
     public ArrayDesign importDesign(CaArrayFile designFile) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, designFile);
+        }
         AbstractArrayDesignHandler handler = getHandler(designFile);
         ArrayDesign design = handler.getArrayDesign();
         getArrayDao().save(design);
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
         return design;
     }
-    
+
     /**
      * Returns the element-level details (features, reporters, and composite elements) for
      * an array design.
@@ -127,7 +139,13 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      * @return the design details.
      */
     public ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, arrayDesign);
+        }
         AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile());
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
         return handler.getDesignDetails();
     }
 
