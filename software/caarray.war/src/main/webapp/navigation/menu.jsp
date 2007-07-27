@@ -4,4 +4,5 @@
 <h:form id="mainMenu">
   <h:outputLabel value="Project Menu" />
   <h:commandLink id="proposeProject" action="#{projectProposalBean.startNewProposal}" value="Propose Project" />
+  <h:commandLink id="importDemo" action="demoForm" value="Import Demo" />
 </h:form>

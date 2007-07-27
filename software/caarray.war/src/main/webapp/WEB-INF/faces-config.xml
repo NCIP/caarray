@@ -63,4 +63,24 @@
         </navigation-case>
     </navigation-rule>
 
+    <managed-bean>
+        <managed-bean-name>importDemoBean</managed-bean-name>
+        <managed-bean-class>gov.nih.nci.caarray.ui.jsf.beans.project.ImportDemoBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>demoForm</from-outcome>
+            <to-view-id>/demoForm.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>demoProject</from-outcome>
+            <to-view-id>/demoProject.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+
 </faces-config>
