@@ -80,36 +80,33 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.business.arraydesign;
+package gov.nih.nci.caarray.application.arraydesign;
 
-import java.io.File;
-import java.util.Set;
-
-import gov.nih.nci.caarray.business.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 
-class FileAccessServiceStub implements FileAccessService {
+/**
+ * Provides array design detail parsing, storage, and retrieval functionality. Interface to the
+ * ArrayDesign subsystem.
+ */
+public interface ArrayDesignService {
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.business.fileaccess.FileAccessService#add(java.io.File)
+    /**
+     * Imports a new array design into the system from an array design file.
+     * 
+     * @param designFile the native file containing the array design details.
+     * @return the new array design.
      */
-    public CaArrayFile add(File file) {
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.business.fileaccess.FileAccessService#getFile(gov.nih.nci.caarray.domain.file.CaArrayFile)
+    ArrayDesign importDesign(CaArrayFile designFile);
+    
+    /**
+     * Returns the element-level details (features, reporters, and composite elements) for
+     * an array design.
+     * 
+     * @param arrayDesign retrieve details for this array design
+     * @return the design details.
      */
-    public File getFile(CaArrayFile caArrayFile) {
-        return new File(caArrayFile.getPath());
-    }
-
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.business.fileaccess.FileAccessService#getFiles(gov.nih.nci.caarray.domain.file.CaArrayFileSet)
-     */
-    public Set<File> getFiles(CaArrayFileSet fileSet) {
-        return null;
-    }
-
+    ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign);
+    
 }

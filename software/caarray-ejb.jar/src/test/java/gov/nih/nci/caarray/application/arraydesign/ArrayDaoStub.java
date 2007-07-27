@@ -80,75 +80,64 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.business.arraydesign;
+package gov.nih.nci.caarray.application.arraydesign;
 
-import static org.junit.Assert.*;
+import java.util.Collection;
+import java.util.List;
 
-import java.io.File;
-import java.io.IOException;
-
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileType;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Test;
+class ArrayDaoStub implements ArrayDao {
 
-/**
- * Test class for ArrayDesignService subsystem.
- * 
- * TODO Add complete details to tests
- * TODO Add test for largest Affymetrix design
- */
-@SuppressWarnings("PMD")
-public class ArrayDesignServiceTest {
-    
-    private ArrayDesignService arrayDesignService;
-    private final CaArrayDaoFactoryStub caArrayDaoFactoryStub = new CaArrayDaoFactoryStub();
-    private final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
-    private final VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
-
-    @Before
-    public void setUp() {
-        ArrayDesignServiceBean bean = new ArrayDesignServiceBean();
-        bean.setDaoFactory(caArrayDaoFactoryStub);
-        bean.setFileAccessService(fileAccessServiceStub);
-        bean.setVocabularyService(vocabularyServiceStub);
-        arrayDesignService = bean;
-    }
-
-    /**
-     * Test method for {@link gov.nih.nci.caarray.business.arraydesign.ArrayDesignService#importDesign(gov.nih.nci.caarray.domain.file.CaArrayFile)}.
-     * @throws IOException 
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.dao.ArrayDao#getArrayDesign(java.lang.Long)
      */
-    @Test
-    public void testImportDesign_AffymetrixGeneExpression() throws IOException {
-        CaArrayFile caArrayFile = getAffymetrixGeneExpressionFile();
-        ArrayDesign arrayDesign = arrayDesignService.importDesign(caArrayFile);
-        assertEquals("Test3", arrayDesign.getName());
-    }
-    
-    @Test
-    public void testGetDesignDetails_AffymetrixGeneExpression() throws IOException {
-        CaArrayFile caArrayFile = getAffymetrixGeneExpressionFile();
-        ArrayDesign arrayDesign = arrayDesignService.importDesign(caArrayFile);
-        ArrayDesignDetails details = arrayDesignService.getDesignDetails(arrayDesign);
-        assertNotNull(details);
-        assertEquals(15876, details.getFeatures().size());
+    public ArrayDesign getArrayDesign(Long id) {
+        return null;
     }
 
-    private CaArrayFile getAffymetrixGeneExpressionFile() throws IOException {
-        CaArrayFile caArrayFile = new CaArrayFile();
-        File tempDir = new File(System.getProperty("java.io.tmpdir"));
-        File tempFile = new File(tempDir, "Test3.CDF");
-        tempFile.deleteOnExit();
-        FileUtils.copyURLToFile(getClass().getResource("/Test3.CDF"), tempFile);
-        caArrayFile.setPath(tempFile.getAbsolutePath());
-        caArrayFile.setType(FileType.AFFYMETRIX_CDF);
-        return caArrayFile;
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.dao.CaArrayDao#queryEntityAndAssociationsByExample(gov.nih.nci.caarray.domain.AbstractCaArrayEntity)
+     */
+    public List<AbstractCaArrayEntity> queryEntityAndAssociationsByExample(AbstractCaArrayEntity entityToMatch) {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.dao.CaArrayDao#queryEntityByExample(gov.nih.nci.caarray.domain.AbstractCaArrayEntity)
+     */
+    public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.dao.CaArrayDao#queryEntityById(gov.nih.nci.caarray.domain.AbstractCaArrayEntity)
+     */
+    public AbstractCaArrayEntity queryEntityById(AbstractCaArrayEntity entityToMatch) {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.dao.CaArrayDao#remove(gov.nih.nci.caarray.domain.AbstractCaArrayEntity)
+     */
+    public void remove(AbstractCaArrayEntity caArrayEntity) {
+        // no-op
+    }
+
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.dao.CaArrayDao#save(gov.nih.nci.caarray.domain.AbstractCaArrayEntity)
+     */
+    public void save(AbstractCaArrayEntity caArrayEntity) {
+        // no-op
+    }
+
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.dao.CaArrayDao#save(java.util.Collection)
+     */
+    public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) {
+        // no-op
     }
 
 }

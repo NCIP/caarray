@@ -80,39 +80,36 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.file;
+package gov.nih.nci.caarray.application.arraydesign;
 
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import java.io.File;
+import java.util.Set;
+
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 
-/**
- * Responsible for importing all the array designs in a file set.
- */
-class ArrayDesignImporter {
+class FileAccessServiceStub implements FileAccessService {
 
-    private final CaArrayFileSet fileSet;
-    private final ArrayDesignService arrayDesignService;
-
-    ArrayDesignImporter(CaArrayFileSet fileSet, ArrayDesignService arrayDesignService) {
-        this.fileSet = fileSet;
-        this.arrayDesignService = arrayDesignService;
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.business.fileaccess.FileAccessService#add(java.io.File)
+     */
+    public CaArrayFile add(File file) {
+        return null;
     }
 
-    void importArrayDesigns() {
-        for (CaArrayFile file : fileSet.getFiles()) {
-            if (isArrayDesign(file)) {
-                importArrayDesign(file);
-            }
-        }
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.business.fileaccess.FileAccessService#getFile(gov.nih.nci.caarray.domain.file.CaArrayFile)
+     */
+    public File getFile(CaArrayFile caArrayFile) {
+        return new File(caArrayFile.getPath());
     }
 
-    private boolean isArrayDesign(CaArrayFile file) {
-        return file.getType().isArrayDesign();
-    }
-
-    private void importArrayDesign(CaArrayFile file) {
-        arrayDesignService.importDesign(file);
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.business.fileaccess.FileAccessService#getFiles(gov.nih.nci.caarray.domain.file.CaArrayFileSet)
+     */
+    public Set<File> getFiles(CaArrayFileSet fileSet) {
+        return null;
     }
 
 }

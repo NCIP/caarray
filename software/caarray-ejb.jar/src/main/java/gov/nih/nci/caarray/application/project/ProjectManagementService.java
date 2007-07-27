@@ -119,7 +119,7 @@ public interface ProjectManagementService {
     /**
      * Persists a new proposal.
      *
-     * @param p the new proposal to save
+     * @param proposal the new proposal to save
      */
-    void submitProposal(Proposal p);
+    void submitProposal(Proposal proposal);
 }

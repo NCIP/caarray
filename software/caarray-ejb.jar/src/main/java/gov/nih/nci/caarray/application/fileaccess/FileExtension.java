@@ -80,39 +80,44 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.file;
+package gov.nih.nci.caarray.application.fileaccess;
 
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import java.util.Locale;
+
+import gov.nih.nci.caarray.domain.file.FileType;
 
 /**
- * Responsible for importing all the array designs in a file set.
+ * File extensions mappable by caArray.
  */
-class ArrayDesignImporter {
+enum FileExtension {
 
-    private final CaArrayFileSet fileSet;
-    private final ArrayDesignService arrayDesignService;
+    CDF(FileType.AFFYMETRIX_CDF),
+    CEL(FileType.AFFYMETRIX_CEL),
+    ADF(FileType.MAGE_TAB_ADF),
+    IDF(FileType.MAGE_TAB_IDF),
+    SDRF(FileType.MAGE_TAB_SDRF);
+    
+    private final FileType type;
 
-    ArrayDesignImporter(CaArrayFileSet fileSet, ArrayDesignService arrayDesignService) {
-        this.fileSet = fileSet;
-        this.arrayDesignService = arrayDesignService;
+    FileExtension(FileType type) {
+        this.type = type;        
     }
 
-    void importArrayDesigns() {
-        for (CaArrayFile file : fileSet.getFiles()) {
-            if (isArrayDesign(file)) {
-                importArrayDesign(file);
+    FileType getType() {
+        return type;
+    }
+
+    static FileExtension getByExtension(String extensionString) {
+        if (extensionString == null) {
+            throw new IllegalArgumentException("Null extensionString");
+        }
+        String extensionStringUpper = extensionString.toUpperCase(Locale.getDefault());
+        for (FileExtension fileExtension : values()) {
+            if (fileExtension.name().equals(extensionStringUpper)) {
+                return fileExtension;
             }
         }
+        return null;
     }
-
-    private boolean isArrayDesign(CaArrayFile file) {
-        return file.getType().isArrayDesign();
-    }
-
-    private void importArrayDesign(CaArrayFile file) {
-        arrayDesignService.importDesign(file);
-    }
-
+    
 }

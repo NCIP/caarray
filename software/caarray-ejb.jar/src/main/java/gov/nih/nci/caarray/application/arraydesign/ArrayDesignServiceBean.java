@@ -80,46 +80,118 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.business.fileaccess;
+package gov.nih.nci.caarray.application.arraydesign;
 
-import java.io.File;
-import java.util.Set;
+import javax.ejb.EJB;
+import javax.ejb.Local;
+import javax.ejb.Stateless;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 /**
- * Provides file storage and retrieval services to the system.
+ * Implementation entry point for the ArrayDesign subsystem.
  */
-public interface FileAccessService {
-
-    /**
-     * The default JNDI name to use to lookup <code>FileAccessService</code>.
-     */
-    String JNDI_NAME = "caarray/FileAccessServiceBean/local";
-
-    /**
-     * Adds a new file to caArray file storage.
-     * 
-     * @param file the file to store
-     * @return the caArray file object.
-     */
-    CaArrayFile add(File file);
-
-    /**
-     * Returns the underlying <code>java.io.File</code> for the <code>CaArrayFile</code> object provided.
-     * 
-     * @param caArrayFile retrieve contents of this file
-     * @return the file
-     */
-    File getFile(CaArrayFile caArrayFile);
-
-    /**
-     * Returns the underlying <code>java.io.Files</code> for the <code>CaArrayFiles</code> in the set provided.
-     *
-     * @param fileSet get files from this set.
-     * @return the files.
-     */
-    Set<File> getFiles(CaArrayFileSet fileSet);
+@Local(ArrayDesignService.class)
+@Stateless
+public class ArrayDesignServiceBean implements ArrayDesignService {
     
+    private static final Log LOG = LogFactory.getLog(ArrayDesignServiceBean.class);
+    
+    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+    @EJB private VocabularyService vocabularyService;
+    @EJB private FileAccessService fileAccessService;
+
+    /**
+     * Imports a new array design into the system from an array design file.
+     * 
+     * @param designFile the native file containing the array design details.
+     * @return the new array design.
+     */
+    public ArrayDesign importDesign(CaArrayFile designFile) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, designFile);
+        }
+        AbstractArrayDesignHandler handler = getHandler(designFile);
+        ArrayDesign design = handler.getArrayDesign();
+        getArrayDao().save(design);
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
+        return design;
+    }
+
+    /**
+     * Returns the element-level details (features, reporters, and composite elements) for
+     * an array design.
+     * 
+     * @param arrayDesign retrieve details for this array design
+     * @return the design details.
+     */
+    public ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, arrayDesign);
+        }
+        AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile());
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
+        return handler.getDesignDetails();
+    }
+
+    private AbstractArrayDesignHandler getHandler(CaArrayFile designFile) {
+        FileType type = designFile.getType();
+        if (type == null || !type.isArrayDesign()) {
+            throw new IllegalArgumentException("FileType " + type + " is not an array design file type.");
+        } else if (FileType.AFFYMETRIX_CDF.equals(type)) {
+            return new AffymetrixCdfHandler(designFile, getVocabularyService(), getFileAccessService());
+        } else {
+            throw new IllegalArgumentException("Unsupported array design file type: " + type);
+        }
+    }
+
+    CaArrayDaoFactory getDaoFactory() {
+        return daoFactory;
+    }
+
+    void setDaoFactory(CaArrayDaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
+    }
+    
+    private ArrayDao getArrayDao() {
+        return getDaoFactory().getArrayDao();
+    }
+
+    /**
+     * @return the vocabularyService
+     */
+    VocabularyService getVocabularyService() {
+        return vocabularyService;
+    }
+
+    /**
+     * @param vocabularyService the vocabularyService to set
+     */
+    void setVocabularyService(VocabularyService vocabularyService) {
+        this.vocabularyService = vocabularyService;
+    }
+
+    FileAccessService getFileAccessService() {
+        return fileAccessService;
+    }
+
+    void setFileAccessService(FileAccessService fileAccessService) {
+        this.fileAccessService = fileAccessService;
+    }
+
 }

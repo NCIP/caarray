@@ -80,54 +80,46 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.business.arraydesign;
+package gov.nih.nci.caarray.application.fileaccess;
 
 import java.io.File;
+import java.util.Set;
 
-import gov.nih.nci.caarray.business.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 
 /**
- * Base class for all design handlers.
+ * Provides file storage and retrieval services to the system.
  */
-abstract class AbstractArrayDesignHandler {
+public interface FileAccessService {
 
-    private final CaArrayFile designFile;
-    private final VocabularyService vocabularyService;
-    private final FileAccessService fileAccessService;
+    /**
+     * The default JNDI name to use to lookup <code>FileAccessService</code>.
+     */
+    String JNDI_NAME = "caarray/FileAccessServiceBean/local";
 
-    AbstractArrayDesignHandler(CaArrayFile designFile, VocabularyService vocabularyService, 
-            FileAccessService fileAccessService) {
-        super();
-        this.designFile = designFile;
-        this.vocabularyService = vocabularyService;
-        this.fileAccessService = fileAccessService;
-    }
+    /**
+     * Adds a new file to caArray file storage.
+     * 
+     * @param file the file to store
+     * @return the caArray file object.
+     */
+    CaArrayFile add(File file);
 
-    final CaArrayFile getDesignFile() {
-        return designFile;
-    }
+    /**
+     * Returns the underlying <code>java.io.File</code> for the <code>CaArrayFile</code> object provided.
+     * 
+     * @param caArrayFile retrieve contents of this file
+     * @return the file
+     */
+    File getFile(CaArrayFile caArrayFile);
 
-    final VocabularyService getVocabularyService() {
-        return vocabularyService;
-    }
+    /**
+     * Returns the underlying <code>java.io.Files</code> for the <code>CaArrayFiles</code> in the set provided.
+     *
+     * @param fileSet get files from this set.
+     * @return the files.
+     */
+    Set<File> getFiles(CaArrayFileSet fileSet);
     
-    final ArrayDesign getArrayDesign() {
-        ArrayDesign arrayDesign = new ArrayDesign();
-        arrayDesign.setDesignFile(getDesignFile());
-        load(arrayDesign);
-        return arrayDesign;
-    }
-
-    final File getFile(CaArrayFile caArrayFile) {
-        return fileAccessService.getFile(caArrayFile);
-    }
-
-    abstract void load(ArrayDesign arrayDesign);
-
-    abstract ArrayDesignDetails getDesignDetails();
-
 }

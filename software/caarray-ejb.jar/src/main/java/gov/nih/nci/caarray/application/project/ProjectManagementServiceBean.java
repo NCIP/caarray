@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.project;
 import java.io.File;
 import java.util.Set;
 
+import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -93,8 +94,10 @@ import javax.ejb.TransactionAttributeType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ProjectDao;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.Proposal;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
@@ -107,6 +110,9 @@ import gov.nih.nci.caarray.util.io.logging.LogUtil;
 public class ProjectManagementServiceBean implements ProjectManagementService {
     
     private static final Log LOG = LogFactory.getLog(ProjectManagementServiceBean.class);
+    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+    
+    @EJB private FileAccessService fileAccessService;
 
     /**
      * Returns the project corresponding to the id given.
@@ -115,11 +121,17 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * @return the corresponding project.
      */
     public Project getProject(long id) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, id);
+        }
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
         return getProjectDao().getProject(id);
     }
 
     private ProjectDao getProjectDao() {
-        return CaArrayDaoFactory.INSTANCE.getProjectDao();
+        return daoFactory.getProjectDao();
     }
 
     /**
@@ -133,7 +145,11 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, project, files);
         }
-        // TODO implement call to FileAccessService.add
+        for (File file : files) {
+            CaArrayFile caArrayFile = fileAccessService.add(file);
+            project.getFiles().add(caArrayFile);
+        }
+        getProjectDao().save(project);
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemExit(LOG);
         }
@@ -151,5 +167,21 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemExit(LOG);
         }
+    }
+
+    FileAccessService getFileAccessService() {
+        return fileAccessService;
+    }
+
+    void setFileAccessService(FileAccessService fileAccessService) {
+        this.fileAccessService = fileAccessService;
+    }
+
+    CaArrayDaoFactory getDaoFactory() {
+        return daoFactory;
+    }
+
+    void setDaoFactory(CaArrayDaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
     }
 }

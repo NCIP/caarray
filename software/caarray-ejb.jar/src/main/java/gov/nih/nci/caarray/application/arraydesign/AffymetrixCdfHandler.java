@@ -80,7 +80,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.business.arraydesign;
+package gov.nih.nci.caarray.application.arraydesign;
 
 import affymetrix.fusion.cdf.FusionCDFData;
 import affymetrix.fusion.cdf.FusionCDFHeader;
@@ -89,7 +89,7 @@ import affymetrix.fusion.cdf.FusionCDFProbeInformation;
 import affymetrix.fusion.cdf.FusionCDFProbeSetInformation;
 import affymetrix.fusion.cdf.FusionCDFQCProbeInformation;
 import affymetrix.fusion.cdf.FusionCDFQCProbeSetInformation;
-import gov.nih.nci.caarray.business.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;

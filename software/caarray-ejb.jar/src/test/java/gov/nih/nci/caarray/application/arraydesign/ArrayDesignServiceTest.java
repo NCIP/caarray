@@ -80,33 +80,75 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.business.arraydesign;
+package gov.nih.nci.caarray.application.arraydesign;
 
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.io.IOException;
+
+import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileType;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * Provides array design detail parsing, storage, and retrieval functionality. Interface to the
- * ArrayDesign subsystem.
+ * Test class for ArrayDesignService subsystem.
+ * 
+ * TODO Add complete details to tests
+ * TODO Add test for largest Affymetrix design
  */
-public interface ArrayDesignService {
+@SuppressWarnings("PMD")
+public class ArrayDesignServiceTest {
+    
+    private ArrayDesignService arrayDesignService;
+    private final CaArrayDaoFactoryStub caArrayDaoFactoryStub = new CaArrayDaoFactoryStub();
+    private final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
+    private final VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
+
+    @Before
+    public void setUp() {
+        ArrayDesignServiceBean bean = new ArrayDesignServiceBean();
+        bean.setDaoFactory(caArrayDaoFactoryStub);
+        bean.setFileAccessService(fileAccessServiceStub);
+        bean.setVocabularyService(vocabularyServiceStub);
+        arrayDesignService = bean;
+    }
 
     /**
-     * Imports a new array design into the system from an array design file.
-     * 
-     * @param designFile the native file containing the array design details.
-     * @return the new array design.
+     * Test method for {@link gov.nih.nci.caarray.application.arraydesign.ArrayDesignService#importDesign(gov.nih.nci.caarray.domain.file.CaArrayFile)}.
+     * @throws IOException 
      */
-    ArrayDesign importDesign(CaArrayFile designFile);
+    @Test
+    public void testImportDesign_AffymetrixGeneExpression() throws IOException {
+        CaArrayFile caArrayFile = getAffymetrixGeneExpressionFile();
+        ArrayDesign arrayDesign = arrayDesignService.importDesign(caArrayFile);
+        assertEquals("Test3", arrayDesign.getName());
+    }
     
-    /**
-     * Returns the element-level details (features, reporters, and composite elements) for
-     * an array design.
-     * 
-     * @param arrayDesign retrieve details for this array design
-     * @return the design details.
-     */
-    ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign);
-    
+    @Test
+    public void testGetDesignDetails_AffymetrixGeneExpression() throws IOException {
+        CaArrayFile caArrayFile = getAffymetrixGeneExpressionFile();
+        ArrayDesign arrayDesign = arrayDesignService.importDesign(caArrayFile);
+        ArrayDesignDetails details = arrayDesignService.getDesignDetails(arrayDesign);
+        assertNotNull(details);
+        assertEquals(15876, details.getFeatures().size());
+    }
+
+    private CaArrayFile getAffymetrixGeneExpressionFile() throws IOException {
+        CaArrayFile caArrayFile = new CaArrayFile();
+        File tempDir = new File(System.getProperty("java.io.tmpdir"));
+        File tempFile = new File(tempDir, "Test3.CDF");
+        tempFile.deleteOnExit();
+        FileUtils.copyURLToFile(getClass().getResource("/Test3.CDF"), tempFile);
+        caArrayFile.setPath(tempFile.getAbsolutePath());
+        caArrayFile.setType(FileType.AFFYMETRIX_CDF);
+        return caArrayFile;
+    }
+
 }

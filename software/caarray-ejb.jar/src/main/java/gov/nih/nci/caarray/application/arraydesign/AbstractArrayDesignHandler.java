@@ -80,64 +80,54 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.business.arraydesign;
+package gov.nih.nci.caarray.application.arraydesign;
 
-import java.util.Collection;
-import java.util.List;
+import java.io.File;
 
-import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
-class ArrayDaoStub implements ArrayDao {
+/**
+ * Base class for all design handlers.
+ */
+abstract class AbstractArrayDesignHandler {
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.ArrayDao#getArrayDesign(java.lang.Long)
-     */
-    public ArrayDesign getArrayDesign(Long id) {
-        return null;
+    private final CaArrayFile designFile;
+    private final VocabularyService vocabularyService;
+    private final FileAccessService fileAccessService;
+
+    AbstractArrayDesignHandler(CaArrayFile designFile, VocabularyService vocabularyService, 
+            FileAccessService fileAccessService) {
+        super();
+        this.designFile = designFile;
+        this.vocabularyService = vocabularyService;
+        this.fileAccessService = fileAccessService;
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.CaArrayDao#queryEntityAndAssociationsByExample(gov.nih.nci.caarray.domain.AbstractCaArrayEntity)
-     */
-    public List<AbstractCaArrayEntity> queryEntityAndAssociationsByExample(AbstractCaArrayEntity entityToMatch) {
-        return null;
+    final CaArrayFile getDesignFile() {
+        return designFile;
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.CaArrayDao#queryEntityByExample(gov.nih.nci.caarray.domain.AbstractCaArrayEntity)
-     */
-    public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) {
-        return null;
+    final VocabularyService getVocabularyService() {
+        return vocabularyService;
+    }
+    
+    final ArrayDesign getArrayDesign() {
+        ArrayDesign arrayDesign = new ArrayDesign();
+        arrayDesign.setDesignFile(getDesignFile());
+        load(arrayDesign);
+        return arrayDesign;
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.CaArrayDao#queryEntityById(gov.nih.nci.caarray.domain.AbstractCaArrayEntity)
-     */
-    public AbstractCaArrayEntity queryEntityById(AbstractCaArrayEntity entityToMatch) {
-        return null;
+    final File getFile(CaArrayFile caArrayFile) {
+        return fileAccessService.getFile(caArrayFile);
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.CaArrayDao#remove(gov.nih.nci.caarray.domain.AbstractCaArrayEntity)
-     */
-    public void remove(AbstractCaArrayEntity caArrayEntity) {
-        // no-op
-    }
+    abstract void load(ArrayDesign arrayDesign);
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.CaArrayDao#save(gov.nih.nci.caarray.domain.AbstractCaArrayEntity)
-     */
-    public void save(AbstractCaArrayEntity caArrayEntity) {
-        // no-op
-    }
-
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.CaArrayDao#save(java.util.Collection)
-     */
-    public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) {
-        // no-op
-    }
+    abstract ArrayDesignDetails getDesignDetails();
 
 }

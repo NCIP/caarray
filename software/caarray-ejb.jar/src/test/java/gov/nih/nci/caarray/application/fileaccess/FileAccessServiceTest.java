@@ -80,84 +80,74 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.business.fileaccess;
+package gov.nih.nci.caarray.application.fileaccess;
+
+import static org.junit.Assert.*;
 
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.util.io.logging.LogUtil;
+import gov.nih.nci.caarray.domain.file.FileType;
 
 import java.io.File;
-import java.util.HashSet;
+import java.io.IOException;
 import java.util.Set;
 
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
 
 /**
- * Implementation of the FileAccess subsystem.
+ * 
  */
-@Local
-@Stateless
-public class FileAccessServiceBean implements FileAccessService {
-    
-    private static final Log LOG = LogFactory.getLog(FileAccessServiceBean.class);
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
+public class FileAccessServiceTest {
 
-    /**
-     * Adds a new file to caArray file storage.
-     * 
-     * @param file the file to store
-     * @return the caArray file object.
-     */
-    public CaArrayFile add(File file) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, file);
-        }
-        CaArrayFile caArrayFile = new CaArrayFile();
-        caArrayFile.setPath(file.getAbsolutePath());
-        // TODO -- add call to FileDao.save when implemented
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
-        return caArrayFile;
+    @Test
+    public void testAdd() throws IOException {
+        File file = File.createTempFile("pre", ".ext");
+        file.deleteOnExit();
+        FileAccessService fileAccessService = new FileAccessServiceBean();
+        CaArrayFile caArrayFile = fileAccessService.add(file);
+        assertEquals(file.getAbsolutePath(), caArrayFile.getPath());
+        assertNull(caArrayFile.getType());
+        
+        file = File.createTempFile("pre", ".cdf");
+        file.deleteOnExit();
+        caArrayFile = fileAccessService.add(file);
+        assertEquals(FileType.AFFYMETRIX_CDF, caArrayFile.getType());
     }
 
     /**
-     * Returns the underlying file for the <code>CaArrayFile</code> object provided.
-     * 
-     * @param caArrayFile retrieve contents of this file
-     * @return the file
+     * Test method for {@link gov.nih.nci.caarray.application.fileaccess.FileAccessService#getFile(gov.nih.nci.caarray.domain.file.CaArrayFile)}.
+     * @throws IOException 
      */
-    public File getFile(CaArrayFile caArrayFile) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        }
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
-        return new File(caArrayFile.getPath());
+    @Test
+    public void testGetFile() throws IOException {
+        File file = File.createTempFile("pre", ".ext");
+        file.deleteOnExit();
+        FileAccessService fileAccessService = new FileAccessServiceBean();
+        CaArrayFile caArrayFile = fileAccessService.add(file);
+        File retrievedFile = fileAccessService.getFile(caArrayFile);
+        assertEquals(file, retrievedFile);
     }
-    
+
     /**
-     * Returns the underlying <code>java.io.Files</code> for the <code>CaArrayFiles</code> in the set provided.
-     *
-     * @param fileSet get files from this set.
-     * @return the files.
+     * Test method for {@link gov.nih.nci.caarray.application.fileaccess.FileAccessService#getFiles(gov.nih.nci.caarray.domain.file.CaArrayFileSet)}.
+     * @throws IOException 
      */
-    public Set<File> getFiles(CaArrayFileSet fileSet) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, fileSet);
-        }
-        Set<File> files = new HashSet<File>();
-        for (CaArrayFile caArrayFile : fileSet.getFiles()) {
-            files.add(getFile(caArrayFile));
-        }
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
-        return files;
+    @Test
+    public void testGetFiles() throws IOException {
+        File file1 = File.createTempFile("pre", ".ext");
+        File file2 = File.createTempFile("pre", ".ext");
+        file1.deleteOnExit();
+        file2.deleteOnExit();
+        FileAccessService fileAccessService = new FileAccessServiceBean();
+        CaArrayFile caArrayFile1 = fileAccessService.add(file1);
+        CaArrayFile caArrayFile2 = fileAccessService.add(file2);
+        CaArrayFileSet fileSet = new CaArrayFileSet();
+        fileSet.add(caArrayFile1);
+        fileSet.add(caArrayFile2);
+        Set<File> retrievedFiles = fileAccessService.getFiles(fileSet);
+        assertTrue(retrievedFiles.contains(file1));
+        assertTrue(retrievedFiles.contains(file2));
     }
 
 }

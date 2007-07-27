@@ -56,8 +56,8 @@ import java.net.URL;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import gov.nih.nci.caarray.business.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.business.fileaccess.FileAccessServiceBean;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceBean;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;

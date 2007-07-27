@@ -80,39 +80,120 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.file;
+package gov.nih.nci.caarray.application.project;
 
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
+
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.dao.ProjectDao;
+import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.dao.stub.ProjectDaoStub;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.project.Proposal;
+import gov.nih.nci.caarray.tests.data.magetab.MageTabDataFiles;
+
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * Responsible for importing all the array designs in a file set.
+ * 
  */
-class ArrayDesignImporter {
+public class ProjectManagementServiceTest {
 
-    private final CaArrayFileSet fileSet;
-    private final ArrayDesignService arrayDesignService;
-
-    ArrayDesignImporter(CaArrayFileSet fileSet, ArrayDesignService arrayDesignService) {
-        this.fileSet = fileSet;
-        this.arrayDesignService = arrayDesignService;
+    private ProjectManagementService projectManagementService;
+    private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
+    private final FileAccessService fileAccessService = new FileAccessServiceStub();
+    
+    @Before
+    public void setUpService() {
+        ProjectManagementServiceBean projectManagementServiceBean = new ProjectManagementServiceBean();
+        projectManagementServiceBean.setDaoFactory(daoFactoryStub);
+        projectManagementServiceBean.setFileAccessService(fileAccessService);
+        projectManagementService = projectManagementServiceBean;
     }
 
-    void importArrayDesigns() {
-        for (CaArrayFile file : fileSet.getFiles()) {
-            if (isArrayDesign(file)) {
-                importArrayDesign(file);
+    /**
+     * Test method for {@link gov.nih.nci.caarray.application.project.ProjectManagementService#getProject(long)}.
+     */
+    @Test
+    public void testGetProject() {
+        Project project = projectManagementService.getProject(123L);
+        assertNotNull(project);
+        assertEquals(123L, project.getId());
+    }
+
+    /**
+     * Test method for {@link gov.nih.nci.caarray.application.project.ProjectManagementService#addFiles(gov.nih.nci.caarray.domain.project.Project, java.util.Set)}.
+     */
+    @Test
+    public void testAddFiles() {
+        Project project = projectManagementService.getProject(123L);
+        Set<File> files = new HashSet<File>();
+        files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
+        projectManagementService.addFiles(project, files);
+        assertEquals(2, project.getFiles().size());
+        assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
+    }
+
+    private void assertContains(Set<CaArrayFile> caArrayFiles, File file) {
+        for (CaArrayFile caArrayFile : caArrayFiles) {
+            if (file.getAbsolutePath().equals(caArrayFile.getPath())) {
+                return;
             }
         }
+        fail("CaArrayFileSet did not contain " + file.getAbsolutePath());
     }
 
-    private boolean isArrayDesign(CaArrayFile file) {
-        return file.getType().isArrayDesign();
+    /**
+     * Test method for {@link gov.nih.nci.caarray.application.project.ProjectManagementService#submitProposal(gov.nih.nci.caarray.domain.project.Proposal)}.
+     */
+    @Test
+    public void testSubmitProposal() {
+        Proposal proposal = Proposal.createNew();
+        projectManagementService.submitProposal(proposal);
+        assertEquals(proposal, daoFactoryStub.projectDao.lastSaved);
+    }
+    
+    private static class LocalDaoFactoryStub extends DaoFactoryStub {
+        
+        LocalProjectDaoStub projectDao;
+
+        @Override
+        public ProjectDao getProjectDao() {
+            if (projectDao == null) {
+                projectDao = new LocalProjectDaoStub();
+            }
+            return projectDao;
+        }
+
     }
 
-    private void importArrayDesign(CaArrayFile file) {
-        arrayDesignService.importDesign(file);
+    private static class LocalProjectDaoStub extends ProjectDaoStub {
+        
+        AbstractCaArrayEntity lastSaved;
+
+        @Override
+        public void save(AbstractCaArrayEntity caArrayEntity) {
+            lastSaved = caArrayEntity;
+        }
+
+        @Override
+        public Project getProject(Long id) {
+            Project project = new Project();
+            project.setId(id);
+            return project;
+        }
+
     }
 
 }
