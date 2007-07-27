@@ -188,17 +188,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleValue(SdrfColumn column, String value) {
         switch (column.getHeading()) {
         case SOURCE_NAME:
-            handleNode(column, value);
-            break;
         case SAMPLE_NAME:
-            handleNode(column, value);
-            break;
         case EXTRACT_NAME:
-            handleNode(column, value);
-            break;
         case LABELED_EXTRACT_NAME:
-            handleNode(column, value);
-            break;
         case HYBRIDIZATION_NAME:
             handleNode(column, value);
             break;

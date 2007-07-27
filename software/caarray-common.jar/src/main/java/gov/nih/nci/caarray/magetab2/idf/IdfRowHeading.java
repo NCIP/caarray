@@ -100,6 +100,12 @@ enum IdfRowHeading {
     EXPERIMENTAL_DESIGN,
 
     /**
+     * Experimental Design Term Source REF.
+     * Not included in MAGE-TAB 1.0 specification, but included for compatibility with real world
+     * MAGE-TAB data.
+     */
+    EXPERIMENTAL_DESIGN_TERM_SOURCE_REF,
+    /**
      * Experimental Factor Name.
      */
     EXPERIMENTAL_FACTOR_NAME,
@@ -107,97 +113,112 @@ enum IdfRowHeading {
     /**
      * Experimental Factor Type.
      */
-     EXPERIMENTAL_FACTOR_TYPE,
+    EXPERIMENTAL_FACTOR_TYPE,
 
     /**
      * Experimental Factor Term Source REF.
      */
-     EXPERIMENTAL_FACTOR_TERM_SOURCE_REF,
+    EXPERIMENTAL_FACTOR_TERM_SOURCE_REF,
+
+    /**
+     * Experimental Factor Type Term Source REF.
+     * Not included in MAGE-TAB 1.0 specification, but included for compatibility with real world
+     * MAGE-TAB data.
+     */
+    EXPERIMENTAL_FACTOR_TYPE_TERM_SOURCE_REF,
 
     /**
      * Person Last Name.
      */
-     PERSON_LAST_NAME,
+    PERSON_LAST_NAME,
 
     /**
      * Person First Name.
      */
-     PERSON_FIRST_NAME,
+    PERSON_FIRST_NAME,
 
     /**
      * Person Mid Initials.
      */
-     PERSON_MID_INITIALS,
+    PERSON_MID_INITIALS,
 
     /**
      * Person Email.
      */
-     PERSON_EMAIL,
+    PERSON_EMAIL,
 
     /**
      * Person Phone.
      */
-     PERSON_PHONE,
+    PERSON_PHONE,
 
     /**
      * Person Fax.
      */
-     PERSON_FAX,
+    PERSON_FAX,
 
     /**
      * Person Address.
      */
-     PERSON_ADDRESS,
+    PERSON_ADDRESS,
 
     /**
      * Person Affiliation.
      */
-     PERSON_AFFILIATION,
+    PERSON_AFFILIATION,
 
     /**
      * Person Roles.
      */
-     PERSON_ROLES,
+    PERSON_ROLES,
 
     /**
      * Person Roles Term Source REF.
      */
-     PERSON_ROLES_TERM_SOURCE_REF,
+    PERSON_ROLES_TERM_SOURCE_REF,
 
     /**
      * Quality Control Type.
      */
-     QUALITY_CONTROL_TYPE,
+    QUALITY_CONTROL_TYPE,
+
+
+    /**
+     * Quality Control Types.
+     * Not included in MAGE-TAB 1.0 specification, but included for compatibility with real world
+     * MAGE-TAB data.
+     */
+    QUALITY_CONTROL_TYPES,
 
     /**
      * Quality Control Term Source REF.
      */
-     QUALITY_CONTROL_TERM_SOURCE_REF,
+    QUALITY_CONTROL_TERM_SOURCE_REF,
 
     /**
      * Replicate Type.
      */
-     REPLICATE_TYPE,
+    REPLICATE_TYPE,
 
     /**
      * Replicate Term Source REF.
      */
-     REPLICATE_TERM_SOURCE_REF,
+    REPLICATE_TERM_SOURCE_REF,
 
     /**
      * Normalization Type.
      */
-     NORMALIZATION_TYPE,
+    NORMALIZATION_TYPE,
 
     /**
      * Normalization Term Source REF.
      */
-     NORMALIZATION_TERM_SOURCE_REF,
+    NORMALIZATION_TERM_SOURCE_REF,
 
     /**
      * Date of Experiment.
      */
-     DATE_OF_EXPERIMENT,
+    DATE_OF_EXPERIMENT,
 
     /**
      * Public Release Date.
@@ -207,97 +228,97 @@ enum IdfRowHeading {
     /**
      * PubMed ID.
      */
-     PUBMED_ID,
+    PUBMED_ID,
 
     /**
      * Publication DOI.
      */
-     PUBLICATION_DOI,
+    PUBLICATION_DOI,
 
     /**
      * Publication Author List.
      */
-     PUBLICATION_AUTHOR_LIST,
+    PUBLICATION_AUTHOR_LIST,
 
     /**
      * Publication Title.
      */
-     PUBLICATION_TITLE,
+    PUBLICATION_TITLE,
 
     /**
      * Publication Status.
      */
-     PUBLICATION_STATUS,
+    PUBLICATION_STATUS,
 
     /**
      * Publication Status Term Source REF.
      */
-     PUBLICATION_STATUS_TERM_SOURCE_REF,
+    PUBLICATION_STATUS_TERM_SOURCE_REF,
 
     /**
      * Experiment Description.
      */
-     EXPERIMENT_DESCRIPTION,
+    EXPERIMENT_DESCRIPTION,
 
     /**
      * Protocol Name.
      */
-     PROTOCOL_NAME,
+    PROTOCOL_NAME,
 
     /**
      * Protocol Type.
      */
-     PROTOCOL_TYPE,
+    PROTOCOL_TYPE,
 
     /**
      * Protocol Description.
      */
-     PROTOCOL_DESCRIPTION,
+    PROTOCOL_DESCRIPTION,
 
     /**
      * Protocol Parameters.
      */
-     PROTOCOL_PARAMETERS,
+    PROTOCOL_PARAMETERS,
 
     /**
      * Protocol Hardware.
      */
-     PROTOCOL_HARDWARE,
+    PROTOCOL_HARDWARE,
 
     /**
      * Protocol Software.
      */
-     PROTOCOL_SOFTWARE,
+    PROTOCOL_SOFTWARE,
 
     /**
      * Protocol Contact.
      */
-     PROTOCOL_CONTACT,
+    PROTOCOL_CONTACT,
 
     /**
      * Protocol Term Source REF.
      */
-     PROTOCOL_TERM_SOURCE_REF,
+    PROTOCOL_TERM_SOURCE_REF,
 
     /**
      * SDRF File.
      */
-     SDRF_FILE,
+    SDRF_FILE,
 
     /**
      * Term Source Name.
      */
-     TERM_SOURCE_NAME,
+    TERM_SOURCE_NAME,
 
     /**
      * Term Source File.
      */
-     TERM_SOURCE_FILE,
+    TERM_SOURCE_FILE,
 
     /**
      * Term Source Version.
      */
-     TERM_SOURCE_VERSION;
+    TERM_SOURCE_VERSION;
 
     static IdfRowHeading get(String name) {
         String enumName = StringUtils.replaceChars(name, ' ', '_').toUpperCase();

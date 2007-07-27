@@ -181,6 +181,9 @@ public final class IdfDocument extends AbstractMageTabDocument {
         case EXPERIMENTAL_DESIGN:
             handleExperimentalDesign(value);
             break;
+        case EXPERIMENTAL_DESIGN_TERM_SOURCE_REF:
+            handleExperimentalDesignTermSourceRef(value, valueIndex);
+            break;
         case EXPERIMENTAL_FACTOR_NAME:
             handleExperimentalFactorName(value, valueIndex);
             break;
@@ -188,6 +191,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
             handleExperimentalFactorType(value, valueIndex);
             break;
         case EXPERIMENTAL_FACTOR_TERM_SOURCE_REF:
+        case EXPERIMENTAL_FACTOR_TYPE_TERM_SOURCE_REF:
             handleExperimentalFactorTermSourceRef(value, valueIndex);
             break;
         case PERSON_LAST_NAME:
@@ -221,6 +225,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
             handlePersonRoleTermSourceRef(value, valueIndex);
             break;
         case QUALITY_CONTROL_TYPE:
+        case QUALITY_CONTROL_TYPES:
             handleQualityControlType(value);
             break;
         case QUALITY_CONTROL_TERM_SOURCE_REF:
@@ -389,6 +394,10 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleExperimentalDesign(String value) {
         investigation.getDesigns().add(getMgedOntologyTerm(IdfOntologyCategory.EXPERIMENTAL_DESIGN_TYPE, value));
+    }
+
+    private void handleExperimentalDesignTermSourceRef(String value, int valueIndex) {
+        investigation.getDesigns().get(valueIndex).setTermSource(getTermSource(value));
     }
 
     private void handleExperimentalFactorName(String value, int valueIndex) {
