@@ -95,10 +95,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.hibernate.Transaction;
 
+import gov.nih.nci.caarray.tests.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Investigation;
 import gov.nih.nci.caarray.domain.project.InvestigationContact;
@@ -145,6 +148,9 @@ public class ProjectDaoTest {
     private static final Publication DUMMY_PUBLICATION_1 = new Publication();
     private static final Publication DUMMY_PUBLICATION_2 = new Publication();
     private static final Term DUMMY_PUBLICATION_STATUS = new Term();
+    
+    private static final CaArrayFile DUMMY_FILE_1 = new CaArrayFile();
+    private static final CaArrayFile DUMMY_FILE_2 = new CaArrayFile();
 
     private static final ProjectDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getProjectDao();
 
@@ -169,6 +175,7 @@ public class ProjectDaoTest {
         setInvestigationAnnotations();
         setExperimentalFactors();
         setPublications();
+        setFiles();
         DUMMY_PROJECT_1.setId(id);
         DUMMY_PROJECT_1.setInvestigation(DUMMY_INVESTIGATION_1);
     }
@@ -225,6 +232,16 @@ public class ProjectDaoTest {
     }
 
     @SuppressWarnings(UNCHECKED)
+    private static void setFiles() {
+        DUMMY_FILE_1.setPath(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getAbsolutePath());
+        DUMMY_FILE_1.setType(FileType.MAGE_TAB_IDF);
+        DUMMY_FILE_2.setPath(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF.getAbsolutePath());
+        DUMMY_FILE_1.setType(FileType.MAGE_TAB_SDRF);
+        DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_1);
+        DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_2);
+    }
+    
+    @SuppressWarnings(UNCHECKED)
     private static void setPublications() {
         DUMMY_PUBLICATION_1.setTitle("DummyPublicationTitle1");
         DUMMY_PUBLICATION_1.setAuthors("DummyAuthors1");
@@ -260,6 +277,7 @@ public class ProjectDaoTest {
             tx.commit();
             Project retrievedProject = DAO_OBJECT.getProject(DUMMY_PROJECT_1.getId());
             if (DUMMY_PROJECT_1.equals(retrievedProject)) {
+                checkFiles(DUMMY_PROJECT_1, retrievedProject);
                 if (compareInvestigations(retrievedProject.getInvestigation(), DUMMY_PROJECT_1.getInvestigation())) {
                     // The retrieved project is the same as the saved project. Test passed.
                     assertTrue(true);
@@ -273,6 +291,12 @@ public class ProjectDaoTest {
         } finally {
             cleanUpProject();
         }
+    }
+
+    private void checkFiles(Project project, Project retrievedProject) {
+        assertEquals(project.getFiles().size(), retrievedProject.getFiles().size());
+        assertTrue(retrievedProject.getFiles().contains(DUMMY_FILE_1));
+        assertTrue(retrievedProject.getFiles().contains(DUMMY_FILE_2));
     }
 
     /**
