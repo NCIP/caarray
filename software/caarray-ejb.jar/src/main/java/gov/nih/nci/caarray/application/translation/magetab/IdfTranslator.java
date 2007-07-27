@@ -83,29 +83,56 @@
 package gov.nih.nci.caarray.application.translation.magetab;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.DAOException;
+import gov.nih.nci.caarray.dao.ProjectDao;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.contact.Address;
+import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Investigation;
+import gov.nih.nci.caarray.domain.project.InvestigationContact;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab2.idf.ExperimentalFactor;
 import gov.nih.nci.caarray.magetab2.idf.IdfDocument;
+import gov.nih.nci.caarray.magetab2.idf.Person;
+import gov.nih.nci.caarray.magetab2.idf.Publication;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Translates entities found in and IDF document.
  */
 final class IdfTranslator extends AbstractTranslator {
+    private static final Log LOG = LogFactory.getLog(IdfTranslator.class);
 
     IdfTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
             CaArrayDaoFactory daoFactory) {
         super(documentSet, translationResult, daoFactory);
     }
 
+    /**
+     * Translates the investigation from each IDF document into a caArray <code>Investigation</code> entity.
+     */
     void translate() {
         for (IdfDocument idfDocument : getDocumentSet().getIdfDocuments()) {
             translate(idfDocument.getInvestigation());
         }
     }
+
     private void translate(gov.nih.nci.caarray.magetab2.idf.Investigation idfInvestigation) {
         Investigation investigation = new Investigation();
         translateInvestigationSummary(idfInvestigation, investigation);
         translateTerms(idfInvestigation, investigation);
+        translatePublications(idfInvestigation, investigation);
+        translateFactors(idfInvestigation, investigation);
+        translateContacts(idfInvestigation, investigation);
         getTranslationResult().addInvestigation(investigation);
     }
 
@@ -120,6 +147,108 @@ final class IdfTranslator extends AbstractTranslator {
     private void translateTerms(gov.nih.nci.caarray.magetab2.idf.Investigation idfInvestigation,
             Investigation investigation) {
         investigation.getNormalizationTypes().addAll(getTerms(idfInvestigation.getNormalizationTypes()));
+        investigation.getReplicateTypes().addAll(getTerms(idfInvestigation.getReplicateTypes()));
+        investigation.getQualityControlTypes().addAll(getTerms(idfInvestigation.getQualityControlTypes()));
     }
 
+    private void translatePublications(gov.nih.nci.caarray.magetab2.idf.Investigation idfInvestigation,
+            Investigation investigation) {
+        List<gov.nih.nci.caarray.domain.publication.Publication> publications =
+            new ArrayList<gov.nih.nci.caarray.domain.publication.Publication>();
+        List<Publication> idfPublications = idfInvestigation.getPublications();
+        Iterator<Publication> iterator = idfPublications.iterator();
+        while (iterator.hasNext()) {
+            Publication idfPublication = iterator.next();
+            gov.nih.nci.caarray.domain.publication.Publication publication =
+                new gov.nih.nci.caarray.domain.publication.Publication();
+            publication.setTitle(idfPublication.getTitle());
+            publication.setAuthors(idfPublication.getAuthorList());
+            publication.setDoi(idfPublication.getDoi());
+            publication.setPubMedId(idfPublication.getPubMedId());
+            Term statusTerm = getTerm(idfPublication.getStatus());
+            publication.setStatus(statusTerm);
+            publication = (gov.nih.nci.caarray.domain.publication.Publication) replaceIfExists(publication);
+            publications.add(publication);
+        }
+        investigation.getPublications().addAll(publications);
+    }
+
+    private void translateFactors(gov.nih.nci.caarray.magetab2.idf.Investigation idfInvestigation,
+            Investigation investigation) {
+        List<Factor> factors = new ArrayList<Factor>();
+        List<ExperimentalFactor> idfFactors = idfInvestigation.getFactors();
+        Iterator<ExperimentalFactor> iterator = idfFactors.iterator();
+        while (iterator.hasNext()) {
+            ExperimentalFactor idfFactor = iterator.next();
+            Factor factor = new Factor();
+            factor.setName(idfFactor.getName());
+            Term typeTerm = getTerm(idfFactor.getType());
+            factor.setType(typeTerm);
+            factors.add(factor);
+        }
+        investigation.getFactors().addAll(factors);
+    }
+
+    private void translateContacts(gov.nih.nci.caarray.magetab2.idf.Investigation idfInvestigation,
+            Investigation investigation) {
+        List<InvestigationContact> contacts = new ArrayList<InvestigationContact>();
+        List<Person> idfPersons = idfInvestigation.getPersons();
+        Iterator<Person> iterator = idfPersons.iterator();
+        while (iterator.hasNext()) {
+            Person idfPerson = iterator.next();
+            gov.nih.nci.caarray.domain.contact.Person person = new gov.nih.nci.caarray.domain.contact.Person();
+            person.setFirstName(idfPerson.getFirstName());
+            person.setLastName(idfPerson.getLastName());
+            person.setMiddleInitials(idfPerson.getMidInitials());
+            Organization affiliatedOrg = new Organization();
+            affiliatedOrg.setName(idfPerson.getAffiliation());
+            person.getAffiliations().add(affiliatedOrg);
+            person.setEmail(idfPerson.getEmail());
+            person.setFax(idfPerson.getFax());
+            person.setPhone(idfPerson.getPhone());
+            Address address = new Address();
+            // TODO Parse the address before putting it in the Address object.
+            address.setStreetAddress1(idfPerson.getAddress());
+            person.setAddress(address);
+            person = (gov.nih.nci.caarray.domain.contact.Person) replaceIfExists(person);
+            InvestigationContact contact = new InvestigationContact();
+            contact.setContact(person);
+            Collection<Term> roleTerms = getTerms(idfPerson.getRoles());
+            contact.getRoles().addAll(roleTerms);
+            contacts.add(contact);
+        }
+        investigation.getInvestigationContacts().addAll(contacts);
+    }
+
+    /**
+     * Checks database to see if a matching caArray entity already exists.
+     * If a matching entity exists, it is returned. If no match is found, or if there
+     * is an error while searching the database, the new entity is returned
+     * without any modification. Searches database for attributes and one level of associations.
+     *
+     * @param entityToMatch the caArray entity to match.
+     * @return a matching caArray that already exists in the database.
+     */
+    private AbstractCaArrayEntity replaceIfExists(AbstractCaArrayEntity entityToMatch) {
+        try {
+            List<AbstractCaArrayEntity> matchingEntities = getProjectDao()
+                .queryEntityAndAssociationsByExample(entityToMatch);
+            if (matchingEntities.size() == 1) {
+                // Exactly one match; use existing object in database.
+                return matchingEntities.get(0);
+            } else {
+                // Either no matches, or ambiguous match; return original entity.
+                return entityToMatch;
+            }
+        } catch (DAOException e) {
+            LOG.error("Error while searching database.", e);
+        }
+
+        // Error searching database; return original entity.
+        return entityToMatch;
+    }
+
+    private ProjectDao getProjectDao() {
+        return getDaoFactory().getProjectDao();
+    }
 }
