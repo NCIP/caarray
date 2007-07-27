@@ -82,10 +82,17 @@
  */
 package gov.nih.nci.caarray.magetab2;
 
+import gov.nih.nci.caarray.util.io.logging.LogUtil;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Implementation entry point for the MAGE-TAB parsing subsystem.
  */
 class MageTabParserImplementation implements MageTabParser {
+    
+    private static final Log LOG = LogFactory.getLog(MageTabParserImplementation.class);
 
     /**
      * Validates the documents contained in the MAGE-TAB file set.
@@ -94,6 +101,12 @@ class MageTabParserImplementation implements MageTabParser {
      * @return the validation result
      */
     public ValidationResult validate(MageTabInputFileSet fileSet) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, fileSet);
+        }
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
         return new ValidationResult();
     }
 
@@ -107,8 +120,14 @@ class MageTabParserImplementation implements MageTabParser {
      * @throws MageTabParsingException if I/O failed reading the MAGE-TAB file.
      */
     public MageTabDocumentSet parse(MageTabInputFileSet inputFileSet) throws MageTabParsingException {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, inputFileSet);
+        }
         MageTabDocumentSet documentSet = new MageTabDocumentSet(inputFileSet);
         documentSet.parse();
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
         return documentSet;
     }
 

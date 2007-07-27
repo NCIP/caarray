@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.domain.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -186,5 +187,14 @@ public class Project extends AbstractCaArrayEntity {
             theHashCode += getId().hashCode();
         }
         return theHashCode;
+    }
+
+    /**
+     * @return the files contained in the project as a set.
+     */
+    public CaArrayFileSet getFileSet() {
+        CaArrayFileSet fileSet = new CaArrayFileSet();
+        fileSet.addAll(files);
+        return fileSet;
     }
 }

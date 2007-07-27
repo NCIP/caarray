@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.domain.file;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -151,6 +152,17 @@ public final class CaArrayFileSet implements Serializable {
             }
         }
         return false;
+    }
+
+    /**
+     * Adds a collection of files to this set.
+     * 
+     * @param fileCollection files to add.
+     */
+    public void addAll(Collection<CaArrayFile> fileCollection) {
+        for (CaArrayFile file : fileCollection) {
+            files.add(file);
+        }
     }
     
 }
