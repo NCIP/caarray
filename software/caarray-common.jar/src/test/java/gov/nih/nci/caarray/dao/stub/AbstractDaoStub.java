@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.dao.stub;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -97,14 +98,14 @@ public class AbstractDaoStub implements CaArrayDao {
      * {@inheritDoc}
      */
     public List<AbstractCaArrayEntity> queryEntityAndAssociationsByExample(AbstractCaArrayEntity entityToMatch) {
-        return null;
+        return new ArrayList<AbstractCaArrayEntity>();
     }
 
     /**
      * {@inheritDoc}
      */
     public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) {
-        return null;
+        return new ArrayList<AbstractCaArrayEntity>();
     }
 
     /**

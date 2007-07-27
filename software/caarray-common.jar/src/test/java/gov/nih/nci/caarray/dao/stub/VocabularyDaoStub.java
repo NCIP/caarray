@@ -82,12 +82,14 @@
  */
 package gov.nih.nci.caarray.dao.stub;
 
-import java.util.List;
-import java.util.Set;
-
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -106,24 +108,21 @@ public class VocabularyDaoStub extends AbstractDaoStub implements VocabularyDao 
      * {@inheritDoc}
      */
     public List<Term> getTerms(String categoryName) {
-        // TODO Auto-generated method stub
-        return null;
+        return new ArrayList<Term>();
     }
 
     /**
      * {@inheritDoc}
      */
     public Set<Term> getTermsRecursive(String categoryName) {
-        // TODO Auto-generated method stub
-        return null;
+        return new HashSet<Term>();
     }
 
     /**
      * {@inheritDoc}
      */
     public void removeTerms(List<Term> termList) {
-        // TODO Auto-generated method stub
-
+        // no-op
     }
 
 }

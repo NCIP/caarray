@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.dao.stub;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import gov.nih.nci.caarray.dao.SearchDao;
@@ -97,24 +98,21 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
      * {@inheritDoc}
      */
     public List<AbstractCaArrayEntity> query(AbstractCaArrayEntity entityToMatch) {
-        // TODO Auto-generated method stub
-        return null;
+        return new ArrayList<AbstractCaArrayEntity>();
     }
 
     /**
      * {@inheritDoc}
      */
     public List<AbstractCaArrayEntity> query(String hqlString) {
-        // TODO Auto-generated method stub
-        return null;
+        return new ArrayList<AbstractCaArrayEntity>();
     }
 
     /**
      * {@inheritDoc}
      */
     public List<AbstractCaArrayEntity> query(CQLQuery cqlQuery) {
-        // TODO Auto-generated method stub
-        return null;
+        return new ArrayList<AbstractCaArrayEntity>();
     }
 
 }

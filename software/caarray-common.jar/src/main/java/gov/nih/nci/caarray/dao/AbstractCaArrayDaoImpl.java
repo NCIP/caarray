@@ -236,8 +236,8 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * and its associations, or null if none exists.
      *
      * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
-     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
-     * @if the list of matching entities could not be retrieved.
+     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List if the list
+     * of matching entities could not be retrieved.
      */
     @SuppressWarnings("unchecked")
     public List<AbstractCaArrayEntity> queryEntityAndAssociationsByExample(AbstractCaArrayEntity entityToMatch)
