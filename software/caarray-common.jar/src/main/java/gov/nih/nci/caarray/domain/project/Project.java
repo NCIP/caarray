@@ -92,10 +92,12 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+
  /**
   * A microarray project.
   */
-public class Project extends AbstractCaArrayEntity {
+public class Project extends AbstractCaArrayEntity implements Comparable<Project> {
 
     /**
      * The serial version UID for serialization.
@@ -206,8 +208,17 @@ public class Project extends AbstractCaArrayEntity {
      * @return the files contained in the project as a set.
      */
     public CaArrayFileSet getFileSet() {
-        CaArrayFileSet fileSet = new CaArrayFileSet();
+        CaArrayFileSet fileSet = new CaArrayFileSet(this);
         fileSet.addAll(files);
         return fileSet;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public int compareTo(Project o) {
+        return new CompareToBuilder()
+            .append(getId(), o.getId())
+            .toComparison();
     }
 }

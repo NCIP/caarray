@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.ui.jsf.beans.project;
 
 import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 
@@ -223,9 +222,7 @@ public final class ProjectManagementBean implements Serializable {
      * @return back to manage
      */
     public String importProjectFiles() {
-        CaArrayFileSet cafs = new CaArrayFileSet();
-        cafs.addAll(project.getFiles());
-        getFileManagementService().importFiles(cafs);
+        getFileManagementService().importFiles(project.getFileSet());
         return "manageProjectFiles";
     }
 

@@ -86,6 +86,7 @@ package gov.nih.nci.caarray.domain.file;
 import org.apache.commons.lang.builder.CompareToBuilder;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.project.Project;
 
 /**
  */
@@ -96,6 +97,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     private String path;
     private FileType type;
     private FileStatus status = FileStatus.UPLOADED;
+    private Project project;
 
     /**
      * Gets the path.
@@ -148,6 +150,20 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     }
 
     /**
+     * @return the project
+     */
+    public Project getProject() {
+        return project;
+    }
+
+    /**
+     * @param project the project to set
+     */
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    /**
      * Checks if given object is equal to this object.
      *
      * @param obj the object to compare to this object
@@ -186,6 +202,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      */
     public int compareTo(CaArrayFile o) {
         return new CompareToBuilder()
+            .append(getProject(), o.getProject())
             .append(getStatus(), o.getStatus())
             .append(getType(), o.getType())
             .append(getPath(), o.getPath())

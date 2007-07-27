@@ -148,7 +148,7 @@ public class ProjectDaoTest {
     private static final Publication DUMMY_PUBLICATION_1 = new Publication();
     private static final Publication DUMMY_PUBLICATION_2 = new Publication();
     private static final Term DUMMY_PUBLICATION_STATUS = new Term();
-    
+
     private static final CaArrayFile DUMMY_FILE_1 = new CaArrayFile();
     private static final CaArrayFile DUMMY_FILE_2 = new CaArrayFile();
 
@@ -236,7 +236,7 @@ public class ProjectDaoTest {
         DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_1);
         DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_2);
     }
-    
+
     @SuppressWarnings(UNCHECKED)
     private static void setPublications() {
         DUMMY_PUBLICATION_1.setTitle("DummyPublicationTitle1");
@@ -295,8 +295,8 @@ public class ProjectDaoTest {
 
     private void checkFiles(Project project, Project retrievedProject) {
         assertEquals(project.getFiles().size(), retrievedProject.getFiles().size());
-        assertTrue(retrievedProject.getFiles().contains(DUMMY_FILE_1));
-        assertTrue(retrievedProject.getFiles().contains(DUMMY_FILE_2));
+        assertEquals(DUMMY_FILE_2, retrievedProject.getFiles().first());
+        assertEquals(DUMMY_FILE_1, retrievedProject.getFiles().last());
     }
 
     /**
