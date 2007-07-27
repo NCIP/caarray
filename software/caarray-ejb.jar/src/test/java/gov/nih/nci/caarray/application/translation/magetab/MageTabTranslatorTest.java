@@ -132,7 +132,7 @@ public class MageTabTranslatorTest {
     public void testTranslate() {
         CaArrayTranslationResult result = translator.translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
         CaArrayEntityTestUtility.printEntities(result.getTerms());
-        assertEquals(14, result.getTerms().size());
+        assertEquals(17, result.getTerms().size());
         assertEquals(1, result.getInvestigations().size());
         Investigation investigation = result.getInvestigations().iterator().next();
         IdfDocument idf = TestMageTabSets.MAGE_TAB_SPECIFICATION_SET.getIdfDocuments().iterator().next();
@@ -180,7 +180,7 @@ public class MageTabTranslatorTest {
                 return null;
             }
         }
-        
+
         @Override
         public Term getTerm(Source source, Category category, String value) {
             assertFalse(StringUtils.isEmpty(source.getName()));
@@ -204,7 +204,7 @@ public class MageTabTranslatorTest {
             assertFalse("MO".equals(source.getName()));
             return super.createCategory(source, categoryName);
         }
-        
+
         @Override
         public Term createTerm(Source source, Category category, String value) {
             assertFalse("MO".equals(source.getName()));
