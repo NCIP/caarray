@@ -85,6 +85,8 @@ package gov.nih.nci.caarray.application.translation.magetab;
 import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -112,6 +114,7 @@ public class MageTabTranslatorBean implements MageTabTranslator {
     /**
      * {@inheritDoc}
      */
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public CaArrayTranslationResult translate(MageTabDocumentSet documentSet) {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, documentSet);

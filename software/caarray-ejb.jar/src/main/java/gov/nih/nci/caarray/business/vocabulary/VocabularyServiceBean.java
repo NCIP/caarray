@@ -205,6 +205,7 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Source getSource(String name) {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, name);
@@ -225,6 +226,7 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Source createSource(String name) {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, name);
@@ -240,6 +242,7 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Category getCategory(Source source, String categoryName) {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, source, categoryName);
@@ -260,6 +263,7 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Category createCategory(Source source, String categoryName) {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, source, categoryName);
@@ -276,6 +280,7 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Term createTerm(Source source, Category category, String value) {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, source, category, value);
@@ -294,6 +299,7 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Term getTerm(Source source, Category category, String value) {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, source, category, value);

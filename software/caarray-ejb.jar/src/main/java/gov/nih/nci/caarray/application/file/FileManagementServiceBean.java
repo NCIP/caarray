@@ -96,6 +96,8 @@ import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -121,6 +123,7 @@ public class FileManagementServiceBean implements FileManagementService {
      *
      * @param fileSet the files to import.
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void importFiles(CaArrayFileSet fileSet) {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, fileSet);

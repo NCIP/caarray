@@ -120,6 +120,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * @param id the project id
      * @return the corresponding project.
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Project getProject(long id) {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, id);
@@ -141,6 +142,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * @param project project to add files to
      * @param files the files to add to the project
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void addFiles(Project project, Set<File> files) {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, project, files);
