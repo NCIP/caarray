@@ -90,6 +90,7 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab2.MageTabParsingException;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
@@ -119,28 +120,44 @@ public class FileManagementServiceBean implements FileManagementService {
     @EJB private VocabularyService vocabularyService;
 
     /**
-     * Imports the files provided.
-     *
-     * @param fileSet the files to import.
+     * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void importFiles(CaArrayFileSet fileSet) {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, fileSet);
         }
-        validate(fileSet);
-        if (fileSet.getStatus().equals(FileStatus.VALIDATED)) {
-            doImport(fileSet);
+        doImport(fileSet);
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, fileSet);
+        }
+        doImport(targetProject, fileSet);
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemExit(LOG);
         }
     }
 
     private void doImport(CaArrayFileSet fileSet) {
-        importArrayDesigns(fileSet);
-        importAnnontation(fileSet);
-        importArrayData(fileSet);
+        doImport(null, fileSet);
+    }
+
+    private void doImport(Project targetProject, CaArrayFileSet fileSet) {
+        validate(fileSet);
+        if (fileSet.getStatus().equals(FileStatus.VALIDATED)) {
+            doImport(fileSet);
+            importArrayDesigns(fileSet);
+            importAnnontation(targetProject, fileSet);
+            importArrayData(fileSet);
+        }
     }
 
     private void importArrayDesigns(CaArrayFileSet fileSet) {
@@ -149,11 +166,11 @@ public class FileManagementServiceBean implements FileManagementService {
         arrayDesignImporter.importArrayDesigns();
     }
 
-    private void importAnnontation(CaArrayFileSet fileSet) {
+    private void importAnnontation(Project targetProject, CaArrayFileSet fileSet) {
         MageTabImporter mageTabImporter = new MageTabImporter(fileAccessService, vocabularyService, mageTabTranslator,
                 daoFactory);
         try {
-            mageTabImporter.importFiles(fileSet);
+            mageTabImporter.importFiles(targetProject, fileSet);
         } catch (MageTabParsingException e) {
             // TODO notify client of error and rollback
             LOG.error(e.getMessage(), e);

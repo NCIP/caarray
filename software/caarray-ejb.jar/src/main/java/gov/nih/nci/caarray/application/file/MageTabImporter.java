@@ -90,9 +90,11 @@ import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -118,11 +120,11 @@ class MageTabImporter {
         this.daoFactory = daoFactory;
     }
 
-    void importFiles(CaArrayFileSet fileSet) throws MageTabParsingException {
+    void importFiles(Project targetProject, CaArrayFileSet fileSet) throws MageTabParsingException {
         MageTabInputFileSet inputSet = getInputFileSet(fileSet);
         MageTabDocumentSet documentSet = MageTabParser.INSTANCE.parse(inputSet);
         CaArrayTranslationResult translationResult = translator.translate(documentSet);
-        save(translationResult);
+        save(targetProject, translationResult);
     }
 
     private MageTabInputFileSet getInputFileSet(CaArrayFileSet fileSet) {
@@ -152,10 +154,10 @@ class MageTabImporter {
         return fileAccessService.getFile(caArrayFile);
     }
 
-    private void save(CaArrayTranslationResult translationResult) {
+    private void save(Project targetProject, CaArrayTranslationResult translationResult) {
         saveTerms(translationResult);
         saveArrayDesigns(translationResult);
-        saveInvestigations(translationResult);
+        saveInvestigations(targetProject, translationResult);
     }
 
     private void saveTerms(CaArrayTranslationResult translationResult) {
@@ -195,11 +197,20 @@ class MageTabImporter {
         getCaArrayDao().save(translationResult.getArrayDesigns());
     }
 
-    private void saveInvestigations(CaArrayTranslationResult translationResult) {
+    private void saveInvestigations(Project targetProject, CaArrayTranslationResult translationResult) {
+        // TODO Handle case where multiple IDFs exist: either disallow or allow Project 1 --> 1..* Investigation
+        if (!translationResult.getInvestigations().isEmpty()) {
+            targetProject.setInvestigation(translationResult.getInvestigations().iterator().next());
+            getProjectDao().save(targetProject);
+        }
         getCaArrayDao().save(translationResult.getInvestigations());
     }
 
     private CaArrayDao getCaArrayDao() {
+        return getProjectDao();
+    }
+
+    private ProjectDao getProjectDao() {
         return daoFactory.getProjectDao();
     }
 
