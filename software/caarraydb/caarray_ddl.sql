@@ -222,7 +222,7 @@ CREATE TABLE CAARRAYFILE
   LSIDOBJECTID                VARCHAR(1000),
   PATH                        VARCHAR(1000),
   TYPE                        VARCHAR(1000),
-  PROJECT_ID                  BIGINT      NOT NULL,
+  PROJECT_ID                  BIGINT,
   PRIMARY KEY                 (ID)
 );
 
