@@ -90,6 +90,6 @@ public class MageTabDataFiles {
         new File(MageTabDataFiles.class.getResource("e-mexp-428_v1.0.idf").getFile());
     
     public static final File SPECIFICATION_EXAMPLE_SDRF = 
-        new File(MageTabDataFiles.class.getResource("e-mexp-428sdrf_v1.0.txt").getFile());
+        new File(MageTabDataFiles.class.getResource("e-mexp-428_v1.0.sdrf").getFile());
 
 }
