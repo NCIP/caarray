@@ -58,6 +58,9 @@
         <java>dom4j-1.6.1.jar</java>
     </module>
     <module>
+        <java>javacsv.jar</java>
+    </module>
+    <module>
         <java>jaxrpc.jar</java>
     </module>
     <module>
