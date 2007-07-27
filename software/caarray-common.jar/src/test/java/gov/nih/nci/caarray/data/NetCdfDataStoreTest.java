@@ -80,6 +80,7 @@ import ucar.ma2.Index;
  * allows String columns to be maxLength of S_VAR_LEN = 80.
  *
  */
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class NetCdfDataStoreTest {
 
     private static final Log LOG = LogFactory.getLog(NetCdfDataStoreTest.class);
