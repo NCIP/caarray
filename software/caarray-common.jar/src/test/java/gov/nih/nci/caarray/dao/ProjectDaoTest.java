@@ -189,7 +189,6 @@ public class ProjectDaoTest {
         DUMMY_INVESTIGATION_1.setPublicReleaseDate(currDate);
     }
 
-    @SuppressWarnings(UNCHECKED)
     private static void setInvestigationContacts() {
         DUMMY_ORGANIZATION.setName("DummyOrganization1");
         DUMMY_PERSON.setFirstName("DummyFirstName1");
@@ -199,7 +198,6 @@ public class ProjectDaoTest {
         DUMMY_INVESTIGATION_1.getInvestigationContacts().add(DUMMY_INVESTIGATION_CONTACT);
     }
 
-    @SuppressWarnings(UNCHECKED)
     private static void setInvestigationAnnotations() {
         DUMMY_REPLICATE_TYPE.setValue("Dummy Replicate Type");
         DUMMY_REPLICATE_TYPE.setSource(DUMMY_SOURCE);
@@ -215,7 +213,6 @@ public class ProjectDaoTest {
         DUMMY_INVESTIGATION_1.getQualityControlTypes().add(DUMMY_QUALITY_CTRL_TYPE);
     }
 
-    @SuppressWarnings(UNCHECKED)
     private static void setExperimentalFactors() {
         DUMMY_FACTOR_TYPE_1.setCategory(DUMMY_CATEGORY);
         DUMMY_FACTOR_TYPE_1.setSource(DUMMY_SOURCE);
@@ -231,7 +228,6 @@ public class ProjectDaoTest {
         DUMMY_INVESTIGATION_1.getFactors().add(DUMMY_FACTOR_2);
     }
 
-    @SuppressWarnings(UNCHECKED)
     private static void setFiles() {
         DUMMY_FILE_1.setPath(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getAbsolutePath());
         DUMMY_FILE_1.setType(FileType.MAGE_TAB_IDF);
@@ -273,6 +269,7 @@ public class ProjectDaoTest {
 
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
+            int size = DAO_OBJECT.getAllProjects().size();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
             Project retrievedProject = DAO_OBJECT.getProject(DUMMY_PROJECT_1.getId());
@@ -285,6 +282,9 @@ public class ProjectDaoTest {
             } else {
                 fail("Retrieved project is different from saved project.");
             }
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            assertEquals(size + 1, DAO_OBJECT.getAllProjects().size());
+            tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of project: " + e.getMessage());

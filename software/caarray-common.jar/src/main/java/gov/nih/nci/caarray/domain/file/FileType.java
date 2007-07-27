@@ -89,9 +89,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+
 /**
  */
-public final class FileType implements Serializable  {
+public final class FileType implements Serializable, Comparable<FileType>  {
     /**
      * The serial version UID for serialization.
      */
@@ -141,7 +143,7 @@ public final class FileType implements Serializable  {
 
     private static final Set<FileType> ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
 
-    
+
     static {
         INSTANCES.put(MAGE_TAB_ADF.toString(), MAGE_TAB_ADF);
         INSTANCES.put(MAGE_TAB_DATA_MATRIX.toString(), MAGE_TAB_DATA_MATRIX);
@@ -149,7 +151,7 @@ public final class FileType implements Serializable  {
         INSTANCES.put(MAGE_TAB_SDRF.toString(), MAGE_TAB_SDRF);
         INSTANCES.put(AFFYMETRIX_CDF.toString(), AFFYMETRIX_CDF);
         INSTANCES.put(AFFYMETRIX_CEL.toString(), AFFYMETRIX_CEL);
-        
+
         ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CDF);
         ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
     }
@@ -190,5 +192,14 @@ public final class FileType implements Serializable  {
      */
     public boolean isArrayData() {
         return ARRAY_DATA_FILE_TYPES.contains(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public int compareTo(FileType o) {
+        return new CompareToBuilder()
+            .append(this.name, o.name)
+            .toComparison();
     }
 }

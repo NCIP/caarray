@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import java.util.List;
+
 import gov.nih.nci.caarray.domain.project.Project;
 
 /**
@@ -97,4 +99,10 @@ public interface ProjectDao extends CaArrayDao {
      * @return the <code>Project</code> or null.
      */
     Project getProject(Long id);
+
+    /**
+     * Returns all projects.
+     * @return all projects
+     */
+    List<Project> getAllProjects();
 }

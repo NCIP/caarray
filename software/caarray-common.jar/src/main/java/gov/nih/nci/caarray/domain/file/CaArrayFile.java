@@ -83,11 +83,13 @@
 
 package gov.nih.nci.caarray.domain.file;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
 /**
  */
-public class CaArrayFile extends AbstractCaArrayEntity {
+public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaArrayFile> {
 
     private static final long serialVersionUID = 1234567890L;
 
@@ -177,5 +179,17 @@ public class CaArrayFile extends AbstractCaArrayEntity {
             theHashCode += getId().hashCode();
         }
         return theHashCode;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public int compareTo(CaArrayFile o) {
+        return new CompareToBuilder()
+            .append(getStatus(), o.getStatus())
+            .append(getType(), o.getType())
+            .append(getPath(), o.getPath())
+            .append(getId(), o.getId())
+            .toComparison();
     }
 }

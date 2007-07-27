@@ -113,7 +113,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      *
      * @return the id
      */
-    public final Long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -122,7 +122,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      *
      * @param id the id to set
      */
-    public final void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -131,7 +131,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      *
      * @return the LSID authority
      */
-    public final String getLsidAuthority() {
+    public String getLsidAuthority() {
         return lsidAuthority;
     }
 
@@ -140,7 +140,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      *
      * @param lsidAuthorityVal the LSID authority to set
      */
-    public final void setLsidAuthority(String lsidAuthorityVal) {
+    public void setLsidAuthority(String lsidAuthorityVal) {
         this.lsidAuthority = lsidAuthorityVal;
     }
 
@@ -149,7 +149,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      *
      * @return the LSID namespace
      */
-    public final String getLsidNamespace() {
+    public String getLsidNamespace() {
         return lsidNamespace;
     }
 
@@ -158,7 +158,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      *
      * @param lsidNamespaceVal the LSID namespace to set
      */
-    public final void setLsidNamespace(String lsidNamespaceVal) {
+    public void setLsidNamespace(String lsidNamespaceVal) {
         this.lsidNamespace = lsidNamespaceVal;
     }
 
@@ -167,7 +167,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      *
      * @return the LSID object ID
      */
-    public final String getLsidObjectId() {
+    public String getLsidObjectId() {
         return lsidObjectId;
     }
 
@@ -176,7 +176,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      *
      * @param lsidObjectIdVal the LSID object ID to set
      */
-    public final void setLsidObjectId(String lsidObjectIdVal) {
+    public void setLsidObjectId(String lsidObjectIdVal) {
         this.lsidObjectId = lsidObjectIdVal;
     }
 

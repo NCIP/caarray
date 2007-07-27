@@ -91,6 +91,7 @@
     <property name="spring.jar" value="${lib.dir}/spring.jar" />
     <property name="netcdf.jar" value="${lib.dir}/nc2.2.jar" />
     <property name="javacsv.jar" value="${lib.dir}/javacsv.jar" />
+    <property name="tomahawk.jar" value="${lib.dir}/tomahawk-1.1.6.jar" />
 
     <!-- Test-related properties -->
     <property name="test.dir" value="${basedir}/test" />
@@ -298,8 +299,8 @@
         <javac srcdir="${caarray-ejb.src.dir}" destdir="${caarray-ejb.classes.dir}" debug="true">
             <classpath>
                 <pathelement location="${caarray-common.classes.dir}" />
-			    <pathelement location="${commons-lang.jar}" />
-			    <pathelement location="${commons-io.jar}" />
+          <pathelement location="${commons-lang.jar}" />
+          <pathelement location="${commons-io.jar}" />
                 <pathelement location="${cacore32-client.jar}" />
                 <pathelement location="${javaee.jar}" />
                 <pathelement location="${affxfusion.jar}" />
@@ -318,6 +319,7 @@
                 <pathelement location="${commons-lang.jar}" />
                 <pathelement location="${commons-logging.jar}" />
                 <pathelement location="${myfaces-api.jar}" />
+                <pathelement location="${tomahawk.jar}"/>
             </classpath>
         </javac>
     </target>
@@ -379,6 +381,8 @@
                 <include name="commons-logging-1.1.jar" />
                 <include name="myfaces-api-1.1.5.jar" />
                 <include name="myfaces-impl-1.1.5.jar" />
+                <include name="tomahawk-1.1.6.jar"/>
+                <include name="commons-fileupload-1.2.jar"/>
             </lib>
         </war>
     </target>

@@ -10,9 +10,27 @@
 <title>User Workspace</title>
 </head>
 <body>
-<h1>User Workspace</h1>
 <f:view>
 <%@include file="/navigation/menu.jsp" %>
+
+<h:form>
+  <h:messages/>
+  <h:dataTable value="#{projectManagementBean.projects}"
+               var="project"
+               binding="#{projectManagementBean.projectTable}">
+    <f:facet name="header">
+      <h:outputText value="Select a project"/>
+    </f:facet>
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="Title"/>
+      </f:facet>
+      <h:commandLink action="#{projectManagementBean.openProject}">
+        <h:outputText value="#{project.investigation.title}"/>
+      </h:commandLink>
+    </h:column>
+  </h:dataTable>
+</h:form>
 </f:view>
 </body>
 </html>

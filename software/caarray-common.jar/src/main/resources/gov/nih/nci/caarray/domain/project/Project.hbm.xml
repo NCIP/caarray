@@ -12,7 +12,7 @@
         <property name="lsidNamespace" column="LSIDNAMESPACE" type="string" />
         <property name="lsidObjectId" column="LSIDOBJECTID" type="string" />
         <many-to-one name="investigation" column="INVESTIGATION_ID" class="gov.nih.nci.caarray.domain.project.Investigation" lazy="false" cascade="save-update" />
-        <set name="files" lazy="false" cascade="save-update">
+        <set name="files" lazy="false" cascade="save-update" sort="natural">
             <key column="PROJECT_ID" />
             <one-to-many class="gov.nih.nci.caarray.domain.file.CaArrayFile" />
         </set>

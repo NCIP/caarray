@@ -87,8 +87,10 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
  /**
   * A microarray project.
@@ -134,15 +136,26 @@ public class Project extends AbstractCaArrayEntity {
     /**
      * The files set.
      */
-    private Set<CaArrayFile> files = new HashSet<CaArrayFile>();
+    private SortedSet<CaArrayFile> files = new TreeSet<CaArrayFile>();
 
     /**
      * Gets the files.
      *
      * @return the files
      */
-    public Set<CaArrayFile> getFiles() {
+    public SortedSet<CaArrayFile> getFiles() {
         return files;
+    }
+
+    /**
+     * Helper method to get files as list for JSF controls.
+     *
+     * @return files, as list
+     */
+    public List<CaArrayFile> getFilesList() {
+        List<CaArrayFile> result = new ArrayList<CaArrayFile>(getFiles().size());
+        result.addAll(getFiles());
+        return result;
     }
 
     /**
@@ -151,7 +164,7 @@ public class Project extends AbstractCaArrayEntity {
      * @param filesVal the files
      */
     @SuppressWarnings("unused")
-    private void setFiles(final Set<CaArrayFile> filesVal) { // NOPMD
+    private void setFiles(final SortedSet<CaArrayFile> filesVal) { // NOPMD
         this.files = filesVal;
     }
 

@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import java.util.List;
+
 import gov.nih.nci.caarray.domain.project.Project;
 
 import org.apache.commons.logging.Log;
@@ -111,5 +113,14 @@ public class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao
     @Override
     Log getLog() {
         return LOG;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public List<Project> getAllProjects() {
+        return getCurrentSession().createQuery("FROM " + Project.class.getName() + " p ORDER BY p.investigation.title")
+                                  .list();
     }
 }

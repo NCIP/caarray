@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.project;
 
 import java.io.File;
+import java.util.List;
 import java.util.Set;
 
 import javax.ejb.EJB;
@@ -108,10 +109,10 @@ import gov.nih.nci.caarray.util.io.logging.LogUtil;
 @Local
 @Stateless
 public class ProjectManagementServiceBean implements ProjectManagementService {
-    
+
     private static final Log LOG = LogFactory.getLog(ProjectManagementServiceBean.class);
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-    
+
     @EJB private FileAccessService fileAccessService;
 
     /**
@@ -169,6 +170,13 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemExit(LOG);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Project> getAll() {
+        return getProjectDao().getAllProjects();
     }
 
     FileAccessService getFileAccessService() {

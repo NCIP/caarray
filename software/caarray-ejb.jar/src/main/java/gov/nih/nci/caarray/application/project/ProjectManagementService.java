@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.project;
 
 import java.io.File;
+import java.util.List;
 import java.util.Set;
 
 import gov.nih.nci.caarray.domain.project.Project;
@@ -122,4 +123,11 @@ public interface ProjectManagementService {
      * @param proposal the new proposal to save
      */
     void submitProposal(Proposal proposal);
+
+    /**
+     * Gets all projects.
+     *
+     * @return all projects
+     */
+    List<Project> getAll();
 }
