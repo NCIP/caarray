@@ -222,7 +222,7 @@ public final class ProjectManagementBean implements Serializable {
      * @return back to manage
      */
     public String importProjectFiles() {
-        getFileManagementService().importFiles(project.getFileSet());
+        getFileManagementService().importFiles(project, project.getFileSet());
         return "manageProjectFiles";
     }
 

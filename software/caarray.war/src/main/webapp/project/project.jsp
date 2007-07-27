@@ -25,6 +25,9 @@
       </li>
       <li>Other choices here...</li>
     </ul>
+    <p>Project details:
+    <p>
+    <pre><h:outputText value="#{projectManagementBean.project}"/></pre>
 </h:form>
 </f:view>
 </body>

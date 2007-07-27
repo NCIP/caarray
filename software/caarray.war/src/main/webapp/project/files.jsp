@@ -41,14 +41,7 @@
       <h:outputText value="#{file.status}"/>
     </h:column>
   </h:dataTable>
-  <f:facet name="footer">
-    <h:commandLink action="importProjectFiles">
-      <h:outputText value="Import"/>
-    </h:commandLink>
-  </f:facet>
-  <h:commandLink action="importProjectFiles">
-    <h:outputText value="Import"/>
-  </h:commandLink>
+  <h:commandButton action="#{projectManagementBean.importProjectFiles}" value="Import" />
 </h:form>
 <h:form enctype="multipart/form-data">
   <t:inputFileUpload value="#{projectManagementBean.uploadFile}" storage="file" required="true"/>
