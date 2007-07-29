@@ -85,40 +85,12 @@ package gov.nih.nci.caarray.domain.data;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-  /**
+/**
+ * 
+ */
+public class DerivedArrayData extends AbstractArrayData {
 
-   */
-
-public class DerivedArrayData extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
-    /**
-     * The serial version UID for serialization.
-     */
     private static final long serialVersionUID = 1234567890L;
-
-
-    /**
-     * The dataFile gov.nih.nci.caarray.domain.file.CaArrayFile.
-     */
-    private gov.nih.nci.caarray.domain.file.CaArrayFile dataFile;
-
-    /**
-     * Gets the dataFile.
-     *
-     * @return the dataFile
-     */
-    public gov.nih.nci.caarray.domain.file.CaArrayFile getDataFile() {
-        return dataFile;
-    }
-
-    /**
-     * Sets the dataFile.
-     *
-     * @param dataFileVal the dataFile
-     */
-    public void setDataFile(final
-      gov.nih.nci.caarray.domain.file.CaArrayFile dataFileVal) {
-        this.dataFile = dataFileVal;
-    }
 
     /**
      * Checks if given object is equal to this object.

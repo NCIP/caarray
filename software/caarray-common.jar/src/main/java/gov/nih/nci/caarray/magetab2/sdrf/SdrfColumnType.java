@@ -80,61 +80,171 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab2.idf;
+package gov.nih.nci.caarray.magetab2.sdrf;
+
+import gov.nih.nci.caarray.magetab2.OntologyTerm;
+import gov.nih.nci.caarray.magetab2.ParameterValue;
+import gov.nih.nci.caarray.magetab2.TermSource;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
- * Ontology categories implicit in IDF.
+ * Enumeration of legal row headings in an IDF document.
  */
-enum IdfOntologyCategory {
+enum SdrfColumnType {
 
     /**
-     * ExperimentDesignType category.
+     * Source Name.
      */
-    EXPERIMENTAL_DESIGN_TYPE("ExperimentDesignType"),
-    /**
-     *
-     */
-    EXPERIMENTAL_FACTOR_CATEGORY("ExperimentalFactorCategory"),
-    /**
-     *
-     */
-    PERSON_ROLE("Roles"),
-    /**
-     *
-     */
-    QUALITY_CONTROL_TYPE("QualityControlDescriptionType"),
+    SOURCE_NAME(Source.class),
 
     /**
-     *
+     * Sample Name.
      */
-    REPLICATE_TYPE("ReplicateDescriptionType"),
+    SAMPLE_NAME(Sample.class),
 
     /**
-     *
+     * Extract Name.
      */
-    NORMALIZATION_TYPE("NormalizationDescriptionType"),
+    EXTRACT_NAME(Extract.class),
 
     /**
-     *
+     * Labeled Extract Name.
      */
-    PUBLICATION_STATUS("PublicationStatus"),
+    LABELED_EXTRACT_NAME(LabeledExtract.class),
 
     /**
-     *
+     * Hybridization Name.
      */
-    PROTOCOL_TYPE("ProtocolType");
+    HYBRIDIZATION_NAME(Hybridization.class),
 
-    private final String categoryName;
+    /**
+     * Scan Name.
+     */
+    SCAN_NAME(Scan.class),
 
-    IdfOntologyCategory(String categoryName) {
-        this.categoryName = categoryName;
+    /**
+     * Normalization Name.
+     */
+    NORMALIZATION_NAME(Normalization.class),
+
+    /**
+     * Array Data File.
+     */
+    ARRAY_DATA_FILE(ArrayDataFile.class),
+
+    /**
+     * Derived Array Data File.
+     */
+    DERIVED_ARRAY_DATA_FILE(DerivedArrayDataFile.class),
+
+    /**
+     * Array Data Matrix File.
+     */
+    ARRAY_DATA_MATRIX_FILE,
+
+    /**
+     * Derived Array Data Matrix File.
+     */
+    DERIVED_ARRAY_DATA_MATRIX_FILE,
+
+    /**
+     * Image File.
+     */
+    IMAGE_FILE(Image.class),
+
+    /**
+     * Array Design File.
+     */
+    ARRAY_DESIGN_FILE,
+
+    /**
+     * Array Design REF.
+     */
+    ARRAY_DESIGN_REF,
+
+    /**
+     * Protocol REF.
+     */
+    PROTOCOL_REF,
+
+    /**
+     * Characteristics.
+     */
+    CHARACTERISTICS (Characteristic.class),
+
+    /**
+     * Provider.
+     */
+    PROVIDER,
+
+    /**
+     * Material Type.
+     */
+    MATERIAL_TYPE (OntologyTerm.class),
+
+    /**
+     * Label.
+     */
+    LABEL,
+
+    /**
+     * Factor Value.
+     */
+    FACTOR_VALUE,
+
+    /**
+     * Performer.
+     */
+    PERFORMER,
+
+    /**
+     * Date.
+     */
+    DATE,
+
+    /**
+     * Parameter Value.
+     */
+    PARAMETER_VALUE (ParameterValue.class),
+
+    /**
+     * Unit.
+     */
+    UNIT,
+
+    /**
+     * Description.
+     */
+    DESCRIPTION,
+
+    /**
+     * Term Source REF.
+     */
+    TERM_SOURCE_REF (TermSource.class),
+
+    /**
+     * Comment. 
+     */
+    COMMENT;
+
+    private final Class<?> nodeClass;
+
+    SdrfColumnType() {
+        this(null);
     }
 
-    /**
-     * @return the categoryName
-     */
-    public String getCategoryName() {
-        return categoryName;
+    SdrfColumnType(Class<?> nodeClass) {
+        this.nodeClass = nodeClass;
+    }
+
+    static SdrfColumnType get(String name) {
+        String enumName = StringUtils.replaceChars(name, ' ', '_').toUpperCase();
+        return valueOf(enumName);
+    }
+
+    Class<?> getNodeClass() {
+        return nodeClass;
     }
 
 }

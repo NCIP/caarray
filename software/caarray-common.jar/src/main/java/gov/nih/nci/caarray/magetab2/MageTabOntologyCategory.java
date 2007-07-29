@@ -80,171 +80,76 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab2.sdrf;
-
-import gov.nih.nci.caarray.magetab2.OntologyTerm;
-import gov.nih.nci.caarray.magetab2.ParameterValue;
-import gov.nih.nci.caarray.magetab2.TermSource;
-
-import org.apache.commons.lang.StringUtils;
+package gov.nih.nci.caarray.magetab2;
 
 /**
- * Enumeration of legal row headings in an IDF document.
+ * Ontology categories implicit in MAGE-TAB documents.
+ * 
  */
-enum SdrfColumnHeading {
+public enum MageTabOntologyCategory {
 
     /**
-     * Source Name.
+     * ExperimentDesignType category.
      */
-    SOURCE_NAME(Source.class),
+    EXPERIMENTAL_DESIGN_TYPE("ExperimentDesignType"),
+    
+    /**
+     * ExperimentalFactorCategory category.
+     */
+    EXPERIMENTAL_FACTOR_CATEGORY("ExperimentalFactorCategory"),
+    
+    /**
+     * LabelCompound category.
+     */
+    LABEL_COMPOUND("LabelCompound"),
+    
+    /**
+     * MaterialType category.
+     */
+    MATERIAL_TYPE("MaterialType"),
+    
+    /**
+     * NormalizationDescriptionType category.
+     */
+    NORMALIZATION_TYPE("NormalizationDescriptionType"),
 
     /**
-     * Sample Name.
+     * Roles category.
      */
-    SAMPLE_NAME(Sample.class),
+    ROLES("Roles"),
 
     /**
-     * Extract Name.
+     * PublicationStatus category.
      */
-    EXTRACT_NAME(Extract.class),
+    PUBLICATION_STATUS("PublicationStatus"),
 
     /**
-     * Labeled Extract Name.
+     * ProtocolType category.
      */
-    LABELED_EXTRACT_NAME(LabeledExtract.class),
-
+    PROTOCOL_TYPE("ProtocolType"),
+    
     /**
-     * Hybridization Name.
+     * QualityControlDescriptionType category.
      */
-    HYBRIDIZATION_NAME(Hybridization.class),
-
+    QUALITY_CONTROL_TYPE("QualityControlDescriptionType"),
+    
+    
     /**
-     * Scan Name.
+     * ReplicateDescriptionType category.
      */
-    SCAN_NAME(Scan.class),
+    REPLICATE_TYPE("ReplicateDescriptionType");
 
-    /**
-     * Normalization Name.
-     */
-    NORMALIZATION_NAME(Normalization.class),
+    private final String categoryName;
 
-    /**
-     * Array Data File.
-     */
-    ARRAY_DATA_FILE(ArrayDataFile.class),
-
-    /**
-     * Derived Array Data File.
-     */
-    DERIVED_ARRAY_DATA_FILE(DerivedArrayDataFile.class),
-
-    /**
-     * Array Data Matrix File.
-     */
-    ARRAY_DATA_MATRIX_FILE,
-
-    /**
-     * Derived Array Data Matrix File.
-     */
-    DERIVED_ARRAY_DATA_MATRIX_FILE,
-
-    /**
-     * Image File.
-     */
-    IMAGE_FILE(Image.class),
-
-    /**
-     * Array Design File.
-     */
-    ARRAY_DESIGN_FILE,
-
-    /**
-     * Array Design REF.
-     */
-    ARRAY_DESIGN_REF,
-
-    /**
-     * Protocol REF.
-     */
-    PROTOCOL_REF,
-
-    /**
-     * Characteristics.
-     */
-    CHARACTERISTICS (Characteristic.class),
-
-    /**
-     * Provider.
-     */
-    PROVIDER,
-
-    /**
-     * Material Type.
-     */
-    MATERIAL_TYPE (OntologyTerm.class),
-
-    /**
-     * Label.
-     */
-    LABEL,
-
-    /**
-     * Factor Value.
-     */
-    FACTOR_VALUE,
-
-    /**
-     * Performer.
-     */
-    PERFORMER,
-
-    /**
-     * Date.
-     */
-    DATE,
-
-    /**
-     * Parameter Value.
-     */
-    PARAMETER_VALUE (ParameterValue.class),
-
-    /**
-     * Unit.
-     */
-    UNIT,
-
-    /**
-     * Description.
-     */
-    DESCRIPTION,
-
-    /**
-     * Term Source REF.
-     */
-    TERM_SOURCE_REF (TermSource.class),
-
-    /**
-     * Comment. 
-     */
-    COMMENT;
-
-    private final Class<?> nodeClass;
-
-    SdrfColumnHeading() {
-        this(null);
+    MageTabOntologyCategory(String categoryName) {
+        this.categoryName = categoryName;
     }
 
-    SdrfColumnHeading(Class<?> nodeClass) {
-        this.nodeClass = nodeClass;
-    }
-
-    static SdrfColumnHeading get(String name) {
-        String enumName = StringUtils.replaceChars(name, ' ', '_').toUpperCase();
-        return valueOf(enumName);
-    }
-
-    Class<?> getNodeClass() {
-        return nodeClass;
+    /**
+     * @return the categoryName
+     */
+    public String getCategoryName() {
+        return categoryName;
     }
 
 }

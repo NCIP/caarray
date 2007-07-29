@@ -162,4 +162,28 @@ public abstract class AbstractMageTabDocument implements Serializable {
         return getDocumentSet().getProtocol(protocolId);
     }
 
+    /**
+     * Creates an entry heading from the column or row heading
+     * value provided.
+     * 
+     * @param headingString the heading as given in the file
+     * @return the heading object.
+     */
+    protected final EntryHeading createHeading(String headingString) {
+        return new EntryHeading(headingString);
+    }
+
+    /**
+     * Returns a term that should originate from the MGED ontology.
+     * 
+     * @param category category of the term.
+     * @param value the term.
+     * @return the term object.
+     */
+    protected final OntologyTerm getMgedOntologyTerm(MageTabOntologyCategory category, String value) {
+        OntologyTerm term = getOntologyTerm(category.getCategoryName(), value);
+        term.setTermSource(getTermSource("MO"));
+        return term;
+    }
+
 }

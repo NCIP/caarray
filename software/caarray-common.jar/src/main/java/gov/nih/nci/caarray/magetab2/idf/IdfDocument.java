@@ -94,7 +94,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import gov.nih.nci.caarray.magetab2.AbstractMageTabDocument;
+import gov.nih.nci.caarray.magetab2.EntryHeading;
 import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab2.MageTabOntologyCategory;
 import gov.nih.nci.caarray.magetab2.MageTabParsingException;
 import gov.nih.nci.caarray.magetab2.OntologyTerm;
 import gov.nih.nci.caarray.magetab2.Parameter;
@@ -153,12 +155,13 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleLine(List<String> lineContents) {
         if (!isEmpty(lineContents)) {
-            IdfRowHeading rowHeading = IdfRowHeading.get(lineContents.get(0));
+            EntryHeading heading = createHeading(lineContents.get(0));
+            IdfRow idfRow = new IdfRow(heading, IdfRowType.get(heading.getTypeName()));
             for (int columnIndex = 1; columnIndex < lineContents.size(); columnIndex++) {
                 int valueIndex = columnIndex - 1;
                 String value = lineContents.get(columnIndex);
                 if (!isEmpty(value)) {
-                    handleValue(rowHeading, value, valueIndex);
+                    handleValue(idfRow, value, valueIndex);
                 }
             }
         }
@@ -173,8 +176,8 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     @SuppressWarnings("PMD") // warnings suppressed due to long switch statement
-    private void handleValue(IdfRowHeading rowHeading, String value, int valueIndex) {
-        switch (rowHeading) {
+    private void handleValue(IdfRow idfRow, String value, int valueIndex) {
+        switch (idfRow.getType()) {
         case INVESTIGATION_TITLE:
             handleTitle(value);
             break;
@@ -229,12 +232,14 @@ public final class IdfDocument extends AbstractMageTabDocument {
             handleQualityControlType(value);
             break;
         case QUALITY_CONTROL_TERM_SOURCE_REF:
+        case QUALITY_CONTROL_TYPES_TERM_SOURCE_REF:            
             handleQualityControlTermSourceRef(value);
             break;
         case REPLICATE_TYPE:
             handleReplicateType(value);
             break;
         case REPLICATE_TERM_SOURCE_REF:
+        case REPLICATE_TYPE_TERM_SOURCE_REF:
             handleReplicateTypeTermSourceRef(value);
             break;
         case NORMALIZATION_TYPE:
@@ -295,6 +300,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
             handleProtocolTermSourceRef(value);
             break;
         case SDRF_FILE:
+        case SDRF_FILES:
            handleSdrfFile(value);
             break;
         case TERM_SOURCE_NAME:
@@ -306,8 +312,11 @@ public final class IdfDocument extends AbstractMageTabDocument {
         case TERM_SOURCE_VERSION:
             handleTermSourceVersion(value, valueIndex);
             break;
+        case COMMENT:
+            // no-op
+            break;
         default:
-            throw new IllegalArgumentException("Unknown IdfRowHeading " + rowHeading);
+            throw new IllegalArgumentException("Unknown IdfRowType " + idfRow);
         }
     }
 
@@ -355,7 +364,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleProtocolType(String value, int valueIndex) {
         Protocol protocol = investigation.getOrCreateProtcol(valueIndex);
-        protocol.setType(getMgedOntologyTerm(IdfOntologyCategory.PROTOCOL_TYPE, value));
+        protocol.setType(getMgedOntologyTerm(MageTabOntologyCategory.PROTOCOL_TYPE, value));
     }
 
 
@@ -393,7 +402,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handleExperimentalDesign(String value) {
-        investigation.getDesigns().add(getMgedOntologyTerm(IdfOntologyCategory.EXPERIMENTAL_DESIGN_TYPE, value));
+        investigation.getDesigns().add(getMgedOntologyTerm(MageTabOntologyCategory.EXPERIMENTAL_DESIGN_TYPE, value));
     }
 
     private void handleExperimentalDesignTermSourceRef(String value, int valueIndex) {
@@ -406,18 +415,12 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleExperimentalFactorType(String value, int valueIndex) {
         ExperimentalFactor factor = investigation.getOrCreateFactor(valueIndex);
-        factor.setType(getMgedOntologyTerm(IdfOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY, value));
+        factor.setType(getMgedOntologyTerm(MageTabOntologyCategory.EXPERIMENTAL_FACTOR_CATEGORY, value));
     }
 
     private void handleExperimentalFactorTermSourceRef(String value, int valueIndex) {
         ExperimentalFactor factor = investigation.getFactors().get(valueIndex);
         factor.getType().setTermSource(getTermSource(value));
-    }
-
-    private OntologyTerm getMgedOntologyTerm(IdfOntologyCategory category, String value) {
-        OntologyTerm term = getOntologyTerm(category.getCategoryName(), value);
-        term.setTermSource(getTermSource("MO"));
-        return term;
     }
 
     private void handlePersonLastName(String value, int valueIndex) {
@@ -461,7 +464,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
         Iterator<String> rolesIter = roles.iterator();
         while (rolesIter.hasNext()) {
             investigation.getOrCreatePerson(valueIndex).getRoles()
-                .add(getMgedOntologyTerm(IdfOntologyCategory.PERSON_ROLE, rolesIter.next()));
+                .add(getMgedOntologyTerm(MageTabOntologyCategory.ROLES, rolesIter.next()));
         }
     }
 
@@ -490,7 +493,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handlePublicationStatus(String value, int valueIndex) {
         investigation.getOrCreatePublication(valueIndex)
-            .setStatus(getMgedOntologyTerm(IdfOntologyCategory.PUBLICATION_STATUS, value));
+            .setStatus(getMgedOntologyTerm(MageTabOntologyCategory.PUBLICATION_STATUS, value));
     }
 
     private void handlePublicationStatusTermSourceRef(String value) {
@@ -504,7 +507,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleQualityControlType(String value) {
         investigation.getQualityControlTypes().add(
-                getMgedOntologyTerm(IdfOntologyCategory.QUALITY_CONTROL_TYPE, value));
+                getMgedOntologyTerm(MageTabOntologyCategory.QUALITY_CONTROL_TYPE, value));
     }
 
     private void handleQualityControlTermSourceRef(String value) {
@@ -517,7 +520,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handleReplicateType(String value) {
-        investigation.getReplicateTypes().add(getMgedOntologyTerm(IdfOntologyCategory.REPLICATE_TYPE, value));
+        investigation.getReplicateTypes().add(getMgedOntologyTerm(MageTabOntologyCategory.REPLICATE_TYPE, value));
     }
 
     private void handleReplicateTypeTermSourceRef(String value) {
@@ -530,7 +533,8 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handleNormalizationType(String value) {
-        investigation.getNormalizationTypes().add(getMgedOntologyTerm(IdfOntologyCategory.NORMALIZATION_TYPE, value));
+        investigation.getNormalizationTypes().add(
+                getMgedOntologyTerm(MageTabOntologyCategory.NORMALIZATION_TYPE, value));
     }
 
     private void handleNormalizationTypeTermSourceRef(String value) {

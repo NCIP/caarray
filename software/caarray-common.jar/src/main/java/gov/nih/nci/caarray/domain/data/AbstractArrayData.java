@@ -83,25 +83,39 @@
 
 package gov.nih.nci.caarray.domain.data;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 
 import java.util.HashSet;
 import java.util.Set;
 
-  /**
+/**
+ * 
+ */
+public abstract class AbstractArrayData extends AbstractCaArrayEntity {
 
-   */
-
-public abstract class AbstractArrayData extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
-    /**
-     * The serial version UID for serialization.
-     */
     private static final long serialVersionUID = 1234567890L;
+    private String name;
+    private CaArrayFile dataFile;
 
     /**
-     * The name String.
+     * Gets the dataFile.
+     *
+     * @return the dataFile
      */
-    private String name;
+    public final CaArrayFile getDataFile() {
+        return dataFile;
+    }
+
+    /**
+     * Sets the dataFile.
+     *
+     * @param dataFileVal the dataFile
+     */
+    public final void setDataFile(final CaArrayFile dataFileVal) {
+        this.dataFile = dataFileVal;
+    }
 
     /**
      * Gets the name.
@@ -154,9 +168,9 @@ public abstract class AbstractArrayData extends gov.nih.nci.caarray.domain.Abstr
     @Override
     public boolean equals(final Object obj) {
         boolean theyAreEqual = false;
-        if (obj instanceof gov.nih.nci.caarray.domain.data.AbstractArrayData) {
-            final gov.nih.nci.caarray.domain.data.AbstractArrayData castObject =
-                (gov.nih.nci.caarray.domain.data.AbstractArrayData) obj;
+        if (obj instanceof AbstractArrayData) {
+            final AbstractArrayData castObject =
+                (AbstractArrayData) obj;
             Long thisId = getId();
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;

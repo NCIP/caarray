@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.domain.hybridization;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.Array;
-import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.project.FactorValue;
@@ -108,7 +107,7 @@ public class Hybridization extends AbstractCaArrayEntity {
     private RawArrayData arrayData;
     private Array array;
     private Set<Image> images = new HashSet<Image>();
-    private DerivedArrayData derivedData;
+    private AbstractCaArrayEntity derivedData;
     private ProtocolApplication protocolApplication;
     private Set<LabeledExtract> labeledExtract = new HashSet<LabeledExtract>();
     private Set<FactorValue> factorValues = new HashSet<FactorValue>();
@@ -195,7 +194,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      * 
      * @return the derivedData
      */
-    public DerivedArrayData getDerivedData() {
+    public AbstractCaArrayEntity getDerivedData() {
         return derivedData;
     }
 
@@ -205,7 +204,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      * @param derivedDataVal
      *            the derivedData
      */
-    public void setDerivedData(final DerivedArrayData derivedDataVal) {
+    public void setDerivedData(final AbstractCaArrayEntity derivedDataVal) {
         this.derivedData = derivedDataVal;
     }
 

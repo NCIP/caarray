@@ -96,9 +96,6 @@ import org.junit.Test;
 @SuppressWarnings("PMD")
 public class MageTabParserTest {
 
-    private static final int SIX = 6;
-    private static final int THREE = 3;
-    private static final int TWO = 2;
     private MageTabParser parser = MageTabParser.INSTANCE;
 
     /**
@@ -113,19 +110,30 @@ public class MageTabParserTest {
 
     /**
      * @throws MageTabParsingException .
-     *
      */
     @Test
     public void testParse() throws MageTabParsingException {
+        testSpecificationDocuments();
+        testTcgaBroadDocuments();
+    }
+
+    private void testTcgaBroadDocuments() throws MageTabParsingException {
+        MageTabInputFileSet fileSet = TestMageTabSets.TCGA_BROAD_INPUT_SET;
+        MageTabDocumentSet documentSet = parser.parse(fileSet);
+        assertNotNull(documentSet);
+    }
+
+    private void testSpecificationDocuments() throws MageTabParsingException {
         MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET;
         MageTabDocumentSet documentSet = parser.parse(fileSet);
         assertNotNull(documentSet);
+        checkTerms(documentSet);
         assertEquals(1, documentSet.getIdfDocuments().size());
         IdfDocument idfDocument = documentSet.getIdfDocument(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
         Investigation investigation = idfDocument.getInvestigation();
-        assertTrue(investigation.getProtocols().size() == THREE);
+        assertEquals(3, investigation.getProtocols().size());
         assertEquals("submitter", investigation.getPersons().get(0).getRoles().get(0).getValue());
-        assertTrue(investigation.getPersons().get(0).getRoles().size() == TWO);
+        assertEquals(2, investigation.getPersons().get(0).getRoles().size());
         assertEquals("http://mged.sourceforge.net/ontologies/MGEDontology.php",
                 investigation.getProtocols().get(0).getType().getTermSource().getFile());
         assertEquals("University of Heidelberg H sapiens TK6", investigation.getTitle());
@@ -133,7 +141,15 @@ public class MageTabParserTest {
         assertNotNull(sdrfDocument);
         assertTrue(idfDocument.getSdrfDocuments().contains(sdrfDocument));
         assertEquals(idfDocument, sdrfDocument.getIdfDocument());
-        assertEquals(SIX, sdrfDocument.getLeftmostNodes().size());
+        assertEquals(6, sdrfDocument.getLeftmostNodes().size());
+    }
+
+    private void checkTerms(MageTabDocumentSet documentSet) {
+        for (OntologyTerm term : documentSet.getTerms()) {
+            assertNotNull("null category for term " + term.getValue(), term.getCategory());
+            assertNotNull("null value for term", term.getValue());
+            assertNotNull("null source for term " + term.getValue(), term.getTermSource());
+        }
     }
 
 }

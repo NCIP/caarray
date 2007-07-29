@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.magetab2.sdrf;
 
 import gov.nih.nci.caarray.magetab2.AbstractMageTabDocument;
 import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab2.MageTabOntologyCategory;
 import gov.nih.nci.caarray.magetab2.MageTabParsingException;
 import gov.nih.nci.caarray.magetab2.MageTabParsingRuntimeException;
 import gov.nih.nci.caarray.magetab2.OntologyTerm;
@@ -172,7 +173,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     private void handleHeaderLine(List<String> values) {
         for (int i = 0; i < values.size(); i++) {
-            columns.add(new SdrfColumn(values.get(i)));
+            columns.add(new SdrfColumn(createHeading(values.get(i))));
         }
     }
 
@@ -186,7 +187,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     @SuppressWarnings("PMD")
     // warnings suppressed due to long switch statement
     private void handleValue(SdrfColumn column, String value) {
-        switch (column.getHeading()) {
+        switch (column.getType()) {
         case SOURCE_NAME:
         case SAMPLE_NAME:
         case EXTRACT_NAME:
@@ -263,7 +264,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     }
 
     private void handleLabel(SdrfColumn column, String value) {
-        ((LabeledExtract) currentNode).setLabel(getOntologyTerm(column.getHeader(), value));
+        LabeledExtract labeledExtract = (LabeledExtract) currentNode;
+        labeledExtract.setLabel(getMgedOntologyTerm(MageTabOntologyCategory.LABEL_COMPOUND, value));
+        currentTermSourceable = labeledExtract.getLabel();
     }
 
     private SdrfColumn getNextColumn(SdrfColumn column) {
@@ -276,13 +279,13 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     }
 
     private void handleUnit(SdrfColumn column, String value) {
-        OntologyTerm unit = getOntologyTerm(column.getHeader(), value);
+        OntologyTerm unit = getOntologyTerm(column.getHeading().getQualifier(), value);
         unit.setValue(value);
         currentUnitable.setUnit(unit);
     }
 
     private void handleMaterialType(SdrfColumn column, String value) {
-        OntologyTerm materialType = getOntologyTerm(column.getHeader(), value);
+        OntologyTerm materialType = getMgedOntologyTerm(MageTabOntologyCategory.MATERIAL_TYPE, value);
         ((AbstractBioMaterial) currentNode).setTerm(materialType);
         currentTermSourceable = materialType;
     }
@@ -300,10 +303,10 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         Characteristic characteristic = new Characteristic();
         characteristic.setValue(value);
         //  if the next column is a CHARACTERISTICS column add to the list
-        if (nextColumn != null && nextColumn.getHeading() == SdrfColumnHeading.CHARACTERISTICS) {
+        if (nextColumn != null && nextColumn.getType() == SdrfColumnType.CHARACTERISTICS) {
             characteristicsList.add(characteristic);
         } else {
-            if (nextColumn != null && nextColumn.getHeading() == SdrfColumnHeading.TERM_SOURCE_REF) {
+            if (nextColumn != null && nextColumn.getType() == SdrfColumnType.TERM_SOURCE_REF) {
                 characteristicsList.add(characteristic);
                 createCharacteristicTerms(currentColumn);
             } else {
@@ -317,7 +320,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         for (Characteristic aCharacteristic : characteristicsList) {
             ((AbstractBioMaterial) currentNode).getCharacteristics().add(aCharacteristic);
             // set the characteristic value as the term since the next column is a term source ref
-            OntologyTerm term = getOntologyTerm(currentColumn.getHeader(), aCharacteristic.getValue());
+            OntologyTerm term = 
+                getOntologyTerm(currentColumn.getHeading().getQualifier(), aCharacteristic.getValue());
             // the value becomes the term so clear out the value
             aCharacteristic.setValue(null);
             aCharacteristic.setTerm(term);
@@ -335,7 +339,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             protocolApp.setProtocol(new Protocol());
             protocolApp.getProtocol().setName(value);
         }
-        if (nextColumn != null && nextColumn.getHeading() == SdrfColumnHeading.TERM_SOURCE_REF) {
+        if (nextColumn != null && nextColumn.getType() == SdrfColumnType.TERM_SOURCE_REF) {
             currentTermSourceable = protocolApp.getProtocol();
         }
     }
@@ -370,7 +374,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     private AbstractSampleDataRelationshipNode createNode(SdrfColumn column, String value) {
         try {
-            AbstractSampleDataRelationshipNode node = (AbstractSampleDataRelationshipNode) column.getHeading()
+            AbstractSampleDataRelationshipNode node = (AbstractSampleDataRelationshipNode) column.getType()
                     .getNodeClass().newInstance();
             node.setName(value);
             node.addToSdrfList(this);
@@ -383,10 +387,10 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     }
 
     private NodeKey getNodeKey(SdrfColumn column, String value) {
-        return getNodeKey(column.getHeading(), value);
+        return getNodeKey(column.getType(), value);
     }
 
-    private NodeKey getNodeKey(SdrfColumnHeading heading, String value) {
+    private NodeKey getNodeKey(SdrfColumnType heading, String value) {
         return new NodeKey(heading.getNodeClass(), value);
     }
 

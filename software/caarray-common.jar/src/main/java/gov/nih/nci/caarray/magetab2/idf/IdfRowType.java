@@ -87,7 +87,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * Enumeration of legal row headings in an IDF document.
  */
-enum IdfRowHeading {
+enum IdfRowType {
 
     /**
      * Investigation Title.
@@ -196,6 +196,13 @@ enum IdfRowHeading {
     QUALITY_CONTROL_TERM_SOURCE_REF,
 
     /**
+     * Quality Control Types Term Source REF.
+     * Not included in MAGE-TAB 1.0 specification, but included for compatibility with real world
+     * MAGE-TAB data.
+     */
+    QUALITY_CONTROL_TYPES_TERM_SOURCE_REF,
+
+    /**
      * Replicate Type.
      */
     REPLICATE_TYPE,
@@ -204,6 +211,13 @@ enum IdfRowHeading {
      * Replicate Term Source REF.
      */
     REPLICATE_TERM_SOURCE_REF,
+
+    /**
+     * Replicate Type Term Source REF.
+     * Not included in MAGE-TAB 1.0 specification, but included for compatibility with real world
+     * MAGE-TAB data.
+     */
+    REPLICATE_TYPE_TERM_SOURCE_REF,
 
     /**
      * Normalization Type.
@@ -306,6 +320,13 @@ enum IdfRowHeading {
     SDRF_FILE,
 
     /**
+     * SDRF Files.
+     * Not included in MAGE-TAB 1.0 specification, but included for compatibility with real world
+     * MAGE-TAB data.
+     */
+    SDRF_FILES,
+
+    /**
      * Term Source Name.
      */
     TERM_SOURCE_NAME,
@@ -318,9 +339,14 @@ enum IdfRowHeading {
     /**
      * Term Source Version.
      */
-    TERM_SOURCE_VERSION;
+    TERM_SOURCE_VERSION,
 
-    static IdfRowHeading get(String name) {
+    /**
+     * Comment.
+     */
+    COMMENT;
+
+    static IdfRowType get(String name) {
         String enumName = StringUtils.replaceChars(name, ' ', '_').toUpperCase();
         return valueOf(enumName);
     }

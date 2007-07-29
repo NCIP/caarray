@@ -82,111 +82,35 @@
  */
 package gov.nih.nci.caarray.magetab2.sdrf;
 
+import gov.nih.nci.caarray.magetab2.EntryHeading;
+
 /**
  * A single column in an SDRF file.
  */
 class SdrfColumn {
 
-    private String header;
-    private SdrfColumnHeading heading;
-    private String qualifier;
-    private String lsid;
+    private final EntryHeading heading;
+    private final SdrfColumnType type;
 
-    SdrfColumn(String header) {
-        setHeader(header);
-        parseQualifier();
-        parseLsid();
-        heading = SdrfColumnHeading.get(this.header);
+    SdrfColumn(EntryHeading heading) {
+        this.heading = heading;
+        type = SdrfColumnType.get(heading.getTypeName());
     }
 
-    private void parseLsid() {
-        int firstColon = header.indexOf(':');
-        int lastColon = header.lastIndexOf(':');
-        if (firstColon > 0) {
-            if (lastColon == 0) {
-                lastColon = header.length();
-            }
-            lsid = header.substring(firstColon + 1, lastColon);
-            if (lsid != null) {
-                setLsid(lsid.trim());
-            }
-            setHeader(header.substring(0, firstColon).trim());
-        }
+    SdrfColumnType getType() {
+        return type;
     }
 
-    private void parseQualifier() {
-        int firstBracket = header.indexOf('[');
-        int lastBracket = header.indexOf(']');
-        if (firstBracket > 0) {
-            // get the text between the brackets []
-            qualifier = header.substring(firstBracket + 1, lastBracket);
-            setHeader(header.substring(0, firstBracket).trim());
-        }
-
-    }
-
-    /**
-     * 
-     * @return SdrfColumnHeading
-     */
-    public SdrfColumnHeading getHeading() {
+    EntryHeading getHeading() {
         return heading;
     }
-
+    
     /**
-     * 
-     * @param heading SdrfColumnHeading
+     * {@inheritDoc}
      */
-    public void setHeading(SdrfColumnHeading heading) {
-        this.heading = heading;
-    }
-
-    /**
-     * 
-     * @return tring
-     */
-    public String getHeader() {
-        return header;
-    }
-
-    /**
-     * 
-     * @param header String
-     */
-    public final void setHeader(String header) {
-        this.header = header;
-    }
-
-    /**
-     * 
-     * @return String
-     */
-    public String getQualifier() {
-        return qualifier;
-    }
-
-    /**
-     * 
-     * @param qualifier String
-     */
-    public void setQualifier(String qualifier) {
-        this.qualifier = qualifier;
-    }
-
-    /**
-     * 
-     * @return String
-     */
-    public String getLsid() {
-        return lsid;
-    }
-
-    /**
-     * 
-     * @param lsid String
-     */
-    private void setLsid(String lsid) {
-        this.lsid = lsid;
+    @Override
+    public String toString() {
+        return heading.toString();
     }
 
 }

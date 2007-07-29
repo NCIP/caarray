@@ -82,6 +82,10 @@
  */
 package gov.nih.nci.caarray.magetab2;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.Locale;
+
 import gov.nih.nci.caarray.tests.data.magetab.MageTabDataFiles;
 
 /**
@@ -103,6 +107,24 @@ public final class TestMageTabSets {
      */
     public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_SET = getSet(MAGE_TAB_SPECIFICATION_INPUT_SET);
 
+    /**
+     * MAGE-TAB input set from TCGA Broad data.
+     */
+    public static final MageTabInputFileSet TCGA_BROAD_INPUT_SET = getTcgaBroadInputSet();
+
+    /**
+     * Document set parsed from TCGA Broad data.
+     */
+    public static final MageTabDocumentSet TCGA_BROAD_SET = getSet(TCGA_BROAD_INPUT_SET);
+
+    private static final FilenameFilter CEL_FILTER = new FilenameFilter() {
+
+        public boolean accept(File dir, String name) {
+            return name.toLowerCase(Locale.getDefault()).endsWith(".cel");
+        }
+        
+    };
+
     private static MageTabDocumentSet getSet(MageTabInputFileSet inputSet) {
         try {
             return MageTabParser.INSTANCE.parse(inputSet);
@@ -110,6 +132,18 @@ public final class TestMageTabSets {
             e.printStackTrace(System.err);
             return null;
         }
+    }
+
+    private static MageTabInputFileSet getTcgaBroadInputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.TCGA_BROAD_IDF);
+        fileSet.addSdrf(MageTabDataFiles.TCGA_BROAD_SDRF);
+        fileSet.addDataMatrix(MageTabDataFiles.TCGA_BROAD_DATA_MATRIX);
+        File[] celFiles = MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY.listFiles(CEL_FILTER);
+        for (File file : celFiles) {
+            fileSet.addNativeData(file);
+        }
+        return fileSet;
     }
 
     private static MageTabInputFileSet getSpecificationInputSet() {
