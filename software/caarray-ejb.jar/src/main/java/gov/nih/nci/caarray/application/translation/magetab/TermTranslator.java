@@ -83,8 +83,11 @@
 package gov.nih.nci.caarray.application.translation.magetab;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -95,21 +98,20 @@ import gov.nih.nci.caarray.magetab2.OntologyTerm;
  * Translates MAGE-TAB <code>OntologyTerms</code> to caArray <code>Terms</code>.
  */
 @SuppressWarnings("PMD")
-final class TermTranslator {
+final class TermTranslator extends AbstractTranslator {
 
-    private final MageTabDocumentSet documentSet;
-    private final MageTabTranslationResult translationResult;
+    private static final Log LOG = LogFactory.getLog(TermTranslator.class);
+    
     private final VocabularyService service;
 
     TermTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
-            VocabularyService service) {
-                this.documentSet = documentSet;
-                this.translationResult = translationResult;
-                this.service = service;
+            VocabularyService service, CaArrayDaoFactory daoFactory) {
+        super(documentSet, translationResult, daoFactory);
+        this.service = service;
     }
 
     void translate() {
-        for (OntologyTerm ontologyTerm : documentSet.getTerms()) {
+        for (OntologyTerm ontologyTerm : getDocumentSet().getTerms()) {
             translateTerm(ontologyTerm);
         }
     }
@@ -125,7 +127,7 @@ final class TermTranslator {
         Source source = getOrCreateSource(sourceName);
         Category category = getOrCreateCategory(source, ontologyTerm.getCategory());
         Term term = getOrCreateTerm(source, category, ontologyTerm.getValue());
-        translationResult.addTerm(ontologyTerm, term);
+        getTranslationResult().addTerm(ontologyTerm, term);
     }
 
     private Source getOrCreateSource(String name) {
@@ -155,6 +157,11 @@ final class TermTranslator {
             term.setValue(value);
         }
         return term;
+    }
+
+    @Override
+    Log getLog() {
+        return LOG;
     }
 
 

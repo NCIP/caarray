@@ -132,12 +132,12 @@ public class MageTabTranslatorBean implements MageTabTranslator {
 
     private void translateTermSources(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
             VocabularyDao vocabularyDao) {
-        new TermSourceTranslator(documentSet, translationResult, vocabularyService).translate();
+        new TermSourceTranslator(documentSet, translationResult, vocabularyService, daoFactory).translate();
     }
 
     private void translateTerms(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
             VocabularyService service) {
-        new TermTranslator(documentSet, translationResult, service).translate();
+        new TermTranslator(documentSet, translationResult, service, daoFactory).translate();
     }
 
     private void translateIdfs(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult) {

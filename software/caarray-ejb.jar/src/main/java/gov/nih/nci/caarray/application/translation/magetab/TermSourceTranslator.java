@@ -83,8 +83,11 @@
 package gov.nih.nci.caarray.application.translation.magetab;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.vocabulary.Source;
 import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab2.TermSource;
@@ -92,22 +95,20 @@ import gov.nih.nci.caarray.magetab2.TermSource;
 /**
  * Translates MAGE-TAB <code>TermSources</code> to caArray <code>Sources</code>.
  */
-@SuppressWarnings("PMD")
-final class TermSourceTranslator {
+final class TermSourceTranslator extends AbstractTranslator {
 
-    private final MageTabDocumentSet documentSet;
-    private final MageTabTranslationResult translationResult;
+    private static final Log LOG = LogFactory.getLog(TermSourceTranslator.class);
+    
     private final VocabularyService vocabularyService;
 
     TermSourceTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
-            VocabularyService vocabularyService) {
-                this.documentSet = documentSet;
-                this.translationResult = translationResult;
+            VocabularyService vocabularyService, CaArrayDaoFactory daoFatory) {
+                super(documentSet, translationResult, daoFatory);
                 this.vocabularyService = vocabularyService;
     }
 
     void translate() {
-        for (TermSource termSource : documentSet.getTermSources()) {
+        for (TermSource termSource : getDocumentSet().getTermSources()) {
             translate(termSource);
         }
     }
@@ -119,7 +120,7 @@ final class TermSourceTranslator {
         } else {
             updateSource(source, termSource);
         }
-        translationResult.addSource(termSource, source);
+        getTranslationResult().addSource(termSource, source);
     }
 
     private Source getExistingSource(TermSource termSource) {
@@ -148,6 +149,11 @@ final class TermSourceTranslator {
         if (StringUtils.isEmpty(source.getUrl())) {
             source.setUrl(termSource.getFile());
         }
+    }
+
+    @Override
+    Log getLog() {
+        return LOG;
     }
 
 }
