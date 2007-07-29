@@ -87,9 +87,21 @@ import java.io.File;
 public class MageTabDataFiles {
     
     public static final File SPECIFICATION_EXAMPLE_IDF = 
-        new File(MageTabDataFiles.class.getResource("e-mexp-428_v1.0.idf").getFile());
+        new File(MageTabDataFiles.class.getResource("specification/e-mexp-428_v1.0.idf").getFile());
     
     public static final File SPECIFICATION_EXAMPLE_SDRF = 
-        new File(MageTabDataFiles.class.getResource("e-mexp-428_v1.0.sdrf").getFile());
+        new File(MageTabDataFiles.class.getResource("specification/e-mexp-428_v1.0.sdrf").getFile());
+    
+    public static final File TCGA_BROAD_DATA_DIRECTORY = 
+        new File(MageTabDataFiles.class.getResource("tcga/broad").getFile());
+    
+    public static final File TCGA_BROAD_IDF = 
+        new File(MageTabDataFiles.class.getResource("tcga/broad/broad.mit.edu_GBM.HT_HG-U133A.1.idf").getFile());
+    
+    public static final File TCGA_BROAD_SDRF = 
+        new File(MageTabDataFiles.class.getResource("tcga/broad/broad.mit.edu_GBM.HT_HG-U133A.1.sdrf").getFile());
+    
+    public static final File TCGA_BROAD_DATA_MATRIX = 
+        new File(MageTabDataFiles.class.getResource("tcga/broad/broad.mit.edu_GBM.HT_HG-U133A.1.data").getFile());
 
 }
