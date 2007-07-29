@@ -2,7 +2,7 @@
 <!-- ** PROJECT:   caArray                                                ** -->
 <!-- *********************************************************************** -->
 
-<project name="caarray" default="build" basedir="..">
+<project name="caarray" default="continuous-integration" basedir="..">
 
     <!-- ******************************************************************* -->
     <!-- ** PROPERTIES                                                    ** -->
