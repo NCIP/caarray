@@ -83,28 +83,26 @@
 
 package gov.nih.nci.caarray.domain.array;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-
-  /**
-
-   */
-
+/**
+ * Represents a single, physical microarray used in an investigation.
+ */
 public class Array extends AbstractCaArrayEntity {
-    /**
-     * The serial version UID for serialization.
-     */
+
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The batch String.
-     */
     private String batch;
+    private String serialNumber;
+    private ProtocolApplication production;
+    private ArrayDesign design;
 
     /**
      * Gets the batch.
-     *
+     * 
      * @return the batch
      */
     public String getBatch() {
@@ -113,20 +111,17 @@ public class Array extends AbstractCaArrayEntity {
 
     /**
      * Sets the batch.
-     *
-     * @param batchVal the batch
+     * 
+     * @param batchVal
+     *            the batch
      */
     public void setBatch(final String batchVal) {
         this.batch = batchVal;
     }
-    /**
-     * The serialNumber String.
-     */
-    private String serialNumber;
 
     /**
      * Gets the serialNumber.
-     *
+     * 
      * @return the serialNumber
      */
     public String getSerialNumber() {
@@ -135,73 +130,64 @@ public class Array extends AbstractCaArrayEntity {
 
     /**
      * Sets the serialNumber.
-     *
-     * @param serialNumberVal the serialNumber
+     * 
+     * @param serialNumberVal
+     *            the serialNumber
      */
     public void setSerialNumber(final String serialNumberVal) {
         this.serialNumber = serialNumberVal;
     }
 
     /**
-     * The production gov.nih.nci.caarray.domain.protocol.ProtocolApplication.
-     */
-    private gov.nih.nci.caarray.domain.protocol.ProtocolApplication production;
-
-    /**
      * Gets the production.
-     *
+     * 
      * @return the production
      */
-    public gov.nih.nci.caarray.domain.protocol.ProtocolApplication getProduction() {
+    public ProtocolApplication getProduction() {
         return production;
     }
 
     /**
      * Sets the production.
-     *
-     * @param productionVal the production
+     * 
+     * @param productionVal
+     *            the production
      */
-    public void setProduction(final
-      gov.nih.nci.caarray.domain.protocol.ProtocolApplication productionVal) {
+    public void setProduction(final ProtocolApplication productionVal) {
         this.production = productionVal;
     }
 
     /**
-     * The design gov.nih.nci.caarray.domain.array.ArrayDesign.
-     */
-    private gov.nih.nci.caarray.domain.array.ArrayDesign design;
-
-    /**
      * Gets the design.
-     *
+     * 
      * @return the design
      */
-    public gov.nih.nci.caarray.domain.array.ArrayDesign getDesign() {
+    public ArrayDesign getDesign() {
         return design;
     }
 
     /**
      * Sets the design.
-     *
-     * @param designVal the design
+     * 
+     * @param designVal
+     *            the design
      */
-    public void setDesign(final
-      gov.nih.nci.caarray.domain.array.ArrayDesign designVal) {
+    public void setDesign(final ArrayDesign designVal) {
         this.design = designVal;
     }
 
     /**
      * Checks if given object is equal to this object.
-     *
-     * @param obj the object to compare to this object
+     * 
+     * @param obj
+     *            the object to compare to this object
      * @return true if they are equal, false if they are not
      */
     @Override
     public boolean equals(final Object obj) {
         boolean theyAreEqual = false;
-        if (obj instanceof gov.nih.nci.caarray.domain.array.Array) {
-            final gov.nih.nci.caarray.domain.array.Array castObject =
-                (gov.nih.nci.caarray.domain.array.Array) obj;
+        if (obj instanceof Array) {
+            final Array castObject = (Array) obj;
             Long thisId = getId();
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;
@@ -212,7 +198,7 @@ public class Array extends AbstractCaArrayEntity {
 
     /**
      * Returns the hashcode for the object.
-     *
+     * 
      * @return the int hashcode
      */
     @Override

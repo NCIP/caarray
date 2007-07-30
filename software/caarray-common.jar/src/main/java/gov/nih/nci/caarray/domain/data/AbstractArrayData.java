@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.domain.data;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 
 import java.util.HashSet;
@@ -97,6 +98,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
     private String name;
+    private Hybridization hybridization;
     private CaArrayFile dataFile;
 
     /**
@@ -192,4 +194,19 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
         }
         return theHashCode;
     }
+
+    /**
+     * @return the hybridization
+     */
+    public final Hybridization getHybridization() {
+        return hybridization;
+    }
+
+    /**
+     * @param hybridization the hybridization to set
+     */
+    public final void setHybridization(Hybridization hybridization) {
+        this.hybridization = hybridization;
+    }
+
 }
