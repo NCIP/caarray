@@ -82,14 +82,18 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import affymetrix.fusion.cel.FusionCELData;
 import affymetrix.fusion.cel.FusionCELFileEntryType;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
+import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 
@@ -97,8 +101,9 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
  * Handles import and retrieval of Affymetrix CEL file data.
  */
 final class AffymetrixCelHandler extends AbstractArrayDataHandler {
-    
+
     private final FusionCELData celData = new FusionCELData();
+    private Map<FeatureKey, Feature> featureMap;
 
     AffymetrixCelHandler(AbstractArrayData arrayData, FileAccessService fileAccessService, 
             ArrayDesignService arrayDesignService) {
@@ -136,19 +141,34 @@ final class AffymetrixCelHandler extends AbstractArrayDataHandler {
 
     private void initializeForRead() {
         readCelData();
+        loadFeatureMap();
+    }
+
+    private void loadFeatureMap() {
+        featureMap = new HashMap<FeatureKey, Feature>(getArrayDesignDetails().getFeatures().size());
+        for (Feature feature : getArrayDesignDetails().getFeatures()) {
+            featureMap.put(getFeatureKey(feature), feature);
+        }
+    }
+
+    private FeatureKey getFeatureKey(Feature feature) {
+        return new FeatureKey(feature);
     }
 
     private void loadValues(ArrayDataValues arrayDataValues) {
         FusionCELFileEntryType entry = new FusionCELFileEntryType();
         int numberOfCells = celData.getCells();
+        List<Feature> features = new ArrayList<Feature>(numberOfCells);
         arrayDataValues.setValues(new Object[numberOfCells][]);
         for (int cellIndex = 0; cellIndex < numberOfCells; cellIndex++) {
             celData.getEntry(cellIndex, entry);
-            loadValues(arrayDataValues, entry, cellIndex);
+            handleEntry(arrayDataValues, features, entry, cellIndex);
         }
+        arrayDataValues.setElements(features);
     }
 
-    private void loadValues(ArrayDataValues arrayDataValues, FusionCELFileEntryType entry, int cellIndex) {
+    private void handleEntry(ArrayDataValues arrayDataValues, List<Feature> features, FusionCELFileEntryType entry, 
+            int cellIndex) {
         int x = celData.indexToX(cellIndex);
         int y = celData.indexToY(cellIndex);
         int valueIndex = 0;
@@ -160,6 +180,46 @@ final class AffymetrixCelHandler extends AbstractArrayDataHandler {
         arrayDataValues.getValues()[cellIndex][valueIndex++] = celData.isMasked(x, y);
         arrayDataValues.getValues()[cellIndex][valueIndex++] = celData.isOutlier(x, y);
         arrayDataValues.getValues()[cellIndex][valueIndex++] = entry.getPixels();
+        features.add(getFeature(x, y));
+    }
+
+    private Feature getFeature(int x, int y) {
+        return featureMap.get(getFeatureKey(x, y));
+    }
+
+    private FeatureKey getFeatureKey(int x, int y) {
+        return new FeatureKey(x, y);
+    }
+
+    /**
+     * Used to lookup features in this handler.
+     */
+    private static class FeatureKey {
+        
+        private final int x;
+        private final int y;
+
+        FeatureKey(Feature feature) {
+            this.x = feature.getColumn();
+            this.y = feature.getRow();
+        }
+        
+        FeatureKey(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+        
+        @Override
+        public boolean equals(Object obj) {
+            FeatureKey featureKey = (FeatureKey) obj;
+            return featureKey.x == x && featureKey.y == y;
+        }
+
+        @Override
+        public int hashCode() {
+            return x * y;
+        }
+
     }
 
 }

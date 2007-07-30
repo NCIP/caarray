@@ -88,9 +88,13 @@ import java.util.List;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
+import gov.nih.nci.caarray.domain.array.Array;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
 /**
  * Base class for data import and retrieval handlers.
@@ -100,6 +104,7 @@ abstract class AbstractArrayDataHandler {
     private final AbstractArrayData arrayData;
     private final FileAccessService fileAccessService;
     private final ArrayDesignService arrayDesignService;
+    private ArrayDesignDetails arrayDesignDetails;
 
     AbstractArrayDataHandler(AbstractArrayData arrayData, FileAccessService fileAccessService, 
             ArrayDesignService arrayDesignService) {
@@ -131,6 +136,25 @@ abstract class AbstractArrayDataHandler {
 
     ArrayDesignService getArrayDesignService() {
         return arrayDesignService;
+    }
+
+    ArrayDesignDetails getArrayDesignDetails() {
+        if (arrayDesignDetails == null) {
+            arrayDesignDetails = getArrayDesignService().getDesignDetails(getArrayDesign());
+        }
+        return arrayDesignDetails;
+    }
+
+    private ArrayDesign getArrayDesign() {
+        return getArray().getDesign();
+    }
+
+    private Array getArray() {
+        return getHybridization().getArray();
+    }
+
+    private Hybridization getHybridization() {
+        return getArrayData().getHybridization();
     }
 
 }

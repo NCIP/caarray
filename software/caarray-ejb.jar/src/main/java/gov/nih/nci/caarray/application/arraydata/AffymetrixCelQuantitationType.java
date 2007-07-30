@@ -95,7 +95,7 @@ enum AffymetrixCelQuantitationType implements QuantitationType {
     CEL_INTENSITY_STD_DEV("CELIntensityStdev", Float.class),
     CEL_MASK("CELMask", Boolean.class),
     CEL_OUTLIER("CELOutlier", Boolean.class),
-    CEL_PIXELS("CELPixels", Integer.class);
+    CEL_PIXELS("CELPixels", Short.class);
 
     private final String typeName;
     private final Class type;

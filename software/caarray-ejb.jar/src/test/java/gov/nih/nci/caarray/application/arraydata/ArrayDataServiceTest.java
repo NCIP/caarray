@@ -85,12 +85,16 @@ package gov.nih.nci.caarray.application.arraydata;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.util.Arrays;
 
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceTest;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.domain.array.Feature;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
@@ -100,6 +104,9 @@ import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import affymetrix.fusion.cel.FusionCELData;
+import affymetrix.fusion.cel.FusionCELFileEntryType;
 
 /**
  * 
@@ -123,20 +130,49 @@ public class ArrayDataServiceTest {
         RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
         arrayDataService.importData(celData);
         ArrayDataValues values = arrayDataService.getDataValues(celData, null, null);
-        assertEquals(15876, values.getValues().length);
-        assertEquals(7, values.getValues()[0].length);
+        checkCelValues(values, AffymetrixArrayDataFiles.TEST3_CEL);
 
         celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CALVIN_CEL);
         arrayDataService.importData(celData);
         values = arrayDataService.getDataValues(celData, null, null);
-        assertEquals(15876, values.getValues().length);
-        assertEquals(7, values.getValues()[0].length);
+        checkCelValues(values, AffymetrixArrayDataFiles.TEST3_CALVIN_CEL);
+    }
+    
+    private void checkCelValues(ArrayDataValues values, File file) {
+        FusionCELData fusionCelData = new FusionCELData();
+        fusionCelData.setFileName(file.getAbsolutePath());
+        fusionCelData.read();
+        assertEquals(AffymetrixCelQuantitationType.CEL_X, values.getQuantitationTypes().get(0));
+        assertEquals(AffymetrixCelQuantitationType.CEL_Y, values.getQuantitationTypes().get(1));
+        assertEquals(AffymetrixCelQuantitationType.CEL_INTENSITY, values.getQuantitationTypes().get(2));
+        assertEquals(AffymetrixCelQuantitationType.CEL_INTENSITY_STD_DEV, values.getQuantitationTypes().get(3));
+        assertEquals(AffymetrixCelQuantitationType.CEL_MASK, values.getQuantitationTypes().get(4));
+        assertEquals(AffymetrixCelQuantitationType.CEL_OUTLIER, values.getQuantitationTypes().get(5));
+        assertEquals(AffymetrixCelQuantitationType.CEL_PIXELS, values.getQuantitationTypes().get(6));
+        ArrayDesignDetails designDetails = getArrayDesignDetails(values.getArrayData());
+        int rowCount = values.getValues().length;
+        assertEquals(designDetails.getFeatures().size(), rowCount);
+        FusionCELFileEntryType fusionCelEntry = new FusionCELFileEntryType();
+        for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+            fusionCelData.getEntry(rowIndex, fusionCelEntry);
+            assertNotNull(values.getElements().get(rowIndex));
+            Object[] rowValues = values.getValues()[rowIndex];
+            assertEquals(7, rowValues.length);
+            Feature feature = (Feature) values.getElements().get(rowIndex);
+            assertEquals(feature.getColumn(), rowValues[0]);
+            assertEquals(fusionCelData.indexToX(rowIndex), rowValues[0]);
+            assertEquals(fusionCelData.indexToY(rowIndex), rowValues[1]);
+            assertEquals(fusionCelEntry.getIntensity(), rowValues[2]);
+            assertEquals(fusionCelEntry.getStdv(), rowValues[3]);
+            assertEquals(fusionCelData.isMasked(rowIndex), rowValues[4]);
+            assertEquals(fusionCelData.isOutlier(rowIndex), rowValues[5]);
+            assertEquals(fusionCelEntry.getPixels(), rowValues[6]);
+        }
+    }
 
-        celData = getCelData(AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF, AffymetrixArrayDataFiles.TEST_HG_U133_PLUS_2_CEL);
-        arrayDataService.importData(celData);
-        values = arrayDataService.getDataValues(celData, null, null);
-        assertEquals(1354896, values.getValues().length);
-        assertEquals(7, values.getValues()[0].length);
+    private ArrayDesignDetails getArrayDesignDetails(AbstractArrayData arrayData) {
+        ArrayDesign design = arrayData.getHybridization().getArray().getDesign();
+        return arrayDesignService.getDesignDetails(design);
     }
 
     private RawArrayData getCelData(File cdf, File cel) {

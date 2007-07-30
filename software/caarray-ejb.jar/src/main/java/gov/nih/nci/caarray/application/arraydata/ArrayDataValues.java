@@ -92,6 +92,8 @@ import java.util.List;
 
 /**
  * Provides access to retrieved data values from an <code>AbstractArrayData</code>.
+ * 
+ * @TODO provide wrapped access to values array and remove direct access.
  */
 public class ArrayDataValues implements Serializable {
 
@@ -117,14 +119,14 @@ public class ArrayDataValues implements Serializable {
      * @return the elements
      */
     public List<AbstractDesignElement> getElements() {
-        return Collections.unmodifiableList(elements);
+        return elements;
     }
 
     /**
      * @return the quantitationTypes
      */
     public List<QuantitationType> getQuantitationTypes() {
-        return Collections.unmodifiableList(quantitationTypes);
+        return quantitationTypes;
     }
 
     /**
@@ -140,12 +142,12 @@ public class ArrayDataValues implements Serializable {
         this.values = values;
     }
 
-    void setElements(List<AbstractDesignElement> elements) {
-        this.elements = elements;
+    void setElements(List<? extends AbstractDesignElement> elements) {
+        this.elements = Collections.unmodifiableList(elements);
     }
 
     void setQuantitationTypes(List<QuantitationType> quantitationTypes) {
-        this.quantitationTypes = quantitationTypes;
+        this.quantitationTypes = Collections.unmodifiableList(quantitationTypes);
     }
     
 }
