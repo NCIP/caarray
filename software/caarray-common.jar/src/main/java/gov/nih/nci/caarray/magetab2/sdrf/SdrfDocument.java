@@ -195,7 +195,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             handleNode(column, value);
             break;
         case PROVIDER:
-            handleProvider(value);
+            handleProviders(value);
             break;
         case PROTOCOL_REF:
             handleProtocolRef(value, getNextColumn(column));
@@ -319,7 +319,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         for (Characteristic aCharacteristic : characteristicsList) {
             ((AbstractBioMaterial) currentNode).getCharacteristics().add(aCharacteristic);
             // set the characteristic value as the term since the next column is a term source ref
-            OntologyTerm term = 
+            OntologyTerm term =
                 getOntologyTerm(currentColumn.getHeading().getQualifier(), aCharacteristic.getValue());
             // the value becomes the term so clear out the value
             aCharacteristic.setValue(null);
@@ -393,10 +393,17 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         return new NodeKey(heading.getNodeClass(), value);
     }
 
-    private void handleProvider(String value) {
-        Provider provider = new Provider();
-        provider.setName(value);
-        ((Source) currentNode).setProvider(provider);
+    private void handleProviders(String value) {
+        String[] providerNames = value.split(";");
+        if (providerNames == null) {
+            return;
+        }
+        int numProviders = providerNames.length;
+        for (int i = 0; i < numProviders; i++) {
+            Provider provider = new Provider();
+            provider.setName(providerNames[i]);
+            ((Source) currentNode).getProviders().add(provider);
+        }
     }
 
     /**
@@ -532,8 +539,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
      */
     public List<ArrayDataMatrixFile> getAllArrayDataMatrixFiles() {
         return allArrayDataMatrixFiles;
-    }
-
+}
     /**
      * @return the allDerivedArrayDataMatrixFiles
      */
