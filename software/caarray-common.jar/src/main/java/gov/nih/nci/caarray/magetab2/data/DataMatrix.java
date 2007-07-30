@@ -82,18 +82,38 @@
  */
 package gov.nih.nci.caarray.magetab2.data;
 
+import java.io.File;
+
+import gov.nih.nci.caarray.magetab2.AbstractMageTabDocument;
+import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab2.MageTabParsingException;
+
 /**
- * Default implementation of the <code>DataMatrixReader</code>.
- * 
- * TODO Implement and remove PMD warning suppression
+ * Base class for MAGE-TAB data matrix files.
  */
-@SuppressWarnings("PMD")
-class DataMatrixReaderImplementation implements DataMatrixReader {
+public class DataMatrix extends AbstractMageTabDocument {
 
-    private final DataMatrix matrix;
+    private static final long serialVersionUID = 1L;
 
-    DataMatrixReaderImplementation(DataMatrix matrix) {
-        this.matrix = matrix;
+    DataMatrix(MageTabDocumentSet documentSet, File file) {
+        super(documentSet, file);
     }
 
+    /**
+     * Returns a reader that can be used to iterate through all of the data in the matrix.
+     * 
+     * @return the reader.
+     */
+    public DataMatrixReader getDataReader() {
+        return new DataMatrixReaderImplementation(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void parse() throws MageTabParsingException {
+        // TODO Implement parsing
+    }
+    
 }

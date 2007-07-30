@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.magetab2.sdrf;
 /**
  * A microarray image acquired after a hybridization.
  */
-public final class Image extends AbstractNativeFormatFile {
+public final class Image extends AbstractNativeFileReference {
 
     private static final long serialVersionUID = -244337508880218634L;
 

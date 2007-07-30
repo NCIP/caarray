@@ -82,27 +82,31 @@
  */
 package gov.nih.nci.caarray.magetab2.sdrf;
 
-import java.io.File;
+import gov.nih.nci.caarray.magetab2.data.DataMatrix;
 
 /**
- * Base class for nodes that represent a native format file.
+ * Base class for data matrix references.
  */
-public abstract class AbstractNativeFormatFile extends AbstractSampleDataRelationshipNode {
-    
-    private File file;
+public abstract class AbstractDataMatrixReference extends AbstractSampleDataRelationshipNode {
 
-    /**
-     * @return the file
-     */
-    public final File getFile() {
-        return file;
+    private DataMatrix dataMatrix;
+    
+    AbstractDataMatrixReference() {
+        super();
     }
 
     /**
-     * @param file the file to set
+     * @return the dataMatrix
      */
-    public final void setFile(File file) {
-        this.file = file;
+    public final DataMatrix getDataMatrix() {
+        return dataMatrix;
+    }
+
+    /**
+     * @param dataMatrix the dataMatrix to set
+     */
+    public final void setDataMatrix(DataMatrix dataMatrix) {
+        this.dataMatrix = dataMatrix;
     }
 
 }

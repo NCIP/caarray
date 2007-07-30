@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.magetab2.sdrf;
 /**
  * Processed array data in native format.
  */
-public final class DerivedArrayDataFile extends AbstractNativeFormatFile {
+public final class DerivedArrayDataFile extends AbstractNativeFileReference {
 
     private static final long serialVersionUID = -244337508880218634L;
 

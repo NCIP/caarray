@@ -80,31 +80,25 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab2.data;
-
-import java.io.File;
-
-import gov.nih.nci.caarray.magetab2.AbstractMageTabDocument;
-import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
+package gov.nih.nci.caarray.magetab2.sdrf;
 
 /**
- * Base class for MAGE-TAB data matrix files.
+ * Reference to a raw array data matrix file. Column name in SDRF is Array Data Matrix File.
  */
-public abstract class AbstractDataMatrix extends AbstractMageTabDocument {
+public final class ArrayDataMatrixFile extends AbstractDataMatrixReference {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -5200861196061030762L;
 
-    AbstractDataMatrix(MageTabDocumentSet documentSet, File file) {
-        super(documentSet, file);
+    @Override
+    void addToSdrfList(SdrfDocument document) {
+        document.getAllArrayDataMatrixFiles().add(this);
     }
 
     /**
-     * Returns a reader that can be used to iterate through all of the data in the matrix.
-     * 
-     * @return the reader.
+     * @return the node type.
      */
-    public DataMatrixReader getDataReader() {
-        return new DataMatrixReaderImplementation(this);
+    public SdrfNodeType getNodeType() {
+        return SdrfNodeType.ARRAY_DATA_MATRIX;
     }
-    
+
 }

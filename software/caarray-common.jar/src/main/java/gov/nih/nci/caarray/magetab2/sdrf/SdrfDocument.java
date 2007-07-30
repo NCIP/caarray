@@ -95,8 +95,6 @@ import gov.nih.nci.caarray.magetab2.TermSource;
 import gov.nih.nci.caarray.magetab2.TermSourceable;
 import gov.nih.nci.caarray.magetab2.Unitable;
 import gov.nih.nci.caarray.magetab2.adf.ArrayDesign;
-import gov.nih.nci.caarray.magetab2.data.ArrayDataMatrix;
-import gov.nih.nci.caarray.magetab2.data.DerivedArrayDataMatrix;
 import gov.nih.nci.caarray.magetab2.idf.IdfDocument;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 
@@ -139,8 +137,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private final List<Normalization> allNormalizations = new ArrayList<Normalization>();
     private final List<ArrayDataFile> allArrayDataFiles = new ArrayList<ArrayDataFile>();
     private final List<DerivedArrayDataFile> allDerivedArrayDataFiles = new ArrayList<DerivedArrayDataFile>();
-    private final List<ArrayDataMatrix> allArrayDataMatrixs = new ArrayList<ArrayDataMatrix>();
-    private final List<DerivedArrayDataMatrix> allDerivedArrayDataMatrixs = new ArrayList<DerivedArrayDataMatrix>();
+    private final List<ArrayDataMatrixFile> allArrayDataMatrixFiles = new ArrayList<ArrayDataMatrixFile>();
+    private final List<DerivedArrayDataMatrixFile> allDerivedArrayDataMatrixFiles = 
+        new ArrayList<DerivedArrayDataMatrixFile>();
     private final List<Image> allImages = new ArrayList<Image>();
     private final List<ArrayDesign> allArrayDesigns = new ArrayList<ArrayDesign>();
 
@@ -438,13 +437,6 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     }
 
     /**
-     * @return the allArrayDataMatrixs
-     */
-    public List<ArrayDataMatrix> getAllArrayDataMatrixs() {
-        return allArrayDataMatrixs;
-    }
-
-    /**
      * @return the allArrayDesigns
      */
     public List<ArrayDesign> getAllArrayDesigns() {
@@ -456,13 +448,6 @@ public final class SdrfDocument extends AbstractMageTabDocument {
      */
     public List<DerivedArrayDataFile> getAllDerivedArrayDataFiles() {
         return allDerivedArrayDataFiles;
-    }
-
-    /**
-     * @return the allDerivedArrayDataMatrixs
-     */
-    public List<DerivedArrayDataMatrix> getAllDerivedArrayDataMatrixs() {
-        return allDerivedArrayDataMatrixs;
     }
 
     /**
@@ -540,6 +525,20 @@ public final class SdrfDocument extends AbstractMageTabDocument {
      */
     public void setIdfDocument(IdfDocument idfDocument) {
         this.idfDocument = idfDocument;
+    }
+
+    /**
+     * @return the allArrayDataMatrixFiles
+     */
+    public List<ArrayDataMatrixFile> getAllArrayDataMatrixFiles() {
+        return allArrayDataMatrixFiles;
+    }
+
+    /**
+     * @return the allDerivedArrayDataMatrixFiles
+     */
+    public List<DerivedArrayDataMatrixFile> getAllDerivedArrayDataMatrixFiles() {
+        return allDerivedArrayDataMatrixFiles;
     }
 
 }

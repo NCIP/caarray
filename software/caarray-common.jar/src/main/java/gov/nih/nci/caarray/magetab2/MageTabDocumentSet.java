@@ -83,8 +83,7 @@
 package gov.nih.nci.caarray.magetab2;
 
 import gov.nih.nci.caarray.magetab2.adf.AdfDocument;
-import gov.nih.nci.caarray.magetab2.data.ArrayDataMatrix;
-import gov.nih.nci.caarray.magetab2.data.DerivedArrayDataMatrix;
+import gov.nih.nci.caarray.magetab2.data.DataMatrix;
 import gov.nih.nci.caarray.magetab2.data.NativeDataFile;
 import gov.nih.nci.caarray.magetab2.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab2.sdrf.SdrfDocument;
@@ -109,8 +108,7 @@ public final class MageTabDocumentSet implements Serializable {
     private final Set<IdfDocument> idfDocuments = new HashSet<IdfDocument>();
     private final Set<SdrfDocument> sdrfDocuments = new HashSet<SdrfDocument>();
     private final Set<AdfDocument> adfDocuments = new HashSet<AdfDocument>();
-    private final Set<ArrayDataMatrix> arrayDataMatrixes = new HashSet<ArrayDataMatrix>();
-    private final Set<DerivedArrayDataMatrix> derivedArrayDataMatrixes = new HashSet<DerivedArrayDataMatrix>();
+    private final Set<DataMatrix> arrayDataMatrixes = new HashSet<DataMatrix>();
     private final Set<NativeDataFile> nativeDataFiles = new HashSet<NativeDataFile>();
     private final Map<String, OntologyTerm> termCache = new HashMap<String, OntologyTerm>();
     private final Map<String, TermSource> termSourceCache = new HashMap<String, TermSource>();
@@ -144,15 +142,8 @@ public final class MageTabDocumentSet implements Serializable {
     /**
      * @return the arrayDataMatrixes
      */
-    public Set<ArrayDataMatrix> getArrayDataMatrixes() {
+    public Set<DataMatrix> getArrayDataMatrixes() {
         return arrayDataMatrixes;
-    }
-
-    /**
-     * @return the derivedArrayDataMatrixes
-     */
-    public Set<DerivedArrayDataMatrix> getDerivedArrayDataMatrixes() {
-        return derivedArrayDataMatrixes;
     }
 
     /**
@@ -323,23 +314,13 @@ public final class MageTabDocumentSet implements Serializable {
     }
     
     /**
-     * Returns the <code>ArrayDataMatrix</code> that matches the filename provided, or null if none match.
+     * Returns the <code>DataMatrix</code> that matches the filename provided, or null if none match.
      * 
-     * @param filename locate <code>ArrayDataMatrix</code> with this filename
-     * @return the <code>ArrayDataMatrix</code>.
+     * @param filename locate <code>DataMatrix</code> with this filename
+     * @return the <code>DataMatrix</code>.
      */
-    public ArrayDataMatrix getArrayDataMatrix(String filename) {
-        return (ArrayDataMatrix) getDocument(arrayDataMatrixes, filename);
-    }
-    
-    /**
-     * Returns the <code>DerivedArrayDataMatrix</code> that matches the filename provided, or null if none match.
-     * 
-     * @param filename locate <code>DerivedArrayDataMatrix</code> with this filename
-     * @return the <code>DerivedArrayDataMatrix</code>.
-     */
-    public DerivedArrayDataMatrix getDerivedArrayDataMatrix(String filename) {
-        return (DerivedArrayDataMatrix) getDocument(derivedArrayDataMatrixes, filename);
+    public DataMatrix getArrayDataMatrix(String filename) {
+        return (DataMatrix) getDocument(arrayDataMatrixes, filename);
     }
     
     /**

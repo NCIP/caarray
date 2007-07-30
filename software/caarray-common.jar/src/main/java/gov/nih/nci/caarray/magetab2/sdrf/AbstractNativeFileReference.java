@@ -80,36 +80,29 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab2.data;
+package gov.nih.nci.caarray.magetab2.sdrf;
 
-import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
-import gov.nih.nci.caarray.magetab2.MageTabParsingException;
-
-import java.io.File;
+import gov.nih.nci.caarray.magetab2.data.NativeDataFile;
 
 /**
- * A data matrix containing raw array data.
+ * Base class for nodes that represent a native format file.
  */
-public final class ArrayDataMatrix extends AbstractDataMatrix {
-
-    private static final long serialVersionUID = -3266714211172321498L;
+public abstract class AbstractNativeFileReference extends AbstractSampleDataRelationshipNode {
+    
+    private NativeDataFile nativeDataFile;
 
     /**
-     * Creates a new data matrix from an existing file.
-     * 
-     * @param documentSet the document set containing the data file
-     * @param file the data file
+     * @return the nativeDataFile
      */
-    public ArrayDataMatrix(MageTabDocumentSet documentSet, File file) {
-        super(documentSet, file);
+    public final NativeDataFile getNativeDataFile() {
+        return nativeDataFile;
     }
 
     /**
-     * {@inheritDoc}
+     * @param nativeDataFile the nativeDataFile to set
      */
-    @Override
-    protected void parse() throws MageTabParsingException {
-        // TODO Auto-generated method stub        
+    public final void setNativeDataFile(NativeDataFile nativeDataFile) {
+        this.nativeDataFile = nativeDataFile;
     }
 
 }
