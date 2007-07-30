@@ -130,6 +130,11 @@ public class MageTabTranslatorTest {
      */
     @Test
     public void testTranslate() {
+        testSpecificationDocuments();
+        testTcgaBroadDocuments();
+    }
+
+    private void testSpecificationDocuments() {
         CaArrayTranslationResult result = translator.translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
         CaArrayEntityTestUtility.printEntities(result.getTerms());
         assertEquals(17, result.getTerms().size());
@@ -138,6 +143,18 @@ public class MageTabTranslatorTest {
         assertEquals(6, investigation.getSources().size());
         assertEquals(6, investigation.getSamples().size());
         IdfDocument idf = TestMageTabSets.MAGE_TAB_SPECIFICATION_SET.getIdfDocuments().iterator().next();
+        assertEquals(idf.getInvestigation().getTitle(), investigation.getTitle());
+    }
+
+    private void testTcgaBroadDocuments() {
+        CaArrayTranslationResult result = translator.translate(TestMageTabSets.TCGA_BROAD_SET);
+        CaArrayEntityTestUtility.printEntities(result.getTerms());
+        assertEquals(10, result.getTerms().size());
+        assertEquals(1, result.getInvestigations().size());
+        Investigation investigation = result.getInvestigations().iterator().next();
+        assertEquals(0, investigation.getSources().size());
+        assertEquals(0, investigation.getSamples().size());
+        IdfDocument idf = TestMageTabSets.TCGA_BROAD_SET.getIdfDocuments().iterator().next();
         assertEquals(idf.getInvestigation().getTitle(), investigation.getTitle());
     }
 
