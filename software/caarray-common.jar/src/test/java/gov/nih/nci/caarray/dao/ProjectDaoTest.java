@@ -95,7 +95,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.hibernate.Transaction;
 
-import gov.nih.nci.caarray.tests.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.contact.Organization;
