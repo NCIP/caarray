@@ -92,7 +92,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.CaArrayEntityTestUtility;
 import gov.nih.nci.caarray.domain.project.Investigation;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.Source;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab2.TestMageTabSets;
 import gov.nih.nci.caarray.magetab2.idf.IdfDocument;
@@ -153,7 +153,7 @@ public class MageTabTranslatorTest {
 
         @Override
         public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) {
-            Source searchSource = (Source) entityToMatch;
+            TermSource searchSource = (TermSource) entityToMatch;
             System.out.println("Searching for " + searchSource);
             return new ArrayList<AbstractCaArrayEntity>();
         }
@@ -163,7 +163,7 @@ public class MageTabTranslatorTest {
     private static class LocalVocabularyServiceStub extends VocabularyServiceStub {
 
         @Override
-        public Source getSource(String name) {
+        public TermSource getSource(String name) {
             assertFalse(StringUtils.isEmpty(name));
             if ("caarray".equals(name)) {
                 return null;
@@ -173,7 +173,7 @@ public class MageTabTranslatorTest {
         }
 
         @Override
-        public Category getCategory(Source source, String categoryName) {
+        public Category getCategory(TermSource source, String categoryName) {
             assertFalse(StringUtils.isEmpty(source.getName()));
             assertFalse(StringUtils.isEmpty(categoryName));
             if ("MO".equals(source.getName())) {
@@ -184,7 +184,7 @@ public class MageTabTranslatorTest {
         }
 
         @Override
-        public Term getTerm(Source source, Category category, String value) {
+        public Term getTerm(TermSource source, Category category, String value) {
             assertFalse(StringUtils.isEmpty(source.getName()));
             assertFalse(StringUtils.isEmpty(category.getName()));
             assertFalse(StringUtils.isEmpty(value));
@@ -196,19 +196,19 @@ public class MageTabTranslatorTest {
         }
 
         @Override
-        public Source createSource(String name) {
+        public TermSource createSource(String name) {
             assertFalse("MO".equals(name));
             return super.createSource(name);
         }
 
         @Override
-        public Category createCategory(Source source, String categoryName) {
+        public Category createCategory(TermSource source, String categoryName) {
             assertFalse("MO".equals(source.getName()));
             return super.createCategory(source, categoryName);
         }
 
         @Override
-        public Term createTerm(Source source, Category category, String value) {
+        public Term createTerm(TermSource source, Category category, String value) {
             assertFalse("MO".equals(source.getName()));
             return super.createTerm(source, category, value);
         }

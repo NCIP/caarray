@@ -86,7 +86,7 @@ import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dao.VocabularyDaoImpl;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.Source;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.evs.domain.DescLogicConcept;
 import gov.nih.nci.evs.domain.Property;
@@ -140,7 +140,7 @@ public class EVSUtility {
      */
     private static final Log LOG = LogFactory.getLog(EVSUtility.class);
 
-    private final Source mgedSource;
+    private final TermSource mgedSource;
 
     private final Map<String, Category> categoryList;
 
@@ -480,8 +480,8 @@ public class EVSUtility {
         terms.add(aTerm);
     }
 
-    private Source getSourceForName(String source) {
-        Source newSource = new Source();
+    private TermSource getSourceForName(String source) {
+        TermSource newSource = new TermSource();
         newSource.setId(0L);
         newSource.setName(source);
         newSource.setUrl(APP_SERVICE_URL);

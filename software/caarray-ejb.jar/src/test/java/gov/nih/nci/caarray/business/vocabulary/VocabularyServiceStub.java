@@ -86,7 +86,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.Source;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 /**
@@ -99,7 +99,7 @@ public class VocabularyServiceStub implements VocabularyService {
      */
     public List<Term> getTerms(String categoryName) throws VocabularyServiceException {
         ArrayList<Term> terms = new ArrayList<Term>();
-        Source source = getSource("MO");
+        TermSource source = getSource("MO");
         for (int i = 0; i < 10; i++) {
             Term term = getTerm(source, getCategory(source, categoryName), "term" + i);
             term.setId((long) i);
@@ -108,13 +108,13 @@ public class VocabularyServiceStub implements VocabularyService {
         return terms;
     }
 
-    public Source getSource(String name) {
-        Source source = new Source();
+    public TermSource getSource(String name) {
+        TermSource source = new TermSource();
         source.setName(name);
         return source;
     }
 
-    public Term getTerm(Source source, Category category, String value) {
+    public Term getTerm(TermSource source, Category category, String value) {
         Term term = new Term();
         term.setSource(source);
         term.setCategory(category);
@@ -122,23 +122,23 @@ public class VocabularyServiceStub implements VocabularyService {
         return term;
     }
 
-    public Category createCategory(Source source, String categoryName) {
+    public Category createCategory(TermSource source, String categoryName) {
         Category category = new Category();
         category.setName(categoryName);
         return category;
     }
 
-    public Term createTerm(Source source, Category category, String value) {
+    public Term createTerm(TermSource source, Category category, String value) {
         return getTerm(source, category, value);
     }
 
-    public Category getCategory(Source source, String categoryName) {
+    public Category getCategory(TermSource source, String categoryName) {
         Category category = new Category();
         category.setName(categoryName);
         return category;
     }
 
-    public Source createSource(String name) {
+    public TermSource createSource(String name) {
         return getSource(name);
     }
 

@@ -88,17 +88,16 @@ import org.apache.commons.logging.LogFactory;
 
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.domain.vocabulary.Source;
 import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab2.TermSource;
 
 /**
- * Translates MAGE-TAB <code>TermSources</code> to caArray <code>Sources</code>.
+ * Translates MAGE-TAB <code>TermSources</code> to caArray <code>TermSources</code>.
  */
 final class TermSourceTranslator extends AbstractTranslator {
 
     private static final Log LOG = LogFactory.getLog(TermSourceTranslator.class);
-    
+
     private final VocabularyService vocabularyService;
 
     TermSourceTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
@@ -114,7 +113,7 @@ final class TermSourceTranslator extends AbstractTranslator {
     }
 
     private void translate(TermSource termSource) {
-        Source source = getExistingSource(termSource);
+        gov.nih.nci.caarray.domain.vocabulary.TermSource source = getExistingSource(termSource);
         if (source == null) {
             source = createSource(termSource);
         } else {
@@ -123,12 +122,13 @@ final class TermSourceTranslator extends AbstractTranslator {
         getTranslationResult().addSource(termSource, source);
     }
 
-    private Source getExistingSource(TermSource termSource) {
+    private gov.nih.nci.caarray.domain.vocabulary.TermSource getExistingSource(TermSource termSource) {
         return vocabularyService.getSource(termSource.getName());
     }
 
-    private Source createSource(TermSource termSource) {
-        Source source = new Source();
+    private gov.nih.nci.caarray.domain.vocabulary.TermSource createSource(TermSource termSource) {
+        gov.nih.nci.caarray.domain.vocabulary.TermSource source =
+            new gov.nih.nci.caarray.domain.vocabulary.TermSource();
         source.setName(termSource.getName());
         source.setUrl(termSource.getFile());
         source.setVersion(termSource.getVersion());
@@ -139,7 +139,7 @@ final class TermSourceTranslator extends AbstractTranslator {
      * @param source
      * @param termSource
      */
-    private void updateSource(Source source, TermSource termSource) {
+    private void updateSource(gov.nih.nci.caarray.domain.vocabulary.TermSource source, TermSource termSource) {
         if (StringUtils.isEmpty(source.getName())) {
             source.setName(termSource.getName());
         }

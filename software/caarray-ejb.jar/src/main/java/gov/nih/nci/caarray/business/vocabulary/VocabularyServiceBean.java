@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.business.vocabulary;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.Source;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
@@ -206,11 +206,11 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Source getSource(String name) {
+    public TermSource getSource(String name) {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, name);
         }
-        Source querySource = new Source();
+        TermSource querySource = new TermSource();
         querySource.setName(name);
         Collection<AbstractCaArrayEntity> result = getVocabularyDao().queryEntityByExample(querySource);
         if (LOG.isDebugEnabled()) {
@@ -219,7 +219,7 @@ public class VocabularyServiceBean implements VocabularyService {
         if (result.isEmpty()) {
             return null;
         } else {
-            return (Source) result.iterator().next();
+            return (TermSource) result.iterator().next();
         }
     }
 
@@ -227,11 +227,11 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Source createSource(String name) {
+    public TermSource createSource(String name) {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, name);
         }
-        Source source = new Source();
+        TermSource source = new TermSource();
         source.setName(name);
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemExit(LOG);
@@ -243,7 +243,7 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Category getCategory(Source source, String categoryName) {
+    public Category getCategory(TermSource source, String categoryName) {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, source, categoryName);
         }
@@ -264,7 +264,7 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Category createCategory(Source source, String categoryName) {
+    public Category createCategory(TermSource source, String categoryName) {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, source, categoryName);
         }
@@ -281,7 +281,7 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Term createTerm(Source source, Category category, String value) {
+    public Term createTerm(TermSource source, Category category, String value) {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, source, category, value);
         }
@@ -300,7 +300,7 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Term getTerm(Source source, Category category, String value) {
+    public Term getTerm(TermSource source, Category category, String value) {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, source, category, value);
         }

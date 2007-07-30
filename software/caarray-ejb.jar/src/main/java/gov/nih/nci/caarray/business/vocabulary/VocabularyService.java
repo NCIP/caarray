@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.business.vocabulary;
 
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.Source;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.List;
@@ -116,7 +116,7 @@ public interface VocabularyService {
      * @param name name of the source
      * @return the matching source.
      */
-    Source getSource(String name);
+    TermSource getSource(String name);
 
     /**
      * Creates a new term source with the given name.
@@ -124,7 +124,7 @@ public interface VocabularyService {
      * @param name name of the new source
      * @return the new source.
      */
-    Source createSource(String name);
+    TermSource createSource(String name);
 
     /**
      * Returns the category with the matching name for the given source.
@@ -133,7 +133,7 @@ public interface VocabularyService {
      * @param categoryName the name of the category
      * @return the category
      */
-    Category getCategory(Source source, String categoryName);
+    Category getCategory(TermSource source, String categoryName);
 
     /**
      * Registers a new category with the vocabulary service.
@@ -142,7 +142,7 @@ public interface VocabularyService {
      * @param categoryName the name of the new category
      * @return the new category
      */
-    Category createCategory(Source source, String categoryName);
+    Category createCategory(TermSource source, String categoryName);
 
     /**
      * Returns the term that matches the given criteria.
@@ -152,7 +152,7 @@ public interface VocabularyService {
      * @param value value of the term.
      * @return the matching term or null.
      */
-    Term getTerm(Source source, Category category, String value);
+    Term getTerm(TermSource source, Category category, String value);
 
     /**
      * Adds a new term to the vocabulary service.
@@ -162,6 +162,6 @@ public interface VocabularyService {
      * @param value the value of the new term
      * @return the new term
      */
-    Term createTerm(Source source, Category category, String value);
+    Term createTerm(TermSource source, Category category, String value);
 
 }

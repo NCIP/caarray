@@ -89,7 +89,7 @@ import org.apache.commons.logging.LogFactory;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.Source;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab2.OntologyTerm;
@@ -124,22 +124,22 @@ final class TermTranslator extends AbstractTranslator {
         } else {
             sourceName = ontologyTerm.getTermSource().getName();
         }
-        Source source = getOrCreateSource(sourceName);
+        TermSource source = getOrCreateSource(sourceName);
         Category category = getOrCreateCategory(source, ontologyTerm.getCategory());
         Term term = getOrCreateTerm(source, category, ontologyTerm.getValue());
         getTranslationResult().addTerm(ontologyTerm, term);
     }
 
-    private Source getOrCreateSource(String name) {
-        Source source = service.getSource(name);
+    private TermSource getOrCreateSource(String name) {
+        TermSource source = service.getSource(name);
         if (source == null) {
-            source = new Source();
+            source = new TermSource();
             source.setName(name);
         }
         return source;
     }
 
-    private Category getOrCreateCategory(Source source, String categoryName) {
+    private Category getOrCreateCategory(TermSource source, String categoryName) {
         Category category = service.getCategory(source, categoryName);
         if (category == null) {
             category = new Category();
@@ -148,7 +148,7 @@ final class TermTranslator extends AbstractTranslator {
         return category;
     }
 
-    private Term getOrCreateTerm(Source source, Category category, String value) {
+    private Term getOrCreateTerm(TermSource source, Category category, String value) {
         Term term = service.getTerm(source, category, value);
         if (term == null) {
             term = new Term();

@@ -90,7 +90,6 @@ import java.util.Map;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.project.Investigation;
-import gov.nih.nci.caarray.domain.vocabulary.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab2.OntologyTerm;
 import gov.nih.nci.caarray.magetab2.TermSource;
@@ -103,7 +102,8 @@ final class MageTabTranslationResult implements CaArrayTranslationResult {
     private static final long serialVersionUID = -1084448170352002555L;
 
     private final Map<OntologyTerm, Term> termMap = new HashMap<OntologyTerm, Term>();
-    private final Map<TermSource, Source> termSourceMap = new HashMap<TermSource, Source>();
+    private final Map<TermSource, gov.nih.nci.caarray.domain.vocabulary.TermSource> termSourceMap =
+        new HashMap<TermSource, gov.nih.nci.caarray.domain.vocabulary.TermSource>();
     private final Collection<Investigation> investigations = new HashSet<Investigation>();
     private final Collection<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
 
@@ -136,11 +136,11 @@ final class MageTabTranslationResult implements CaArrayTranslationResult {
         termMap.put(ontologyTerm, term);
     }
 
-    Source getSource(TermSource termSource) {
+    gov.nih.nci.caarray.domain.vocabulary.TermSource getSource(TermSource termSource) {
         return termSourceMap.get(termSource);
     }
 
-    void addSource(TermSource termSource, Source source) {
+    void addSource(TermSource termSource, gov.nih.nci.caarray.domain.vocabulary.TermSource source) {
         termSourceMap.put(termSource, source);
     }
 

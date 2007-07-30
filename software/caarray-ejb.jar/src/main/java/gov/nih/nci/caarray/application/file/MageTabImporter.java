@@ -96,7 +96,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.Source;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab2.MageTabInputFileSet;
@@ -163,7 +163,7 @@ class MageTabImporter {
     private void saveTerms(CaArrayTranslationResult translationResult) {
         // TODO Better handling of sources and categories (don't look up each and every time)
         for (Term term : translationResult.getTerms()) {
-            Source source = getActualSource(term.getSource().getName());
+            TermSource source = getActualSource(term.getSource().getName());
             term.setSource(source);
             term.setCategory(getActualCategory(source, term.getCategory().getName()));
             if (isNew(term)) {
@@ -172,15 +172,15 @@ class MageTabImporter {
         }
     }
 
-    private Source getActualSource(String name) {
-        Source source = vocabularyService.getSource(name);
+    private TermSource getActualSource(String name) {
+        TermSource source = vocabularyService.getSource(name);
         if (source == null) {
             source = vocabularyService.createSource(name);
         }
         return source;
     }
 
-    private Category getActualCategory(Source source, String name) {
+    private Category getActualCategory(TermSource source, String name) {
         Category category = vocabularyService.getCategory(source, name);
         if (category == null) {
             category = vocabularyService.createCategory(source, name);
