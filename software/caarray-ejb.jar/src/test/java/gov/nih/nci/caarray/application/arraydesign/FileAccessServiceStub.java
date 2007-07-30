@@ -95,7 +95,9 @@ class FileAccessServiceStub implements FileAccessService {
      * @see gov.nih.nci.caarray.business.fileaccess.FileAccessService#add(java.io.File)
      */
     public CaArrayFile add(File file) {
-        return null;
+        CaArrayFile caArrayFile = new CaArrayFile();
+        caArrayFile.setPath(file.getAbsolutePath());
+        return caArrayFile;
     }
 
     /* (non-Javadoc)

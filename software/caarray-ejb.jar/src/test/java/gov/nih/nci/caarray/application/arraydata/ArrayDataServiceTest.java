@@ -80,79 +80,81 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydesign;
+package gov.nih.nci.caarray.application.arraydata;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
+import static org.junit.Assert.*;
+
+import java.io.File;
+
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceTest;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
-
-import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test class for ArrayDesignService subsystem.
  * 
- * TODO Add complete details to tests
- * TODO Add test for largest Affymetrix design
  */
-@SuppressWarnings("PMD")
-public class ArrayDesignServiceTest {
+public class ArrayDataServiceTest {
     
-    private ArrayDesignService arrayDesignService;
-    private final CaArrayDaoFactoryStub caArrayDaoFactoryStub = new CaArrayDaoFactoryStub();
-    private final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
-    private final VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
+    private ArrayDataService arrayDataService;
+    ArrayDesignService arrayDesignService = ArrayDesignServiceTest.getArrayDesignService();
+    FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
 
     @Before
-    public void setUp() {
-        arrayDesignService = createArrayDesignService(caArrayDaoFactoryStub, fileAccessServiceStub, vocabularyServiceStub);
-    }
-    
-    public static ArrayDesignService getArrayDesignService() {
-        return createArrayDesignService(new CaArrayDaoFactoryStub(), new FileAccessServiceStub(), new VocabularyServiceStub());
-    }
-    
-    private static ArrayDesignService createArrayDesignService(CaArrayDaoFactoryStub caArrayDaoFactoryStub, 
-            final FileAccessServiceStub fileAccessServiceStub,
-            VocabularyServiceStub vocabularyServiceStub) {
-        ArrayDesignServiceBean bean = new ArrayDesignServiceBean();
-        bean.setDaoFactory(caArrayDaoFactoryStub);
-        bean.setFileAccessService(fileAccessServiceStub);
-        bean.setVocabularyService(vocabularyServiceStub);
-        return bean;
+    public void setUp() throws Exception {
+        ArrayDataServiceBean arrayDataServiceBean = new ArrayDataServiceBean();
+        arrayDataServiceBean.setArrayDesignService(arrayDesignService);
+        arrayDataServiceBean.setFileAccessService(fileAccessServiceStub);
+        arrayDataService = arrayDataServiceBean;
     }
 
-    /**
-     * Test method for {@link gov.nih.nci.caarray.application.arraydesign.ArrayDesignService#importDesign(gov.nih.nci.caarray.domain.file.CaArrayFile)}.
-     * @throws IOException 
-     */
     @Test
-    public void testImportDesign_AffymetrixGeneExpression() throws IOException {
-        CaArrayFile caArrayFile = getAffymetrixGeneExpressionCdfFile();
-        ArrayDesign arrayDesign = arrayDesignService.importDesign(caArrayFile);
-        assertEquals("Test3", arrayDesign.getName());
-    }
-    
-    @Test
-    public void testGetDesignDetails_AffymetrixGeneExpression() throws IOException {
-        CaArrayFile caArrayFile = getAffymetrixGeneExpressionCdfFile();
-        ArrayDesign arrayDesign = arrayDesignService.importDesign(caArrayFile);
-        ArrayDesignDetails details = arrayDesignService.getDesignDetails(arrayDesign);
-        assertNotNull(details);
-        assertEquals(15876, details.getFeatures().size());
+    public void testAffymetrixCelData() {
+        RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
+        arrayDataService.importData(celData);
+        ArrayDataValues values = arrayDataService.getDataValues(celData, null, null);
+        assertEquals(15876, values.getValues().length);
+        assertEquals(7, values.getValues()[0].length);
+
+        celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CALVIN_CEL);
+        arrayDataService.importData(celData);
+        values = arrayDataService.getDataValues(celData, null, null);
+        assertEquals(15876, values.getValues().length);
+        assertEquals(7, values.getValues()[0].length);
+
+        celData = getCelData(AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF, AffymetrixArrayDataFiles.TEST_HG_U133_PLUS_2_CEL);
+        arrayDataService.importData(celData);
+        values = arrayDataService.getDataValues(celData, null, null);
+        assertEquals(1354896, values.getValues().length);
+        assertEquals(7, values.getValues()[0].length);
     }
 
-    private CaArrayFile getAffymetrixGeneExpressionCdfFile() throws IOException {
-        CaArrayFile caArrayFile = fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
-        caArrayFile.setType(FileType.AFFYMETRIX_CDF);
-        return caArrayFile;
+    private RawArrayData getCelData(File cdf, File cel) {
+        ArrayDesign arrayDesign = new ArrayDesign();
+        CaArrayFile designFile = fileAccessServiceStub.add(cdf);
+        designFile.setType(FileType.AFFYMETRIX_CDF);
+        arrayDesign.setDesignFile(designFile);
+        Array array = new Array();
+        array.setDesign(arrayDesign);
+        Hybridization hybridization = new Hybridization();
+        hybridization.setArray(array);
+        RawArrayData celData = new RawArrayData();
+        CaArrayFile celDataFile = fileAccessServiceStub.add(cel);
+        celDataFile.setType(FileType.AFFYMETRIX_CEL);
+        celData.setDataFile(celDataFile);
+        celData.setHybridization(hybridization);
+        hybridization.setArrayData(celData);
+        return celData;
     }
 
 }
