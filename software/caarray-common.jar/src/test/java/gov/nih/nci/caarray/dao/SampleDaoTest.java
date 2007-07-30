@@ -87,7 +87,7 @@ import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.domain.sample.Characteristic;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.Source;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
@@ -111,7 +111,7 @@ public class SampleDaoTest {
     private static final Long DUMMY_START_ID = 150L;
     private static final Sample DUMMY_SAMPLE_1 = new Sample();
 
-    private static final Source DUMMY_SOURCE = new Source();
+    private static final TermSource DUMMY_SOURCE = new TermSource();
     private static final Category DUMMY_CATEGORY = new Category();
     private static final Term DUMMY_MATERIAL_TYPE = new Term();
 

@@ -26,7 +26,6 @@
             <key column="BIOMATERIAL_ID" />
             <one-to-many class="gov.nih.nci.caarray.domain.protocol.ProtocolApplication" />
         </set>
-        <!-- Source subclass not working yet
         <subclass name="gov.nih.nci.caarray.domain.sample.Source" discriminator-value="SO">
             <set name="providers" table="SOURCEPROVIDER" lazy="false" cascade="save-update">
             <key column="SOURCE_ID" />
@@ -37,14 +36,11 @@
             <many-to-many class="gov.nih.nci.caarray.domain.sample.Sample" column="SAMPLE_ID" />
             </set>
         </subclass>
-        -->
         <subclass name="gov.nih.nci.caarray.domain.sample.Sample" discriminator-value="SA">
-            <!--
             <set name="sources" table="SOURCESAMPLE" lazy="false" cascade="save-update" inverse="true">
                 <key column="SAMPLE_ID" />
                 <many-to-many class="gov.nih.nci.caarray.domain.sample.Source" column="SOURCE_ID" />
             </set>
-            -->
             <set name="extracts" table="SAMPLEEXTRACT" lazy="false">
                 <key column="SAMPLE_ID" />
                 <many-to-many class="gov.nih.nci.caarray.domain.sample.Extract" column="EXTRACT_ID" />

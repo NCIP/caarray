@@ -87,7 +87,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
   /**
    */
-public class Source extends AbstractCaArrayEntity {
+public class TermSource extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
 
@@ -167,9 +167,9 @@ public class Source extends AbstractCaArrayEntity {
     @Override
     public boolean equals(final Object obj) {
         boolean theyAreEqual = false;
-        if (obj instanceof gov.nih.nci.caarray.domain.vocabulary.Source) {
-            final gov.nih.nci.caarray.domain.vocabulary.Source castObject =
-                (gov.nih.nci.caarray.domain.vocabulary.Source) obj;
+        if (obj instanceof gov.nih.nci.caarray.domain.vocabulary.TermSource) {
+            final gov.nih.nci.caarray.domain.vocabulary.TermSource castObject =
+                (gov.nih.nci.caarray.domain.vocabulary.TermSource) obj;
             Long thisId = getId();
             if (thisId != null && thisId.equals(castObject.getId())) {
                 theyAreEqual = true;

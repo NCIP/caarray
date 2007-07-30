@@ -24,7 +24,7 @@
         <mapping resource="gov/nih/nci/caarray/domain/vocabulary/Term.hbm.xml"/>
         <mapping resource="gov/nih/nci/caarray/domain/vocabulary/Category.hbm.xml"/>
         <mapping resource="gov/nih/nci/caarray/domain/vocabulary/Accession.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/vocabulary/Source.hbm.xml"/>
+        <mapping resource="gov/nih/nci/caarray/domain/vocabulary/TermSource.hbm.xml"/>
         <mapping resource="gov/nih/nci/caarray/domain/protocol/Parameter.hbm.xml"/>
         <mapping resource="gov/nih/nci/caarray/domain/protocol/ParameterValue.hbm.xml"/>
         <mapping resource="gov/nih/nci/caarray/domain/protocol/Protocol.hbm.xml"/>

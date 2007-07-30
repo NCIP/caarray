@@ -191,14 +191,14 @@ public class Term extends AbstractCaArrayEntity {
     /**
      * The source gov.nih.nci.caarray.domain.vocabulary.Source.
      */
-    private gov.nih.nci.caarray.domain.vocabulary.Source source;
+    private gov.nih.nci.caarray.domain.vocabulary.TermSource source;
 
     /**
      * Gets the source.
      *
      * @return the source
      */
-    public gov.nih.nci.caarray.domain.vocabulary.Source getSource() {
+    public gov.nih.nci.caarray.domain.vocabulary.TermSource getSource() {
         return source;
     }
 
@@ -208,7 +208,7 @@ public class Term extends AbstractCaArrayEntity {
      * @param sourceVal the source
      */
     public void setSource(final
-      gov.nih.nci.caarray.domain.vocabulary.Source sourceVal) {
+      gov.nih.nci.caarray.domain.vocabulary.TermSource sourceVal) {
         this.source = sourceVal;
     }
 

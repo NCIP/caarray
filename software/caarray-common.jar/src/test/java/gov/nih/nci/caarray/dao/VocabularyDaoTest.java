@@ -96,7 +96,7 @@ import org.junit.Test;
 
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.domain.vocabulary.Source;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Accession;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
@@ -118,8 +118,8 @@ public class VocabularyDaoTest {
     private static final Term DUMMY_TERM_1 = new Term();
     private static final Term DUMMY_TERM_2 = new Term();
     private static final Term DUMMY_TERM_3 = new Term();
-    private static final Source DUMMY_SOURCE_1 = new Source();
-    private static final Source DUMMY_SOURCE_2 = new Source();
+    private static final TermSource DUMMY_SOURCE_1 = new TermSource();
+    private static final TermSource DUMMY_SOURCE_2 = new TermSource();
     private static final Accession DUMMY_ACCESSION_1 = new Accession();
     private static final Accession DUMMY_ACCESSION_2 = new Accession();
 
@@ -414,7 +414,7 @@ public class VocabularyDaoTest {
     @Test
     public void testSaveSourceCollection() {
         Transaction tx = null;
-        List<Source> sourceList = new ArrayList<Source>();
+        List<TermSource> sourceList = new ArrayList<TermSource>();
         sourceList.add(DUMMY_SOURCE_1);
         sourceList.add(DUMMY_SOURCE_2);
         try {
@@ -554,7 +554,7 @@ public class VocabularyDaoTest {
     }
 
     private void checkIfExpectedSource() {
-        Source retrievedSource = (Source) DAO_OBJECT.queryEntityById(DUMMY_SOURCE_1);
+        TermSource retrievedSource = (TermSource) DAO_OBJECT.queryEntityById(DUMMY_SOURCE_1);
         if (DUMMY_SOURCE_1.equals(retrievedSource)) {
             // The retrieved source is the same as the saved source. Save and retrieve test passed.
             assertTrue(true);

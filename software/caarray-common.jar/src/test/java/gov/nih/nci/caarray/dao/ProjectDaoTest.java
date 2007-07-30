@@ -108,7 +108,7 @@ import gov.nih.nci.caarray.domain.project.InvestigationContact;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.Source;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 /**
@@ -125,7 +125,7 @@ public class ProjectDaoTest {
     private static final Long DUMMY_START_ID = 150L;
     private static final Project DUMMY_PROJECT_1 = new Project();
     private static final Investigation DUMMY_INVESTIGATION_1 = new Investigation();
-    private static final Source DUMMY_SOURCE = new Source();
+    private static final TermSource DUMMY_SOURCE = new TermSource();
     private static final Category DUMMY_CATEGORY = new Category();
 
     // Contacts

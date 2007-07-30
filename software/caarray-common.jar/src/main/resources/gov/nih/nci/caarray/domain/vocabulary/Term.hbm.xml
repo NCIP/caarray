@@ -15,6 +15,6 @@
         <property name="value" column="VALUE" type="string" />
         <many-to-one name="category" column="CATEGORY_ID" class="gov.nih.nci.caarray.domain.vocabulary.Category" lazy="false" cascade="save-update" />
         <many-to-one name="accession" column="ACCESSION_ID" class="gov.nih.nci.caarray.domain.vocabulary.Accession" lazy="false" cascade="save-update" />
-        <many-to-one name="source" column="SOURCE_ID" class="gov.nih.nci.caarray.domain.vocabulary.Source" lazy="false" cascade="save-update" />
+        <many-to-one name="source" column="SOURCE_ID" class="gov.nih.nci.caarray.domain.vocabulary.TermSource" lazy="false" cascade="save-update" />
     </class>
 </hibernate-mapping>

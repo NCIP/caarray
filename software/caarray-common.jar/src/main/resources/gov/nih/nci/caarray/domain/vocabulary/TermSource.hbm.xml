@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC 
+<!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="gov.nih.nci.caarray.domain.vocabulary.Source" table="SOURCE" polymorphism="implicit">
+    <class name="gov.nih.nci.caarray.domain.vocabulary.TermSource" table="SOURCE" polymorphism="implicit">
         <id name="id" column="ID" type="long">
             <generator class="assigned"/>
         </id>
