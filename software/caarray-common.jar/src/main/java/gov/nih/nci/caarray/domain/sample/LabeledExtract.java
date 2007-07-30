@@ -100,16 +100,16 @@ public class LabeledExtract extends AbstractBioMaterial {
 
 
     /**
-     * The label gov.nih.nci.caarray.domain.sample.Compound.
+     * The label gov.nih.nci.caarray.domain.vocabulary.Term.
      */
-    private gov.nih.nci.caarray.domain.sample.Compound label;
+    private gov.nih.nci.caarray.domain.vocabulary.Term label;
 
     /**
      * Gets the label.
      *
      * @return the label
      */
-    public gov.nih.nci.caarray.domain.sample.Compound getLabel() {
+    public gov.nih.nci.caarray.domain.vocabulary.Term getLabel() {
         return label;
     }
 
@@ -119,7 +119,7 @@ public class LabeledExtract extends AbstractBioMaterial {
      * @param labelVal the label
      */
     public void setLabel(final
-      gov.nih.nci.caarray.domain.sample.Compound labelVal) {
+      gov.nih.nci.caarray.domain.vocabulary.Term labelVal) {
         this.label = labelVal;
     }
 

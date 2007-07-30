@@ -65,7 +65,7 @@
                 <key column="LABELEDEXTRACT_ID" />
                 <many-to-many class="gov.nih.nci.caarray.domain.sample.Extract" column="EXTRACT_ID" />
             </set>
-            <many-to-one name="label" column="LABEL_ID" class="gov.nih.nci.caarray.domain.sample.Compound" lazy="false"
+            <many-to-one name="label" column="LABEL_ID" class="gov.nih.nci.caarray.domain.vocabulary.Term" lazy="false"
                 cascade="save-update" />
         </subclass>
     </class>
