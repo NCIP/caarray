@@ -86,7 +86,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Locale;
 
-import gov.nih.nci.caarray.tests.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 /**
  * MAGE-TAB document sets to be used as test data.

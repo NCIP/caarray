@@ -86,7 +86,7 @@ import static org.junit.Assert.*;
 import gov.nih.nci.caarray.magetab2.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab2.idf.Investigation;
 import gov.nih.nci.caarray.magetab2.sdrf.SdrfDocument;
-import gov.nih.nci.caarray.tests.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import org.junit.Test;
 
