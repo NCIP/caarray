@@ -145,7 +145,6 @@ final class SdrfTranslator extends AbstractTranslator {
             if (investigationTitle.equals(investigation.getTitle())) {
                 investigation.getSources().addAll(allSources);
                 investigation.getSamples().addAll(allSamples);
-                // TODO Add all extracts and labeled extracts. Not in Investigation POJO or DDL yet.
             }
         }
     }
@@ -191,7 +190,7 @@ final class SdrfTranslator extends AbstractTranslator {
         for (gov.nih.nci.caarray.magetab2.sdrf.LabeledExtract sdrfLabeledExtract : document.getAllLabeledExtracts()) {
             LabeledExtract labeledExtract = new LabeledExtract();
             translateBioMaterial(labeledExtract, sdrfLabeledExtract);
-            // TODO Translate the label into a caArray Compound. Compound is empty right now.
+            labeledExtract.setLabel(getTerm(sdrfLabeledExtract.getLabel()));
             nodeTranslations.put(sdrfLabeledExtract, labeledExtract);
             allLabeledExtracts.add(labeledExtract);
         }
