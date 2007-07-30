@@ -82,11 +82,13 @@
  */
 package gov.nih.nci.caarray.magetab2;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.magetab2.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab2.idf.Investigation;
 import gov.nih.nci.caarray.magetab2.sdrf.SdrfDocument;
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.tests.data.magetab.MageTabDataFiles;
 
 import org.junit.Test;
 
@@ -96,6 +98,8 @@ import org.junit.Test;
 @SuppressWarnings("PMD")
 public class MageTabParserTest {
 
+    private static final int ONE = 1;
+    private static final int SIX = 6;
     private MageTabParser parser = MageTabParser.INSTANCE;
 
     /**
@@ -126,7 +130,7 @@ public class MageTabParserTest {
     private void testSpecificationDocuments() throws MageTabParsingException {
         MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET;
         MageTabDocumentSet documentSet = parser.parse(fileSet);
-        assertNotNull(documentSet);
+        assertNotNull(documentSet); 
         checkTerms(documentSet);
         assertEquals(1, documentSet.getIdfDocuments().size());
         IdfDocument idfDocument = documentSet.getIdfDocument(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
@@ -139,9 +143,15 @@ public class MageTabParserTest {
         assertEquals("University of Heidelberg H sapiens TK6", investigation.getTitle());
         SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
         assertNotNull(sdrfDocument);
-        assertTrue(idfDocument.getSdrfDocuments().contains(sdrfDocument));
+        assertEquals(ONE, documentSet.getSdrfDocuments().size());
+        assertTrue(idfDocument.getDocumentSet().getSdrfDocuments().contains(sdrfDocument));
         assertEquals(idfDocument, sdrfDocument.getIdfDocument());
         assertEquals(6, sdrfDocument.getLeftmostNodes().size());
+        assertEquals(SIX, sdrfDocument.getAllSources().size());
+        assertEquals(SIX, sdrfDocument.getAllSamples().size());
+        assertEquals(SIX, sdrfDocument.getAllExtracts().size());
+        assertEquals(SIX, sdrfDocument.getAllHybridizations().size());
+        assertEquals(SIX, sdrfDocument.getAllLabeledExtracts().size());
     }
 
     private void checkTerms(MageTabDocumentSet documentSet) {
