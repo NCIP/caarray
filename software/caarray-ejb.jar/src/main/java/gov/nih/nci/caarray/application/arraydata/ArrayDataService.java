@@ -82,7 +82,11 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import java.util.List;
+
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
 
 /**
  * Provides hybridization data storage and retrieval functionality.
@@ -101,5 +105,18 @@ public interface ArrayDataService {
      * @param arrayData the array data to import. The associated 
      */
     void importData(AbstractArrayData arrayData);
+    
+    /**
+     * Returns the data associated with the specified <code>AbstractArrayData</code>.
+     * 
+     * @param arrayData return data represented by this array data object.
+     * @param designElements return data corresponding only to these design elements. If argument is null
+     *        or empty, return data for all elements.
+     * @param types return data corresponding only to these <code>QuantitationTypes</code>. If argument is null
+     *        or empty, return data for all types.
+     * @return the data.
+     */
+    ArrayDataValues getDataValues(AbstractArrayData arrayData, List<AbstractDesignElement> designElements, 
+            List<QuantitationType> types);
     
 }

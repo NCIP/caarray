@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import java.util.List;
+
 import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -89,8 +91,11 @@ import javax.ejb.Stateless;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
@@ -104,6 +109,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
     private static final Log LOG = LogFactory.getLog(ArrayDataServiceBean.class);
 
     @EJB private FileAccessService fileAccessService;
+    @EJB private ArrayDesignService arrayDesignService;
 
     /**
      * {@inheritDoc}
@@ -118,7 +124,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
     private AbstractArrayDataHandler getHandler(AbstractArrayData arrayData) {
         FileType fileType = arrayData.getDataFile().getType();
         if (FileType.AFFYMETRIX_CEL.equals(fileType)) {
-            return new AffymetrixCelHandler(arrayData, getFileAccessService());
+            return new AffymetrixCelHandler(arrayData, getFileAccessService(), getArrayDesignService());
         } else {
             throw new IllegalArgumentException("Unsupported data file type: " + fileType);
         }
@@ -139,6 +145,22 @@ public class ArrayDataServiceBean implements ArrayDataService {
 
     void setFileAccessService(FileAccessService fileAccessService) {
         this.fileAccessService = fileAccessService;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public ArrayDataValues getDataValues(AbstractArrayData arrayData, List<AbstractDesignElement> designElements, 
+            List<QuantitationType> types) {
+        return getHandler(arrayData).getDataValues(designElements, types);
+    }
+
+    ArrayDesignService getArrayDesignService() {
+        return arrayDesignService;
+    }
+
+    void setArrayDesignService(ArrayDesignService arrayDesignService) {
+        this.arrayDesignService = arrayDesignService;
     }
 
 }

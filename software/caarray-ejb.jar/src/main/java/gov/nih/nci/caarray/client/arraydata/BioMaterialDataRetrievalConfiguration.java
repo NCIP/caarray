@@ -80,57 +80,55 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydata;
+package gov.nih.nci.caarray.client.arraydata;
 
-import java.io.File;
+import gov.nih.nci.caarray.magetab2.sdrf.AbstractBioMaterial;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-
 /**
- * Base class for data import and retrieval handlers.
+ * Specifies data to retrieve by investigation biomaterial.
  */
-abstract class AbstractArrayDataHandler {
+public final class BioMaterialDataRetrievalConfiguration extends AbstractDataRetrievalConfiguration {
 
-    private final AbstractArrayData arrayData;
-    private final FileAccessService fileAccessService;
-    private final ArrayDesignService arrayDesignService;
+    private static final long serialVersionUID = 4702803511895616634L;
+    private final List<AbstractBioMaterial> bioMaterials = new ArrayList<AbstractBioMaterial>();
 
-    AbstractArrayDataHandler(AbstractArrayData arrayData, FileAccessService fileAccessService, 
-            ArrayDesignService arrayDesignService) {
+    /**
+     * Creates a new configuration instance.
+     */
+    public BioMaterialDataRetrievalConfiguration() {
         super();
-        this.arrayData = arrayData;
-        this.fileAccessService = fileAccessService;
-        this.arrayDesignService = arrayDesignService;
     }
 
-    abstract void importData();
-
-    abstract ArrayDataValues getDataValues(List<AbstractDesignElement> designElements, List<QuantitationType> types);
-
-    final AbstractArrayData getArrayData() {
-        return arrayData;
-    }
-    
-    final CaArrayFile getCaArrayFile() {
-        return getArrayData().getDataFile();
-    }
-    
-    final File getFile() {
-        return fileAccessService.getFile(getCaArrayFile());
+    /**
+     * Data for all hybridizations associated with the given biomaterial (<code>Source</code>, <code>Sample</code>,
+     * <code>Extract</code>, etc.) will be retrieved. This means that if a <code>Source</code> is split into two
+     * <code>Samples</code> then you should expect data for two hybridizations after adding the one source. The
+     * <code>DataSet</code> object will contain information mapping the two <code>Hybridizations</code> to 
+     * the one <code>Source</code>.
+     * 
+     * @param bioMaterial the biomaterial to retrieve data for.
+     */
+    public void addBiomaterial(AbstractBioMaterial bioMaterial) {
+        bioMaterials.add(bioMaterial);
     }
 
-    FileAccessService getFileAccessService() {
-        return fileAccessService;
-    }
-
-    ArrayDesignService getArrayDesignService() {
-        return arrayDesignService;
+    /**
+     * Add a collection of bio materials.
+     * 
+     * @see #addBiomaterial(AbstractBioMaterial)
+     * @param bioMaterialsToAdd the collection of bio materials to add
+     */
+    public void addBiomaterials(Collection<? extends AbstractBioMaterial> bioMaterialsToAdd) {
+        Iterator<? extends AbstractBioMaterial> iterator = bioMaterialsToAdd.iterator();
+        while (iterator.hasNext()) {
+            AbstractBioMaterial bioMaterial = iterator.next();
+            addBiomaterial(bioMaterial);
+        }
     }
 
 }

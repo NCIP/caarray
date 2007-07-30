@@ -80,32 +80,23 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.client;
+package gov.nih.nci.caarray.client.search;
 
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.DAOException;
-import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.query.CQLQuery;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
- * Session bean that searches for caArray entities based on various types of criteria.
+ * Search API for caArray, based on various types of criteria.
  *
  * @author Rashmi Srinivasa
  */
-@Stateless
-@Remote(CaArraySearchService.class)
-public class CaArraySearchServiceBean implements CaArraySearchService {
-    private static final Log LOG = LogFactory.getLog(CaArraySearchServiceBean.class);
+public interface CaArraySearchService {
+    /**
+     * The JNDI name to look up the remote <code>CaArraySearch</code> service.
+     */
+    String JNDI_NAME = "caarray/CaArraySearchServiceBean/remote";
 
     /**
      * Performs a query-by-example search based on the entity passed.
@@ -114,23 +105,7 @@ public class CaArraySearchServiceBean implements CaArraySearchService {
      *
      * @return the matching entities.
      */
-    public List<AbstractCaArrayEntity> search(AbstractCaArrayEntity entityExample) {
-        List<AbstractCaArrayEntity> retrievedList = new ArrayList<AbstractCaArrayEntity>();
-        if (entityExample == null) {
-            LOG.error("Search was called with null example entity.");
-            return retrievedList;
-        }
-
-        try {
-            retrievedList = getSearchDao().query(entityExample);
-        } catch (DAOException e) {
-            LOG.error("DAO exception while querying by example: ", e);
-        } catch (Exception e) {
-            LOG.error("Exception while querying by example: ", e);
-        }
-
-        return retrievedList;
-    }
+    List<AbstractCaArrayEntity> search(AbstractCaArrayEntity entityExample);
 
     /**
      * Searches for entities based on the given HQL (Hibernate Query Language) string.
@@ -139,23 +114,7 @@ public class CaArraySearchServiceBean implements CaArraySearchService {
      *
      * @return the matching entities.
      */
-    public List<AbstractCaArrayEntity> search(String hqlString) {
-        List<AbstractCaArrayEntity> retrievedList = new ArrayList<AbstractCaArrayEntity>();
-        if ((hqlString == null) || (hqlString.equals(""))) {
-            LOG.error("Search was called with null or empty HQL string.");
-            return retrievedList;
-        }
-
-        try {
-            retrievedList = getSearchDao().query(hqlString);
-        } catch (DAOException e) {
-            LOG.error("DAO exception while querying by HQL string: ", e);
-        } catch (Exception e) {
-            LOG.error("Exception while querying by HQL string: ", e);
-        }
-
-        return retrievedList;
-    }
+    List<AbstractCaArrayEntity> search(String hqlString);
 
     /**
      * Searches for entities based on the given CQL query.
@@ -164,30 +123,5 @@ public class CaArraySearchServiceBean implements CaArraySearchService {
      *
      * @return the matching entities.
      */
-    public List<AbstractCaArrayEntity> search(CQLQuery cqlQuery) {
-        List<AbstractCaArrayEntity> retrievedList = new ArrayList<AbstractCaArrayEntity>();
-        if (cqlQuery == null) {
-            LOG.error("Search was called with null CQL query.");
-            return retrievedList;
-        }
-
-        try {
-            retrievedList = getSearchDao().query(cqlQuery);
-        } catch (DAOException e) {
-            LOG.error("DAO exception while querying by CQL: ", e);
-        } catch (Exception e) {
-            LOG.error("Exception while querying by CQL: ", e);
-        }
-
-        return retrievedList;
-    }
-
-    /**
-    * Returns a DAO for accessing Vocabulary domain objects.
-    *
-    * @return VocabularyDao
-    */
-   public SearchDao getSearchDao() {
-       return CaArrayDaoFactory.INSTANCE.getSearchDao();
-   }
+    List<AbstractCaArrayEntity> search(CQLQuery cqlQuery);
 }

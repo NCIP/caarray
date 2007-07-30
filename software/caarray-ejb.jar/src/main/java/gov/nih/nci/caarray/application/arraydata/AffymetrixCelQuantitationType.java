@@ -82,55 +82,35 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import java.io.File;
-import java.util.List;
-
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
 /**
- * Base class for data import and retrieval handlers.
+ * Quantitation type information for Affymetrix CEL files.
  */
-abstract class AbstractArrayDataHandler {
+enum AffymetrixCelQuantitationType implements QuantitationType {
 
-    private final AbstractArrayData arrayData;
-    private final FileAccessService fileAccessService;
-    private final ArrayDesignService arrayDesignService;
+    CEL_X("CELX", Integer.class),
+    CEL_Y("CELY", Integer.class),
+    CEL_INTENSITY("CELIntensity", Float.class),
+    CEL_INTENSITY_STD_DEV("CELIntensityStdev", Float.class),
+    CEL_MASK("CELMask", Boolean.class),
+    CEL_OUTLIER("CELOutlier", Boolean.class),
+    CEL_PIXELS("CELPixels", Integer.class);
 
-    AbstractArrayDataHandler(AbstractArrayData arrayData, FileAccessService fileAccessService, 
-            ArrayDesignService arrayDesignService) {
-        super();
-        this.arrayData = arrayData;
-        this.fileAccessService = fileAccessService;
-        this.arrayDesignService = arrayDesignService;
+    private final String typeName;
+    private final Class type;
+
+    AffymetrixCelQuantitationType(String typeName, Class type) {
+        this.typeName = typeName;
+        this.type = type;
     }
 
-    abstract void importData();
-
-    abstract ArrayDataValues getDataValues(List<AbstractDesignElement> designElements, List<QuantitationType> types);
-
-    final AbstractArrayData getArrayData() {
-        return arrayData;
-    }
-    
-    final CaArrayFile getCaArrayFile() {
-        return getArrayData().getDataFile();
-    }
-    
-    final File getFile() {
-        return fileAccessService.getFile(getCaArrayFile());
+    public String getTypeName() {
+        return typeName;
     }
 
-    FileAccessService getFileAccessService() {
-        return fileAccessService;
-    }
-
-    ArrayDesignService getArrayDesignService() {
-        return arrayDesignService;
+    public Class getDataType() {
+        return type;
     }
 
 }

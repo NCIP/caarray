@@ -82,9 +82,16 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import java.util.Arrays;
+import java.util.List;
+
 import affymetrix.fusion.cel.FusionCELData;
+import affymetrix.fusion.cel.FusionCELFileEntryType;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
 
 /**
  * Handles import and retrieval of Affymetrix CEL file data.
@@ -93,8 +100,9 @@ final class AffymetrixCelHandler extends AbstractArrayDataHandler {
     
     private final FusionCELData celData = new FusionCELData();
 
-    AffymetrixCelHandler(AbstractArrayData arrayData, FileAccessService fileAccessService) {
-        super(arrayData, fileAccessService);
+    AffymetrixCelHandler(AbstractArrayData arrayData, FileAccessService fileAccessService, 
+            ArrayDesignService arrayDesignService) {
+        super(arrayData, fileAccessService, arrayDesignService);
     }
 
     @Override
@@ -105,6 +113,53 @@ final class AffymetrixCelHandler extends AbstractArrayDataHandler {
     private void readCelData() {
         celData.setFileName(getFile().getAbsolutePath());
         celData.read();
+    }
+
+    @Override
+    ArrayDataValues getDataValues(List<AbstractDesignElement> designElements, List<QuantitationType> types) {
+        // TODO Implement selective retrieval on elements, quantitation types
+        initializeForRead();
+        ArrayDataValues arrayDataValues = new ArrayDataValues(getArrayData());
+        setQuantitationTypes(arrayDataValues, types);
+        loadValues(arrayDataValues);
+        return arrayDataValues;
+    }
+
+    private void setQuantitationTypes(ArrayDataValues arrayDataValues, List<QuantitationType> types) {
+        if (types != null && !types.isEmpty()) {
+            arrayDataValues.setQuantitationTypes(types);
+        } else {
+            QuantitationType[] affymetrixTypes = AffymetrixCelQuantitationType.values();
+            arrayDataValues.setQuantitationTypes(Arrays.asList(affymetrixTypes));
+        }
+    }
+
+    private void initializeForRead() {
+        readCelData();
+    }
+
+    private void loadValues(ArrayDataValues arrayDataValues) {
+        FusionCELFileEntryType entry = new FusionCELFileEntryType();
+        int numberOfCells = celData.getCells();
+        arrayDataValues.setValues(new Object[numberOfCells][]);
+        for (int cellIndex = 0; cellIndex < numberOfCells; cellIndex++) {
+            celData.getEntry(cellIndex, entry);
+            loadValues(arrayDataValues, entry, cellIndex);
+        }
+    }
+
+    private void loadValues(ArrayDataValues arrayDataValues, FusionCELFileEntryType entry, int cellIndex) {
+        int x = celData.indexToX(cellIndex);
+        int y = celData.indexToY(cellIndex);
+        int valueIndex = 0;
+        arrayDataValues.getValues()[cellIndex] = new Object[arrayDataValues.getQuantitationTypes().size()];
+        arrayDataValues.getValues()[cellIndex][valueIndex++] = x;
+        arrayDataValues.getValues()[cellIndex][valueIndex++] = y;
+        arrayDataValues.getValues()[cellIndex][valueIndex++] = entry.getIntensity();
+        arrayDataValues.getValues()[cellIndex][valueIndex++] = entry.getStdv();
+        arrayDataValues.getValues()[cellIndex][valueIndex++] = celData.isMasked(x, y);
+        arrayDataValues.getValues()[cellIndex][valueIndex++] = celData.isOutlier(x, y);
+        arrayDataValues.getValues()[cellIndex][valueIndex++] = entry.getPixels();
     }
 
 }

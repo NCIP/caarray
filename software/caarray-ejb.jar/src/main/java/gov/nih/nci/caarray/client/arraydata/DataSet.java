@@ -80,57 +80,16 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydata;
+package gov.nih.nci.caarray.client.arraydata;
 
-import java.io.File;
-import java.util.List;
-
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import java.io.Serializable;
 
 /**
- * Base class for data import and retrieval handlers.
+ * Contains the retrieved data and contextual information.
  */
-abstract class AbstractArrayDataHandler {
+public final class DataSet implements Serializable {
 
-    private final AbstractArrayData arrayData;
-    private final FileAccessService fileAccessService;
-    private final ArrayDesignService arrayDesignService;
+    private static final long serialVersionUID = 7962555966414415259L;
 
-    AbstractArrayDataHandler(AbstractArrayData arrayData, FileAccessService fileAccessService, 
-            ArrayDesignService arrayDesignService) {
-        super();
-        this.arrayData = arrayData;
-        this.fileAccessService = fileAccessService;
-        this.arrayDesignService = arrayDesignService;
-    }
-
-    abstract void importData();
-
-    abstract ArrayDataValues getDataValues(List<AbstractDesignElement> designElements, List<QuantitationType> types);
-
-    final AbstractArrayData getArrayData() {
-        return arrayData;
-    }
     
-    final CaArrayFile getCaArrayFile() {
-        return getArrayData().getDataFile();
-    }
-    
-    final File getFile() {
-        return fileAccessService.getFile(getCaArrayFile());
-    }
-
-    FileAccessService getFileAccessService() {
-        return fileAccessService;
-    }
-
-    ArrayDesignService getArrayDesignService() {
-        return arrayDesignService;
-    }
-
 }

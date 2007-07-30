@@ -82,55 +82,70 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import java.io.File;
-import java.util.List;
-
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
+
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * Base class for data import and retrieval handlers.
+ * Provides access to retrieved data values from an <code>AbstractArrayData</code>.
  */
-abstract class AbstractArrayDataHandler {
+public class ArrayDataValues implements Serializable {
 
+    private static final long serialVersionUID = -3365579491463701461L;
     private final AbstractArrayData arrayData;
-    private final FileAccessService fileAccessService;
-    private final ArrayDesignService arrayDesignService;
+    private List<QuantitationType> quantitationTypes;
+    private List<AbstractDesignElement> elements;
+    private Object[][] values;
 
-    AbstractArrayDataHandler(AbstractArrayData arrayData, FileAccessService fileAccessService, 
-            ArrayDesignService arrayDesignService) {
+    ArrayDataValues(AbstractArrayData arrayData) {
         super();
         this.arrayData = arrayData;
-        this.fileAccessService = fileAccessService;
-        this.arrayDesignService = arrayDesignService;
     }
 
-    abstract void importData();
-
-    abstract ArrayDataValues getDataValues(List<AbstractDesignElement> designElements, List<QuantitationType> types);
-
-    final AbstractArrayData getArrayData() {
+    /**
+     * @return the arrayData
+     */
+    public AbstractArrayData getArrayData() {
         return arrayData;
     }
+
+    /**
+     * @return the elements
+     */
+    public List<AbstractDesignElement> getElements() {
+        return Collections.unmodifiableList(elements);
+    }
+
+    /**
+     * @return the quantitationTypes
+     */
+    public List<QuantitationType> getQuantitationTypes() {
+        return Collections.unmodifiableList(quantitationTypes);
+    }
+
+    /**
+     * @return the values
+     */
+    @SuppressWarnings("PMD.MethodReturnsInternalArray") // only used internally; exposed directly for efficiency
+    public Object[][] getValues() {
+        return values;
+    }
+
+    @SuppressWarnings("PMD.ArrayIsStoredDirectly") // only used internally; exposed directly for efficiency
+    void setValues(Object[][] values) {
+        this.values = values;
+    }
+
+    void setElements(List<AbstractDesignElement> elements) {
+        this.elements = elements;
+    }
+
+    void setQuantitationTypes(List<QuantitationType> quantitationTypes) {
+        this.quantitationTypes = quantitationTypes;
+    }
     
-    final CaArrayFile getCaArrayFile() {
-        return getArrayData().getDataFile();
-    }
-    
-    final File getFile() {
-        return fileAccessService.getFile(getCaArrayFile());
-    }
-
-    FileAccessService getFileAccessService() {
-        return fileAccessService;
-    }
-
-    ArrayDesignService getArrayDesignService() {
-        return arrayDesignService;
-    }
-
 }

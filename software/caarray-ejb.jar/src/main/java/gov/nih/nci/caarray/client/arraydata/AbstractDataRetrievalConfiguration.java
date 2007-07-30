@@ -80,57 +80,60 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydata;
+package gov.nih.nci.caarray.client.arraydata;
 
-import java.io.File;
+import gov.nih.nci.caarray.domain.LSID;
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
+
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-
 /**
- * Base class for data import and retrieval handlers.
+ * Provides the capability to specify exactly which array data to retrieve. The resulting object
+ * should then be used as an argument to <code>retrieveData()</code>. Note that if 
+ * <code>QuantitationTypes</code> or <code>AbstractDesignElements</code>
+ * to retrieve are not specified the default is to retrieve data for all.
  */
-abstract class AbstractArrayDataHandler {
+public abstract class AbstractDataRetrievalConfiguration implements Serializable {
 
-    private final AbstractArrayData arrayData;
-    private final FileAccessService fileAccessService;
-    private final ArrayDesignService arrayDesignService;
-
-    AbstractArrayDataHandler(AbstractArrayData arrayData, FileAccessService fileAccessService, 
-            ArrayDesignService arrayDesignService) {
+    private static final long serialVersionUID = -3487995502696975268L;
+    
+    private final List<QuantitationType> types = new ArrayList<QuantitationType>();
+    private final List<LSID> designElementLsids = new ArrayList<LSID>();
+    
+    /**
+     * Creates a new configuration.
+     */
+    AbstractDataRetrievalConfiguration() {
         super();
-        this.arrayData = arrayData;
-        this.fileAccessService = fileAccessService;
-        this.arrayDesignService = arrayDesignService;
     }
 
-    abstract void importData();
+    List<LSID> getDesignElementLsids() {
+        return designElementLsids;
+    }
 
-    abstract ArrayDataValues getDataValues(List<AbstractDesignElement> designElements, List<QuantitationType> types);
-
-    final AbstractArrayData getArrayData() {
-        return arrayData;
+    List<QuantitationType> getTypes() {
+        return types;
     }
     
-    final CaArrayFile getCaArrayFile() {
-        return getArrayData().getDataFile();
+    /**
+     * Retrieve data related to this design element.
+     * 
+     * @param designElement design element to add
+     */
+    public final void addDesignElement(AbstractDesignElement designElement) {
+        // TODO implement selection based on design element
     }
     
-    final File getFile() {
-        return fileAccessService.getFile(getCaArrayFile());
-    }
-
-    FileAccessService getFileAccessService() {
-        return fileAccessService;
-    }
-
-    ArrayDesignService getArrayDesignService() {
-        return arrayDesignService;
+    /**
+     * Retrieve data of this type.
+     * 
+     * @param type quantitation type to add
+     */
+    public final void addDesignElement(QuantitationType type) {
+        types.add(type);
     }
 
 }

@@ -97,7 +97,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.Proposal;
-import gov.nih.nci.caarray.tests.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import org.junit.Before;
 import org.junit.Test;
