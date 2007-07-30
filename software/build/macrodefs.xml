@@ -8,7 +8,7 @@
 
         <sequential>
             <mkdir dir="@{xml.output.dir}" />
-            <junit printsummary="on" failureproperty="junit.failure" fork="true">
+            <junit printsummary="on" failureproperty="junit.failure" fork="true" maxmemory="256m">
                 <sysproperty key="net.sourceforge.cobertura.datafile"
                 		file="${basedir}/cobertura.ser" />
                 <classpath>
