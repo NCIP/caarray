@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.translation.magetab;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Investigation;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
@@ -93,6 +94,8 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab2.sdrf.AbstractSampleDataRelationshipNode;
+import gov.nih.nci.caarray.magetab2.sdrf.Characteristic;
+import gov.nih.nci.caarray.magetab2.sdrf.Provider;
 import gov.nih.nci.caarray.magetab2.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.magetab2.sdrf.SdrfNodeType;
 
@@ -162,7 +165,12 @@ final class SdrfTranslator extends AbstractTranslator {
         for (gov.nih.nci.caarray.magetab2.sdrf.Source sdrfSource : document.getAllSources()) {
             Source source = new Source();
             translateBioMaterial(source, sdrfSource);
-            // TODO Translate the providers of the source.
+            for (Provider sdrfProvider : sdrfSource.getProviders()) {
+                Organization organization = new Organization();
+                organization.setName(sdrfProvider.getName());
+                organization = (Organization) replaceIfExists(organization);
+                source.getProviders().add(organization);
+            }
             nodeTranslations.put(sdrfSource, source);
             allSources.add(source);
         }
@@ -209,7 +217,21 @@ final class SdrfTranslator extends AbstractTranslator {
         bioMaterial.setName(sdrfBiomaterial.getName());
         bioMaterial.setDescription(sdrfBiomaterial.getDescription());
         bioMaterial.setMaterialType(getTerm(sdrfBiomaterial.getMaterialType()));
-        // TODO Translate characteristics
+        for (Characteristic sdrfCharacteristic : sdrfBiomaterial.getCharacteristics()) {
+            gov.nih.nci.caarray.domain.sample.Characteristic characteristic =
+                translateCharacteristic(sdrfCharacteristic);
+            bioMaterial.getCharacteristics().add(characteristic);
+        }
+    }
+
+    private gov.nih.nci.caarray.domain.sample.Characteristic translateCharacteristic(
+            Characteristic sdrfCharacteristic) {
+        gov.nih.nci.caarray.domain.sample.Characteristic characteristic =
+            new gov.nih.nci.caarray.domain.sample.Characteristic();
+        characteristic.setValue(sdrfCharacteristic.getValue());
+        characteristic.setTerm(getTerm(sdrfCharacteristic.getTerm()));
+        characteristic.setUnit(getTerm(sdrfCharacteristic.getUnit()));
+        return null;
     }
 
     private void linkNodes(SdrfDocument document) {
