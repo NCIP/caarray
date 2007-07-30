@@ -340,22 +340,22 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     private void linkSourceAndSample(Source source, Sample sample) {
-        source.getSamples().add((Sample) sample);
-        sample.getSources().add((Source) source);
+        source.getSamples().add(sample);
+        sample.getSources().add(source);
     }
 
     private void linkSampleAndExtract(Sample sample, Extract extract) {
-        sample.getExtracts().add((Extract) extract);
-        extract.getSamples().add((Sample) sample);
+        sample.getExtracts().add(extract);
+        extract.getSamples().add(sample);
     }
 
     private void linkExtractAndLabeledExtract(Extract extract, LabeledExtract labeledExtract) {
-        extract.getLabeledExtracts().add((LabeledExtract) labeledExtract);
-        labeledExtract.getExtracts().add((Extract) extract);
+        extract.getLabeledExtracts().add(labeledExtract);
+        labeledExtract.getExtracts().add(extract);
     }
 
     private void linkLabeledExtractAndHybridization(LabeledExtract labeledExtract, Hybridization hybridization) {
-        hybridization.getLabeledExtract().add((LabeledExtract) labeledExtract);
+        hybridization.getLabeledExtract().add(labeledExtract);
     }
 
     private boolean isBioMaterial(SdrfNodeType nodeType) {

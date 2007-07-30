@@ -1,6 +1,7 @@
 package gov.nih.nci.caarray.domain.protocol;
 
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
 /**
@@ -182,6 +183,8 @@ public class Parameter extends AbstractCaArrayEntity {
      */
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toStringExclude(this, "defaultValue");
+        return new ToStringBuilder(this)
+            .append("name", name)
+            .toString();
     }
 }

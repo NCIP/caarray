@@ -84,7 +84,8 @@
 package gov.nih.nci.caarray.domain.file;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.Project;
 
@@ -215,6 +216,11 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      */
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toStringExclude(this, "project");
+        return new ToStringBuilder(this)
+            .appendSuper(super.toString())
+            .append("path", path)
+            .append("status", status)
+            .append("type", type)
+            .toString();
     }
 }

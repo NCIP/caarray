@@ -86,7 +86,7 @@ package gov.nih.nci.caarray.domain.sample;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
   /**
 
@@ -186,6 +186,8 @@ public class LabeledExtract extends AbstractBioMaterial {
      */
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toStringExclude(this, "extracts");
+        return new ToStringBuilder(this)
+            .append("label", label)
+            .toString();
     }
 }
