@@ -80,28 +80,25 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.tests.data.magetab;
+package gov.nih.nci.caarray.test.base;
 
-import java.io.File;
+import com.thoughtworks.selenium.SeleneseTestCase;
 
-public class MageTabDataFiles {
-    
-    public static final File SPECIFICATION_EXAMPLE_IDF = 
-        new File(MageTabDataFiles.class.getResource("specification/e-mexp-428_v1.0.idf").getFile());
-    
-    public static final File SPECIFICATION_EXAMPLE_SDRF = 
-        new File(MageTabDataFiles.class.getResource("specification/e-mexp-428_v1.0.sdrf").getFile());
-    
-    public static final File TCGA_BROAD_DATA_DIRECTORY = 
-        new File(MageTabDataFiles.class.getResource("tcga/broad").getFile());
-    
-    public static final File TCGA_BROAD_IDF = 
-        new File(MageTabDataFiles.class.getResource("tcga/broad/broad.mit.edu_GBM.HT_HG-U133A.1.idf").getFile());
-    
-    public static final File TCGA_BROAD_SDRF = 
-        new File(MageTabDataFiles.class.getResource("tcga/broad/broad.mit.edu_GBM.HT_HG-U133A.1.sdrf").getFile());
-    
-    public static final File TCGA_BROAD_DATA_MATRIX = 
-        new File(MageTabDataFiles.class.getResource("tcga/broad/broad.mit.edu_GBM.HT_HG-U133A.1.data").getFile());
+/**
+ * Base class for all functional tests that use Selenium Remote Control. Provides
+ * proper set up in order to be called by caArray's ant script.
+ *
+ * @author tavelae
+ */
+public abstract class AbstractSeleniumTest extends SeleneseTestCase {
+
+    @Override
+    public void setUp() throws Exception {
+        System.setProperty("selenium.port", "8081");
+        String hostname = System.getProperty("test.hostname", "localhost");
+        String port = System.getProperty("test.port", "8080");
+        String browser = System.getProperty("test.browser", "*iexplore");
+        super.setUp("http://" + hostname + ":" + port, browser);
+    }
 
 }

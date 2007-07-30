@@ -80,9 +80,9 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.tests.functional;
+package gov.nih.nci.caarray.test.functional;
 
-import gov.nih.nci.caarray.tests.base.AbstractSeleniumTest;
+import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
 
 /**
  * Test case #7959.
