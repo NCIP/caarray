@@ -117,6 +117,8 @@ public class VocabularyServiceBean implements VocabularyService {
 
     private static final Log LOG = LogFactory.getLog(VocabularyServiceBean.class);
     
+    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+    
     /**
      * Creates a new instance.
      */
@@ -128,7 +130,7 @@ public class VocabularyServiceBean implements VocabularyService {
      * @return VocabularyDao
      */
     public VocabularyDao getVocabularyDao() {
-        return CaArrayDaoFactory.INSTANCE.getVocabularyDao();
+        return daoFactory.getVocabularyDao();
     }
     /**
      * Returns all terms that belong to the category for the name given (including all
@@ -199,7 +201,7 @@ public class VocabularyServiceBean implements VocabularyService {
     }
 
     EVSUtility getEVSUtility() {
-        return new EVSUtility();
+        return new EVSUtility(getDaoFactory());
     }
 
     /**
@@ -318,6 +320,12 @@ public class VocabularyServiceBean implements VocabularyService {
         } else {
             return (Term) result.iterator().next();
         }
+    }
+    final CaArrayDaoFactory getDaoFactory() {
+        return daoFactory;
+    }
+    final void setDaoFactory(CaArrayDaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
     }
 
 

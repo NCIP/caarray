@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
@@ -114,6 +115,7 @@ public class FileManagementServiceBean implements FileManagementService {
     private static final Log LOG = LogFactory.getLog(FileManagementServiceBean.class);
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+    @EJB private ArrayDataService arrayDataService;
     @EJB private FileAccessService fileAccessService;
     @EJB private ArrayDesignService arrayDesignService;
     @EJB private MageTabTranslator mageTabTranslator;
@@ -177,13 +179,14 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private void importArrayData(CaArrayFileSet fileSet) {
-        LOG.warn("Need to implement importArrayData: " + fileSet);
-        // TODO implement importArrayData and delete extraneous logging statement below
+        ArrayDataImporter arrayDataImporter = new ArrayDataImporter(arrayDataService, daoFactory);
+        arrayDataImporter.importFiles(fileSet);
     }
 
     private void validate(CaArrayFileSet fileSet) {
         for (CaArrayFile file : fileSet.getFiles()) {
             file.setStatus(FileStatus.VALIDATED);
+            getDaoFactory().getProjectDao().save(file);
         }
     }
 
@@ -228,6 +231,20 @@ public class FileManagementServiceBean implements FileManagementService {
 
     void setVocabularyService(VocabularyService vocabularyService) {
         this.vocabularyService = vocabularyService;
+    }
+
+    /**
+     * @return the arrayDataService
+     */
+    final ArrayDataService getArrayDataService() {
+        return arrayDataService;
+    }
+
+    /**
+     * @param arrayDataService the arrayDataService to set
+     */
+    final void setArrayDataService(ArrayDataService arrayDataService) {
+        this.arrayDataService = arrayDataService;
     }
 
 }

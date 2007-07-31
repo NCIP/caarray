@@ -59,7 +59,7 @@ import java.util.Set;
 
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
-import gov.nih.nci.caarray.dao.VocabularyDaoImpl;
+import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -153,6 +153,11 @@ public class VocabularyServiceTest {
      *
      */
     class MockEVSUtility extends EVSUtility {
+        
+        MockEVSUtility() {
+            super(new DaoFactoryStub());
+        }
+        
         @Override
         public ApplicationService getApplicationInstance() {
             return ApplicationService.getRemoteInstance("http://yahoo.com");
@@ -175,7 +180,7 @@ public class VocabularyServiceTest {
             return new MockVocabularyDao();
         }
     }
-    public class MockVocabularyDao extends VocabularyDaoImpl {
+    public class MockVocabularyDao extends VocabularyDaoTestStub {
 
 
         @Override
@@ -188,16 +193,6 @@ public class VocabularyServiceTest {
         }
 
         @Override
-        public Category getCategory(String name) throws DAOException {
-            return null;
-        }
-        @Override
-        public void save(AbstractCaArrayEntity caArrayEntity) throws DAOException {
-        }
-        @Override
-        public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) throws DAOException {
-        }
-        @Override
         public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
             return new ArrayList<AbstractCaArrayEntity>();
         }
@@ -205,17 +200,7 @@ public class VocabularyServiceTest {
         public List<AbstractCaArrayEntity> queryEntityAndAssociationsByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
             return new ArrayList<AbstractCaArrayEntity>();
         }
-        @Override
-        public AbstractCaArrayEntity queryEntityById(AbstractCaArrayEntity entityToMatch) throws DAOException {
-            return null;
-        }
-        @Override
-        public void remove(AbstractCaArrayEntity caArrayEntity) throws DAOException {
-        }
-        @Override
-        public void removeTerms(List<Term> entityList) throws DAOException {
-        }
-    }
+     }
     public class MockVocabularyDaoForException implements VocabularyDao {
 
         public List<Term> getTerms(String categoryName) throws DAOException {

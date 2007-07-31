@@ -82,9 +82,9 @@
  */
 package gov.nih.nci.caarray.business.vocabulary;
 
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
-import gov.nih.nci.caarray.dao.VocabularyDaoImpl;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -144,12 +144,16 @@ public class EVSUtility {
 
     private final Map<String, Category> categoryList;
 
+    private final CaArrayDaoFactory daoFactory;
+
     /**
      * Creates a new instance.
+     * 
+     * @param daoFactory used to access persistent data
      */
-    public EVSUtility() {
+    public EVSUtility(CaArrayDaoFactory daoFactory) {
         super();
-
+        this.daoFactory = daoFactory;
         mgedSource = getSourceForName(MGED_VOCAB);
         categoryList = new HashMap<String, Category>();
 
@@ -492,7 +496,7 @@ public class EVSUtility {
         if (categoryList.containsKey(categoryName)) {
             return categoryList.get(categoryName);
         }
-        VocabularyDao vocabDao = new VocabularyDaoImpl();
+        VocabularyDao vocabDao = daoFactory.getVocabularyDao();
         Category existingCategory = null;
         try {
             existingCategory = vocabDao.getCategory(categoryName);

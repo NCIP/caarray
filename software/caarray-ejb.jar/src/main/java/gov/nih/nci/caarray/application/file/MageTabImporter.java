@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
@@ -121,10 +122,28 @@ class MageTabImporter {
     }
 
     void importFiles(Project targetProject, CaArrayFileSet fileSet) throws MageTabParsingException {
+        updateFileStatus(fileSet, FileStatus.IMPORTING);
         MageTabInputFileSet inputSet = getInputFileSet(fileSet);
         MageTabDocumentSet documentSet = MageTabParser.INSTANCE.parse(inputSet);
         CaArrayTranslationResult translationResult = translator.translate(documentSet);
         save(targetProject, translationResult);
+        updateFileStatus(fileSet, FileStatus.IMPORTED);
+    }
+
+    private void updateFileStatus(CaArrayFileSet fileSet, FileStatus status) {
+        for (CaArrayFile file : fileSet.getFiles()) {
+            if (isMageTabFile(file)) {
+                file.setStatus(status);
+                getProjectDao().save(file);
+            }
+        }
+    }
+
+    private boolean isMageTabFile(CaArrayFile file) {
+        return FileType.MAGE_TAB_ADF.equals(file.getType())
+        || FileType.MAGE_TAB_DATA_MATRIX.equals(file.getType())
+        || FileType.MAGE_TAB_IDF.equals(file.getType())
+        || FileType.MAGE_TAB_SDRF.equals(file.getType());
     }
 
     private MageTabInputFileSet getInputFileSet(CaArrayFileSet fileSet) {

@@ -50,6 +50,7 @@
  */
 package gov.nih.nci.caarray.business.vocabulary;
 
+import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.List;
@@ -92,7 +93,7 @@ public class EVSUtilityTest {
      * Tests basic search in EVS, where search should return no results.
      */
      @Test public final void searchEVSNoResults() throws VocabularyServiceException {
-        EVSUtility evs = new EVSUtility();
+        EVSUtility evs = new EVSUtility(new DaoFactoryStub());
         List<Term> results = evs.getConcepts("Foo");
 
         assertTrue(results.isEmpty());

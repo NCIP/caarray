@@ -80,64 +80,46 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydesign;
+package gov.nih.nci.caarray.application.file;
 
-import java.util.Collection;
-import java.util.List;
+import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
 
-import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
+/**
+ * Manages import of array data files.
+ */
+final class ArrayDataImporter {
 
-class ArrayDaoStub implements ArrayDao {
+    private final ArrayDataService arrayDataService;
+    private final CaArrayDaoFactory daoFactory;
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.ArrayDao#getArrayDesign(java.lang.Long)
-     */
-    public ArrayDesign getArrayDesign(Long id) {
-        return null;
+    ArrayDataImporter(ArrayDataService arrayDataService, CaArrayDaoFactory daoFactory) {
+        super();
+        this.arrayDataService = arrayDataService;
+        this.daoFactory = daoFactory;
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.CaArrayDao#queryEntityAndAssociationsByExample(gov.nih.nci.caarray.domain.AbstractCaArrayEntity)
-     */
-    public List<AbstractCaArrayEntity> queryEntityAndAssociationsByExample(AbstractCaArrayEntity entityToMatch) {
-        return null;
+    public void importFiles(CaArrayFileSet fileSet) {
+        for (CaArrayFile file : fileSet.getFiles()) {
+            if (isDataFile(file)) {
+                arrayDataService.importData(getArrayData(file));
+                file.setStatus(FileStatus.IMPORTED);
+                daoFactory.getProjectDao().save(file);
+            }
+        }
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.CaArrayDao#queryEntityByExample(gov.nih.nci.caarray.domain.AbstractCaArrayEntity)
-     */
-    public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) {
-        return null;
+    private boolean isDataFile(CaArrayFile file) {
+        return FileType.AFFYMETRIX_CEL.equals(file.getType());
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.CaArrayDao#queryEntityById(gov.nih.nci.caarray.domain.AbstractCaArrayEntity)
-     */
-    public AbstractCaArrayEntity queryEntityById(AbstractCaArrayEntity entityToMatch) {
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.CaArrayDao#remove(gov.nih.nci.caarray.domain.AbstractCaArrayEntity)
-     */
-    public void remove(AbstractCaArrayEntity caArrayEntity) {
-        // no-op
-    }
-
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.CaArrayDao#save(gov.nih.nci.caarray.domain.AbstractCaArrayEntity)
-     */
-    public void save(AbstractCaArrayEntity caArrayEntity) {
-        // no-op
-    }
-
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.CaArrayDao#save(java.util.Collection)
-     */
-    public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) {
-        // no-op
+    private AbstractArrayData getArrayData(CaArrayFile file) {
+        return daoFactory.getArrayDao().getArrayData(file);
     }
 
 }

@@ -84,7 +84,9 @@ package gov.nih.nci.caarray.application.arraydesign;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
+import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -106,7 +108,7 @@ import org.junit.Test;
 public class ArrayDesignServiceTest {
     
     private ArrayDesignService arrayDesignService;
-    private final CaArrayDaoFactoryStub caArrayDaoFactoryStub = new CaArrayDaoFactoryStub();
+    private final DaoFactoryStub caArrayDaoFactoryStub = new DaoFactoryStub();
     private final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
     private final VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
 
@@ -116,10 +118,10 @@ public class ArrayDesignServiceTest {
     }
     
     public static ArrayDesignService getArrayDesignService() {
-        return createArrayDesignService(new CaArrayDaoFactoryStub(), new FileAccessServiceStub(), new VocabularyServiceStub());
+        return createArrayDesignService(new DaoFactoryStub(), new FileAccessServiceStub(), new VocabularyServiceStub());
     }
     
-    private static ArrayDesignService createArrayDesignService(CaArrayDaoFactoryStub caArrayDaoFactoryStub, 
+    private static ArrayDesignService createArrayDesignService(DaoFactoryStub caArrayDaoFactoryStub, 
             final FileAccessServiceStub fileAccessServiceStub,
             VocabularyServiceStub vocabularyServiceStub) {
         ArrayDesignServiceBean bean = new ArrayDesignServiceBean();

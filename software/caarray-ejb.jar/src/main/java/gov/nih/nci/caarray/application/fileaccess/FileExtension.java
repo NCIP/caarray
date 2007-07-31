@@ -95,7 +95,8 @@ enum FileExtension {
     CEL(FileType.AFFYMETRIX_CEL),
     ADF(FileType.MAGE_TAB_ADF),
     IDF(FileType.MAGE_TAB_IDF),
-    SDRF(FileType.MAGE_TAB_SDRF);
+    SDRF(FileType.MAGE_TAB_SDRF),
+    DATA(FileType.MAGE_TAB_DATA_MATRIX);
     
     private final FileType type;
 
