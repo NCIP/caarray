@@ -92,7 +92,7 @@ import gov.nih.nci.caarray.domain.protocol.Protocol;
  *
  * @author Rashmi Srinivasa
  */
-public class ProtocolDaoImpl extends AbstractCaArrayDaoImpl implements ProtocolDao {
+class ProtocolDaoImpl extends AbstractCaArrayDaoImpl implements ProtocolDao {
 
     private static final Log LOG = LogFactory.getLog(ProtocolDaoImpl.class);
 

@@ -87,7 +87,7 @@ package gov.nih.nci.caarray.dao;
  *
  * @author ETavela
  */
-public class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
+class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
 
     /**
      * Returns a <code>ProtocolDao</code>.

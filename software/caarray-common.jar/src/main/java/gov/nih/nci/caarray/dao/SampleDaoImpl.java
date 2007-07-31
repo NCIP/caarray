@@ -92,7 +92,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Rashmi Srinivasa
  */
-public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
+class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
     private static final Log LOG = LogFactory.getLog(SampleDaoImpl.class);
 
     /**

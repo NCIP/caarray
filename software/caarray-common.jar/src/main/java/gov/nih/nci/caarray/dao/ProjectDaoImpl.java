@@ -94,7 +94,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Rashmi Srinivasa
  */
-public class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
+class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     private static final Log LOG = LogFactory.getLog(ProjectDaoImpl.class);
 
     /**

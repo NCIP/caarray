@@ -105,7 +105,7 @@ import org.hibernate.Session;
  *
  * @author Rashmi Srinivasa
  */
-public class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
+class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     private static final Log LOG = LogFactory.getLog(SearchDaoImpl.class);
 
     /**

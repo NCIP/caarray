@@ -83,6 +83,8 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -92,20 +94,26 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Rashmi Srinivasa
  */
-public class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
+class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
+    
     private static final Log LOG = LogFactory.getLog(ArrayDaoImpl.class);
 
     /**
-     * Returns the <code>ArrayDesign</code> with the id given or null if none exists.
-     *
-     * @param id get <code>ArrayDesign</code> matching this id
-     * @return the <code>ArrayDesign</code> or null.
+     * {@inheritDoc}
      */
     public ArrayDesign getArrayDesign(Long id) {
         // Create an example arraydesign that has the desired id, and use it to retrieve matching arraydesigns.
         ArrayDesign arrayDesignToMatch = new ArrayDesign();
         arrayDesignToMatch.setId(id);
         return (ArrayDesign) queryEntityById(arrayDesignToMatch);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public AbstractArrayData getArrayData(CaArrayFile file) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override

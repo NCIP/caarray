@@ -83,6 +83,8 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.array</code> package.
@@ -97,4 +99,12 @@ public interface ArrayDao extends CaArrayDao {
      * @return the <code>ArrayDesign</code> or null.
      */
     ArrayDesign getArrayDesign(Long id);
+
+    /**
+     * Returns the array data object associated with the file provided.
+     * 
+     * @param file find data for this file.
+     * @return the associated data or null.
+     */
+    AbstractArrayData getArrayData(CaArrayFile file);
 }

@@ -72,7 +72,7 @@ import gov.nih.nci.caarray.util.HibernateUtil;
  *
  * @author John Pike
  */
-public class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao {
+class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao {
 
     private static final Log LOG = LogFactory.getLog(VocabularyDaoImpl.class);
 
