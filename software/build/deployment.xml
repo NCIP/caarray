@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project default="cargo" name="jboss-deploy" basedir=".">
-
 	<property name="cargo-jar" value="cargo-core-uberjar-0.9.jar" />
 	<property name="cargo-ant-jar" value="cargo-ant-0.9.jar" />
 	<property name="jboss.dir" value="${target.dir}/jboss" />
