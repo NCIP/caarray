@@ -82,11 +82,53 @@
  */
 package gov.nih.nci.caarray.test.functional;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 /**
  * Test case #7959.
  */
 public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
+    
+    public void testNew() throws Exception {
+        selenium.open("/caarray/");
+        
+        String title = "test" + System.currentTimeMillis();
+        // Create project
+        selenium.click("mainMenu:proposeProject");
+        selenium.type("projectProposalForm:projectTitle", title);
+        selenium.click("projectProposalForm:submitCommandButton");
+        assertTrue(selenium.isTextPresent("Proposal with title '" + title + "' has been created successfully"));
+        
+        // Upload files
+        selenium.click("mainMenu:workspace");
+        selenium.click("workspaceForm:_idJsp2:1:projectTitle");
+        selenium.click("projectManagementForm:manageProjectFilesCommandLink");
+        
+        upload(MageTabDataFiles.TCGA_BROAD_IDF);
+        upload(MageTabDataFiles.TCGA_BROAD_SDRF);
+        upload(MageTabDataFiles.TCGA_BROAD_DATA_MATRIX);
+        FileFilter celFilter = new FileFilter() {
+            public boolean accept(File pathname) {
+                return pathname.getName().toLowerCase().endsWith(".cel");
+            }
+        };
+        for (File celFile : MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY.listFiles(celFilter)) {
+            upload(celFile);
+        }
+        
+        // Import data
+        selenium.click("_idJsp1:importCommandButton");
+        // TODO Implement front end checks
+        
+        // Validate data via API
+    }
 
+    private void upload(File file) throws IOException {
+        selenium.type("uploadForm:inputFileUpload", file.getCanonicalPath().replace('/', File.separatorChar));
+    }
 }
