@@ -165,7 +165,7 @@ public class ArrayDaoTest {
         remove(DUMMY_ORGANIZATION);
     }
     
-    // TODO -- implement Hibernate mappings for AbstractArrayData subclasses and uncomment @Test annotation below
+    // TODO -- Todd: implement Hibernate mappings for AbstractArrayData subclasses and uncomment @Test annotation below
     // @Test
     public void testGetArrayData() {
         Transaction tx = null;
