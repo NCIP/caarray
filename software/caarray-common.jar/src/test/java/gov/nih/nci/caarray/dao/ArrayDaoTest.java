@@ -91,8 +91,12 @@ import org.junit.Test;
 import org.hibernate.Transaction;
 
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
 /**
  * Unit tests for the Array DAO.
@@ -144,12 +148,7 @@ public class ArrayDaoTest {
             DAO_OBJECT.save(DUMMY_ARRAYDESIGN_1);
             tx.commit();
             ArrayDesign retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getId());
-            if (DUMMY_ARRAYDESIGN_1.equals(retrievedArrayDesign)) {
-                // The retrieved arraydesign is the same as the saved arraydesign. Test passed.
-                assertTrue(true);
-            } else {
-                fail("Retrieved arraydesign is different from saved arraydesign.");
-            }
+            assertEquals(DUMMY_ARRAYDESIGN_1, retrievedArrayDesign);
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());
@@ -162,16 +161,43 @@ public class ArrayDaoTest {
      * Clean up after a test by removing the dummy arraydesign.
      */
     private void cleanUpArrayDesign() {
+        remove(DUMMY_ARRAYDESIGN_1);
+        remove(DUMMY_ORGANIZATION);
+    }
+    
+    // TODO -- implement Hibernate mappings for AbstractArrayData subclasses and uncomment @Test annotation below
+    // @Test
+    public void testGetArrayData() {
+        Transaction tx = null;
+        CaArrayFile file = new CaArrayFile();
+        RawArrayData rawArrayData = new RawArrayData();
+        rawArrayData.setDataFile(file);
+        rawArrayData.setName("test" + System.currentTimeMillis());
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            DAO_OBJECT.save(rawArrayData);
+            tx.commit();            
+            AbstractArrayData retrievedArrayData = DAO_OBJECT.getArrayData(file);
+            assertEquals(rawArrayData, retrievedArrayData);
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());
+        } finally {
+            remove(file);
+            remove(rawArrayData);
+        }
+    }
+
+    private void remove(AbstractCaArrayEntity entity) {
         Transaction tx = null;
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
-            DAO_OBJECT.remove(DUMMY_ARRAYDESIGN_1);
-            DAO_OBJECT.remove(DUMMY_ORGANIZATION);
+            DAO_OBJECT.remove(entity);
             tx.commit();
         } catch (DAOException deleteException) {
             HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up dummy arraydesign.", deleteException);
-            fail("DAO exception during deletion of arraydesign: " + deleteException.getMessage());
+            LOG.error("Error cleaning up entity.", deleteException);
+            fail("DAO exception during deletion of entity: " + deleteException.getMessage());
         }
     }
 }
