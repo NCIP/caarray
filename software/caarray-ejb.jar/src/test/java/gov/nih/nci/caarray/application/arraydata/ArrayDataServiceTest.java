@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.application.arraydata;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.util.Arrays;
 
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceTest;
@@ -109,8 +108,9 @@ import affymetrix.fusion.cel.FusionCELData;
 import affymetrix.fusion.cel.FusionCELFileEntryType;
 
 /**
- * 
+ * Tests the ArrayDataService subsystem
  */
+@SuppressWarnings("PMD")
 public class ArrayDataServiceTest {
     
     private ArrayDataService arrayDataService;
