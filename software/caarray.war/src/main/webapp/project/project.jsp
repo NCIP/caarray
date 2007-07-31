@@ -13,13 +13,13 @@
 <f:view>
 <%@include file="/navigation/menu.jsp" %>
 
-<h:form>
+<h:form id="projectManagementForm">
   <h:messages/>
   <p>You have selected <h:outputText value="#{projectManagementBean.project.investigation.title}"/>.  What would you
      like to do?</p>
     <ul>
       <li>
-        <h:commandLink action="manageProjectFiles">
+        <h:commandLink id="manageProjectFilesCommandLink" action="manageProjectFiles">
           <h:outputText value="Manage files"/>
         </h:commandLink>
       </li>

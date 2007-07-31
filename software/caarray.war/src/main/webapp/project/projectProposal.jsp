@@ -14,22 +14,22 @@
 <f:view>
 <%@include file="/navigation/menu.jsp" %>
 
-<h:form>
+<h:form id="projectProposalForm">
 <h:messages/>
 <table>
   <tr>
     <th>
-      <h:outputLabel for="ztitle">
+      <h:outputLabel for="projectTitle">
         <h:outputText value="Title for new project:"/>
       </h:outputLabel>
     </th>
     <td>
-      <h:inputText id="ztitle" value="#{projectProposalBean.proposal.project.investigation.title}"/>
+      <h:inputText id="projectTitle" value="#{projectProposalBean.proposal.project.investigation.title}"/>
     </td>
   </tr>
   <tr>
     <td colspan="2">
-      <h:commandButton value="Submit" action="#{projectProposalBean.submitNew}"/>
+      <h:commandButton id="submitCommandButton" value="Submit" action="#{projectProposalBean.submitNew}"/>
     </td>
   </tr>
 </table>

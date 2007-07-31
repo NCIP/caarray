@@ -13,7 +13,7 @@
 <f:view>
 <%@include file="/navigation/menu.jsp" %>
 
-<h:form>
+<h:form id="workspaceForm">
   <h:messages/>
   <h:dataTable value="#{projectManagementBean.projects}"
                var="project"
@@ -25,8 +25,8 @@
       <f:facet name="header">
         <h:outputText value="Title"/>
       </f:facet>
-      <h:commandLink action="#{projectManagementBean.openProject}">
-        <h:outputText value="#{project.investigation.title}"/>
+      <h:commandLink id="openProjectCommandLink" action="#{projectManagementBean.openProject}">
+        <h:outputText id="projectTitle" value="#{project.investigation.title}"/>
       </h:commandLink>
     </h:column>
   </h:dataTable>
