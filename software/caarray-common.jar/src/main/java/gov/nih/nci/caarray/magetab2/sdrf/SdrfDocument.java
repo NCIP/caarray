@@ -275,12 +275,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     private void handleFactorValue(SdrfColumn column, String value) {
         FactorValue factorValue = new FactorValue();
-        factorValue.setValue(value);
-        currentTermSourceable = factorValue;
-        handleTermSourceRef(column.getHeading().getTermSource());
-        currentUnitable = factorValue;
-        handleUnit(column, value);
-        currentUnitable.getUnit().setTermSource(factorValue.getTermSource());
+        OntologyTerm term = getOntologyTerm(column.getHeading().getQualifier(), value);
+        factorValue.setTerm(term);
+        term.setTermSource(getTermSource(column.getHeading().getTermSourceString()));
         // set it on Hybridization
         // TBD - ask Eric
         allHybridizations.get(allHybridizations.size() - 1).getFactorValues().add(factorValue);

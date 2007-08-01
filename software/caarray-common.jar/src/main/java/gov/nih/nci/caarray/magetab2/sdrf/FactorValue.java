@@ -83,34 +83,59 @@
 package gov.nih.nci.caarray.magetab2.sdrf;
 
 import gov.nih.nci.caarray.magetab2.OntologyTerm;
-import gov.nih.nci.caarray.magetab2.TermSource;
-import gov.nih.nci.caarray.magetab2.TermSourceable;
 import gov.nih.nci.caarray.magetab2.Unitable;
 
 import java.io.Serializable;
 
 /**
- * @author Bill Mason
  * 
  */
-public class FactorValue implements Serializable, Unitable, TermSourceable {
+public class FactorValue implements Serializable, Unitable {
     private static final long serialVersionUID = 28728045635671179L;
     private String value;
-    private TermSource termSource;
+    private OntologyTerm term;
     private OntologyTerm unit;
 
     /**
      * @return TermSouce the term source
      */
-    public TermSource getTermSource() {
-        return termSource;
+    public OntologyTerm getTerm() {
+        return term;
     }
 
     /**
-     * @param termSource set the term source
+     * @param term set the term source
      */
-    public void setTermSource(TermSource termSource) {
-        this.termSource = termSource;
+    public void setTerm(OntologyTerm term) {
+        this.term = term;
+    }
+
+    // /**
+    // * @return the unit
+    // */
+    // public OntologyTerm getUnit() {
+    // return unit;
+    // }
+    //
+    // /**
+    // * @param unit the unit to set
+    // */
+    // public void setUnit(OntologyTerm unit) {
+    // this.unit = unit;
+    // }
+
+    /**
+     * @return the value
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * @param value the value to set
+     */
+    public void setValue(String value) {
+        this.value = value;
     }
 
     /**
@@ -125,20 +150,6 @@ public class FactorValue implements Serializable, Unitable, TermSourceable {
      */
     public void setUnit(OntologyTerm unit) {
         this.unit = unit;
-    }
-
-    /**
-     * @return the value
-     */
-    public String getValue() {
-        return value;
-    }
-
-    /**
-     * @param value the value to set
-     */
-    public void setValue(String value) {
-        this.value = value;
     }
 
 }

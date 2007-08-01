@@ -103,7 +103,7 @@ public final class EntryHeading implements Serializable {
     private String qualifier;
     private String typeName;
     private final String headingString;
-    private String termSource;
+    private String termSourceString;
 
     EntryHeading(final String headingString) {
         super();
@@ -117,7 +117,7 @@ public final class EntryHeading implements Serializable {
          if (hasTermSource()) {
              int startIndex = headingString.indexOf(TERM_SOURCE_START_DELIMITER) + 1;
              int endIndex = headingString.indexOf(TERM_SOURCE_END_DELIMITER);
-             termSource = headingString.substring(startIndex, endIndex);
+             termSourceString = headingString.substring(startIndex, endIndex);
             
          }
     }
@@ -244,8 +244,8 @@ public final class EntryHeading implements Serializable {
     /**
      * @return the term source
      */
-    public String getTermSource() {
-        return termSource;
+    public String getTermSourceString() {
+        return termSourceString;
     }
 
      
