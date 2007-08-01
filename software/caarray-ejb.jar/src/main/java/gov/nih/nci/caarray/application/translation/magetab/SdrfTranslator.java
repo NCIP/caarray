@@ -127,6 +127,8 @@ final class SdrfTranslator extends AbstractTranslator {
     private final List<Sample> allSamples = new ArrayList<Sample>();
     private final List<Extract> allExtracts = new ArrayList<Extract>();
     private final List<LabeledExtract> allLabeledExtracts = new ArrayList<LabeledExtract>();
+    private final Map<String, AbstractCaArrayEntity> generatedNodes =
+        new HashMap<String, AbstractCaArrayEntity>();
 
     SdrfTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
             CaArrayDaoFactory daoFactory) {
@@ -284,6 +286,7 @@ final class SdrfTranslator extends AbstractTranslator {
     @SuppressWarnings("PMD")
     private void linkBioMaterial(AbstractCaArrayEntity leftCaArrayNode, AbstractCaArrayEntity rightCaArrayNode,
             SdrfNodeType leftNodeType, SdrfNodeType rightNodeType, String baseGeneratedNodeName) {
+        // TODO Handle case where Extract goes to Extract, as shown in ChIP-chip example in MAGE-TAB spec.
         if (leftNodeType.equals(SdrfNodeType.SOURCE)) {
             if (rightNodeType.equals(SdrfNodeType.SAMPLE)) {
                 linkSourceAndSample((Source) leftCaArrayNode, (Sample) rightCaArrayNode);
@@ -316,26 +319,44 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     private Sample generateSampleAndLink(String baseGeneratedNodeName, Source source) {
-        Sample generatedSample = new Sample();
-        generatedSample.setName(GENERATED_SAMPLE_PREFIX + baseGeneratedNodeName);
+        // Generate sample if not already generated.
+        String sampleName = GENERATED_SAMPLE_PREFIX + baseGeneratedNodeName;
+        Sample generatedSample = (Sample) generatedNodes.get(sampleName);
+        if (generatedSample == null) {
+            generatedSample = new Sample();
+            generatedSample.setName(sampleName);
+            generatedNodes.put(sampleName, generatedSample);
+            allSamples.add(generatedSample);
+        }
         linkSourceAndSample(source, generatedSample);
-        allSamples.add(generatedSample);
         return generatedSample;
     }
 
     private Extract generateExtractAndLink(String baseGeneratedNodeName, Sample generatedSample) {
-        Extract generatedExtract = new Extract();
-        generatedExtract.setName(GENERATED_EXTRACT_PREFIX + baseGeneratedNodeName);
+        // Generate extract if not already generated.
+        String extractName = GENERATED_EXTRACT_PREFIX + baseGeneratedNodeName;
+        Extract generatedExtract = (Extract) generatedNodes.get(extractName);
+        if (generatedExtract == null) {
+            generatedExtract = new Extract();
+            generatedExtract.setName(extractName);
+            generatedNodes.put(extractName, generatedExtract);
+            allExtracts.add(generatedExtract);
+        }
         linkSampleAndExtract(generatedSample, generatedExtract);
-        allExtracts.add(generatedExtract);
         return generatedExtract;
     }
 
     private LabeledExtract generateLabeledExtractAndLink(String baseGeneratedNodeName, Extract generatedExtract) {
-        LabeledExtract generatedLabeledExtract = new LabeledExtract();
-        generatedLabeledExtract.setName(GENERATED_LABELED_EXTRACT_PREFIX + baseGeneratedNodeName);
+        // Generate labeled extract if not already generated.
+        String labeledExtractName = GENERATED_LABELED_EXTRACT_PREFIX + baseGeneratedNodeName;
+        LabeledExtract generatedLabeledExtract = (LabeledExtract) generatedNodes.get(labeledExtractName);
+        if (generatedLabeledExtract == null) {
+            generatedLabeledExtract = new LabeledExtract();
+            generatedLabeledExtract.setName(labeledExtractName);
+            generatedNodes.put(labeledExtractName, generatedLabeledExtract);
+            allLabeledExtracts.add(generatedLabeledExtract);
+        }
         linkExtractAndLabeledExtract(generatedExtract, generatedLabeledExtract);
-        allLabeledExtracts.add(generatedLabeledExtract);
         return generatedLabeledExtract;
     }
 
