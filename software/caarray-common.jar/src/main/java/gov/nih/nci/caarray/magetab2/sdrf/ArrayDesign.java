@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute 
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent 
  * government employees are authors, any rights in such works shall be subject 
  * to Title 17 of the United States Code, section 105. 
  *
- * This caArray Software License (the License) is between NCI and You. You (or 
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or 
  * Your) shall mean a person or an entity, and all other entities that control, 
  * are controlled by, or are under common control with the entity. Control for 
  * purposes of this definition means (i) the direct or indirect power to cause 
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described 
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up, 
  * no-charge, irrevocable, transferable and royalty-free right and license in 
- * its rights in the caArray Software to (i) use, install, access, operate, 
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate, 
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and 
- * have distributed to and by third parties the caArray Software and any 
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and 
+ * have distributed to and by third parties the caarray-common-jar Software and any 
  * modifications and derivative works thereof; and (iii) sublicense the 
  * foregoing rights set out in (i) and (ii) to third parties, including the 
  * right to license such rights to further third parties. For sake of clarity, 
@@ -82,73 +82,48 @@
  */
 package gov.nih.nci.caarray.magetab2.sdrf;
 
+import gov.nih.nci.caarray.magetab2.TermSource;
+import gov.nih.nci.caarray.magetab2.TermSourceable;
+
 /**
- * The different types of graph nodes supported in the SDRF format.
+ * @author Bill Mason
+ * 
  */
-public enum SdrfNodeType {
+public class ArrayDesign extends AbstractSampleDataRelationshipNode implements TermSourceable {
+
+    private static final long serialVersionUID = 1L;
+    private TermSource termSource;
+
+    /*
+     * (non-Javadoc)
+     * 
+     */
+    @Override
+    void addToSdrfList(SdrfDocument document) {
+        // TBD - not sure if there is to be a list of these things  8/1/2007  wlm
+        // document.getAllArrayDataMatrixFiles().add(this);
+    }
 
     /**
-     * Source.
+     * @return SdrfNodeType node type of ARRAY_DESIGN
      */
-    SOURCE,
+    @Override
+    public SdrfNodeType getNodeType() {
+        return SdrfNodeType.ARRAY_DESIGN;
+    }
 
     /**
-     * Sample.
+     * @return TermSouce the term Source
      */
-    SAMPLE,
+    public TermSource getTermSource() {
+        return termSource;
+    }
 
     /**
-     * Extract.
+     * @param termSource set the term Source
      */
-    EXTRACT,
+    public void setTermSource(TermSource termSource) {
+        this.termSource = termSource;
+    }
 
-    /**
-     * LabeledExtract.
-     */
-    LABELED_EXTRACT,
-
-    /**
-     * Hybridization.
-     */
-    HYBRIDIZATION,
-
-    /**
-     * Scan.
-     */
-    SCAN,
-
-    /**
-     * Normalization.
-     */
-    NORMALIZATION,
-
-    /**
-     * ArrrayDataFile.
-     */
-    ARRAY_DATA_FILE,
-
-    /**
-     * ArrrayDataMatrix.
-     */
-    ARRAY_DATA_MATRIX,
-
-    /**
-     * DerivedArrrayDataFile.
-     */
-    DERIVED_ARRAY_DATA_FILE,
-
-    /**
-     * DerivedArrrayDataMatrix.
-     */
-    DERIVED_ARRAY_DATA_MATRIX,
-
-    /**
-     * Image.
-     */
-    IMAGE,    
-    /**
-     * ArrayDesign.
-     */
-    ARRAY_DESIGN;    
-    
 }

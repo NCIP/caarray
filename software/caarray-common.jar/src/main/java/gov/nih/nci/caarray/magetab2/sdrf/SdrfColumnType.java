@@ -161,7 +161,7 @@ enum SdrfColumnType {
     /**
      * Array Design REF.
      */
-    ARRAY_DESIGN_REF,
+    ARRAY_DESIGN_REF (ArrayDesign.class),
 
     /**
      * Protocol REF.

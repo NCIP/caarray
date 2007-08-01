@@ -95,18 +95,35 @@ public final class EntryHeading implements Serializable {
     private static final char LSID_COMPONENT_SEPARATOR = ':';
     private static final char CATEGORY_START_DELIMITER = '[';
     private static final char CATEGORY_END_DELIMITER = ']';
+    private static final char TERM_SOURCE_START_DELIMITER = '(';
+    private static final char TERM_SOURCE_END_DELIMITER = ')';
     
     private String authority;
     private String namespace;
     private String qualifier;
     private String typeName;
     private final String headingString;
+    private String termSource;
 
     EntryHeading(final String headingString) {
         super();
         this.headingString = headingString;
         parseName();
         parseQualifier();
+        parseTermSource();
+    }
+
+     private void parseTermSource() {
+         if (hasTermSource()) {
+             int startIndex = headingString.indexOf(TERM_SOURCE_START_DELIMITER) + 1;
+             int endIndex = headingString.indexOf(TERM_SOURCE_END_DELIMITER);
+             termSource = headingString.substring(startIndex, endIndex);
+            
+         }
+    }
+
+    private boolean hasTermSource() {
+        return headingString.indexOf(TERM_SOURCE_START_DELIMITER) != -1;
     }
 
     private void parseName() {
@@ -223,5 +240,13 @@ public final class EntryHeading implements Serializable {
     public String toString() {
         return headingString;
     }
-    
+
+    /**
+     * @return the term source
+     */
+    public String getTermSource() {
+        return termSource;
+    }
+
+     
 }

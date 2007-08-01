@@ -95,6 +95,7 @@ import gov.nih.nci.caarray.magetab2.TermSource;
 import gov.nih.nci.caarray.magetab2.TermSourceable;
 import gov.nih.nci.caarray.magetab2.Unitable;
 import gov.nih.nci.caarray.magetab2.adf.ArrayDesign;
+import gov.nih.nci.caarray.magetab2.data.NativeDataFile;
 import gov.nih.nci.caarray.magetab2.idf.IdfDocument;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 
@@ -112,18 +113,19 @@ import java.util.Map;
  * experimental designs, constructing the SDRF file is straightforward, and even complex loop designs can be expressed
  * in this format.
  */
-@SuppressWarnings("PMD")  // Exception to PMD checking due to cycolmetric complexity and number of fields
+@SuppressWarnings("PMD")
+// Exception to PMD checking due to cycolmetric complexity and number of fields
 public final class SdrfDocument extends AbstractMageTabDocument {
 
     private static final long serialVersionUID = 1116542609494378874L;
     private IdfDocument idfDocument;
     private final List<SdrfColumn> columns = new ArrayList<SdrfColumn>();
-    private final Map<NodeKey, AbstractSampleDataRelationshipNode> nodeCache =
+    private final Map<NodeKey, AbstractSampleDataRelationshipNode> nodeCache = 
         new HashMap<NodeKey, AbstractSampleDataRelationshipNode>();
     private AbstractSampleDataRelationshipNode currentNode;
     private Unitable currentUnitable;
     private TermSourceable currentTermSourceable;
-    private final List<AbstractSampleDataRelationshipNode> leftmostNodes =
+    private final List<AbstractSampleDataRelationshipNode> leftmostNodes = 
         new ArrayList<AbstractSampleDataRelationshipNode>();
     private ProtocolApplication currentProtocolApp;
     private final List<Characteristic> characteristicsList = new ArrayList<Characteristic>();
@@ -145,7 +147,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     /**
      * Creates a new SDRF from an existing file.
-     *
+     * 
      * @param documentSet the MAGE-TAB document set the IDF belongs to.
      * @param file the file containing the IDF content.
      */
@@ -155,9 +157,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     /**
      * Parses the MAGE-TAB document, creating the object graph of entities.
-     *
+     * 
      * @throws MageTabParsingException
-     *
+     * 
      * @throws MageTabParsingException if the document couldn't be read.
      * @throws MageTabTextFileLoaderException
      */
@@ -169,6 +171,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             handleLine(tabDelimitedReader.nextLine());
         }
     }
+
 
     private void handleHeaderLine(List<String> values) {
         for (int i = 0; i < values.size(); i++) {
@@ -192,6 +195,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         case EXTRACT_NAME:
         case LABELED_EXTRACT_NAME:
         case HYBRIDIZATION_NAME:
+        case SCAN_NAME:
+        case NORMALIZATION_NAME:
             handleNode(column, value);
             break;
         case PROVIDER:
@@ -218,17 +223,20 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         case LABEL:
             handleLabel(column, value);
             break;
+        case ARRAY_DESIGN_REF:
+            handleArrayDesign(column, value);
+            break;
         case DERIVED_ARRAY_DATA_FILE:
-            // handleDerivedArrayDataFile(value);
+            handleDerivedArrayDataFile(value);
             break;
         case ARRAY_DATA_FILE:
-            // handleArrayDataFile(value);
+            handleArrayDataFile(value);
             break;
         case ARRAY_DATA_MATRIX_FILE:
-            // handleArrayDataMatrixFile(value);
+            handleArrayDataMatrixFile(value);
             break;
         case DERIVED_ARRAY_DATA_MATRIX_FILE:
-            // handleDerivedArrayDataMatrixFile(value);
+            handleDerivedArrayDataMatrixFile(value);
             break;
         case IMAGE_FILE:
             // handleImageFile(value);
@@ -236,11 +244,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         case ARRAY_DESIGN_FILE:
             // handleArrayDesignFile(value);
             break;
-        case ARRAY_DESIGN_REF:
-            // handleArrayDesignRef(value);
-            break;
         case FACTOR_VALUE:
-            // handleFactorValue(value);
+            handleFactorValue(column, value);
             break;
         case PERFORMER:
             // handlePerformer(value);
@@ -254,12 +259,66 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         case COMMENT:
             // handleComment(value);
             break;
-        case SCAN_NAME:
-            // handleScanName(value);
-            break;
         default:
             break;
         }
+    }
+
+    /**
+     * @param column
+     * @param value
+     */
+    private void handleArrayDesign(SdrfColumn column, String value) {
+        handleNode(column, value);
+        currentTermSourceable = (TermSourceable) currentNode;
+
+    }
+
+    private void handleFactorValue(SdrfColumn column, String value) {
+        FactorValue factorValue = new FactorValue();
+        factorValue.setValue(value);
+        currentTermSourceable = factorValue;
+        handleTermSourceRef(column.getHeading().getTermSource());
+        currentUnitable = factorValue;
+        handleUnit(column, value);
+    }
+
+    private void handleDerivedArrayDataFile(String value) {
+        NativeDataFile nativeDataFile = getDocumentSet().getNativeDataFile(value);
+        DerivedArrayDataFile adf = new DerivedArrayDataFile();
+        adf.setNativeDataFile(nativeDataFile);
+        adf.setName(value);
+        adf.addToSdrfList(this);
+        adf.link(currentNode);
+        currentNode = adf;
+    }
+
+    private void handleArrayDataFile(String value) {
+        NativeDataFile nativeDataFile = getDocumentSet().getNativeDataFile(value);
+        ArrayDataFile adf = new ArrayDataFile();
+        adf.setNativeDataFile(nativeDataFile);
+        adf.setName(value);
+        adf.addToSdrfList(this);
+        adf.link(currentNode);
+        currentNode = adf;
+    }
+
+    private void handleDerivedArrayDataMatrixFile(String value) {
+        DerivedArrayDataMatrixFile admf = new DerivedArrayDataMatrixFile();
+        admf.setDataMatrix(getDocumentSet().getArrayDataMatrix(value));
+        admf.setName(value);
+        admf.addToSdrfList(this);
+        admf.link(currentNode);
+        currentNode = admf;
+    }
+
+    private void handleArrayDataMatrixFile(String value) {
+        ArrayDataMatrixFile admf = new ArrayDataMatrixFile();
+        admf.setDataMatrix(getDocumentSet().getArrayDataMatrix(value));
+        admf.setName(value);
+        admf.addToSdrfList(this);
+        admf.link(currentNode);
+        currentNode = admf;
     }
 
     private void handleLabel(SdrfColumn column, String value) {
@@ -301,7 +360,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleCharacteristic(String value, SdrfColumn currentColumn, SdrfColumn nextColumn) {
         Characteristic characteristic = new Characteristic();
         characteristic.setValue(value);
-        //  if the next column is a CHARACTERISTICS column add to the list
+        // if the next column is a CHARACTERISTICS column add to the list
         if (nextColumn != null && nextColumn.getType() == SdrfColumnType.CHARACTERISTICS) {
             characteristicsList.add(characteristic);
         } else {
@@ -315,19 +374,17 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         }
     }
 
-   private void createCharacteristicTerms(SdrfColumn currentColumn) {
+    private void createCharacteristicTerms(SdrfColumn currentColumn) {
         for (Characteristic aCharacteristic : characteristicsList) {
             ((AbstractBioMaterial) currentNode).getCharacteristics().add(aCharacteristic);
             // set the characteristic value as the term since the next column is a term source ref
-            OntologyTerm term =
-                getOntologyTerm(currentColumn.getHeading().getQualifier(), aCharacteristic.getValue());
+            OntologyTerm term = getOntologyTerm(currentColumn.getHeading().getQualifier(), aCharacteristic.getValue());
             // the value becomes the term so clear out the value
             aCharacteristic.setValue(null);
             aCharacteristic.setTerm(term);
             currentTermSourceable = term;
         }
     }
-
 
     private void handleProtocolRef(String value, SdrfColumn nextColumn) {
         ProtocolApplication protocolApp = new ProtocolApplication();
@@ -539,7 +596,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
      */
     public List<ArrayDataMatrixFile> getAllArrayDataMatrixFiles() {
         return allArrayDataMatrixFiles;
-}
+    }
+
     /**
      * @return the allDerivedArrayDataMatrixFiles
      */
