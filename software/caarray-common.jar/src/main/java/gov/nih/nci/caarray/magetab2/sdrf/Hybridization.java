@@ -82,12 +82,16 @@
  */
 package gov.nih.nci.caarray.magetab2.sdrf;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The act of hybridizing biomaterials to a microarray.
  */
 public final class Hybridization extends AbstractSampleDataRelationshipNode {
 
     private static final long serialVersionUID = -244337508880218634L;
+    private final List<FactorValue> factorValues = new ArrayList<FactorValue>(); 
 
     /**
      * {@inheritDoc}
@@ -100,6 +104,12 @@ public final class Hybridization extends AbstractSampleDataRelationshipNode {
     @Override
     void addToSdrfList(SdrfDocument document) {
         document.getAllHybridizations().add(this);
+    }
+    /**
+     * @return the factor values
+     */
+    public List<FactorValue> getFactorValues() {
+        return factorValues;
     }
 
 }

@@ -137,7 +137,7 @@ public class MageTabTranslatorTest {
     private void testSpecificationDocuments() {
         CaArrayTranslationResult result = translator.translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
         CaArrayEntityTestUtility.printEntities(result.getTerms());
-        assertEquals(17, result.getTerms().size());
+        assertEquals(20, result.getTerms().size());
         assertEquals(1, result.getInvestigations().size());
         Investigation investigation = result.getInvestigations().iterator().next();
         assertEquals(6, investigation.getSources().size());

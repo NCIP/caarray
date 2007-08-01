@@ -172,7 +172,6 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         }
     }
 
-
     private void handleHeaderLine(List<String> values) {
         for (int i = 0; i < values.size(); i++) {
             columns.add(new SdrfColumn(createHeading(values.get(i))));
@@ -282,6 +281,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         currentUnitable = factorValue;
         handleUnit(column, value);
         currentUnitable.getUnit().setTermSource(factorValue.getTermSource());
+        // set it on Hybridization
+        // TBD - ask Eric
+        allHybridizations.get(allHybridizations.size() - 1).getFactorValues().add(factorValue);
     }
 
     private void handleDerivedArrayDataFile(String value) {
