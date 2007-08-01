@@ -281,12 +281,12 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         handleTermSourceRef(column.getHeading().getTermSource());
         currentUnitable = factorValue;
         handleUnit(column, value);
+        currentUnitable.getUnit().setTermSource(factorValue.getTermSource());
     }
 
     private void handleDerivedArrayDataFile(String value) {
-        NativeDataFile nativeDataFile = getDocumentSet().getNativeDataFile(value);
         DerivedArrayDataFile adf = new DerivedArrayDataFile();
-        adf.setNativeDataFile(nativeDataFile);
+        adf.setNativeDataFile(getDocumentSet().getNativeDataFile(value));
         adf.setName(value);
         adf.addToSdrfList(this);
         adf.link(currentNode);
@@ -294,8 +294,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     }
 
     private void handleArrayDataFile(String value) {
-        NativeDataFile nativeDataFile = getDocumentSet().getNativeDataFile(value);
         ArrayDataFile adf = new ArrayDataFile();
+        NativeDataFile nativeDataFile = getDocumentSet().getNativeDataFile(value);
         adf.setNativeDataFile(nativeDataFile);
         adf.setName(value);
         adf.addToSdrfList(this);
