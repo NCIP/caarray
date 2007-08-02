@@ -92,13 +92,24 @@ import com.thoughtworks.selenium.SeleneseTestCase;
  */
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
+    private static final String PAGE_TIMEOUT = "30000";
+
     @Override
     public void setUp() throws Exception {
         System.setProperty("selenium.port", "8081");
         String hostname = System.getProperty("test.hostname", "localhost");
         String port = System.getProperty("test.port", "8080");
-        String browser = System.getProperty("test.browser", "*iexplore");
+        String browser = System.getProperty("test.browser", "*firefox");
         super.setUp("http://" + hostname + ":" + port, browser);
+    }
+
+    protected void waitForPageToLoad() {
+        selenium.waitForPageToLoad(PAGE_TIMEOUT);
+    }
+    
+    protected void clickAndWait(String linkOrButton) {
+        selenium.click(linkOrButton);
+        waitForPageToLoad();
     }
 
 }
