@@ -101,6 +101,7 @@
     <property name="test.target.dir" value="${test.dir}/target" />
     <property name="test.src.dir" value="${test.dir}/src/test/java" />
     <property name="test.data.dir" value="${test.dir}/src/test/data" />
+    <property name="test.resources.dir" value="${test.dir}/src/test/resources" />
     <property name="test.classes.dir" value="${test.target.dir}/test-classes" />
 
     <path id="cobertura.classpath">
@@ -654,7 +655,7 @@
 
     <target name="test:functional:run-tests" depends="test:selenium:run-tests" />
 
-    <target name="test:selenium:run-tests" depends="test:functional:compile-tests">
+    <target name="test:selenium:run-tests" depends="test:functional:compile-tests,test:selenium:prepare-selenium-server.jar">
         <antcall target="test:selenium:start-server" />
         <run-junit-tests
             test.src.dir="${test.src.dir}"
@@ -662,6 +663,11 @@
             classpath="${test.classes.dir};${selenium-server.jar};${selenium-java-client-driver.jar};${selenium-java-client-driver-tests.jar};${junit.jar}" />
         <antcall target="test:selenium:stop-server" />
     </target>
+
+    <target name="test:selenium:prepare-selenium-server.jar">
+        <jar update="true" jarfile="${selenium-server.jar}" basedir="${test.resources.dir}/selenium" />
+    </target>
+
 
     <!-- ******************************************************************* -->
     <!-- ** CHECK TARGETS                                                 ** -->
