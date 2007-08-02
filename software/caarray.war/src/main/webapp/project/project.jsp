@@ -10,6 +10,7 @@
 <title>Manage Project</title>
 </head>
 <body>
+<h1>Manage Project</h1>
 <f:view>
 <%@include file="/navigation/menu.jsp" %>
 

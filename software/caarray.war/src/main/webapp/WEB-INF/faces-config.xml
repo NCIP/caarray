@@ -24,28 +24,33 @@
             <to-view-id>/project/projectProposal.jsp</to-view-id>
         </navigation-case>
     </navigation-rule>
+    
     <navigation-rule>
         <navigation-case>
             <from-outcome>workspace</from-outcome>
             <to-view-id>/project/workspace.jsp</to-view-id>
         </navigation-case>
     </navigation-rule>
+    
     <navigation-rule>
         <navigation-case>
             <from-outcome>project</from-outcome>
             <to-view-id>/project/project.jsp</to-view-id>
         </navigation-case>
     </navigation-rule>
+    
     <navigation-rule>
         <navigation-case>
             <from-outcome>manageProjectFiles</from-outcome>
             <to-view-id>/project/files.jsp</to-view-id>
         </navigation-case>
     </navigation-rule>
+    
     <navigation-rule>
         <from-view-id>/project/projectProposal.jsp</from-view-id>
         <navigation-case>
-            <to-view-id>/index.jsp</to-view-id>
+            <from-outcome>success</from-outcome>
+            <to-view-id>/project/workspace.jsp</to-view-id>
         </navigation-case>
     </navigation-rule>
 

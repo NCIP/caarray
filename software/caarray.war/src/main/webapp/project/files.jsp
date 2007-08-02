@@ -11,6 +11,7 @@
 <title>Manage Project Files</title>
 </head>
 <body>
+<h1>Manage Project Files</h1>
 <f:view>
 <%@include file="/navigation/menu.jsp" %>
 

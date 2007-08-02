@@ -10,6 +10,7 @@
 <title>User Workspace</title>
 </head>
 <body>
+<h1>User Workspace</h1>
 <f:view>
 <%@include file="/navigation/menu.jsp" %>
 

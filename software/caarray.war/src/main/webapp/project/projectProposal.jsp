@@ -7,10 +7,10 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Welcome to caArray 2</title>
+<title>Project Proposal</title>
 </head>
 <body>
-<h1>Welcome to caArray 2</h1>
+<h1>Project Proposal</h1>
 <f:view>
 <%@include file="/navigation/menu.jsp" %>
 
