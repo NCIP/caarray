@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.domain.hybridization;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.Array;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.project.FactorValue;
@@ -94,36 +95,49 @@ import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * The act of hybridizing extracted genetic material to the probes on a microarray.
  */
+@Entity
+@Table(name = "HYBRIDIZATION")
 public class Hybridization extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
+    private static final String FK_COLUMN = "HYBRIDIZATION_ID";
 
     private String name;
     private RawArrayData arrayData;
     private Array array;
     private Set<Image> images = new HashSet<Image>();
-    private AbstractCaArrayEntity derivedData;
+    private DerivedArrayData derivedData;
     private ProtocolApplication protocolApplication;
     private Set<LabeledExtract> labeledExtract = new HashSet<LabeledExtract>();
     private Set<FactorValue> factorValues = new HashSet<FactorValue>();
 
     /**
      * Gets the name.
-     * 
+     *
      * @return the name
      */
+    @Column(name = "NAME", length = DEFAULT_STRING_COLUMN_SIZE, nullable = false)
     public String getName() {
         return name;
     }
 
     /**
      * Sets the name.
-     * 
+     *
      * @param nameVal
      *            the name
      */
@@ -133,16 +147,18 @@ public class Hybridization extends AbstractCaArrayEntity {
 
     /**
      * Gets the images.
-     * 
+     *
      * @return the images
      */
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = FK_COLUMN)
     public Set<Image> getImages() {
         return images;
     }
 
     /**
      * Sets the images.
-     * 
+     *
      * @param imagesVal
      *            the images
      */
@@ -153,16 +169,17 @@ public class Hybridization extends AbstractCaArrayEntity {
 
     /**
      * Gets the arrayData.
-     * 
+     *
      * @return the arrayData
      */
+    @OneToOne(mappedBy = "hybridization")
     public RawArrayData getArrayData() {
         return arrayData;
     }
 
     /**
      * Sets the arrayData.
-     * 
+     *
      * @param arrayDataVal
      *            the arrayData
      */
@@ -172,16 +189,18 @@ public class Hybridization extends AbstractCaArrayEntity {
 
     /**
      * Gets the array.
-     * 
+     *
      * @return the array
      */
+    @ManyToOne
+    @JoinColumn(name = FK_COLUMN)
     public Array getArray() {
         return array;
     }
 
     /**
      * Sets the array.
-     * 
+     *
      * @param arrayVal
      *            the array
      */
@@ -191,35 +210,38 @@ public class Hybridization extends AbstractCaArrayEntity {
 
     /**
      * Gets the derivedData.
-     * 
+     *
      * @return the derivedData
      */
-    public AbstractCaArrayEntity getDerivedData() {
+    @OneToOne(mappedBy = "hybridization")
+    public DerivedArrayData getDerivedData() {
         return derivedData;
     }
 
     /**
      * Sets the derivedData.
-     * 
+     *
      * @param derivedDataVal
      *            the derivedData
      */
-    public void setDerivedData(final AbstractCaArrayEntity derivedDataVal) {
+    public void setDerivedData(final DerivedArrayData derivedDataVal) {
         this.derivedData = derivedDataVal;
     }
 
     /**
      * Gets the factorValues.
-     * 
+     *
      * @return the factorValues
      */
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = FK_COLUMN)
     public Set<FactorValue> getFactorValues() {
         return factorValues;
     }
 
     /**
      * Sets the factorValues.
-     * 
+     *
      * @param factorValuesVal
      *            the factorValues
      */
@@ -230,16 +252,18 @@ public class Hybridization extends AbstractCaArrayEntity {
 
     /**
      * Gets the protocolApplication.
-     * 
+     *
      * @return the protocolApplication
      */
+    @ManyToOne
+    @JoinColumn(name = "PROTOCOL_APPLICATION_ID", nullable = false)
     public ProtocolApplication getProtocolApplication() {
         return protocolApplication;
     }
 
     /**
      * Sets the protocolApplication.
-     * 
+     *
      * @param protocolApplicationVal
      *            the protocolApplication
      */
@@ -250,16 +274,18 @@ public class Hybridization extends AbstractCaArrayEntity {
 
     /**
      * Gets the labeledExtract.
-     * 
+     *
      * @return the labeledExtract
      */
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = FK_COLUMN)
     public Set<LabeledExtract> getLabeledExtract() {
         return labeledExtract;
     }
 
     /**
      * Sets the labeledExtract.
-     * 
+     *
      * @param labeledExtractVal
      *            the labeledExtract
      */
@@ -270,7 +296,7 @@ public class Hybridization extends AbstractCaArrayEntity {
 
     /**
      * Checks if given object is equal to this object.
-     * 
+     *
      * @param obj
      *            the object to compare to this object
      * @return true if they are equal, false if they are not
@@ -290,7 +316,7 @@ public class Hybridization extends AbstractCaArrayEntity {
 
     /**
      * Returns the hashcode for the object.
-     * 
+     *
      * @return the int hashcode
      */
     @Override

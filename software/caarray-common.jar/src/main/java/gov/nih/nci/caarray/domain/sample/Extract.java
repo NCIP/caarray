@@ -86,12 +86,21 @@ package gov.nih.nci.caarray.domain.sample;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
 
   /**
 
    */
-
+@Entity
+@DiscriminatorValue("EX")
 public class Extract extends AbstractBioMaterial {
     /**
      * The serial version UID for serialization.
@@ -109,6 +118,7 @@ public class Extract extends AbstractBioMaterial {
      *
      * @return the samples
      */
+    @ManyToMany(mappedBy = "extracts")
     public Set<Sample> getSamples() {
         return samples;
     }
@@ -133,6 +143,14 @@ public class Extract extends AbstractBioMaterial {
      *
      * @return the labeledExtracts
      */
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "EXTRACTLABELEDEXTRACT",
+            joinColumns = { @javax.persistence.JoinColumn(name = "EXTRACT_ID") },
+            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "LABELEDEXTRACT_ID") }
+    )
+    @ForeignKey(name = "EXTRACT_ID", inverseName = "LABELEDEXTRACT_ID")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<LabeledExtract> getLabeledExtracts() {
         return labeledExtracts;
     }

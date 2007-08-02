@@ -83,6 +83,10 @@
 
 package gov.nih.nci.caarray.domain.contact;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
@@ -90,7 +94,8 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
   /**
 
    */
-
+@Entity
+@Table(name = "ADDRESS")
 public class Address extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -107,6 +112,7 @@ public class Address extends AbstractCaArrayEntity {
      *
      * @return the city
      */
+    @Column(name = "CITY", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getCity() {
         return city;
     }
@@ -129,6 +135,7 @@ public class Address extends AbstractCaArrayEntity {
      *
      * @return the state
      */
+    @Column(name = "STATE", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getState() {
         return state;
     }
@@ -151,6 +158,7 @@ public class Address extends AbstractCaArrayEntity {
      *
      * @return the streetAddress1
      */
+    @Column(name = "STREETADDRESS1", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getStreetAddress1() {
         return streetAddress1;
     }
@@ -173,6 +181,7 @@ public class Address extends AbstractCaArrayEntity {
      *
      * @return the streetAddress2
      */
+    @Column(name = "STREETADDRESS2", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getStreetAddress2() {
         return streetAddress2;
     }
@@ -195,6 +204,7 @@ public class Address extends AbstractCaArrayEntity {
      *
      * @return the zipCode
      */
+    @Column(name = "ZIPCODE", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getZipCode() {
         return zipCode;
     }

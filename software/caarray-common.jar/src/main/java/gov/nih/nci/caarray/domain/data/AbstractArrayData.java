@@ -91,9 +91,18 @@ import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+
 /**
- * 
+ *
  */
+@MappedSuperclass
 public abstract class AbstractArrayData extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
@@ -106,7 +115,9 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      *
      * @return the dataFile
      */
-    public final CaArrayFile getDataFile() {
+    @ManyToOne
+    @JoinColumn(name = "ARRAY_DATA_ID")
+    public CaArrayFile getDataFile() {
         return dataFile;
     }
 
@@ -115,7 +126,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      *
      * @param dataFileVal the dataFile
      */
-    public final void setDataFile(final CaArrayFile dataFileVal) {
+    public void setDataFile(final CaArrayFile dataFileVal) {
         this.dataFile = dataFileVal;
     }
 
@@ -124,6 +135,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      *
      * @return the name
      */
+    @Column(name = "NAME", length = DEFAULT_STRING_COLUMN_SIZE, nullable = false)
     public String getName() {
         return name;
     }
@@ -147,6 +159,8 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      *
      * @return the protocolApplications
      */
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "ARRAY_DATA_ID")
     public Set<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }
@@ -198,14 +212,16 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
     /**
      * @return the hybridization
      */
-    public final Hybridization getHybridization() {
+    @OneToOne
+    @JoinColumn(name = "HYBRIDIZATION_ID")
+    public Hybridization getHybridization() {
         return hybridization;
     }
 
     /**
      * @param hybridization the hybridization to set
      */
-    public final void setHybridization(Hybridization hybridization) {
+    public void setHybridization(Hybridization hybridization) {
         this.hybridization = hybridization;
     }
 

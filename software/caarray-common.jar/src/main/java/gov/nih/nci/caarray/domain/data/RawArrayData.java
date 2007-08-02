@@ -83,12 +83,16 @@
 
 package gov.nih.nci.caarray.domain.data;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 
   /**
 
    */
-
+@Entity
+@Table(name = "RAW_ARRAY_DATA")
 public class RawArrayData extends AbstractArrayData {
     /**
      * The serial version UID for serialization.

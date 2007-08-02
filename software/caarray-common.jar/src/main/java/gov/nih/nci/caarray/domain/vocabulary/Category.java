@@ -88,12 +88,24 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 
   /**
 
    */
-
+@Entity
+@Table(name = "CATEGORY")
 public class Category extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -110,6 +122,7 @@ public class Category extends AbstractCaArrayEntity {
      *
      * @return the name
      */
+    @Column(name = "NAME", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
         return name;
     }
@@ -126,14 +139,19 @@ public class Category extends AbstractCaArrayEntity {
     /**
      * The parent gov.nih.nci.caarray.domain.vocabulary.Category.
      */
-    private gov.nih.nci.caarray.domain.vocabulary.Category parent;
+    private Category parent;
 
     /**
      * Gets the parent.
      *
      * @return the parent
      */
-    public gov.nih.nci.caarray.domain.vocabulary.Category getParent() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "PARENT_ID")
+    @Index(name = "CATEGORY_PARENT_IDX")
+    @ForeignKey(name = "PARENT_ID")
+    public Category getParent() {
         return parent;
     }
 
@@ -142,8 +160,7 @@ public class Category extends AbstractCaArrayEntity {
      *
      * @param parentVal the parent
      */
-    public void setParent(final
-      gov.nih.nci.caarray.domain.vocabulary.Category parentVal) {
+    public void setParent(final Category parentVal) {
         this.parent = parentVal;
     }
 
@@ -157,6 +174,9 @@ public class Category extends AbstractCaArrayEntity {
      *
      * @return the children
      */
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "PARENT_ID")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Category> getChildren() {
         return children;
     }

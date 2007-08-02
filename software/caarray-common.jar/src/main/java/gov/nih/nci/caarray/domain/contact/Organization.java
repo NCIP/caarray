@@ -83,12 +83,17 @@
 
 package gov.nih.nci.caarray.domain.contact;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 
   /**
 
    */
-
+@Entity
+@DiscriminatorValue("O")
 public class Organization extends AbstractContact {
     /**
      * The serial version UID for serialization.
@@ -105,6 +110,7 @@ public class Organization extends AbstractContact {
      *
      * @return the name
      */
+    @Column(name = "NAME", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
         return name;
     }

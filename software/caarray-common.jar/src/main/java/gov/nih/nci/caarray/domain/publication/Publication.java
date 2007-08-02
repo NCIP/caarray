@@ -83,14 +83,26 @@
 
 package gov.nih.nci.caarray.domain.publication;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
   /**
 
    */
-
+@Entity
+@Table(name = "PUBLICATION")
 public class Publication extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -107,6 +119,7 @@ public class Publication extends AbstractCaArrayEntity {
      *
      * @return the authors
      */
+    @Column(name = "AUTHORS", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getAuthors() {
         return authors;
     }
@@ -129,6 +142,7 @@ public class Publication extends AbstractCaArrayEntity {
      *
      * @return the doi
      */
+    @Column(name = "DOI", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getDoi() {
         return doi;
     }
@@ -151,6 +165,7 @@ public class Publication extends AbstractCaArrayEntity {
      *
      * @return the pubMedId
      */
+    @Column(name = "PUBMEDID", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getPubMedId() {
         return pubMedId;
     }
@@ -166,14 +181,19 @@ public class Publication extends AbstractCaArrayEntity {
     /**
      * The status gov.nih.nci.caarray.domain.vocabulary.Term.
      */
-    private gov.nih.nci.caarray.domain.vocabulary.Term status;
+    private Term status;
 
     /**
      * Gets the status.
      *
      * @return the status
      */
-    public gov.nih.nci.caarray.domain.vocabulary.Term getStatus() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "STATUS_ID")
+    @Index(name = "PUBLICATION_STATUS_IDX")
+    @ForeignKey(name = "STATUS_ID")
+    public Term getStatus() {
         return status;
     }
 
@@ -182,7 +202,7 @@ public class Publication extends AbstractCaArrayEntity {
      *
      * @param statusVal the status
      */
-    public void setStatus(final gov.nih.nci.caarray.domain.vocabulary.Term statusVal) {
+    public void setStatus(final Term statusVal) {
         this.status = statusVal;
     }
     /**
@@ -195,6 +215,7 @@ public class Publication extends AbstractCaArrayEntity {
      *
      * @return the title
      */
+    @Column(name = "TITLE", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getTitle() {
         return title;
     }

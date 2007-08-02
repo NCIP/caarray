@@ -83,7 +83,19 @@
 
 package gov.nih.nci.caarray.domain.array;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.contact.Organization;
@@ -94,6 +106,8 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 /**
  * The design details for a type of microarray.
  */
+@Entity
+@Table(name = "ARRAYDESIGN")
 public class ArrayDesign extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
@@ -114,6 +128,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @return the name
      */
+    @Column(name = "NAME", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
         return name;
     }
@@ -132,6 +147,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @return the numberOfFeatures
      */
+    @Transient
     public Integer getNumberOfFeatures() {
         return numberOfFeatures;
     }
@@ -149,6 +165,11 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @return the polymerType
      */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "POLYMERTYPE_ID")
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @Index(name = "ARRAYDESIGN_POLYMER_IDX")
+    @ForeignKey(name = "POLYMERTYPE_ID")
     public Term getPolymerType() {
         return polymerType;
     }
@@ -166,6 +187,11 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @return the substrateType
      */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "SUBSTRATETYPE_ID")
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @Index(name = "ARRAYDESIGN_SUBSTRAE_IDX")
+    @ForeignKey(name = "SUBSTRATETYPE_ID")
     public Term getSubstrateType() {
         return substrateType;
     }
@@ -183,6 +209,11 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @return the surfaceType
      */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "SURFACETYPE_ID")
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @Index(name = "ARRAYDESIGN_SURFACE_IDX")
+    @ForeignKey(name = "SURFACETYPE_ID")
     public Term getSurfaceType() {
         return surfaceType;
     }
@@ -200,6 +231,11 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @return the technologyType
      */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "TECHNOLOGYTYPE_ID")
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @Index(name = "ARRAYDESIGN_TECHNOLOGY_IDX")
+    @ForeignKey(name = "TECHNOLOGIYTYPE_ID")
     public Term getTechnologyType() {
         return technologyType;
     }
@@ -217,6 +253,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @return the version
      */
+    @Column(name = "VERSION", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getVersion() {
         return version;
     }
@@ -235,6 +272,11 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @return the provider
      */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "PROVIDER_ID")
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @Index(name = "ARRAYDESIGN_PROVIDER_IDX")
+    @ForeignKey(name = "PROVIDER_ID")
     public Organization getProvider() {
         return provider;
     }
@@ -254,6 +296,10 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @return the printing
      */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "PRINTING_ID")
+    @Index(name = "ARRAYDESIGN_PRINTING_IDX")
+    @ForeignKey(name = "PRINTING_ID")
     public ProtocolApplication getPrinting() {
         return printing;
     }
@@ -271,6 +317,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     /**
      * @return the designFile
      */
+    @Transient
     public CaArrayFile getDesignFile() {
         return designFile;
     }

@@ -92,12 +92,27 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 
  /**
   * A microarray project.
   */
+@Entity
+@Table(name = "PROJECT")
 public class Project extends AbstractCaArrayEntity implements Comparable<Project> {
 
     /**
@@ -123,6 +138,11 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      *
      * @return the investigation
      */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "INVESTIGATION_ID")
+    @Index(name = "PROJECT_INVESTIGATION_IDX")
+    @ForeignKey(name = "INVESTIGATION_ID")
     public Investigation getInvestigation() {
         return investigation;
     }
@@ -146,6 +166,10 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      *
      * @return the files
      */
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "PROJECT_ID")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Sort(type = SortType.NATURAL)
     public SortedSet<CaArrayFile> getFiles() {
         return files;
     }
@@ -155,6 +179,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      *
      * @return files, as list
      */
+    @Transient
     public List<CaArrayFile> getFilesList() {
         List<CaArrayFile> result = new ArrayList<CaArrayFile>(getFiles().size());
         result.addAll(getFiles());
@@ -208,6 +233,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     /**
      * @return the files contained in the project as a set.
      */
+    @Transient
     public CaArrayFileSet getFileSet() {
         CaArrayFileSet fileSet = new CaArrayFileSet(this);
         fileSet.addAll(files);

@@ -84,17 +84,30 @@
 package gov.nih.nci.caarray.domain.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.contact.AbstractContact;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 
   /**
 
    */
-
+@Entity
+@Table(name = "INVESTIGATIONCONTACT")
 public class InvestigationContact extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -105,14 +118,19 @@ public class InvestigationContact extends AbstractCaArrayEntity {
     /**
      * The contact gov.nih.nci.caarray.domain.contact.AbstractContact.
      */
-    private gov.nih.nci.caarray.domain.contact.AbstractContact contact;
+    private AbstractContact contact;
 
     /**
      * Gets the contact.
      *
      * @return the contact
      */
-    public gov.nih.nci.caarray.domain.contact.AbstractContact getContact() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "CONTACT_ID")
+    @Index(name = "INVESTIGATIONCONTACT_CONTACT_IDX")
+    @ForeignKey(name = "CONTACT_ID")
+    public AbstractContact getContact() {
         return contact;
     }
 
@@ -121,8 +139,7 @@ public class InvestigationContact extends AbstractCaArrayEntity {
      *
      * @param contactVal the contact
      */
-    public void setContact(final
-      gov.nih.nci.caarray.domain.contact.AbstractContact contactVal) {
+    public void setContact(final AbstractContact contactVal) {
         this.contact = contactVal;
     }
 
@@ -136,6 +153,14 @@ public class InvestigationContact extends AbstractCaArrayEntity {
      *
      * @return the roles
      */
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "INVESTIGATIONCONTACTROLE",
+            joinColumns = { @JoinColumn(name = "INVESTIGATIONCONTACT_ID") },
+            inverseJoinColumns = { @JoinColumn(name = "ROLE_ID") }
+    )
+    @ForeignKey(name = "INVESTIGATIONCONTACT_ID", inverseName = "ROLE_ID")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Term> getRoles() {
         return roles;
     }

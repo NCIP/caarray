@@ -83,15 +83,25 @@
 
 package gov.nih.nci.caarray.domain.contact;
 
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
 
   /**
 
    */
-
+@Entity
+@DiscriminatorValue("P")
 public class Person extends AbstractContact {
     /**
      * The serial version UID for serialization.
@@ -108,6 +118,7 @@ public class Person extends AbstractContact {
      *
      * @return the firstName
      */
+    @Column(name = "FIRSTNAME", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getFirstName() {
         return firstName;
     }
@@ -130,6 +141,7 @@ public class Person extends AbstractContact {
      *
      * @return the lastName
      */
+    @Column(name = "LASTNAME", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getLastName() {
         return lastName;
     }
@@ -152,6 +164,7 @@ public class Person extends AbstractContact {
      *
      * @return the middleInitials
      */
+    @Column(name = "MIDDLEINITIAL", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getMiddleInitials() {
         return middleInitials;
     }
@@ -168,14 +181,22 @@ public class Person extends AbstractContact {
     /**
      * The affiliations set.
      */
-    private final Collection<Object> affiliations = new HashSet<Object>();
+    private Set<Organization> affiliations = new HashSet<Organization>();
 
     /**
      * Gets the affiliations.
      *
      * @return the affiliations
      */
-    public Collection<Object> getAffiliations() {
+    @ManyToMany
+    @JoinTable(
+            name = "PERSONORGANIZATION",
+            joinColumns = { @JoinColumn(name = "PERSON_ID") },
+            inverseJoinColumns = { @JoinColumn(name = "ORGANIZATION_ID") }
+    )
+    @ForeignKey(name = "PERSON_ID", inverseName = "ORGANIZATION_ID")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    public Set<Organization> getAffiliations() {
         return affiliations;
     }
 
@@ -184,9 +205,9 @@ public class Person extends AbstractContact {
      *
      * @param affiliationsVal the affiliations
      */
-    @SuppressWarnings("unchecked")
-    public void setAffiliations(final Collection<Object> affiliationsVal) {
-        this.affiliations.addAll(affiliationsVal);
+    @SuppressWarnings("unused")
+    private void setAffiliations(final Set<Organization> affiliationsVal) { // NOPMD
+        this.affiliations = affiliationsVal;
     }
 
     /**

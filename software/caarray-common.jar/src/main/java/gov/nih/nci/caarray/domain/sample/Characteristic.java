@@ -83,14 +83,25 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
   /**
 
    */
-
+@Entity
+@Table(name = "CHARACTERISTIC")
 public class Characteristic extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -107,7 +118,12 @@ public class Characteristic extends gov.nih.nci.caarray.domain.AbstractCaArrayEn
      *
      * @return the term
      */
-    public gov.nih.nci.caarray.domain.vocabulary.Term getTerm() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "TERM_ID")
+    @Index(name = "CHARACTERISTIC_TERM_IDX")
+    @ForeignKey(name = "TERM_ID")
+    public Term getTerm() {
         return term;
     }
 
@@ -116,7 +132,7 @@ public class Characteristic extends gov.nih.nci.caarray.domain.AbstractCaArrayEn
      *
      * @param termVal the term
      */
-    public void setTerm(final gov.nih.nci.caarray.domain.vocabulary.Term termVal) {
+    public void setTerm(final Term termVal) {
         this.term = termVal;
     }
     /**
@@ -129,6 +145,7 @@ public class Characteristic extends gov.nih.nci.caarray.domain.AbstractCaArrayEn
      *
      * @return the value
      */
+    @Column(name = "VALUE", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getValue() {
         return value;
     }
@@ -144,14 +161,19 @@ public class Characteristic extends gov.nih.nci.caarray.domain.AbstractCaArrayEn
     /**
      * The unit gov.nih.nci.caarray.domain.vocabulary.Term.
      */
-    private gov.nih.nci.caarray.domain.vocabulary.Term unit;
+    private Term unit;
 
     /**
      * Gets the unit.
      *
      * @return the unit
      */
-    public gov.nih.nci.caarray.domain.vocabulary.Term getUnit() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "UNIT_ID")
+    @Index(name = "CHARACTERISTIC_UNIT_IDX")
+    @ForeignKey(name = "UNIT_ID")
+    public Term getUnit() {
         return unit;
     }
 
@@ -160,7 +182,7 @@ public class Characteristic extends gov.nih.nci.caarray.domain.AbstractCaArrayEn
      *
      * @param unitVal the unit
      */
-    public void setUnit(final gov.nih.nci.caarray.domain.vocabulary.Term unitVal) {
+    public void setUnit(final Term unitVal) {
         this.unit = unitVal;
     }
 

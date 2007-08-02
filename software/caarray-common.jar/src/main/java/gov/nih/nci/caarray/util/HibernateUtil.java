@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.util;
 
+import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.SessionFactory;
 import org.hibernate.Session;
@@ -99,7 +100,7 @@ public final class HibernateUtil {
 
     static {
         try {
-            HIBERNATE_CONFIG = new Configuration();
+            HIBERNATE_CONFIG = new AnnotationConfiguration();
             SESSION_FACTORY = HIBERNATE_CONFIG.configure("hibernate.cfg.xml").buildSessionFactory();
         } catch (HibernateException e) {
             // TODO Log this error

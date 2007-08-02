@@ -412,6 +412,7 @@ public class ProjectDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during search of person: " + e.getMessage());
+            LOG.error(e.getMessage(), e);
         } finally {
             cleanUpDeepSearch();
         }

@@ -82,13 +82,24 @@
  */
 package gov.nih.nci.caarray.domain.project;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
 /**
  * A proposal for a new project.
  */
+@Entity
+@Table(name = "PROPOSAL")
 public class Proposal extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 6882932219345651741L;
@@ -109,6 +120,11 @@ public class Proposal extends AbstractCaArrayEntity {
     /**
      * @return the project
      */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "PROJECT_ID")
+    @Index(name = "PROPOSAL_PROJECT_IDX")
+    @ForeignKey(name = "PROJECT_ID")
     public Project getProject() {
         return project;
     }

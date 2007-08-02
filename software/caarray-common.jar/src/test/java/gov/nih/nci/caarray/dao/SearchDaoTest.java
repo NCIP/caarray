@@ -115,11 +115,11 @@ public class SearchDaoTest {
 
     private static final String FAIL_NO_MATCH = "Retrieved protocol is different from saved protocol.";
     private static final Long DUMMY_START_ID = 150L;
-    private static final Parameter DUMMY_PARAMETER_1 = new Parameter();
-    private static final Parameter DUMMY_PARAMETER_2 = new Parameter();
     private static final Category DUMMY_CATEGORY = new Category();
     private static final Term DUMMY_TERM_1 = new Term();
     private static final Protocol DUMMY_PROTOCOL_1 = new Protocol();
+    private static final Parameter DUMMY_PARAMETER_1 = new Parameter(DUMMY_PROTOCOL_1);
+    private static final Parameter DUMMY_PARAMETER_2 = new Parameter(DUMMY_PROTOCOL_1);
 
     private static final SearchDao SEARCH_DAO = CaArrayDaoFactory.INSTANCE.getSearchDao();
     private static final ProtocolDao PROTOCOL_DAO = CaArrayDaoFactory.INSTANCE.getProtocolDao();

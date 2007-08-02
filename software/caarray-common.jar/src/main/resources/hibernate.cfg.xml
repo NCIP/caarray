@@ -21,27 +21,32 @@
         @HIBERNATE_CONFIG_END@ -->
 
         <!-- mapping files -->
-        <mapping resource="gov/nih/nci/caarray/domain/vocabulary/Term.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/vocabulary/Category.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/vocabulary/Accession.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/vocabulary/TermSource.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/protocol/Parameter.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/protocol/ParameterValue.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/protocol/Protocol.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/protocol/ProtocolApplication.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/contact/Address.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/contact/AbstractContact.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/array/ArrayDesign.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/array/Array.hbm.xml"/>
         <mapping resource="gov/nih/nci/caarray/domain/file/CaArrayFile.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/project/Proposal.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/project/Project.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/project/Investigation.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/publication/Publication.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/project/InvestigationContact.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/project/Factor.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/project/FactorValue.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/sample/Characteristic.hbm.xml"/>
-        <mapping resource="gov/nih/nci/caarray/domain/sample/AbstractBioMaterial.hbm.xml"/>
+
+        <mapping class="gov.nih.nci.caarray.domain.vocabulary.Term"/>
+        <mapping class="gov.nih.nci.caarray.domain.vocabulary.Category"/>
+        <mapping class="gov.nih.nci.caarray.domain.vocabulary.Accession"/>
+        <mapping class="gov.nih.nci.caarray.domain.vocabulary.TermSource"/>
+        <mapping class="gov.nih.nci.caarray.domain.protocol.Parameter"/>
+        <mapping class="gov.nih.nci.caarray.domain.protocol.ParameterValue"/>
+        <mapping class="gov.nih.nci.caarray.domain.protocol.Protocol"/>
+        <mapping class="gov.nih.nci.caarray.domain.protocol.ProtocolApplication"/>
+        <mapping class="gov.nih.nci.caarray.domain.contact.Address"/>
+        <mapping class="gov.nih.nci.caarray.domain.contact.Person"/>
+        <mapping class="gov.nih.nci.caarray.domain.contact.Organization"/>
+        <mapping class="gov.nih.nci.caarray.domain.array.ArrayDesign"/>
+        <mapping class="gov.nih.nci.caarray.domain.array.Array"/>
+        <mapping class="gov.nih.nci.caarray.domain.project.Proposal"/>
+        <mapping class="gov.nih.nci.caarray.domain.project.Project"/>
+        <mapping class="gov.nih.nci.caarray.domain.project.Investigation"/>
+        <mapping class="gov.nih.nci.caarray.domain.publication.Publication"/>
+        <mapping class="gov.nih.nci.caarray.domain.project.InvestigationContact"/>
+        <mapping class="gov.nih.nci.caarray.domain.project.Factor"/>
+        <mapping class="gov.nih.nci.caarray.domain.project.FactorValue"/>
+        <mapping class="gov.nih.nci.caarray.domain.sample.Characteristic"/>
+        <mapping class="gov.nih.nci.caarray.domain.sample.Extract"/>
+        <mapping class="gov.nih.nci.caarray.domain.sample.LabeledExtract"/>
+        <mapping class="gov.nih.nci.caarray.domain.sample.Sample"/>
+        <mapping class="gov.nih.nci.caarray.domain.sample.Source"/>
     </session-factory>
 </hibernate-configuration>

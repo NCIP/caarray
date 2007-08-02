@@ -83,15 +83,28 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 
   /**
 
    */
-
+@Entity
+@DiscriminatorValue("LA")
 public class LabeledExtract extends AbstractBioMaterial {
     /**
      * The serial version UID for serialization.
@@ -102,14 +115,19 @@ public class LabeledExtract extends AbstractBioMaterial {
     /**
      * The label gov.nih.nci.caarray.domain.vocabulary.Term.
      */
-    private gov.nih.nci.caarray.domain.vocabulary.Term label;
+    private Term label;
 
     /**
      * Gets the label.
      *
      * @return the label
      */
-    public gov.nih.nci.caarray.domain.vocabulary.Term getLabel() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "LABEL_ID")
+    @Index(name = "BIOMATERIAL_LABEL_IDX")
+    @ForeignKey(name = "LABEL_ID")
+    public Term getLabel() {
         return label;
     }
 
@@ -118,8 +136,7 @@ public class LabeledExtract extends AbstractBioMaterial {
      *
      * @param labelVal the label
      */
-    public void setLabel(final
-      gov.nih.nci.caarray.domain.vocabulary.Term labelVal) {
+    public void setLabel(final Term labelVal) {
         this.label = labelVal;
     }
 
@@ -133,6 +150,7 @@ public class LabeledExtract extends AbstractBioMaterial {
      *
      * @return the extracts
      */
+    @ManyToMany(mappedBy = "labeledExtracts")
     public Set<Extract> getExtracts() {
         return extracts;
     }

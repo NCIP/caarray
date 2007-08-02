@@ -110,8 +110,6 @@ public class ProtocolDaoTest {
     private static final Log LOG = LogFactory.getLog(ProtocolDaoTest.class);
 
     private static final Long DUMMY_START_ID = 150L;
-    private static final Parameter DUMMY_PARAMETER_1 = new Parameter();
-    private static final Parameter DUMMY_PARAMETER_2 = new Parameter();
     private static final ParameterValue DUMMY_PARAMETER_VALUE_1 = new ParameterValue();
     private static final ParameterValue DUMMY_PARAMETER_VALUE_2 = new ParameterValue();
     private static final ParameterValue DUMMY_PARAMETER_VALUE_3 = new ParameterValue();
@@ -121,6 +119,8 @@ public class ProtocolDaoTest {
     private static final Protocol DUMMY_PROTOCOL_1 = new Protocol();
     private static final Protocol DUMMY_PROTOCOL_2 = new Protocol();
     private static final Protocol DUMMY_PROTOCOL_3 = new Protocol();
+    private static final Parameter DUMMY_PARAMETER_1 = new Parameter(DUMMY_PROTOCOL_1);
+    private static final Parameter DUMMY_PARAMETER_2 = new Parameter(DUMMY_PROTOCOL_1);
     private static final ProtocolApplication DUMMY_PROTOCOL_APPLICATION_1 = new ProtocolApplication();
     private static final ProtocolApplication DUMMY_PROTOCOL_APPLICATION_2 = new ProtocolApplication();
 

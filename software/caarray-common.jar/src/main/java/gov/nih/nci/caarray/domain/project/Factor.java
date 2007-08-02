@@ -84,16 +84,30 @@
 package gov.nih.nci.caarray.domain.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 
   /**
 
    */
-
+@Entity
+@Table(name = "FACTOR")
 public class Factor extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -110,6 +124,7 @@ public class Factor extends AbstractCaArrayEntity {
      *
      * @return the name
      */
+    @Column(name = "NAME", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
         return name;
     }
@@ -125,14 +140,19 @@ public class Factor extends AbstractCaArrayEntity {
     /**
      * The type gov.nih.nci.caarray.domain.vocabulary.Term.
      */
-    private gov.nih.nci.caarray.domain.vocabulary.Term type;
+    private Term type;
 
     /**
      * Gets the type.
      *
      * @return the type
      */
-    public gov.nih.nci.caarray.domain.vocabulary.Term getType() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "TYPE_ID")
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @Index(name = "FACTOR_TYPE_IDX")
+    @ForeignKey(name = "TYPE_ID")
+    public Term getType() {
         return type;
     }
 
@@ -141,7 +161,7 @@ public class Factor extends AbstractCaArrayEntity {
      *
      * @param typeVal the type
      */
-    public void setType(final gov.nih.nci.caarray.domain.vocabulary.Term typeVal) {
+    public void setType(final Term typeVal) {
         this.type = typeVal;
     }
 
@@ -155,6 +175,9 @@ public class Factor extends AbstractCaArrayEntity {
      *
      * @return the factorValues
      */
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "FACTOR_ID")
+    @Cascade(CascadeType.SAVE_UPDATE)
     public Set<FactorValue> getFactorValues() {
         return factorValues;
     }

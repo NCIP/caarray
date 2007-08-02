@@ -83,21 +83,33 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
+import gov.nih.nci.caarray.domain.contact.AbstractContact;
+
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
 
   /**
 
    */
-
+@Entity
+@DiscriminatorValue("SO")
 public class Source extends AbstractBioMaterial {
     /**
      * The serial version UID for serialization.
      */
     private static final long serialVersionUID = 1234567890L;
 
+    private static final String DEFAULT_FK_ID = "SOURCE_ID";
 
     /**
      * The samples set.
@@ -109,6 +121,14 @@ public class Source extends AbstractBioMaterial {
      *
      * @return the samples
      */
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "SOURCESAMPLE",
+            joinColumns = { @javax.persistence.JoinColumn(name = DEFAULT_FK_ID) },
+            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "SAMPLE_ID") }
+    )
+    @ForeignKey(name = DEFAULT_FK_ID, inverseName = "SAMPLE_ID")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Sample> getSamples() {
         return samples;
     }
@@ -126,14 +146,22 @@ public class Source extends AbstractBioMaterial {
     /**
      * The providers set.
      */
-    private Set<Object> providers = new HashSet<Object>();
+    private Set<AbstractContact> providers = new HashSet<AbstractContact>();
 
     /**
      * Gets the providers.
      *
      * @return the providers
      */
-    public Set<Object> getProviders() {
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "SOURCEPROVIDER",
+            joinColumns = { @javax.persistence.JoinColumn(name = DEFAULT_FK_ID) },
+            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "CONTACT_ID") }
+    )
+    @ForeignKey(name = DEFAULT_FK_ID, inverseName = "CONTACT_ID")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    public Set<AbstractContact> getProviders() {
         return providers;
     }
 
@@ -143,7 +171,7 @@ public class Source extends AbstractBioMaterial {
      * @param providersVal the providers
      */
     @SuppressWarnings("unused")
-    private void setProviders(final Set<Object> providersVal) { // NOPMD
+    private void setProviders(final Set<AbstractContact> providersVal) { // NOPMD
         this.providers = providersVal;
     }
 

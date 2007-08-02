@@ -1,12 +1,3 @@
-package gov.nih.nci.caarray.domain.protocol;
-
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 /**
  * The software subject to this notice and license includes both human readable
  * source code form and machine readable, binary, object code form. The caArray
@@ -90,10 +81,31 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+package gov.nih.nci.caarray.domain.protocol;
+
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
+
+
   /**
 
    */
-
+@Entity
+@Table(name = "PROTOCOLAPPLICATION")
 public class ProtocolApplication extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -103,14 +115,19 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
     /**
      * The protocol gov.nih.nci.caarray.domain.protocol.Protocol.
      */
-    private gov.nih.nci.caarray.domain.protocol.Protocol protocol;
+    private Protocol protocol;
 
     /**
      * Gets the protocol.
      *
      * @return the protocol
      */
-    public gov.nih.nci.caarray.domain.protocol.Protocol getProtocol() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "PROTOCOL_ID")
+    @Index(name = "PROTOCOLAPP_PROTOCOL")
+    @ForeignKey(name = "PROTOCOL_ID")
+    public Protocol getProtocol() {
         return protocol;
     }
 
@@ -119,8 +136,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      *
      * @param protocolVal the protocol
      */
-    public void setProtocol(final
-      gov.nih.nci.caarray.domain.protocol.Protocol protocolVal) {
+    public void setProtocol(final Protocol protocolVal) {
         this.protocol = protocolVal;
     }
 
@@ -134,6 +150,11 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      *
      * @return the values
      */
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "PROTOCOL_APPLICATION_ID")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Index(name = "PARAMVALUE_PROTOCOLAPP_IDX")
+    @ForeignKey(name = "PROTOCOL_APPLICATION_ID")
     public Set<ParameterValue> getValues() {
         return values;
     }

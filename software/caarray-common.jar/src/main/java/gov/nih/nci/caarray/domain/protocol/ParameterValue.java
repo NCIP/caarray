@@ -1,6 +1,16 @@
 package gov.nih.nci.caarray.domain.protocol;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
@@ -90,7 +100,8 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
   /**
 
    */
-
+@Entity
+@Table(name = "PARAMETERVALUE")
 public class ParameterValue  extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -107,6 +118,7 @@ public class ParameterValue  extends AbstractCaArrayEntity {
      *
      * @return the unit
      */
+    @Column(name = "UNIT", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getUnit() {
         return unit;
     }
@@ -129,6 +141,7 @@ public class ParameterValue  extends AbstractCaArrayEntity {
      *
      * @return the value
      */
+    @Column(name = "VALUE", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getValue() {
         return value;
     }
@@ -145,14 +158,19 @@ public class ParameterValue  extends AbstractCaArrayEntity {
     /**
      * The parameter gov.nih.nci.caarray.domain.protocol.Parameter.
      */
-    private gov.nih.nci.caarray.domain.protocol.Parameter parameter;
+    private Parameter parameter;
 
     /**
      * Gets the parameter.
      *
      * @return the parameter
      */
-    public gov.nih.nci.caarray.domain.protocol.Parameter getParameter() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "PARAMETER_ID")
+    @Index(name = "PARAMVALUE_PARAMETER_IDX")
+    @ForeignKey(name = "PARAMETER_ID")
+    public Parameter getParameter() {
         return parameter;
     }
 
@@ -161,8 +179,7 @@ public class ParameterValue  extends AbstractCaArrayEntity {
      *
      * @param parameterVal the parameter
      */
-    public void setParameter(final
-      gov.nih.nci.caarray.domain.protocol.Parameter parameterVal) {
+    public void setParameter(final Parameter parameterVal) {
         this.parameter = parameterVal;
     }
 

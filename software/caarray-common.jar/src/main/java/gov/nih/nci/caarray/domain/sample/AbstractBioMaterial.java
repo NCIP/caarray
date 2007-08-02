@@ -89,15 +89,39 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
+
   /**
 
    */
-
+@Entity
+@Table(name = "BIOMATERIAL")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(
+        name = "DISCRIMINATOR",
+        discriminatorType = DiscriminatorType.STRING
+)
 public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
      */
     private static final long serialVersionUID = 1234567890L;
+
+    private static final String DEFAULT_FK = "BIOMATERIAL_ID";
 
     /**
      * The materialType gov.nih.nci.caarray.domain.vocabulary.Term.
@@ -109,7 +133,12 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @return the materialType
      */
-    public gov.nih.nci.caarray.domain.vocabulary.Term getMaterialType() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "MATERIAL_TYPE_ID")
+    @Index(name = "BIOMATERIAL_TYPE_IDX")
+    @ForeignKey(name = "MATERIAL_TYPE_ID")
+    public Term getMaterialType() {
         return materialType;
     }
 
@@ -118,7 +147,7 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @param materialTypeVal the materialType
      */
-    public void setMaterialType(final gov.nih.nci.caarray.domain.vocabulary.Term materialTypeVal) {
+    public void setMaterialType(final Term materialTypeVal) {
         this.materialType = materialTypeVal;
     }
     /**
@@ -131,6 +160,7 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @return the name
      */
+    @Column(name = "NAME", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
         return name;
     }
@@ -153,6 +183,7 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @return the description
      */
+    @Column(name = "DESCRIPTION", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getDescription() {
         return description;
     }
@@ -176,6 +207,11 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @return the characteristics
      */
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = DEFAULT_FK)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Index(name = "CHARACTERISTIC_BIOMATERIAL_IDX")
+    @ForeignKey(name = DEFAULT_FK)
     public Set<Characteristic> getCharacteristics() {
         return characteristics;
     }
@@ -200,6 +236,11 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @return the protocolApplications
      */
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = DEFAULT_FK)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Index(name = "PROTOCOLAPP_BIOMATERIAL")
+    @ForeignKey(name = DEFAULT_FK)
     public Set<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }

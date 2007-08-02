@@ -86,11 +86,23 @@ package gov.nih.nci.caarray.domain.array;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 
 /**
  * Represents a single, physical microarray used in an investigation.
  */
+@Entity
+@Table(name = "ARRAY")
 public class Array extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
@@ -102,16 +114,17 @@ public class Array extends AbstractCaArrayEntity {
 
     /**
      * Gets the batch.
-     * 
+     *
      * @return the batch
      */
+    @Column(name = "BATCH", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getBatch() {
         return batch;
     }
 
     /**
      * Sets the batch.
-     * 
+     *
      * @param batchVal
      *            the batch
      */
@@ -121,16 +134,17 @@ public class Array extends AbstractCaArrayEntity {
 
     /**
      * Gets the serialNumber.
-     * 
+     *
      * @return the serialNumber
      */
+    @Column(name = "SERIALNUMBER", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getSerialNumber() {
         return serialNumber;
     }
 
     /**
      * Sets the serialNumber.
-     * 
+     *
      * @param serialNumberVal
      *            the serialNumber
      */
@@ -140,16 +154,21 @@ public class Array extends AbstractCaArrayEntity {
 
     /**
      * Gets the production.
-     * 
+     *
      * @return the production
      */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "PRODUCTION_ID")
+    @Index(name = "ARRAY_PRODUCTION_IDX")
+    @ForeignKey(name = "PRODUCTION_ID")
     public ProtocolApplication getProduction() {
         return production;
     }
 
     /**
      * Sets the production.
-     * 
+     *
      * @param productionVal
      *            the production
      */
@@ -159,16 +178,20 @@ public class Array extends AbstractCaArrayEntity {
 
     /**
      * Gets the design.
-     * 
+     *
      * @return the design
      */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "DESIGN_ID")
+    @Index(name = "ARRAY_DESIGN_IDX")
+    @ForeignKey(name = "DESIGN_ID")
     public ArrayDesign getDesign() {
         return design;
     }
 
     /**
      * Sets the design.
-     * 
+     *
      * @param designVal
      *            the design
      */
@@ -178,7 +201,7 @@ public class Array extends AbstractCaArrayEntity {
 
     /**
      * Checks if given object is equal to this object.
-     * 
+     *
      * @param obj
      *            the object to compare to this object
      * @return true if they are equal, false if they are not
@@ -198,7 +221,7 @@ public class Array extends AbstractCaArrayEntity {
 
     /**
      * Returns the hashcode for the object.
-     * 
+     *
      * @return the int hashcode
      */
     @Override

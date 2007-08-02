@@ -75,6 +75,9 @@
     <property name="commons-logging.jar" value="${lib.dir}/commons-logging-1.1.jar" />
     <property name="dom4j.jar" value="${lib.dir}/dom4j-1.6.1.jar" />
     <property name="hibernate.jar" value="${lib.dir}/hibernate3.jar" />
+    <property name="ejb3-persistence.jar" value="${lib.dir}/ejb3-persistence.jar" />
+    <property name="hibernate-annotations.jar" value="${lib.dir}/hibernate-annotations.jar" />
+    <property name="hibernate-commons-annotations.jar" value="${lib.dir}/hibernate-commons-annotations.jar" />
     <property name="jakarta-oro-2.0.8.jar" value="${lib.dir}/jakarta-oro-2.0.8.jar" />
     <property name="javaee.jar" value="${lib.dir}/javaee.jar" />
     <property name="jaxen.jar" value="${lib.dir}/jaxen-1.1-beta.jar" />
@@ -154,6 +157,12 @@
     <taskdef name="for" classname="net.sf.antcontrib.logic.ForTask">
         <classpath>
             <fileset dir="${lib.dir}" />
+        </classpath>
+    </taskdef>
+
+    <taskdef name="hibernatetool" classname="org.hibernate.tool.ant.HibernateToolTask">
+        <classpath>
+          <fileset dir="${lib.dir}"/>
         </classpath>
     </taskdef>
 
@@ -282,6 +291,10 @@
         <javac srcdir="${caarray-common.src.dir}" destdir="${caarray-common.classes.dir}" debug="true">
             <classpath>
                 <pathelement location="${hibernate.jar}" />
+                <pathelement location="${ejb3-persistence.jar}" />
+                <pathelement location="${hibernate-annotations.jar}" />
+                <pathelement location="${hibernate-commons-annotations.jar}" />
+                <pathelement location="${javaee.jar}" />
                 <pathelement location="${commons-collections.jar}" />
                 <pathelement location="${commons-io.jar}" />
                 <pathelement location="${commons-lang.jar}" />
@@ -305,6 +318,10 @@
                 <pathelement location="${javaee.jar}" />
                 <pathelement location="${affxfusion.jar}" />
                 <pathelement location="${netcdf.jar}" />
+                <pathelement location="${ejb3-persistence.jar}" />
+                <pathelement location="${hibernate-annotations.jar}" />
+                <pathelement location="${hibernate-commons-annotations.jar}" />
+                <pathelement location="${javaee.jar}" />
             </classpath>
         </javac>
     </target>
@@ -320,6 +337,10 @@
                 <pathelement location="${commons-logging.jar}" />
                 <pathelement location="${myfaces-api.jar}" />
                 <pathelement location="${tomahawk.jar}"/>
+                <pathelement location="${ejb3-persistence.jar}" />
+                <pathelement location="${hibernate-annotations.jar}" />
+                <pathelement location="${hibernate-commons-annotations.jar}" />
+                <pathelement location="${javaee.jar}" />
             </classpath>
         </javac>
     </target>
@@ -468,6 +489,10 @@
                 <pathelement location="${junit.jar}" />
                 <pathelement location="${hibernate.jar}" />
                 <pathelement location="${netcdf.jar}" />
+                <pathelement location="${ejb3-persistence.jar}" />
+                <pathelement location="${hibernate-annotations.jar}" />
+                <pathelement location="${hibernate-commons-annotations.jar}" />
+                <pathelement location="${javaee.jar}" />
             </classpath>
         </javac>
     </target>
@@ -477,7 +502,7 @@
       test.src.dir="${caarray-common.test.src.dir}"
       xml.output.dir="${caarray-common.target.dir}/junit"
       instrumented.classes="${caarray-common.instrumented.classes.dir}"
-      classpath="${caarray-common.test.classes.dir};${test.data.dir};${test.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-common.resources.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar};${javacsv.jar}" />
+      classpath="${caarray-common.test.classes.dir};${test.data.dir};${test.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-common.resources.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar};${javacsv.jar};${hibernate-annotations.jar};${hibernate-commons-annotations.jar};${ejb3-persistence.jar}" />
     </target>
 
     <!-- caarray-ejb.jar -->
@@ -503,6 +528,10 @@
                 <pathelement location="${commons-io.jar}" />
                 <pathelement location="${javaee.jar}" />
                 <pathelement location="${junit.jar}" />
+                <pathelement location="${ejb3-persistence.jar}" />
+                <pathelement location="${hibernate-annotations.jar}" />
+                <pathelement location="${hibernate-commons-annotations.jar}" />
+                <pathelement location="${javaee.jar}" />
             </classpath>
         </javac>
     </target>
@@ -534,6 +563,10 @@
                 <pathelement location="${caarray-common.test.files.dir}" />
                 <pathelement location="${myfaces-api.jar}" />
                 <pathelement location="${junit.jar}" />
+                <pathelement location="${ejb3-persistence.jar}" />
+                <pathelement location="${hibernate-annotations.jar}" />
+                <pathelement location="${hibernate-commons-annotations.jar}" />
+                <pathelement location="${javaee.jar}" />
             </classpath>
         </javac>
     </target>
@@ -711,6 +744,103 @@
     <!-- ** SITE TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
 
+
+    <!-- ******************************************************************* -->
+    <!-- ** SQL TARGETS                                                   ** -->
+    <!-- ******************************************************************* -->
+
+    <target name="init-sql">
+        <mkdir dir="${site.dir}/sql"/>
+        <dependset>
+            <srcfileset dir="${caarray-common.src.dir}">
+                <include name="gov/nih/nci/caarray/domain/**/*.java"/>
+            </srcfileset>
+            <srcfileset dir="${caarray-common.resources.dir}">
+                <include name="*.hbm.xml"/>
+                <include name="hibernate.cfg.xml"/>
+                <include name="hibernate.properties"/>
+            </srcfileset>
+            <targetfileset dir="${site.dir}/sql"/>
+        </dependset>
+        <available property="drop-schema-sql.exists" file="${site.dir}/sql/drop-schema.sql"/>
+        <available property="create-schema-sql.exists" file="${site.dir}/sql/create-schema.sql"/>
+    </target>
+
+    <target name="-define-run-sql-script-task">
+        <macrodef name="run-sql-script">
+            <attribute name="sql.file" />
+            <attribute name="sql.delimiter" default=";" />
+            <attribute name="sql.delimitertype" default="normal" />
+            <sequential>
+                <sql driver="com.mysql.jdbc.Driver"
+                     url="${db.url}"
+                     userid="${database.user}"
+                     password="${database.password}"
+                     src="@{sql.file}"
+                     onerror="continue"
+                     autocommit="true"
+                     delimiter="@{sql.delimiter}"
+                     delimitertype="@{sql.delimitertype}"
+                     keepformat="true">
+                    <classpath>
+                        <pathelement location="${mysql-connector.jar}"/>
+                    </classpath>
+                </sql>
+            </sequential>
+        </macrodef>
+    </target>
+
+    <target name="-generate-drop-schema-sql" depends="compile, init-sql" unless="drop-schema-sql.exists">
+        <hibernatetool destdir="${site.dir}/sql">
+            <annotationconfiguration configurationfile="${caarray-common.resources.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.resources.dir}/hibernate.properties" />
+            <hbm2ddl drop="true" create="false" export="false" outputfilename="drop-schema.sql" />
+            <classpath>
+                <pathelement path="${caarray-common.classes.dir}" />
+                <pathelement path="${hibernate.jar}"/>
+            </classpath>
+        </hibernatetool>
+    </target>
+
+    <target name="-generate-create-schema-sql" depends="compile, init-sql" unless="create-schema-sql.exists">
+        <hibernatetool destdir="${site.dir}/sql">
+            <annotationconfiguration configurationfile="${caarray-common.resources.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.resources.dir}/hibernate.properties" />
+            <hbm2ddl drop="false" create="true" export="false" outputfilename="create-schema.sql" />
+            <classpath>
+                <pathelement path="${caarray-common.classes.dir}" />
+                <pathelement path="${hibernate.jar}"/>
+            </classpath>
+        </hibernatetool>
+    </target>
+
+    <target name="generate-schema-sql" depends="-generate-drop-schema-sql, -generate-create-schema-sql" />
+
+    <target name="drop-db" depends="generate-schema-sql, -define-run-sql-script-task" description="Drop DB schema">
+        <fail unless="config.firebird.jdbc.allowDbInit" message="init db will not execute until you set the config.firebird.jdbc.allowDbInit property" />
+        <for param="file">
+            <path>
+                <fileset dir="${src.sql.drop.scripts.dir}" includes="*.sql" />
+            </path>
+            <sequential>
+                <run-sql-script sql.file="@{file}" />
+            </sequential>
+        </for>
+        <run-sql-script sql.file="${build.sql.dir}/drop-schema.sql" />
+    </target>
+
+    <target name="create-db" depends="generate-schema-sql, -define-run-sql-script-task" description="Create DB schema">
+        <fail unless="config.firebird.jdbc.allowDbInit" message="init db will not execute until you set the config.firebird.jdbc.allowDbInit property" />
+        <run-sql-script sql.file="${build.sql.dir}/create-schema.sql" />
+        <for param="file">
+            <path>
+                <fileset dir="${src.sql.create.scripts.dir}" includes="*.sql" />
+            </path>
+            <sequential>
+                <run-sql-script sql.file="@{file}" sql.delimitertype="row" />
+            </sequential>
+        </for>
+    </target>
+
+    <target name="init-db" depends="drop-db, create-db" description="Drop &amp; Create DB schema" />
 
     <!-- ******************************************************************* -->
     <!-- ** DEPLOY TARGETS                                                ** -->

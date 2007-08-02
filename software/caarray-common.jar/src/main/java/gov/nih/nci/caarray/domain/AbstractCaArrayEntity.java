@@ -85,14 +85,25 @@ package gov.nih.nci.caarray.domain;
 import java.io.Serializable;
 import java.util.Random;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
+
 /**
  * Base class for all caArray domain entities.
  *
  * @author ETavela
  */
+@MappedSuperclass
 public abstract class AbstractCaArrayEntity implements Serializable {
 
     private static final long serialVersionUID = 2732929116326299995L;
+
+    /**
+     * The default column size for string columns in the db.
+     */
+    public static final int DEFAULT_STRING_COLUMN_SIZE = 1000;
 
     private Long id;
 
@@ -113,6 +124,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      *
      * @return the id
      */
+    @Id
     public Long getId() {
         return id;
     }
@@ -131,6 +143,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      *
      * @return the LSID authority
      */
+    @Column(name = "LSIDAUTHORITY", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getLsidAuthority() {
         return lsidAuthority;
     }
@@ -149,6 +162,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      *
      * @return the LSID namespace
      */
+    @Column(name = "LSIDNAMESPACE", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getLsidNamespace() {
         return lsidNamespace;
     }
@@ -167,6 +181,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      *
      * @return the LSID object ID
      */
+    @Column(name = "LSIDOBJECTID", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getLsidObjectId() {
         return lsidObjectId;
     }
@@ -191,6 +206,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      *
      * @return the entity ID
      */
+    @Transient
     private long generateId() {
         long currTime = System.currentTimeMillis();
         currTime <<= NUM_LSBS; // roll in zeros in the 8 LS bits.

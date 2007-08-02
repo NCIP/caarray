@@ -1,5 +1,9 @@
 package gov.nih.nci.caarray.domain.vocabulary;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
 /**
@@ -87,6 +91,8 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
   /**
    */
+@Entity
+@Table(name = "SOURCE")
 public class TermSource extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
@@ -101,6 +107,7 @@ public class TermSource extends AbstractCaArrayEntity {
      *
      * @return the name
      */
+    @Column(name = "NAME", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
         return name;
     }
@@ -123,6 +130,7 @@ public class TermSource extends AbstractCaArrayEntity {
      *
      * @return the url
      */
+    @Column(name = "URL", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getUrl() {
         return url;
     }
@@ -145,6 +153,7 @@ public class TermSource extends AbstractCaArrayEntity {
      *
      * @return the version
      */
+    @Column(name = "VERSION", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getVersion() {
         return version;
     }

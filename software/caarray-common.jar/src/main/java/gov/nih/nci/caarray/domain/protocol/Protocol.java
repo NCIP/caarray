@@ -84,16 +84,29 @@
 package gov.nih.nci.caarray.domain.protocol;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 
   /**
 
    */
-
+@Entity
+@Table(name = "PROTOCOL")
 public class Protocol extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -110,6 +123,7 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @return the contact
      */
+    @Column(name = "CONTACT", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getContact() {
         return contact;
     }
@@ -132,6 +146,7 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @return the description
      */
+    @Column(name = "DESCRIPTION", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getDescription() {
         return description;
     }
@@ -154,6 +169,7 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @return the hardware
      */
+    @Column(name = "HARDWARE", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getHardware() {
         return hardware;
     }
@@ -176,6 +192,7 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @return the name
      */
+    @Column(name = "NAME", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
         return name;
     }
@@ -198,6 +215,7 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @return the software
      */
+    @Column(name = "SOFTWARE", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getSoftware() {
         return software;
     }
@@ -213,14 +231,19 @@ public class Protocol extends AbstractCaArrayEntity {
     /**
      * The type gov.nih.nci.caarray.domain.vocabulary.Term.
      */
-    private gov.nih.nci.caarray.domain.vocabulary.Term type;
+    private Term type;
 
     /**
      * Gets the type.
      *
      * @return the type
      */
-    public gov.nih.nci.caarray.domain.vocabulary.Term getType() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "TYPE_ID")
+    @Index(name = "PROTOCOL_TYPE_IDX")
+    @ForeignKey(name = "TYPE_ID")
+    public Term getType() {
         return type;
     }
 
@@ -229,7 +252,7 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @param typeVal the type
      */
-    public void setType(final gov.nih.nci.caarray.domain.vocabulary.Term typeVal) {
+    public void setType(final Term typeVal) {
         this.type = typeVal;
     }
     /**
@@ -242,6 +265,7 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @return the url
      */
+    @Column(name = "URL", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getUrl() {
         return url;
     }
@@ -258,14 +282,15 @@ public class Protocol extends AbstractCaArrayEntity {
     /**
      * The parameters set.
      */
-    private Set<Object> parameters = new HashSet<Object>();
+    private Set<Parameter> parameters = new HashSet<Parameter>();
 
     /**
      * Gets the parameters.
      *
      * @return the parameters
      */
-    public Set<Object> getParameters() {
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "protocol")
+    public Set<Parameter> getParameters() {
         return parameters;
     }
 
@@ -275,7 +300,7 @@ public class Protocol extends AbstractCaArrayEntity {
      * @param parametersVal the parameters
      */
     @SuppressWarnings("unused")
-    private void setParameters(final Set<Object> parametersVal) { // NOPMD
+    private void setParameters(final Set<Parameter> parametersVal) { // NOPMD
         this.parameters = parametersVal;
     }
 

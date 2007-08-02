@@ -1,6 +1,16 @@
 package gov.nih.nci.caarray.domain.protocol;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
@@ -90,23 +100,35 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
   /**
 
    */
-
+@Entity
+@Table(name = "PARAMETER")
 public class Parameter extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
      */
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The name String.
-     */
     private String name;
+    private ParameterValue defaultValue;
+    private Protocol protocol;
+
+    /**
+     * @param protocol the protocol this paramater is attached to
+     */
+    public Parameter(Protocol protocol) {
+        this.protocol = protocol;
+    }
+
+    Parameter() {
+        // hibernate-only constructor
+    }
 
     /**
      * Gets the name.
      *
      * @return the name
      */
+    @Column(name = "NAME", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
         return name;
     }
@@ -121,16 +143,14 @@ public class Parameter extends AbstractCaArrayEntity {
     }
 
     /**
-     * The defaultValue gov.nih.nci.caarray.domain.protocol.ParameterValue.
-     */
-    private gov.nih.nci.caarray.domain.protocol.ParameterValue defaultValue;
-
-    /**
      * Gets the defaultValue.
      *
      * @return the defaultValue
      */
-    public gov.nih.nci.caarray.domain.protocol.ParameterValue getDefaultValue() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "DEFAULT_VALUE_ID")
+    public ParameterValue getDefaultValue() {
         return defaultValue;
     }
 
@@ -139,9 +159,26 @@ public class Parameter extends AbstractCaArrayEntity {
      *
      * @param defaultValueVal the defaultValue
      */
-    public void setDefaultValue(final
-      gov.nih.nci.caarray.domain.protocol.ParameterValue defaultValueVal) {
+    public void setDefaultValue(final ParameterValue defaultValueVal) {
         this.defaultValue = defaultValueVal;
+    }
+
+    /**
+     * @return the protocol
+     */
+    @ManyToOne
+    @JoinColumn(name = "PROTOCOL_ID", nullable = false, updatable = false)
+    @Index(name = "PARAMETER_PROTOCOL_IDX")
+    @ForeignKey(name = "PROTOCOL_ID")
+    public Protocol getProtocol() {
+        return protocol;
+    }
+
+    /**
+     * @param protocol the protocol to set
+     */
+    public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
     }
 
     /**

@@ -83,12 +83,34 @@
 
 package gov.nih.nci.caarray.domain.contact;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
+
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
   /**
 
    */
-
+@Entity
+@Table(name = "CONTACT")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(
+        name = "DISCRIMINATOR",
+        discriminatorType = DiscriminatorType.STRING
+)
 public abstract class AbstractContact extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -105,6 +127,7 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
      *
      * @return the email
      */
+    @Column(name = "EMAIL", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getEmail() {
         return email;
     }
@@ -127,6 +150,7 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
      *
      * @return the fax
      */
+    @Column(name = "FAX", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getFax() {
         return fax;
     }
@@ -149,6 +173,7 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
      *
      * @return the phone
      */
+    @Column(name = "PHONE", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getPhone() {
         return phone;
     }
@@ -171,6 +196,7 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
      *
      * @return the url
      */
+    @Column(name = "URL", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getUrl() {
         return url;
     }
@@ -187,14 +213,19 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
     /**
      * The address gov.nih.nci.caarray.domain.contact.Address.
      */
-    private gov.nih.nci.caarray.domain.contact.Address address;
+    private Address address;
 
     /**
      * Gets the address.
      *
      * @return the address
      */
-    public gov.nih.nci.caarray.domain.contact.Address getAddress() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ADDRESS_ID")
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @Index(name = "CONTACT_ADDRESS_IDX")
+    @ForeignKey(name = "ADDRESS_ID")
+    public Address getAddress() {
         return address;
     }
 
@@ -203,8 +234,7 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
      *
      * @param addressVal the address
      */
-    public void setAddress(final
-      gov.nih.nci.caarray.domain.contact.Address addressVal) {
+    public void setAddress(final Address addressVal) {
         this.address = addressVal;
     }
 

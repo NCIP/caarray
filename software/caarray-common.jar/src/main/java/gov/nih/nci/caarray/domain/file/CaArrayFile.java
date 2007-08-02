@@ -83,14 +83,25 @@
 
 package gov.nih.nci.caarray.domain.file;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.Project;
 
 /**
  */
+@Entity
+@Table(name = "CAARRAYFILE")
 public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaArrayFile> {
 
     private static final long serialVersionUID = 1234567890L;
@@ -105,6 +116,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      *
      * @return the path
      */
+    @Column(name = "PATH", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getPath() {
         return path;
     }
@@ -123,6 +135,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      *
      * @return the type
      */
+    @Transient
     public FileType getType() {
         return type;
     }
@@ -139,6 +152,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     /**
      * @return the status
      */
+    @Transient
     public FileStatus getStatus() {
         return status;
     }
@@ -153,6 +167,10 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     /**
      * @return the project
      */
+    @ManyToOne
+    @JoinColumn(name = "PROJECT_ID", nullable = false, insertable = false, updatable = false)
+    @Index(name = "CAARRAYFILE_PROJECT_IDX")
+    @ForeignKey(name = "PROJECT_ID")
     public Project getProject() {
         return project;
     }

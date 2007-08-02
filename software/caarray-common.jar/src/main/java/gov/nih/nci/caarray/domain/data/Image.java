@@ -83,17 +83,26 @@
 
 package gov.nih.nci.caarray.domain.data;
 
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
   /**
 
    */
-
+@Entity
+@Table(name = "IMAGE")
 public class Image extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -110,6 +119,7 @@ public class Image extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
      *
      * @return the name
      */
+    @Column(name = "NAME", length = DEFAULT_STRING_COLUMN_SIZE, nullable = false)
     public String getName() {
         return name;
     }
@@ -133,6 +143,8 @@ public class Image extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
      *
      * @return the protocolApplications
      */
+    @OneToMany
+    @JoinColumn(name = "IMAGE_ID")
     public Set<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }
@@ -150,14 +162,16 @@ public class Image extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
     /**
      * The imageFile gov.nih.nci.caarray.domain.file.CaArrayFile.
      */
-    private gov.nih.nci.caarray.domain.file.CaArrayFile imageFile;
+    private CaArrayFile imageFile;
 
     /**
      * Gets the imageFile.
      *
      * @return the imageFile
      */
-    public gov.nih.nci.caarray.domain.file.CaArrayFile getImageFile() {
+    @ManyToOne
+    @JoinColumn(name = "FILE_ID")
+    public CaArrayFile getImageFile() {
         return imageFile;
     }
 
@@ -166,8 +180,7 @@ public class Image extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
      *
      * @param imageFileVal the imageFile
      */
-    public void setImageFile(final
-      gov.nih.nci.caarray.domain.file.CaArrayFile imageFileVal) {
+    public void setImageFile(final CaArrayFile imageFileVal) {
         this.imageFile = imageFileVal;
     }
 

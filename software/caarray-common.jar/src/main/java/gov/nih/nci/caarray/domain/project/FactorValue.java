@@ -83,14 +83,23 @@
 
 package gov.nih.nci.caarray.domain.project;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
   /**
 
    */
-
+@Entity
+@Table(name = "FACTORVALUE")
 public class FactorValue extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -101,14 +110,18 @@ public class FactorValue extends AbstractCaArrayEntity {
     /**
      * The factor gov.nih.nci.caarray.domain.project.Factor.
      */
-    private gov.nih.nci.caarray.domain.project.Factor factor;
+    private Factor factor;
 
     /**
      * Gets the factor.
      *
      * @return the factor
      */
-    public gov.nih.nci.caarray.domain.project.Factor getFactor() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "FACTOR_ID")
+    @Index(name = "FACTORVALUE_FACTOR_IDX")
+    @ForeignKey(name = "FACTOR_ID")
+    public Factor getFactor() {
         return factor;
     }
 
@@ -117,8 +130,7 @@ public class FactorValue extends AbstractCaArrayEntity {
      *
      * @param factorVal the factor
      */
-    public void setFactor(final
-      gov.nih.nci.caarray.domain.project.Factor factorVal) {
+    public void setFactor(final Factor factorVal) {
         this.factor = factorVal;
     }
 

@@ -91,23 +91,43 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 
 /**
  *
  */
+@Entity
+@Table(name = "INVESTIGATION")
 public class Investigation extends AbstractCaArrayEntity {
     private static final String UNUSED = "unused";
+    private static final String FK_COLUMN_NAME = "INVESTIGATION_ID";
+    private static final String TERM_FK_NAME = "TERM_ID";
 
     /**
      * The serial version UID for serialization.
      */
     private static final long serialVersionUID = 1234567890L;
 
-    private java.util.Date dateOfExperiment;
+    private Date dateOfExperiment;
 
     /**
      * Creates a new, empty <code>Investigation</code>.
@@ -123,7 +143,9 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @return the dateOfExperiment
      */
-    public java.util.Date getDateOfExperiment() {
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "DATEOFEXPERIMENT")
+    public Date getDateOfExperiment() {
         return dateOfExperiment;
     }
 
@@ -132,7 +154,7 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param dateOfExperimentVal the dateOfExperiment
      */
-    public void setDateOfExperiment(final java.util.Date dateOfExperimentVal) {
+    public void setDateOfExperiment(final Date dateOfExperimentVal) {
         this.dateOfExperiment = dateOfExperimentVal;
     }
     /**
@@ -145,6 +167,7 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @return the description
      */
+    @Column(name = "DESCRIPTION", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getDescription() {
         return description;
     }
@@ -160,14 +183,16 @@ public class Investigation extends AbstractCaArrayEntity {
     /**
      * The publicReleaseDate java.util.Date.
      */
-    private java.util.Date publicReleaseDate;
+    private Date publicReleaseDate;
 
     /**
      * Gets the publicReleaseDate.
      *
      * @return the publicReleaseDate
      */
-    public java.util.Date getPublicReleaseDate() {
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "PUBLICRELEASEDATE")
+    public Date getPublicReleaseDate() {
         return publicReleaseDate;
     }
 
@@ -176,7 +201,7 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @param publicReleaseDateVal the publicReleaseDate
      */
-    public void setPublicReleaseDate(final java.util.Date publicReleaseDateVal) {
+    public void setPublicReleaseDate(final Date publicReleaseDateVal) {
         this.publicReleaseDate = publicReleaseDateVal;
     }
     /**
@@ -189,6 +214,7 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @return the title
      */
+    @Column(name = "TITLE", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getTitle() {
         return title;
     }
@@ -212,6 +238,14 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @return the qualityControlTypes
      */
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "QUALITYCONTROLTYPE",
+            joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
+            inverseJoinColumns = { @JoinColumn(name = TERM_FK_NAME) }
+    )
+    @ForeignKey(name = FK_COLUMN_NAME, inverseName = TERM_FK_NAME)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Term> getQualityControlTypes() {
         return qualityControlTypes;
     }
@@ -236,6 +270,11 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @return the publications
      */
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = FK_COLUMN_NAME)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Index(name = "PUBLICATION_INVEST")
+    @ForeignKey(name = FK_COLUMN_NAME)
     public Set<Publication> getPublications() {
         return publications;
     }
@@ -260,6 +299,14 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @return the replicateTypes
      */
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "REPLICATETYPE",
+            joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
+            inverseJoinColumns = { @JoinColumn(name = TERM_FK_NAME) }
+    )
+    @ForeignKey(name = FK_COLUMN_NAME, inverseName = TERM_FK_NAME)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Term> getReplicateTypes() {
         return replicateTypes;
     }
@@ -284,6 +331,7 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @return the sources
      */
+    @Transient
     public Set<Source> getSources() {
         return sources;
     }
@@ -308,6 +356,14 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @return the samples
      */
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "INVESTIGATIONSAMPLE",
+            joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
+            inverseJoinColumns = { @JoinColumn(name = "SAMPLE_ID") }
+    )
+    @ForeignKey(name = "INVESTIGATION_NAME", inverseName = "SAMPLE_ID")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Sample> getSamples() {
         return samples;
     }
@@ -332,6 +388,14 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @return the arrayDesigns
      */
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "INVESTIGATIONARRAYDESIGN",
+            joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
+            inverseJoinColumns = { @JoinColumn(name = "ARRAYDESIGN_ID") }
+    )
+    @ForeignKey(name = FK_COLUMN_NAME, inverseName = "ARRAYDESIGN_ID")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<ArrayDesign> getArrayDesigns() {
         return arrayDesigns;
     }
@@ -356,6 +420,11 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @return the investigationContacts
      */
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = FK_COLUMN_NAME)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Index(name = "INVCONTACT_INVEST_IDX")
+    @ForeignKey(name = FK_COLUMN_NAME)
     public Set<InvestigationContact> getInvestigationContacts() {
         return investigationContacts;
     }
@@ -380,6 +449,11 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @return the factors
      */
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = FK_COLUMN_NAME)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Index(name = "FACTOR_INVEST_IDX")
+    @ForeignKey(name = FK_COLUMN_NAME)
     public Set<Factor> getFactors() {
         return factors;
     }
@@ -404,6 +478,14 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @return the normalizationTypes
      */
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "NORMALIZATIONTYPE",
+            joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
+            inverseJoinColumns = { @JoinColumn(name = TERM_FK_NAME) }
+    )
+    @ForeignKey(name = FK_COLUMN_NAME, inverseName = TERM_FK_NAME)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Term> getNormalizationTypes() {
         return normalizationTypes;
     }
@@ -428,6 +510,14 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @return the arrays
      */
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "INVESTIGATIONARRAY",
+            joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
+            inverseJoinColumns = { @JoinColumn(name = "ARRAY_ID") }
+    )
+    @ForeignKey(name = FK_COLUMN_NAME, inverseName = "ARRAY_ID")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Array> getArrays() {
         return arrays;
     }

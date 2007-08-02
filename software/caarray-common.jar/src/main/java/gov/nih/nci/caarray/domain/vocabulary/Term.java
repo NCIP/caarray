@@ -83,12 +83,24 @@
 
 package gov.nih.nci.caarray.domain.vocabulary;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
+
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
   /**
 
    */
-
+@Entity
+@Table(name = "TERM")
 public class Term extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -105,6 +117,7 @@ public class Term extends AbstractCaArrayEntity {
      *
      * @return the description
      */
+    @Column(name = "DESCRIPTION", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getDescription() {
         return description;
     }
@@ -127,6 +140,7 @@ public class Term extends AbstractCaArrayEntity {
      *
      * @return the value
      */
+    @Column(name = "VALUE", length = DEFAULT_STRING_COLUMN_SIZE)
     public String getValue() {
         return value;
     }
@@ -143,14 +157,19 @@ public class Term extends AbstractCaArrayEntity {
     /**
      * The accession gov.nih.nci.caarray.domain.vocabulary.Accession.
      */
-    private gov.nih.nci.caarray.domain.vocabulary.Accession accession;
+    private Accession accession;
 
     /**
      * Gets the accession.
      *
      * @return the accession
      */
-    public gov.nih.nci.caarray.domain.vocabulary.Accession getAccession() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "ACCESSION_ID")
+    @Index(name = "TERM_ACCESSION_IDX")
+    @ForeignKey(name = "ACCESSION_ID")
+    public Accession getAccession() {
         return accession;
     }
 
@@ -159,22 +178,26 @@ public class Term extends AbstractCaArrayEntity {
      *
      * @param accessionVal the accession
      */
-    public void setAccession(final
-      gov.nih.nci.caarray.domain.vocabulary.Accession accessionVal) {
+    public void setAccession(final Accession accessionVal) {
         this.accession = accessionVal;
     }
 
     /**
      * The category gov.nih.nci.caarray.domain.vocabulary.Category.
      */
-    private gov.nih.nci.caarray.domain.vocabulary.Category category;
+    private Category category;
 
     /**
      * Gets the category.
      *
      * @return the category
      */
-    public gov.nih.nci.caarray.domain.vocabulary.Category getCategory() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "CATEGORY_ID")
+    @Index(name = "TERM_CATEGORY_IDX")
+    @ForeignKey(name = "CATEGORY_ID")
+    public Category getCategory() {
         return category;
     }
 
@@ -183,22 +206,26 @@ public class Term extends AbstractCaArrayEntity {
      *
      * @param categoryVal the category
      */
-    public void setCategory(final
-      gov.nih.nci.caarray.domain.vocabulary.Category categoryVal) {
+    public void setCategory(final Category categoryVal) {
         this.category = categoryVal;
     }
 
     /**
      * The source gov.nih.nci.caarray.domain.vocabulary.Source.
      */
-    private gov.nih.nci.caarray.domain.vocabulary.TermSource source;
+    private TermSource source;
 
     /**
      * Gets the source.
      *
      * @return the source
      */
-    public gov.nih.nci.caarray.domain.vocabulary.TermSource getSource() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "SOURCE_ID")
+    @Index(name = "TERM_SOURCE_IDX")
+    @ForeignKey(name = "SOURCE_ID")
+    public TermSource getSource() {
         return source;
     }
 
@@ -207,8 +234,7 @@ public class Term extends AbstractCaArrayEntity {
      *
      * @param sourceVal the source
      */
-    public void setSource(final
-      gov.nih.nci.caarray.domain.vocabulary.TermSource sourceVal) {
+    public void setSource(final TermSource sourceVal) {
         this.source = sourceVal;
     }
 
