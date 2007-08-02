@@ -101,7 +101,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
 
   /**
 
@@ -150,8 +149,7 @@ public class Factor extends AbstractCaArrayEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "TYPE_ID")
     @Cascade(CascadeType.SAVE_UPDATE)
-    @Index(name = "FACTOR_TYPE_IDX")
-    @ForeignKey(name = "TYPE_ID")
+    @ForeignKey(name = "FACTOR_TYPE_IDX")
     public Term getType() {
         return type;
     }

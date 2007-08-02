@@ -91,8 +91,6 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
-
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
   /**
@@ -119,8 +117,7 @@ public class FactorValue extends AbstractCaArrayEntity {
      */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FACTOR_ID")
-    @Index(name = "FACTORVALUE_FACTOR_IDX")
-    @ForeignKey(name = "FACTOR_ID")
+    @ForeignKey(name = "FACTORVALUE_FACTOR_IDX")
     public Factor getFactor() {
         return factor;
     }

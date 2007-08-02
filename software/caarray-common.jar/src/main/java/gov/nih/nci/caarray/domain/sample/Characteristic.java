@@ -93,8 +93,6 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
-
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
   /**
@@ -121,8 +119,7 @@ public class Characteristic extends gov.nih.nci.caarray.domain.AbstractCaArrayEn
     @ManyToOne(fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "TERM_ID")
-    @Index(name = "CHARACTERISTIC_TERM_IDX")
-    @ForeignKey(name = "TERM_ID")
+    @ForeignKey(name = "CHARACTERISTIC_TERM_IDX")
     public Term getTerm() {
         return term;
     }
@@ -171,8 +168,7 @@ public class Characteristic extends gov.nih.nci.caarray.domain.AbstractCaArrayEn
     @ManyToOne(fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "UNIT_ID")
-    @Index(name = "CHARACTERISTIC_UNIT_IDX")
-    @ForeignKey(name = "UNIT_ID")
+    @ForeignKey(name = "CHARACTERISTIC_UNIT_IDX")
     public Term getUnit() {
         return unit;
     }

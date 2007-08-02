@@ -101,7 +101,6 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
 
   /**
 
@@ -114,11 +113,9 @@ public class InvestigationContact extends AbstractCaArrayEntity {
      */
     private static final long serialVersionUID = 1234567890L;
 
-
-    /**
-     * The contact gov.nih.nci.caarray.domain.contact.AbstractContact.
-     */
     private AbstractContact contact;
+    private Set<Term> roles = new HashSet<Term>();
+    private Investigation investigation;
 
     /**
      * Gets the contact.
@@ -128,8 +125,7 @@ public class InvestigationContact extends AbstractCaArrayEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "CONTACT_ID")
-    @Index(name = "INVESTIGATIONCONTACT_CONTACT_IDX")
-    @ForeignKey(name = "CONTACT_ID")
+    @ForeignKey(name = "INVESTIGATIONCONTACT_CONTACT_IDX")
     public AbstractContact getContact() {
         return contact;
     }
@@ -144,11 +140,6 @@ public class InvestigationContact extends AbstractCaArrayEntity {
     }
 
     /**
-     * The roles set.
-     */
-    private Set<Term> roles = new HashSet<Term>();
-
-    /**
      * Gets the roles.
      *
      * @return the roles
@@ -159,7 +150,7 @@ public class InvestigationContact extends AbstractCaArrayEntity {
             joinColumns = { @JoinColumn(name = "INVESTIGATIONCONTACT_ID") },
             inverseJoinColumns = { @JoinColumn(name = "ROLE_ID") }
     )
-    @ForeignKey(name = "INVESTIGATIONCONTACT_ID", inverseName = "ROLE_ID")
+    @ForeignKey(name = "INVESTCONT_CONTACT_FK", inverseName = "INVESTCONT_ROLE_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Term> getRoles() {
         return roles;
@@ -172,6 +163,23 @@ public class InvestigationContact extends AbstractCaArrayEntity {
      */
     public void setRoles(final Set<Term> rolesVal) {
         this.roles = rolesVal;
+    }
+
+    /**
+     * @return the investigation
+     */
+    @ManyToOne
+    @JoinColumn(name = "INVESTIGATION_ID", insertable = false, updatable = false)
+    @ForeignKey(name = "INVCONTACT_INVEST_IDX")
+    public Investigation getInvestigation() {
+        return investigation;
+    }
+
+    /**
+     * @param investigation the investigation to set
+     */
+    public void setInvestigation(Investigation investigation) {
+        this.investigation = investigation;
     }
 
     /**

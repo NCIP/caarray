@@ -95,8 +95,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
-
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -168,8 +166,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "POLYMERTYPE_ID")
     @Cascade(CascadeType.SAVE_UPDATE)
-    @Index(name = "ARRAYDESIGN_POLYMER_IDX")
-    @ForeignKey(name = "POLYMERTYPE_ID")
+    @ForeignKey(name = "ARRAYDESIGN_POLYMER_IDX")
     public Term getPolymerType() {
         return polymerType;
     }
@@ -190,8 +187,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "SUBSTRATETYPE_ID")
     @Cascade(CascadeType.SAVE_UPDATE)
-    @Index(name = "ARRAYDESIGN_SUBSTRAE_IDX")
-    @ForeignKey(name = "SUBSTRATETYPE_ID")
+    @ForeignKey(name = "ARRAYDESIGN_SUBSTRAE_IDX")
     public Term getSubstrateType() {
         return substrateType;
     }
@@ -212,8 +208,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "SURFACETYPE_ID")
     @Cascade(CascadeType.SAVE_UPDATE)
-    @Index(name = "ARRAYDESIGN_SURFACE_IDX")
-    @ForeignKey(name = "SURFACETYPE_ID")
+    @ForeignKey(name = "ARRAYDESIGN_SURFACE_IDX")
     public Term getSurfaceType() {
         return surfaceType;
     }
@@ -234,8 +229,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "TECHNOLOGYTYPE_ID")
     @Cascade(CascadeType.SAVE_UPDATE)
-    @Index(name = "ARRAYDESIGN_TECHNOLOGY_IDX")
-    @ForeignKey(name = "TECHNOLOGIYTYPE_ID")
+    @ForeignKey(name = "ARRAYDESIGN_TECHNOLOGY_IDX")
     public Term getTechnologyType() {
         return technologyType;
     }
@@ -275,8 +269,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "PROVIDER_ID")
     @Cascade(CascadeType.SAVE_UPDATE)
-    @Index(name = "ARRAYDESIGN_PROVIDER_IDX")
-    @ForeignKey(name = "PROVIDER_ID")
+    @ForeignKey(name = "ARRAYDESIGN_PROVIDER_IDX")
     public Organization getProvider() {
         return provider;
     }
@@ -298,8 +291,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "PRINTING_ID")
-    @Index(name = "ARRAYDESIGN_PRINTING_IDX")
-    @ForeignKey(name = "PRINTING_ID")
+    @ForeignKey(name = "ARRAYDESIGN_PRINTING_IDX")
     public ProtocolApplication getPrinting() {
         return printing;
     }

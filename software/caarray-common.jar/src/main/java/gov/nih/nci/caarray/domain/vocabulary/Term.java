@@ -92,8 +92,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
-
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
   /**
@@ -167,8 +165,7 @@ public class Term extends AbstractCaArrayEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "ACCESSION_ID")
-    @Index(name = "TERM_ACCESSION_IDX")
-    @ForeignKey(name = "ACCESSION_ID")
+    @ForeignKey(name = "TERM_ACCESSION_IDX")
     public Accession getAccession() {
         return accession;
     }
@@ -195,8 +192,7 @@ public class Term extends AbstractCaArrayEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "CATEGORY_ID")
-    @Index(name = "TERM_CATEGORY_IDX")
-    @ForeignKey(name = "CATEGORY_ID")
+    @ForeignKey(name = "TERM_CATEGORY_IDX")
     public Category getCategory() {
         return category;
     }
@@ -223,8 +219,7 @@ public class Term extends AbstractCaArrayEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "SOURCE_ID")
-    @Index(name = "TERM_SOURCE_IDX")
-    @ForeignKey(name = "SOURCE_ID")
+    @ForeignKey(name = "TERM_SOURCE_IDX")
     public TermSource getSource() {
         return source;
     }

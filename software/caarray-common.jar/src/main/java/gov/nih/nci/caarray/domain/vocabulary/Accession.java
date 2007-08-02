@@ -10,8 +10,6 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
-
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
 /**
@@ -168,8 +166,7 @@ public class Accession extends AbstractCaArrayEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "SOURCE_ID")
-    @Index(name = "ACCESSION_SOURCE_IDX")
-    @ForeignKey(name = "SOURCE_ID")
+    @ForeignKey(name = "ACCESSION_SOURCE_IDK")
     public TermSource getSource() {
         return source;
     }

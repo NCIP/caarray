@@ -773,7 +773,7 @@
             <attribute name="sql.delimitertype" default="normal" />
             <sequential>
                 <sql driver="com.mysql.jdbc.Driver"
-                     url="${db.url}"
+                     url="${db.url}${database.name}"
                      userid="${database.user}"
                      password="${database.password}"
                      src="@{sql.file}"
@@ -790,9 +790,9 @@
         </macrodef>
     </target>
 
-    <target name="-generate-drop-schema-sql" depends="compile, init-sql" unless="drop-schema-sql.exists">
+    <target name="-generate-drop-schema-sql" depends="build:caarray-common.jar, configure-datasource-for-test, compile, init-sql" unless="drop-schema-sql.exists">
         <hibernatetool destdir="${site.dir}/sql">
-            <annotationconfiguration configurationfile="${caarray-common.resources.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.resources.dir}/hibernate.properties" />
+            <annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.test.classes.dir}/hibernate.properties" />
             <hbm2ddl drop="true" create="false" export="false" outputfilename="drop-schema.sql" />
             <classpath>
                 <pathelement path="${caarray-common.classes.dir}" />
@@ -801,9 +801,9 @@
         </hibernatetool>
     </target>
 
-    <target name="-generate-create-schema-sql" depends="compile, init-sql" unless="create-schema-sql.exists">
+    <target name="-generate-create-schema-sql" depends="configure-datasource-for-test, compile, init-sql" unless="create-schema-sql.exists">
         <hibernatetool destdir="${site.dir}/sql">
-            <annotationconfiguration configurationfile="${caarray-common.resources.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.resources.dir}/hibernate.properties" />
+            <annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.test.classes.dir}/hibernate.properties" />
             <hbm2ddl drop="false" create="true" export="false" outputfilename="create-schema.sql" />
             <classpath>
                 <pathelement path="${caarray-common.classes.dir}" />
@@ -815,29 +815,11 @@
     <target name="generate-schema-sql" depends="-generate-drop-schema-sql, -generate-create-schema-sql" />
 
     <target name="drop-db" depends="generate-schema-sql, -define-run-sql-script-task" description="Drop DB schema">
-        <fail unless="config.firebird.jdbc.allowDbInit" message="init db will not execute until you set the config.firebird.jdbc.allowDbInit property" />
-        <for param="file">
-            <path>
-                <fileset dir="${src.sql.drop.scripts.dir}" includes="*.sql" />
-            </path>
-            <sequential>
-                <run-sql-script sql.file="@{file}" />
-            </sequential>
-        </for>
-        <run-sql-script sql.file="${build.sql.dir}/drop-schema.sql" />
+        <run-sql-script sql.file="${site.dir}/sql/drop-schema.sql" />
     </target>
 
     <target name="create-db" depends="generate-schema-sql, -define-run-sql-script-task" description="Create DB schema">
-        <fail unless="config.firebird.jdbc.allowDbInit" message="init db will not execute until you set the config.firebird.jdbc.allowDbInit property" />
-        <run-sql-script sql.file="${build.sql.dir}/create-schema.sql" />
-        <for param="file">
-            <path>
-                <fileset dir="${src.sql.create.scripts.dir}" includes="*.sql" />
-            </path>
-            <sequential>
-                <run-sql-script sql.file="@{file}" sql.delimitertype="row" />
-            </sequential>
-        </for>
+        <run-sql-script sql.file="${site.dir}/sql/create-schema.sql" />
     </target>
 
     <target name="init-db" depends="drop-db, create-db" description="Drop &amp; Create DB schema" />

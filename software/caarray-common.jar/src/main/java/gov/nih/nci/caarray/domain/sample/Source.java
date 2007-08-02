@@ -127,7 +127,7 @@ public class Source extends AbstractBioMaterial {
             joinColumns = { @javax.persistence.JoinColumn(name = DEFAULT_FK_ID) },
             inverseJoinColumns = { @javax.persistence.JoinColumn(name = "SAMPLE_ID") }
     )
-    @ForeignKey(name = DEFAULT_FK_ID, inverseName = "SAMPLE_ID")
+    @ForeignKey(name = "SOURCESAMPLE_SOURCE_FK", inverseName = "SOURCESAMPLE_SAMPLE_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Sample> getSamples() {
         return samples;
@@ -159,7 +159,7 @@ public class Source extends AbstractBioMaterial {
             joinColumns = { @javax.persistence.JoinColumn(name = DEFAULT_FK_ID) },
             inverseJoinColumns = { @javax.persistence.JoinColumn(name = "CONTACT_ID") }
     )
-    @ForeignKey(name = DEFAULT_FK_ID, inverseName = "CONTACT_ID")
+    @ForeignKey(name = "SOURCEPROVIDER_SOURCE_FK", inverseName = "SOURCEPROVIDER_PROVIDER_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<AbstractContact> getProviders() {
         return providers;

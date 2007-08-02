@@ -103,7 +103,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
     /**
      * The default column size for string columns in the db.
      */
-    public static final int DEFAULT_STRING_COLUMN_SIZE = 1000;
+    public static final int DEFAULT_STRING_COLUMN_SIZE = 254;
 
     private Long id;
 
@@ -125,6 +125,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      * @return the id
      */
     @Id
+    @Column(name = "ID")
     public Long getId() {
         return id;
     }

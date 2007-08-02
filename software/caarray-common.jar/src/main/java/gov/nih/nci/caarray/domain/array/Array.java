@@ -96,7 +96,6 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
 
 /**
  * Represents a single, physical microarray used in an investigation.
@@ -160,8 +159,7 @@ public class Array extends AbstractCaArrayEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "PRODUCTION_ID")
-    @Index(name = "ARRAY_PRODUCTION_IDX")
-    @ForeignKey(name = "PRODUCTION_ID")
+    @ForeignKey(name = "ARRAY_PRODUCTION_IDK")
     public ProtocolApplication getProduction() {
         return production;
     }
@@ -183,8 +181,7 @@ public class Array extends AbstractCaArrayEntity {
      */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "DESIGN_ID")
-    @Index(name = "ARRAY_DESIGN_IDX")
-    @ForeignKey(name = "DESIGN_ID")
+    @ForeignKey(name = "ARRAY_DESIGN_IDK")
     public ArrayDesign getDesign() {
         return design;
     }

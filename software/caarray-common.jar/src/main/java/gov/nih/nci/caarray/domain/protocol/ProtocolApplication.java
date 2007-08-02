@@ -98,7 +98,6 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
 
 
   /**
@@ -125,8 +124,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "PROTOCOL_ID")
-    @Index(name = "PROTOCOLAPP_PROTOCOL")
-    @ForeignKey(name = "PROTOCOL_ID")
+    @ForeignKey(name = "PROTOCOLAPP_PROTOCOL")
     public Protocol getProtocol() {
         return protocol;
     }
@@ -153,8 +151,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "PROTOCOL_APPLICATION_ID")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @Index(name = "PARAMVALUE_PROTOCOLAPP_IDX")
-    @ForeignKey(name = "PROTOCOL_APPLICATION_ID")
+    @ForeignKey(name = "PARAMVALUE_PROTOCOLAPP_IDX")
     public Set<ParameterValue> getValues() {
         return values;
     }

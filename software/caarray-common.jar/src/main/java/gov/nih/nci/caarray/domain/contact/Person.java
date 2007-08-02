@@ -194,7 +194,7 @@ public class Person extends AbstractContact {
             joinColumns = { @JoinColumn(name = "PERSON_ID") },
             inverseJoinColumns = { @JoinColumn(name = "ORGANIZATION_ID") }
     )
-    @ForeignKey(name = "PERSON_ID", inverseName = "ORGANIZATION_ID")
+    @ForeignKey(name = "PERORG_PERSON_FK", inverseName = "PERORG_ORGANIZATION_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Organization> getAffiliations() {
         return affiliations;

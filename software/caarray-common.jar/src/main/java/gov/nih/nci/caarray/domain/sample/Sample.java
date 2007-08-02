@@ -149,7 +149,7 @@ public class Sample extends AbstractBioMaterial {
             joinColumns = { @javax.persistence.JoinColumn(name = "SAMPLE_ID") },
             inverseJoinColumns = { @javax.persistence.JoinColumn(name = "EXTRACT_ID") }
     )
-    @ForeignKey(name = "SAMPLE_ID", inverseName = "EXTRACT_ID")
+    @ForeignKey(name = "SAMPLEEXTRACT_SAMPLE_FK", inverseName = "SAMPLEEXTRACT_EXTRACT_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Extract> getExtracts() {
         return extracts;

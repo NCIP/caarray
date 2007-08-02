@@ -100,7 +100,6 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
 
   /**
 
@@ -241,8 +240,7 @@ public class Protocol extends AbstractCaArrayEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "TYPE_ID")
-    @Index(name = "PROTOCOL_TYPE_IDX")
-    @ForeignKey(name = "TYPE_ID")
+    @ForeignKey(name = "PROTOCOL_TYPE_IDX")
     public Term getType() {
         return type;
     }

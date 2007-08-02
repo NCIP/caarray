@@ -93,8 +93,6 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
-
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.Project;
 
@@ -169,8 +167,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      */
     @ManyToOne
     @JoinColumn(name = "PROJECT_ID", nullable = false, insertable = false, updatable = false)
-    @Index(name = "CAARRAYFILE_PROJECT_IDX")
-    @ForeignKey(name = "PROJECT_ID")
+    @ForeignKey(name = "CAARRAYFILE_PROJECT_IDX")
     public Project getProject() {
         return project;
     }

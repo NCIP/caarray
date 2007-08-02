@@ -103,7 +103,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
 
   /**
 
@@ -136,8 +135,7 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
     @ManyToOne(fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "MATERIAL_TYPE_ID")
-    @Index(name = "BIOMATERIAL_TYPE_IDX")
-    @ForeignKey(name = "MATERIAL_TYPE_ID")
+    @ForeignKey(name = "BIOMATERIAL_TYPE_IDX")
     public Term getMaterialType() {
         return materialType;
     }
@@ -210,8 +208,7 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = DEFAULT_FK)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @Index(name = "CHARACTERISTIC_BIOMATERIAL_IDX")
-    @ForeignKey(name = DEFAULT_FK)
+    @ForeignKey(name = "CHARACTERISTIC_BIOMATERIAL_IDX")
     public Set<Characteristic> getCharacteristics() {
         return characteristics;
     }
@@ -239,8 +236,7 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = DEFAULT_FK)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @Index(name = "PROTOCOLAPP_BIOMATERIAL")
-    @ForeignKey(name = DEFAULT_FK)
+    @ForeignKey(name = "PROTOCOLAPP_BIOMATERIAL")
     public Set<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }

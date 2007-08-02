@@ -98,7 +98,6 @@ import javax.persistence.ManyToOne;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
 
   /**
 
@@ -125,8 +124,7 @@ public class LabeledExtract extends AbstractBioMaterial {
     @ManyToOne(fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "LABEL_ID")
-    @Index(name = "BIOMATERIAL_LABEL_IDX")
-    @ForeignKey(name = "LABEL_ID")
+    @ForeignKey(name = "BIOMATERIAL_LABEL_IDX")
     public Term getLabel() {
         return label;
     }

@@ -97,8 +97,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
-
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
   /**
@@ -223,8 +221,7 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ADDRESS_ID")
     @Cascade(CascadeType.SAVE_UPDATE)
-    @Index(name = "CONTACT_ADDRESS_IDX")
-    @ForeignKey(name = "ADDRESS_ID")
+    @ForeignKey(name = "CONTACT_ADDRESS_IDX")
     public Address getAddress() {
         return address;
     }

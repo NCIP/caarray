@@ -10,8 +10,6 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
-
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
 /**
@@ -168,8 +166,7 @@ public class Parameter extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @JoinColumn(name = "PROTOCOL_ID", nullable = false, updatable = false)
-    @Index(name = "PARAMETER_PROTOCOL_IDX")
-    @ForeignKey(name = "PROTOCOL_ID")
+    @ForeignKey(name = "PARAMETER_PROTOCOL_IDX")
     public Protocol getProtocol() {
         return protocol;
     }

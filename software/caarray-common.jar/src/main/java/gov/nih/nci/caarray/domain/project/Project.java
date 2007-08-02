@@ -104,7 +104,6 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
@@ -141,8 +140,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @ManyToOne(fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "INVESTIGATION_ID")
-    @Index(name = "PROJECT_INVESTIGATION_IDX")
-    @ForeignKey(name = "INVESTIGATION_ID")
+    @ForeignKey(name = "PROJECT_INVESTIGATION_IDX")
     public Investigation getInvestigation() {
         return investigation;
     }

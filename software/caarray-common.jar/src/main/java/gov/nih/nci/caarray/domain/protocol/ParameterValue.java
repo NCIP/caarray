@@ -10,8 +10,6 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Index;
-
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
 /**
@@ -168,8 +166,7 @@ public class ParameterValue  extends AbstractCaArrayEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "PARAMETER_ID")
-    @Index(name = "PARAMVALUE_PARAMETER_IDX")
-    @ForeignKey(name = "PARAMETER_ID")
+    @ForeignKey(name = "PARAMVALUE_PARAMETER_IDX")
     public Parameter getParameter() {
         return parameter;
     }
