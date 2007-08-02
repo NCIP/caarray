@@ -903,8 +903,6 @@
     </target>
 
     <!-- BEGIN STELLIGENT ADD -->
-    <property name="cargo-jar" value="cargo-core-uberjar-0.9.jar" />
-    <property name="cargo-ant-jar" value="cargo-ant-0.9.jar" />
     <property name="jboss.dir" value="${target.dir}/jboss" />
     <property name="jboss.tmp.dir" value="${target.dir}/jboss-test" />
     <property name="jboss.refid" value="tmptmct01" />
@@ -923,9 +921,6 @@
     <property name="envproperties.file" value="default.properties" />
 
     <target name="validate-properties">
-        <get dest="${lib.dir}/nci-ant.jar" usetimestamp="false"
-      ignoreerrors="true" src="${stelligent.download.site}/nci-ant.jar">
-        </get>
         <taskdef name="ncitask" classname="com.stelligent.nci.anttasks.PropertyChecker">
             <classpath>
                 <pathelement location="${lib.dir}/nci-ant.jar" />
