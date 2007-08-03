@@ -99,7 +99,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         System.setProperty("selenium.port", "8081");
         String hostname = System.getProperty("test.hostname", "localhost");
         String port = System.getProperty("test.port", "8080");
-        String browser = System.getProperty("test.browser", "*firefox");
+        String browser = System.getProperty("test.browser", "*chrome");
         super.setUp("http://" + hostname + ":" + port, browser);
     }
 
