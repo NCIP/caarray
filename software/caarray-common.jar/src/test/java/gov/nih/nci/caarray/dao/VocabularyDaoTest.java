@@ -571,10 +571,6 @@ public class VocabularyDaoTest {
         DAO_OBJECT.save(DUMMY_TERM_1);
         DAO_OBJECT.save(DUMMY_TERM_2);
         DAO_OBJECT.save(DUMMY_TERM_3);
-        DAO_OBJECT.save(DUMMY_CATEGORY_1);
-        DAO_OBJECT.save(DUMMY_CATEGORY_2);
-        DAO_OBJECT.save(DUMMY_CATEGORY_3);
-        DAO_OBJECT.save(DUMMY_CATEGORY_4);
     }
 
     /**
