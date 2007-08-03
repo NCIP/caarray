@@ -84,21 +84,39 @@ package gov.nih.nci.caarray.application.translation.magetab;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.array.Array;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
+import gov.nih.nci.caarray.domain.data.Image;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.Factor;
+import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.project.Investigation;
+import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab2.data.DataMatrix;
+import gov.nih.nci.caarray.magetab2.data.NativeDataFile;
+import gov.nih.nci.caarray.magetab2.idf.ExperimentalFactor;
 import gov.nih.nci.caarray.magetab2.sdrf.AbstractSampleDataRelationshipNode;
 import gov.nih.nci.caarray.magetab2.sdrf.Characteristic;
+import gov.nih.nci.caarray.magetab2.sdrf.Normalization;
 import gov.nih.nci.caarray.magetab2.sdrf.Provider;
+import gov.nih.nci.caarray.magetab2.sdrf.Scan;
 import gov.nih.nci.caarray.magetab2.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.magetab2.sdrf.SdrfNodeType;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -108,7 +126,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Translates entities in SDRF documents.
+ * Translates entities in SDRF documents into caArray entities.
  */
 @SuppressWarnings("PMD")
 final class SdrfTranslator extends AbstractTranslator {
@@ -160,7 +178,10 @@ final class SdrfTranslator extends AbstractTranslator {
         translateExtracts(document);
         translateLabeledExtracts(document);
         translateHybridizations(document);
-        // TODO etc...
+        translateArrayDesigns(document);
+        translateImages(document);
+        translateRawArrayData(document);
+        translateDerivedArrayData(document);
     }
 
     private void translateSources(SdrfDocument document) {
@@ -210,8 +231,26 @@ final class SdrfTranslator extends AbstractTranslator {
         for (gov.nih.nci.caarray.magetab2.sdrf.Hybridization sdrfHybridization : document.getAllHybridizations()) {
             Hybridization hybridization = new Hybridization();
             hybridization.setName(sdrfHybridization.getName());
+            for (gov.nih.nci.caarray.magetab2.sdrf.FactorValue sdrfFactorVal : sdrfHybridization.getFactorValues()) {
+                FactorValue factorValue = translateFactor(sdrfFactorVal);
+                hybridization.getFactorValues().add(factorValue);
+            }
             nodeTranslations.put(sdrfHybridization, hybridization);
         }
+    }
+
+    private FactorValue translateFactor(gov.nih.nci.caarray.magetab2.sdrf.FactorValue sdrfFactorVal) {
+        FactorValue factorValue = new FactorValue();
+        factorValue.setValue(sdrfFactorVal.getValue());
+        factorValue.setUnit(getTerm(sdrfFactorVal.getUnit()));
+        Factor factor = new Factor();
+        ExperimentalFactor sdrfFactor = sdrfFactorVal.getFactor();
+        if (sdrfFactor != null) {
+            factor.setName(sdrfFactor.getName());
+            factor.setType(getTerm(sdrfFactor.getType()));
+        }
+        factorValue.setFactor(factor);
+        return factorValue;
     }
 
     private void translateBioMaterial(AbstractBioMaterial bioMaterial,
@@ -236,6 +275,176 @@ final class SdrfTranslator extends AbstractTranslator {
         return null;
     }
 
+    // Translates arraydesigns to a linked array-arraydesign pair in the caArray domain.
+    private void translateArrayDesigns(SdrfDocument document) {
+        for (gov.nih.nci.caarray.magetab2.sdrf.ArrayDesign sdrfArrayDesign : document.getAllArrayDesigns()) {
+            ArrayDesign arrayDesign = null;
+            File adfFile = sdrfArrayDesign.getFile();
+            if (adfFile != null) {
+                arrayDesign = processArrayDesignFile(adfFile, sdrfArrayDesign.getNodeType());
+            } else {
+                arrayDesign = processArrayDesignRef(sdrfArrayDesign);
+            }
+            // Generate an array to link the hybridization to the arraydesign.
+            Array array = new Array();
+            array.setDesign(arrayDesign);
+            nodeTranslations.put(sdrfArrayDesign, array);
+        }
+    }
+
+    // Process a reference to an array design in the caArray or in an external database.
+    private ArrayDesign processArrayDesignRef(gov.nih.nci.caarray.magetab2.sdrf.ArrayDesign sdrfArrayDesign) {
+        ArrayDesign arrayDesign;
+        arrayDesign = new ArrayDesign();
+        String lsid = sdrfArrayDesign.getName();
+        arrayDesign.setLsidForEntity(lsid);
+        arrayDesign.setName(arrayDesign.getLsidObjectId());
+        // Look up database for ArrayDesign with this lsid. If doesn't exist, create.
+        arrayDesign = (ArrayDesign) replaceIfExists(arrayDesign);
+        return arrayDesign;
+    }
+
+    // Processes an array design for which a file is included in the MAGE-TAB document set.
+    private ArrayDesign processArrayDesignFile(File adfFile, SdrfNodeType sdrfType) {
+        ArrayDesign arrayDesign = new ArrayDesign();
+        CaArrayFile designFile = new CaArrayFile();
+        designFile.setPath(adfFile.getPath());
+        designFile.setType(translateFileType(sdrfType));
+        arrayDesign.setDesignFile(designFile);
+        return arrayDesign;
+    }
+
+    private void translateImages(SdrfDocument document) {
+        for (gov.nih.nci.caarray.magetab2.sdrf.Image sdrfImage : document.getAllImages()) {
+            Image image = new Image();
+            image.setName(sdrfImage.getName());
+            NativeDataFile nativeDataFile = sdrfImage.getNativeDataFile();
+            if (nativeDataFile != null) {
+                File nativeImageFile = nativeDataFile.getFile();
+                if (nativeImageFile != null) {
+                    CaArrayFile imageFile = new CaArrayFile();
+                    imageFile.setPath(nativeImageFile.getPath());
+                    imageFile.setType(translateFileType(sdrfImage.getNodeType()));
+                    image.setImageFile(imageFile);
+                }
+            }
+            nodeTranslations.put(sdrfImage, image);
+        }
+    }
+
+    private void translateRawArrayData(SdrfDocument document) {
+        // Translate native raw data files.
+        for (gov.nih.nci.caarray.magetab2.sdrf.ArrayDataFile sdrfData : document.getAllArrayDataFiles()) {
+            RawArrayData caArrayData = new RawArrayData();
+            caArrayData.setName(sdrfData.getName());
+            NativeDataFile nativeDataFile = sdrfData.getNativeDataFile();
+            if (nativeDataFile != null) {
+                File sdrfDataFile = nativeDataFile.getFile();
+                translateFile(sdrfData.getNodeType(), caArrayData, sdrfDataFile);
+            }
+            // Associate Scan with the raw data.
+            for (Scan scan : sdrfData.getPredecessorScans()) {
+                associateScanWithData(caArrayData, scan);
+            }
+            nodeTranslations.put(sdrfData, caArrayData);
+        }
+        // Translate MAGE-TAB raw data matrix files.
+        for (gov.nih.nci.caarray.magetab2.sdrf.ArrayDataMatrixFile sdrfData : document.getAllArrayDataMatrixFiles()) {
+            RawArrayData caArrayData = new RawArrayData();
+            caArrayData.setName(sdrfData.getName());
+            DataMatrix dataMatrix = sdrfData.getDataMatrix();
+            if (dataMatrix != null) {
+                File sdrfDataFile = dataMatrix.getFile();
+                translateFile(sdrfData.getNodeType(), caArrayData, sdrfDataFile);
+            }
+            // Associate Scan with the raw data.
+            for (Scan scan : sdrfData.getPredecessorScans()) {
+                associateScanWithData(caArrayData, scan);
+            }
+            nodeTranslations.put(sdrfData, caArrayData);
+        }
+    }
+
+    private void associateScanWithData(RawArrayData caArrayData, Scan scan) {
+        ProtocolApplication scanProtocolApp = new ProtocolApplication();
+        Protocol scanProtocol = new Protocol();
+        scanProtocol.setName(scan.getName());
+        scanProtocol = (Protocol) replaceIfExists(scanProtocol);
+        scanProtocolApp.setProtocol(scanProtocol);
+        caArrayData.getProtocolApplications().add(scanProtocolApp);
+    }
+
+    private void translateDerivedArrayData(SdrfDocument document) {
+        // Translate native derived data files.
+        for (gov.nih.nci.caarray.magetab2.sdrf.DerivedArrayDataFile sdrfData : document.getAllDerivedArrayDataFiles()) {
+            DerivedArrayData caArrayData = new DerivedArrayData();
+            caArrayData.setName(sdrfData.getName());
+            NativeDataFile nativeDataFile = sdrfData.getNativeDataFile();
+            if (nativeDataFile != null) {
+                File sdrfDataFile = nativeDataFile.getFile();
+                translateFile(sdrfData.getNodeType(), caArrayData, sdrfDataFile);
+            }
+            // Associate Normalization with the derived data.
+            for (Normalization normalization : sdrfData.getPredecessorNormalizations()) {
+                associateNormalizationWithData(caArrayData, normalization);
+            }
+            nodeTranslations.put(sdrfData, caArrayData);
+        }
+        // Translate MAGE-TAB derived data matrix files.
+        for (gov.nih.nci.caarray.magetab2.sdrf.DerivedArrayDataMatrixFile sdrfData
+                : document.getAllDerivedArrayDataMatrixFiles()) {
+            DerivedArrayData caArrayData = new DerivedArrayData();
+            caArrayData.setName(sdrfData.getName());
+            DataMatrix dataMatrix = sdrfData.getDataMatrix();
+            if (dataMatrix != null) {
+                File sdrfDataFile = dataMatrix.getFile();
+                translateFile(sdrfData.getNodeType(), caArrayData, sdrfDataFile);
+            }
+            // Associate Normalization with the derived data.
+            for (Normalization normalization : sdrfData.getPredecessorNormalizations()) {
+                associateNormalizationWithData(caArrayData, normalization);
+            }
+            nodeTranslations.put(sdrfData, caArrayData);
+        }
+    }
+
+    private void associateNormalizationWithData(DerivedArrayData caArrayData, Normalization normalization) {
+        ProtocolApplication normalizationProtocolApp = new ProtocolApplication();
+        Protocol normalizationProtocol = new Protocol();
+        normalizationProtocol.setName(normalization.getName());
+        normalizationProtocol = (Protocol) replaceIfExists(normalizationProtocol);
+        normalizationProtocolApp.setProtocol(normalizationProtocol);
+        caArrayData.getProtocolApplications().add(normalizationProtocolApp);
+    }
+
+    private void translateFile(SdrfNodeType sdrfType, AbstractArrayData caArrayData, File sdrfDataFile) {
+        if (sdrfDataFile != null) {
+            CaArrayFile dataFile = new CaArrayFile();
+            dataFile.setPath(sdrfDataFile.getPath());
+            dataFile.setType(translateFileType(sdrfType));
+            // TODO How set Project for the CaArrayFile?
+            caArrayData.setDataFile(dataFile);
+        }
+    }
+
+    private FileType translateFileType(SdrfNodeType sdrfType) {
+        if (sdrfType.equals(SdrfNodeType.ARRAY_DATA_FILE)) {
+            // TODO Set the file type correctly for a native raw data file.
+            return FileType.AFFYMETRIX_CEL;
+        } else if (sdrfType.equals(SdrfNodeType.ARRAY_DATA_MATRIX)) {
+            return FileType.MAGE_TAB_DATA_MATRIX;
+        } else if (sdrfType.equals(SdrfNodeType.DERIVED_ARRAY_DATA_FILE)) {
+            // TODO Set the file type correctly for a native derived data file.
+            return FileType.AFFYMETRIX_CDF;
+        } else if (sdrfType.equals(SdrfNodeType.DERIVED_ARRAY_DATA_MATRIX)) {
+            return FileType.MAGE_TAB_DATA_MATRIX;
+        } else if (sdrfType.equals(SdrfNodeType.ARRAY_DESIGN)) {
+            return FileType.MAGE_TAB_ADF;
+        } else {
+            return null;
+        }
+    }
+
     private void linkNodes(SdrfDocument document) {
         for (AbstractSampleDataRelationshipNode currNode : document.getLeftmostNodes()) {
             linkNode(currNode);
@@ -244,6 +453,10 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     // Recursively link this node to its successors.
+    // Does not handle <code>Comment</code> entities.
+    // Assumes that nodes occur in the order: Source, Sample, Extract, LabeledExtract, Hybridization,
+    // Scan, Raw Data, Normalization, Derived Data. Any of these nodes are optional, and Image
+    // can occur anywhere after Hybridization.
     private void linkNode(AbstractSampleDataRelationshipNode node) {
         // Check if we already linked this node before.
         Boolean isLinked = isNodeLinked.get(node);
@@ -271,8 +484,60 @@ final class SdrfTranslator extends AbstractTranslator {
             // Use the left node's name as part of any generated biomaterial names.
             String baseGeneratedNodeName = ((AbstractBioMaterial) leftCaArrayNode).getName();
             linkBioMaterial(leftCaArrayNode, rightCaArrayNode, leftNodeType, rightNodeType, baseGeneratedNodeName);
+        } else if (SdrfNodeType.HYBRIDIZATION.equals(leftNodeType)) {
+            linkHybridizationToArrays((gov.nih.nci.caarray.magetab2.sdrf.Hybridization) leftNode,
+                    (Hybridization) leftCaArrayNode);
+            linkHybridizationToImages((gov.nih.nci.caarray.magetab2.sdrf.Hybridization) leftNode,
+                    (Hybridization) leftCaArrayNode);
+            linkHybridizationToArrayData((gov.nih.nci.caarray.magetab2.sdrf.Hybridization) leftNode,
+                    (Hybridization) leftCaArrayNode);
+        } else {
+            // Ignore other nodes - Image, Scan, Raw/Derived Data, Normalization; they've already been linked.
+            return;
         }
-        // TODO Linkage of nodes where left node is not a BioMaterial is not yet implemented.
+    }
+
+    private void linkHybridizationToArrays(gov.nih.nci.caarray.magetab2.sdrf.Hybridization sdrfHybridization,
+            Hybridization hybridization) {
+        for (gov.nih.nci.caarray.magetab2.sdrf.ArrayDesign sdrfArrayDesign
+                : sdrfHybridization.getSuccessorArrayDesigns()) {
+            Array array = (Array) nodeTranslations.get(sdrfArrayDesign);
+            hybridization.setArray(array);
+        }
+    }
+
+    private void linkHybridizationToImages(gov.nih.nci.caarray.magetab2.sdrf.Hybridization sdrfHybridization,
+            Hybridization hybridization) {
+        for (gov.nih.nci.caarray.magetab2.sdrf.Image sdrfImage : sdrfHybridization.getSuccessorImages()) {
+            Image image = (Image) nodeTranslations.get(sdrfImage);
+            hybridization.getImages().add(image);
+        }
+    }
+
+    private void linkHybridizationToArrayData(gov.nih.nci.caarray.magetab2.sdrf.Hybridization sdrfHybridization,
+            Hybridization hybridization) {
+        // Link raw array data
+        for (gov.nih.nci.caarray.magetab2.sdrf.ArrayDataFile sdrfArrayData
+                : sdrfHybridization.getSuccessorArrayDataFiles()) {
+            RawArrayData arrayData = (RawArrayData) nodeTranslations.get(sdrfArrayData);
+            hybridization.setArrayData(arrayData);
+        }
+        for (gov.nih.nci.caarray.magetab2.sdrf.ArrayDataMatrixFile sdrfArrayData
+                : sdrfHybridization.getSuccessorArrayDataMatrixFiles()) {
+            RawArrayData arrayData = (RawArrayData) nodeTranslations.get(sdrfArrayData);
+            hybridization.setArrayData(arrayData);
+        }
+        // Link derived array data
+        for (gov.nih.nci.caarray.magetab2.sdrf.DerivedArrayDataFile sdrfArrayData
+                : sdrfHybridization.getSuccessorDerivedArrayDataFiles()) {
+            DerivedArrayData arrayData = (DerivedArrayData) nodeTranslations.get(sdrfArrayData);
+            hybridization.setDerivedData(arrayData);
+        }
+        for (gov.nih.nci.caarray.magetab2.sdrf.DerivedArrayDataMatrixFile sdrfArrayData
+                : sdrfHybridization.getSuccessorDerivedArrayDataMatrixFiles()) {
+            DerivedArrayData arrayData = (DerivedArrayData) nodeTranslations.get(sdrfArrayData);
+            hybridization.setDerivedData(arrayData);
+        }
     }
 
     /**
