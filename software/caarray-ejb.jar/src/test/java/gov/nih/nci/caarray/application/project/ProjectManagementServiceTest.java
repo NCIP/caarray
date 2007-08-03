@@ -189,6 +189,7 @@ public class ProjectManagementServiceTest {
         }
 
         @Override
+        @SuppressWarnings("PMD")
         public Project getProject(long id) {
             Project project = new Project();
             // Perform voodoo magic
