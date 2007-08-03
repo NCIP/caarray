@@ -109,7 +109,6 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 public class ProtocolDaoTest {
     private static final Log LOG = LogFactory.getLog(ProtocolDaoTest.class);
 
-    private static final Long DUMMY_START_ID = 150L;
     private static final ParameterValue DUMMY_PARAMETER_VALUE_1 = new ParameterValue();
     private static final ParameterValue DUMMY_PARAMETER_VALUE_2 = new ParameterValue();
     private static final ParameterValue DUMMY_PARAMETER_VALUE_3 = new ParameterValue();
@@ -141,21 +140,16 @@ public class ProtocolDaoTest {
      * Initialize the dummy <code>Parameter</code> and <code>ParameterValue</code> objects.
      */
     private static void initializeParametersAndParamValues() {
-        DUMMY_PARAMETER_1.setId(DUMMY_START_ID);
         DUMMY_PARAMETER_1.setName("DummyTestParameter1");
         //DUMMY_PARAMETER_1.setDefaultValue(DUMMY_PARAMETER_VALUE_3);
-        DUMMY_PARAMETER_2.setId(DUMMY_START_ID + 1);
         DUMMY_PARAMETER_2.setName("DummyTestParameter2");
 
-        DUMMY_PARAMETER_VALUE_1.setId(DUMMY_START_ID);
         DUMMY_PARAMETER_VALUE_1.setUnit("DummyUnitForParameterValue1");
         DUMMY_PARAMETER_VALUE_1.setValue("DummyValueForParameterValue1");
         DUMMY_PARAMETER_VALUE_1.setParameter(DUMMY_PARAMETER_1);
-        DUMMY_PARAMETER_VALUE_2.setId(DUMMY_START_ID + 1);
         DUMMY_PARAMETER_VALUE_2.setUnit("DummyUnitForParameterValue2");
         DUMMY_PARAMETER_VALUE_2.setValue("DummyValueForParameterValue2");
         DUMMY_PARAMETER_VALUE_2.setParameter(DUMMY_PARAMETER_2);
-        DUMMY_PARAMETER_VALUE_3.setId(DUMMY_START_ID + 2);
         DUMMY_PARAMETER_VALUE_3.setUnit("DummyUnitForParameterValue3");
         DUMMY_PARAMETER_VALUE_3.setValue("DummyValueForParameterValue3");
         DUMMY_PARAMETER_VALUE_3.setParameter(DUMMY_PARAMETER_1);
@@ -167,28 +161,21 @@ public class ProtocolDaoTest {
      */
     @SuppressWarnings("unchecked")
     private static void initializeProtocols() {
-        DUMMY_CATEGORY.setId(DUMMY_START_ID);
         DUMMY_CATEGORY.setName("DummyTestCategory");
-        DUMMY_TERM_1.setId(DUMMY_START_ID);
         DUMMY_TERM_1.setValue("DummyTestTerm1");
         DUMMY_TERM_1.setCategory(DUMMY_CATEGORY);
-        DUMMY_TERM_2.setId(DUMMY_START_ID + 1);
         DUMMY_TERM_2.setValue("DummyTestTerm2");
         DUMMY_TERM_2.setCategory(DUMMY_CATEGORY);
 
-        long id = DUMMY_START_ID;
-        DUMMY_PROTOCOL_1.setId(id);
         DUMMY_PROTOCOL_1.setName("DummyTestProtocol1");
         DUMMY_PROTOCOL_1.setDescription("DummyDescForProtocol");
         DUMMY_PROTOCOL_1.setUrl("DummyUrlForProtocol1");
         DUMMY_PROTOCOL_1.setType(DUMMY_TERM_1);
         DUMMY_PROTOCOL_1.getParameters().add(DUMMY_PARAMETER_1);
         DUMMY_PROTOCOL_1.getParameters().add(DUMMY_PARAMETER_2);
-        DUMMY_PROTOCOL_2.setId(++id);
         DUMMY_PROTOCOL_2.setName("DummyTestProtocol2");
         DUMMY_PROTOCOL_2.setDescription("DummyDescForProtocol");
         DUMMY_PROTOCOL_2.setType(DUMMY_TERM_1);
-        DUMMY_PROTOCOL_3.setId(++id);
         DUMMY_PROTOCOL_3.setName("DummyTestProtocol3");
         DUMMY_PROTOCOL_3.setDescription("DummyDescForProtocol");
         DUMMY_PROTOCOL_3.setType(DUMMY_TERM_2);
@@ -199,11 +186,9 @@ public class ProtocolDaoTest {
      */
     @SuppressWarnings("unchecked")
     private static void initializeProtocolApps() {
-        DUMMY_PROTOCOL_APPLICATION_1.setId(DUMMY_START_ID);
         DUMMY_PROTOCOL_APPLICATION_1.setProtocol(DUMMY_PROTOCOL_1);
         DUMMY_PROTOCOL_APPLICATION_1.getValues().add(DUMMY_PARAMETER_VALUE_1);
         DUMMY_PROTOCOL_APPLICATION_1.getValues().add(DUMMY_PARAMETER_VALUE_2);
-        DUMMY_PROTOCOL_APPLICATION_2.setId(DUMMY_START_ID + 1);
         DUMMY_PROTOCOL_APPLICATION_2.setProtocol(DUMMY_PROTOCOL_2);
     }
 
@@ -218,8 +203,8 @@ public class ProtocolDaoTest {
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             DAO_OBJECT.save(DUMMY_PROTOCOL_1);
-            tx.commit();
             Protocol retrievedProtocol = DAO_OBJECT.getProtocol(DUMMY_PROTOCOL_1.getId());
+            tx.commit();
             if (DUMMY_PROTOCOL_1.equals(retrievedProtocol)) {
                 // The retrieved protocol is the same as the saved protocol. Test passed.
                 assertTrue(true);
@@ -268,7 +253,8 @@ public class ProtocolDaoTest {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             DAO_OBJECT.save(DUMMY_PROTOCOL_APPLICATION_1);
             ProtocolApplication retrievedProtocolApp =
-                (ProtocolApplication) DAO_OBJECT.queryEntityById(DUMMY_PROTOCOL_APPLICATION_1);
+                (ProtocolApplication) HibernateUtil.getCurrentSession().get(ProtocolApplication.class,
+                                                                            DUMMY_PROTOCOL_APPLICATION_1.getId());
             if (DUMMY_PROTOCOL_APPLICATION_1.equals(retrievedProtocolApp)) {
                 // The retrieved protocol app is the same as the saved protocol app. Test passed.
                 assertTrue(true);

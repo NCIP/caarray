@@ -95,7 +95,7 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
     /**
      * {@inheritDoc}
      */
-    public ArrayDesign getArrayDesign(Long id) {
+    public ArrayDesign getArrayDesign(long id) {
         return null;
     }
 

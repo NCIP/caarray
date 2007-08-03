@@ -114,7 +114,6 @@ public class SearchDaoTest {
     private static final Log LOG = LogFactory.getLog(SearchDaoTest.class);
 
     private static final String FAIL_NO_MATCH = "Retrieved protocol is different from saved protocol.";
-    private static final Long DUMMY_START_ID = 150L;
     private static final Category DUMMY_CATEGORY = new Category();
     private static final Term DUMMY_TERM_1 = new Term();
     private static final Protocol DUMMY_PROTOCOL_1 = new Protocol();
@@ -150,9 +149,7 @@ public class SearchDaoTest {
      * Initialize the dummy <code>Parameter</code> objects.
      */
     private static void initializeParameters() {
-        DUMMY_PARAMETER_1.setId(DUMMY_START_ID);
         DUMMY_PARAMETER_1.setName("DummyTestParameter1");
-        DUMMY_PARAMETER_2.setId(DUMMY_START_ID + 1);
         DUMMY_PARAMETER_2.setName("DummyTestParameter2");
     }
 
@@ -162,14 +159,10 @@ public class SearchDaoTest {
      */
     @SuppressWarnings("unchecked")
     private static void initializeProtocols() {
-        DUMMY_CATEGORY.setId(DUMMY_START_ID);
         DUMMY_CATEGORY.setName("DummyTestCategory");
-        DUMMY_TERM_1.setId(DUMMY_START_ID);
         DUMMY_TERM_1.setValue("DummyTestTerm1");
         DUMMY_TERM_1.setCategory(DUMMY_CATEGORY);
 
-        long id = DUMMY_START_ID;
-        DUMMY_PROTOCOL_1.setId(id);
         DUMMY_PROTOCOL_1.setName("DummyTestProtocol1");
         DUMMY_PROTOCOL_1.setDescription("DummyDescForProtocol");
         DUMMY_PROTOCOL_1.setUrl("DummyUrlForProtocol1");

@@ -90,6 +90,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
@@ -272,18 +273,11 @@ public class Term extends AbstractCaArrayEntity {
      */
     @Override
     public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(super.toString());
-        stringBuffer.append(" source=");
-        if (source == null) {
-            stringBuffer.append("null");
-        } else {
-            stringBuffer.append(source.getName());
-        }
-        stringBuffer.append(" category=");
-        stringBuffer.append(getCategory().getName());
-        stringBuffer.append(" value=");
-        stringBuffer.append(getValue());
-        return stringBuffer.toString();
+        return new ToStringBuilder(this)
+            .append("source", source)
+            .append("category", category)
+            .append("value", value)
+            .append("description", description)
+            .toString();
     }
 }

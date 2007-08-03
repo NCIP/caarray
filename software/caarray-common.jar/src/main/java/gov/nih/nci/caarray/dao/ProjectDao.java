@@ -93,12 +93,12 @@ import gov.nih.nci.caarray.domain.project.Project;
  */
 public interface ProjectDao extends CaArrayDao {
     /**
-     * Returns the <code>Project</code> with the id given, or null if none exists.
+     * Returns the <code>Project</code> with the id given.
      *
      * @param id get <code>Project</code> matching this id
-     * @return the <code>Project</code> or null.
+     * @return the <code>Project</code>.
      */
-    Project getProject(Long id);
+    Project getProject(long id);
 
     /**
      * Returns all projects.

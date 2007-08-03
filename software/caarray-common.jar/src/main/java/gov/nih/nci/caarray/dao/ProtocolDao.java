@@ -90,11 +90,11 @@ import gov.nih.nci.caarray.domain.protocol.Protocol;
 public interface ProtocolDao extends CaArrayDao {
 
     /**
-     * Returns the <code>Protocol</code> with the id given or null if none exists.
+     * Returns the <code>Protocol</code> with the id given.
      *
      * @param id get <code>Protocol</code> matching this id
-     * @return the <code>Protocol</code> or null.
+     * @return the <code>Protocol</code>.
      */
-    Protocol getProtocol(Long id);
+    Protocol getProtocol(long id);
 
 }

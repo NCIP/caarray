@@ -96,16 +96,10 @@ class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
     private static final Log LOG = LogFactory.getLog(SampleDaoImpl.class);
 
     /**
-     * Returns the <code>Sample</code> with the id given, or null if none exists.
-     *
-     * @param id get <code>Sample</code> matching this id
-     * @return the <code>Sample</code> or null.
+     * {@inheritDoc}
      */
-    public Sample getSample(Long id) {
-        // Create an example sample that has the desired id, and use it to retrieve matching samples.
-        Sample sampleToMatch = new Sample();
-        sampleToMatch.setId(id);
-        return (Sample) queryEntityById(sampleToMatch);
+    public Sample getSample(long id) {
+        return (Sample) getCurrentSession().get(Sample.class, id);
     }
 
     @Override

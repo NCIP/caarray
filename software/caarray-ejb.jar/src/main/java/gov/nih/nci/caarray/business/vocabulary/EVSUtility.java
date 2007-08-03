@@ -148,7 +148,7 @@ public class EVSUtility {
 
     /**
      * Creates a new instance.
-     * 
+     *
      * @param daoFactory used to access persistent data
      */
     public EVSUtility(CaArrayDaoFactory daoFactory) {
@@ -217,6 +217,7 @@ public class EVSUtility {
         // category will always be set to the parent concept
         List<DescLogicConcept> remainderList = new ArrayList<DescLogicConcept>(subConcepts);
         int test = 0;
+        // TODO: should revisit need to clone this
         Category oldParent = this.cloneCategory(parentCategory);
         while (!remainderList.isEmpty()) {
             // the first time through, skip this part... obtain conceptInstances for the current concept
@@ -457,12 +458,12 @@ public class EVSUtility {
     }
 
     private Category cloneCategory(Category oldCategory) {
-        Category newCategory = new Category();
-        newCategory.getChildren().addAll(oldCategory.getChildren());
-        newCategory.setId(oldCategory.getId());
-        newCategory.setName(oldCategory.getName());
-        newCategory.setParent(oldCategory.getParent());
-        return newCategory;
+        try {
+            return (Category) oldCategory.clone();
+        } catch (CloneNotSupportedException cnse) {
+            // shouldn't be possible
+            return null;
+        }
     }
 
     /**
@@ -486,7 +487,6 @@ public class EVSUtility {
 
     private TermSource getSourceForName(String source) {
         TermSource newSource = new TermSource();
-        newSource.setId(0L);
         newSource.setName(source);
         newSource.setUrl(APP_SERVICE_URL);
         return newSource;

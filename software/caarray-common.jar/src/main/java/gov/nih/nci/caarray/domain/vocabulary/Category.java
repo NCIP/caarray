@@ -105,7 +105,7 @@ import org.hibernate.annotations.ForeignKey;
    */
 @Entity
 @Table(name = "CATEGORY")
-public class Category extends AbstractCaArrayEntity {
+public class Category extends AbstractCaArrayEntity implements Cloneable {
     /**
      * The serial version UID for serialization.
      */
@@ -232,4 +232,15 @@ public class Category extends AbstractCaArrayEntity {
             .append("name", name)
             .toString();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Category c = (Category) super.clone();
+
+        return c;
+    }
+
 }

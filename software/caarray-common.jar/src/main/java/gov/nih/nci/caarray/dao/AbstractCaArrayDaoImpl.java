@@ -92,7 +92,6 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Example;
-import org.hibernate.criterion.Restrictions;
 
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
@@ -149,34 +148,6 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         } catch (HibernateException he) {
             getLog().error("Unable to save entity collection", he);
             throw new DAOException("Unable to save entity collection", he);
-        }
-    }
-
-    /**
-     * Returns the <code>AbstractCaArrayEntity</code> matching the given id,
-     * or null if none exists.
-     *
-     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this id.
-     * @return the retrieved <code>AbstractCaArrayEntity</code> or null.
-     */
-    public AbstractCaArrayEntity queryEntityById(AbstractCaArrayEntity entityToMatch) {
-        List hibernateReturnedEntities = null;
-        Session mySession = HibernateUtil.getSessionForQueryMethod();
-
-        try {
-            // Query database for list of entities matching the given entity.
-            hibernateReturnedEntities = mySession.createCriteria(entityToMatch.getClass()).add(
-                Restrictions.eq("id", entityToMatch.getId())).list();
-        } catch (HibernateException he) {
-            getLog().error(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
-            throw new DAOException(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
-        } finally {
-            HibernateUtil.returnSession(mySession);
-        }
-        if ((hibernateReturnedEntities != null) && (hibernateReturnedEntities.size() >= 1)) {
-            return (AbstractCaArrayEntity) hibernateReturnedEntities.get(0);
-        } else {
-            return null;
         }
     }
 

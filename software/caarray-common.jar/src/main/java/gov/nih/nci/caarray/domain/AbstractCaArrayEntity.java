@@ -138,7 +138,8 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      *
      * @param id the id to set
      */
-    public void setId(Long id) {
+    @SuppressWarnings("unused")
+    private void setId(Long id) {
         this.id = id;
     }
 

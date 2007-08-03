@@ -108,7 +108,6 @@ import org.junit.Test;
 public class SampleDaoTest {
     private static final Log LOG = LogFactory.getLog(SampleDaoTest.class);
 
-    private static final Long DUMMY_START_ID = 150L;
     private static final Sample DUMMY_SAMPLE_1 = new Sample();
 
     private static final TermSource DUMMY_SOURCE = new TermSource();
@@ -133,8 +132,6 @@ public class SampleDaoTest {
      */
     @BeforeClass
     public static void setUpBeforeClass() {
-        long id = DUMMY_START_ID;
-        DUMMY_SAMPLE_1.setId(id);
         DUMMY_SAMPLE_1.setName("DummySample1");
         DUMMY_SAMPLE_1.setDescription("DummySample1Desc");
 
@@ -167,8 +164,8 @@ public class SampleDaoTest {
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             DAO_OBJECT.save(DUMMY_SAMPLE_1);
-            tx.commit();
             Sample retrievedSample = DAO_OBJECT.getSample(DUMMY_SAMPLE_1.getId());
+            tx.commit();
             if (DUMMY_SAMPLE_1.equals(retrievedSample)) {
                 if (compareSamples(retrievedSample, DUMMY_SAMPLE_1)) {
                     // The retrieved sample is the same as the saved sample. Test passed.

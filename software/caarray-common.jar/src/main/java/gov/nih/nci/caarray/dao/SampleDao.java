@@ -91,10 +91,10 @@ import gov.nih.nci.caarray.domain.sample.Sample;
  */
 public interface SampleDao extends CaArrayDao {
     /**
-     * Returns the <code>Sample</code> with the id given, or null if none exists.
+     * Returns the <code>Sample</code> with the id given.
      *
      * @param id get <code>Sample</code> matching this id
-     * @return the <code>Sample</code> or null.
+     * @return the <code>Sample</code>.
      */
-    Sample getSample(Long id);
+    Sample getSample(long id);
 }

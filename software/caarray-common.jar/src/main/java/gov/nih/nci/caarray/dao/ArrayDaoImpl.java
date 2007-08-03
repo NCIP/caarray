@@ -95,17 +95,14 @@ import org.apache.commons.logging.LogFactory;
  * @author Rashmi Srinivasa
  */
 class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
-    
+
     private static final Log LOG = LogFactory.getLog(ArrayDaoImpl.class);
 
     /**
      * {@inheritDoc}
      */
-    public ArrayDesign getArrayDesign(Long id) {
-        // Create an example arraydesign that has the desired id, and use it to retrieve matching arraydesigns.
-        ArrayDesign arrayDesignToMatch = new ArrayDesign();
-        arrayDesignToMatch.setId(id);
-        return (ArrayDesign) queryEntityById(arrayDesignToMatch);
+    public ArrayDesign getArrayDesign(long id) {
+        return (ArrayDesign) getCurrentSession().load(ArrayDesign.class, id);
     }
 
     /**

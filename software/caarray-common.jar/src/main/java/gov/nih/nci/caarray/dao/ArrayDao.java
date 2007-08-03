@@ -93,16 +93,16 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
  */
 public interface ArrayDao extends CaArrayDao {
     /**
-     * Returns the <code>ArrayDesign</code> with the id given or null if none exists.
+     * Returns the <code>ArrayDesign</code> with the id given.
      *
      * @param id get <code>ArrayDesign</code> matching this id
-     * @return the <code>ArrayDesign</code> or null.
+     * @return the <code>ArrayDesign</code>.
      */
-    ArrayDesign getArrayDesign(Long id);
+    ArrayDesign getArrayDesign(long id);
 
     /**
      * Returns the array data object associated with the file provided.
-     * 
+     *
      * @param file find data for this file.
      * @return the associated data or null.
      */

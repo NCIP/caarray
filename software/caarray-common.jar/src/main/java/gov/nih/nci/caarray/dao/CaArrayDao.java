@@ -135,13 +135,4 @@ public interface CaArrayDao {
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
      */
     List<AbstractCaArrayEntity> queryEntityAndAssociationsByExample(AbstractCaArrayEntity entityToMatch);
-
-    /**
-     * Returns the <code>AbstractCaArrayEntity</code> matching the given id,
-     * or null if none exists.
-     *
-     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this id.
-     * @return the retrieved <code>AbstractCaArrayEntity</code> or null.
-     */
-    AbstractCaArrayEntity queryEntityById(AbstractCaArrayEntity entityToMatch);
 }

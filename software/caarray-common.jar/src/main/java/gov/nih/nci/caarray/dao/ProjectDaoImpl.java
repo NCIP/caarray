@@ -103,11 +103,8 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      * @param id get <code>Project</code> matching this id
      * @return the <code>Project</code> or null.
      */
-    public Project getProject(Long id) {
-        // Create an example project that has the desired id, and use it to retrieve matching projects.
-        Project projectToMatch = new Project();
-        projectToMatch.setId(id);
-        return (Project) queryEntityById(projectToMatch);
+    public Project getProject(long id) {
+        return (Project) getCurrentSession().get(Project.class, id);
     }
 
     @Override

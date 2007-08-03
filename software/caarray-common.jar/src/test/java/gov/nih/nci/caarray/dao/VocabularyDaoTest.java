@@ -109,7 +109,6 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 public class VocabularyDaoTest {
     private static final Log LOG = LogFactory.getLog(VocabularyDaoTest.class);
 
-    private static final Long DUMMY_START_ID = new Long(150);
     private static final Category DUMMY_CATEGORY_1 = new Category();
     private static final Category DUMMY_CATEGORY_2 = new Category();
     private static final Category DUMMY_CATEGORY_3 = new Category();
@@ -140,26 +139,17 @@ public class VocabularyDaoTest {
      */
     @SuppressWarnings("unchecked")
     private static void initializeCategoriesAndTerms() {
-        long id = DUMMY_START_ID;
-        DUMMY_CATEGORY_1.setId(id);
         DUMMY_CATEGORY_1.setName("DummyTestCategory1");
-        DUMMY_CATEGORY_2.setId(++id);
         DUMMY_CATEGORY_2.setName("DummyTestCategory2");
-        DUMMY_CATEGORY_3.setId(++id);
         DUMMY_CATEGORY_3.setName("DummyTestCategory3");
-        DUMMY_CATEGORY_4.setId(++id);
         DUMMY_CATEGORY_4.setName("DummyTestCategory4");
         DUMMY_CATEGORY_3.setParent(DUMMY_CATEGORY_4);
         DUMMY_CATEGORY_4.getChildren().add(DUMMY_CATEGORY_3);
 
-        id = DUMMY_START_ID;
-        DUMMY_TERM_1.setId(id);
         DUMMY_TERM_1.setDescription("DummyTestTerm1");
         DUMMY_TERM_1.setCategory(DUMMY_CATEGORY_3);
-        DUMMY_TERM_2.setId(++id);
         DUMMY_TERM_2.setDescription("DummyTestTerm2");
         DUMMY_TERM_2.setCategory(DUMMY_CATEGORY_3);
-        DUMMY_TERM_3.setId(++id);
         DUMMY_TERM_3.setDescription("DummyTestTerm3");
         DUMMY_TERM_3.setCategory(DUMMY_CATEGORY_4);
     }
@@ -168,20 +158,16 @@ public class VocabularyDaoTest {
      * Initialize the dummy <code>Source</code> and <code>Accession</code> objects.
      */
     private static void initializeSourcesAndAccessions() {
-        DUMMY_SOURCE_1.setId(DUMMY_START_ID);
         DUMMY_SOURCE_1.setName("DummyTestSource1");
         DUMMY_SOURCE_1.setUrl("DummyUrlForSource1");
         DUMMY_SOURCE_1.setVersion("1.0");
-        DUMMY_SOURCE_2.setId(DUMMY_START_ID + 1);
         DUMMY_SOURCE_2.setName("DummyTestSource2");
         DUMMY_SOURCE_2.setUrl("DummyUrlForSource2");
         DUMMY_SOURCE_2.setVersion("1.0");
 
-        DUMMY_ACCESSION_1.setId(DUMMY_START_ID);
         DUMMY_ACCESSION_1.setUrl("DummyUrlForAccession1");
         DUMMY_ACCESSION_1.setValue("DummyValueForAccession1");
         DUMMY_ACCESSION_1.setSource(DUMMY_SOURCE_1);
-        DUMMY_ACCESSION_2.setId(DUMMY_START_ID + 1);
         DUMMY_ACCESSION_2.setUrl("DummyUrlForAccession2");
         DUMMY_ACCESSION_2.setValue("DummyValueForAccession2");
         DUMMY_ACCESSION_2.setSource(DUMMY_SOURCE_1);
@@ -220,10 +206,10 @@ public class VocabularyDaoTest {
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             setupTestGetTermsRecursive();
+            assertTrue(DUMMY_CATEGORY_4.getChildren().size() > 0);
+            assertNotNull(DUMMY_CATEGORY_3.getParent());
             Set<Term> retrievedTerms = DAO_OBJECT.getTermsRecursive(DUMMY_CATEGORY_4.getName());
-            if (retrievedTerms.size() != NUM_DUMMY_TERMS) {
-                fail("Did not retrieve the expected number of terms.");
-            }
+            assertEquals("Wrong size: " + retrievedTerms, NUM_DUMMY_TERMS, retrievedTerms.size());
             // Check if we got the expected terms, and accordingly pass or fail the test.
             checkIfExpectedTermsRecursive(retrievedTerms);
             tx.commit();
@@ -272,7 +258,7 @@ public class VocabularyDaoTest {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             DAO_OBJECT.save(DUMMY_CATEGORY_1);
             // Check if we got the expected category, and accordingly pass or fail the test.
-            checkIfExpectedCategory();
+            checkIfExpectedCategory(DUMMY_CATEGORY_1.getId());
             tx.commit();
         } catch (DAOException saveException) {
             HibernateUtil.rollbackTransaction(tx);
@@ -325,7 +311,7 @@ public class VocabularyDaoTest {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             DAO_OBJECT.save(DUMMY_TERM_1);
             // Check if we got the expected term, and accordingly pass or fail the test.
-            checkIfExpectedTerm();
+            checkIfExpectedTerm(DUMMY_TERM_1.getId());
             tx.commit();
         } catch (DAOException saveException) {
             HibernateUtil.rollbackTransaction(tx);
@@ -389,7 +375,7 @@ public class VocabularyDaoTest {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             DAO_OBJECT.save(DUMMY_SOURCE_1);
             // Check if we got the expected source, and accordingly pass or fail the test.
-            checkIfExpectedSource();
+            checkIfExpectedSource(DUMMY_SOURCE_1.getId());
             tx.commit();
         } catch (DAOException saveException) {
             HibernateUtil.rollbackTransaction(tx);
@@ -452,7 +438,7 @@ public class VocabularyDaoTest {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             DAO_OBJECT.save(DUMMY_ACCESSION_1);
             // Check if we got the expected accession, and accordingly pass or fail the test.
-            checkIfExpectedAccession();
+            checkIfExpectedAccession(DUMMY_ACCESSION_1.getId());
             tx.commit();
         } catch (DAOException saveException) {
             HibernateUtil.rollbackTransaction(tx);
@@ -533,8 +519,8 @@ public class VocabularyDaoTest {
         assertTrue(true);
     }
 
-    private void checkIfExpectedTerm() {
-        Term retrievedTerm = (Term) DAO_OBJECT.queryEntityById(DUMMY_TERM_1);
+    private void checkIfExpectedTerm(long id) {
+        Term retrievedTerm = (Term) HibernateUtil.getCurrentSession().get(Term.class, id);
         if (DUMMY_TERM_1.equals(retrievedTerm)) {
             // The retrieved term is the same as the saved term. Save and retrieve test passed.
             assertTrue(true);
@@ -543,8 +529,8 @@ public class VocabularyDaoTest {
         }
     }
 
-    private void checkIfExpectedCategory() {
-        Category retrievedCategory = (Category) DAO_OBJECT.queryEntityById(DUMMY_CATEGORY_1);
+    private void checkIfExpectedCategory(long id) {
+        Category retrievedCategory = (Category) HibernateUtil.getCurrentSession().get(Category.class, id);
         if (DUMMY_CATEGORY_1.equals(retrievedCategory)) {
             // The retrieved category is the same as the saved category. Save and retrieve test passed.
             assertTrue(true);
@@ -553,8 +539,8 @@ public class VocabularyDaoTest {
         }
     }
 
-    private void checkIfExpectedSource() {
-        TermSource retrievedSource = (TermSource) DAO_OBJECT.queryEntityById(DUMMY_SOURCE_1);
+    private void checkIfExpectedSource(long id) {
+        TermSource retrievedSource = (TermSource) HibernateUtil.getCurrentSession().get(TermSource.class, id);
         if (DUMMY_SOURCE_1.equals(retrievedSource)) {
             // The retrieved source is the same as the saved source. Save and retrieve test passed.
             assertTrue(true);
@@ -563,8 +549,8 @@ public class VocabularyDaoTest {
         }
     }
 
-    private void checkIfExpectedAccession() {
-        Accession retrievedAccession = (Accession) DAO_OBJECT.queryEntityById(DUMMY_ACCESSION_1);
+    private void checkIfExpectedAccession(long id) {
+        Accession retrievedAccession = (Accession) HibernateUtil.getCurrentSession().get(Accession.class, id);
         if (DUMMY_ACCESSION_1.equals(retrievedAccession)) {
             // The retrieved accession is the same as the saved accession. Save and retrieve test passed.
             assertTrue(true);
@@ -585,6 +571,10 @@ public class VocabularyDaoTest {
         DAO_OBJECT.save(DUMMY_TERM_1);
         DAO_OBJECT.save(DUMMY_TERM_2);
         DAO_OBJECT.save(DUMMY_TERM_3);
+        DAO_OBJECT.save(DUMMY_CATEGORY_1);
+        DAO_OBJECT.save(DUMMY_CATEGORY_2);
+        DAO_OBJECT.save(DUMMY_CATEGORY_3);
+        DAO_OBJECT.save(DUMMY_CATEGORY_4);
     }
 
     /**

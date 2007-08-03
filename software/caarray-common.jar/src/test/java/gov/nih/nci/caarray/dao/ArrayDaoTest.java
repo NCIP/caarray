@@ -106,7 +106,6 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 public class ArrayDaoTest {
     private static final Log LOG = LogFactory.getLog(ArrayDaoTest.class);
 
-    private static final Long DUMMY_START_ID = 150L;
     private static final Organization DUMMY_ORGANIZATION = new Organization();
     private static final ArrayDesign DUMMY_ARRAYDESIGN_1 = new ArrayDesign();
 
@@ -125,10 +124,7 @@ public class ArrayDaoTest {
      * Initialize the dummy <code>ArrayDesign</code> objects.
      */
     private static void initializeArrayDesigns() {
-        long id = DUMMY_START_ID;
-        DUMMY_ORGANIZATION.setId(id);
         DUMMY_ORGANIZATION.setName("DummyOrganization");
-        DUMMY_ARRAYDESIGN_1.setId(id);
         DUMMY_ARRAYDESIGN_1.setName("DummyTestArrayDesign1");
         DUMMY_ARRAYDESIGN_1.setVersion("2.0");
         DUMMY_ARRAYDESIGN_1.setProvider(DUMMY_ORGANIZATION);
@@ -146,8 +142,8 @@ public class ArrayDaoTest {
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             DAO_OBJECT.save(DUMMY_ARRAYDESIGN_1);
-            tx.commit();
             ArrayDesign retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getId());
+            tx.commit();
             assertEquals(DUMMY_ARRAYDESIGN_1, retrievedArrayDesign);
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
@@ -164,7 +160,7 @@ public class ArrayDaoTest {
         remove(DUMMY_ARRAYDESIGN_1);
         remove(DUMMY_ORGANIZATION);
     }
-    
+
     // TODO -- Todd: implement Hibernate mappings for AbstractArrayData subclasses and uncomment @Test annotation below
     // @Test
     public void testGetArrayData() {
@@ -176,7 +172,7 @@ public class ArrayDaoTest {
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             DAO_OBJECT.save(rawArrayData);
-            tx.commit();            
+            tx.commit();
             AbstractArrayData retrievedArrayData = DAO_OBJECT.getArrayData(file);
             assertEquals(rawArrayData, retrievedArrayData);
         } catch (DAOException e) {

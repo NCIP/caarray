@@ -93,7 +93,7 @@ public class SampleDaoStub extends AbstractDaoStub implements SampleDao {
     /**
      * {@inheritDoc}
      */
-    public Sample getSample(Long id) {
+    public Sample getSample(long id) {
         return null;
     }
 

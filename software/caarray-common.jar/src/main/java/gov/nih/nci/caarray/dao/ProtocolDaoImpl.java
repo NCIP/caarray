@@ -102,11 +102,8 @@ class ProtocolDaoImpl extends AbstractCaArrayDaoImpl implements ProtocolDao {
      * @param id get <code>Protocol</code> matching this id
      * @return the <code>Protocol</code> or null.
      */
-    public Protocol getProtocol(Long id) {
-        // Create an example protocol that has the desired id, and use it to retrieve matching protocols.
-        Protocol protocolToMatch = new Protocol();
-        protocolToMatch.setId(id);
-        return (Protocol) queryEntityById(protocolToMatch);
+    public Protocol getProtocol(long id) {
+        return (Protocol) getCurrentSession().get(Protocol.class, id);
     }
 
     @Override

@@ -122,7 +122,6 @@ public class ProjectDaoTest {
 
     // Investigation
     private static final String UNCHECKED = "unchecked";
-    private static final Long DUMMY_START_ID = 150L;
     private static final Project DUMMY_PROJECT_1 = new Project();
     private static final Investigation DUMMY_INVESTIGATION_1 = new Investigation();
     private static final TermSource DUMMY_SOURCE = new TermSource();
@@ -167,8 +166,7 @@ public class ProjectDaoTest {
      * Initialize the dummy <code>Project</code> objects.
      */
     private static void initializeProjects() {
-        long id = DUMMY_START_ID;
-        setInvestigationSummary(id);
+        setInvestigationSummary();
         setInvestigationContacts();
         DUMMY_SOURCE.setName("Dummy MGED Ontology");
         DUMMY_CATEGORY.setName("Dummy Category");
@@ -176,12 +174,10 @@ public class ProjectDaoTest {
         setExperimentalFactors();
         setPublications();
         setFiles();
-        DUMMY_PROJECT_1.setId(id);
         DUMMY_PROJECT_1.setInvestigation(DUMMY_INVESTIGATION_1);
     }
 
-    private static void setInvestigationSummary(long id) {
-        DUMMY_INVESTIGATION_1.setId(id);
+    private static void setInvestigationSummary() {
         DUMMY_INVESTIGATION_1.setTitle("DummyInvestigation1");
         DUMMY_INVESTIGATION_1.setDescription("DummyInvestigation1Desc");
         Date currDate = new Date();
@@ -271,8 +267,8 @@ public class ProjectDaoTest {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             int size = DAO_OBJECT.getAllProjects().size();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
-            tx.commit();
             Project retrievedProject = DAO_OBJECT.getProject(DUMMY_PROJECT_1.getId());
+            tx.commit();
             if (DUMMY_PROJECT_1.equals(retrievedProject)) {
                 checkFiles(DUMMY_PROJECT_1, retrievedProject);
                 if (compareInvestigations(retrievedProject.getInvestigation(), DUMMY_PROJECT_1.getInvestigation())) {

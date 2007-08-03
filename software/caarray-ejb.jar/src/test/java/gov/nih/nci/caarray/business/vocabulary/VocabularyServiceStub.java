@@ -102,7 +102,6 @@ public class VocabularyServiceStub implements VocabularyService {
         TermSource source = getSource("MO");
         for (int i = 0; i < 10; i++) {
             Term term = getTerm(source, getCategory(source, categoryName), "term" + i);
-            term.setId((long) i);
             terms.add(term);
         }
         return terms;
