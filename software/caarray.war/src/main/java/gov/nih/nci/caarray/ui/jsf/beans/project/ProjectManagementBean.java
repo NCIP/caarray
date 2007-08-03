@@ -111,7 +111,6 @@ import org.apache.myfaces.custom.fileupload.UploadedFile;
 public final class ProjectManagementBean implements Serializable {
 
     private static final long serialVersionUID = -1814579234979957046L;
-    @SuppressWarnings("unused")
     private static final Log LOG = LogFactory.getLog(ProjectManagementBean.class);
 
     private Project project;
@@ -175,6 +174,7 @@ public final class ProjectManagementBean implements Serializable {
         OutputStream os = null;
         try {
             File f = getFile();
+            LOG.info("Writing uploaded file to " + f.getAbsolutePath());
 
             os = new BufferedOutputStream(new FileOutputStream(f));
             os.write(getUploadFile().getBytes());
@@ -204,14 +204,17 @@ public final class ProjectManagementBean implements Serializable {
     /**
      * @return file based upon the uploaded file name
      * @throws IOException on error
+     * TODO Get storage dir from FileManagementBean; proper handling of duplicate files
      */
     private File getFile() throws IOException {
         File f;
         final String uploadName = getUploadFile().getName();
         int count = 0;
         do {
+            File projectDirectory = new File(System.getProperty("java.io.tmpdir"), getProject().getId().toString());
+            projectDirectory.mkdirs();
             String fileName = (count == 0) ? uploadName : count + "-" + uploadName;
-            f = new File(System.getProperty("java.io.tmpdir"), fileName);
+            f = new File(projectDirectory, fileName);
             ++count;
         } while (!f.createNewFile());
         return f;
