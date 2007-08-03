@@ -105,6 +105,9 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      */
     public static final int DEFAULT_STRING_COLUMN_SIZE = 254;
 
+    private static final String CAARRAY_LSID_AUTHORITY = "gov.nih.nci.caarray.domain";
+    private static final String CAARRAY_LSID_NAMESPACE = "Protocol";
+
     private Long id;
 
     private java.lang.String lsidAuthority;
@@ -194,6 +197,32 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      */
     public void setLsidObjectId(String lsidObjectIdVal) {
         this.lsidObjectId = lsidObjectIdVal;
+    }
+
+    /**
+     * Sets the LSID components for this entity.
+     * If the authority and namespace are both absent, the default caArray authority
+     * and namespace will be used. The LSID string is of the form authority:namespace:objectId
+     * where authority can be absent, or authority and namespace can both be absent.
+     *
+     * @param lsidString the LSID string
+     */
+    public void setLsidForEntity(String lsidString) {
+        String[] lsidPortions = lsidString.split(":");
+        int lsidIndex = lsidPortions.length;
+        setLsidObjectId(lsidPortions[lsidIndex]);
+        lsidIndex--;
+        if (lsidIndex < 0) {
+            // No explicit namespace provided. The name is assumed to be in the local (caArray) namespace.
+            setLsidAuthority(AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY);
+            setLsidNamespace(AbstractCaArrayEntity.CAARRAY_LSID_NAMESPACE);
+        } else {
+            setLsidNamespace(lsidPortions[lsidIndex]);
+            lsidIndex--;
+            if (lsidIndex >= 0) {
+                setLsidAuthority(lsidPortions[lsidIndex]);
+            }
+        }
     }
 
     // Random number generator seeded with current time for more
