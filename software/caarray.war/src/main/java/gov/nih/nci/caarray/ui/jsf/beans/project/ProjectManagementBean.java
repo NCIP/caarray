@@ -207,17 +207,9 @@ public final class ProjectManagementBean implements Serializable {
      * TODO Get storage dir from FileManagementBean; proper handling of duplicate files
      */
     private File getFile() throws IOException {
-        File f;
-        final String uploadName = getUploadFile().getName();
-        int count = 0;
-        do {
-            File projectDirectory = new File(System.getProperty("java.io.tmpdir"), getProject().getId().toString());
-            projectDirectory.mkdirs();
-            String fileName = (count == 0) ? uploadName : count + "-" + uploadName;
-            f = new File(projectDirectory, fileName);
-            ++count;
-        } while (!f.createNewFile());
-        return f;
+        File projectDirectory = new File(System.getProperty("java.io.tmpdir"), getProject().getId().toString());
+        projectDirectory.mkdirs();
+        return new File(projectDirectory, getUploadFile().getName());
     }
 
     /**
