@@ -83,6 +83,7 @@
 
 package gov.nih.nci.caarray.domain.project;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -90,8 +91,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
   /**
 
@@ -109,6 +113,8 @@ public class FactorValue extends AbstractCaArrayEntity {
      * The factor gov.nih.nci.caarray.domain.project.Factor.
      */
     private Factor factor;
+    private Term unit;
+    private String value;
 
     /**
      * Gets the factor.
@@ -129,6 +135,48 @@ public class FactorValue extends AbstractCaArrayEntity {
      */
     public void setFactor(final Factor factorVal) {
         this.factor = factorVal;
+    }
+
+    /**
+     * Gets the unit.
+     *
+     * @return the unit
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "UNIT_ID")
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @ForeignKey(name = "FACTORVALUE_UNIT_IDX")
+    public gov.nih.nci.caarray.domain.vocabulary.Term getUnit() {
+        return unit;
+    }
+
+    /**
+     * Sets the unit.
+     *
+     * @param unitVal the unit
+     */
+    public void setUnit(final
+      gov.nih.nci.caarray.domain.vocabulary.Term unitVal) {
+        this.unit = unitVal;
+    }
+
+    /**
+     * Gets the value.
+     *
+     * @return the value
+     */
+    @Column(name = "VALUE", length = DEFAULT_STRING_COLUMN_SIZE)
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * Sets the value.
+     *
+     * @param valueString the value
+     */
+    public void setValue(final String valueString) {
+        this.value = valueString;
     }
 
     /**
