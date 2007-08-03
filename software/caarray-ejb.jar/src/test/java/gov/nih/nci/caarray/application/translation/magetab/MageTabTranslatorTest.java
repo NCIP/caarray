@@ -161,6 +161,7 @@ public class MageTabTranslatorTest {
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
 
+        @Override
         public VocabularyDao getVocabularyDao() {
             return new LocalVocabularyDaoStub();
         }

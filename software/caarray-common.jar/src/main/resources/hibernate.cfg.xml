@@ -48,10 +48,13 @@
         <mapping class="gov.nih.nci.caarray.domain.sample.LabeledExtract"/>
         <mapping class="gov.nih.nci.caarray.domain.sample.Sample"/>
         <mapping class="gov.nih.nci.caarray.domain.sample.Source"/>
+        <mapping class="gov.nih.nci.caarray.domain.data.Image"/>
+        <mapping class="gov.nih.nci.caarray.domain.data.RawArrayData"/>
+        <mapping class="gov.nih.nci.caarray.domain.data.DerivedArrayData"/>
+        <mapping class="gov.nih.nci.caarray.domain.hybridization.Hybridization"/>
         <mapping class="gov.nih.nci.caarray.domain.vocabulary.Accession"/>
         <mapping class="gov.nih.nci.caarray.domain.vocabulary.Category"/>
         <mapping class="gov.nih.nci.caarray.domain.vocabulary.Term"/>
         <mapping class="gov.nih.nci.caarray.domain.vocabulary.TermSource"/>
-
     </session-factory>
 </hibernate-configuration>

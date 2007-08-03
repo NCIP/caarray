@@ -2,11 +2,7 @@ package gov.nih.nci.caarray.domain.vocabulary;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
@@ -99,7 +95,6 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
    */
 @Entity
-@Table(name = "ACCESSION")
 public class Accession extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -116,7 +111,7 @@ public class Accession extends AbstractCaArrayEntity {
      *
      * @return the url
      */
-    @Column(name = "URL", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getUrl() {
         return url;
     }
@@ -139,7 +134,7 @@ public class Accession extends AbstractCaArrayEntity {
      *
      * @return the value
      */
-    @Column(name = "VALUE", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getValue() {
         return value;
     }
@@ -163,9 +158,8 @@ public class Accession extends AbstractCaArrayEntity {
      *
      * @return the source
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "SOURCE_ID")
     @ForeignKey(name = "ACCESSION_SOURCE_IDK")
     public TermSource getSource() {
         return source;

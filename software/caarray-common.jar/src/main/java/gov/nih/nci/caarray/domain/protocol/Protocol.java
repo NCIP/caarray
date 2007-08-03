@@ -91,12 +91,8 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
@@ -105,7 +101,6 @@ import org.hibernate.annotations.ForeignKey;
 
    */
 @Entity
-@Table(name = "PROTOCOL")
 public class Protocol extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -122,7 +117,7 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @return the contact
      */
-    @Column(name = "CONTACT", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getContact() {
         return contact;
     }
@@ -145,7 +140,7 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @return the description
      */
-    @Column(name = "DESCRIPTION", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getDescription() {
         return description;
     }
@@ -168,7 +163,7 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @return the hardware
      */
-    @Column(name = "HARDWARE", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getHardware() {
         return hardware;
     }
@@ -191,7 +186,7 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @return the name
      */
-    @Column(name = "NAME", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
         return name;
     }
@@ -214,7 +209,7 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @return the software
      */
-    @Column(name = "SOFTWARE", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getSoftware() {
         return software;
     }
@@ -237,9 +232,8 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @return the type
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "TYPE_ID")
     @ForeignKey(name = "PROTOCOL_TYPE_IDX")
     public Term getType() {
         return type;
@@ -263,7 +257,7 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @return the url
      */
-    @Column(name = "URL", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getUrl() {
         return url;
     }
@@ -287,7 +281,7 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @return the parameters
      */
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "protocol")
+    @OneToMany(mappedBy = "protocol")
     public Set<Parameter> getParameters() {
         return parameters;
     }

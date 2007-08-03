@@ -807,8 +807,11 @@
 
     <target name="-generate-drop-schema-sql" depends="build:caarray-common.jar, configure-datasource-for-test, compile, init-sql" unless="drop-schema-sql.exists">
         <hibernatetool destdir="${site.dir}/sql">
-            <annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.test.classes.dir}/hibernate.properties" />
-            <hbm2ddl drop="true" create="false" export="false" outputfilename="drop-schema.sql" />
+            <annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml"
+                                     propertyfile="${caarray-common.test.classes.dir}/hibernate.properties"
+                                     namingstrategy="gov.nih.nci.caarray.util.NamingStrategy"
+            />
+            <hbm2ddl drop="true" create="false" export="false" outputfilename="drop-schema.sql"  />
             <classpath>
                 <pathelement path="${caarray-common.classes.dir}" />
                 <pathelement path="${hibernate.jar}"/>
@@ -818,7 +821,10 @@
 
     <target name="-generate-create-schema-sql" depends="configure-datasource-for-test, compile, init-sql" unless="create-schema-sql.exists">
         <hibernatetool destdir="${site.dir}/sql">
-            <annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.test.classes.dir}/hibernate.properties" />
+            <annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml"
+                                     propertyfile="${caarray-common.test.classes.dir}/hibernate.properties"
+                                     namingstrategy="gov.nih.nci.caarray.util.NamingStrategy"
+            />
             <hbm2ddl drop="false" create="true" export="false" outputfilename="create-schema.sql" />
             <classpath>
                 <pathelement path="${caarray-common.classes.dir}" />

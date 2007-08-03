@@ -93,10 +93,8 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -120,8 +118,6 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      */
     private static final long serialVersionUID = 1234567890L;
 
-    private static final String DEFAULT_FK = "BIOMATERIAL_ID";
-
     /**
      * The materialType gov.nih.nci.caarray.domain.vocabulary.Term.
      */
@@ -132,9 +128,8 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @return the materialType
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "MATERIAL_TYPE_ID")
     @ForeignKey(name = "BIOMATERIAL_TYPE_IDX")
     public Term getMaterialType() {
         return materialType;
@@ -158,7 +153,7 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @return the name
      */
-    @Column(name = "NAME", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
         return name;
     }
@@ -181,7 +176,7 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @return the description
      */
-    @Column(name = "DESCRIPTION", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getDescription() {
         return description;
     }
@@ -205,10 +200,8 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @return the characteristics
      */
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = DEFAULT_FK)
+    @OneToMany(mappedBy = "bioMaterial")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "CHARACTERISTIC_BIOMATERIAL_IDX")
     public Set<Characteristic> getCharacteristics() {
         return characteristics;
     }
@@ -233,10 +226,8 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @return the protocolApplications
      */
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = DEFAULT_FK)
+    @OneToMany(mappedBy = "bioMaterial")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PROTOCOLAPP_BIOMATERIAL")
     public Set<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }

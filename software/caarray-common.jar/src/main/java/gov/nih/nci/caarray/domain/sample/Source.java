@@ -90,7 +90,6 @@ import java.util.Set;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
@@ -121,7 +120,7 @@ public class Source extends AbstractBioMaterial {
      *
      * @return the samples
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "SOURCESAMPLE",
             joinColumns = { @javax.persistence.JoinColumn(name = DEFAULT_FK_ID) },
@@ -153,7 +152,7 @@ public class Source extends AbstractBioMaterial {
      *
      * @return the providers
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "SOURCEPROVIDER",
             joinColumns = { @javax.persistence.JoinColumn(name = DEFAULT_FK_ID) },

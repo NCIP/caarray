@@ -118,7 +118,7 @@ public class Person extends AbstractContact {
      *
      * @return the firstName
      */
-    @Column(name = "FIRSTNAME", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getFirstName() {
         return firstName;
     }
@@ -141,7 +141,7 @@ public class Person extends AbstractContact {
      *
      * @return the lastName
      */
-    @Column(name = "LASTNAME", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getLastName() {
         return lastName;
     }
@@ -164,7 +164,7 @@ public class Person extends AbstractContact {
      *
      * @return the middleInitials
      */
-    @Column(name = "MIDDLEINITIAL", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getMiddleInitials() {
         return middleInitials;
     }

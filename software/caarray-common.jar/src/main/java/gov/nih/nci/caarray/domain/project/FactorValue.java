@@ -83,25 +83,23 @@
 
 package gov.nih.nci.caarray.domain.project;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
 
   /**
 
    */
 @Entity
-@Table(name = "FACTORVALUE")
 public class FactorValue extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -109,20 +107,17 @@ public class FactorValue extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 
 
-    /**
-     * The factor gov.nih.nci.caarray.domain.project.Factor.
-     */
     private Factor factor;
     private Term unit;
     private String value;
+    private Hybridization hybridization;
 
     /**
      * Gets the factor.
      *
      * @return the factor
      */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "FACTOR_ID")
+    @ManyToOne
     @ForeignKey(name = "FACTORVALUE_FACTOR_IDX")
     public Factor getFactor() {
         return factor;
@@ -142,11 +137,10 @@ public class FactorValue extends AbstractCaArrayEntity {
      *
      * @return the unit
      */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "UNIT_ID")
+    @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "FACTORVALUE_UNIT_IDX")
-    public gov.nih.nci.caarray.domain.vocabulary.Term getUnit() {
+    public Term getUnit() {
         return unit;
     }
 
@@ -155,8 +149,7 @@ public class FactorValue extends AbstractCaArrayEntity {
      *
      * @param unitVal the unit
      */
-    public void setUnit(final
-      gov.nih.nci.caarray.domain.vocabulary.Term unitVal) {
+    public void setUnit(final Term unitVal) {
         this.unit = unitVal;
     }
 
@@ -165,7 +158,7 @@ public class FactorValue extends AbstractCaArrayEntity {
      *
      * @return the value
      */
-    @Column(name = "VALUE", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getValue() {
         return value;
     }
@@ -177,6 +170,22 @@ public class FactorValue extends AbstractCaArrayEntity {
      */
     public void setValue(final String valueString) {
         this.value = valueString;
+    }
+
+    /**
+     * @return the hybridization
+     */
+    @ManyToOne
+    @ForeignKey(name = "FACTORVALUE_HYBRIDIZATATION_FK")
+    public Hybridization getHybridization() {
+        return hybridization;
+    }
+
+    /**
+     * @param hybridization the hybridization to set
+     */
+    public void setHybridization(Hybridization hybridization) {
+        this.hybridization = hybridization;
     }
 
     /**

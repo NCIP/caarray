@@ -85,40 +85,33 @@ package gov.nih.nci.caarray.domain.sample;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
+
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
   /**
 
    */
 @Entity
-@Table(name = "CHARACTERISTIC")
-public class Characteristic extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
-    /**
-     * The serial version UID for serialization.
-     */
+public class Characteristic extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The term gov.nih.nci.caarray.domain.vocabulary.Term.
-     */
     private Term term;
+    private String value;
+    private Term unit;
+    private AbstractBioMaterial bioMaterial;
 
     /**
      * Gets the term.
      *
      * @return the term
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "TERM_ID")
     @ForeignKey(name = "CHARACTERISTIC_TERM_IDX")
     public Term getTerm() {
         return term;
@@ -132,17 +125,13 @@ public class Characteristic extends gov.nih.nci.caarray.domain.AbstractCaArrayEn
     public void setTerm(final Term termVal) {
         this.term = termVal;
     }
-    /**
-     * The value String.
-     */
-    private String value;
 
     /**
      * Gets the value.
      *
      * @return the value
      */
-    @Column(name = "VALUE", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getValue() {
         return value;
     }
@@ -155,19 +144,14 @@ public class Characteristic extends gov.nih.nci.caarray.domain.AbstractCaArrayEn
     public void setValue(final String valueVal) {
         this.value = valueVal;
     }
-    /**
-     * The unit gov.nih.nci.caarray.domain.vocabulary.Term.
-     */
-    private Term unit;
 
     /**
      * Gets the unit.
      *
      * @return the unit
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "UNIT_ID")
     @ForeignKey(name = "CHARACTERISTIC_UNIT_IDX")
     public Term getUnit() {
         return unit;
@@ -180,6 +164,22 @@ public class Characteristic extends gov.nih.nci.caarray.domain.AbstractCaArrayEn
      */
     public void setUnit(final Term unitVal) {
         this.unit = unitVal;
+    }
+
+    /**
+     * @return the abstractBioMaterial
+     */
+    @ManyToOne
+    @ForeignKey(name = "CHARACTERISTIC_BIOMATERIAL_IDX")
+    public AbstractBioMaterial getBioMaterial() {
+        return bioMaterial;
+    }
+
+    /**
+     * @param abstractBioMaterial the abstractBioMaterial to set
+     */
+    public void setBioMaterial(AbstractBioMaterial abstractBioMaterial) {
+        this.bioMaterial = abstractBioMaterial;
     }
 
     /**

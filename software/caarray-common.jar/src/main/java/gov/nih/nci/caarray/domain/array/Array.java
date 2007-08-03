@@ -88,11 +88,7 @@ import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
@@ -101,7 +97,6 @@ import org.hibernate.annotations.ForeignKey;
  * Represents a single, physical microarray used in an investigation.
  */
 @Entity
-@Table(name = "ARRAY")
 public class Array extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
@@ -116,7 +111,7 @@ public class Array extends AbstractCaArrayEntity {
      *
      * @return the batch
      */
-    @Column(name = "BATCH", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getBatch() {
         return batch;
     }
@@ -136,7 +131,7 @@ public class Array extends AbstractCaArrayEntity {
      *
      * @return the serialNumber
      */
-    @Column(name = "SERIALNUMBER", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getSerialNumber() {
         return serialNumber;
     }
@@ -156,9 +151,8 @@ public class Array extends AbstractCaArrayEntity {
      *
      * @return the production
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "PRODUCTION_ID")
     @ForeignKey(name = "ARRAY_PRODUCTION_IDK")
     public ProtocolApplication getProduction() {
         return production;
@@ -179,8 +173,7 @@ public class Array extends AbstractCaArrayEntity {
      *
      * @return the design
      */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "DESIGN_ID")
+    @ManyToOne
     @ForeignKey(name = "ARRAY_DESIGN_IDK")
     public ArrayDesign getDesign() {
         return design;

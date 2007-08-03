@@ -106,6 +106,7 @@ final class TermSourceTranslator extends AbstractTranslator {
                 this.vocabularyService = vocabularyService;
     }
 
+    @Override
     void translate() {
         for (TermSource termSource : getDocumentSet().getTermSources()) {
             translate(termSource);

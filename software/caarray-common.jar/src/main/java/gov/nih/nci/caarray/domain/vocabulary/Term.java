@@ -85,11 +85,7 @@ package gov.nih.nci.caarray.domain.vocabulary;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
@@ -99,7 +95,6 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
    */
 @Entity
-@Table(name = "TERM")
 public class Term extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -116,7 +111,7 @@ public class Term extends AbstractCaArrayEntity {
      *
      * @return the description
      */
-    @Column(name = "DESCRIPTION", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getDescription() {
         return description;
     }
@@ -139,7 +134,7 @@ public class Term extends AbstractCaArrayEntity {
      *
      * @return the value
      */
-    @Column(name = "VALUE", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getValue() {
         return value;
     }
@@ -163,9 +158,8 @@ public class Term extends AbstractCaArrayEntity {
      *
      * @return the accession
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "ACCESSION_ID")
     @ForeignKey(name = "TERM_ACCESSION_IDX")
     public Accession getAccession() {
         return accession;
@@ -190,9 +184,8 @@ public class Term extends AbstractCaArrayEntity {
      *
      * @return the category
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "CATEGORY_ID")
     @ForeignKey(name = "TERM_CATEGORY_IDX")
     public Category getCategory() {
         return category;
@@ -217,9 +210,8 @@ public class Term extends AbstractCaArrayEntity {
      *
      * @return the source
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "SOURCE_ID")
     @ForeignKey(name = "TERM_SOURCE_IDX")
     public TermSource getSource() {
         return source;

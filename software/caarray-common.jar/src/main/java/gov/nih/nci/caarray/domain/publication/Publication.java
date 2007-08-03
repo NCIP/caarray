@@ -85,39 +85,38 @@ package gov.nih.nci.caarray.domain.publication;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.project.Investigation;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
   /**
 
    */
 @Entity
-@Table(name = "PUBLICATION")
 public class Publication extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
      */
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The authors String.
-     */
     private String authors;
+    private String doi;
+    private String pubMedId;
+    private Term status;
+    private String title;
+    private Investigation investigation;
+
 
     /**
      * Gets the authors.
      *
      * @return the authors
      */
-    @Column(name = "AUTHORS", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getAuthors() {
         return authors;
     }
@@ -130,17 +129,13 @@ public class Publication extends AbstractCaArrayEntity {
     public void setAuthors(final String authorsVal) {
         this.authors = authorsVal;
     }
-    /**
-     * The doi String.
-     */
-    private String doi;
 
     /**
      * Gets the doi.
      *
      * @return the doi
      */
-    @Column(name = "DOI", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getDoi() {
         return doi;
     }
@@ -153,17 +148,13 @@ public class Publication extends AbstractCaArrayEntity {
     public void setDoi(final String doiVal) {
         this.doi = doiVal;
     }
-    /**
-     * The pubMedId String.
-     */
-    private String pubMedId;
 
     /**
      * Gets the pubMedId.
      *
      * @return the pubMedId
      */
-    @Column(name = "PUBMEDID", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getPubMedId() {
         return pubMedId;
     }
@@ -176,19 +167,14 @@ public class Publication extends AbstractCaArrayEntity {
     public void setPubMedId(final String pubMedIdVal) {
         this.pubMedId = pubMedIdVal;
     }
-    /**
-     * The status gov.nih.nci.caarray.domain.vocabulary.Term.
-     */
-    private Term status;
 
     /**
      * Gets the status.
      *
      * @return the status
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "STATUS_ID")
     @ForeignKey(name = "PUBLICATION_STATUS_IDX")
     public Term getStatus() {
         return status;
@@ -202,17 +188,13 @@ public class Publication extends AbstractCaArrayEntity {
     public void setStatus(final Term statusVal) {
         this.status = statusVal;
     }
-    /**
-     * The title String.
-     */
-    private String title;
 
     /**
      * Gets the title.
      *
      * @return the title
      */
-    @Column(name = "TITLE", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getTitle() {
         return title;
     }
@@ -224,6 +206,22 @@ public class Publication extends AbstractCaArrayEntity {
      */
     public void setTitle(final String titleVal) {
         this.title = titleVal;
+    }
+
+    /**
+     * @return the investigation
+     */
+    @ManyToOne
+    @ForeignKey(name = "PUBLICATION_INVEST")
+    public Investigation getInvestigation() {
+        return investigation;
+    }
+
+    /**
+     * @param investigation the investigation to set
+     */
+    public void setInvestigation(Investigation investigation) {
+        this.investigation = investigation;
     }
 
     /**

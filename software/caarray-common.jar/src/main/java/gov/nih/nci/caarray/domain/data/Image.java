@@ -83,7 +83,9 @@
 
 package gov.nih.nci.caarray.domain.data;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 
 import java.util.HashSet;
@@ -91,35 +93,30 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.ForeignKey;
 
   /**
 
    */
 @Entity
-@Table(name = "IMAGE")
-public class Image extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
-    /**
-     * The serial version UID for serialization.
-     */
+public class Image extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The name String.
-     */
     private String name;
+    private Set<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
+    private CaArrayFile imageFile;
+    private Hybridization hybridization;
 
     /**
      * Gets the name.
      *
      * @return the name
      */
-    @Column(name = "NAME", length = DEFAULT_STRING_COLUMN_SIZE, nullable = false)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE, nullable = false)
     public String getName() {
         return name;
     }
@@ -134,17 +131,11 @@ public class Image extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
     }
 
     /**
-     * The protocolApplications set.
-     */
-    private Set<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
-
-    /**
      * Gets the protocolApplications.
      *
      * @return the protocolApplications
      */
-    @OneToMany
-    @JoinColumn(name = "IMAGE_ID")
+    @OneToMany(mappedBy = "image")
     public Set<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }
@@ -160,17 +151,12 @@ public class Image extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
     }
 
     /**
-     * The imageFile gov.nih.nci.caarray.domain.file.CaArrayFile.
-     */
-    private CaArrayFile imageFile;
-
-    /**
      * Gets the imageFile.
      *
      * @return the imageFile
      */
     @ManyToOne
-    @JoinColumn(name = "FILE_ID")
+    @ForeignKey(name = "IMAGE_FILE_FK")
     public CaArrayFile getImageFile() {
         return imageFile;
     }
@@ -190,5 +176,21 @@ public class Image extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * @return the hybridization
+     */
+    @ManyToOne
+    @ForeignKey(name = "IMAGE_HYBRIDIZATION_FK")
+    public Hybridization getHybridization() {
+        return hybridization;
+    }
+
+    /**
+     * @param hybridization the hybridization to set
+     */
+    public void setHybridization(Hybridization hybridization) {
+        this.hybridization = hybridization;
     }
 }

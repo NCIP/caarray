@@ -90,12 +90,9 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
@@ -104,7 +101,6 @@ import org.hibernate.annotations.ForeignKey;
 
    */
 @Entity
-@Table(name = "CATEGORY")
 public class Category extends AbstractCaArrayEntity implements Cloneable {
     /**
      * The serial version UID for serialization.
@@ -121,7 +117,7 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
      *
      * @return the name
      */
-    @Column(name = "NAME", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
         return name;
     }
@@ -145,9 +141,9 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
      *
      * @return the parent
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
+    @JoinColumn
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "PARENT_ID")
     @ForeignKey(name = "CATEGORY_PARENT_IDX")
     public Category getParent() {
         return parent;
@@ -172,9 +168,7 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
      *
      * @return the children
      */
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "PARENT_ID")
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @OneToMany(mappedBy = "parent")
     public Set<Category> getChildren() {
         return children;
     }

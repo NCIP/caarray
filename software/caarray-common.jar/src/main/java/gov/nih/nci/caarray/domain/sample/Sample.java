@@ -88,7 +88,6 @@ import java.util.Set;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
@@ -143,7 +142,7 @@ public class Sample extends AbstractBioMaterial {
      *
      * @return the extracts
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "SAMPLEEXTRACT",
             joinColumns = { @javax.persistence.JoinColumn(name = "SAMPLE_ID") },

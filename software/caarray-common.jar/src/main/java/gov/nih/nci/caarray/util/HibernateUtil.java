@@ -100,7 +100,7 @@ public final class HibernateUtil {
 
     static {
         try {
-            HIBERNATE_CONFIG = new AnnotationConfiguration();
+            HIBERNATE_CONFIG = new AnnotationConfiguration().setNamingStrategy(new NamingStrategy());
             SESSION_FACTORY = HIBERNATE_CONFIG.configure("hibernate.cfg.xml").buildSessionFactory();
         } catch (HibernateException e) {
             // TODO Log this error

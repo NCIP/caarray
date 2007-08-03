@@ -121,7 +121,6 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ID")
     public Long getId() {
         return id;
     }
@@ -141,7 +140,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      *
      * @return the LSID authority
      */
-    @Column(name = "LSIDAUTHORITY", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getLsidAuthority() {
         return lsidAuthority;
     }
@@ -160,7 +159,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      *
      * @return the LSID namespace
      */
-    @Column(name = "LSIDNAMESPACE", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getLsidNamespace() {
         return lsidNamespace;
     }
@@ -179,7 +178,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      *
      * @return the LSID object ID
      */
-    @Column(name = "LSIDOBJECTID", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getLsidObjectId() {
         return lsidObjectId;
     }

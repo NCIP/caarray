@@ -84,17 +84,16 @@
 package gov.nih.nci.caarray.domain.protocol;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.Image;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
@@ -104,26 +103,21 @@ import org.hibernate.annotations.ForeignKey;
 
    */
 @Entity
-@Table(name = "PROTOCOLAPPLICATION")
 public class ProtocolApplication extends AbstractCaArrayEntity {
-    /**
-     * The serial version UID for serialization.
-     */
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The protocol gov.nih.nci.caarray.domain.protocol.Protocol.
-     */
     private Protocol protocol;
+    private Image image;
+    private AbstractBioMaterial bioMaterial;
+    private AbstractArrayData arrayData;
 
     /**
      * Gets the protocol.
      *
      * @return the protocol
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "PROTOCOL_ID")
     @ForeignKey(name = "PROTOCOLAPP_PROTOCOL")
     public Protocol getProtocol() {
         return protocol;
@@ -139,6 +133,26 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
     }
 
     /**
+     * Gets the image.
+     *
+     * @return the image
+     */
+    @ManyToOne
+    @ForeignKey(name = "PROTOCOLAPP_IMAGE_FK")
+    public Image getImage() {
+        return image;
+    }
+
+    /**
+     * Sets the image.
+     *
+     * @param image the image
+     */
+    public void setImage(final Image image) {
+        this.image = image;
+    }
+
+    /**
      * The values set.
      */
     private Set<ParameterValue> values = new HashSet<ParameterValue>();
@@ -148,10 +162,8 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      *
      * @return the values
      */
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "PROTOCOL_APPLICATION_ID")
+    @OneToMany(mappedBy = "protocolApplication")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PARAMVALUE_PROTOCOLAPP_IDX")
     public Set<ParameterValue> getValues() {
         return values;
     }
@@ -164,6 +176,38 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
     @SuppressWarnings("unused")
     private void setValues(final Set<ParameterValue> valuesVal) { // NOPMD
         this.values = valuesVal;
+    }
+
+    /**
+     * @return the abstractBioMaterial
+     */
+    @ManyToOne
+    @ForeignKey(name = "PROTOCOLAPP_BIOMATERIAL")
+    public AbstractBioMaterial getBioMaterial() {
+        return bioMaterial;
+    }
+
+    /**
+     * @param abstractBioMaterial the abstractBioMaterial to set
+     */
+    public void setBioMaterial(AbstractBioMaterial abstractBioMaterial) {
+        this.bioMaterial = abstractBioMaterial;
+    }
+
+    /**
+     * @return the arrayData
+     */
+    @ManyToOne
+    @ForeignKey(name = "PROTOCOLAPP_ARRAYDATA_FK")
+    public AbstractArrayData getArrayData() {
+        return arrayData;
+    }
+
+    /**
+     * @param arrayData the arrayData to set
+     */
+    public void setArrayData(AbstractArrayData arrayData) {
+        this.arrayData = arrayData;
     }
 
     /**

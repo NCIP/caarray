@@ -110,6 +110,7 @@ final class TermTranslator extends AbstractTranslator {
         this.service = service;
     }
 
+    @Override
     void translate() {
         for (OntologyTerm ontologyTerm : getDocumentSet().getTerms()) {
             translateTerm(ontologyTerm);

@@ -83,16 +83,15 @@
 
 package gov.nih.nci.caarray.domain.data;
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Table;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  *
  */
 @Entity
-@Table(name = "DERIVED_ARRAY_DATA")
+@DiscriminatorValue("DERIVED")
 public class DerivedArrayData extends AbstractArrayData {
 
     private static final long serialVersionUID = 1234567890L;

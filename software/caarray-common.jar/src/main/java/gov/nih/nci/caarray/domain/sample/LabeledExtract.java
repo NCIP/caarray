@@ -83,6 +83,7 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.HashSet;
@@ -90,11 +91,8 @@ import java.util.Set;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
@@ -105,25 +103,20 @@ import org.hibernate.annotations.ForeignKey;
 @Entity
 @DiscriminatorValue("LA")
 public class LabeledExtract extends AbstractBioMaterial {
-    /**
-     * The serial version UID for serialization.
-     */
     private static final long serialVersionUID = 1234567890L;
 
 
-    /**
-     * The label gov.nih.nci.caarray.domain.vocabulary.Term.
-     */
     private Term label;
+    private Set<Extract> extracts = new HashSet<Extract>();
+    private Hybridization hybridization;
 
     /**
      * Gets the label.
      *
      * @return the label
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "LABEL_ID")
     @ForeignKey(name = "BIOMATERIAL_LABEL_IDX")
     public Term getLabel() {
         return label;
@@ -137,11 +130,6 @@ public class LabeledExtract extends AbstractBioMaterial {
     public void setLabel(final Term labelVal) {
         this.label = labelVal;
     }
-
-    /**
-     * The extracts set.
-     */
-    private Set<Extract> extracts = new HashSet<Extract>();
 
     /**
      * Gets the extracts.
@@ -161,6 +149,22 @@ public class LabeledExtract extends AbstractBioMaterial {
     @SuppressWarnings("unused")
     private void setExtracts(final Set<Extract> extractsVal) { // NOPMD
         this.extracts = extractsVal;
+    }
+
+    /**
+     * @return the hybridization
+     */
+    @ManyToOne
+    @ForeignKey(name = "EXTRACT_HYBRIDIZATION_FK")
+    public Hybridization getHybridization() {
+        return hybridization;
+    }
+
+    /**
+     * @param hybridization the hybridization to set
+     */
+    public void setHybridization(Hybridization hybridization) {
+        this.hybridization = hybridization;
     }
 
     /**

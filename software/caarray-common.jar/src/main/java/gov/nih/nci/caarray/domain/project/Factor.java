@@ -91,11 +91,8 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
@@ -106,24 +103,20 @@ import org.hibernate.annotations.ForeignKey;
 
    */
 @Entity
-@Table(name = "FACTOR")
 public class Factor extends AbstractCaArrayEntity {
-    /**
-     * The serial version UID for serialization.
-     */
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The name String.
-     */
     private String name;
+    private Term type;
+    private Set<FactorValue> factorValues = new HashSet<FactorValue>();
+    private Investigation investigation;
 
     /**
      * Gets the name.
      *
      * @return the name
      */
-    @Column(name = "NAME", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
         return name;
     }
@@ -136,18 +129,13 @@ public class Factor extends AbstractCaArrayEntity {
     public void setName(final String nameVal) {
         this.name = nameVal;
     }
-    /**
-     * The type gov.nih.nci.caarray.domain.vocabulary.Term.
-     */
-    private Term type;
 
     /**
      * Gets the type.
      *
      * @return the type
      */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "TYPE_ID")
+    @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "FACTOR_TYPE_IDX")
     public Term getType() {
@@ -164,17 +152,11 @@ public class Factor extends AbstractCaArrayEntity {
     }
 
     /**
-     * The factorValues set.
-     */
-    private Set<FactorValue> factorValues = new HashSet<FactorValue>();
-
-    /**
      * Gets the factorValues.
      *
      * @return the factorValues
      */
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "FACTOR_ID")
+    @OneToMany(mappedBy = "factor")
     @Cascade(CascadeType.SAVE_UPDATE)
     public Set<FactorValue> getFactorValues() {
         return factorValues;
@@ -188,6 +170,22 @@ public class Factor extends AbstractCaArrayEntity {
     @SuppressWarnings("unused")
     private void setFactorValues(final Set<FactorValue> factorValuesVal) { // NOPMD
         this.factorValues = factorValuesVal;
+    }
+
+    /**
+     * @return the investigation
+     */
+    @ManyToOne
+    @ForeignKey(name = "FACTOR_INVEST_IDX")
+    public Investigation getInvestigation() {
+        return investigation;
+    }
+
+    /**
+     * @param investigation the investigation to set
+     */
+    public void setInvestigation(Investigation investigation) {
+        this.investigation = investigation;
     }
 
     /**

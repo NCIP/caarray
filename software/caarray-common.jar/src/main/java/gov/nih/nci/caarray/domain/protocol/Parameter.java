@@ -2,11 +2,8 @@ package gov.nih.nci.caarray.domain.protocol;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
@@ -99,7 +96,6 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
    */
 @Entity
-@Table(name = "PARAMETER")
 public class Parameter extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -126,7 +122,7 @@ public class Parameter extends AbstractCaArrayEntity {
      *
      * @return the name
      */
-    @Column(name = "NAME", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
         return name;
     }
@@ -145,9 +141,10 @@ public class Parameter extends AbstractCaArrayEntity {
      *
      * @return the defaultValue
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "DEFAULT_VALUE_ID")
+    @ForeignKey(name = "PARAMETER_DEFAULTVALUE_FK")
     public ParameterValue getDefaultValue() {
         return defaultValue;
     }
@@ -165,7 +162,7 @@ public class Parameter extends AbstractCaArrayEntity {
      * @return the protocol
      */
     @ManyToOne
-    @JoinColumn(name = "PROTOCOL_ID", nullable = false, updatable = false)
+    @JoinColumn(nullable = false, updatable = false)
     @ForeignKey(name = "PARAMETER_PROTOCOL_IDX")
     public Protocol getProtocol() {
         return protocol;

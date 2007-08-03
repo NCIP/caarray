@@ -91,18 +91,29 @@ import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.JoinColumn;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.ForeignKey;
 
 /**
  *
  */
-@MappedSuperclass
+@Entity
+@Table(name = "ARRAYDATA")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(
+        name = "DISCRIMINATOR",
+        discriminatorType = DiscriminatorType.STRING
+)
 public abstract class AbstractArrayData extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
@@ -116,7 +127,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      * @return the dataFile
      */
     @ManyToOne
-    @JoinColumn(name = "ARRAY_DATA_ID")
+    @ForeignKey(name = "ARRAYDATA_FILE_FK")
     public CaArrayFile getDataFile() {
         return dataFile;
     }
@@ -135,7 +146,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      *
      * @return the name
      */
-    @Column(name = "NAME", length = DEFAULT_STRING_COLUMN_SIZE, nullable = false)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE, nullable = false)
     public String getName() {
         return name;
     }
@@ -159,8 +170,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      *
      * @return the protocolApplications
      */
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "ARRAY_DATA_ID")
+    @OneToMany(mappedBy = "arrayData")
     public Set<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }
@@ -179,7 +189,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      * @return the hybridization
      */
     @OneToOne
-    @JoinColumn(name = "HYBRIDIZATION_ID")
+    @ForeignKey(name = "ARRAYDATA_HYBRIDIZATION_FK")
     public Hybridization getHybridization() {
         return hybridization;
     }

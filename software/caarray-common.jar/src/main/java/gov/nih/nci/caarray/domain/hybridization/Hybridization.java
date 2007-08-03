@@ -95,26 +95,24 @@ import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.ForeignKey;
 
 /**
  * The act of hybridizing extracted genetic material to the probes on a microarray.
  */
 @Entity
-@Table(name = "HYBRIDIZATION")
 public class Hybridization extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
-    private static final String FK_COLUMN = "HYBRIDIZATION_ID";
+    private static final String MAPPED_BY = "hybridization";
 
     private String name;
     private RawArrayData arrayData;
@@ -130,7 +128,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      *
      * @return the name
      */
-    @Column(name = "NAME", length = DEFAULT_STRING_COLUMN_SIZE, nullable = false)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE, nullable = false)
     public String getName() {
         return name;
     }
@@ -150,8 +148,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      *
      * @return the images
      */
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = FK_COLUMN)
+    @OneToMany(mappedBy = MAPPED_BY)
     public Set<Image> getImages() {
         return images;
     }
@@ -172,7 +169,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      *
      * @return the arrayData
      */
-    @OneToOne(mappedBy = "hybridization")
+    @OneToOne(mappedBy = MAPPED_BY)
     public RawArrayData getArrayData() {
         return arrayData;
     }
@@ -193,7 +190,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      * @return the array
      */
     @ManyToOne
-    @JoinColumn(name = FK_COLUMN)
+    @ForeignKey(name = "HYBRIDIZATION_ARRAY_FK")
     public Array getArray() {
         return array;
     }
@@ -213,7 +210,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      *
      * @return the derivedData
      */
-    @OneToOne(mappedBy = "hybridization")
+    @OneToOne(mappedBy = MAPPED_BY)
     public DerivedArrayData getDerivedData() {
         return derivedData;
     }
@@ -233,8 +230,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      *
      * @return the factorValues
      */
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = FK_COLUMN)
+    @OneToMany(mappedBy = MAPPED_BY)
     public Set<FactorValue> getFactorValues() {
         return factorValues;
     }
@@ -256,7 +252,8 @@ public class Hybridization extends AbstractCaArrayEntity {
      * @return the protocolApplication
      */
     @ManyToOne
-    @JoinColumn(name = "PROTOCOL_APPLICATION_ID", nullable = false)
+    @JoinColumn(nullable = false)
+    @ForeignKey(name = "HYBRIDIZATION_PROTOCOLAPP_FK")
     public ProtocolApplication getProtocolApplication() {
         return protocolApplication;
     }
@@ -277,8 +274,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      *
      * @return the labeledExtract
      */
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = FK_COLUMN)
+    @OneToMany(mappedBy = MAPPED_BY)
     public Set<LabeledExtract> getLabeledExtract() {
         return labeledExtract;
     }

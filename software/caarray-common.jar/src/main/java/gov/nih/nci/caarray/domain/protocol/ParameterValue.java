@@ -2,11 +2,7 @@ package gov.nih.nci.caarray.domain.protocol;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
@@ -99,24 +95,23 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
    */
 @Entity
-@Table(name = "PARAMETERVALUE")
 public class ParameterValue  extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
      */
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The unit String.
-     */
     private String unit;
+    private String value;
+    private Parameter parameter;
+    private ProtocolApplication protocolApplication;
 
     /**
      * Gets the unit.
      *
      * @return the unit
      */
-    @Column(name = "UNIT", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getUnit() {
         return unit;
     }
@@ -129,17 +124,13 @@ public class ParameterValue  extends AbstractCaArrayEntity {
     public void setUnit(final String unitVal) {
         this.unit = unitVal;
     }
-    /**
-     * The value String.
-     */
-    private String value;
 
     /**
      * Gets the value.
      *
      * @return the value
      */
-    @Column(name = "VALUE", length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getValue() {
         return value;
     }
@@ -154,18 +145,12 @@ public class ParameterValue  extends AbstractCaArrayEntity {
     }
 
     /**
-     * The parameter gov.nih.nci.caarray.domain.protocol.Parameter.
-     */
-    private Parameter parameter;
-
-    /**
      * Gets the parameter.
      *
      * @return the parameter
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "PARAMETER_ID")
     @ForeignKey(name = "PARAMVALUE_PARAMETER_IDX")
     public Parameter getParameter() {
         return parameter;
@@ -178,6 +163,22 @@ public class ParameterValue  extends AbstractCaArrayEntity {
      */
     public void setParameter(final Parameter parameterVal) {
         this.parameter = parameterVal;
+    }
+
+    /**
+     * @return the protocolApplication
+     */
+    @ManyToOne
+    @ForeignKey(name = "PARAMVALUE_PROTOCOLAPP_IDX")
+    public ProtocolApplication getProtocolApplication() {
+        return protocolApplication;
+    }
+
+    /**
+     * @param protocolApplication the protocolApplication to set
+     */
+    public void setProtocolApplication(ProtocolApplication protocolApplication) {
+        this.protocolApplication = protocolApplication;
     }
 
     /**

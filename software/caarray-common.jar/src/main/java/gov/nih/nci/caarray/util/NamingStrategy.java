@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,126 +80,106 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package gov.nih.nci.caarray.util;
 
-package gov.nih.nci.caarray.domain.file;
+import java.util.Locale;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
-
-import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.hibernate.annotations.ForeignKey;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.project.Project;
+import org.hibernate.cfg.ImprovedNamingStrategy;
 
 /**
+ * CaArray Naming Strategy.
  */
-@Entity
-public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaArrayFile> {
+public class NamingStrategy extends ImprovedNamingStrategy {
 
-    private static final long serialVersionUID = 1234567890L;
-
-    private String path;
-    private FileType type;
-    private FileStatus status = FileStatus.UPLOADED;
-    private Project project;
-
-    /**
-     * Gets the path.
-     *
-     * @return the path
-     */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public String getPath() {
-        return path;
-    }
-
-    /**
-     * Sets the path.
-     *
-     * @param pathVal the path
-     */
-    public void setPath(final String pathVal) {
-        this.path = pathVal;
-    }
-
-    /**
-     * Gets the type.
-     *
-     * @return the type
-     */
-    @Transient
-    public FileType getType() {
-        return type;
-    }
-
-    /**
-     * Sets the type.
-     *
-     * @param typeVal the type
-     */
-    public void setType(final FileType typeVal) {
-        this.type = typeVal;
-    }
-
-    /**
-     * @return the status
-     */
-    @Transient
-    public FileStatus getStatus() {
-        return status;
-    }
-
-    /**
-     * @param status the status to set
-     */
-    public void setStatus(FileStatus status) {
-        this.status = status;
-    }
-
-    /**
-     * @return the project
-     */
-    @ManyToOne
-    @JoinColumn(nullable = false, insertable = false, updatable = false)
-    @ForeignKey(name = "CAARRAYFILE_PROJECT_IDX")
-    public Project getProject() {
-        return project;
-    }
-
-    /**
-     * @param project the project to set
-     */
-    public void setProject(Project project) {
-        this.project = project;
-    }
+    private static final long serialVersionUID = -2556633166307295370L;
 
     /**
      * {@inheritDoc}
      */
-    public int compareTo(CaArrayFile o) {
-        return new CompareToBuilder()
-            .append(getProject(), o.getProject())
-            .append(getStatus(), o.getStatus())
-            .append(getType(), o.getType())
-            .append(getPath(), o.getPath())
-            .append(getId(), o.getId())
-            .toComparison();
+    @Override
+    public String classToTableName(String className) {
+        String superStr = super.classToTableName(className);
+        return superStr.toUpperCase(Locale.US);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-            .appendSuper(super.toString())
-            .append("path", path)
-            .append("status", status)
-            .append("type", type)
-            .toString();
+    public String collectionTableName(String ownerEntity, String ownerEntityTable, String associatedEntity,
+            String associatedEntityTable, String propertyName) {
+        return super.collectionTableName(ownerEntity, ownerEntityTable, associatedEntity,
+                                         associatedEntityTable, propertyName).toUpperCase();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String columnName(String columnName) {
+        String superStr = super.columnName(columnName);
+        return superStr.toUpperCase(Locale.US);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String foreignKeyColumnName(String propertyName, String propertyEntityName, String propertyTableName,
+            String referencedColumnName) {
+        return super.foreignKeyColumnName(propertyName, propertyEntityName, propertyTableName,
+                                          referencedColumnName).toUpperCase();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String joinKeyColumnName(String joinedColumn, String joinedTable) {
+        return super.joinKeyColumnName(joinedColumn, joinedTable).toUpperCase();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String logicalCollectionColumnName(String columnName, String propertyName, String referencedColumn) {
+        return super.logicalCollectionColumnName(columnName, propertyName, referencedColumn).toUpperCase();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String logicalCollectionTableName(String tableName, String ownerEntityTable, String associatedEntityTable,
+            String propertyName) {
+        return super.logicalCollectionTableName(tableName, ownerEntityTable, associatedEntityTable,
+                                                propertyName).toUpperCase();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String logicalColumnName(String columnName, String propertyName) {
+        return super.logicalColumnName(columnName, propertyName).toUpperCase();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String propertyToColumnName(String propertyName) {
+        String superStr =  super.propertyToColumnName(propertyName);
+        return superStr.toUpperCase(Locale.US);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String tableName(String tableName) {
+        String superStr =  super.tableName(tableName);
+        return superStr.toUpperCase(Locale.US);
     }
 }

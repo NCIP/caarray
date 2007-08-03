@@ -91,13 +91,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
@@ -106,7 +103,6 @@ import org.hibernate.annotations.ForeignKey;
 
    */
 @Entity
-@Table(name = "INVESTIGATIONCONTACT")
 public class InvestigationContact extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
@@ -122,9 +118,8 @@ public class InvestigationContact extends AbstractCaArrayEntity {
      *
      * @return the contact
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "CONTACT_ID")
     @ForeignKey(name = "INVESTIGATIONCONTACT_CONTACT_IDX")
     public AbstractContact getContact() {
         return contact;
@@ -144,7 +139,7 @@ public class InvestigationContact extends AbstractCaArrayEntity {
      *
      * @return the roles
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "INVESTIGATIONCONTACTROLE",
             joinColumns = { @JoinColumn(name = "INVESTIGATIONCONTACT_ID") },
@@ -169,7 +164,7 @@ public class InvestigationContact extends AbstractCaArrayEntity {
      * @return the investigation
      */
     @ManyToOne
-    @JoinColumn(name = "INVESTIGATION_ID", insertable = false, updatable = false)
+    @JoinColumn(insertable = false, updatable = false)
     @ForeignKey(name = "INVCONTACT_INVEST_IDX")
     public Investigation getInvestigation() {
         return investigation;

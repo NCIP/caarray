@@ -118,6 +118,7 @@ final class IdfTranslator extends AbstractTranslator {
     /**
      * Translates the investigation from each IDF document into a caArray <code>Investigation</code> entity.
      */
+    @Override
     void translate() {
         for (IdfDocument idfDocument : getDocumentSet().getIdfDocuments()) {
             translate(idfDocument.getInvestigation());

@@ -93,11 +93,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -111,7 +108,6 @@ import org.hibernate.annotations.SortType;
   * A microarray project.
   */
 @Entity
-@Table(name = "PROJECT")
 public class Project extends AbstractCaArrayEntity implements Comparable<Project> {
 
     /**
@@ -137,9 +133,8 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      *
      * @return the investigation
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "INVESTIGATION_ID")
     @ForeignKey(name = "PROJECT_INVESTIGATION_IDX")
     public Investigation getInvestigation() {
         return investigation;
@@ -164,8 +159,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      *
      * @return the files
      */
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "PROJECT_ID")
+    @OneToMany(mappedBy = "project")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @Sort(type = SortType.NATURAL)
     public SortedSet<CaArrayFile> getFiles() {
