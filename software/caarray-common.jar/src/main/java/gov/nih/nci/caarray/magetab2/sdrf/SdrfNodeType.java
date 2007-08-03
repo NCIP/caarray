@@ -149,6 +149,12 @@ public enum SdrfNodeType {
     /**
      * ArrayDesign.
      */
-    ARRAY_DESIGN;    
+    ARRAY_DESIGN,
+    
+    /**
+     * comment.
+     */
+    COMMENT;    
+
     
 }

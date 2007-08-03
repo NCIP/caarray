@@ -153,15 +153,16 @@ enum SdrfColumnType {
      */
     IMAGE_FILE(Image.class),
 
-    /**
-     * Array Design File.
-     */
-    ARRAY_DESIGN_FILE,
 
     /**
      * Array Design REF.
      */
     ARRAY_DESIGN_REF (ArrayDesign.class),
+
+    /**
+     * Array Design File.
+     */
+    ARRAY_DESIGN_FILE (ArrayDesign.class),
 
     /**
      * Protocol REF.
@@ -226,7 +227,7 @@ enum SdrfColumnType {
     /**
      * Comment. 
      */
-    COMMENT;
+    COMMENT (Comment.class);
 
     private final Class<?> nodeClass;
 

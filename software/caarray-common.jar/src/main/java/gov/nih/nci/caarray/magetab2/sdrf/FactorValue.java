@@ -82,47 +82,22 @@
  */
 package gov.nih.nci.caarray.magetab2.sdrf;
 
-import gov.nih.nci.caarray.magetab2.OntologyTerm;
-import gov.nih.nci.caarray.magetab2.Unitable;
+import gov.nih.nci.caarray.magetab2.idf.ExperimentalFactor;
 
 import java.io.Serializable;
 
 /**
  * 
  */
-public class FactorValue implements Serializable, Unitable {
+public class FactorValue implements Serializable {
     private static final long serialVersionUID = 28728045635671179L;
     private String value;
-    private OntologyTerm term;
-    private OntologyTerm unit;
+    private ExperimentalFactor factor;
 
-    /**
-     * @return TermSouce the term source
-     */
-    public OntologyTerm getTerm() {
-        return term;
+    
+    void addToSdrfList(SdrfDocument document) {
+        document.getAllFactorValues().add(this);
     }
-
-    /**
-     * @param term set the term source
-     */
-    public void setTerm(OntologyTerm term) {
-        this.term = term;
-    }
-
-    // /**
-    // * @return the unit
-    // */
-    // public OntologyTerm getUnit() {
-    // return unit;
-    // }
-    //
-    // /**
-    // * @param unit the unit to set
-    // */
-    // public void setUnit(OntologyTerm unit) {
-    // this.unit = unit;
-    // }
 
     /**
      * @return the value
@@ -139,17 +114,17 @@ public class FactorValue implements Serializable, Unitable {
     }
 
     /**
-     * @return the unit
+     * @return ExperimentalFactor
      */
-    public OntologyTerm getUnit() {
-        return unit;
+    public ExperimentalFactor getFactor() {
+        return factor;
     }
 
     /**
-     * @param unit the unit to set
+     * @param factor the factor to set
      */
-    public void setUnit(OntologyTerm unit) {
-        this.unit = unit;
+   public void setFactor(ExperimentalFactor factor) {
+        this.factor = factor;
     }
 
 }

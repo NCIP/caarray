@@ -597,4 +597,16 @@ public final class IdfDocument extends AbstractMageTabDocument {
         return sdrfDocuments;
     }
 
+    /**
+     * @return ExperimentalFactor the factor 
+     * @param factorName the name of the factor being returned
+     */
+    public ExperimentalFactor getFactor(String factorName) {
+        for (ExperimentalFactor aFactor : investigation.getFactors()) {
+            if (aFactor.getName().equalsIgnoreCase(factorName)) {
+                return aFactor;
+            }
+        }
+        return null;
+    }
 }

@@ -94,7 +94,6 @@ import gov.nih.nci.caarray.magetab2.ProtocolApplication;
 import gov.nih.nci.caarray.magetab2.TermSource;
 import gov.nih.nci.caarray.magetab2.TermSourceable;
 import gov.nih.nci.caarray.magetab2.Unitable;
-import gov.nih.nci.caarray.magetab2.adf.ArrayDesign;
 import gov.nih.nci.caarray.magetab2.data.NativeDataFile;
 import gov.nih.nci.caarray.magetab2.idf.IdfDocument;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
@@ -130,7 +129,10 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private ProtocolApplication currentProtocolApp;
     private final List<Characteristic> characteristicsList = new ArrayList<Characteristic>();
 
+    private final List<ArrayDesign> allArrayDesigns = new ArrayList<ArrayDesign>();
+    private final List<Comment> allComments = new ArrayList<Comment>();
     private final List<Source> allSources = new ArrayList<Source>();
+    private final List<FactorValue> allFactorValues = new ArrayList<FactorValue>();
     private final List<Sample> allSamples = new ArrayList<Sample>();
     private final List<Extract> allExtracts = new ArrayList<Extract>();
     private final List<LabeledExtract> allLabeledExtracts = new ArrayList<LabeledExtract>();
@@ -143,7 +145,6 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private final List<DerivedArrayDataMatrixFile> allDerivedArrayDataMatrixFiles = 
         new ArrayList<DerivedArrayDataMatrixFile>();
     private final List<Image> allImages = new ArrayList<Image>();
-    private final List<ArrayDesign> allArrayDesigns = new ArrayList<ArrayDesign>();
 
     /**
      * Creates a new SDRF from an existing file.
@@ -222,8 +223,11 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         case LABEL:
             handleLabel(column, value);
             break;
+        case ARRAY_DESIGN_FILE:
+            handleArrayDesignFile(column, value);
+            break;
         case ARRAY_DESIGN_REF:
-            handleArrayDesign(column, value);
+            handleArrayDesignRef(column, value);
             break;
         case DERIVED_ARRAY_DATA_FILE:
             handleDerivedArrayDataFile(value);
@@ -238,10 +242,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             handleDerivedArrayDataMatrixFile(value);
             break;
         case IMAGE_FILE:
-            // handleImageFile(value);
-            break;
-        case ARRAY_DESIGN_FILE:
-            // handleArrayDesignFile(value);
+            handleImageFile(column, value);
             break;
         case FACTOR_VALUE:
             handleFactorValue(column, value);
@@ -256,30 +257,49 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             // handleDescription(value);
             break;
         case COMMENT:
-            // handleComment(value);
+           // handleComment(column, value);
             break;
         default:
             break;
         }
     }
 
-    /**
-     * @param column
-     * @param value
-     */
-    private void handleArrayDesign(SdrfColumn column, String value) {
-        handleNode(column, value);
-        currentTermSourceable = (TermSourceable) currentNode;
+    private void handleArrayDesignFile(SdrfColumn column, String value) {
+        ArrayDesign arrayDesign = new ArrayDesign();
+        arrayDesign.setFile(getDocumentSet().getAdfDocument(value).getFile());
+        arrayDesign.link(currentNode);
+        arrayDesign.addToSdrfList(this);
+        currentNode = arrayDesign;
+    }
 
+    private void handleImageFile(SdrfColumn column, String value) {
+        Image i = new Image();
+        i.setName(value);
+       // i.setNativeDataFile(getDocumentSet().getNativeDataFile(value));
+        i.link(currentNode);
+        currentNode = i;
+    }
+
+
+    private void handleArrayDesignRef(SdrfColumn column, String value) {
+        ArrayDesign arrayDesign = new ArrayDesign();
+        arrayDesign.setName(value);
+        if (value.indexOf(":") == -1) {
+            // get the lsid from the column header
+            arrayDesign.setName(column.getHeading().getLsid() + value);
+        }
+        arrayDesign.link(currentNode);
+        arrayDesign.addToSdrfList(this);
+        currentTermSourceable = arrayDesign;
+        currentNode = arrayDesign;
     }
 
     private void handleFactorValue(SdrfColumn column, String value) {
         FactorValue factorValue = new FactorValue();
-        OntologyTerm term = getOntologyTerm(column.getHeading().getQualifier(), value);
-        factorValue.setTerm(term);
-        term.setTermSource(getTermSource(column.getHeading().getTermSourceString()));
-        // set it on Hybridization
-        // TBD - ask Eric
+        factorValue.setFactor(idfDocument.getFactor(column.getHeading().getQualifier()));
+        factorValue.addToSdrfList(this);
+        factorValue.setValue(value);
+        // set it on a Hybridization
         allHybridizations.get(allHybridizations.size() - 1).getFactorValues().add(factorValue);
     }
 
@@ -602,6 +622,20 @@ public final class SdrfDocument extends AbstractMageTabDocument {
      */
     public List<DerivedArrayDataMatrixFile> getAllDerivedArrayDataMatrixFiles() {
         return allDerivedArrayDataMatrixFiles;
+    }
+
+    /**
+     * @return the allFactorValues
+     */
+    public List<FactorValue> getAllFactorValues() {
+        return allFactorValues;
+    }
+
+    /**
+     * @return the allComments
+     */
+    public List<Comment> getAllComments() {
+        return allComments;
     }
 
 }
