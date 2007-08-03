@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.magetab;
 
 import static org.junit.Assert.*;
-import gov.nih.nci.caarray.magetab.EntryHeading;
 
 import org.junit.Test;
 

@@ -86,10 +86,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Locale;
 
-import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.magetab.MageTabInputFileSet;
-import gov.nih.nci.caarray.magetab.MageTabParser;
-import gov.nih.nci.caarray.magetab.MageTabParsingException;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 /**
