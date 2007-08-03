@@ -97,8 +97,6 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
@@ -110,7 +108,6 @@ import org.junit.Test;
  */
 @SuppressWarnings("PMD")
 public class ProtocolDaoTest  extends AbstractDaoTest {
-    private static final Log LOG = LogFactory.getLog(ProtocolDaoTest.class);
 
     private static ParameterValue DUMMY_PARAMETER_VALUE_1 = new ParameterValue();
     private static ParameterValue DUMMY_PARAMETER_VALUE_2 = new ParameterValue();

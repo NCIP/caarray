@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.domain.vocabulary.Accession;
@@ -97,8 +95,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
@@ -110,7 +106,6 @@ import org.junit.Test;
  */
 @SuppressWarnings("PMD")
 public class VocabularyDaoTest extends AbstractDaoTest {
-    private static final Log LOG = LogFactory.getLog(VocabularyDaoTest.class);
 
     private static Category DUMMY_CATEGORY_1 = new Category();
     private static Category DUMMY_CATEGORY_2 = new Category();
