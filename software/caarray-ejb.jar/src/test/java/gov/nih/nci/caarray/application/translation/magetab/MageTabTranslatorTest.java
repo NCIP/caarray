@@ -82,7 +82,8 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.VocabularyDao;
@@ -92,8 +93,8 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.CaArrayEntityTestUtility;
 import gov.nih.nci.caarray.domain.project.Investigation;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab2.TestMageTabSets;
 import gov.nih.nci.caarray.magetab2.idf.IdfDocument;
 
@@ -137,7 +138,7 @@ public class MageTabTranslatorTest {
     private void testSpecificationDocuments() {
         CaArrayTranslationResult result = translator.translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
         CaArrayEntityTestUtility.printEntities(result.getTerms());
-        assertEquals(20, result.getTerms().size());
+        assertEquals(17, result.getTerms().size());
         assertEquals(1, result.getInvestigations().size());
         Investigation investigation = result.getInvestigations().iterator().next();
         assertEquals(6, investigation.getSources().size());
