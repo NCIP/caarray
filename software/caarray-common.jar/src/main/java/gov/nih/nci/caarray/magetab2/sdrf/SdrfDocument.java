@@ -299,6 +299,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         factorValue.setFactor(idfDocument.getFactor(column.getHeading().getQualifier()));
         factorValue.addToSdrfList(this);
         factorValue.setValue(value);
+        currentUnitable = factorValue;
         // set it on a Hybridization
         allHybridizations.get(allHybridizations.size() - 1).getFactorValues().add(factorValue);
     }
