@@ -156,10 +156,8 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
     private void upload(File file) throws IOException {
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
-        System.out.println(filePath);
         selenium.type("uploadForm:inputFileUpload", filePath);
         clickAndWait("uploadForm:uploadCommandButton");
-        selenium.setSpeed("0");
         assertTrue(selenium.isTextPresent(file.getName()));
     }
 }
