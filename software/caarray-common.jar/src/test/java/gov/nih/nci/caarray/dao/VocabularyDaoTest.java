@@ -206,13 +206,10 @@ public class VocabularyDaoTest {
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             setupTestGetTermsRecursive();
-            assertTrue(DUMMY_CATEGORY_4.getChildren().size() > 0);
-            assertNotNull(DUMMY_CATEGORY_3.getParent());
+            tx.commit();
             Set<Term> retrievedTerms = DAO_OBJECT.getTermsRecursive(DUMMY_CATEGORY_4.getName());
-            assertEquals("Wrong size: " + retrievedTerms, NUM_DUMMY_TERMS, retrievedTerms.size());
             // Check if we got the expected terms, and accordingly pass or fail the test.
             checkIfExpectedTermsRecursive(retrievedTerms);
-            tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception while getting terms in a category: " + e.getMessage());
