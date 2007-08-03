@@ -93,6 +93,8 @@ import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 /**
  * Test case #7959.
+ *
+ * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
  */
 public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
@@ -103,6 +105,22 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
     @Test
     public void testNew() throws Exception {
+        
+        // Upload the following files:
+        // - MAGE-TAB IDF
+        // - MAGE-TAB SDRF (with references to included native CEL files and corresponding Affymetrix array design)
+        // - MAGE-TAB Derived Data Matrix
+        // - CEL files referenced in SDRF
+        // 
+        // Import the files.
+        // 
+        // Verify that the files imported successfully.
+        // 
+        // Using the Java remote API, verify:
+        // - Expected entities exist
+        // - Permissions are correct
+        // - Files can be downloaded through API
+        // - Raw and derived data are available and accurate
         selenium.open("/caarray/");
 
         String title = "test" + System.currentTimeMillis();
