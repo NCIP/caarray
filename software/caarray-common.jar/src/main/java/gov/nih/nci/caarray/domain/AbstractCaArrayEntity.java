@@ -131,7 +131,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      *
      * @param id the id to set
      */
-    @SuppressWarnings("PMD.UnusedPrivateMethod")
+    @SuppressWarnings({ "PMD.UnusedPrivateMethod", "unused" })
     private void setId(Long id) {
         this.id = id;
     }
