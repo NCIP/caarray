@@ -194,7 +194,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
     }
 
     /**
-     * Returns all <code>Sources</code> that this node originated from (searched recursively).
+     * Returns all <code>Sources</code> that originate from this node (searched recursively).
      *
      * @return the originating <code>Sources</code>.
      */
@@ -208,7 +208,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
     }
 
     /**
-     * Returns all <code>Samples</code> that this node originated from (searched recursively).
+     * Returns all <code>Samples</code> that originate from this node (searched recursively).
      *
      * @return the originating <code>Samples</code>.
      */
@@ -222,7 +222,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
     }
 
     /**
-     * Returns all <code>Extracts</code> that this node originated from (searched recursively).
+     * Returns all <code>Extracts</code> that originate from this node (searched recursively).
      *
      * @return the originating <code>Extracts</code>.
      */
@@ -236,7 +236,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
     }
 
     /**
-     * Returns all <code>LabeledExtracts</code> that this node originated from (searched recursively).
+     * Returns all <code>LabeledExtracts</code> that originate from this node (searched recursively).
      *
      * @return the originating <code>LabeledExtracts</code>.
      */
@@ -250,7 +250,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
     }
 
     /**
-     * Returns all <code>Hybridizations</code> that this node originated from (searched recursively).
+     * Returns all <code>Hybridizations</code> that originate from this node (searched recursively).
      *
      * @return the originating <code>Hybridizations</code>.
      */
@@ -264,7 +264,21 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
     }
 
     /**
-     * Returns all <code>Scans</code> that this node originated from (searched recursively).
+     * Returns all <code>ArrayDesigns</code> that originate from this node (searched recursively).
+     *
+     * @return the originating <code>Scans</code>.
+     */
+    public Set<ArrayDesign> getSuccessorArrayDesigns() {
+        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.ARRAY_DESIGN);
+        HashSet<ArrayDesign> result = new HashSet<ArrayDesign>(nodes.size());
+        for (AbstractSampleDataRelationshipNode node : nodes) {
+            result.add((ArrayDesign) node);
+        }
+        return result;
+    }
+
+    /**
+     * Returns all <code>Scans</code> that originate from this node (searched recursively).
      *
      * @return the originating <code>Scans</code>.
      */
@@ -292,7 +306,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
     }
 
     /**
-     * Returns all <code>Normalizations</code> that this node originated from (searched recursively).
+     * Returns all <code>Normalizations</code> that originate from this node (searched recursively).
      *
      * @return the originating <code>Normalizations</code>.
      */
@@ -320,7 +334,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
     }
 
     /**
-     * Returns all <code>ArrayDataFiles</code> that this node originated from (searched recursively).
+     * Returns all <code>ArrayDataFiles</code> that originate from this node (searched recursively).
      *
      * @return the originating <code>ArrayDataFiles</code>.
      */
@@ -334,7 +348,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
     }
 
     /**
-     * Returns all <code>DerivedArrayDataFiles</code> that this node originated from (searched recursively).
+     * Returns all <code>DerivedArrayDataFiles</code> that originate from this node (searched recursively).
      *
      * @return the originating <code>DerivedArrayDataFiles</code>.
      */
@@ -348,7 +362,35 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
     }
 
     /**
-     * Returns all <code>Images</code> that this node originated from (searched recursively).
+     * Returns all <code>ArrayDataMatrixFiles</code> that originate from this node (searched recursively).
+     *
+     * @return the originating <code>ArrayDataMatrixFiles</code>.
+     */
+    public Set<ArrayDataMatrixFile> getSuccessorArrayDataMatrixFiles() {
+        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.ARRAY_DATA_MATRIX);
+        HashSet<ArrayDataMatrixFile> result = new HashSet<ArrayDataMatrixFile>(nodes.size());
+        for (AbstractSampleDataRelationshipNode node : nodes) {
+            result.add((ArrayDataMatrixFile) node);
+        }
+        return result;
+    }
+
+    /**
+     * Returns all <code>DerivedArrayDataMatrixFiles</code> that originate from this node (searched recursively).
+     *
+     * @return the originating <code>DerivedArrayDataMatrixFiles</code>.
+     */
+    public Set<DerivedArrayDataMatrixFile> getSuccessorDerivedArrayDataMatrixFiles() {
+        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.DERIVED_ARRAY_DATA_MATRIX);
+        HashSet<DerivedArrayDataMatrixFile> result = new HashSet<DerivedArrayDataMatrixFile>(nodes.size());
+        for (AbstractSampleDataRelationshipNode node : nodes) {
+            result.add((DerivedArrayDataMatrixFile) node);
+        }
+        return result;
+    }
+
+    /**
+     * Returns all <code>Images</code> that originate from this node (searched recursively).
      *
      * @return the originating <code>Images</code>.
      */
