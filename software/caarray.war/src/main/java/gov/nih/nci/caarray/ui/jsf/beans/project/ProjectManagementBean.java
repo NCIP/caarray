@@ -204,7 +204,8 @@ public final class ProjectManagementBean implements Serializable {
     /**
      * @return file based upon the uploaded file name
      * @throws IOException on error
-     * TODO Get storage dir from FileManagementBean; proper handling of duplicate files
+     * TODO Get storage dir from FileManagementBean; proper handling of duplicate files 
+     * (currently will create additional CaArrayFiles)
      */
     private File getFile() throws IOException {
         File projectDirectory = new File(System.getProperty("java.io.tmpdir"), getProject().getId().toString());
