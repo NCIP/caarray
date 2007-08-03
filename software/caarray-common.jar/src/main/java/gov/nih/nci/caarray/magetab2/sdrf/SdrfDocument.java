@@ -149,8 +149,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     /**
      * Creates a new SDRF from an existing file.
      * 
-     * @param documentSet the MAGE-TAB document set the IDF belongs to.
-     * @param file the file containing the IDF content.
+     * @param documentSet the MAGE-TAB document set the SDRF belongs to.
+     * @param file the file containing the SDRF content.
      */
     public SdrfDocument(MageTabDocumentSet documentSet, File file) {
         super(documentSet, file);

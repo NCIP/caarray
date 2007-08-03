@@ -108,7 +108,7 @@ public final class MageTabDocumentSet implements Serializable {
     private final Set<IdfDocument> idfDocuments = new HashSet<IdfDocument>();
     private final Set<SdrfDocument> sdrfDocuments = new HashSet<SdrfDocument>();
     private final Set<AdfDocument> adfDocuments = new HashSet<AdfDocument>();
-    private final Set<DataMatrix> arrayDataMatrixes = new HashSet<DataMatrix>();
+    private final Set<DataMatrix> dataMatrixes = new HashSet<DataMatrix>();
     private final Set<NativeDataFile> nativeDataFiles = new HashSet<NativeDataFile>();
     private final Map<String, OntologyTerm> termCache = new HashMap<String, OntologyTerm>();
     private final Map<String, TermSource> termSourceCache = new HashMap<String, TermSource>();
@@ -140,10 +140,10 @@ public final class MageTabDocumentSet implements Serializable {
     }
 
     /**
-     * @return the arrayDataMatrixes
+     * @return the dataMatrixes
      */
-    public Set<DataMatrix> getArrayDataMatrixes() {
-        return arrayDataMatrixes;
+    public Set<DataMatrix> getDataMatrixes() {
+        return dataMatrixes;
     }
 
     /**
@@ -200,15 +200,13 @@ public final class MageTabDocumentSet implements Serializable {
 
     private void initializeDataMatrixes(MageTabInputFileSet inputFileSet) {
         for (File file : inputFileSet.getDataMatrixFiles()) {
-            // TODO Implement initializeDataMatrixes and remove placeholder line below
-            FileUtility.checkFileExists(file);
+            dataMatrixes.add(new DataMatrix(this, file));
         }
     }
 
     private void initializeNativeDataFiles(MageTabInputFileSet inputFileSet) {
         for (File file : inputFileSet.getNativeDataFiles()) {
-            // TODO Implement initializeNativeDataFiles and remove placeholder line below
-            FileUtility.checkFileExists(file);
+            nativeDataFiles.add(new NativeDataFile(this, file));
         }
     }
 
@@ -320,7 +318,7 @@ public final class MageTabDocumentSet implements Serializable {
      * @return the <code>DataMatrix</code>.
      */
     public DataMatrix getArrayDataMatrix(String filename) {
-        return (DataMatrix) getDocument(arrayDataMatrixes, filename);
+        return (DataMatrix) getDocument(dataMatrixes, filename);
     }
     
     /**

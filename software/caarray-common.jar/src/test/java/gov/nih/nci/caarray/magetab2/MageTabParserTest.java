@@ -125,6 +125,10 @@ public class MageTabParserTest {
         MageTabInputFileSet fileSet = TestMageTabSets.TCGA_BROAD_INPUT_SET;
         MageTabDocumentSet documentSet = parser.parse(fileSet);
         assertNotNull(documentSet);
+        assertEquals(1, documentSet.getIdfDocuments().size());
+        assertEquals(1, documentSet.getSdrfDocuments().size());
+        assertEquals(1, documentSet.getDataMatrixes().size());
+        assertEquals(26, documentSet.getNativeDataFiles().size());
     }
 
     private void testSpecificationDocuments() throws MageTabParsingException {

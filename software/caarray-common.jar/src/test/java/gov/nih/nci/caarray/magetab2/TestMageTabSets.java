@@ -97,6 +97,8 @@ public final class TestMageTabSets {
         super();
     }
 
+    private static final FilenameFilter CEL_FILTER = createExtensionFilter("cel");
+
     /**
      * Example set of documents included with MAGE-TAB specification.
      */
@@ -116,14 +118,6 @@ public final class TestMageTabSets {
      * Document set parsed from TCGA Broad data.
      */
     public static final MageTabDocumentSet TCGA_BROAD_SET = getSet(TCGA_BROAD_INPUT_SET);
-
-    private static final FilenameFilter CEL_FILTER = new FilenameFilter() {
-
-        public boolean accept(File dir, String name) {
-            return name.toLowerCase(Locale.getDefault()).endsWith(".cel");
-        }
-        
-    };
 
     private static MageTabDocumentSet getSet(MageTabInputFileSet inputSet) {
         try {
@@ -151,6 +145,14 @@ public final class TestMageTabSets {
         fileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
         return fileSet;
+    }
+
+    private static FilenameFilter createExtensionFilter(final String extension) {
+        return new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.toLowerCase(Locale.getDefault()).endsWith("." + extension.toLowerCase(Locale.getDefault()));
+            }
+        };    
     }
 
 }

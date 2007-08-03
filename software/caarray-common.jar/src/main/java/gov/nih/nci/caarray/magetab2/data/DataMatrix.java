@@ -95,7 +95,13 @@ public class DataMatrix extends AbstractMageTabDocument {
 
     private static final long serialVersionUID = 1L;
 
-    DataMatrix(MageTabDocumentSet documentSet, File file) {
+    /**
+     * Creates a new Data Matrix from an existing file.
+     * 
+     * @param documentSet the MAGE-TAB document set the Data Matrix belongs to.
+     * @param file the file containing the Data Matrix content.
+     */
+    public DataMatrix(MageTabDocumentSet documentSet, File file) {
         super(documentSet, file);
     }
 
