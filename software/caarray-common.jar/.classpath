@@ -22,5 +22,6 @@
 	<classpathentry kind="lib" path="/lib/ejb3-persistence.jar"/>
 	<classpathentry kind="lib" path="/lib/hibernate-commons-annotations.jar"/>
 	<classpathentry kind="lib" path="/lib/hibernate-annotations.jar"/>
+	<classpathentry kind="lib" path="/lib/antlr-2.7.6.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

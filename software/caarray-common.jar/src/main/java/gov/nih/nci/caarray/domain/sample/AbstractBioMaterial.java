@@ -250,38 +250,4 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
     private void setProtocolApplications(final Set<ProtocolApplication> protocolApplicationsVal) { // NOPMD
         this.protocolApplications = protocolApplicationsVal;
     }
-
-    /**
-     * Checks if given object is equal to this object.
-     *
-     * @param obj the object to compare to this object
-     * @return true if they are equal, false if they are not
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        boolean theyAreEqual = false;
-        if (obj instanceof AbstractBioMaterial) {
-            final AbstractBioMaterial castObject =
-                (AbstractBioMaterial) obj;
-            Long thisId = getId();
-            if (thisId != null && thisId.equals(castObject.getId())) {
-                theyAreEqual = true;
-            }
-        }
-        return theyAreEqual;
-    }
-
-    /**
-     * Returns the hashcode for the object.
-     *
-     * @return the int hashcode
-     */
-    @Override
-    public int hashCode() {
-        int theHashCode = 0;
-        if (getId() != null) {
-            theHashCode += getId().hashCode();
-        }
-        return theHashCode;
-    }
 }

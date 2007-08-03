@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,158 +80,59 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package gov.nih.nci.caarray.dao;
 
-package gov.nih.nci.caarray.domain.contact;
+import gov.nih.nci.caarray.domain.protocol.Parameter;
+import gov.nih.nci.caarray.domain.protocol.ParameterValue;
+import gov.nih.nci.caarray.util.HibernateUtil;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.util.List;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.ForeignKey;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.junit.After;
 
-  /**
+/**
+ * Helper methods for the dao classes
+ */
+@SuppressWarnings("PMD")
+public class AbstractDaoTest {
+    private static final Log LOG = LogFactory.getLog(AbstractDaoTest.class);
 
-   */
-@Entity
-@Table(name = "CONTACT")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(
-        name = "DISCRIMINATOR",
-        discriminatorType = DiscriminatorType.STRING
-)
-public abstract class AbstractContact extends AbstractCaArrayEntity {
-    /**
-     * The serial version UID for serialization.
-     */
-    private static final long serialVersionUID = 1234567890L;
-
-    /**
-     * The email String.
-     */
-    private String email;
-
-    /**
-     * Gets the email.
-     *
-     * @return the email
-     */
-    @Column(name = "EMAIL", length = DEFAULT_STRING_COLUMN_SIZE)
-    public String getEmail() {
-        return email;
+    @After
+    public void doCleanup() {
+        doCleanupInternal();
+        if (!doCleanupInternal()) {
+            // This means we saw an object again, and that's a problem
+            throw new RuntimeException("Last unit test didn't fully clean up after itself");
+        }
     }
 
-    /**
-     * Sets the email.
-     *
-     * @param emailVal the email
-     */
-    public void setEmail(final String emailVal) {
-        this.email = emailVal;
-    }
-    /**
-     * The fax String.
-     */
-    private String fax;
-
-    /**
-     * Gets the fax.
-     *
-     * @return the fax
-     */
-    @Column(name = "FAX", length = DEFAULT_STRING_COLUMN_SIZE)
-    public String getFax() {
-        return fax;
-    }
-
-    /**
-     * Sets the fax.
-     *
-     * @param faxVal the fax
-     */
-    public void setFax(final String faxVal) {
-        this.fax = faxVal;
-    }
-    /**
-     * The phone String.
-     */
-    private String phone;
-
-    /**
-     * Gets the phone.
-     *
-     * @return the phone
-     */
-    @Column(name = "PHONE", length = DEFAULT_STRING_COLUMN_SIZE)
-    public String getPhone() {
-        return phone;
-    }
-
-    /**
-     * Sets the phone.
-     *
-     * @param phoneVal the phone
-     */
-    public void setPhone(final String phoneVal) {
-        this.phone = phoneVal;
-    }
-    /**
-     * The url String.
-     */
-    private String url;
-
-    /**
-     * Gets the url.
-     *
-     * @return the url
-     */
-    @Column(name = "URL", length = DEFAULT_STRING_COLUMN_SIZE)
-    public String getUrl() {
-        return url;
-    }
-
-    /**
-     * Sets the url.
-     *
-     * @param urlVal the url
-     */
-    public void setUrl(final String urlVal) {
-        this.url = urlVal;
-    }
-
-    /**
-     * The address gov.nih.nci.caarray.domain.contact.Address.
-     */
-    private Address address;
-
-    /**
-     * Gets the address.
-     *
-     * @return the address
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "ADDRESS_ID")
-    @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "CONTACT_ADDRESS_IDX")
-    public Address getAddress() {
-        return address;
-    }
-
-    /**
-     * Sets the address.
-     *
-     * @param addressVal the address
-     */
-    public void setAddress(final Address addressVal) {
-        this.address = addressVal;
+    private boolean doCleanupInternal() {
+        boolean done = true;
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            Session s = HibernateUtil.getCurrentSession();
+            Class<?>[] classes = new Class<?>[] {ParameterValue.class, Parameter.class, Object.class};
+            for (Class<?> c : classes) {
+                List<?> allObjs = s.createQuery("FROM " + c.getName()).list();
+                for (Object o : allObjs) {
+                    done = false;
+                    s.delete(o);
+                }
+            }
+            tx.commit();
+        } catch (DAOException deleteException) {
+            HibernateUtil.rollbackTransaction(tx);
+            LOG.error("Error cleaning up dummy category and terms.", deleteException);
+        } catch (HibernateException he) {
+            HibernateUtil.rollbackTransaction(tx);
+            LOG.error("Error cleaning up dummy category and terms.", he);
+        }
+        return done;
     }
 }

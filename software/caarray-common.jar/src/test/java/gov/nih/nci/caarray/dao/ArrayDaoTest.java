@@ -103,7 +103,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
  *
  * @author Rashmi Srinivasa
  */
-public class ArrayDaoTest {
+public class ArrayDaoTest  extends AbstractDaoTest {
     private static final Log LOG = LogFactory.getLog(ArrayDaoTest.class);
 
     private static final Organization DUMMY_ORGANIZATION = new Organization();

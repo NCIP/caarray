@@ -127,7 +127,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
      */
     public List<AbstractCaArrayEntity> query(String hqlString) {
-        List params = new ArrayList();
+        List<?> params = new ArrayList<Object>();
 
         return (runHqlQuery(hqlString, params));
     }
@@ -154,7 +154,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     }
 
     @SuppressWarnings("unchecked")
-    private List<AbstractCaArrayEntity> runHqlQuery(String hqlString, List params) {
+    private List<AbstractCaArrayEntity> runHqlQuery(String hqlString, List<?> params) {
         Session mySession = HibernateUtil.getSessionForQueryMethod();
         List<AbstractCaArrayEntity> matchingEntities = new ArrayList<AbstractCaArrayEntity>();
         List hibernateReturnedEntities = null;

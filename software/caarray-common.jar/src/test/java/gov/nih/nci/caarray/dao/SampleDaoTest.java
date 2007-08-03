@@ -105,7 +105,7 @@ import org.junit.Test;
  *
  * @author Rashmi Srinivasa
  */
-public class SampleDaoTest {
+public class SampleDaoTest  extends AbstractDaoTest {
     private static final Log LOG = LogFactory.getLog(SampleDaoTest.class);
 
     private static final Sample DUMMY_SAMPLE_1 = new Sample();

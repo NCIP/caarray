@@ -82,23 +82,26 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.Iterator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hibernate.Transaction;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.domain.vocabulary.Accession;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.domain.vocabulary.Accession;
 import gov.nih.nci.caarray.util.HibernateUtil;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.Transaction;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Unit tests for the Vocabulary DAO.
@@ -106,29 +109,29 @@ import gov.nih.nci.caarray.util.HibernateUtil;
  * @author Rashmi Srinivasa
  */
 @SuppressWarnings("PMD")
-public class VocabularyDaoTest {
+public class VocabularyDaoTest extends AbstractDaoTest {
     private static final Log LOG = LogFactory.getLog(VocabularyDaoTest.class);
 
-    private static final Category DUMMY_CATEGORY_1 = new Category();
-    private static final Category DUMMY_CATEGORY_2 = new Category();
-    private static final Category DUMMY_CATEGORY_3 = new Category();
-    private static final Category DUMMY_CATEGORY_4 = new Category();
+    private static Category DUMMY_CATEGORY_1 = new Category();
+    private static Category DUMMY_CATEGORY_2 = new Category();
+    private static Category DUMMY_CATEGORY_3 = new Category();
+    private static Category DUMMY_CATEGORY_4 = new Category();
     private static final int NUM_DUMMY_TERMS = 3;
-    private static final Term DUMMY_TERM_1 = new Term();
-    private static final Term DUMMY_TERM_2 = new Term();
-    private static final Term DUMMY_TERM_3 = new Term();
-    private static final TermSource DUMMY_SOURCE_1 = new TermSource();
-    private static final TermSource DUMMY_SOURCE_2 = new TermSource();
-    private static final Accession DUMMY_ACCESSION_1 = new Accession();
-    private static final Accession DUMMY_ACCESSION_2 = new Accession();
+    private static Term DUMMY_TERM_1 = new Term();
+    private static Term DUMMY_TERM_2 = new Term();
+    private static Term DUMMY_TERM_3 = new Term();
+    private static TermSource DUMMY_SOURCE_1 = new TermSource();
+    private static TermSource DUMMY_SOURCE_2 = new TermSource();
+    private static Accession DUMMY_ACCESSION_1 = new Accession();
+    private static Accession DUMMY_ACCESSION_2 = new Accession();
 
     private static final VocabularyDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
 
     /**
      * Define the dummy objects that will be used by the tests.
      */
-    @BeforeClass
-    public static void setUpBeforeClass() {
+    @Before
+    public void setup() {
         // Initialize all the dummy objects needed for the tests.
         initializeCategoriesAndTerms();
         initializeSourcesAndAccessions();
@@ -139,6 +142,13 @@ public class VocabularyDaoTest {
      */
     @SuppressWarnings("unchecked")
     private static void initializeCategoriesAndTerms() {
+        DUMMY_CATEGORY_1 = new Category();
+        DUMMY_CATEGORY_2 = new Category();
+        DUMMY_CATEGORY_3 = new Category();
+        DUMMY_CATEGORY_4 = new Category();
+        DUMMY_TERM_1 = new Term();
+        DUMMY_TERM_2 = new Term();
+        DUMMY_TERM_3 = new Term();
         DUMMY_CATEGORY_1.setName("DummyTestCategory1");
         DUMMY_CATEGORY_2.setName("DummyTestCategory2");
         DUMMY_CATEGORY_3.setName("DummyTestCategory3");
@@ -158,6 +168,10 @@ public class VocabularyDaoTest {
      * Initialize the dummy <code>Source</code> and <code>Accession</code> objects.
      */
     private static void initializeSourcesAndAccessions() {
+        DUMMY_SOURCE_1 = new TermSource();
+        DUMMY_SOURCE_2 = new TermSource();
+        DUMMY_ACCESSION_1 = new Accession();
+        DUMMY_ACCESSION_2 = new Accession();
         DUMMY_SOURCE_1.setName("DummyTestSource1");
         DUMMY_SOURCE_1.setUrl("DummyUrlForSource1");
         DUMMY_SOURCE_1.setVersion("1.0");
@@ -192,8 +206,6 @@ public class VocabularyDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception while getting terms in a category: " + e.getMessage());
-        } finally {
-            cleanUpTestGetTerms();
         }
     }
 
@@ -216,8 +228,6 @@ public class VocabularyDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception while getting terms in a category: " + e.getMessage());
-        } finally {
-            cleanUpTestGetTermsRecursive();
         }
     }
 
@@ -241,8 +251,6 @@ public class VocabularyDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception while getting category by name: " + e.getMessage());
-        } finally {
-            cleanUpCategory();
         }
     }
 
@@ -263,8 +271,6 @@ public class VocabularyDaoTest {
         } catch (DAOException saveException) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of category: " + saveException.getMessage());
-        } finally {
-            cleanUpCategory();
         }
     }
 
@@ -284,18 +290,6 @@ public class VocabularyDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save of category collection: " + e.getMessage());
-        } finally {
-            // Clean up by removing the dummy categories.
-            try {
-                tx = HibernateUtil.getCurrentSession().beginTransaction();
-                DAO_OBJECT.remove(DUMMY_CATEGORY_1);
-                DAO_OBJECT.remove(DUMMY_CATEGORY_2);
-                tx.commit();
-            } catch (DAOException deleteException) {
-                HibernateUtil.rollbackTransaction(tx);
-                LOG.error("Error cleaning up dummy categories.", deleteException);
-                fail("DAO exception during deletion of categories: " + deleteException.getMessage());
-            }
         }
         assertTrue(true);
     }
@@ -316,18 +310,6 @@ public class VocabularyDaoTest {
         } catch (DAOException saveException) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of term: " + saveException.getMessage());
-        } finally {
-            // Clean up by removing the dummy term.
-            try {
-                tx = HibernateUtil.getCurrentSession().beginTransaction();
-                DAO_OBJECT.remove(DUMMY_TERM_1);
-                DAO_OBJECT.remove(DUMMY_CATEGORY_3);
-                tx.commit();
-            } catch (DAOException deleteException) {
-                HibernateUtil.rollbackTransaction(tx);
-                LOG.error("Error cleaning up dummy term.", deleteException);
-                fail("DAO exception during deletion of term: " + deleteException.getMessage());
-            }
         }
     }
 
@@ -347,19 +329,6 @@ public class VocabularyDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save of term collection: " + e.getMessage());
-        } finally {
-            // Clean up by removing the dummy terms.
-            try {
-                tx = HibernateUtil.getCurrentSession().beginTransaction();
-                DAO_OBJECT.remove(DUMMY_TERM_1);
-                DAO_OBJECT.remove(DUMMY_TERM_2);
-                DAO_OBJECT.remove(DUMMY_CATEGORY_3);
-                tx.commit();
-            } catch (DAOException deleteException) {
-                HibernateUtil.rollbackTransaction(tx);
-                LOG.error("Error cleaning up dummy terms.", deleteException);
-                fail("DAO exception during deletion of terms: " + deleteException.getMessage());
-            }
         }
         assertTrue(true);
     }
@@ -380,17 +349,6 @@ public class VocabularyDaoTest {
         } catch (DAOException saveException) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of source: " + saveException.getMessage());
-        } finally {
-            // Clean up by removing the dummy source.
-            try {
-                tx = HibernateUtil.getCurrentSession().beginTransaction();
-                DAO_OBJECT.remove(DUMMY_SOURCE_1);
-                tx.commit();
-            } catch (DAOException deleteException) {
-                HibernateUtil.rollbackTransaction(tx);
-                LOG.error("Error cleaning up dummy source.", deleteException);
-                fail("DAO exception during deletion of source: " + deleteException.getMessage());
-            }
         }
     }
 
@@ -410,18 +368,6 @@ public class VocabularyDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save of source collection: " + e.getMessage());
-        } finally {
-            // Clean up by removing the dummy sources.
-            try {
-                tx = HibernateUtil.getCurrentSession().beginTransaction();
-                DAO_OBJECT.remove(DUMMY_SOURCE_1);
-                DAO_OBJECT.remove(DUMMY_SOURCE_2);
-                tx.commit();
-            } catch (DAOException deleteException) {
-                HibernateUtil.rollbackTransaction(tx);
-                LOG.error("Error cleaning up dummy sources.", deleteException);
-                fail("DAO exception during deletion of sources: " + deleteException.getMessage());
-            }
         }
         assertTrue(true);
     }
@@ -443,18 +389,6 @@ public class VocabularyDaoTest {
         } catch (DAOException saveException) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of accession: " + saveException.getMessage());
-        } finally {
-            // Clean up by removing the dummy accession.
-            try {
-                tx = HibernateUtil.getCurrentSession().beginTransaction();
-                DAO_OBJECT.remove(DUMMY_ACCESSION_1);
-                DAO_OBJECT.remove(DUMMY_SOURCE_1);
-                tx.commit();
-            } catch (DAOException deleteException) {
-                HibernateUtil.rollbackTransaction(tx);
-                LOG.error("Error cleaning up dummy accession.", deleteException);
-                fail("DAO exception during deletion of accession: " + deleteException.getMessage());
-            }
         }
     }
 
@@ -475,19 +409,6 @@ public class VocabularyDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save of accession collection: " + e.getMessage());
-        } finally {
-            // Clean up by removing the dummy accessions.
-            try {
-                tx = HibernateUtil.getCurrentSession().beginTransaction();
-                DAO_OBJECT.remove(DUMMY_ACCESSION_1);
-                DAO_OBJECT.remove(DUMMY_ACCESSION_2);
-                DAO_OBJECT.remove(DUMMY_SOURCE_1);
-                tx.commit();
-            } catch (DAOException deleteException) {
-                HibernateUtil.rollbackTransaction(tx);
-                LOG.error("Error cleaning up dummy accessions.", deleteException);
-                fail("DAO exception during deletion of accessions: " + deleteException.getMessage());
-            }
         }
         assertTrue(true);
     }
@@ -571,52 +492,5 @@ public class VocabularyDaoTest {
         DAO_OBJECT.save(DUMMY_TERM_1);
         DAO_OBJECT.save(DUMMY_TERM_2);
         DAO_OBJECT.save(DUMMY_TERM_3);
-    }
-
-    /**
-     * Clean up after tests by removing the dummy entities from the database.
-     */
-    private void cleanUpTestGetTerms() {
-        Transaction tx = null;
-        try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
-            DAO_OBJECT.remove(DUMMY_TERM_1);
-            DAO_OBJECT.remove(DUMMY_TERM_2);
-            DAO_OBJECT.remove(DUMMY_CATEGORY_3);
-            tx.commit();
-        } catch (DAOException deleteException) {
-            HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up dummy category and terms.", deleteException);
-        }
-    }
-
-    private void cleanUpTestGetTermsRecursive() {
-        Transaction tx = null;
-        try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
-            DAO_OBJECT.remove(DUMMY_TERM_1);
-            DAO_OBJECT.remove(DUMMY_TERM_2);
-            DAO_OBJECT.remove(DUMMY_TERM_3);
-            DAO_OBJECT.remove(DUMMY_CATEGORY_3);
-            DAO_OBJECT.remove(DUMMY_CATEGORY_4);
-            tx.commit();
-        } catch (DAOException deleteException) {
-            HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up dummy category and terms.", deleteException);
-        }
-    }
-
-    private void cleanUpCategory() {
-        Transaction tx = null;
-
-        try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
-            DAO_OBJECT.remove(DUMMY_CATEGORY_1);
-            tx.commit();
-        } catch (DAOException deleteException) {
-            HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up dummy category.", deleteException);
-            fail("DAO exception during deletion of category: " + deleteException.getMessage());
-        }
     }
 }

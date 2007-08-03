@@ -82,17 +82,9 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-import java.util.ArrayList;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.hibernate.Transaction;
-
-import gov.nih.nci.caarray.util.HibernateUtil;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.protocol.Parameter;
 import gov.nih.nci.caarray.domain.protocol.ParameterValue;
@@ -100,37 +92,61 @@ import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.util.HibernateUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.Transaction;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Unit tests for the Protocol DAO.
  *
  * @author Rashmi Srinivasa
  */
-public class ProtocolDaoTest {
+@SuppressWarnings("PMD")
+public class ProtocolDaoTest  extends AbstractDaoTest {
     private static final Log LOG = LogFactory.getLog(ProtocolDaoTest.class);
 
-    private static final ParameterValue DUMMY_PARAMETER_VALUE_1 = new ParameterValue();
-    private static final ParameterValue DUMMY_PARAMETER_VALUE_2 = new ParameterValue();
-    private static final ParameterValue DUMMY_PARAMETER_VALUE_3 = new ParameterValue();
-    private static final Category DUMMY_CATEGORY = new Category();
-    private static final Term DUMMY_TERM_1 = new Term();
-    private static final Term DUMMY_TERM_2 = new Term();
-    private static final Protocol DUMMY_PROTOCOL_1 = new Protocol();
-    private static final Protocol DUMMY_PROTOCOL_2 = new Protocol();
-    private static final Protocol DUMMY_PROTOCOL_3 = new Protocol();
-    private static final Parameter DUMMY_PARAMETER_1 = new Parameter(DUMMY_PROTOCOL_1);
-    private static final Parameter DUMMY_PARAMETER_2 = new Parameter(DUMMY_PROTOCOL_1);
-    private static final ProtocolApplication DUMMY_PROTOCOL_APPLICATION_1 = new ProtocolApplication();
-    private static final ProtocolApplication DUMMY_PROTOCOL_APPLICATION_2 = new ProtocolApplication();
+    private static ParameterValue DUMMY_PARAMETER_VALUE_1 = new ParameterValue();
+    private static ParameterValue DUMMY_PARAMETER_VALUE_2 = new ParameterValue();
+    private static ParameterValue DUMMY_PARAMETER_VALUE_3 = new ParameterValue();
+    private static Category DUMMY_CATEGORY = new Category();
+    private static Term DUMMY_TERM_1 = new Term();
+    private static Term DUMMY_TERM_2 = new Term();
+    private static Protocol DUMMY_PROTOCOL_1 = new Protocol();
+    private static Protocol DUMMY_PROTOCOL_2 = new Protocol();
+    private static Protocol DUMMY_PROTOCOL_3 = new Protocol();
+    private static Parameter DUMMY_PARAMETER_1 = new Parameter(DUMMY_PROTOCOL_1);
+    private static Parameter DUMMY_PARAMETER_2 = new Parameter(DUMMY_PROTOCOL_1);
+    private static ProtocolApplication DUMMY_PROTOCOL_APPLICATION_1 = new ProtocolApplication();
+    private static ProtocolApplication DUMMY_PROTOCOL_APPLICATION_2 = new ProtocolApplication();
 
     private static final ProtocolDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getProtocolDao();
 
     /**
      * Define the dummy objects that will be used by the tests.
      */
-    @BeforeClass
-    public static void setUpBeforeClass() {
+    @Before
+    public void setUpBeforeClass() {
         // Initialize all the dummy objects needed for the tests.
+        DUMMY_PARAMETER_VALUE_1 = new ParameterValue();
+        DUMMY_PARAMETER_VALUE_2 = new ParameterValue();
+        DUMMY_PARAMETER_VALUE_3 = new ParameterValue();
+        DUMMY_CATEGORY = new Category();
+        DUMMY_TERM_1 = new Term();
+        DUMMY_TERM_2 = new Term();
+        DUMMY_PROTOCOL_1 = new Protocol();
+        DUMMY_PROTOCOL_2 = new Protocol();
+        DUMMY_PROTOCOL_3 = new Protocol();
+        DUMMY_PARAMETER_1 = new Parameter(DUMMY_PROTOCOL_1);
+        DUMMY_PARAMETER_2 = new Parameter(DUMMY_PROTOCOL_1);
+        DUMMY_PROTOCOL_APPLICATION_1 = new ProtocolApplication();
+        DUMMY_PROTOCOL_APPLICATION_2 = new ProtocolApplication();
         initializeParametersAndParamValues();
         initializeProtocols();
         initializeProtocolApps();
@@ -214,8 +230,6 @@ public class ProtocolDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of protocol: " + e.getMessage());
-        } finally {
-            cleanUpProtocol();
         }
     }
 
@@ -235,10 +249,7 @@ public class ProtocolDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save of protocol collection: " + e.getMessage());
-        } finally {
-            cleanUpProtocols();
         }
-        assertTrue(true);
     }
 
     /**
@@ -265,8 +276,6 @@ public class ProtocolDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of protocol app: " + e.getMessage());
-        } finally {
-            cleanUpProtocolApp();
         }
     }
 
@@ -286,8 +295,6 @@ public class ProtocolDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save of protocol app collection: " + e.getMessage());
-        } finally {
-            cleanUpProtocolApps();
         }
         assertTrue(true);
     }
@@ -310,17 +317,10 @@ public class ProtocolDaoTest {
             if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
                 retrievedProtocol = (Protocol) matchingProtocols.get(0);
             }
-            if (DUMMY_PROTOCOL_1.equals(retrievedProtocol)) {
-                // The retrieved protocol is the same as the saved protocol. Test passed.
-                assertTrue(true);
-            } else {
-                fail("Retrieved protocol is different from saved protocol.");
-            }
+            assertEquals(DUMMY_PROTOCOL_1.getDescription(), retrievedProtocol.getDescription());
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during search of protocol: " + e.getMessage());
-        } finally {
-            cleanUpProtocol();
         }
     }
 
@@ -355,8 +355,6 @@ public class ProtocolDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during search of protocol: " + e.getMessage());
-        } finally {
-            cleanUpDeepSearch();
         }
     }
 
@@ -373,107 +371,4 @@ public class ProtocolDaoTest {
         exampleProtocol.setType(exampleTerm);
         return exampleProtocol;
     }
-
-    /**
-     * Clean up after a test by removing the dummy protocol.
-     */
-    private void cleanUpProtocol() {
-        Transaction tx = null;
-        try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
-            DAO_OBJECT.remove(DUMMY_PARAMETER_1);
-            DAO_OBJECT.remove(DUMMY_PARAMETER_2);
-            DAO_OBJECT.remove(DUMMY_PROTOCOL_1);
-            DAO_OBJECT.remove(DUMMY_TERM_1);
-            DAO_OBJECT.remove(DUMMY_CATEGORY);
-            tx.commit();
-        } catch (DAOException deleteException) {
-            HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up dummy protocol.", deleteException);
-            fail("DAO exception during deletion of protocol: " + deleteException.getMessage());
-        }
-    }
-
-    /**
-     * Clean up after deep search test by removing the dummy protocols.
-     */
-    private void cleanUpDeepSearch() {
-        Transaction tx = null;
-        try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
-            DAO_OBJECT.remove(DUMMY_PROTOCOL_2);
-            DAO_OBJECT.remove(DUMMY_PROTOCOL_3);
-            DAO_OBJECT.remove(DUMMY_TERM_1);
-            DAO_OBJECT.remove(DUMMY_TERM_2);
-            DAO_OBJECT.remove(DUMMY_CATEGORY);
-            tx.commit();
-        } catch (DAOException deleteException) {
-            HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up dummy protocols.", deleteException);
-            fail("DAO exception during deletion of protocols: " + deleteException.getMessage());
-        }
-    }
-
-    /**
-     * Clean up after a test by removing the dummy protocol app.
-     */
-    private void cleanUpProtocolApp() {
-        Transaction tx = null;
-        try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
-            DAO_OBJECT.remove(DUMMY_PARAMETER_VALUE_1);
-            DAO_OBJECT.remove(DUMMY_PARAMETER_VALUE_2);
-            DAO_OBJECT.remove(DUMMY_PROTOCOL_APPLICATION_1);
-            tx.commit();
-            cleanUpProtocol();
-        } catch (DAOException deleteException) {
-            HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up dummy protocol app.", deleteException);
-            fail("DAO exception during deletion of protocol app: " + deleteException.getMessage());
-        }
-    }
-
-    /**
-     * Clean up after a test by removing the dummy protocols.
-     */
-    private void cleanUpProtocols() {
-        Transaction tx = null;
-
-        try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
-            DAO_OBJECT.remove(DUMMY_PARAMETER_1);
-            DAO_OBJECT.remove(DUMMY_PARAMETER_2);
-            DAO_OBJECT.remove(DUMMY_PROTOCOL_1);
-            DAO_OBJECT.remove(DUMMY_PROTOCOL_2);
-            DAO_OBJECT.remove(DUMMY_TERM_1);
-            DAO_OBJECT.remove(DUMMY_CATEGORY);
-            tx.commit();
-        } catch (DAOException deleteException) {
-            HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up dummy protocols.", deleteException);
-            fail("DAO exception during deletion of protocols: " + deleteException.getMessage());
-        }
-    }
-
-    /**
-     * Clean up after testSaveProtocolAppCollection by removing the dummy protocol apps.
-     */
-    private void cleanUpProtocolApps() {
-        Transaction tx = null;
-
-        try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
-            DAO_OBJECT.remove(DUMMY_PARAMETER_VALUE_1);
-            DAO_OBJECT.remove(DUMMY_PARAMETER_VALUE_2);
-            DAO_OBJECT.remove(DUMMY_PROTOCOL_APPLICATION_1);
-            DAO_OBJECT.remove(DUMMY_PROTOCOL_APPLICATION_2);
-            tx.commit();
-            cleanUpProtocols();
-        } catch (DAOException deleteException) {
-            HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up dummy protocol apps.", deleteException);
-            fail("DAO exception during deletion of protocol apps: " + deleteException.getMessage());
-        }
-    }
-
 }

@@ -179,40 +179,6 @@ public class Parameter extends AbstractCaArrayEntity {
     }
 
     /**
-     * Checks if given object is equal to this object.
-     *
-     * @param obj the object to compare to this object
-     * @return true if they are equal, false if they are not
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        boolean theyAreEqual = false;
-        if (obj instanceof gov.nih.nci.caarray.domain.protocol.Parameter) {
-            final gov.nih.nci.caarray.domain.protocol.Parameter castObject =
-                (gov.nih.nci.caarray.domain.protocol.Parameter) obj;
-            Long thisId = getId();
-            if (thisId != null && thisId.equals(castObject.getId())) {
-                theyAreEqual = true;
-            }
-        }
-        return theyAreEqual;
-    }
-
-    /**
-     * Returns the hashcode for the object.
-     *
-     * @return the int hashcode
-     */
-    @Override
-    public int hashCode() {
-        int theHashCode = 0;
-        if (getId() != null) {
-            theHashCode += getId().hashCode();
-        }
-        return theHashCode;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override

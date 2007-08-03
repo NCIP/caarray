@@ -82,21 +82,9 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import static org.junit.Assert.*;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.hibernate.Transaction;
-
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
@@ -108,56 +96,99 @@ import gov.nih.nci.caarray.domain.project.InvestigationContact;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.util.HibernateUtil;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.Transaction;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Unit tests for the Project DAO.
  *
  * @author Rashmi Srinivasa
  */
-@SuppressWarnings("PMD.CyclomaticComplexity")
-public class ProjectDaoTest {
+@SuppressWarnings("PMD")
+public class ProjectDaoTest extends AbstractDaoTest {
     private static final Log LOG = LogFactory.getLog(ProjectDaoTest.class);
 
     // Investigation
     private static final String UNCHECKED = "unchecked";
-    private static final Project DUMMY_PROJECT_1 = new Project();
-    private static final Investigation DUMMY_INVESTIGATION_1 = new Investigation();
-    private static final TermSource DUMMY_SOURCE = new TermSource();
-    private static final Category DUMMY_CATEGORY = new Category();
+    private static Project DUMMY_PROJECT_1 = new Project();
+    private static Investigation DUMMY_INVESTIGATION_1 = new Investigation();
+    private static TermSource DUMMY_SOURCE = new TermSource();
+    private static Category DUMMY_CATEGORY = new Category();
 
     // Contacts
-    private static final InvestigationContact DUMMY_INVESTIGATION_CONTACT = new InvestigationContact();
-    private static final Person DUMMY_PERSON = new Person();
-    private static final Organization DUMMY_ORGANIZATION = new Organization();
+    private static InvestigationContact DUMMY_INVESTIGATION_CONTACT = new InvestigationContact();
+    private static Person DUMMY_PERSON = new Person();
+    private static Organization DUMMY_ORGANIZATION = new Organization();
 
     // Annotations
-    private static final Term DUMMY_REPLICATE_TYPE = new Term();
-    private static final Term DUMMY_NORMALIZATION_TYPE = new Term();
-    private static final Term DUMMY_QUALITY_CTRL_TYPE = new Term();
+    private static Term DUMMY_REPLICATE_TYPE = new Term();
+    private static Term DUMMY_NORMALIZATION_TYPE = new Term();
+    private static Term DUMMY_QUALITY_CTRL_TYPE = new Term();
 
     // Factors
-    private static final Term DUMMY_FACTOR_TYPE_1 = new Term();
-    private static final Term DUMMY_FACTOR_TYPE_2 = new Term();
-    private static final Factor DUMMY_FACTOR_1 = new Factor();
-    private static final Factor DUMMY_FACTOR_2 = new Factor();
+    private static Term DUMMY_FACTOR_TYPE_1 = new Term();
+    private static Term DUMMY_FACTOR_TYPE_2 = new Term();
+    private static Factor DUMMY_FACTOR_1 = new Factor();
+    private static Factor DUMMY_FACTOR_2 = new Factor();
 
     // Publications
-    private static final Publication DUMMY_PUBLICATION_1 = new Publication();
-    private static final Publication DUMMY_PUBLICATION_2 = new Publication();
-    private static final Term DUMMY_PUBLICATION_STATUS = new Term();
+    private static Publication DUMMY_PUBLICATION_1 = new Publication();
+    private static Publication DUMMY_PUBLICATION_2 = new Publication();
+    private static Term DUMMY_PUBLICATION_STATUS = new Term();
 
-    private static final CaArrayFile DUMMY_FILE_1 = new CaArrayFile();
-    private static final CaArrayFile DUMMY_FILE_2 = new CaArrayFile();
+    private static CaArrayFile DUMMY_FILE_1 = new CaArrayFile();
+    private static CaArrayFile DUMMY_FILE_2 = new CaArrayFile();
 
     private static final ProjectDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getProjectDao();
 
     /**
      * Define the dummy objects that will be used by the tests.
      */
-    @BeforeClass
-    public static void setUpBeforeClass() {
+    @Before
+    public void setup() {
+        // Investigation
+        DUMMY_PROJECT_1 = new Project();
+        DUMMY_INVESTIGATION_1 = new Investigation();
+        DUMMY_SOURCE = new TermSource();
+        DUMMY_CATEGORY = new Category();
+
+        // Contacts
+        DUMMY_INVESTIGATION_CONTACT = new InvestigationContact();
+        DUMMY_PERSON = new Person();
+        DUMMY_ORGANIZATION = new Organization();
+
+        // Annotations
+        DUMMY_REPLICATE_TYPE = new Term();
+        DUMMY_NORMALIZATION_TYPE = new Term();
+        DUMMY_QUALITY_CTRL_TYPE = new Term();
+
+        // Factors
+        DUMMY_FACTOR_TYPE_1 = new Term();
+        DUMMY_FACTOR_TYPE_2 = new Term();
+        DUMMY_FACTOR_1 = new Factor();
+        DUMMY_FACTOR_2 = new Factor();
+
+        // Publications
+        DUMMY_PUBLICATION_1 = new Publication();
+        DUMMY_PUBLICATION_2 = new Publication();
+        DUMMY_PUBLICATION_STATUS = new Term();
+
+        DUMMY_FILE_1 = new CaArrayFile();
+        DUMMY_FILE_2 = new CaArrayFile();
+
         // Initialize all the dummy objects needed for the tests.
         initializeProjects();
     }
@@ -283,9 +314,8 @@ public class ProjectDaoTest {
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
-            fail("DAO exception during save and retrieve of project: " + e.getMessage());
-        } finally {
-            cleanUpProject();
+            throw e;
+//            fail("DAO exception during save and retrieve of project: " + e.getMessage());
         }
     }
 
@@ -341,43 +371,6 @@ public class ProjectDaoTest {
     }
 
     /**
-     * Clean up after a test by removing the dummy project.
-     */
-    @SuppressWarnings("PMD")
-    private void cleanUpProject() {
-        Transaction tx = null;
-        try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
-            DAO_OBJECT.remove(DUMMY_PROJECT_1);
-            DAO_OBJECT.remove(DUMMY_INVESTIGATION_CONTACT);
-            DAO_OBJECT.remove(DUMMY_INVESTIGATION_1);
-            DAO_OBJECT.remove(DUMMY_PERSON);
-            DAO_OBJECT.remove(DUMMY_ORGANIZATION);
-
-            DAO_OBJECT.remove(DUMMY_REPLICATE_TYPE);
-            DAO_OBJECT.remove(DUMMY_NORMALIZATION_TYPE);
-            DAO_OBJECT.remove(DUMMY_QUALITY_CTRL_TYPE);
-
-            DAO_OBJECT.remove(DUMMY_FACTOR_1);
-            DAO_OBJECT.remove(DUMMY_FACTOR_2);
-            DAO_OBJECT.remove(DUMMY_FACTOR_TYPE_1);
-            DAO_OBJECT.remove(DUMMY_FACTOR_TYPE_2);
-
-            DAO_OBJECT.remove(DUMMY_PUBLICATION_1);
-            DAO_OBJECT.remove(DUMMY_PUBLICATION_2);
-            DAO_OBJECT.remove(DUMMY_PUBLICATION_STATUS);
-
-            DAO_OBJECT.remove(DUMMY_SOURCE);
-            DAO_OBJECT.remove(DUMMY_CATEGORY);
-            tx.commit();
-        } catch (DAOException deleteException) {
-            HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up dummy project.", deleteException);
-            fail("DAO exception during deletion of project: " + deleteException.getMessage());
-        }
-    }
-
-    /**
      * Tests searching for a <code>Person</code> by example, including associations
      * in the search.
      */
@@ -409,25 +402,6 @@ public class ProjectDaoTest {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during search of person: " + e.getMessage());
             LOG.error(e.getMessage(), e);
-        } finally {
-            cleanUpDeepSearch();
-        }
-    }
-
-    /**
-     * Clean up after deep search test by removing the dummy person.
-     */
-    private void cleanUpDeepSearch() {
-        Transaction tx = null;
-        try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
-            DAO_OBJECT.remove(DUMMY_PERSON);
-            DAO_OBJECT.remove(DUMMY_ORGANIZATION);
-            tx.commit();
-        } catch (DAOException deleteException) {
-            HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up dummy person.", deleteException);
-            fail("DAO exception during deletion of person: " + deleteException.getMessage());
         }
     }
 }
