@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.magetab2.sdrf;
 
+import gov.nih.nci.caarray.magetab2.OntologyTerm;
+import gov.nih.nci.caarray.magetab2.Unitable;
 import gov.nih.nci.caarray.magetab2.idf.ExperimentalFactor;
 
 import java.io.Serializable;
@@ -89,12 +91,12 @@ import java.io.Serializable;
 /**
  * 
  */
-public class FactorValue implements Serializable {
+public class FactorValue implements Serializable, Unitable {
     private static final long serialVersionUID = 28728045635671179L;
     private String value;
     private ExperimentalFactor factor;
+    private OntologyTerm unit;
 
-    
     void addToSdrfList(SdrfDocument document) {
         document.getAllFactorValues().add(this);
     }
@@ -123,8 +125,24 @@ public class FactorValue implements Serializable {
     /**
      * @param factor the factor to set
      */
-   public void setFactor(ExperimentalFactor factor) {
+    public void setFactor(ExperimentalFactor factor) {
         this.factor = factor;
+    }
+
+    /**
+     * 
+     * @return OntologyTerm get the term
+     */
+    public OntologyTerm getUnit() {
+        return unit;
+    }
+
+    /**
+     * 
+     * @param unit the OntologyTerm
+     */
+    public void setUnit(OntologyTerm unit) {
+        this.unit = unit;
     }
 
 }
