@@ -119,7 +119,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      */
     public AbstractCaArrayEntity() {
         // Generate a unique ID for the entity.
-        id = Long.valueOf(generateId());
+        setId(Long.valueOf(generateId()));
     }
 
     /**
@@ -138,7 +138,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      *
      * @param id the id to set
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     private void setId(Long id) {
         this.id = id;
     }
