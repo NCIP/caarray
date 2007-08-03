@@ -112,6 +112,12 @@
             <include name="log4j-1.2.13.jar" />
         </fileset>
     </path>
+	
+	<path id="project.classpath">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
 
     <!-- Datasource-configuration-related properties -->
     <property name="jta.transaction.factory" value="hibernate.transaction.factory_class org.hibernate.transaction.JTATransactionFactory" />
@@ -127,6 +133,8 @@
 
     <!-- Environment properties -->
     <property environment="env" />
+	<!-- Environment properties file - launch build with -Dbuild.env=DEV/QA/STAGING/PROD -->
+	<property file="${build.dir}/${build.env}.properties" />
     <property file="${build.dir}/local.properties" />
     <property file="${build.dir}/default.properties" />
     <property name="jboss.deploy.dir" value="${jboss.home}/server/${jboss.server.name}/deploy" />
@@ -916,6 +924,17 @@
         </taskdef>
         <ncitask keyFile="${properties.dir}/${keyfile.file}" compareFile="${properties.dir}/${envproperties.file}"/>
     </target>
+	
+	<!-- Integrate MySQL -->
+	<target name="mysql:run-db-integration">
+		<echo message="Starting MySQL 5.0.45 database integration on ${db.url}..." />
+		<sql driver="${db.driver}" url="${db.url}" userid="${db.username}"
+			password="${db.password}" classpathref="project.classpath" delimiter=";">
+			<fileset file="${database.dir}/create_database_and_user.sql"/>
+			<fileset file="${database.dir}/caarray_ddl.sql"/> 
+		</sql>
+	</target>
+	
     <!-- END STELLIGENT ADD -->
 
 </project>
