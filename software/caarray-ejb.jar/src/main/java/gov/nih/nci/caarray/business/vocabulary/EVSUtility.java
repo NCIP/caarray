@@ -217,7 +217,7 @@ public class EVSUtility {
         // category will always be set to the parent concept
         List<DescLogicConcept> remainderList = new ArrayList<DescLogicConcept>(subConcepts);
         int test = 0;
-        // TODO: should revisit need to clone this
+        // FIXME: should revisit need to clone this
         Category oldParent = this.cloneCategory(parentCategory);
         while (!remainderList.isEmpty()) {
             // the first time through, skip this part... obtain conceptInstances for the current concept
