@@ -210,7 +210,7 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      */
     public void setLsidForEntity(String lsidString) {
         String[] lsidPortions = lsidString.split(":");
-        int lsidIndex = lsidPortions.length;
+        int lsidIndex = lsidPortions.length - 1;
         setLsidObjectId(lsidPortions[lsidIndex]);
         lsidIndex--;
         if (lsidIndex < 0) {
