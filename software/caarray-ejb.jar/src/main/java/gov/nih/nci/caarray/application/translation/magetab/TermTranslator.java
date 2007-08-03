@@ -91,8 +91,8 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
-import gov.nih.nci.caarray.magetab2.OntologyTerm;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.OntologyTerm;
 
 /**
  * Translates MAGE-TAB <code>OntologyTerms</code> to caArray <code>Terms</code>.

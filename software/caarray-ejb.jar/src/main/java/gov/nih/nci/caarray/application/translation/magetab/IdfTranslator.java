@@ -89,11 +89,11 @@ import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Investigation;
 import gov.nih.nci.caarray.domain.project.InvestigationContact;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
-import gov.nih.nci.caarray.magetab2.idf.ExperimentalFactor;
-import gov.nih.nci.caarray.magetab2.idf.IdfDocument;
-import gov.nih.nci.caarray.magetab2.idf.Person;
-import gov.nih.nci.caarray.magetab2.idf.Publication;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
+import gov.nih.nci.caarray.magetab.idf.IdfDocument;
+import gov.nih.nci.caarray.magetab.idf.Person;
+import gov.nih.nci.caarray.magetab.idf.Publication;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -124,7 +124,7 @@ final class IdfTranslator extends AbstractTranslator {
         }
     }
 
-    private void translate(gov.nih.nci.caarray.magetab2.idf.Investigation idfInvestigation) {
+    private void translate(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation) {
         Investigation investigation = new Investigation();
         translateInvestigationSummary(idfInvestigation, investigation);
         translateTerms(idfInvestigation, investigation);
@@ -134,7 +134,7 @@ final class IdfTranslator extends AbstractTranslator {
         getTranslationResult().addInvestigation(investigation);
     }
 
-    private void translateInvestigationSummary(gov.nih.nci.caarray.magetab2.idf.Investigation idfInvestigation,
+    private void translateInvestigationSummary(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
             Investigation investigation) {
         investigation.setTitle(idfInvestigation.getTitle());
         investigation.setDescription(idfInvestigation.getDescription());
@@ -142,14 +142,14 @@ final class IdfTranslator extends AbstractTranslator {
         investigation.setPublicReleaseDate(idfInvestigation.getPublicReleaseDate());
     }
 
-    private void translateTerms(gov.nih.nci.caarray.magetab2.idf.Investigation idfInvestigation,
+    private void translateTerms(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
             Investigation investigation) {
         investigation.getNormalizationTypes().addAll(getTerms(idfInvestigation.getNormalizationTypes()));
         investigation.getReplicateTypes().addAll(getTerms(idfInvestigation.getReplicateTypes()));
         investigation.getQualityControlTypes().addAll(getTerms(idfInvestigation.getQualityControlTypes()));
     }
 
-    private void translatePublications(gov.nih.nci.caarray.magetab2.idf.Investigation idfInvestigation,
+    private void translatePublications(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
             Investigation investigation) {
         List<gov.nih.nci.caarray.domain.publication.Publication> publications =
             new ArrayList<gov.nih.nci.caarray.domain.publication.Publication>();
@@ -171,7 +171,7 @@ final class IdfTranslator extends AbstractTranslator {
         investigation.getPublications().addAll(publications);
     }
 
-    private void translateFactors(gov.nih.nci.caarray.magetab2.idf.Investigation idfInvestigation,
+    private void translateFactors(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
             Investigation investigation) {
         List<Factor> factors = new ArrayList<Factor>();
         List<ExperimentalFactor> idfFactors = idfInvestigation.getFactors();
@@ -187,7 +187,7 @@ final class IdfTranslator extends AbstractTranslator {
         investigation.getFactors().addAll(factors);
     }
 
-    private void translateContacts(gov.nih.nci.caarray.magetab2.idf.Investigation idfInvestigation,
+    private void translateContacts(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
             Investigation investigation) {
         List<InvestigationContact> contacts = new ArrayList<InvestigationContact>();
         List<Person> idfPersons = idfInvestigation.getPersons();

@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.client.arraydata;
 
-import gov.nih.nci.caarray.magetab2.sdrf.AbstractBioMaterial;
+import gov.nih.nci.caarray.magetab.sdrf.AbstractBioMaterial;
 
 import java.util.ArrayList;
 import java.util.Collection;

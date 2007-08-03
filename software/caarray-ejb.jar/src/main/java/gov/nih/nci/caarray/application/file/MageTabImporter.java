@@ -99,10 +99,10 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
-import gov.nih.nci.caarray.magetab2.MageTabInputFileSet;
-import gov.nih.nci.caarray.magetab2.MageTabParser;
-import gov.nih.nci.caarray.magetab2.MageTabParsingException;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.MageTabInputFileSet;
+import gov.nih.nci.caarray.magetab.MageTabParser;
+import gov.nih.nci.caarray.magetab.MageTabParsingException;
 
 /**
  * Responsible for importing parsed MAGE-TAB data into caArray.

@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.application.translation.magetab;
 
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
-import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 
 /**
  * Interface to component used to translate MAGE-TAB files to the caArray domain model.

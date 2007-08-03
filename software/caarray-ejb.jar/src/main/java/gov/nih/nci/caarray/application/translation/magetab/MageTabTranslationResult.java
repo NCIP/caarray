@@ -91,8 +91,8 @@ import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.project.Investigation;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.magetab2.OntologyTerm;
-import gov.nih.nci.caarray.magetab2.TermSource;
+import gov.nih.nci.caarray.magetab.OntologyTerm;
+import gov.nih.nci.caarray.magetab.TermSource;
 
 /**
  * Result of MAGE-TAB translation. Also used to pass-around and look up shared objects.

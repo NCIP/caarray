@@ -95,8 +95,8 @@ import gov.nih.nci.caarray.domain.project.Investigation;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.magetab2.TestMageTabSets;
-import gov.nih.nci.caarray.magetab2.idf.IdfDocument;
+import gov.nih.nci.caarray.magetab.TestMageTabSets;
+import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,7 +127,7 @@ public class MageTabTranslatorTest {
     }
 
     /**
-     * Test method for {@link gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator#translate(gov.nih.nci.caarray.magetab2.MageTabDocumentSet)}.
+     * Test method for {@link gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator#translate(gov.nih.nci.caarray.magetab.MageTabDocumentSet)}.
      */
     @Test
     public void testTranslate() {

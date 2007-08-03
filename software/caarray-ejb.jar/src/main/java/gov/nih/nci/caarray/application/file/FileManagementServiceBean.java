@@ -92,7 +92,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.magetab2.MageTabParsingException;
+import gov.nih.nci.caarray.magetab.MageTabParsingException;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import javax.ejb.EJB;

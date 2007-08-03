@@ -88,8 +88,8 @@ import org.apache.commons.logging.LogFactory;
 
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.magetab2.MageTabDocumentSet;
-import gov.nih.nci.caarray.magetab2.TermSource;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.TermSource;
 
 /**
  * Translates MAGE-TAB <code>TermSources</code> to caArray <code>TermSources</code>.
