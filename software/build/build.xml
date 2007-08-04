@@ -192,7 +192,7 @@
 
     <target name="nightly-build" depends="continuous-integration,
         deploy:start-jboss,
-      deploy:deploy-and-wait,
+        deploy:deploy-and-wait,
         test:functional,
         deploy:stop-jboss,
         test:check-functional-test-results" />
@@ -830,7 +830,7 @@
 
     <target name="database:initialize-schema" depends="database:drop-schema,database:create-schema" description="Drop &amp; Create DB schema" />
 
-    <target name="database:initialize-database" depends="database:recreate-database,database:create-schema" description="Completely reset caarraydb by dropping database, recreating, and creating schema" />
+    <target name="database:reinitialize" depends="database:recreate-database,database:create-schema" description="Completely reset caarraydb by dropping database, recreating, and creating schema" />
 
     <target name="database:recreate-database" depends="database:init-sql" description="Drops and recreates caarraydb database">
         <run-sql-script database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_database_and_user.sql" />
