@@ -26,5 +26,29 @@
             </junit>
         </sequential>
     </macrodef>
+    
+    <macrodef name="run-sql-script">
+        <attribute name="sql.file" />
+        <attribute name="sql.delimiter" default=";" />
+        <attribute name="sql.delimitertype" default="normal" />
+        <attribute name="database.user" default="${database.user}" />
+        <attribute name="database.password" default="${database.password}" />
+        <sequential>
+            <sql driver="${database.driver}"
+                 url="${database.url}${database.name}"
+                 userid="@{database.user}"
+                 password="@{database.password}"
+                 src="@{sql.file}"
+                 onerror="continue"
+                 autocommit="true"
+                 delimiter="@{sql.delimiter}"
+                 delimitertype="@{sql.delimitertype}"
+                 keepformat="true">
+                <classpath>
+                    <pathelement location="${mysql-connector.jar}"/>
+                </classpath>
+            </sql>
+        </sequential>
+    </macrodef>
 
 </project>

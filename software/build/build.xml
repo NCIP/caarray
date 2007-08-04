@@ -56,6 +56,11 @@
     <property name="caarray.ear" value="${caarray-ear.target.dir}/caarray.ear" />
     <property name="caarray-client.jar" value="${caarray-ear.target.dir}/caarray-client.jar" />
 
+    <property name="caarraydb.dir" value="${basedir}/caarraydb" />
+    <property name="caarraydb.target.dir" value="${caarraydb.dir}/target" />
+    <property name="caarraydb.sql.src.dir" value="${caarraydb.dir}/src/main/sql" />
+    <property name="caarraydb.sql.dir" value="${caarraydb.target.dir}/sql" />
+
     <!-- Third-party -->
     <property name="affxfusion.jar" value="${lib.dir}/AffxFusion.jar" />
     <property name="antlr.jar" value="${lib.dir}/antlr-2.7.6.jar" />
@@ -181,7 +186,7 @@
 
     <target name="continuous-integration" depends="clean,
       build,
-      init-db,
+      database:initialize-schema,
       check,
       test:unit" />
 
@@ -764,8 +769,8 @@
     <!-- ** SQL TARGETS                                                   ** -->
     <!-- ******************************************************************* -->
 
-    <target name="init-sql">
-        <mkdir dir="${site.dir}/sql"/>
+    <target name="database:init-sql">
+        <mkdir dir="${caarraydb.sql.dir}"/>
         <dependset>
             <srcfileset dir="${caarray-common.src.dir}">
                 <include name="gov/nih/nci/caarray/domain/**/*.java"/>
@@ -777,41 +782,21 @@
             </srcfileset>
             <targetfileset dir="${site.dir}/sql"/>
         </dependset>
-        <available property="drop-schema-sql.exists" file="${site.dir}/sql/drop-schema.sql"/>
-        <available property="create-schema-sql.exists" file="${site.dir}/sql/create-schema.sql"/>
+	    <copy todir="${caarraydb.sql.dir}">
+		    <filterset refid="caarray.filterset" />
+    		<fileset dir="${caarraydb.sql.src.dir}" includes="**/*.sql" />
+	    </copy>
+	    <available property="drop-schema-sql.exists" file="${caarraydb.sql.dir}/sql/drop_schema.sql"/>
+        <available property="create-schema-sql.exists" file="${caarraydb.sql.dir}/sql/create_schema.sql"/>
     </target>
 
-    <target name="-define-run-sql-script-task">
-        <macrodef name="run-sql-script">
-            <attribute name="sql.file" />
-            <attribute name="sql.delimiter" default=";" />
-            <attribute name="sql.delimitertype" default="normal" />
-            <sequential>
-                <sql driver="com.mysql.jdbc.Driver"
-                     url="${db.url}${database.name}"
-                     userid="${database.user}"
-                     password="${database.password}"
-                     src="@{sql.file}"
-                     onerror="continue"
-                     autocommit="true"
-                     delimiter="@{sql.delimiter}"
-                     delimitertype="@{sql.delimitertype}"
-                     keepformat="true">
-                    <classpath>
-                        <pathelement location="${mysql-connector.jar}"/>
-                    </classpath>
-                </sql>
-            </sequential>
-        </macrodef>
-    </target>
-
-    <target name="-generate-drop-schema-sql" depends="build:caarray-common.jar, configure-datasource-for-test, compile, init-sql" unless="drop-schema-sql.exists">
-        <hibernatetool destdir="${site.dir}/sql">
+    <target name="database:generate-drop-schema-sql" depends="build:caarray-common.jar, configure-datasource-for-test, compile, database:init-sql" unless="drop-schema-sql.exists">
+        <hibernatetool destdir="${caarraydb.sql.dir}">
             <annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml"
                                      propertyfile="${caarray-common.test.classes.dir}/hibernate.properties"
                                      namingstrategy="gov.nih.nci.caarray.util.NamingStrategy"
             />
-            <hbm2ddl drop="true" create="false" export="false" outputfilename="drop-schema.sql"  />
+            <hbm2ddl drop="true" create="false" export="false" outputfilename="drop_schema.sql"  />
             <classpath>
                 <pathelement path="${caarray-common.classes.dir}" />
                 <pathelement path="${hibernate.jar}"/>
@@ -819,13 +804,13 @@
         </hibernatetool>
     </target>
 
-    <target name="-generate-create-schema-sql" depends="configure-datasource-for-test, compile, init-sql" unless="create-schema-sql.exists">
-        <hibernatetool destdir="${site.dir}/sql">
+    <target name="database:generate-create-schema-sql" depends="configure-datasource-for-test, compile, database:init-sql" unless="create-schema-sql.exists">
+        <hibernatetool destdir="${caarraydb.sql.dir}">
             <annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml"
                                      propertyfile="${caarray-common.test.classes.dir}/hibernate.properties"
                                      namingstrategy="gov.nih.nci.caarray.util.NamingStrategy"
             />
-            <hbm2ddl drop="false" create="true" export="false" outputfilename="create-schema.sql" />
+            <hbm2ddl drop="false" create="true" export="false" outputfilename="create_schema.sql" />
             <classpath>
                 <pathelement path="${caarray-common.classes.dir}" />
                 <pathelement path="${hibernate.jar}"/>
@@ -833,17 +818,23 @@
         </hibernatetool>
     </target>
 
-    <target name="generate-schema-sql" depends="-generate-drop-schema-sql, -generate-create-schema-sql" />
+    <target name="database:generate-schema-sql" depends="database:generate-drop-schema-sql, database:generate-create-schema-sql" />
 
-    <target name="drop-db" depends="generate-schema-sql, -define-run-sql-script-task" description="Drop DB schema">
-        <run-sql-script sql.file="${site.dir}/sql/drop-schema.sql" />
+    <target name="database:drop-schema" depends="database:generate-drop-schema-sql" description="Drop DB schema">
+        <run-sql-script sql.file="${caarraydb.sql.dir}/drop_schema.sql" />
     </target>
 
-    <target name="create-db" depends="generate-schema-sql, -define-run-sql-script-task" description="Create DB schema">
-        <run-sql-script sql.file="${site.dir}/sql/create-schema.sql" />
+    <target name="database:create-schema" depends="database:generate-create-schema-sql" description="Create DB schema">
+        <run-sql-script sql.file="${caarraydb.sql.dir}/create_schema.sql" />
     </target>
 
-    <target name="init-db" depends="drop-db, create-db" description="Drop &amp; Create DB schema" />
+    <target name="database:initialize-schema" depends="database:drop-schema,database:create-schema" description="Drop &amp; Create DB schema" />
+
+    <target name="database:initialize-database" depends="database:recreate-database,database:create-schema" description="Completely reset caarraydb by dropping database, recreating, and creating schema" />
+
+    <target name="database:recreate-database" depends="database:init-sql" description="Drops and recreates caarraydb database">
+        <run-sql-script database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_database_and_user.sql" />
+    </target>
 
     <!-- ******************************************************************* -->
     <!-- ** DEPLOY TARGETS                                                ** -->
@@ -934,9 +925,9 @@
 
   <!-- Integrate MySQL -->
   <target name="mysql:run-db-integration">
-    <echo message="Starting MySQL 5.0.45 database integration on ${db.url}..." />
-    <sql driver="${db.driver}" url="${db.url}" userid="${db.username}"
-      password="${db.password}" classpathref="project.classpath" delimiter=";">
+    <echo message="Starting MySQL 5.0.45 database integration on ${database.url}..." />
+    <sql driver="${database.driver}" url="${database.url}" userid="${database.username}"
+      password="${database.password}" classpathref="project.classpath" delimiter=";">
       <fileset file="${database.dir}/create_database_and_user.sql"/>
       <fileset file="${database.dir}/caarray_ddl.sql"/>
     </sql>

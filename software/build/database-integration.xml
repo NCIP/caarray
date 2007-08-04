@@ -16,21 +16,22 @@
 	  <targetfileset dir="${filtered.sql.dir}"/>
 	</dependset>
 
-    <path id="db.lib.path">
+    <path id="database.lib.path">
 	  <pathelement location="." />
 	  <pathelement location="${lib.dir}/mysql-connector-java-5.0.5-bin.jar" />
 	</path>
 
     <target name="db:create-database">
 	  <echo>Creating tables...</echo>
-	  <sql driver="${db.driver}"
-   	    url="${db.url}"
+	  <sql driver="${database.driver}"
+   	    url="${database.url}"
 	    userid="${database.system.user}"
 	    password="${database.system.password}"
-	    classpathref="db.lib.path"
+	    classpathref="database.lib.path"
 	    delimiter=";">
-	    <fileset file="${database.dir}/create_database_and_user.sql"/>
-	    <fileset file="${database.dir}/caarray_ddl.sql"/>
+	    <fileset file="${caarraydb.sql.dir}/create_database_and_user.sql"/>
+		<fileset file="${caarraydb.sql.dir}/drop_schema.sql"/>
+		<fileset file="${caarraydb.sql.dir}/create_schema.sql"/>
 	  </sql>
 	</target>
 
