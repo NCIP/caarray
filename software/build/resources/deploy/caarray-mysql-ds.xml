@@ -15,6 +15,7 @@
     <metadata>
        <type-mapping>mySQL</type-mapping>
     </metadata>
+
   </local-tx-datasource>
 </datasources>
 
