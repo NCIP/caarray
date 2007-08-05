@@ -93,6 +93,7 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
@@ -200,7 +201,7 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @return the characteristics
      */
-    @OneToMany(mappedBy = "bioMaterial")
+    @OneToMany(mappedBy = "bioMaterial", fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Characteristic> getCharacteristics() {
         return characteristics;
@@ -226,7 +227,7 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      *
      * @return the protocolApplications
      */
-    @OneToMany(mappedBy = "bioMaterial")
+    @OneToMany(mappedBy = "bioMaterial", fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;

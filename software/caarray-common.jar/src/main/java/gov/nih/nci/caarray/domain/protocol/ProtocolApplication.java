@@ -92,6 +92,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -162,7 +163,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      *
      * @return the values
      */
-    @OneToMany(mappedBy = "protocolApplication")
+    @OneToMany(mappedBy = "protocolApplication", fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<ParameterValue> getValues() {
         return values;

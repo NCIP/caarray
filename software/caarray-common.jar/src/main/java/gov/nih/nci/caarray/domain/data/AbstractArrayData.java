@@ -95,6 +95,7 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
@@ -170,7 +171,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      *
      * @return the protocolApplications
      */
-    @OneToMany(mappedBy = "arrayData")
+    @OneToMany(mappedBy = "arrayData", fetch = FetchType.EAGER)
     public Set<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }

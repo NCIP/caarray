@@ -91,6 +91,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -281,7 +282,7 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @return the parameters
      */
-    @OneToMany(mappedBy = "protocol")
+    @OneToMany(mappedBy = "protocol", fetch = FetchType.EAGER)
     public Set<Parameter> getParameters() {
         return parameters;
     }

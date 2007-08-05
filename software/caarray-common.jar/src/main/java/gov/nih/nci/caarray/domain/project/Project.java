@@ -93,6 +93,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
@@ -159,7 +160,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      *
      * @return the files
      */
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @Sort(type = SortType.NATURAL)
     public SortedSet<CaArrayFile> getFiles() {

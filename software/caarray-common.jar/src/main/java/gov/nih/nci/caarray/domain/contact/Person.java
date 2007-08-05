@@ -89,6 +89,7 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -188,7 +189,7 @@ public class Person extends AbstractContact {
      *
      * @return the affiliations
      */
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "PERSONORGANIZATION",
             joinColumns = { @JoinColumn(name = "PERSON_ID") },

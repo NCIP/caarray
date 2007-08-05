@@ -91,6 +91,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -156,7 +157,7 @@ public class Factor extends AbstractCaArrayEntity {
      *
      * @return the factorValues
      */
-    @OneToMany(mappedBy = "factor")
+    @OneToMany(mappedBy = "factor", fetch = FetchType.EAGER)
     @Cascade(CascadeType.SAVE_UPDATE)
     public Set<FactorValue> getFactorValues() {
         return factorValues;

@@ -97,6 +97,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -148,7 +149,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      *
      * @return the images
      */
-    @OneToMany(mappedBy = MAPPED_BY)
+    @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.EAGER)
     public Set<Image> getImages() {
         return images;
     }
@@ -230,7 +231,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      *
      * @return the factorValues
      */
-    @OneToMany(mappedBy = MAPPED_BY)
+    @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.EAGER)
     public Set<FactorValue> getFactorValues() {
         return factorValues;
     }
@@ -274,7 +275,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      *
      * @return the labeledExtract
      */
-    @OneToMany(mappedBy = MAPPED_BY)
+    @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.EAGER)
     public Set<LabeledExtract> getLabeledExtract() {
         return labeledExtract;
     }

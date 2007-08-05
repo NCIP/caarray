@@ -93,6 +93,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -135,7 +136,7 @@ public class Image extends AbstractCaArrayEntity {
      *
      * @return the protocolApplications
      */
-    @OneToMany(mappedBy = "image")
+    @OneToMany(mappedBy = "image", fetch = FetchType.EAGER)
     public Set<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }
