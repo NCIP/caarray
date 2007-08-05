@@ -22,6 +22,9 @@
         <java>activation.jar</java>
     </module>
     <module>
+        <java>AffxFusion.jar</java>
+    </module>
+    <module>
         <java>antlr-2.7.6.jar</java>
     </module>
     <module>
