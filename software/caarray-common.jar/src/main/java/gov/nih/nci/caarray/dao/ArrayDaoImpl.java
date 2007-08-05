@@ -85,9 +85,12 @@ package gov.nih.nci.caarray.dao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.util.HibernateUtil;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.array</code> package.
@@ -109,8 +112,10 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      * {@inheritDoc}
      */
     public AbstractArrayData getArrayData(CaArrayFile file) {
-        // TODO Auto-generated method stub
-        return null;
+        Session session = HibernateUtil.getCurrentSession();
+        Query query = session.createQuery("from AbstractArrayData arrayData where arrayData.dataFile = :file");
+        query.setEntity("file", file);
+        return (AbstractArrayData) query.uniqueResult();
     }
 
     @Override
