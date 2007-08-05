@@ -155,7 +155,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
 
     @SuppressWarnings("unchecked")
     private List<AbstractCaArrayEntity> runHqlQuery(String hqlString, List<?> params) {
-        Session mySession = HibernateUtil.getSessionForQueryMethod();
+        Session mySession = HibernateUtil.getCurrentSession();
         List<AbstractCaArrayEntity> matchingEntities = new ArrayList<AbstractCaArrayEntity>();
         List hibernateReturnedEntities = null;
 
@@ -168,8 +168,6 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         } catch (HibernateException he) {
             getLog().error("Unable to retrieve entities", he);
             throw new DAOException("Unable to retrieve entities", he);
-        } finally {
-            HibernateUtil.returnSession(mySession);
         }
 
         if (hibernateReturnedEntities != null) {

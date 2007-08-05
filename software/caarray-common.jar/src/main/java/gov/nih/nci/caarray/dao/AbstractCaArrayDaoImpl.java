@@ -182,7 +182,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             return resultList;
         }
 
-        Session mySession = HibernateUtil.getSessionForQueryMethod();
+        Session mySession = HibernateUtil.getCurrentSession();
         try {
             // Query database for list of entities matching the given entity's attributes.
             Criteria criteria = mySession.createCriteria(entityToMatch.getClass());
@@ -191,8 +191,6 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         } catch (HibernateException he) {
             getLog().error(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
             throw new DAOException(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
-        } finally {
-            HibernateUtil.returnSession(mySession);
         }
 
         if (hibernateReturnedEntities != null) {
@@ -219,7 +217,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             return resultList;
         }
 
-        Session mySession = HibernateUtil.getSessionForQueryMethod();
+        Session mySession = HibernateUtil.getCurrentSession();
         try {
             // Create search-criteria with the given entity's attributes.
             Criteria criteria = mySession.createCriteria(entityToMatch.getClass());
@@ -230,8 +228,6 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         } catch (HibernateException he) {
             getLog().error(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
             throw new DAOException(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
-        } finally {
-            HibernateUtil.returnSession(mySession);
         }
 
         if (hibernateReturnedEntities != null) {

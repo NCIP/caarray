@@ -95,6 +95,7 @@ import org.hibernate.Transaction;
  * @author Rashmi Srinivasa
  */
 public final class HibernateUtil {
+    
     private static final Configuration HIBERNATE_CONFIG;
     private static final SessionFactory SESSION_FACTORY;
 
@@ -133,36 +134,6 @@ public final class HibernateUtil {
      */
     public static Session getCurrentSession() {
         return SESSION_FACTORY.getCurrentSession();
-    }
-
-    /**
-     * Gets a Hibernate Session for a query-only method to use.
-     * If the current session is not associated with a transaction, then it opens a new session.
-     * Note that this must be used only by DAO methods that don't need a transaction (query-only DAO methods).
-     *
-     * @return the Hibernate Session to use.
-     */
-    public static Session getSessionForQueryMethod() {
-        Session session = getCurrentSession();
-        if ((session == null) || (session.getTransaction() == null) || (!session.getTransaction().isActive())) {
-            // Session is not associated with a transaction. Have to manage my own session.
-            session = SESSION_FACTORY.openSession();
-        }
-        return session;
-    }
-
-    /**
-     * Returns a Hibernate session by flushing and closing it.
-     * If the current session is not associated with a transaction, then it closes the session.
-     * Note that this must be used only by DAO methods that don't need a transaction (query-only DAO methods).
-     *
-     * @param session the Hibernate session to flush and close.
-     */
-    public static void returnSession(Session session) {
-        if ((session != null) && (session.getTransaction() == null) || (!session.getTransaction().isActive())) {
-            session.flush();
-            session.close();
-        }
     }
 
     /**

@@ -307,6 +307,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             DAO_OBJECT.save(DUMMY_PROTOCOL_1);
             tx.commit();
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
             Protocol exampleProtocol = new Protocol();
             exampleProtocol.setDescription(DUMMY_PROTOCOL_1.getDescription());
             Protocol retrievedProtocol = null;
@@ -315,6 +316,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
                 retrievedProtocol = (Protocol) matchingProtocols.get(0);
             }
             assertEquals(DUMMY_PROTOCOL_1.getDescription(), retrievedProtocol.getDescription());
+            tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during search of protocol: " + e.getMessage());
@@ -336,6 +338,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
             DAO_OBJECT.save(DUMMY_PROTOCOL_2);
             DAO_OBJECT.save(DUMMY_PROTOCOL_3);
             tx.commit();
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
             Protocol exampleProtocol = setupDeepSearchExample();
             Protocol retrievedProtocol = null;
             List<AbstractCaArrayEntity> matchingProtocols =
@@ -349,6 +352,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
             } else {
                 fail("Retrieved protocol is different from saved protocol.");
             }
+            tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during search of protocol: " + e.getMessage());

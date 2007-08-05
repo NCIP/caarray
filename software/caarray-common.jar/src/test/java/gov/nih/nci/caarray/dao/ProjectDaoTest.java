@@ -383,6 +383,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             DAO_OBJECT.save(DUMMY_PERSON);
             tx.commit();
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
             Person examplePerson = new Person();
             examplePerson.setLastName(DUMMY_PERSON.getLastName());
             examplePerson.getAffiliations().add(DUMMY_ORGANIZATION);
@@ -398,6 +399,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             } else {
                 fail("Retrieved person is different from saved person.");
             }
+            tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during search of person: " + e.getMessage());

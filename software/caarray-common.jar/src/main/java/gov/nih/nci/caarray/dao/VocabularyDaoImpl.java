@@ -84,7 +84,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
      */
     @SuppressWarnings("unchecked")
     public List<Term> getTerms(String categoryName) {
-        Session mySession = HibernateUtil.getSessionForQueryMethod();
+        Session mySession = HibernateUtil.getCurrentSession();
         List<Term> matchingTerms = new ArrayList<Term>();
         List hibernateReturnedTerms = null;
 
@@ -94,8 +94,6 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
         } catch (HibernateException he) {
             getLog().error("Unable to retrieve terms", he);
             throw new DAOException("Unable to retrieve terms", he);
-        } finally {
-            HibernateUtil.returnSession(mySession);
         }
 
         if (hibernateReturnedTerms != null) {
@@ -131,7 +129,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
      * @return all matching terms or an empty <code>Set</code> if no matches.
      */
     public Set<Term> getTermsRecursive(String categoryName) {
-        Session mySession = HibernateUtil.getSessionForQueryMethod();
+        Session mySession = HibernateUtil.getCurrentSession();
         Set<Term> matchingTerms = new HashSet<Term>();
 
         try {
@@ -151,8 +149,6 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
         } catch (HibernateException he) {
             getLog().error("Unable to retrieve terms recursively", he);
             throw new DAOException("Unable to retrieve terms recursively", he);
-        } finally {
-            HibernateUtil.returnSession(mySession);
         }
 
         return matchingTerms;
@@ -165,7 +161,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
      * @return the <code>Category</code> or null.
      */
     public Category getCategory(String name) {
-        Session mySession = HibernateUtil.getSessionForQueryMethod();
+        Session mySession = HibernateUtil.getCurrentSession();
         Category retrievedCategory = null;
 
         try {
@@ -173,8 +169,6 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
         } catch (HibernateException he) {
             getLog().error("Unable to retrieve categories", he);
             throw new DAOException("Unable to retrieve categories", he);
-        } finally {
-            HibernateUtil.returnSession(mySession);
         }
 
         return retrievedCategory;

@@ -161,8 +161,7 @@ public class ArrayDaoTest  extends AbstractDaoTest {
         remove(DUMMY_ORGANIZATION);
     }
 
-    // TODO -- Todd: implement Hibernate mappings for AbstractArrayData subclasses and uncomment @Test annotation below
-    // @Test
+    @Test
     public void testGetArrayData() {
         Transaction tx = null;
         CaArrayFile file = new CaArrayFile();
@@ -173,14 +172,13 @@ public class ArrayDaoTest  extends AbstractDaoTest {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             DAO_OBJECT.save(rawArrayData);
             tx.commit();
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
             AbstractArrayData retrievedArrayData = DAO_OBJECT.getArrayData(file);
             assertEquals(rawArrayData, retrievedArrayData);
+            tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());
-        } finally {
-            remove(file);
-            remove(rawArrayData);
         }
     }
 

@@ -214,12 +214,14 @@ public class VocabularyDaoTest extends AbstractDaoTest {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             setupTestGetTermsRecursive();
             tx.commit();
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
             Set<Term> retrievedTerms = DAO_OBJECT.getTermsRecursive(DUMMY_CATEGORY_4.getName());
             if (retrievedTerms.size() != NUM_DUMMY_TERMS) {
                 fail("Did not retrieve the expected number of terms.");
             }
             // Check if we got the expected terms, and accordingly pass or fail the test.
             checkIfExpectedTermsRecursive(retrievedTerms);
+            tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception while getting terms in a category: " + e.getMessage());

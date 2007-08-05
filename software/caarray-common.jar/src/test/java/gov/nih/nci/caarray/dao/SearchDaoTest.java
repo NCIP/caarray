@@ -176,7 +176,9 @@ public class SearchDaoTest {
      */
     @Test
     public void testSearchByExample() {
+        Transaction tx = null;
         try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
             Protocol exampleProtocol = setUpExampleProtocol();
             Protocol retrievedProtocol = null;
             List<AbstractCaArrayEntity> matchingProtocols = SEARCH_DAO.query(exampleProtocol);
@@ -189,7 +191,9 @@ public class SearchDaoTest {
             } else {
                 fail(FAIL_NO_MATCH);
             }
+            tx.commit();
         } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during search by example: " + e.getMessage());
         }
     }
@@ -201,7 +205,9 @@ public class SearchDaoTest {
     public void testHqlSearch() {
         String hqlString = "From Protocol p where p.type.value='" + DUMMY_TERM_1.getValue() + "'";
 
+        Transaction tx = null;
         try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
             Protocol retrievedProtocol = null;
             List<AbstractCaArrayEntity> matchingProtocols = SEARCH_DAO.query(hqlString);
             if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
@@ -213,7 +219,9 @@ public class SearchDaoTest {
             } else {
                 fail(FAIL_NO_MATCH);
             }
+            tx.commit();
         } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during HQL search: " + e.getMessage());
         }
     }
@@ -225,7 +233,9 @@ public class SearchDaoTest {
     public void testCqlSearch() {
         CQLQuery cqlQuery = formulateCqlQuery();
 
+        Transaction tx = null;
         try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
             Protocol retrievedProtocol = null;
             List<AbstractCaArrayEntity> matchingProtocols = SEARCH_DAO.query(cqlQuery);
             if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
@@ -237,7 +247,9 @@ public class SearchDaoTest {
             } else {
                 fail(FAIL_NO_MATCH);
             }
+            tx.commit();
         } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during CQL search: " + e.getMessage());
         }
     }
@@ -249,7 +261,9 @@ public class SearchDaoTest {
     public void testCqlSearchWithAssociations() {
         CQLQuery cqlQuery = formulateCqlQueryWithAssociations();
 
+        Transaction tx = null;
         try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
             Protocol retrievedProtocol = null;
             List<AbstractCaArrayEntity> matchingProtocols = SEARCH_DAO.query(cqlQuery);
             if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
@@ -261,7 +275,9 @@ public class SearchDaoTest {
             } else {
                 fail(FAIL_NO_MATCH);
             }
+            tx.commit();
         } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during CQL search: " + e.getMessage());
         }
     }
