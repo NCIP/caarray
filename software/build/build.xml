@@ -436,6 +436,7 @@
             </fileset>
             <fileset dir="${lib.dir}">
                 <include name="activation.jar" />
+                <include name="AffxFusion.jar" />
                 <include name="antlr-2.7.6.jar" />
                 <include name="asm.jar" />
                 <include name="asm-attrs.jar" />
