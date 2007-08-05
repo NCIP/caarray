@@ -90,6 +90,9 @@ public class AffymetrixArrayDesignFiles {
         new File(AffymetrixArrayDesignFiles.class.getResource("affymetrix/Test3.CDF").getFile());
     
     public static final File HG_U133_PLUS_2_CDF = 
-        new File(AffymetrixArrayDesignFiles.class.getResource("affymetrix/HG-U133_Plus_2.CDF").getFile());
+        new File(AffymetrixArrayDesignFiles.class.getResource("affymetrix/HG-U133_Plus_2.cdf").getFile());
+    
+    public static final File HT_HG_U133A_CDF = 
+        new File(AffymetrixArrayDesignFiles.class.getResource("affymetrix/HT_HG-U133A.cdf").getFile());
 
 }
