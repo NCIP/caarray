@@ -89,6 +89,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
+import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 /**
@@ -138,6 +139,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         upload(MageTabDataFiles.TCGA_BROAD_IDF);
         upload(MageTabDataFiles.TCGA_BROAD_SDRF);
         upload(MageTabDataFiles.TCGA_BROAD_DATA_MATRIX);
+        upload(AffymetrixArrayDesignFiles.HT_HG_U133A_CDF);
         FileFilter celFilter = new FileFilter() {
             public boolean accept(File pathname) {
                 return pathname.getName().toLowerCase().endsWith(".cel");
