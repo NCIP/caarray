@@ -269,15 +269,16 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         arrayDesign.setFile(getDocumentSet().getAdfDocument(value).getFile());
         arrayDesign.link(currentNode);
         arrayDesign.addToSdrfList(this);
+        arrayDesign.setArrayDesignRef(false);
+        arrayDesign.setName(value);
         currentNode = arrayDesign;
     }
 
     private void handleImageFile(SdrfColumn column, String value) {
-        Image i = new Image();
-        i.setName(value);
-       // i.setNativeDataFile(getDocumentSet().getNativeDataFile(value));
-        i.link(currentNode);
-        currentNode = i;
+        Image image = new Image();
+        image.setName(value);
+        image.link(currentNode);
+        currentNode = image;
     }
 
 
@@ -289,7 +290,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             arrayDesign.setName(column.getHeading().getLsid() + value);
         }
         arrayDesign.link(currentNode);
+        arrayDesign.setName(value);
         arrayDesign.addToSdrfList(this);
+        arrayDesign.setArrayDesignRef(true);
         currentTermSourceable = arrayDesign;
         currentNode = arrayDesign;
     }

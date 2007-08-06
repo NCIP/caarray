@@ -99,6 +99,7 @@ public class ArrayDesign extends AbstractSampleDataRelationshipNode implements T
     private static final long serialVersionUID = -5219974664880778410L;
     private TermSource termSource;
     private File file;
+    private boolean arrayDesignRef;
 
     @Override
     void addToSdrfList(SdrfDocument document) {
@@ -140,5 +141,22 @@ public class ArrayDesign extends AbstractSampleDataRelationshipNode implements T
     public void setFile(File file) {
         this.file = file;
     }
+
+    /**
+     * 
+     * @return boolean is a reference
+     */
+    public boolean isArrayDesignRef() {
+        return arrayDesignRef;
+    }
+
+    /**
+     * 
+     * @param arrayDesignRef boolean
+     */
+    public void setArrayDesignRef(boolean arrayDesignRef) {
+        this.arrayDesignRef = arrayDesignRef;
+    }
+
 
 }
