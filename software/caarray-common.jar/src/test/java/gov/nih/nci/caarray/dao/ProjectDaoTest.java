@@ -95,6 +95,10 @@ import gov.nih.nci.caarray.domain.project.Investigation;
 import gov.nih.nci.caarray.domain.project.InvestigationContact;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.publication.Publication;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -125,7 +129,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
     private static final String UNCHECKED = "unchecked";
     private static Project DUMMY_PROJECT_1 = new Project();
     private static Investigation DUMMY_INVESTIGATION_1 = new Investigation();
-    private static TermSource DUMMY_SOURCE = new TermSource();
+    private static TermSource DUMMY_TERM_SOURCE = new TermSource();
     private static Category DUMMY_CATEGORY = new Category();
 
     // Contacts
@@ -151,6 +155,11 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
     private static CaArrayFile DUMMY_FILE_1 = new CaArrayFile();
     private static CaArrayFile DUMMY_FILE_2 = new CaArrayFile();
+    
+    private static Source DUMMY_SOURCE = new Source();
+    private static Sample DUMMY_SAMPLE = new Sample();
+    private static Extract DUMMY_EXTRACT = new Extract();
+    private static LabeledExtract DUMMY_LABELED_EXTRACT = new LabeledExtract();
 
     private static final ProjectDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getProjectDao();
 
@@ -162,7 +171,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         // Investigation
         DUMMY_PROJECT_1 = new Project();
         DUMMY_INVESTIGATION_1 = new Investigation();
-        DUMMY_SOURCE = new TermSource();
+        DUMMY_TERM_SOURCE = new TermSource();
         DUMMY_CATEGORY = new Category();
 
         // Contacts
@@ -192,20 +201,32 @@ public class ProjectDaoTest extends AbstractDaoTest {
         // Initialize all the dummy objects needed for the tests.
         initializeProjects();
     }
-
+    
     /**
      * Initialize the dummy <code>Project</code> objects.
      */
     private static void initializeProjects() {
         setInvestigationSummary();
         setInvestigationContacts();
-        DUMMY_SOURCE.setName("Dummy MGED Ontology");
+        DUMMY_TERM_SOURCE.setName("Dummy MGED Ontology");
         DUMMY_CATEGORY.setName("Dummy Category");
         setInvestigationAnnotations();
         setExperimentalFactors();
         setPublications();
         setFiles();
+        setBioMaterials();
         DUMMY_PROJECT_1.setInvestigation(DUMMY_INVESTIGATION_1);
+    }
+
+    private static void setBioMaterials() {
+        DUMMY_SOURCE.setName("DummySource");
+        DUMMY_SAMPLE.setName("DummySample");
+        DUMMY_EXTRACT.setName("DummyExtract");
+        DUMMY_LABELED_EXTRACT.setName("DummyLabeledExtract");
+        DUMMY_INVESTIGATION_1.getSources().add(DUMMY_SOURCE);
+        DUMMY_INVESTIGATION_1.getSamples().add(DUMMY_SAMPLE);
+        DUMMY_INVESTIGATION_1.getExtracts().add(DUMMY_EXTRACT);
+        DUMMY_INVESTIGATION_1.getLabeledExtracts().add(DUMMY_LABELED_EXTRACT);
     }
 
     private static void setInvestigationSummary() {
@@ -227,13 +248,13 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
     private static void setInvestigationAnnotations() {
         DUMMY_REPLICATE_TYPE.setValue("Dummy Replicate Type");
-        DUMMY_REPLICATE_TYPE.setSource(DUMMY_SOURCE);
+        DUMMY_REPLICATE_TYPE.setSource(DUMMY_TERM_SOURCE);
         DUMMY_REPLICATE_TYPE.setCategory(DUMMY_CATEGORY);
         DUMMY_NORMALIZATION_TYPE.setValue("Dummy Normalization Type");
-        DUMMY_NORMALIZATION_TYPE.setSource(DUMMY_SOURCE);
+        DUMMY_NORMALIZATION_TYPE.setSource(DUMMY_TERM_SOURCE);
         DUMMY_NORMALIZATION_TYPE.setCategory(DUMMY_CATEGORY);
         DUMMY_QUALITY_CTRL_TYPE.setValue("Dummy Quality Control Type");
-        DUMMY_QUALITY_CTRL_TYPE.setSource(DUMMY_SOURCE);
+        DUMMY_QUALITY_CTRL_TYPE.setSource(DUMMY_TERM_SOURCE);
         DUMMY_QUALITY_CTRL_TYPE.setCategory(DUMMY_CATEGORY);
         DUMMY_INVESTIGATION_1.getReplicateTypes().add(DUMMY_REPLICATE_TYPE);
         DUMMY_INVESTIGATION_1.getNormalizationTypes().add(DUMMY_NORMALIZATION_TYPE);
@@ -242,10 +263,10 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
     private static void setExperimentalFactors() {
         DUMMY_FACTOR_TYPE_1.setCategory(DUMMY_CATEGORY);
-        DUMMY_FACTOR_TYPE_1.setSource(DUMMY_SOURCE);
+        DUMMY_FACTOR_TYPE_1.setSource(DUMMY_TERM_SOURCE);
         DUMMY_FACTOR_TYPE_1.setValue("Dummy Factor Type 1");
         DUMMY_FACTOR_TYPE_2.setCategory(DUMMY_CATEGORY);
-        DUMMY_FACTOR_TYPE_2.setSource(DUMMY_SOURCE);
+        DUMMY_FACTOR_TYPE_2.setSource(DUMMY_TERM_SOURCE);
         DUMMY_FACTOR_TYPE_2.setValue("Dummy Factor Type 2");
         DUMMY_FACTOR_1.setName("Dummy Factor 1");
         DUMMY_FACTOR_1.setType(DUMMY_FACTOR_TYPE_1);
@@ -276,7 +297,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DUMMY_PUBLICATION_2.setPubMedId("DummyPubMedId2");
 
         DUMMY_PUBLICATION_STATUS.setCategory(DUMMY_CATEGORY);
-        DUMMY_PUBLICATION_STATUS.setSource(DUMMY_SOURCE);
+        DUMMY_PUBLICATION_STATUS.setSource(DUMMY_TERM_SOURCE);
         DUMMY_PUBLICATION_STATUS.setValue("Dummy Status: Published");
         DUMMY_PUBLICATION_1.setStatus(DUMMY_PUBLICATION_STATUS);
         DUMMY_PUBLICATION_2.setStatus(DUMMY_PUBLICATION_STATUS);
@@ -332,6 +353,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
      */
     @SuppressWarnings("PMD")
     private boolean compareInvestigations(Investigation retrievedInv, Investigation dummyInv) {
+        checkBioMaterials(dummyInv, retrievedInv);
+        
         // Investigation summary.
         if (!dummyInv.getTitle().equals(retrievedInv.getTitle())) {
             return false;
@@ -368,6 +391,17 @@ public class ProjectDaoTest extends AbstractDaoTest {
             return false;
         }
         return true;
+    }
+
+    private void checkBioMaterials(Investigation dummyInv, Investigation retrievedInv) {
+        assertEquals(dummyInv.getSources().size(), retrievedInv.getSources().size());
+        assertEquals(dummyInv.getSamples().size(), retrievedInv.getSamples().size());
+        assertEquals(dummyInv.getExtracts().size(), retrievedInv.getExtracts().size());
+        assertEquals(dummyInv.getLabeledExtracts().size(), retrievedInv.getLabeledExtracts().size());
+//        assertTrue(retrievedInv.getSources().containsAll(dummyInv.getSources()));
+//        assertTrue(retrievedInv.getSamples().containsAll(dummyInv.getSamples()));
+//        assertTrue(retrievedInv.getExtracts().containsAll(dummyInv.getExtracts()));
+//        assertTrue(retrievedInv.getLabeledExtracts().containsAll(dummyInv.getLabeledExtracts()));
     }
 
     /**
