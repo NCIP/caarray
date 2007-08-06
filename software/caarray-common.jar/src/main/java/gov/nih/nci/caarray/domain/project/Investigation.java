@@ -87,6 +87,8 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.publication.Publication;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -104,7 +106,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
@@ -114,17 +115,31 @@ import org.hibernate.annotations.ForeignKey;
  *
  */
 @Entity
+@SuppressWarnings("PMD.TooManyFields") // Investigation is central object -- can't reduce set of linked entities
 public class Investigation extends AbstractCaArrayEntity {
+    
     private static final String UNUSED = "unused";
     private static final String FK_COLUMN_NAME = "INVESTIGATION_ID";
     private static final String TERM_FK_NAME = "TERM_ID";
 
-    /**
-     * The serial version UID for serialization.
-     */
     private static final long serialVersionUID = 1234567890L;
 
+    private String title;
+    private String description;
     private Date dateOfExperiment;
+    private Date publicReleaseDate;
+    private Set<Factor> factors = new HashSet<Factor>();
+    private Set<InvestigationContact> investigationContacts = new HashSet<InvestigationContact>();
+    private Set<Term> qualityControlTypes = new HashSet<Term>();
+    private Set<Term> replicateTypes = new HashSet<Term>();
+    private Set<Term> normalizationTypes = new HashSet<Term>();
+    private Set<Publication> publications = new HashSet<Publication>();
+    private Set<Array> arrays = new HashSet<Array>();
+    private Set<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
+    private Set<Source> sources = new HashSet<Source>();
+    private Set<Sample> samples = new HashSet<Sample>();
+    private Set<Extract> extracts = new HashSet<Extract>();
+    private Set<LabeledExtract> labeledExtracts = new HashSet<LabeledExtract>();
 
     /**
      * Creates a new, empty <code>Investigation</code>.
@@ -154,11 +169,6 @@ public class Investigation extends AbstractCaArrayEntity {
         this.dateOfExperiment = dateOfExperimentVal;
     }
     /**
-     * The description String.
-     */
-    private String description;
-
-    /**
      * Gets the description.
      *
      * @return the description
@@ -176,11 +186,6 @@ public class Investigation extends AbstractCaArrayEntity {
     public void setDescription(final String descriptionVal) {
         this.description = descriptionVal;
     }
-    /**
-     * The publicReleaseDate java.util.Date.
-     */
-    private Date publicReleaseDate;
-
     /**
      * Gets the publicReleaseDate.
      *
@@ -200,11 +205,6 @@ public class Investigation extends AbstractCaArrayEntity {
         this.publicReleaseDate = publicReleaseDateVal;
     }
     /**
-     * The title String.
-     */
-    private String title;
-
-    /**
      * Gets the title.
      *
      * @return the title
@@ -222,11 +222,6 @@ public class Investigation extends AbstractCaArrayEntity {
     public void setTitle(final String titleVal) {
         this.title = titleVal;
     }
-
-    /**
-     * The qualityControlTypes set.
-     */
-    private Set<Term> qualityControlTypes = new HashSet<Term>();
 
     /**
      * Gets the qualityControlTypes.
@@ -256,11 +251,6 @@ public class Investigation extends AbstractCaArrayEntity {
     }
 
     /**
-     * The publications set.
-     */
-    private Set<Publication> publications = new HashSet<Publication>();
-
-    /**
      * Gets the publications.
      *
      * @return the publications
@@ -279,11 +269,6 @@ public class Investigation extends AbstractCaArrayEntity {
     private void setPublications(final Set<Publication> publicationsVal) {  // NOPMD
         this.publications = publicationsVal;
     }
-
-    /**
-     * The replicateTypes set.
-     */
-    private Set<Term> replicateTypes = new HashSet<Term>();
 
     /**
      * Gets the replicateTypes.
@@ -313,16 +298,18 @@ public class Investigation extends AbstractCaArrayEntity {
     }
 
     /**
-     * The sources set.
-     */
-    private Set<Source> sources = new HashSet<Source>();
-
-    /**
      * Gets the sources.
      *
      * @return the sources
      */
-    @Transient
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "INVESTIGATIONSOURCE",
+            joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
+            inverseJoinColumns = { @JoinColumn(name = "SOURCE_ID") }
+    )
+    @ForeignKey(name = "INVESTIGATIONSOURCE_INVEST_IDX", inverseName = "INVESTIGATIONSOURCE_SOURCE_IDX")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Source> getSources() {
         return sources;
     }
@@ -336,11 +323,6 @@ public class Investigation extends AbstractCaArrayEntity {
     private void setSources(final Set<Source> sourcesVal) {  // NOPMD
         this.sources = sourcesVal;
     }
-
-    /**
-     * The samples set.
-     */
-    private Set<Sample> samples = new HashSet<Sample>();
 
     /**
      * Gets the samples.
@@ -370,9 +352,58 @@ public class Investigation extends AbstractCaArrayEntity {
     }
 
     /**
-     * The arrayDesigns set.
+     * Gets the extracts.
+     *
+     * @return the extracts
      */
-    private Set<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "INVESTIGATIONEXTRACT",
+            joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
+            inverseJoinColumns = { @JoinColumn(name = "EXTRACT_ID") }
+    )
+    @ForeignKey(name = "INVESTIGATIONEXTRACT_INVEST_IDX", inverseName = "INVESTIGATIONEXTRACT_EXTRACT_IDX")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    public Set<Extract> getExtracts() {
+        return extracts;
+    }
+
+    /**
+     * Sets the extracts.
+     *
+     * @param extractsVal the sources
+     */
+    @SuppressWarnings(UNUSED)
+    private void setExtracts(final Set<Extract> extractsVal) {  // NOPMD
+        this.extracts = extractsVal;
+    }
+
+    /**
+     * Gets the labeledExtracts.
+     *
+     * @return the labeledExtracts
+     */
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "INVESTIGATIONLABELEDEXTRACT",
+            joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
+            inverseJoinColumns = { @JoinColumn(name = "SAMPLE_ID") }
+    )
+    @ForeignKey(name = "INVESTIGATIONLE_INVEST_IDX", inverseName = "INVESTIGATIONLE_LE_IDX")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    public Set<LabeledExtract> getLabeledExtracts() {
+        return labeledExtracts;
+    }
+
+    /**
+     * Sets the labeledExtracts.
+     *
+     * @param labeledExtractsVal the sources
+     */
+    @SuppressWarnings(UNUSED)
+    private void setLabeledExtracts(final Set<LabeledExtract> labeledExtractsVal) {  // NOPMD
+        this.labeledExtracts = labeledExtractsVal;
+    }
 
     /**
      * Gets the arrayDesigns.
@@ -402,11 +433,6 @@ public class Investigation extends AbstractCaArrayEntity {
     }
 
     /**
-     * The investigationContacts set.
-     */
-    private Set<InvestigationContact> investigationContacts = new HashSet<InvestigationContact>();
-
-    /**
      * Gets the investigationContacts.
      *
      * @return the investigationContacts
@@ -428,11 +454,6 @@ public class Investigation extends AbstractCaArrayEntity {
     }
 
     /**
-     * The factors set.
-     */
-    private Set<Factor> factors = new HashSet<Factor>();
-
-    /**
      * Gets the factors.
      *
      * @return the factors
@@ -452,11 +473,6 @@ public class Investigation extends AbstractCaArrayEntity {
     private void setFactors(final Set<Factor> factorsVal) {  // NOPMD
         this.factors = factorsVal;
     }
-
-    /**
-     * The normalizationTypes set.
-     */
-    private Set<Term> normalizationTypes = new HashSet<Term>();
 
     /**
      * Gets the normalizationTypes.
@@ -484,11 +500,6 @@ public class Investigation extends AbstractCaArrayEntity {
     private void setNormalizationTypes(final Set<Term> normalizationTypesVal) {  // NOPMD
         this.normalizationTypes = normalizationTypesVal;
     }
-
-    /**
-     * The arrays set.
-     */
-    private Set<Array> arrays = new HashSet<Array>();
 
     /**
      * Gets the arrays.
