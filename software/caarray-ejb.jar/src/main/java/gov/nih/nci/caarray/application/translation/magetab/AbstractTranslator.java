@@ -140,6 +140,9 @@ abstract class AbstractTranslator {
     }
 
     CaArrayFile getFile(String name) {
+        if (fileSet == null) {
+            return null;
+        }
         Set<CaArrayFile> files = fileSet.getFiles();
         Iterator<CaArrayFile> i = files.iterator();
         while (i.hasNext()) {

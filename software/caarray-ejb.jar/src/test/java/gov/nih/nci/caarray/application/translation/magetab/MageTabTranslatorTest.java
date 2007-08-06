@@ -82,15 +82,21 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.CaArrayEntityTestUtility;
+import gov.nih.nci.caarray.domain.project.Investigation;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.magetab.TestMageTabSets;
+import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,6 +110,7 @@ import org.junit.Test;
  */
 @SuppressWarnings("PMD")
 public class MageTabTranslatorTest {
+    private static final int SIX = 6;
 
     private MageTabTranslator translator;
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
@@ -130,19 +137,23 @@ public class MageTabTranslatorTest {
     }
 
     private void testSpecificationDocuments() {
-/*        CaArrayTranslationResult result = translator.translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
+        // TODO Get CaArrayFileSet for MAGE_TAB_SPECIFICATION_SET and pass to translator.
+        CaArrayTranslationResult result = translator.translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET, null);
         CaArrayEntityTestUtility.printEntities(result.getTerms());
         assertEquals(17, result.getTerms().size());
         assertEquals(1, result.getInvestigations().size());
         Investigation investigation = result.getInvestigations().iterator().next();
-        assertEquals(6, investigation.getSources().size());
-        assertEquals(6, investigation.getSamples().size());
+        assertEquals(SIX, investigation.getSources().size());
+        assertEquals(SIX, investigation.getSamples().size());
+        assertEquals(SIX, investigation.getExtracts().size());
+        assertEquals(SIX, investigation.getLabeledExtracts().size());
         IdfDocument idf = TestMageTabSets.MAGE_TAB_SPECIFICATION_SET.getIdfDocuments().iterator().next();
         assertEquals(idf.getInvestigation().getTitle(), investigation.getTitle());
-*/    }
+    }
 
     private void testTcgaBroadDocuments() {
-/*        CaArrayTranslationResult result = translator.translate(TestMageTabSets.TCGA_BROAD_SET);
+        // TODO Get CaArrayFileSet for TCGA_BROAD_SET and pass to translator.
+        CaArrayTranslationResult result = translator.translate(TestMageTabSets.TCGA_BROAD_SET, null);
         CaArrayEntityTestUtility.printEntities(result.getTerms());
         assertEquals(10, result.getTerms().size());
         assertEquals(1, result.getInvestigations().size());
@@ -151,7 +162,7 @@ public class MageTabTranslatorTest {
         assertEquals(0, investigation.getSamples().size());
         IdfDocument idf = TestMageTabSets.TCGA_BROAD_SET.getIdfDocuments().iterator().next();
         assertEquals(idf.getInvestigation().getTitle(), investigation.getTitle());
-*/    }
+    }
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
 
