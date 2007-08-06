@@ -157,7 +157,8 @@ public class InvestigationContact extends AbstractCaArrayEntity {
      *
      * @param rolesVal the roles
      */
-    public void setRoles(final Set<Term> rolesVal) {
+    @SuppressWarnings("unused")
+    private void setRoles(final Set<Term> rolesVal) { // NOPMD
         this.roles = rolesVal;
     }
 

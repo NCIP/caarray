@@ -21,8 +21,6 @@
         @HIBERNATE_CONFIG_END@ -->
 
         <!-- mapping files -->
-        <mapping resource="gov/nih/nci/caarray/domain/file/CaArrayFile.hbm.xml"/>
-
         <mapping class="gov.nih.nci.caarray.domain.array.Array"/>
         <mapping class="gov.nih.nci.caarray.domain.array.ArrayDesign"/>
         <mapping class="gov.nih.nci.caarray.domain.contact.Address"/>
@@ -31,6 +29,7 @@
         <mapping class="gov.nih.nci.caarray.domain.data.DerivedArrayData"/>
         <mapping class="gov.nih.nci.caarray.domain.data.Image"/>
         <mapping class="gov.nih.nci.caarray.domain.data.RawArrayData"/>
+        <mapping class="gov.nih.nci.caarray.domain.file.CaArrayFile"/>
         <mapping class="gov.nih.nci.caarray.domain.hybridization.Hybridization"/>
         <mapping class="gov.nih.nci.caarray.domain.project.Factor"/>
         <mapping class="gov.nih.nci.caarray.domain.project.FactorValue"/>

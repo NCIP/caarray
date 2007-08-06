@@ -87,17 +87,21 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Type;
+
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.Project;
 
 /**
  */
 @Entity
+@Table(name = "CAARRAYFILE")
 public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaArrayFile> {
 
     private static final long serialVersionUID = 1234567890L;
@@ -131,7 +135,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      *
      * @return the type
      */
-    @Transient
+    @Type(type = "gov.nih.nci.caarray.dao.customtype.FileTypeUserType")
     public FileType getType() {
         return type;
     }
@@ -164,7 +168,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      * @return the project
      */
     @ManyToOne
-    @JoinColumn(nullable = false, insertable = false, updatable = false)
+    @JoinColumn(insertable = false, updatable = false)
     @ForeignKey(name = "CAARRAYFILE_PROJECT_IDX")
     public Project getProject() {
         return project;
