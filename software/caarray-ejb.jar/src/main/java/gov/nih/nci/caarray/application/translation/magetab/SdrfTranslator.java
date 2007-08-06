@@ -87,12 +87,11 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.FactorValue;
@@ -105,8 +104,6 @@ import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.magetab.data.DataMatrix;
-import gov.nih.nci.caarray.magetab.data.NativeDataFile;
 import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode;
 import gov.nih.nci.caarray.magetab.sdrf.Characteristic;
@@ -116,7 +113,6 @@ import gov.nih.nci.caarray.magetab.sdrf.Scan;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfNodeType;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -148,9 +144,9 @@ final class SdrfTranslator extends AbstractTranslator {
     private final Map<String, AbstractCaArrayEntity> generatedNodes =
         new HashMap<String, AbstractCaArrayEntity>();
 
-    SdrfTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
+    SdrfTranslator(MageTabDocumentSet documentSet, CaArrayFileSet fileSet, MageTabTranslationResult translationResult,
             CaArrayDaoFactory daoFactory) {
-        super(documentSet, translationResult, daoFactory);
+        super(documentSet, fileSet, translationResult, daoFactory);
     }
 
     @Override
@@ -168,6 +164,8 @@ final class SdrfTranslator extends AbstractTranslator {
             if (investigationTitle.equals(investigation.getTitle())) {
                 investigation.getSources().addAll(allSources);
                 investigation.getSamples().addAll(allSamples);
+                investigation.getExtracts().addAll(allExtracts);
+                investigation.getLabeledExtracts().addAll(allLabeledExtracts);
             }
         }
     }
@@ -279,11 +277,10 @@ final class SdrfTranslator extends AbstractTranslator {
     private void translateArrayDesigns(SdrfDocument document) {
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDesign sdrfArrayDesign : document.getAllArrayDesigns()) {
             ArrayDesign arrayDesign = null;
-            File adfFile = sdrfArrayDesign.getFile();
-            if (adfFile != null) {
-                arrayDesign = processArrayDesignFile(adfFile, sdrfArrayDesign.getNodeType());
+            if (sdrfArrayDesign.isArrayDesignRef()) {
+                arrayDesign = processArrayDesignRef(sdrfArrayDesign.getName());
             } else {
-                arrayDesign = processArrayDesignRef(sdrfArrayDesign);
+                arrayDesign = processArrayDesignFile(sdrfArrayDesign.getName());
             }
             // Generate an array to link the hybridization to the arraydesign.
             Array array = new Array();
@@ -293,11 +290,9 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     // Process a reference to an array design in the caArray or in an external database.
-    private ArrayDesign processArrayDesignRef(gov.nih.nci.caarray.magetab.sdrf.ArrayDesign sdrfArrayDesign) {
-        ArrayDesign arrayDesign;
-        arrayDesign = new ArrayDesign();
-        String lsid = sdrfArrayDesign.getName();
-        arrayDesign.setLsidForEntity(lsid);
+    private ArrayDesign processArrayDesignRef(String arrayDesignName) {
+        ArrayDesign arrayDesign = new ArrayDesign();
+        arrayDesign.setLsidForEntity(arrayDesignName);
         arrayDesign.setName(arrayDesign.getLsidObjectId());
         // Look up database for ArrayDesign with this lsid. If doesn't exist, create.
         arrayDesign = (ArrayDesign) replaceIfExists(arrayDesign);
@@ -305,11 +300,9 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     // Processes an array design for which a file is included in the MAGE-TAB document set.
-    private ArrayDesign processArrayDesignFile(File adfFile, SdrfNodeType sdrfType) {
+    private ArrayDesign processArrayDesignFile(String arrayDesignName) {
         ArrayDesign arrayDesign = new ArrayDesign();
-        CaArrayFile designFile = new CaArrayFile();
-        designFile.setPath(adfFile.getPath());
-        designFile.setType(translateFileType(sdrfType));
+        CaArrayFile designFile = getFile(arrayDesignName);
         arrayDesign.setDesignFile(designFile);
         return arrayDesign;
     }
@@ -317,17 +310,10 @@ final class SdrfTranslator extends AbstractTranslator {
     private void translateImages(SdrfDocument document) {
         for (gov.nih.nci.caarray.magetab.sdrf.Image sdrfImage : document.getAllImages()) {
             Image image = new Image();
-            image.setName(sdrfImage.getName());
-            NativeDataFile nativeDataFile = sdrfImage.getNativeDataFile();
-            if (nativeDataFile != null) {
-                File nativeImageFile = nativeDataFile.getFile();
-                if (nativeImageFile != null) {
-                    CaArrayFile imageFile = new CaArrayFile();
-                    imageFile.setPath(nativeImageFile.getPath());
-                    imageFile.setType(translateFileType(sdrfImage.getNodeType()));
-                    image.setImageFile(imageFile);
-                }
-            }
+            String imageName = sdrfImage.getName();
+            image.setName(imageName);
+            CaArrayFile imageFile = getFile(imageName);
+            image.setImageFile(imageFile);
             nodeTranslations.put(sdrfImage, image);
         }
     }
@@ -336,12 +322,10 @@ final class SdrfTranslator extends AbstractTranslator {
         // Translate native raw data files.
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile sdrfData : document.getAllArrayDataFiles()) {
             RawArrayData caArrayData = new RawArrayData();
-            caArrayData.setName(sdrfData.getName());
-            NativeDataFile nativeDataFile = sdrfData.getNativeDataFile();
-            if (nativeDataFile != null) {
-                File sdrfDataFile = nativeDataFile.getFile();
-                translateFile(sdrfData.getNodeType(), caArrayData, sdrfDataFile);
-            }
+            String fileName = sdrfData.getName();
+            caArrayData.setName(fileName);
+            CaArrayFile dataFile = getFile(fileName);
+            caArrayData.setDataFile(dataFile);
             // Associate Scan with the raw data.
             for (Scan scan : sdrfData.getPredecessorScans()) {
                 associateScanWithData(caArrayData, scan);
@@ -351,12 +335,10 @@ final class SdrfTranslator extends AbstractTranslator {
         // Translate MAGE-TAB raw data matrix files.
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile sdrfData : document.getAllArrayDataMatrixFiles()) {
             RawArrayData caArrayData = new RawArrayData();
-            caArrayData.setName(sdrfData.getName());
-            DataMatrix dataMatrix = sdrfData.getDataMatrix();
-            if (dataMatrix != null) {
-                File sdrfDataFile = dataMatrix.getFile();
-                translateFile(sdrfData.getNodeType(), caArrayData, sdrfDataFile);
-            }
+            String fileName = sdrfData.getName();
+            caArrayData.setName(fileName);
+            CaArrayFile dataFile = getFile(fileName);
+            caArrayData.setDataFile(dataFile);
             // Associate Scan with the raw data.
             for (Scan scan : sdrfData.getPredecessorScans()) {
                 associateScanWithData(caArrayData, scan);
@@ -378,12 +360,10 @@ final class SdrfTranslator extends AbstractTranslator {
         // Translate native derived data files.
         for (gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataFile sdrfData : document.getAllDerivedArrayDataFiles()) {
             DerivedArrayData caArrayData = new DerivedArrayData();
-            caArrayData.setName(sdrfData.getName());
-            NativeDataFile nativeDataFile = sdrfData.getNativeDataFile();
-            if (nativeDataFile != null) {
-                File sdrfDataFile = nativeDataFile.getFile();
-                translateFile(sdrfData.getNodeType(), caArrayData, sdrfDataFile);
-            }
+            String fileName = sdrfData.getName();
+            caArrayData.setName(fileName);
+            CaArrayFile dataFile = getFile(fileName);
+            caArrayData.setDataFile(dataFile);
             // Associate Normalization with the derived data.
             for (Normalization normalization : sdrfData.getPredecessorNormalizations()) {
                 associateNormalizationWithData(caArrayData, normalization);
@@ -394,12 +374,10 @@ final class SdrfTranslator extends AbstractTranslator {
         for (gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataMatrixFile sdrfData
                 : document.getAllDerivedArrayDataMatrixFiles()) {
             DerivedArrayData caArrayData = new DerivedArrayData();
-            caArrayData.setName(sdrfData.getName());
-            DataMatrix dataMatrix = sdrfData.getDataMatrix();
-            if (dataMatrix != null) {
-                File sdrfDataFile = dataMatrix.getFile();
-                translateFile(sdrfData.getNodeType(), caArrayData, sdrfDataFile);
-            }
+            String fileName = sdrfData.getName();
+            caArrayData.setName(fileName);
+            CaArrayFile dataFile = getFile(fileName);
+            caArrayData.setDataFile(dataFile);
             // Associate Normalization with the derived data.
             for (Normalization normalization : sdrfData.getPredecessorNormalizations()) {
                 associateNormalizationWithData(caArrayData, normalization);
@@ -415,34 +393,6 @@ final class SdrfTranslator extends AbstractTranslator {
         normalizationProtocol = (Protocol) replaceIfExists(normalizationProtocol);
         normalizationProtocolApp.setProtocol(normalizationProtocol);
         caArrayData.getProtocolApplications().add(normalizationProtocolApp);
-    }
-
-    private void translateFile(SdrfNodeType sdrfType, AbstractArrayData caArrayData, File sdrfDataFile) {
-        if (sdrfDataFile != null) {
-            CaArrayFile dataFile = new CaArrayFile();
-            dataFile.setPath(sdrfDataFile.getPath());
-            dataFile.setType(translateFileType(sdrfType));
-            // TODO How set Project for the CaArrayFile?
-            caArrayData.setDataFile(dataFile);
-        }
-    }
-
-    private FileType translateFileType(SdrfNodeType sdrfType) {
-        if (sdrfType.equals(SdrfNodeType.ARRAY_DATA_FILE)) {
-            // TODO Set the file type correctly for a native raw data file.
-            return FileType.AFFYMETRIX_CEL;
-        } else if (sdrfType.equals(SdrfNodeType.ARRAY_DATA_MATRIX)) {
-            return FileType.MAGE_TAB_DATA_MATRIX;
-        } else if (sdrfType.equals(SdrfNodeType.DERIVED_ARRAY_DATA_FILE)) {
-            // TODO Set the file type correctly for a native derived data file.
-            return FileType.AFFYMETRIX_CDF;
-        } else if (sdrfType.equals(SdrfNodeType.DERIVED_ARRAY_DATA_MATRIX)) {
-            return FileType.MAGE_TAB_DATA_MATRIX;
-        } else if (sdrfType.equals(SdrfNodeType.ARRAY_DESIGN)) {
-            return FileType.MAGE_TAB_ADF;
-        } else {
-            return null;
-        }
     }
 
     private void linkNodes(SdrfDocument document) {
@@ -520,22 +470,26 @@ final class SdrfTranslator extends AbstractTranslator {
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile sdrfArrayData
                 : sdrfHybridization.getSuccessorArrayDataFiles()) {
             RawArrayData arrayData = (RawArrayData) nodeTranslations.get(sdrfArrayData);
+            arrayData.setHybridization(hybridization);
             hybridization.setArrayData(arrayData);
         }
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile sdrfArrayData
                 : sdrfHybridization.getSuccessorArrayDataMatrixFiles()) {
             RawArrayData arrayData = (RawArrayData) nodeTranslations.get(sdrfArrayData);
+            arrayData.setHybridization(hybridization);
             hybridization.setArrayData(arrayData);
         }
         // Link derived array data
         for (gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataFile sdrfArrayData
                 : sdrfHybridization.getSuccessorDerivedArrayDataFiles()) {
             DerivedArrayData arrayData = (DerivedArrayData) nodeTranslations.get(sdrfArrayData);
+            arrayData.setHybridization(hybridization);
             hybridization.setDerivedData(arrayData);
         }
         for (gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataMatrixFile sdrfArrayData
                 : sdrfHybridization.getSuccessorDerivedArrayDataMatrixFiles()) {
             DerivedArrayData arrayData = (DerivedArrayData) nodeTranslations.get(sdrfArrayData);
+            arrayData.setHybridization(hybridization);
             hybridization.setDerivedData(arrayData);
         }
     }

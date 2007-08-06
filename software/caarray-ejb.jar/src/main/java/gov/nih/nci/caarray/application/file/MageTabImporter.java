@@ -125,7 +125,7 @@ class MageTabImporter {
         updateFileStatus(fileSet, FileStatus.IMPORTING);
         MageTabInputFileSet inputSet = getInputFileSet(fileSet);
         MageTabDocumentSet documentSet = MageTabParser.INSTANCE.parse(inputSet);
-        CaArrayTranslationResult translationResult = translator.translate(documentSet);
+        CaArrayTranslationResult translationResult = translator.translate(documentSet, fileSet);
         save(targetProject, translationResult);
         updateFileStatus(fileSet, FileStatus.IMPORTED);
     }

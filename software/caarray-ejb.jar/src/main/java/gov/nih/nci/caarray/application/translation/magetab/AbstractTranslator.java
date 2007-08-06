@@ -82,19 +82,24 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.OntologyTerm;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.logging.Log;
 
 /**
  * Base class for translators.
@@ -102,12 +107,22 @@ import gov.nih.nci.caarray.magetab.OntologyTerm;
 abstract class AbstractTranslator {
 
     private final MageTabDocumentSet documentSet;
+    private final CaArrayFileSet fileSet;
     private final MageTabTranslationResult translationResult;
     private final CaArrayDaoFactory daoFactory;
+
+    AbstractTranslator(MageTabDocumentSet documentSet, CaArrayFileSet fileSet,
+            MageTabTranslationResult translationResult, CaArrayDaoFactory daoFactory) {
+        this.documentSet = documentSet;
+        this.fileSet = fileSet;
+        this.translationResult = translationResult;
+        this.daoFactory = daoFactory;
+    }
 
     AbstractTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
             CaArrayDaoFactory daoFactory) {
         this.documentSet = documentSet;
+        this.fileSet = null;
         this.translationResult = translationResult;
         this.daoFactory = daoFactory;
     }
@@ -118,6 +133,23 @@ abstract class AbstractTranslator {
 
     MageTabDocumentSet getDocumentSet() {
         return documentSet;
+    }
+
+    CaArrayFileSet getFileSet() {
+        return fileSet;
+    }
+
+    CaArrayFile getFile(String name) {
+        Set<CaArrayFile> files = fileSet.getFiles();
+        Iterator<CaArrayFile> i = files.iterator();
+        while (i.hasNext()) {
+            CaArrayFile caArrayFile = i.next();
+            String fileName = (new File(caArrayFile.getPath())).getName();
+            if (name.equals(fileName)) {
+                return caArrayFile;
+            }
+        }
+        return null;
     }
 
     MageTabTranslationResult getTranslationResult() {
@@ -137,7 +169,7 @@ abstract class AbstractTranslator {
     }
 
     abstract void translate();
-    
+
     abstract Log getLog();
 
     /**
@@ -163,7 +195,7 @@ abstract class AbstractTranslator {
         } catch (DAOException e) {
             getLog().error("Error while searching database.", e);
         }
-    
+
         // Error searching database; return original entity.
         return entityToMatch;
     }
