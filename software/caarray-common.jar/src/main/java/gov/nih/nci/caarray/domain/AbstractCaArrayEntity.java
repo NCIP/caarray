@@ -105,8 +105,8 @@ public abstract class AbstractCaArrayEntity implements Serializable {
      */
     public static final int DEFAULT_STRING_COLUMN_SIZE = 254;
 
-    private static final String CAARRAY_LSID_AUTHORITY = "gov.nih.nci.caarray.domain";
-    private static final String CAARRAY_LSID_NAMESPACE = "Protocol";
+    private static final String CAARRAY_LSID_AUTHORITY = "gov.nih.nci.caarray";
+    private static final String CAARRAY_LSID_NAMESPACE = "domain";
 
     private Long id;
 
