@@ -92,7 +92,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
   /**
    */
 @Entity
-@Table(name = "SOURCE")
+@Table(name = "TERMSOURCE")
 public class TermSource extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
