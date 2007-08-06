@@ -800,6 +800,7 @@
             <hbm2ddl drop="true" create="false" export="false" outputfilename="drop_schema.sql"  />
             <classpath>
                 <pathelement path="${caarray-common.classes.dir}" />
+				<pathelement path="${caarray-common.resources.dir}" />
                 <pathelement path="${hibernate.jar}"/>
             </classpath>
         </hibernatetool>
@@ -814,6 +815,7 @@
             <hbm2ddl drop="false" create="true" export="false" outputfilename="create_schema.sql" />
             <classpath>
                 <pathelement path="${caarray-common.classes.dir}" />
+    			<pathelement path="${caarray-common.resources.dir}" />
                 <pathelement path="${hibernate.jar}"/>
             </classpath>
         </hibernatetool>
