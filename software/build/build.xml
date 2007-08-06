@@ -186,7 +186,7 @@
 
     <target name="continuous-integration" depends="clean,
       build,
-      database:initialize-schema,
+      database:reinitialize,
       check,
       test:unit" />
 
