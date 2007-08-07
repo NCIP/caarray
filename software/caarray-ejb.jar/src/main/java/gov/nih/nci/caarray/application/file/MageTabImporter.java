@@ -99,6 +99,7 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.magetab.InvalidMageTabException;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabInputFileSet;
 import gov.nih.nci.caarray.magetab.MageTabParser;
@@ -124,10 +125,20 @@ class MageTabImporter {
     void importFiles(Project targetProject, CaArrayFileSet fileSet) throws MageTabParsingException {
         updateFileStatus(fileSet, FileStatus.IMPORTING);
         MageTabInputFileSet inputSet = getInputFileSet(fileSet);
-        MageTabDocumentSet documentSet = MageTabParser.INSTANCE.parse(inputSet);
-        CaArrayTranslationResult translationResult = translator.translate(documentSet, fileSet);
-        save(targetProject, translationResult);
-        updateFileStatus(fileSet, FileStatus.IMPORTED);
+        MageTabDocumentSet documentSet;
+        try {
+            documentSet = MageTabParser.INSTANCE.parse(inputSet);
+            CaArrayTranslationResult translationResult = translator.translate(documentSet, fileSet);
+            save(targetProject, translationResult);
+            updateFileStatus(fileSet, FileStatus.IMPORTED);
+        } catch (InvalidMageTabException e) {
+            handleInvalidMageTab(targetProject, fileSet, e);
+        }
+    }
+
+    @SuppressWarnings("PMD")
+    private void handleInvalidMageTab(Project targetProject, CaArrayFileSet fileSet, InvalidMageTabException e) {
+        // TODO Bill -- handle updating file statuses to INVALID
     }
 
     private void updateFileStatus(CaArrayFileSet fileSet, FileStatus status) {
