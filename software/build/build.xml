@@ -15,6 +15,8 @@
     <property name="resource.dir" value="${build.dir}/resources" />
     <property name="target.dir" value="${build.dir}/target" />
     <property name="site.dir" value="${build.dir}/site" />
+    <property name="cobertura.dir" value="${site.dir}/cobertura"/>
+    <property name="cobertura.file" value="${cobertura.dir}/cobertura.ser"/>
 
     <!-- Components -->
 
@@ -113,6 +115,7 @@
         <fileset dir="${lib.dir}">
             <include name="cobertura.jar" />
             <include name="asm-2.2.1.jar" />
+            <include name="asm-tree-2.2.1.jar" />
             <include name="jakarta-oro-2.0.8.jar" />
             <include name="log4j-1.2.13.jar" />
         </fileset>
@@ -487,7 +490,7 @@
     <!-- caarray-common.jar -->
 
     <target name="test:instrument:caarray-common.jar" depends="compile:caarray-common.jar">
-        <cobertura-instrument todir="${caarray-common.instrumented.classes.dir}">
+        <cobertura-instrument todir="${caarray-common.instrumented.classes.dir}" datafile="${cobertura.file}">
             <fileset dir="${caarray-common.classes.dir}" />
         </cobertura-instrument>
     </target>
@@ -524,7 +527,7 @@
     <!-- caarray-ejb.jar -->
 
     <target name="test:instrument:caarray-ejb.jar" depends="compile:caarray-ejb.jar">
-        <cobertura-instrument todir="${caarray-ejb.instrumented.classes.dir}">
+        <cobertura-instrument todir="${caarray-ejb.instrumented.classes.dir}" datafile="${cobertura.file}">
             <fileset dir="${caarray-ejb.classes.dir}" />
         </cobertura-instrument>
     </target>
@@ -563,7 +566,7 @@
     <!-- caarray.war -->
 
     <target name="test:instrument:caarray.war" depends="compile:caarray.war">
-        <cobertura-instrument todir="${caarray-war.instrumented.classes.dir}">
+        <cobertura-instrument todir="${caarray-war.instrumented.classes.dir}" datafile="${cobertura.file}">
             <fileset dir="${caarray-war.classes.dir}" />
         </cobertura-instrument>
     </target>
@@ -613,7 +616,7 @@
 
     <!-- Cobertura Test Targets -->
     <target name="test:cobertura-report">
-        <cobertura-report format="html" destdir="${site.dir}/cobertura" >
+        <cobertura-report format="html" destdir="${site.dir}/cobertura" datafile="${cobertura.file}">
             <fileset dir="${caarray-common.src.dir}" />
             <fileset dir="${caarray-ejb.src.dir}" />
             <fileset dir="${caarray-war.src.dir}" />
@@ -622,13 +625,14 @@
 
     <target name="test:cobertura-check">
         <cobertura-check failureproperty="cobertura.failure"
-        haltonfailure="false"
-        branchrate="0"
-      linerate="0"
-      packagebranchrate="0"
-      packagelinerate="0"
-      totalbranchrate="10"
-      totallinerate="10" />
+                         datafile="${cobertura.file}"
+                         haltonfailure="false"
+                         branchrate="0"
+                         linerate="0"
+                         packagebranchrate="0"
+                         packagelinerate="0"
+                         totalbranchrate="42"
+                         totallinerate="58" />
     </target>
 
     <!-- Functional (Selenium) Test Targets -->
@@ -783,11 +787,11 @@
             </srcfileset>
             <targetfileset dir="${site.dir}/sql"/>
         </dependset>
-	    <copy todir="${caarraydb.sql.dir}">
-		    <filterset refid="caarray.filterset" />
-    		<fileset dir="${caarraydb.sql.src.dir}" includes="**/*.sql" />
-	    </copy>
-	    <available property="drop-schema-sql.exists" file="${caarraydb.sql.dir}/sql/drop_schema.sql"/>
+      <copy todir="${caarraydb.sql.dir}">
+        <filterset refid="caarray.filterset" />
+        <fileset dir="${caarraydb.sql.src.dir}" includes="**/*.sql" />
+      </copy>
+      <available property="drop-schema-sql.exists" file="${caarraydb.sql.dir}/sql/drop_schema.sql"/>
         <available property="create-schema-sql.exists" file="${caarraydb.sql.dir}/sql/create_schema.sql"/>
     </target>
 
@@ -800,7 +804,7 @@
             <hbm2ddl drop="true" create="false" export="false" outputfilename="drop_schema.sql"  />
             <classpath>
                 <pathelement path="${caarray-common.classes.dir}" />
-				<pathelement path="${caarray-common.resources.dir}" />
+        <pathelement path="${caarray-common.resources.dir}" />
                 <pathelement path="${hibernate.jar}"/>
             </classpath>
         </hibernatetool>
@@ -815,7 +819,7 @@
             <hbm2ddl drop="false" create="true" export="false" outputfilename="create_schema.sql" />
             <classpath>
                 <pathelement path="${caarray-common.classes.dir}" />
-    			<pathelement path="${caarray-common.resources.dir}" />
+          <pathelement path="${caarray-common.resources.dir}" />
                 <pathelement path="${hibernate.jar}"/>
             </classpath>
         </hibernatetool>

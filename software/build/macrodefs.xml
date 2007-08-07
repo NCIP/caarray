@@ -8,13 +8,13 @@
 
         <sequential>
             <mkdir dir="@{xml.output.dir}" />
-            <junit printsummary="on" failureproperty="junit.failure" fork="true" maxmemory="256m">
+            <junit printsummary="on" failureproperty="junit.failure" fork="true" forkmode="once" maxmemory="256m">
                 <sysproperty key="net.sourceforge.cobertura.datafile"
-                		file="${basedir}/cobertura.ser" />
+                             file="${cobertura.file}" />
                 <classpath>
                     <pathelement path="@{instrumented.classes}" />
                     <pathelement path="@{classpath}" />
-                	<path refid="cobertura.classpath" />
+                  <path refid="cobertura.classpath" />
                 </classpath>
                 <formatter type="xml" />
                 <batchtest todir="@{xml.output.dir}">
@@ -26,7 +26,7 @@
             </junit>
         </sequential>
     </macrodef>
-    
+
     <macrodef name="run-sql-script">
         <attribute name="sql.file" />
         <attribute name="sql.delimiter" default=";" />
