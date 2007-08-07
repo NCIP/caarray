@@ -119,12 +119,12 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private static final long serialVersionUID = 1116542609494378874L;
     private IdfDocument idfDocument;
     private final List<SdrfColumn> columns = new ArrayList<SdrfColumn>();
-    private final Map<NodeKey, AbstractSampleDataRelationshipNode> nodeCache = 
+    private final Map<NodeKey, AbstractSampleDataRelationshipNode> nodeCache =
         new HashMap<NodeKey, AbstractSampleDataRelationshipNode>();
     private AbstractSampleDataRelationshipNode currentNode;
     private Unitable currentUnitable;
     private TermSourceable currentTermSourceable;
-    private final List<AbstractSampleDataRelationshipNode> leftmostNodes = 
+    private final List<AbstractSampleDataRelationshipNode> leftmostNodes =
         new ArrayList<AbstractSampleDataRelationshipNode>();
     private ProtocolApplication currentProtocolApp;
     private final List<Characteristic> characteristicsList = new ArrayList<Characteristic>();
@@ -142,13 +142,13 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private final List<ArrayDataFile> allArrayDataFiles = new ArrayList<ArrayDataFile>();
     private final List<DerivedArrayDataFile> allDerivedArrayDataFiles = new ArrayList<DerivedArrayDataFile>();
     private final List<ArrayDataMatrixFile> allArrayDataMatrixFiles = new ArrayList<ArrayDataMatrixFile>();
-    private final List<DerivedArrayDataMatrixFile> allDerivedArrayDataMatrixFiles = 
+    private final List<DerivedArrayDataMatrixFile> allDerivedArrayDataMatrixFiles =
         new ArrayList<DerivedArrayDataMatrixFile>();
     private final List<Image> allImages = new ArrayList<Image>();
 
     /**
      * Creates a new SDRF from an existing file.
-     * 
+     *
      * @param documentSet the MAGE-TAB document set the SDRF belongs to.
      * @param file the file containing the SDRF content.
      */
@@ -158,9 +158,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     /**
      * Parses the MAGE-TAB document, creating the object graph of entities.
-     * 
+     *
      * @throws MageTabParsingException
-     * 
+     *
      * @throws MageTabParsingException if the document couldn't be read.
      * @throws MageTabTextFileLoaderException
      */
@@ -498,10 +498,10 @@ public final class SdrfDocument extends AbstractMageTabDocument {
      */
     private static final class NodeKey {
 
-        private final Class nodeClass;
+        private final Class<?> nodeClass;
         private final String nodeName;
 
-        NodeKey(Class nodeClass, String nodeName) {
+        NodeKey(Class<?> nodeClass, String nodeName) {
             this.nodeClass = nodeClass;
             this.nodeName = nodeName;
         }

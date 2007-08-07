@@ -195,12 +195,12 @@ public class SampleDaoTest  extends AbstractDaoTest {
         if (!DUMMY_MATERIAL_TYPE.getValue().equals(retrievedMaterialType.getValue())) {
             return false;
         }
-        Collection characteristics = retrievedSample.getCharacteristics();
+        Collection<Characteristic> characteristics = retrievedSample.getCharacteristics();
         if (characteristics.isEmpty() || characteristics.size() != 1) {
             return false;
         }
-        Iterator i = characteristics.iterator();
-        Characteristic retrievedCharacteristic = (Characteristic) i.next();
+        Iterator<Characteristic> i = characteristics.iterator();
+        Characteristic retrievedCharacteristic = i.next();
         if (!DUMMY_CHARACTERISTIC.getValue().equals(retrievedCharacteristic.getValue())) {
             return false;
         }

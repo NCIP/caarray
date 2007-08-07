@@ -135,6 +135,8 @@ public class EVSUtility {
 
     private static final int MAX_NUM_RESULTS = 10;
 
+    private static final String UNCHECKED = "unchecked";
+
     /**
      * LOG used by this class.
      */
@@ -289,6 +291,7 @@ public class EVSUtility {
      * @return
      * @throws ApplicationException
      */
+    @SuppressWarnings(UNCHECKED)
     private List<String> getSubConceptNames(ApplicationService appService, EVSQuery evs, DescLogicConcept concept)
             throws ApplicationException {
         List<String> subConcepts;
@@ -313,6 +316,7 @@ public class EVSUtility {
      * @throws ApplicationException
      *             an exception
      */
+    @SuppressWarnings(UNCHECKED)
     private DescLogicConcept getEVSConcept(final String conceptName, final EVSQuery evs, final List<Vocabulary> vocabs,
             final ApplicationService appService) throws ApplicationException {
 
@@ -347,6 +351,7 @@ public class EVSUtility {
      * @throws ApplicationException
      *             an exception
      */
+    @SuppressWarnings(UNCHECKED)
     private List<DescLogicConcept> getEVSConceptList(final List<Vocabulary> vocabs,
             final ApplicationService appService, DescLogicConcept concept) throws ApplicationException {
         EVSQuery evs = new EVSQueryImpl();
@@ -377,6 +382,7 @@ public class EVSUtility {
      *             an exception
      *
      */
+    @SuppressWarnings(UNCHECKED)
     public List<Vocabulary> getVocabularyList(final EVSQuery evs, final ApplicationService appService)
             throws ApplicationException {
 
@@ -403,6 +409,7 @@ public class EVSUtility {
      *             an exception
      *
      */
+    @SuppressWarnings(UNCHECKED)
     private List<Vocabulary> getVocabularyByName(final EVSQuery evs, final ApplicationService appService,
             final String name) throws ApplicationException {
 
@@ -423,10 +430,11 @@ public class EVSUtility {
      *             an exception
      *
      */
+    @SuppressWarnings(UNCHECKED)
     private boolean conceptIsInstance(DescLogicConcept concept) {
-        List list = concept.getPropertyCollection();
+        List<Property> list = concept.getPropertyCollection();
         for (int i = 0; i < list.size(); i++) {
-            Property property = (Property) list.get(i);
+            Property property = list.get(i);
             if (isMgedInstance(property)) {
                 return true;
             }
@@ -445,11 +453,12 @@ public class EVSUtility {
      * @param name
      * @return
      */
+    @SuppressWarnings(UNCHECKED)
     private String getConceptPropertyValue(DescLogicConcept concept, String name) {
         String defValue = null;
-        List list = concept.getPropertyCollection();
+        List<Property> list = concept.getPropertyCollection();
         for (int i = 0; i < list.size(); i++) {
-            Property p = (Property) list.get(i);
+            Property p = list.get(i);
             if (p.getName().equals(name)) {
                 defValue = p.getValue();
             }

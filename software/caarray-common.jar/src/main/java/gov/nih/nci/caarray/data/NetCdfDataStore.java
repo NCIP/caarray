@@ -151,10 +151,8 @@ public class NetCdfDataStore implements DataStore {
     /**
      * @param argFile the file
      * @param argDescriptor the descriptor
-     * @throws DataStoreException exception
      */
-    public NetCdfDataStore(NetcdfFileWriteable argFile, NetcdfDataStoreDescriptor argDescriptor)
-            throws DataStoreException {
+    public NetCdfDataStore(NetcdfFileWriteable argFile, NetcdfDataStoreDescriptor argDescriptor) {
         super();
 
         netcdffile = argFile;
@@ -164,9 +162,8 @@ public class NetCdfDataStore implements DataStore {
 
     /**
      * @param argFile the file
-     * @throws DataStoreException exception
      */
-    public NetCdfDataStore(NetcdfFileWriteable argFile) throws DataStoreException {
+    public NetCdfDataStore(NetcdfFileWriteable argFile) {
         super();
 
         netcdffile = argFile;
@@ -174,15 +171,16 @@ public class NetCdfDataStore implements DataStore {
 
     }
 
+    @SuppressWarnings("unchecked")
     private void createDescriptorFromFile(NetcdfFileWriteable argFile) {
         if (descriptor == null) {
             descriptor = new NetcdfDataStoreDescriptor();
             ArrayList<Column> columns = new ArrayList<Column>();
-            List variables = argFile.getVariables();
+            List<Variable> variables = argFile.getVariables();
 
             for (int i = 0; i < variables.size(); i++) {
                 Column column = new Column();
-                Variable variable = (Variable) variables.get(i);
+                Variable variable = variables.get(i);
                 column.setName(variable.getName());
                 column.setType(DataType.valueOf(variable.getDataType().toString().toUpperCase()));
                 columns.add(i, column);
@@ -391,14 +389,15 @@ public class NetCdfDataStore implements DataStore {
      * @throws DataStoreException exception
      * @return Object[] an array
      */
+    @SuppressWarnings("unchecked")
     public Object[] getValues(int index) throws DataStoreException {
 
         Object[] returnObj = new Object[this.getDescriptor().getColumns().size()];
 
         try {
-            List variables = netcdffile.getVariables();
+            List<Variable> variables = netcdffile.getVariables();
             for (int i = 0; i < variables.size(); i++) {
-                Variable var = (Variable) variables.get(i);
+                Variable var = variables.get(i);
                 boolean isChar = isChar(var);
                 Index idx = null;
                 if (isChar) {

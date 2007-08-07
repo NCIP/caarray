@@ -94,11 +94,7 @@ public class NetcdfDataStoreFactory implements DataStoreFactory {
         } catch (IOException ie) {
             closeFile(netCdfDS);
             LOG.error("error getting file in createDataStore()", ie);
-            throw new DataStoreException(ie.getMessage());
-        } catch (DataStoreException dse) {
-            closeFile(netCdfDS);
-            LOG.error("error creating NetcdfDataStore in createDataStore()", dse);
-            throw dse;
+            throw new DataStoreException(ie.getMessage(), ie);
         }
         return netCdfDS;
 
@@ -125,10 +121,6 @@ public class NetcdfDataStoreFactory implements DataStoreFactory {
             closeFile(netCdfDS);
             LOG.error("error getting file in createDataStore()", ie);
             throw new DataStoreException(ie.getMessage(), ie);
-        } catch (DataStoreException dse) {
-            closeFile(netCdfDS);
-            LOG.error("error creating NetcdfDataStore in createDataStore()", dse);
-            throw dse;
         }
         return netCdfDS;
     }

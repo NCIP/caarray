@@ -116,14 +116,15 @@ public final class SearchCriteriaUtil {
      * @throws IllegalAccessException
      * @throws InvocationTargetException
      */
+    @SuppressWarnings("unchecked")
     static void addCriteriaForAssociations(AbstractCaArrayEntity entityToMatch, Criteria criteria)
       {
         try {
             PersistentClass pclass = HibernateUtil.getConfiguration().getClassMapping(
                 entityToMatch.getClass().getName());
-            Iterator properties = pclass.getPropertyIterator();
+            Iterator<Property> properties = pclass.getPropertyIterator();
             while (properties.hasNext()) {
-                Property prop = (Property) properties.next();
+                Property prop = properties.next();
                 if (prop.getType().isAssociationType()) {
                     addCriterionForAssociation(entityToMatch, criteria, prop);
                 }

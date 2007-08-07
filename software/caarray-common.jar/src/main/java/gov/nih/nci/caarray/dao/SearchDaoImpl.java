@@ -148,7 +148,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
             throw new DAOException("Unable to parse CQL query", e);
         }
         String hqlString = hqlWrapper.getHql();
-        List params = hqlWrapper.getParameters();
+        List<?> params = hqlWrapper.getParameters();
 
         return (runHqlQuery(hqlString, params));
     }

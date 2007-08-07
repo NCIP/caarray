@@ -91,7 +91,7 @@ import java.util.List;
  */
 public class HibernateQueryWrapper {
     private String hql;
-    private List parameters;
+    private List<?> parameters;
 
     /**
      * Creates a Hibernate query wrapper with the given HQL string and parameter list.
@@ -99,7 +99,7 @@ public class HibernateQueryWrapper {
      * @param hql the HQL string for this Hibernate query.
      * @param parameters the list of parameters for this Hibernate query.
      */
-    public HibernateQueryWrapper(String hql, List parameters) {
+    public HibernateQueryWrapper(String hql, List<?> parameters) {
         super();
         this.hql = hql;
         this.parameters = parameters;
@@ -128,7 +128,7 @@ public class HibernateQueryWrapper {
      *
      * @return the parameters for this Hibernate query.
      */
-    public List getParameters() {
+    public List<?> getParameters() {
         return parameters;
     }
 
@@ -137,7 +137,7 @@ public class HibernateQueryWrapper {
      *
      * @param parameters the parameters for this Hibernate query.
      */
-    public void setParameters(List parameters) {
+    public void setParameters(List<?> parameters) {
         this.parameters = parameters;
     }
 }

@@ -75,6 +75,7 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao {
 
     private static final Log LOG = LogFactory.getLog(VocabularyDaoImpl.class);
+    private static final String UNCHECKED = "unchecked";
 
     /**
      * Gets all the <code>Terms</code> matching the given category name.
@@ -82,7 +83,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
      * @param categoryName get terms for this category
      * @return all matching terms or an empty <code>List</code> if no matches.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings(UNCHECKED)
     public List<Term> getTerms(String categoryName) {
         Session mySession = HibernateUtil.getCurrentSession();
         List<Term> matchingTerms = new ArrayList<Term>();
@@ -109,7 +110,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
      *
      * @param termList list of terms
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings(UNCHECKED)
     public void removeTerms(List<Term> termList) {
         Term aTerm = null;
 
@@ -181,14 +182,15 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
      * @param mySession the Hibernate Session to use.
      * @return the retrieved Category or null if none exists.
      */
+    @SuppressWarnings(UNCHECKED)
     private Category getCategoryByName(String name, Session mySession) {
-        List hibernateReturnedCategories = null;
+        List<Category> hibernateReturnedCategories = null;
         Category retrievedCategory = null;
 
         hibernateReturnedCategories = mySession.createCriteria(Category.class).add(
                 Restrictions.eq("name", name)).list();
         if ((hibernateReturnedCategories != null) && (hibernateReturnedCategories.size() >= 1)) {
-            retrievedCategory = (Category) hibernateReturnedCategories.get(0);
+            retrievedCategory = hibernateReturnedCategories.get(0);
         }
         return retrievedCategory;
     }
@@ -200,7 +202,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
      * @param matchingTerms the set of terms to add to.
      * @param categoryId the category id to search for.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings(UNCHECKED)
     private void getTermsByCategoryId(Session mySession, Set<Term> matchingTerms, Long categoryId) {
         List hibernateReturnedTerms = null;
 

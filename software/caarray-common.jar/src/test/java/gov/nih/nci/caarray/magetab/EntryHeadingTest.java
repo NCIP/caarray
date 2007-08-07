@@ -93,17 +93,17 @@ public class EntryHeadingTest {
 
     @Test
     public void testEntryHeading() {
-        testOrdinary();
-        testWithCategory();
-        testWithNamespace();
+        ordinary();
+        withCategory();
+        withNamespace();
     }
 
-    private void testOrdinary() {
+    private void ordinary() {
         EntryHeading heading = new EntryHeading("Source Name");
         assertEquals("Source Name", heading.getTypeName());
     }
 
-    private void testWithCategory() {
+    private void withCategory() {
         EntryHeading heading = new EntryHeading("Characteristics[Age]");
         assertEquals("Characteristics", heading.getTypeName());
         assertEquals("Age", heading.getQualifier());
@@ -114,7 +114,7 @@ public class EntryHeadingTest {
         assertEquals("Genotype", heading.getQualifier());
     }
 
-    private void testWithNamespace() {
+    private void withNamespace() {
         EntryHeading heading = new EntryHeading("Protocol REF:Affymetrix:Protocol");
         assertEquals("Protocol REF", heading.getTypeName());
         assertEquals("Affymetrix", heading.getAuthority());
