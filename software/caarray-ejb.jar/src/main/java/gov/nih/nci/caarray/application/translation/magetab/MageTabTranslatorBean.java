@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
@@ -108,6 +109,7 @@ public class MageTabTranslatorBean implements MageTabTranslator {
     private static final Log LOG = LogFactory.getLog(MageTabTranslatorBean.class);
 
     @EJB private VocabularyService vocabularyService;
+    @EJB private FileAccessService fileAccessService;
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
     /**
@@ -167,6 +169,14 @@ public class MageTabTranslatorBean implements MageTabTranslator {
      */
     void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
+    }
+
+    final FileAccessService getFileAccessService() {
+        return fileAccessService;
+    }
+
+    final void setFileAccessService(FileAccessService fileAccessService) {
+        this.fileAccessService = fileAccessService;
     }
 
 }

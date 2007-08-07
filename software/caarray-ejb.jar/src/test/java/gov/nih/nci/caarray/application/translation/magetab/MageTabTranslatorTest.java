@@ -84,21 +84,29 @@ package gov.nih.nci.caarray.application.translation.magetab;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.CaArrayEntityTestUtility;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Investigation;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.magetab.AbstractMageTabDocument;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -115,6 +123,7 @@ public class MageTabTranslatorTest {
     private MageTabTranslator translator;
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     private final LocalVocabularyServiceStub vocabularyServiceStub = new LocalVocabularyServiceStub();
+    private final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
 
     /**
      * Prepares the translator implementation, stubbing out dependencies.
@@ -124,6 +133,7 @@ public class MageTabTranslatorTest {
         MageTabTranslatorBean mageTabTranslatorBean = new MageTabTranslatorBean();
         mageTabTranslatorBean.setDaoFactory(daoFactoryStub);
         mageTabTranslatorBean.setVocabularyService(vocabularyServiceStub);
+        mageTabTranslatorBean.setFileAccessService(fileAccessServiceStub);
         translator = mageTabTranslatorBean;
     }
 
@@ -137,9 +147,8 @@ public class MageTabTranslatorTest {
     }
 
     private void testSpecificationDocuments() {
-        // TODO Get CaArrayFileSet for MAGE_TAB_SPECIFICATION_SET and pass to translator.
-        CaArrayTranslationResult result = translator.translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET, null);
-        CaArrayEntityTestUtility.printEntities(result.getTerms());
+        CaArrayFileSet fileSet = getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
+        CaArrayTranslationResult result = translator.translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET, fileSet );
         assertEquals(17, result.getTerms().size());
         assertEquals(1, result.getInvestigations().size());
         Investigation investigation = result.getInvestigations().iterator().next();
@@ -152,21 +161,57 @@ public class MageTabTranslatorTest {
     }
 
     private void testTcgaBroadDocuments() {
-        // TODO Get CaArrayFileSet for TCGA_BROAD_SET and pass to translator.
-        CaArrayTranslationResult result = translator.translate(TestMageTabSets.TCGA_BROAD_SET, null);
+        CaArrayFileSet fileSet = getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
+        CaArrayTranslationResult result = translator.translate(TestMageTabSets.TCGA_BROAD_SET, fileSet);
         assertEquals(10, result.getTerms().size());
         assertEquals(1, result.getInvestigations().size());
         Investigation investigation = result.getInvestigations().iterator().next();
         checkTcgaBroadInvestigation(investigation);
     }
 
+    private CaArrayFileSet getFileSet(MageTabDocumentSet documentSet) {
+        CaArrayFileSet fileSet = new CaArrayFileSet();
+        addFiles(fileSet, documentSet.getIdfDocuments());
+        addFiles(fileSet, documentSet.getSdrfDocuments());
+        addFiles(fileSet, documentSet.getAdfDocuments());
+        addFiles(fileSet, documentSet.getDataMatrixes());
+        addFiles(fileSet, documentSet.getNativeDataFiles());
+        return fileSet;
+    }
+
+    private void addFiles(CaArrayFileSet fileSet, Collection<? extends AbstractMageTabDocument> mageTabDocuments) {
+        for (AbstractMageTabDocument mageTabDocument : mageTabDocuments) {
+            addFile(fileSet, mageTabDocument);
+        }
+    }
+
+    private void addFile(CaArrayFileSet fileSet, AbstractMageTabDocument mageTabDocument) {
+        fileSet.add(fileAccessServiceStub.add(mageTabDocument.getFile()));
+    }
+
     private void checkTcgaBroadInvestigation(Investigation investigation) {
+        IdfDocument idf = TestMageTabSets.TCGA_BROAD_SET.getIdfDocuments().iterator().next();
+        assertEquals(idf.getInvestigation().getTitle(), investigation.getTitle());
+        checkTcgaBroadBioMaterials(investigation);
+        checkTcgaBroadHybridizations(investigation);
+    }
+
+    private void checkTcgaBroadHybridizations(Investigation investigation) {
+        for (LabeledExtract labeledExtract : investigation.getLabeledExtracts()) {
+            Hybridization hybridization = labeledExtract.getHybridization();
+            assertNotNull(hybridization);
+            RawArrayData celData = hybridization.getArrayData();
+            assertNotNull(celData);
+            // TODO Eric -- fix this issue
+            // assertNotNull(celData.getDataFile());
+        }
+    }
+
+    private void checkTcgaBroadBioMaterials(Investigation investigation) {
         assertEquals(0, investigation.getSources().size());
         assertEquals(0, investigation.getSamples().size());
         assertEquals(26, investigation.getExtracts().size());
         assertEquals(26, investigation.getLabeledExtracts().size());
-        IdfDocument idf = TestMageTabSets.TCGA_BROAD_SET.getIdfDocuments().iterator().next();
-        assertEquals(idf.getInvestigation().getTitle(), investigation.getTitle());
     }
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
@@ -182,8 +227,6 @@ public class MageTabTranslatorTest {
 
         @Override
         public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) {
-            TermSource searchSource = (TermSource) entityToMatch;
-            System.out.println("Searching for " + searchSource);
             return new ArrayList<AbstractCaArrayEntity>();
         }
 
