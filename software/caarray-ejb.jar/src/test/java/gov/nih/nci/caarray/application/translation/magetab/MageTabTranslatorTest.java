@@ -154,12 +154,17 @@ public class MageTabTranslatorTest {
     private void testTcgaBroadDocuments() {
         // TODO Get CaArrayFileSet for TCGA_BROAD_SET and pass to translator.
         CaArrayTranslationResult result = translator.translate(TestMageTabSets.TCGA_BROAD_SET, null);
-        CaArrayEntityTestUtility.printEntities(result.getTerms());
         assertEquals(10, result.getTerms().size());
         assertEquals(1, result.getInvestigations().size());
         Investigation investigation = result.getInvestigations().iterator().next();
+        checkTcgaBroadInvestigation(investigation);
+    }
+
+    private void checkTcgaBroadInvestigation(Investigation investigation) {
         assertEquals(0, investigation.getSources().size());
         assertEquals(0, investigation.getSamples().size());
+        assertEquals(26, investigation.getExtracts().size());
+        assertEquals(26, investigation.getLabeledExtracts().size());
         IdfDocument idf = TestMageTabSets.TCGA_BROAD_SET.getIdfDocuments().iterator().next();
         assertEquals(idf.getInvestigation().getTitle(), investigation.getTitle());
     }
