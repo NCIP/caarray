@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.application.translation.magetab;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
@@ -102,7 +101,6 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Implementation of the MAGE-TAB translation component.
  */
-@SuppressWarnings("PMD")
 @Local
 @Stateless
 public class MageTabTranslatorBean implements MageTabTranslator {
@@ -121,7 +119,7 @@ public class MageTabTranslatorBean implements MageTabTranslator {
             LogUtil.logSubsystemEntry(LOG, documentSet);
         }
         MageTabTranslationResult translationResult = new MageTabTranslationResult();
-        translateTermSources(documentSet, translationResult, getDaoFactory().getVocabularyDao());
+        translateTermSources(documentSet, translationResult);
         translateTerms(documentSet, translationResult, getVocabularyService());
         translateIdfs(documentSet, translationResult);
         translateSdrfs(documentSet, fileSet, translationResult);
@@ -131,8 +129,7 @@ public class MageTabTranslatorBean implements MageTabTranslator {
         return translationResult;
     }
 
-    private void translateTermSources(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
-            VocabularyDao vocabularyDao) {
+    private void translateTermSources(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult) {
         new TermSourceTranslator(documentSet, translationResult, vocabularyService, daoFactory).translate();
     }
 
