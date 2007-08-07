@@ -125,6 +125,9 @@ public final class TestMageTabSets {
         } catch (MageTabParsingException e) {
             e.printStackTrace(System.err);
             return null;
+        } catch (InvalidMageTabException e) {
+            e.printStackTrace(System.err);
+            return null;
         }
     }
 

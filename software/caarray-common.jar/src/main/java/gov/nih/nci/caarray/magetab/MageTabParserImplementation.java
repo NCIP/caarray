@@ -95,10 +95,7 @@ class MageTabParserImplementation implements MageTabParser {
     private static final Log LOG = LogFactory.getLog(MageTabParserImplementation.class);
 
     /**
-     * Validates the documents contained in the MAGE-TAB file set.
-     *
-     * @param fileSet the documents to validate
-     * @return the validation result
+     * {@inheritDoc}
      */
     public ValidationResult validate(MageTabInputFileSet fileSet) {
         if (LOG.isDebugEnabled()) {
@@ -111,20 +108,18 @@ class MageTabParserImplementation implements MageTabParser {
     }
 
     /**
-     * Parses the content of the documents contained in the MAGE-TAB file set to produce
-     * an object model representation of the documents and the entities contained within
-     * them.
-     *
-     * @param fileSet the documents to parse
-     * @return the parsed result.
-     * @throws MageTabParsingException if I/O failed reading the MAGE-TAB file.
+     * {@inheritDoc}
      */
-    public MageTabDocumentSet parse(MageTabInputFileSet inputFileSet) throws MageTabParsingException {
+    public MageTabDocumentSet parse(MageTabInputFileSet inputFileSet) 
+    throws MageTabParsingException, InvalidMageTabException {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, inputFileSet);
         }
         MageTabDocumentSet documentSet = new MageTabDocumentSet(inputFileSet);
         documentSet.parse();
+        if (!documentSet.getValidationResult().isValid()) {
+            throw new InvalidMageTabException(documentSet.getValidationResult());
+        }
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemExit(LOG);
         }

@@ -50,6 +50,7 @@
  */
 package gov.nih.nci.caarray.magetab;
 
+import gov.nih.nci.caarray.magetab.ValidationMessage.Type;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
 import gov.nih.nci.caarray.util.io.FileUtility;
@@ -184,6 +185,40 @@ public abstract class AbstractMageTabDocument implements Serializable {
         OntologyTerm term = getOntologyTerm(category.getCategoryName(), value);
         term.setTermSource(getTermSource("MO"));
         return term;
+    }
+    
+    /**
+     * Adds a new informational validation message to the document set's validation results.
+     * 
+     * @param message message content.
+     * @return the message.
+     */
+    protected final ValidationMessage addInfoMessage(String message) {
+        return addMessage(ValidationMessage.Type.INFO, message);
+    }
+    
+    /**
+     * Adds a new warning validation message to the document set's validation results.
+     * 
+     * @param message message content.
+     * @return the message.
+     */
+    protected final ValidationMessage addWarningMessage(String message) {
+        return addMessage(ValidationMessage.Type.WARNING, message);
+    }
+    
+    /**
+     * Adds a new error validation message to the document set's validation results.
+     * 
+     * @param message message content.
+     * @return the message.
+     */
+    protected final ValidationMessage addErrorMessage(String message) {
+        return addMessage(ValidationMessage.Type.ERROR, message);
+    }
+    
+    private ValidationMessage addMessage(Type type, String message) {
+        return getDocumentSet().createValidationMessage(getFile(), type, message);
     }
 
 }

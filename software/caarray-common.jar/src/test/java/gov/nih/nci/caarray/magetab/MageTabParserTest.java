@@ -113,15 +113,16 @@ public class MageTabParserTest {
     }
 
     /**
+     * @throws InvalidMageTabException 
      * @throws MageTabParsingException .
      */
     @Test
-    public void testParse() throws MageTabParsingException {
+    public void testParse() throws MageTabParsingException, InvalidMageTabException {
         testSpecificationDocuments();
         testTcgaBroadDocuments();
     }
 
-    private void testTcgaBroadDocuments() throws MageTabParsingException {
+    private void testTcgaBroadDocuments() throws MageTabParsingException, InvalidMageTabException {
         MageTabInputFileSet fileSet = TestMageTabSets.TCGA_BROAD_INPUT_SET;
         MageTabDocumentSet documentSet = parser.parse(fileSet);
         assertNotNull(documentSet);
@@ -131,7 +132,7 @@ public class MageTabParserTest {
         assertEquals(26, documentSet.getNativeDataFiles().size());
     }
 
-    private void testSpecificationDocuments() throws MageTabParsingException {
+    private void testSpecificationDocuments() throws MageTabParsingException, InvalidMageTabException {
         MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET;
         MageTabDocumentSet documentSet = parser.parse(fileSet);
         assertNotNull(documentSet);

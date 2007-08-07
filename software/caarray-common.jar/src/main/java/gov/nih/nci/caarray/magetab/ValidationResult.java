@@ -83,6 +83,9 @@
 package gov.nih.nci.caarray.magetab;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The result of validating a set of MAGE-TAB documents.
@@ -90,14 +93,39 @@ import java.io.Serializable;
 public final class ValidationResult implements Serializable {
 
     private static final long serialVersionUID = -5781574225752015910L;
+    
+    private final List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
 
+    ValidationResult() {
+        super();
+    }
+    
     /**
      * Returns true if all the documents in the set were valid.
      *
      * @return true if set was valid.
      */
     public boolean isValid() {
+        for (ValidationMessage message : messages) {
+            if (ValidationMessage.Type.ERROR.equals(message.getType())) {
+                return false;
+            }
+        }
         return true;
+    }
+
+    /**
+     * Returns the messages ordered by type and location.
+     * 
+     * @return the messages.
+     */
+    public List<ValidationMessage> getMessages() {
+        Collections.sort(messages);
+        return Collections.unmodifiableList(messages);
+    }
+
+    void add(ValidationMessage validationMessage) {
+        messages.add(validationMessage);
     }
 
 }

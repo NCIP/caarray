@@ -113,6 +113,7 @@ public final class MageTabDocumentSet implements Serializable {
     private final Map<String, OntologyTerm> termCache = new HashMap<String, OntologyTerm>();
     private final Map<String, TermSource> termSourceCache = new HashMap<String, TermSource>();
     private final Map<String, Protocol> protocolCache = new HashMap<String, Protocol>();
+    private final ValidationResult validationResult = new ValidationResult();
 
     MageTabDocumentSet(MageTabInputFileSet inputFileSet) {
         initializeFromFileSet(inputFileSet);
@@ -338,6 +339,19 @@ public final class MageTabDocumentSet implements Serializable {
             }
         }
         return null;
+    }
+
+    /**
+     * @return the validationResult
+     */
+    public ValidationResult getValidationResult() {
+        return validationResult;
+    }
+    
+    ValidationMessage createValidationMessage(File file, ValidationMessage.Type type, String message) {
+        ValidationMessage validationMessage = new ValidationMessage(file, type, message);
+        getValidationResult().add(validationMessage);
+        return validationMessage;
     }
 
 
