@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
@@ -154,7 +155,7 @@ public class LabeledExtract extends AbstractBioMaterial {
     /**
      * @return the hybridization
      */
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.ALL })
     @ForeignKey(name = "EXTRACT_HYBRIDIZATION_FK")
     public Hybridization getHybridization() {
         return hybridization;

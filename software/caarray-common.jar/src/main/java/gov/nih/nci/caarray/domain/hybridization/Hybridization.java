@@ -95,10 +95,10 @@ import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -190,7 +190,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      *
      * @return the array
      */
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.ALL })
     @ForeignKey(name = "HYBRIDIZATION_ARRAY_FK")
     public Array getArray() {
         return array;
@@ -253,7 +253,6 @@ public class Hybridization extends AbstractCaArrayEntity {
      * @return the protocolApplication
      */
     @ManyToOne
-    @JoinColumn(nullable = false)
     @ForeignKey(name = "HYBRIDIZATION_PROTOCOLAPP_FK")
     public ProtocolApplication getProtocolApplication() {
         return protocolApplication;

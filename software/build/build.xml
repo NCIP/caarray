@@ -674,7 +674,7 @@
 
     <target name="test:functional:run-tests" depends="test:selenium:run-tests" />
 
-    <target name="test:selenium:run-tests" depends="test:functional:compile-tests,test:selenium:prepare-selenium-server.jar">
+    <target name="test:selenium:run-tests" depends="test:functional:compile-tests">
         <antcall target="test:selenium:start-server" />
         <run-junit-tests
             test.src.dir="${test.src.dir}"

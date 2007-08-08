@@ -86,6 +86,7 @@ package gov.nih.nci.caarray.domain.array;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -173,7 +174,7 @@ public class Array extends AbstractCaArrayEntity {
      *
      * @return the design
      */
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.ALL })
     @ForeignKey(name = "ARRAY_DESIGN_IDK")
     public ArrayDesign getDesign() {
         return design;

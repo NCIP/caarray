@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -191,7 +192,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
     /**
      * @return the hybridization
      */
-    @OneToOne
+    @OneToOne(cascade = { CascadeType.ALL })
     @ForeignKey(name = "ARRAYDATA_HYBRIDIZATION_FK")
     public Hybridization getHybridization() {
         return hybridization;

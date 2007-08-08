@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -182,7 +183,7 @@ public class Image extends AbstractCaArrayEntity {
     /**
      * @return the hybridization
      */
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.ALL })
     @ForeignKey(name = "IMAGE_HYBRIDIZATION_FK")
     public Hybridization getHybridization() {
         return hybridization;
