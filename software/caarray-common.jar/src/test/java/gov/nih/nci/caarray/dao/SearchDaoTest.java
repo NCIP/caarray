@@ -181,9 +181,9 @@ public class SearchDaoTest {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             Protocol exampleProtocol = setUpExampleProtocol();
             Protocol retrievedProtocol = null;
-            List<AbstractCaArrayEntity> matchingProtocols = SEARCH_DAO.query(exampleProtocol);
+            List<Protocol> matchingProtocols = SEARCH_DAO.query(exampleProtocol);
             if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
-                retrievedProtocol = (Protocol) matchingProtocols.get(0);
+                retrievedProtocol = matchingProtocols.get(0);
             }
             if (DUMMY_PROTOCOL_1.equals(retrievedProtocol)) {
                 // The retrieved protocol is the same as the saved protocol. Test passed.

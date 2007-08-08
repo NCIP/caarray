@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.business.vocabulary;
 
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -95,7 +94,6 @@ import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -116,9 +114,9 @@ import org.apache.commons.logging.LogFactory;
 public class VocabularyServiceBean implements VocabularyService {
 
     private static final Log LOG = LogFactory.getLog(VocabularyServiceBean.class);
-    
+
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-    
+
     /**
      * Creates a new instance.
      */
@@ -181,7 +179,7 @@ public class VocabularyServiceBean implements VocabularyService {
             throw new VocabularyServiceException(de);
         }
     }
-    
+
     /**
      * Returns all terms that belong to the category for the name given
      * from the EVS vocab service.
@@ -214,14 +212,14 @@ public class VocabularyServiceBean implements VocabularyService {
         }
         TermSource querySource = new TermSource();
         querySource.setName(name);
-        Collection<AbstractCaArrayEntity> result = getVocabularyDao().queryEntityByExample(querySource);
+        List<TermSource> result = getVocabularyDao().queryEntityByExample(querySource);
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemExit(LOG);
         }
         if (result.isEmpty()) {
             return null;
         } else {
-            return (TermSource) result.iterator().next();
+            return result.iterator().next();
         }
     }
 
@@ -251,14 +249,14 @@ public class VocabularyServiceBean implements VocabularyService {
         }
         Category queryCategory = new Category();
         queryCategory.setName(categoryName);
-        Collection<AbstractCaArrayEntity> result = getVocabularyDao().queryEntityByExample(queryCategory);
+        List<Category> result = getVocabularyDao().queryEntityByExample(queryCategory);
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemExit(LOG);
         }
         if (result.isEmpty()) {
             return null;
         } else {
-            return (Category) result.iterator().next();
+            return result.iterator().next();
         }
     }
 
@@ -310,7 +308,7 @@ public class VocabularyServiceBean implements VocabularyService {
         queryTerm.setCategory(category);
         queryTerm.setSource(source);
         queryTerm.setValue(value);
-        Collection<AbstractCaArrayEntity> result =
+        List<Term> result =
             getVocabularyDao().queryEntityAndAssociationsByExample(queryTerm);
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemExit(LOG);
@@ -318,7 +316,7 @@ public class VocabularyServiceBean implements VocabularyService {
         if (result.isEmpty()) {
             return null;
         } else {
-            return (Term) result.iterator().next();
+            return result.iterator().next();
         }
     }
     final CaArrayDaoFactory getDaoFactory() {

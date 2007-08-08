@@ -167,16 +167,11 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     }
 
     /**
-     * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity,
-     * or null if none exists.
-     *
-     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
-     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
-     * @if the list of matching entities could not be retrieved.
+     * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) {
-        List<AbstractCaArrayEntity> resultList = new ArrayList<AbstractCaArrayEntity>();
+    public <T extends AbstractCaArrayEntity> List<T> queryEntityByExample(T entityToMatch) {
+        List<T> resultList = new ArrayList<T>();
         List hibernateReturnedEntities = null;
         if (entityToMatch == null) {
             return resultList;
@@ -201,17 +196,12 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
 
 
     /**
-     * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity
-     * and its associations, or null if none exists.
-     *
-     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
-     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List if the list
-     * of matching entities could not be retrieved.
+     * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public List<AbstractCaArrayEntity> queryEntityAndAssociationsByExample(AbstractCaArrayEntity entityToMatch)
+    public <T extends AbstractCaArrayEntity> List<T> queryEntityAndAssociationsByExample(T entityToMatch)
       {
-        List<AbstractCaArrayEntity> resultList = new ArrayList<AbstractCaArrayEntity>();
+        List<T> resultList = new ArrayList<T>();
         List hibernateReturnedEntities = null;
         if (entityToMatch == null) {
             return resultList;

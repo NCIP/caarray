@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.contact.Address;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -155,7 +155,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
     private static CaArrayFile DUMMY_FILE_1 = new CaArrayFile();
     private static CaArrayFile DUMMY_FILE_2 = new CaArrayFile();
-    
+
     private static Source DUMMY_SOURCE = new Source();
     private static Sample DUMMY_SAMPLE = new Sample();
     private static Extract DUMMY_EXTRACT = new Extract();
@@ -178,6 +178,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DUMMY_INVESTIGATION_CONTACT = new InvestigationContact();
         DUMMY_PERSON = new Person();
         DUMMY_ORGANIZATION = new Organization();
+        DUMMY_PERSON.setAddress(new Address());
+        DUMMY_ORGANIZATION.setAddress(new Address());
 
         // Annotations
         DUMMY_REPLICATE_TYPE = new Term();
@@ -201,7 +203,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         // Initialize all the dummy objects needed for the tests.
         initializeProjects();
     }
-    
+
     /**
      * Initialize the dummy <code>Project</code> objects.
      */
@@ -354,7 +356,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
     @SuppressWarnings("PMD")
     private boolean compareInvestigations(Investigation retrievedInv, Investigation dummyInv) {
         checkBioMaterials(dummyInv, retrievedInv);
-        
+
         // Investigation summary.
         if (!dummyInv.getTitle().equals(retrievedInv.getTitle())) {
             return false;
@@ -422,10 +424,10 @@ public class ProjectDaoTest extends AbstractDaoTest {
             examplePerson.setLastName(DUMMY_PERSON.getLastName());
             examplePerson.getAffiliations().add(DUMMY_ORGANIZATION);
             Person retrievedPerson = null;
-            List<AbstractCaArrayEntity> matchingPersons =
+            List<Person> matchingPersons =
                 DAO_OBJECT.queryEntityAndAssociationsByExample(examplePerson);
             if ((matchingPersons != null) && (matchingPersons.size() >= 1)) {
-                retrievedPerson = (Person) matchingPersons.get(0);
+                retrievedPerson = matchingPersons.get(0);
             }
             if (DUMMY_PERSON.equals(retrievedPerson)) {
                 // The retrieved person is the same as the saved person. Test passed.

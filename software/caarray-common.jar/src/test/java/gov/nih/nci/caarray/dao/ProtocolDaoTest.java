@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.protocol.Parameter;
 import gov.nih.nci.caarray.domain.protocol.ParameterValue;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
@@ -311,9 +310,9 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
             Protocol exampleProtocol = new Protocol();
             exampleProtocol.setDescription(DUMMY_PROTOCOL_1.getDescription());
             Protocol retrievedProtocol = null;
-            List<AbstractCaArrayEntity> matchingProtocols = DAO_OBJECT.queryEntityByExample(exampleProtocol);
+            List<Protocol> matchingProtocols = DAO_OBJECT.queryEntityByExample(exampleProtocol);
             if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
-                retrievedProtocol = (Protocol) matchingProtocols.get(0);
+                retrievedProtocol = matchingProtocols.get(0);
             }
             assertEquals(DUMMY_PROTOCOL_1.getDescription(), retrievedProtocol.getDescription());
             tx.commit();
@@ -341,10 +340,10 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             Protocol exampleProtocol = setupDeepSearchExample();
             Protocol retrievedProtocol = null;
-            List<AbstractCaArrayEntity> matchingProtocols =
+            List<Protocol> matchingProtocols =
                 DAO_OBJECT.queryEntityAndAssociationsByExample(exampleProtocol);
             if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
-                retrievedProtocol = (Protocol) matchingProtocols.get(0);
+                retrievedProtocol = matchingProtocols.get(0);
             }
             if (DUMMY_PROTOCOL_3.equals(retrievedProtocol)) {
                 // The retrieved protocol is the same as the saved protocol. Test passed.

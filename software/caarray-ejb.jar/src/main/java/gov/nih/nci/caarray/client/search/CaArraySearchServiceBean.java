@@ -105,18 +105,14 @@ import org.apache.commons.logging.LogFactory;
 @Stateless
 @Remote(CaArraySearchService.class)
 public class CaArraySearchServiceBean implements CaArraySearchService {
-    
+
     private static final Log LOG = LogFactory.getLog(CaArraySearchServiceBean.class);
 
     /**
-     * Performs a query-by-example search based on the entity passed.
-     *
-     * @param entityExample find entities that match the non-null fields and associations of this example.
-     *
-     * @return the matching entities.
+     * {@inheritDoc}
      */
-    public List<AbstractCaArrayEntity> search(AbstractCaArrayEntity entityExample) {
-        List<AbstractCaArrayEntity> retrievedList = new ArrayList<AbstractCaArrayEntity>();
+    public <T extends AbstractCaArrayEntity> List<T> search(T entityExample) {
+        List<T> retrievedList = new ArrayList<T>();
         if (entityExample == null) {
             LOG.error("Search was called with null example entity.");
             return retrievedList;

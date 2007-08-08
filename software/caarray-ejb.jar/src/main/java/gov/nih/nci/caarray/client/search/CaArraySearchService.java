@@ -101,11 +101,12 @@ public interface CaArraySearchService {
     /**
      * Performs a query-by-example search based on the entity passed.
      *
+     * @param <T> object type to search for
      * @param entityExample find entities that match the non-null fields and associations of this example.
      *
      * @return the matching entities.
      */
-    List<AbstractCaArrayEntity> search(AbstractCaArrayEntity entityExample);
+    <T extends AbstractCaArrayEntity> List<T> search(T entityExample);
 
     /**
      * Searches for entities based on the given HQL (Hibernate Query Language) string.

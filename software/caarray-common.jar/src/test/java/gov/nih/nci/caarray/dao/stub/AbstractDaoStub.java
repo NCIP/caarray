@@ -97,21 +97,21 @@ public class AbstractDaoStub implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
-    public List<AbstractCaArrayEntity> queryEntityAndAssociationsByExample(AbstractCaArrayEntity entityToMatch) {
-        return new ArrayList<AbstractCaArrayEntity>();
+    public <T extends AbstractCaArrayEntity> List<T> queryEntityAndAssociationsByExample(T entityToMatch) {
+        return new ArrayList<T>();
     }
 
     /**
      * {@inheritDoc}
      */
-    public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) {
-        return new ArrayList<AbstractCaArrayEntity>();
+    public <T extends AbstractCaArrayEntity> List<T> queryEntityByExample(T entityToMatch) {
+        return new ArrayList<T>();
     }
 
     /**
      * {@inheritDoc}
      */
-    public AbstractCaArrayEntity queryEntityById(AbstractCaArrayEntity entityToMatch) {
+    public <T extends AbstractCaArrayEntity> T queryEntityById(T entityToMatch) {
         return null;
     }
 

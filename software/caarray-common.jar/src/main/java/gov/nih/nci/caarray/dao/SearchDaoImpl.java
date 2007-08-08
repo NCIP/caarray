@@ -109,13 +109,9 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     private static final Log LOG = LogFactory.getLog(SearchDaoImpl.class);
 
     /**
-     * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity
-     * and its associations, or null if none exists.
-     *
-     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
-     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
+     * {@inheritDoc}
      */
-    public List<AbstractCaArrayEntity> query(AbstractCaArrayEntity entityToMatch) {
+    public <T extends AbstractCaArrayEntity> List<T> query(T entityToMatch) {
         return queryEntityAndAssociationsByExample(entityToMatch);
     }
 

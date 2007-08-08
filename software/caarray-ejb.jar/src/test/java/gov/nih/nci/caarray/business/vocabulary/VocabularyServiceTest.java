@@ -153,11 +153,11 @@ public class VocabularyServiceTest {
      *
      */
     class MockEVSUtility extends EVSUtility {
-        
+
         MockEVSUtility() {
             super(new DaoFactoryStub());
         }
-        
+
         @Override
         public ApplicationService getApplicationInstance() {
             return ApplicationService.getRemoteInstance("http://yahoo.com");
@@ -216,13 +216,13 @@ public class VocabularyServiceTest {
         }
         public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) throws DAOException {
         }
-        public List<AbstractCaArrayEntity> queryEntityByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
-            return new ArrayList<AbstractCaArrayEntity>();
+        public <T extends AbstractCaArrayEntity> List<T> queryEntityByExample(T entityToMatch) throws DAOException {
+            return new ArrayList<T>();
         }
-        public List<AbstractCaArrayEntity> queryEntityAndAssociationsByExample(AbstractCaArrayEntity entityToMatch) throws DAOException {
-            return new ArrayList<AbstractCaArrayEntity>();
+        public <T extends AbstractCaArrayEntity> List<T> queryEntityAndAssociationsByExample(T entityToMatch) throws DAOException {
+            return new ArrayList<T>();
         }
-        public AbstractCaArrayEntity queryEntityById(AbstractCaArrayEntity entityToMatch) throws DAOException {
+        public <T extends AbstractCaArrayEntity> T queryEntityById(T entityToMatch) throws DAOException {
             return null;
         }
         public void remove(AbstractCaArrayEntity caArrayEntity) throws DAOException {
