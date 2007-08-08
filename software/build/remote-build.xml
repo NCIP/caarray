@@ -1,0 +1,137 @@
+<!-- *********************************************************************** -->
+<!-- ** PROJECT:   caArray - remote deployment                            ** -->
+<!-- *********************************************************************** -->
+
+<project name="caarray-deploy" default="all" basedir=".">
+	
+	
+	<!-- PROPERTIES -->
+	<property file="${build.env}.properties" />
+	<property file="local.properties" />
+	<property name="lib.dir" value="../lib" />
+	
+	
+		
+	<!-- PATHS -->
+    <path id="project.classpath">
+       <fileset dir="${lib.dir}">
+          <include name="**/*.jar" />
+       </fileset>
+    </path>
+	
+	
+	<!-- CONDITIONS -->
+	<condition property="fail.if.no.env">
+		<not>
+			<isset property="build.env"/>
+		</not>
+	</condition>
+	
+	<condition property="build.with.nolabel.dev">
+		<and>
+			<equals arg1="${build.env}" arg2="DEV" casesensitive="false"/>
+			<not>
+				<isset property="label.ear"/>
+			</not>
+		</and>
+	</condition>
+	
+	<condition property="fail.with.nolabel.qa">
+		<and>
+			<equals arg1="${build.env}" arg2="QA" casesensitive="false"/>
+			<not>
+				<isset property="label.ear"/>
+			</not>
+		</and>
+	</condition>
+	
+	<condition property="build.with.label.dev">
+		<and>
+			<equals arg1="${build.env}" arg2="DEV" casesensitive="false"/>
+			<isset property="label.ear"/>
+		</and>
+	</condition>
+	
+	<condition property="build.with.label.qa">
+		<and>
+			<equals arg1="${build.env}" arg2="QA" casesensitive="false"/>
+			<isset property="label.ear"/>
+		</and>
+	</condition>
+	
+	
+	
+	<!-- TARGETS -->
+	
+	<target name="svn:scorch">
+		<echo message="Scorching local SVN working directory ${svn.local.trunk}..." />
+		<delete dir="${svn.local.trunk}" />
+	</target>
+	
+	<target name="svn:checkout-caarray">
+		<echo message="Checking out latest caarray version from ${svn.caarray.trunk}..." />
+		<taskdef resource="svntask.properties" classpathref="project.classpath"/>
+		<svn username="anonymous" password="">
+			  <checkout url="${svn.caarray.trunk}"
+				  revision="HEAD" destPath="${svn.local.trunk}" />
+		</svn>
+	</target>
+	
+	<target name="svn:checkout-caarray-ear">
+		<echo message="Checking out caarray.ear with label ${label.ear} from ${svn.caarray.trunk}..." />
+		<taskdef resource="svntask.properties" classpathref="project.classpath"/>
+		<svn username="anonymous" password="">
+			  <checkout url="${svn.caarray.trunk}/dist/ear/${label.ear}"
+				  revision="HEAD" destPath="${svn.local.trunk}/caarray.ear/target" />
+		</svn>
+	</target>
+	
+	<target name="prepare-remote-properties">
+		<copy todir="${svn.local.trunk}/build">
+			<fileset dir="." includes="**/*.properties" />
+		</copy>
+	</target>
+	
+	<target name="fail-if-no-env" if="fail.if.no.env">
+		<fail>Target environment not set. Please set target environmant with
+			-Dbuild.env=[DEV|QA|STAGING]</fail>
+	</target>
+	
+	<target name="fail-if-no-label-qa" if="fail.with.nolabel.qa">
+		<fail>QA label not set. Please set the label with -Dlabel.ear=XYZ</fail>
+	</target>
+	
+	<target name="remote-deployment-dev-nolabel" if="build.with.nolabel.dev">
+		<antcall target="svn:scorch" />
+		<antcall target="svn:checkout-caarray" />
+		<antcall target="prepare-remote-properties" />
+		<ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml"
+			target="remote-deploy"/>
+	</target>
+	
+	<target name="remote-deployment-dev-label" if="build.with.label.dev">
+		<antcall target="svn:scorch" />
+		<antcall target="svn:checkout-caarray" />
+		<antcall target="prepare-remote-properties" />
+		<ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml"
+			target="remote-deploy-label"/>
+	</target>
+	
+	<target name="remote-deployment-qa" if="build.with.label.qa">
+		<antcall target="svn:scorch" />
+		<antcall target="svn:checkout-caarray" />
+		<antcall target="svn:checkout-caarray-ear" />
+		<antcall target="prepare-remote-properties" />
+		<ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml"
+			target="remote-deploy-qa"/>
+	</target>
+	
+	<target name="all">
+		<antcall target="fail-if-no-env"/>
+		<antcall target="fail-if-no-label-qa"/>
+		<antcall target="remote-deployment-dev-nolabel"/>
+		<antcall target="remote-deployment-dev-label"/>
+		<antcall target="remote-deployment-qa"/>
+	</target>
+	
+</project>
