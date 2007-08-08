@@ -595,7 +595,7 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     private void linkLabeledExtractAndHybridization(LabeledExtract labeledExtract, Hybridization hybridization) {
-        hybridization.getLabeledExtract().add(labeledExtract);
+        hybridization.getLabeledExtracts().add(labeledExtract);
         labeledExtract.setHybridization(hybridization);
     }
 
