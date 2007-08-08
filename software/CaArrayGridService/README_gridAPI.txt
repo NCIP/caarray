@@ -1,6 +1,11 @@
 How to expose caArray services on caGRID:
 -----------------------------------------
 
+NOTE: The CaArrayGridService code that is checked in is an as-is check-in
+of what caGRID generated for my test application. It is not meant to be
+compiled and run as-is on your machine, but intended only to provide an
+example of the code that must be generated and written.
+
 1. If running the GRID locally, download and install caGRID. (I used the training version.)
    (a) Make sure Java 5 is installed and JAVA_HOME is set.
    (b) Run their terminal.bat, cd to %GLOBUS_LOCATION%\bin and run "globus-start-contaner -nosec".
@@ -75,5 +80,5 @@ How to expose caArray services on caGRID:
 11. Note that both the grid service and the grid client need caarray-client.jar, because they need POJOs
    for the domain objects. We should not introduce any RMI-like code in the POJO classes themselves because
    this will cause problems for the grid client. (This is a problem in caArray 1.5, and causes a hack where
-   different versions of teh same POJO are generated - one for the grid service and one for the grid client.)
+   different versions of the same POJO are generated - one for the grid service and one for the grid client.)
 
