@@ -94,7 +94,6 @@ public class ProtocolDaoStub extends AbstractDaoStub implements ProtocolDao {
      * {@inheritDoc}
      */
     public Protocol getProtocol(long id) {
-        // TODO Auto-generated method stub
         return null;
     }
 

@@ -97,7 +97,6 @@ public class ProjectDaoStub extends AbstractDaoStub implements ProjectDao {
      * {@inheritDoc}
      */
     public Project getProject(long id) {
-        // TODO Auto-generated method stub
         return null;
     }
 

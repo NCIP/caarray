@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.SessionFactory;
@@ -95,7 +97,9 @@ import org.hibernate.Transaction;
  * @author Rashmi Srinivasa
  */
 public final class HibernateUtil {
-    
+
+    private static final Log LOG = LogFactory.getLog(HibernateUtil.class);
+
     private static final Configuration HIBERNATE_CONFIG;
     private static final SessionFactory SESSION_FACTORY;
 
@@ -104,7 +108,7 @@ public final class HibernateUtil {
             HIBERNATE_CONFIG = new AnnotationConfiguration().setNamingStrategy(new NamingStrategy());
             SESSION_FACTORY = HIBERNATE_CONFIG.configure("hibernate.cfg.xml").buildSessionFactory();
         } catch (HibernateException e) {
-            // TODO Log this error
+            LOG.error(e.getMessage(), e);
             throw new ExceptionInInitializerError(e);
         }
     }

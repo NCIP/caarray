@@ -100,7 +100,6 @@ public class VocabularyDaoStub extends AbstractDaoStub implements VocabularyDao 
      * {@inheritDoc}
      */
     public Category getCategory(String name) {
-        // TODO Auto-generated method stub
         return null;
     }
 
