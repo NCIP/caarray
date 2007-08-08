@@ -104,6 +104,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
 /**
@@ -129,7 +130,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      *
      * @return the name
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE, nullable = false)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
         return name;
     }
@@ -166,26 +167,6 @@ public class Hybridization extends AbstractCaArrayEntity {
     }
 
     /**
-     * Gets the arrayData.
-     *
-     * @return the arrayData
-     */
-    @OneToOne(mappedBy = MAPPED_BY)
-    public RawArrayData getArrayData() {
-        return arrayData;
-    }
-
-    /**
-     * Sets the arrayData.
-     *
-     * @param arrayDataVal
-     *            the arrayData
-     */
-    public void setArrayData(final RawArrayData arrayDataVal) {
-        this.arrayData = arrayDataVal;
-    }
-
-    /**
      * Gets the array.
      *
      * @return the array
@@ -207,11 +188,33 @@ public class Hybridization extends AbstractCaArrayEntity {
     }
 
     /**
+     * Gets the arrayData.
+     *
+     * @return the arrayData
+     */
+    @OneToOne(mappedBy = MAPPED_BY)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    public RawArrayData getArrayData() {
+        return arrayData;
+    }
+
+    /**
+     * Sets the arrayData.
+     *
+     * @param arrayDataVal
+     *            the arrayData
+     */
+    public void setArrayData(final RawArrayData arrayDataVal) {
+        this.arrayData = arrayDataVal;
+    }
+
+    /**
      * Gets the derivedData.
      *
      * @return the derivedData
      */
     @OneToOne(mappedBy = MAPPED_BY)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public DerivedArrayData getDerivedData() {
         return derivedData;
     }
@@ -275,7 +278,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      * @return the labeledExtract
      */
     @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.EAGER)
-    public Set<LabeledExtract> getLabeledExtract() {
+    public Set<LabeledExtract> getLabeledExtracts() {
         return labeledExtract;
     }
 
@@ -286,7 +289,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      *            the labeledExtract
      */
     @SuppressWarnings("unused")
-    private void setLabeledExtract(final Set<LabeledExtract> labeledExtractVal) { // NOPMD
+    private void setLabeledExtracts(final Set<LabeledExtract> labeledExtractVal) { // NOPMD
         this.labeledExtract = labeledExtractVal;
     }
 

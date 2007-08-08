@@ -150,7 +150,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      *
      * @return the name
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE, nullable = false)
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
         return name;
     }

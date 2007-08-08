@@ -83,13 +83,16 @@
 package gov.nih.nci.caarray.dao;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.domain.contact.Address;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Investigation;
 import gov.nih.nci.caarray.domain.project.InvestigationContact;
@@ -156,12 +159,16 @@ public class ProjectDaoTest extends AbstractDaoTest {
     private static CaArrayFile DUMMY_FILE_1 = new CaArrayFile();
     private static CaArrayFile DUMMY_FILE_2 = new CaArrayFile();
 
-    private static Source DUMMY_SOURCE = new Source();
-    private static Sample DUMMY_SAMPLE = new Sample();
-    private static Extract DUMMY_EXTRACT = new Extract();
-    private static LabeledExtract DUMMY_LABELED_EXTRACT = new LabeledExtract();
+    private static Source DUMMY_SOURCE;
+    private static Sample DUMMY_SAMPLE;
+    private static Extract DUMMY_EXTRACT;
+    private static LabeledExtract DUMMY_LABELED_EXTRACT;
+    private static Hybridization DUMMY_HYBRIDIZATION;
+    private static RawArrayData DUMMY_RAW_ARRAY_DATA;
+    private static CaArrayFile DUMMY_DATA_FILE;
 
     private static final ProjectDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getProjectDao();
+
 
     /**
      * Define the dummy objects that will be used by the tests.
@@ -199,6 +206,14 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
         DUMMY_FILE_1 = new CaArrayFile();
         DUMMY_FILE_2 = new CaArrayFile();
+        
+        DUMMY_SOURCE = new Source();
+        DUMMY_SAMPLE = new Sample();
+        DUMMY_EXTRACT = new Extract();
+        DUMMY_LABELED_EXTRACT = new LabeledExtract();
+        DUMMY_HYBRIDIZATION = new Hybridization();
+        DUMMY_RAW_ARRAY_DATA = new RawArrayData();
+        DUMMY_DATA_FILE = new CaArrayFile();
 
         // Initialize all the dummy objects needed for the tests.
         initializeProjects();
@@ -217,7 +232,16 @@ public class ProjectDaoTest extends AbstractDaoTest {
         setPublications();
         setFiles();
         setBioMaterials();
+        setHybridizations();
         DUMMY_PROJECT_1.setInvestigation(DUMMY_INVESTIGATION_1);
+    }
+
+    private static void setHybridizations() {
+        DUMMY_LABELED_EXTRACT.setHybridization(DUMMY_HYBRIDIZATION);
+        DUMMY_HYBRIDIZATION.getLabeledExtracts().add(DUMMY_LABELED_EXTRACT);
+        DUMMY_HYBRIDIZATION.setArrayData(DUMMY_RAW_ARRAY_DATA);
+        DUMMY_RAW_ARRAY_DATA.setHybridization(DUMMY_HYBRIDIZATION);
+        DUMMY_RAW_ARRAY_DATA.setDataFile(DUMMY_DATA_FILE);
     }
 
     private static void setBioMaterials() {
@@ -356,6 +380,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
     @SuppressWarnings("PMD")
     private boolean compareInvestigations(Investigation retrievedInv, Investigation dummyInv) {
         checkBioMaterials(dummyInv, retrievedInv);
+        checkHybridizations(dummyInv, retrievedInv);
 
         // Investigation summary.
         if (!dummyInv.getTitle().equals(retrievedInv.getTitle())) {
@@ -393,6 +418,16 @@ public class ProjectDaoTest extends AbstractDaoTest {
             return false;
         }
         return true;
+    }
+
+    private void checkHybridizations(Investigation dummyInv, Investigation retrievedInv) {
+        LabeledExtract labeledExtract = retrievedInv.getLabeledExtracts().iterator().next();
+        Hybridization hybridization = labeledExtract.getHybridization();
+        assertNotNull(hybridization);
+        assertEquals(labeledExtract, hybridization.getLabeledExtracts().iterator().next());
+        RawArrayData arrayData = hybridization.getArrayData();
+        assertNotNull(arrayData);
+        assertEquals(hybridization, arrayData.getHybridization());
     }
 
     private void checkBioMaterials(Investigation dummyInv, Investigation retrievedInv) {
