@@ -199,34 +199,6 @@ public class SearchDaoTest {
     }
 
     /**
-     * Tests searching for an entity using HQL (Hibernate Query Language).
-     */
-    @Test
-    public void testHqlSearch() {
-        String hqlString = "From Protocol p where p.type.value='" + DUMMY_TERM_1.getValue() + "'";
-
-        Transaction tx = null;
-        try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
-            Protocol retrievedProtocol = null;
-            List<AbstractCaArrayEntity> matchingProtocols = SEARCH_DAO.query(hqlString);
-            if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
-                retrievedProtocol = (Protocol) matchingProtocols.get(0);
-            }
-            if (DUMMY_PROTOCOL_1.equals(retrievedProtocol)) {
-                // The retrieved protocol is the same as the saved protocol. Test passed.
-                assertTrue(true);
-            } else {
-                fail(FAIL_NO_MATCH);
-            }
-            tx.commit();
-        } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
-            fail("DAO exception during HQL search: " + e.getMessage());
-        }
-    }
-
-    /**
      * Tests searching for an entity using CQL.
      */
     @Test

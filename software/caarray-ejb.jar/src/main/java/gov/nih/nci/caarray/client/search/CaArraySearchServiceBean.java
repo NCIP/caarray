@@ -130,31 +130,6 @@ public class CaArraySearchServiceBean implements CaArraySearchService {
     }
 
     /**
-     * Searches for entities based on the given HQL (Hibernate Query Language) string.
-     *
-     * @param hqlString the HQL (Hibernate Query Language) string to use as search criteria.
-     *
-     * @return the matching entities.
-     */
-    public List<AbstractCaArrayEntity> search(String hqlString) {
-        List<AbstractCaArrayEntity> retrievedList = new ArrayList<AbstractCaArrayEntity>();
-        if ((hqlString == null) || (hqlString.equals(""))) {
-            LOG.error("Search was called with null or empty HQL string.");
-            return retrievedList;
-        }
-
-        try {
-            retrievedList = getSearchDao().query(hqlString);
-        } catch (DAOException e) {
-            LOG.error("DAO exception while querying by HQL string: ", e);
-        } catch (Exception e) {
-            LOG.error("Exception while querying by HQL string: ", e);
-        }
-
-        return retrievedList;
-    }
-
-    /**
      * Searches for entities based on the given CQL query.
      *
      * @param cqlQuery the HQL (Hibernate Query Language) string to use as search criteria.

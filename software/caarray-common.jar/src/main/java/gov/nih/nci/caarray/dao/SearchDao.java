@@ -107,15 +107,6 @@ public interface SearchDao {
 
     /**
      * Returns the list of <code>AbstractCaArrayEntity</code> retrieved based on the
-     * given HQL (Hibernate Query Language) string.
-     *
-     * @param hqlString Hibernate Query Language string to use as search crietria.
-     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
-     */
-    List<AbstractCaArrayEntity> query(String hqlString);
-
-    /**
-     * Returns the list of <code>AbstractCaArrayEntity</code> retrieved based on the
      * given CQL query.
      *
      * @param cqlQuery CQL query to use as search criteria.

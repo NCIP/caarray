@@ -104,13 +104,6 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
     /**
      * {@inheritDoc}
      */
-    public List<AbstractCaArrayEntity> query(String hqlString) {
-        return new ArrayList<AbstractCaArrayEntity>();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public List<AbstractCaArrayEntity> query(CQLQuery cqlQuery) {
         return new ArrayList<AbstractCaArrayEntity>();
     }

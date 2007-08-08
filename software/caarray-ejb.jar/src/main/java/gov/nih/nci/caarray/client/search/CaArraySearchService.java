@@ -109,15 +109,6 @@ public interface CaArraySearchService {
     <T extends AbstractCaArrayEntity> List<T> search(T entityExample);
 
     /**
-     * Searches for entities based on the given HQL (Hibernate Query Language) string.
-     *
-     * @param hqlString the HQL (Hibernate Query Language) string to use as search criteria.
-     *
-     * @return the matching entities.
-     */
-    List<AbstractCaArrayEntity> search(String hqlString);
-
-    /**
      * Searches for entities based on the given CQL query.
      *
      * @param cqlQuery the HQL (Hibernate Query Language) string to use as search criteria.
