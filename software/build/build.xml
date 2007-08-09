@@ -984,6 +984,7 @@
 		<scp file="${resource.dir}/deploy/caarray-mysql-ds.xml" 
 			keyfile="${ssh.key.file}"
 			passphrase=""
+			trust="true"
 			todir="${ssh.server.username}@${ssh.server.hostname}:${remote.jboss.home}/deploy"/>
 	</target>
 	
@@ -994,6 +995,15 @@
 			passphrase=""
 			todir="${ssh.server.username}@${ssh.server.hostname}:${remote.jboss.home}/deploy"/>
 	</target>
+	
+	<target name="remote-jboss:undeploy-caarray">
+		<sshexec host="${ssh.server.hostname}"
+			trust="true"
+			username="${ssh.server.username}"
+			keyfile="${ssh.key.file}"
+			passphrase=""
+			command="rm -rf ${remote.jboss.home}/deploy/carray.ear ${remote.jboss.home}/deploy/caarray-mysql-ds.xml"/>
+    </target>
 
 	
 	<target name="remote-deploy">
