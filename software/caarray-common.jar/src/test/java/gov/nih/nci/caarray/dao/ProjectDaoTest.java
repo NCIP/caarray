@@ -435,10 +435,6 @@ public class ProjectDaoTest extends AbstractDaoTest {
         assertEquals(dummyInv.getSamples().size(), retrievedInv.getSamples().size());
         assertEquals(dummyInv.getExtracts().size(), retrievedInv.getExtracts().size());
         assertEquals(dummyInv.getLabeledExtracts().size(), retrievedInv.getLabeledExtracts().size());
-//        assertTrue(retrievedInv.getSources().containsAll(dummyInv.getSources()));
-//        assertTrue(retrievedInv.getSamples().containsAll(dummyInv.getSamples()));
-//        assertTrue(retrievedInv.getExtracts().containsAll(dummyInv.getExtracts()));
-//        assertTrue(retrievedInv.getLabeledExtracts().containsAll(dummyInv.getLabeledExtracts()));
     }
 
     /**
