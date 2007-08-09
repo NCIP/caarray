@@ -990,7 +990,7 @@
 	
 	<target name="remote-jboss:deploy-caarray">
 		<echo message="Deploying caarray EAR to jboss server at ${ssh.server.hostname}..." />
-		<scp file="${caarray.ear}"
+		<scp trust="true" file="${caarray.ear}"
 			keyfile="${ssh.key.file}"
 			passphrase=""
 			todir="${ssh.server.username}@${ssh.server.hostname}:${remote.jboss.home}/deploy"/>
