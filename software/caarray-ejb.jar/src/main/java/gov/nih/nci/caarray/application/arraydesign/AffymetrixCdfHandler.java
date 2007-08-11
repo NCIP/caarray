@@ -93,9 +93,9 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.array.CompositeElement;
+import gov.nih.nci.caarray.domain.array.CompositeReporter;
 import gov.nih.nci.caarray.domain.array.Feature;
-import gov.nih.nci.caarray.domain.array.Reporter;
+import gov.nih.nci.caarray.domain.array.PhysicalReporter;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
 /**
@@ -103,10 +103,15 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
  */
 class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
 
+    private static final String LSID_AUTHORITY = "Affymetrix.com";
+
+    private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
+
     private boolean[][] featureCreated;
+
     private FusionCDFData fusionCDFData;
 
-    AffymetrixCdfHandler(CaArrayFile designFile, VocabularyService vocabularyService, 
+    AffymetrixCdfHandler(CaArrayFile designFile, VocabularyService vocabularyService,
             FileAccessService fileAccessService) {
         super(designFile, vocabularyService, fileAccessService);
     }
@@ -136,16 +141,19 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
         for (int index = 0; index < numProbeSets; index++) {
             fusionCDFData.getProbeSetInformation(index, probeSetInformation);
             handleProbeSet(probeSetInformation, fusionCDFData.getProbeSetName(index), designDetails);
-        }   
+        }
     }
 
-    private void handleProbeSet(FusionCDFProbeSetInformation probeSetInformation, String probeSetName, 
+    private void handleProbeSet(FusionCDFProbeSetInformation probeSetInformation, String probeSetName,
             ArrayDesignDetails designDetails) {
-        CompositeElement compositeElement = new CompositeElement(getFusionCDFData().getChipType() + "." + probeSetName);
-        designDetails.getCompositeElements().add(compositeElement);
+        CompositeReporter compositeReporter = new CompositeReporter(LSID_AUTHORITY, LSID_NAMESPACE, getFusionCDFData()
+                .getChipType()
+                + "." + probeSetName);
+        designDetails.getCompositeElements().add(compositeReporter);
         int numLists = probeSetInformation.getNumLists();
         for (int listIndex = 0; listIndex < numLists; listIndex++) {
-            Reporter reporter = new Reporter(probeSetName + ".ProbePair" + listIndex);
+            PhysicalReporter reporter = new PhysicalReporter(LSID_AUTHORITY, LSID_NAMESPACE, probeSetName
+                    + ".ProbePair" + listIndex);
             designDetails.getReporters().add(reporter);
         }
         int numGroups = probeSetInformation.getNumGroups();
@@ -172,10 +180,11 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     }
 
     private Feature createFeature(int x, int y) {
-        Feature feature = new Feature(getFusionCDFData().getChipType() + ".Probe(" + x + "," + y + ")");
-        feature.setColumn(x);
-        feature.setRow(y);
-        featureCreated[x][y] = true; 
+        Feature feature = new Feature(LSID_AUTHORITY, LSID_NAMESPACE, getFusionCDFData().getChipType() + ".Probe(" + x
+                + "," + y + ")");
+        feature.setColumn((short) x);
+        feature.setRow((short) y);
+        featureCreated[x][y] = true;
         return feature;
     }
 
@@ -219,7 +228,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
         }
         return fusionCDFData;
     }
-    
+
     private FusionCDFHeader getFusionCDFHeader() {
         return getFusionCDFData().getHeader();
     }
