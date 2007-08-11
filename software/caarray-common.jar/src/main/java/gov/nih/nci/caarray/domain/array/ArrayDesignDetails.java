@@ -83,8 +83,8 @@
 package gov.nih.nci.caarray.domain.array;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
@@ -96,9 +96,10 @@ public final class ArrayDesignDetails implements Serializable {
 
     private static final long serialVersionUID = -4810002388725364910L;
 
-    private final List<Feature> features = new ArrayList<Feature>();
-    private final List<Reporter> reporters = new ArrayList<Reporter>();
-    private final List<CompositeElement> compositeElements = new ArrayList<CompositeElement>();
+    private final Set<Feature> features = new HashSet<Feature>();
+    private final Set<ReporterGroup> reporterGroups = new HashSet<ReporterGroup>();
+    private final Set<PhysicalReporter> reporters = new HashSet<PhysicalReporter>();
+    private final Set<CompositeReporter> compositeReporters = new HashSet<CompositeReporter>();
 
     /**
      * Instantiates a new instance.
@@ -110,22 +111,22 @@ public final class ArrayDesignDetails implements Serializable {
     /**
      * @return the features
      */
-    public List<Feature> getFeatures() {
+    public Set<Feature> getFeatures() {
         return features;
     }
 
     /**
      * @return the reporters
      */
-    public List<Reporter> getReporters() {
+    public Set<PhysicalReporter> getReporters() {
         return reporters;
     }
 
     /**
-     * @return the compositeElements
+     * @return the compositeReporters
      */
-    public List<CompositeElement> getCompositeElements() {
-        return compositeElements;
+    public Set<CompositeReporter> getCompositeElements() {
+        return compositeReporters;
     }
 
     /**
@@ -134,5 +135,12 @@ public final class ArrayDesignDetails implements Serializable {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * @return the reporterGroups
+     */
+    public Set<ReporterGroup> getReporterGroups() {
+        return reporterGroups;
     }
 }

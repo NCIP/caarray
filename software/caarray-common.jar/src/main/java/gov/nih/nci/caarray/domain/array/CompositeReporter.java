@@ -82,48 +82,34 @@
  */
 package gov.nih.nci.caarray.domain.array;
 
-import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Base class for all array design elements.
+ * A logical probe corresponding to a sequence that is composed of multiple physical probes.
  */
-public abstract class AbstractDesignElement implements Serializable {
+public final class CompositeReporter extends AbstractReporter {
 
-    private static final long serialVersionUID = 462690519968920023L;
+    private static final long serialVersionUID = 4406463229622624441L;
     
-    private final String lsidAuthority;
-    private final String lsidNamespace;
-    private final String lsidObjectId;
+    private final Set<PhysicalReporter> reporters = new HashSet<PhysicalReporter>();
 
-    AbstractDesignElement(final String lsidAuthority, final String lsidNamespace, final String lsidObjectId) {
-        super();
-        if (lsidAuthority == null || lsidNamespace == null || lsidObjectId == null) {
-            throw new IllegalArgumentException("LSID component was null");
-        }
-        this.lsidAuthority = lsidAuthority.intern();
-        this.lsidNamespace = lsidNamespace;
-        this.lsidObjectId = lsidObjectId;
+    /**
+     * Creates a new <code>CompositeReporter</code> with its LSID initialized.
+     * 
+     * @param lsidAuthority the LSID authority
+     * @param lsidNamespace the LSID namespace
+     * @param lsidObjectId the LSID object ID
+     */
+    public CompositeReporter(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
+        super(lsidAuthority, lsidNamespace, lsidObjectId);
     }
 
     /**
-     * @return the lsidAuthority
+     * @return the reporters
      */
-    public String getLsidAuthority() {
-        return lsidAuthority;
-    }
-
-    /**
-     * @return the lsidNamespace
-     */
-    public String getLsidNamespace() {
-        return lsidNamespace;
-    }
-
-    /**
-     * @return the lsidObjectId
-     */
-    public String getLsidObjectId() {
-        return lsidObjectId;
+    public Set<PhysicalReporter> getReporters() {
+        return reporters;
     }
 
 }

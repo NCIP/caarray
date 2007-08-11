@@ -83,47 +83,39 @@
 package gov.nih.nci.caarray.domain.array;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Base class for all array design elements.
+ * A logical grouping of like reporters, allowing the specification of a type.
  */
-public abstract class AbstractDesignElement implements Serializable {
+public class ReporterGroup implements Serializable {
 
-    private static final long serialVersionUID = 462690519968920023L;
+    private static final long serialVersionUID = -7001732731586530134L;
     
-    private final String lsidAuthority;
-    private final String lsidNamespace;
-    private final String lsidObjectId;
+    private final Set<PhysicalReporter> reporters = new HashSet<PhysicalReporter>();
+    
+    private String name;
 
-    AbstractDesignElement(final String lsidAuthority, final String lsidNamespace, final String lsidObjectId) {
-        super();
-        if (lsidAuthority == null || lsidNamespace == null || lsidObjectId == null) {
-            throw new IllegalArgumentException("LSID component was null");
-        }
-        this.lsidAuthority = lsidAuthority.intern();
-        this.lsidNamespace = lsidNamespace;
-        this.lsidObjectId = lsidObjectId;
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
     }
 
     /**
-     * @return the lsidAuthority
+     * @param name the name to set
      */
-    public String getLsidAuthority() {
-        return lsidAuthority;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
-     * @return the lsidNamespace
+     * @return the reporters
      */
-    public String getLsidNamespace() {
-        return lsidNamespace;
+    public Set<PhysicalReporter> getReporters() {
+        return reporters;
     }
-
-    /**
-     * @return the lsidObjectId
-     */
-    public String getLsidObjectId() {
-        return lsidObjectId;
-    }
-
+    
 }

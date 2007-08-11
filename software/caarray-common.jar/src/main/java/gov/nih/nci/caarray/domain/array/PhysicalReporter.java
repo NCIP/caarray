@@ -82,48 +82,57 @@
  */
 package gov.nih.nci.caarray.domain.array;
 
-import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Base class for all array design elements.
+ * Represents a phsyical probe on a microarray.
  */
-public abstract class AbstractDesignElement implements Serializable {
+public final class PhysicalReporter extends AbstractReporter {
 
-    private static final long serialVersionUID = 462690519968920023L;
+    private static final long serialVersionUID = -7343503650075935784L;
     
-    private final String lsidAuthority;
-    private final String lsidNamespace;
-    private final String lsidObjectId;
+    private ReporterGroup reporterGroup;
+    private final Set<Feature> features = new HashSet<Feature>();
+    private final Set<CompositeReporter> compositeReporters = new HashSet<CompositeReporter>();
 
-    AbstractDesignElement(final String lsidAuthority, final String lsidNamespace, final String lsidObjectId) {
-        super();
-        if (lsidAuthority == null || lsidNamespace == null || lsidObjectId == null) {
-            throw new IllegalArgumentException("LSID component was null");
-        }
-        this.lsidAuthority = lsidAuthority.intern();
-        this.lsidNamespace = lsidNamespace;
-        this.lsidObjectId = lsidObjectId;
+    /**
+     * Creates a new <code>PhysicalReporter</code> with its LSID initialized.
+     * 
+     * @param lsidAuthority the LSID authority
+     * @param lsidNamespace the LSID namespace
+     * @param lsidObjectId the LSID object ID
+     */
+    public PhysicalReporter(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
+        super(lsidAuthority, lsidNamespace, lsidObjectId);
     }
 
     /**
-     * @return the lsidAuthority
+     * @return the reporterGroup
      */
-    public String getLsidAuthority() {
-        return lsidAuthority;
+    public ReporterGroup getReporterGroup() {
+        return reporterGroup;
     }
 
     /**
-     * @return the lsidNamespace
+     * @param reporterGroup the reporterGroup to set
      */
-    public String getLsidNamespace() {
-        return lsidNamespace;
+    public void setReporterGroup(ReporterGroup reporterGroup) {
+        this.reporterGroup = reporterGroup;
     }
 
     /**
-     * @return the lsidObjectId
+     * @return the features
      */
-    public String getLsidObjectId() {
-        return lsidObjectId;
+    public Set<Feature> getFeatures() {
+        return features;
+    }
+
+    /**
+     * @return the compositeReporters
+     */
+    public Set<CompositeReporter> getCompositeReporters() {
+        return compositeReporters;
     }
 
 }

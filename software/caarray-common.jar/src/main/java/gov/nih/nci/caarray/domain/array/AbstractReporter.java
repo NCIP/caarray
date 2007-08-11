@@ -82,48 +82,51 @@
  */
 package gov.nih.nci.caarray.domain.array;
 
-import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
+import gov.nih.nci.caarray.domain.sequence.Sequence;
+import gov.nih.nci.caarray.domain.vocabulary.Accession;
 
 /**
- * Base class for all array design elements.
+ * Reports on the presence or intensity of a given target probe.
  */
-public abstract class AbstractDesignElement implements Serializable {
-
-    private static final long serialVersionUID = 462690519968920023L;
+public abstract class AbstractReporter extends AbstractDesignElement {
     
-    private final String lsidAuthority;
-    private final String lsidNamespace;
-    private final String lsidObjectId;
+    private Sequence probeSequence;
+    private Set<Accession> probeAccessions = new HashSet<Accession>();
 
-    AbstractDesignElement(final String lsidAuthority, final String lsidNamespace, final String lsidObjectId) {
-        super();
-        if (lsidAuthority == null || lsidNamespace == null || lsidObjectId == null) {
-            throw new IllegalArgumentException("LSID component was null");
-        }
-        this.lsidAuthority = lsidAuthority.intern();
-        this.lsidNamespace = lsidNamespace;
-        this.lsidObjectId = lsidObjectId;
+    AbstractReporter(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
+        super(lsidAuthority, lsidNamespace, lsidObjectId);
     }
 
     /**
-     * @return the lsidAuthority
+     * @return the probeSequence
      */
-    public String getLsidAuthority() {
-        return lsidAuthority;
+    public Sequence getProbeSequence() {
+        return probeSequence;
     }
 
     /**
-     * @return the lsidNamespace
+     * @param probeSequence the probeSequence to set
      */
-    public String getLsidNamespace() {
-        return lsidNamespace;
+    public void setProbeSequence(Sequence probeSequence) {
+        this.probeSequence = probeSequence;
     }
 
     /**
-     * @return the lsidObjectId
+     * @return the probeAccessions
      */
-    public String getLsidObjectId() {
-        return lsidObjectId;
+    public Set<Accession> getProbeAccessions() {
+        return probeAccessions;
     }
+
+    /**
+     * @param probeAccessions the probeAccessions to set
+     */
+    public void setProbeAccessions(Set<Accession> probeAccessions) {
+        this.probeAccessions = probeAccessions;
+    }
+
 
 }
