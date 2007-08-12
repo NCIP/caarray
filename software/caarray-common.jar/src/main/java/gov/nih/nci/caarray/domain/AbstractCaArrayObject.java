@@ -134,7 +134,7 @@ public abstract class AbstractCaArrayObject implements Serializable {
             return false;
         }
     
-        if (!(o instanceof AbstractCaArrayEntity)) {
+        if (!(o instanceof AbstractCaArrayObject)) {
             return false;
         }
     
