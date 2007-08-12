@@ -82,144 +82,46 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import affymetrix.fusion.cel.FusionCELData;
-import affymetrix.fusion.cel.FusionCELFileEntryType;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
-import gov.nih.nci.caarray.domain.array.Feature;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.array.Array;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
 /**
- * Handles import and retrieval of Affymetrix CEL file data.
+ * Includes functionality common for interpreting <code>RawArrayData</code>.
  */
-final class AffymetrixCelHandler extends AbstractRawArrayDataHandler {
+abstract class AbstractRawArrayDataHandler extends AbstractArrayDataHandler {
 
-    private final FusionCELData celData = new FusionCELData();
-    private Map<FeatureKey, Feature> featureMap;
+    private final RawArrayData rawArrayData;
 
-    AffymetrixCelHandler(RawArrayData rawArrayData, FileAccessService fileAccessService, 
+    AbstractRawArrayDataHandler(RawArrayData rawArrayData, FileAccessService fileAccessService,
             ArrayDesignService arrayDesignService) {
-        super(rawArrayData, fileAccessService, arrayDesignService);
+        super(fileAccessService, arrayDesignService);
+        this.rawArrayData = rawArrayData;
+    }
+
+    ArrayDesign getArrayDesign() {
+        return getArray().getDesign();
+    }
+
+    private Array getArray() {
+        return getHybridization().getArray();
+    }
+
+    private Hybridization getHybridization() {
+        return getRawArrayData().getHybridization();
     }
 
     @Override
-    void importData() {
-        readCelData();
+    final AbstractArrayData getArrayData() {
+        return getRawArrayData();
     }
 
-    private void readCelData() {
-        celData.setFileName(getFile().getAbsolutePath());
-        celData.read();
-    }
-
-    @Override
-    ArrayDataValues getDataValues(List<AbstractDesignElement> designElements, List<QuantitationType> types) {
-        // TODO Implement selective retrieval on elements, quantitation types
-        initializeForRead();
-        ArrayDataValues arrayDataValues = new ArrayDataValues(getArrayData());
-        setQuantitationTypes(arrayDataValues, types);
-        loadValues(arrayDataValues);
-        return arrayDataValues;
-    }
-
-    private void setQuantitationTypes(ArrayDataValues arrayDataValues, List<QuantitationType> types) {
-        if (types != null && !types.isEmpty()) {
-            arrayDataValues.setQuantitationTypes(types);
-        } else {
-            QuantitationType[] affymetrixTypes = AffymetrixCelQuantitationType.values();
-            arrayDataValues.setQuantitationTypes(Arrays.asList(affymetrixTypes));
-        }
-    }
-
-    private void initializeForRead() {
-        readCelData();
-        loadFeatureMap();
-    }
-
-    private void loadFeatureMap() {
-        featureMap = new HashMap<FeatureKey, Feature>(getArrayDesignDetails().getFeatures().size());
-        for (Feature feature : getArrayDesignDetails().getFeatures()) {
-            featureMap.put(getFeatureKey(feature), feature);
-        }
-    }
-
-    private FeatureKey getFeatureKey(Feature feature) {
-        return new FeatureKey(feature);
-    }
-
-    private void loadValues(ArrayDataValues arrayDataValues) {
-        FusionCELFileEntryType entry = new FusionCELFileEntryType();
-        int numberOfCells = celData.getCells();
-        List<Feature> features = new ArrayList<Feature>(numberOfCells);
-        arrayDataValues.setValues(new Object[numberOfCells][]);
-        for (int cellIndex = 0; cellIndex < numberOfCells; cellIndex++) {
-            celData.getEntry(cellIndex, entry);
-            handleEntry(arrayDataValues, features, entry, cellIndex);
-        }
-        arrayDataValues.setElements(features);
-    }
-
-    private void handleEntry(ArrayDataValues arrayDataValues, List<Feature> features, FusionCELFileEntryType entry, 
-            int cellIndex) {
-        int x = celData.indexToX(cellIndex);
-        int y = celData.indexToY(cellIndex);
-        int valueIndex = 0;
-        arrayDataValues.getValues()[cellIndex] = new Object[arrayDataValues.getQuantitationTypes().size()];
-        arrayDataValues.getValues()[cellIndex][valueIndex++] = x;
-        arrayDataValues.getValues()[cellIndex][valueIndex++] = y;
-        arrayDataValues.getValues()[cellIndex][valueIndex++] = entry.getIntensity();
-        arrayDataValues.getValues()[cellIndex][valueIndex++] = entry.getStdv();
-        arrayDataValues.getValues()[cellIndex][valueIndex++] = celData.isMasked(x, y);
-        arrayDataValues.getValues()[cellIndex][valueIndex++] = celData.isOutlier(x, y);
-        arrayDataValues.getValues()[cellIndex][valueIndex++] = entry.getPixels();
-        features.add(getFeature(x, y));
-    }
-
-    private Feature getFeature(int x, int y) {
-        return featureMap.get(getFeatureKey(x, y));
-    }
-
-    private FeatureKey getFeatureKey(int x, int y) {
-        return new FeatureKey(x, y);
-    }
-
-    /**
-     * Used to lookup features in this handler.
-     */
-    private static class FeatureKey {
-        
-        private final int x;
-        private final int y;
-
-        FeatureKey(Feature feature) {
-            this.x = feature.getColumn();
-            this.y = feature.getRow();
-        }
-        
-        FeatureKey(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-        
-        @Override
-        public boolean equals(Object obj) {
-            FeatureKey featureKey = (FeatureKey) obj;
-            return featureKey.x == x && featureKey.y == y;
-        }
-
-        @Override
-        public int hashCode() {
-            return x * y;
-        }
-
+    private RawArrayData getRawArrayData() {
+        return rawArrayData;
     }
 
 }

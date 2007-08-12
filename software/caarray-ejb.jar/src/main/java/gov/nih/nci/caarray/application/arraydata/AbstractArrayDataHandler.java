@@ -88,28 +88,23 @@ import java.util.List;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
-import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
 /**
  * Base class for data import and retrieval handlers.
  */
 abstract class AbstractArrayDataHandler {
 
-    private final AbstractArrayData arrayData;
     private final FileAccessService fileAccessService;
     private final ArrayDesignService arrayDesignService;
     private ArrayDesignDetails arrayDesignDetails;
 
-    AbstractArrayDataHandler(AbstractArrayData arrayData, FileAccessService fileAccessService, 
-            ArrayDesignService arrayDesignService) {
+    AbstractArrayDataHandler(FileAccessService fileAccessService, ArrayDesignService arrayDesignService) {
         super();
-        this.arrayData = arrayData;
         this.fileAccessService = fileAccessService;
         this.arrayDesignService = arrayDesignService;
     }
@@ -118,9 +113,7 @@ abstract class AbstractArrayDataHandler {
 
     abstract ArrayDataValues getDataValues(List<AbstractDesignElement> designElements, List<QuantitationType> types);
 
-    final AbstractArrayData getArrayData() {
-        return arrayData;
-    }
+    abstract AbstractArrayData getArrayData();
     
     final CaArrayFile getCaArrayFile() {
         return getArrayData().getDataFile();
@@ -145,16 +138,6 @@ abstract class AbstractArrayDataHandler {
         return arrayDesignDetails;
     }
 
-    private ArrayDesign getArrayDesign() {
-        return getArray().getDesign();
-    }
-
-    private Array getArray() {
-        return getHybridization().getArray();
-    }
-
-    private Hybridization getHybridization() {
-        return getArrayData().getHybridization();
-    }
+    abstract ArrayDesign getArrayDesign();
 
 }

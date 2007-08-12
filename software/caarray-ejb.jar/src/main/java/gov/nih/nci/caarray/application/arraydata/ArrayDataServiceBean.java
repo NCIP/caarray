@@ -96,6 +96,7 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
@@ -124,7 +125,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
     private AbstractArrayDataHandler getHandler(AbstractArrayData arrayData) {
         FileType fileType = arrayData.getDataFile().getType();
         if (FileType.AFFYMETRIX_CEL.equals(fileType)) {
-            return new AffymetrixCelHandler(arrayData, getFileAccessService(), getArrayDesignService());
+            return new AffymetrixCelHandler((RawArrayData) arrayData, getFileAccessService(), getArrayDesignService());
         } else {
             throw new IllegalArgumentException("Unsupported data file type: " + fileType);
         }

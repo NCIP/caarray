@@ -171,7 +171,7 @@ public class ArrayDataServiceTest {
     }
 
     private ArrayDesignDetails getArrayDesignDetails(AbstractArrayData arrayData) {
-        ArrayDesign design = arrayData.getHybridization().getArray().getDesign();
+        ArrayDesign design = ((RawArrayData) arrayData).getHybridization().getArray().getDesign();
         return arrayDesignService.getDesignDetails(design);
     }
 
