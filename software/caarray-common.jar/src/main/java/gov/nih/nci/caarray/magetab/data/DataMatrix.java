@@ -111,7 +111,7 @@ public class DataMatrix extends AbstractMageTabDocument {
      * @return the reader.
      */
     public DataMatrixReader getDataReader() {
-        return new DataMatrixReaderImplementation(this);
+        return null;
     }
 
     /**
