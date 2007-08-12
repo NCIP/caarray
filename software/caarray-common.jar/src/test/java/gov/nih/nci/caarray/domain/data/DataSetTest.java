@@ -132,7 +132,6 @@ public class DataSetTest {
         assertEquals(hybridizations.get(2), dataSet.getHybridizations().get(2));
         try {
             dataSet.getHybridizations().add(new Hybridization());
-            new TestClass().getHybridizations().add(new Hybridization());
             fail("List should be unmodifiable");
         } catch (UnsupportedOperationException e) {
             // expected
