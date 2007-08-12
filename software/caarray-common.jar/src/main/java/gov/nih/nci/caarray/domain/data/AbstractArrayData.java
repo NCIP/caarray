@@ -85,13 +85,11 @@ package gov.nih.nci.caarray.domain.data;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -101,7 +99,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
@@ -121,7 +118,6 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
     private String name;
-    private Hybridization hybridization;
     private CaArrayFile dataFile;
 
     /**
@@ -187,22 +183,6 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
     @SuppressWarnings("unused")
     private void setProtocolApplications(final Set<ProtocolApplication> protocolApplicationsVal) { // NOPMD
         this.protocolApplications = protocolApplicationsVal;
-    }
-
-    /**
-     * @return the hybridization
-     */
-    @OneToOne(cascade = { CascadeType.ALL })
-    @ForeignKey(name = "ARRAYDATA_HYBRIDIZATION_FK")
-    public Hybridization getHybridization() {
-        return hybridization;
-    }
-
-    /**
-     * @param hybridization the hybridization to set
-     */
-    public void setHybridization(Hybridization hybridization) {
-        this.hybridization = hybridization;
     }
 
 }

@@ -83,20 +83,28 @@
 
 package gov.nih.nci.caarray.domain.data;
 
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+
+import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.ForeignKey;
 
-  /**
-
-   */
+/**
+ * Represents the raw image quantitation extracted from an image. In most cases, this can be thought of
+ * as representing the values from a single data file, as an example for each Affymetrix CEL file there
+ * will be a corresponding <code>RawArrayData</code> instance.
+ */
 @Entity
 @DiscriminatorValue("RAW")
 public class RawArrayData extends AbstractArrayData {
-    /**
-     * The serial version UID for serialization.
-     */
+
     private static final long serialVersionUID = 1234567890L;
+    
+    private Hybridization hybridization;
 
     /**
      * {@inheritDoc}
@@ -104,5 +112,21 @@ public class RawArrayData extends AbstractArrayData {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * @return the hybridization
+     */
+    @OneToOne(cascade = { CascadeType.ALL })
+    @ForeignKey(name = "RAWDATA_HYBRIDIZATION_FK")
+    public Hybridization getHybridization() {
+        return hybridization;
+    }
+
+    /**
+     * @param hybridization the hybridization to set
+     */
+    public void setHybridization(Hybridization hybridization) {
+        this.hybridization = hybridization;
     }
 }

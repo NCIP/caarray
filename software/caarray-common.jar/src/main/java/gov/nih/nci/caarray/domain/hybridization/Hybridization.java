@@ -99,6 +99,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -113,6 +114,7 @@ import org.hibernate.annotations.ForeignKey;
 @Entity
 public class Hybridization extends AbstractCaArrayEntity {
 
+    private static final String UNUSED = "unused";
     private static final long serialVersionUID = 1234567890L;
     private static final String MAPPED_BY = "hybridization";
 
@@ -120,7 +122,7 @@ public class Hybridization extends AbstractCaArrayEntity {
     private RawArrayData arrayData;
     private Array array;
     private Set<Image> images = new HashSet<Image>();
-    private DerivedArrayData derivedData;
+    private Set<DerivedArrayData> derivedDatas = new HashSet<DerivedArrayData>();
     private ProtocolApplication protocolApplication;
     private Set<LabeledExtract> labeledExtract = new HashSet<LabeledExtract>();
     private Set<FactorValue> factorValues = new HashSet<FactorValue>();
@@ -161,9 +163,30 @@ public class Hybridization extends AbstractCaArrayEntity {
      * @param imagesVal
      *            the images
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings(UNUSED)
     private void setImages(final Set<Image> imagesVal) { // NOPMD
         this.images = imagesVal;
+    }
+
+    /**
+     * Gets the derivedDatas.
+     *
+     * @return the derivedDatas
+     */
+    @ManyToMany(mappedBy = "hybridizations")
+    public Set<DerivedArrayData> getDerivedDatas() {
+        return derivedDatas;
+    }
+
+    /**
+     * Sets the derivedDatas.
+     *
+     * @param derivedDatasVal
+     *            the derivedDatasVal
+     */
+    @SuppressWarnings(UNUSED)
+    private void setDerivedDatas(final Set<DerivedArrayData> derivedDatasVal) { // NOPMD
+        this.derivedDatas = derivedDatasVal;
     }
 
     /**
@@ -209,27 +232,6 @@ public class Hybridization extends AbstractCaArrayEntity {
     }
 
     /**
-     * Gets the derivedData.
-     *
-     * @return the derivedData
-     */
-    @OneToOne(mappedBy = MAPPED_BY)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    public DerivedArrayData getDerivedData() {
-        return derivedData;
-    }
-
-    /**
-     * Sets the derivedData.
-     *
-     * @param derivedDataVal
-     *            the derivedData
-     */
-    public void setDerivedData(final DerivedArrayData derivedDataVal) {
-        this.derivedData = derivedDataVal;
-    }
-
-    /**
      * Gets the factorValues.
      *
      * @return the factorValues
@@ -245,7 +247,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      * @param factorValuesVal
      *            the factorValues
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings(UNUSED)
     private void setFactorValues(final Set<FactorValue> factorValuesVal) { // NOPMD
         this.factorValues = factorValuesVal;
     }
@@ -288,7 +290,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      * @param labeledExtractVal
      *            the labeledExtract
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings(UNUSED)
     private void setLabeledExtracts(final Set<LabeledExtract> labeledExtractVal) { // NOPMD
         this.labeledExtract = labeledExtractVal;
     }

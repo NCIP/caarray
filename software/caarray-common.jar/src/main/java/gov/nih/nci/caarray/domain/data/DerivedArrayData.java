@@ -83,9 +83,20 @@
 
 package gov.nih.nci.caarray.domain.data;
 
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
 
 /**
  *
@@ -95,6 +106,58 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class DerivedArrayData extends AbstractArrayData {
 
     private static final long serialVersionUID = 1234567890L;
+    private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
+    private Set<DerivedArrayData> derivedFromDatas = new HashSet<DerivedArrayData>();
+
+    /**
+     * @return the hybridizations
+     */
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "DERIVEDARRAYDATA_HYBRIDIZATIONS",
+            joinColumns = { @javax.persistence.JoinColumn(name = "HYBRIDIZATION_ID") },
+            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "DERIVEDARRAYDATA_ID") }
+    )
+    @ForeignKey(name = "DERIVEDARRAYDATA_HYBRIDIZATIONS_HYBRIDIZATION_FK", 
+            inverseName = "DERIVEDARRAYDATA_HYBRIDIZATIONS_DERIVEDARRAYDATA_FK")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    public Set<Hybridization> getHybridizations() {
+        return hybridizations;
+    }
+
+    /**
+     * Sets the hybridizations.
+     *
+     * @param hybridizationsVal the hybridizations
+     */
+    @SuppressWarnings("unused")
+    private void setHybridizations(final Set<Hybridization> hybridizationsVal) { // NOPMD
+        this.hybridizations = hybridizationsVal;
+    }
+    /**
+     * @return the hybridizations
+     */
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "DERIVEDARRAYDATA_DERIVEDFROM",
+            joinColumns = { @javax.persistence.JoinColumn(name = "DERIVEDFROM_ARRAYDATA_ID") },
+            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "DERIVEDARRAYDATA_ID") }
+    )
+    @ForeignKey(name = "DERIVEDFROM_ARRAYDATA_FK", inverseName = "DERIVEDFROM_DERIVEDARRAYDATA_FK")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    public Set<DerivedArrayData> getDerivedFromDatas() {
+        return derivedFromDatas;
+    }
+
+    /**
+     * Sets the derivedFromDatas.
+     *
+     * @param derivedFromDatasVal the derivedFromDatas
+     */
+    @SuppressWarnings("unused")
+    private void setDerivedFromDatas(final Set<DerivedArrayData> derivedFromDatasVal) { // NOPMD
+        this.derivedFromDatas = derivedFromDatasVal;
+    }
 
     /**
      * {@inheritDoc}
@@ -103,4 +166,5 @@ public class DerivedArrayData extends AbstractArrayData {
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
+
 }
