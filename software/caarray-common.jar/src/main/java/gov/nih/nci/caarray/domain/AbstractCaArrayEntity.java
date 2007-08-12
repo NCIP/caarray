@@ -82,12 +82,7 @@
  */
 package gov.nih.nci.caarray.domain;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 /**
@@ -96,7 +91,7 @@ import javax.persistence.MappedSuperclass;
  * @author ETavela
  */
 @MappedSuperclass
-public abstract class AbstractCaArrayEntity implements Serializable {
+public abstract class AbstractCaArrayEntity extends AbstractCaArrayObject {
 
     private static final long serialVersionUID = 2732929116326299995L;
 
@@ -108,32 +103,9 @@ public abstract class AbstractCaArrayEntity implements Serializable {
     private static final String CAARRAY_LSID_AUTHORITY = "gov.nih.nci.caarray";
     private static final String CAARRAY_LSID_NAMESPACE = "domain";
 
-    private Long id;
-
     private String lsidAuthority;
     private String lsidNamespace;
     private String lsidObjectId;
-
-    /**
-     * Returns the id.
-     *
-     * @return the id
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long getId() {
-        return id;
-    }
-
-    /**
-     * Sets the id.
-     *
-     * @param id the id to set
-     */
-    @SuppressWarnings({ "PMD.UnusedPrivateMethod", "unused" })
-    private void setId(Long id) {
-        this.id = id;
-    }
 
     /**
      * Returns the LSID authority.
@@ -216,59 +188,5 @@ public abstract class AbstractCaArrayEntity implements Serializable {
                 setLsidAuthority(lsidPortions[lsidIndex]);
             }
         }
-    }
-
-    /**
-     * The default comparison uses the id.
-     * @param o other object
-     * @return equal or not
-     */
-    @Override
-    public final boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        }
-
-        if (!(o instanceof AbstractCaArrayEntity)) {
-            return false;
-        }
-
-        if (o == this) {
-            return true;
-        }
-
-        if (id == null) {
-            // by default, two transient instances cannot ever be equal
-            return false;
-        }
-
-        AbstractCaArrayEntity e = (AbstractCaArrayEntity) o;
-        return (id.equals(e.id) && getClass().equals(e.getClass()));
-    }
-
-    /**
-     * Default hashCode goes off of id.
-     * @return hashCode
-     */
-    @Override
-    public final int hashCode() {
-        if (id == null) {
-            return System.identityHashCode(this);
-        }
-
-        return id.hashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append('[');
-        stringBuffer.append(getClass().getSimpleName());
-        stringBuffer.append("] id=");
-        stringBuffer.append(id);
-        return stringBuffer.toString();
     }
 }

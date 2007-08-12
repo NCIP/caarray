@@ -82,11 +82,9 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.protocol.Parameter;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
@@ -97,6 +95,8 @@ import gov.nih.nci.caarray.query.CQLObject;
 import gov.nih.nci.caarray.query.CQLPredicate;
 import gov.nih.nci.caarray.query.CQLQuery;
 import gov.nih.nci.caarray.util.HibernateUtil;
+
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -209,7 +209,7 @@ public class SearchDaoTest {
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             Protocol retrievedProtocol = null;
-            List<AbstractCaArrayEntity> matchingProtocols = SEARCH_DAO.query(cqlQuery);
+            List<AbstractCaArrayObject> matchingProtocols = SEARCH_DAO.query(cqlQuery);
             if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
                 retrievedProtocol = (Protocol) matchingProtocols.get(0);
             }
@@ -237,7 +237,7 @@ public class SearchDaoTest {
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             Protocol retrievedProtocol = null;
-            List<AbstractCaArrayEntity> matchingProtocols = SEARCH_DAO.query(cqlQuery);
+            List<AbstractCaArrayObject> matchingProtocols = SEARCH_DAO.query(cqlQuery);
             if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
                 retrievedProtocol = (Protocol) matchingProtocols.get(0);
             }

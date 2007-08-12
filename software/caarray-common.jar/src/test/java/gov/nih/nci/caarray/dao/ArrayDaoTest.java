@@ -91,7 +91,7 @@ import org.junit.Test;
 import org.hibernate.Transaction;
 
 import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
@@ -182,7 +182,7 @@ public class ArrayDaoTest  extends AbstractDaoTest {
         }
     }
 
-    private void remove(AbstractCaArrayEntity entity) {
+    private void remove(AbstractCaArrayObject entity) {
         Transaction tx = null;
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();

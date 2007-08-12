@@ -99,7 +99,7 @@ public final class CaArrayEntityTestUtility {
      * @param entities .
      */
     public static void printEntities(Collection<? extends AbstractCaArrayEntity> entities) {
-        for (AbstractCaArrayEntity entity : entities) {
+        for (AbstractCaArrayObject entity : entities) {
             System.out.println(entity);
         }
     }

@@ -88,6 +88,7 @@ import java.util.List;
 
 import gov.nih.nci.caarray.dao.CaArrayDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
 /**
  * Base class for all dao stubs.
@@ -97,35 +98,35 @@ public class AbstractDaoStub implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
-    public <T extends AbstractCaArrayEntity> List<T> queryEntityAndAssociationsByExample(T entityToMatch) {
+    public <T extends AbstractCaArrayObject> List<T> queryEntityAndAssociationsByExample(AbstractCaArrayObject entityToMatch) {
         return new ArrayList<T>();
     }
 
     /**
      * {@inheritDoc}
      */
-    public <T extends AbstractCaArrayEntity> List<T> queryEntityByExample(T entityToMatch) {
+    public <T extends AbstractCaArrayObject> List<T> queryEntityByExample(AbstractCaArrayObject entityToMatch) {
         return new ArrayList<T>();
     }
 
     /**
      * {@inheritDoc}
      */
-    public <T extends AbstractCaArrayEntity> T queryEntityById(T entityToMatch) {
+    public <T extends AbstractCaArrayObject> AbstractCaArrayObject queryEntityById(AbstractCaArrayObject entityToMatch) {
         return null;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void remove(AbstractCaArrayEntity caArrayEntity) {
+    public void remove(AbstractCaArrayObject caArrayEntity) {
         // no-op
     }
 
     /**
      * {@inheritDoc}
      */
-    public void save(AbstractCaArrayEntity caArrayEntity) {
+    public void save(AbstractCaArrayObject caArrayEntity) {
         // no-op
     }
 

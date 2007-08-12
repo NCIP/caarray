@@ -95,6 +95,7 @@ import org.hibernate.criterion.Example;
 
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
 /**
  * Base DAO implementation for all caArray domain DAOs.
@@ -123,7 +124,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      *
      * @param caArrayEntity the entity to save
      */
-    public void save(AbstractCaArrayEntity caArrayEntity) {
+    public void save(AbstractCaArrayObject caArrayEntity) {
         try {
             getCurrentSession().saveOrUpdate(caArrayEntity);
         } catch (HibernateException e) {
@@ -142,7 +143,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         try {
             Iterator<? extends AbstractCaArrayEntity> iterator = caArrayEntities.iterator();
             while (iterator.hasNext()) {
-                AbstractCaArrayEntity entity = iterator.next();
+                AbstractCaArrayObject entity = iterator.next();
                 getCurrentSession().saveOrUpdate(entity);
             }
         } catch (HibernateException he) {
@@ -157,7 +158,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * @param caArrayEntity the entity to be deleted.
      * @if unable to delete the entity.
      */
-    public void remove(AbstractCaArrayEntity caArrayEntity) {
+    public void remove(AbstractCaArrayObject caArrayEntity) {
         try {
             getCurrentSession().delete(caArrayEntity);
         } catch (HibernateException he) {
@@ -170,7 +171,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public <T extends AbstractCaArrayEntity> List<T> queryEntityByExample(T entityToMatch) {
+    public <T extends AbstractCaArrayObject> List<T> queryEntityByExample(AbstractCaArrayObject entityToMatch) {
         List<T> resultList = new ArrayList<T>();
         List hibernateReturnedEntities = null;
         if (entityToMatch == null) {
@@ -199,8 +200,8 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public <T extends AbstractCaArrayEntity> List<T> queryEntityAndAssociationsByExample(T entityToMatch)
-      {
+    public <T extends AbstractCaArrayObject> List<T> 
+    queryEntityAndAssociationsByExample(AbstractCaArrayObject entityToMatch) {
         List<T> resultList = new ArrayList<T>();
         List hibernateReturnedEntities = null;
         if (entityToMatch == null) {

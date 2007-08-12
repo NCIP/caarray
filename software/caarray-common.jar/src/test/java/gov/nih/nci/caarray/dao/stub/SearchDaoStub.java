@@ -86,7 +86,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.query.CQLQuery;
 
 /**
@@ -97,15 +97,15 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
     /**
      * {@inheritDoc}
      */
-    public List<AbstractCaArrayEntity> query(AbstractCaArrayEntity entityToMatch) {
-        return new ArrayList<AbstractCaArrayEntity>();
+    public List<AbstractCaArrayObject> query(AbstractCaArrayObject entityToMatch) {
+        return new ArrayList<AbstractCaArrayObject>();
     }
 
     /**
      * {@inheritDoc}
      */
-    public List<AbstractCaArrayEntity> query(CQLQuery cqlQuery) {
-        return new ArrayList<AbstractCaArrayEntity>();
+    public List<AbstractCaArrayObject> query(CQLQuery cqlQuery) {
+        return new ArrayList<AbstractCaArrayObject>();
     }
 
 }

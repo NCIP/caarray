@@ -86,6 +86,7 @@ import java.util.Collection;
 import java.util.List;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
 /**
  * Base interface for all caArray domain DAOs.
@@ -101,7 +102,7 @@ public interface CaArrayDao {
      *
      * @param caArrayEntity the entity to save
      */
-    void save(AbstractCaArrayEntity caArrayEntity);
+    void save(AbstractCaArrayObject caArrayEntity);
 
     /**
      * Saves the collection of entities to persistent storage, updating or inserting
@@ -116,7 +117,7 @@ public interface CaArrayDao {
      *
      * @param caArrayEntity the entity to be deleted.
      */
-    void remove(AbstractCaArrayEntity caArrayEntity);
+    void remove(AbstractCaArrayObject caArrayEntity);
 
     /**
      * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity,
@@ -126,7 +127,7 @@ public interface CaArrayDao {
      * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
      */
-    <T extends AbstractCaArrayEntity> List<T> queryEntityByExample(T entityToMatch);
+    <T extends AbstractCaArrayObject> List<T> queryEntityByExample(AbstractCaArrayObject entityToMatch);
 
     /**
      * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity
@@ -136,5 +137,5 @@ public interface CaArrayDao {
      * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
      */
-    <T extends AbstractCaArrayEntity> List<T> queryEntityAndAssociationsByExample(T entityToMatch);
+    <T extends AbstractCaArrayObject> List<T> queryEntityAndAssociationsByExample(AbstractCaArrayObject entityToMatch);
 }

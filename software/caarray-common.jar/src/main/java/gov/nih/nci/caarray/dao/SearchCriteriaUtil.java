@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.lang.reflect.InvocationTargetException;
@@ -117,7 +117,7 @@ public final class SearchCriteriaUtil {
      * @throws InvocationTargetException
      */
     @SuppressWarnings("unchecked")
-    static void addCriteriaForAssociations(AbstractCaArrayEntity entityToMatch, Criteria criteria)
+    static void addCriteriaForAssociations(AbstractCaArrayObject entityToMatch, Criteria criteria)
       {
         try {
             PersistentClass pclass = HibernateUtil.getConfiguration().getClassMapping(
@@ -147,7 +147,7 @@ public final class SearchCriteriaUtil {
      * @throws IllegalAccessException
      * @throws InvocationTargetException
      */
-    private static void addCriterionForAssociation(AbstractCaArrayEntity entityToMatch, Criteria criteria,
+    private static void addCriterionForAssociation(AbstractCaArrayObject entityToMatch, Criteria criteria,
       Property prop) throws IllegalAccessException, InvocationTargetException {
             Class<?> objClass = entityToMatch.getClass();
             String fieldName = prop.getName();

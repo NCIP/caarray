@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.query.CQLQuery;
 
 import java.util.List;
@@ -103,7 +103,7 @@ public interface SearchDao {
      * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
      */
-    <T extends AbstractCaArrayEntity> List<T> query(T entityToMatch);
+    <T extends AbstractCaArrayObject> List<T> query(AbstractCaArrayObject entityToMatch);
 
     /**
      * Returns the list of <code>AbstractCaArrayEntity</code> retrieved based on the
@@ -112,6 +112,6 @@ public interface SearchDao {
      * @param cqlQuery CQL query to use as search criteria.
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
      */
-    List<AbstractCaArrayEntity> query(CQLQuery cqlQuery);
+    List<AbstractCaArrayObject> query(CQLQuery cqlQuery);
 
 }

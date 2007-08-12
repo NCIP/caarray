@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.query.CQL2HQL;
 import gov.nih.nci.caarray.query.CQLQuery;
 import gov.nih.nci.caarray.query.HibernateQueryWrapper;
@@ -111,7 +111,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
-    public <T extends AbstractCaArrayEntity> List<T> query(T entityToMatch) {
+    public <T extends AbstractCaArrayObject> List<T> query(AbstractCaArrayObject entityToMatch) {
         return queryEntityAndAssociationsByExample(entityToMatch);
     }
 
@@ -122,7 +122,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
      * @param cqlQuery CQL query to use as search criteria.
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
      */
-    public List<AbstractCaArrayEntity> query(CQLQuery cqlQuery) {
+    public List<AbstractCaArrayObject> query(CQLQuery cqlQuery) {
         HibernateQueryWrapper hqlWrapper = null;
         try {
             hqlWrapper = CQL2HQL.translate(cqlQuery, true);
@@ -137,9 +137,9 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     }
 
     @SuppressWarnings("unchecked")
-    private List<AbstractCaArrayEntity> runHqlQuery(String hqlString, List<?> params) {
+    private List<AbstractCaArrayObject> runHqlQuery(String hqlString, List<?> params) {
         Session mySession = HibernateUtil.getCurrentSession();
-        List<AbstractCaArrayEntity> matchingEntities = new ArrayList<AbstractCaArrayEntity>();
+        List<AbstractCaArrayObject> matchingEntities = new ArrayList<AbstractCaArrayObject>();
         List hibernateReturnedEntities = null;
 
         try {

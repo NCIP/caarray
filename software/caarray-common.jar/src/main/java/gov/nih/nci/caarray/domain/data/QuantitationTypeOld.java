@@ -88,10 +88,10 @@ import java.io.Serializable;
  * A named data value type provided in hybridization data for each "row" associated with a reporter
  * or composite element.
  */
-public interface QuantitationType extends Serializable {
+public interface QuantitationTypeOld extends Serializable {
 
     /**
-     * The name of the <code>QuantitationType</code>.
+     * The name of the <code>QuantitationTypeOld</code>.
      *
      * @return the name of the type.
      */
