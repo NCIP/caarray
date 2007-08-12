@@ -94,7 +94,7 @@ import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.Feature;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeOld;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 
 /**
@@ -121,7 +121,7 @@ final class AffymetrixCelHandler extends AbstractRawArrayDataHandler {
     }
 
     @Override
-    ArrayDataValues getDataValues(List<AbstractDesignElement> designElements, List<QuantitationType> types) {
+    ArrayDataValues getDataValues(List<AbstractDesignElement> designElements, List<QuantitationTypeOld> types) {
         // TODO Implement selective retrieval on elements, quantitation types
         initializeForRead();
         ArrayDataValues arrayDataValues = new ArrayDataValues(getArrayData());
@@ -130,11 +130,11 @@ final class AffymetrixCelHandler extends AbstractRawArrayDataHandler {
         return arrayDataValues;
     }
 
-    private void setQuantitationTypes(ArrayDataValues arrayDataValues, List<QuantitationType> types) {
+    private void setQuantitationTypes(ArrayDataValues arrayDataValues, List<QuantitationTypeOld> types) {
         if (types != null && !types.isEmpty()) {
             arrayDataValues.setQuantitationTypes(types);
         } else {
-            QuantitationType[] affymetrixTypes = AffymetrixCelQuantitationType.values();
+            QuantitationTypeOld[] affymetrixTypes = AffymetrixCelQuantitationType.values();
             arrayDataValues.setQuantitationTypes(Arrays.asList(affymetrixTypes));
         }
     }

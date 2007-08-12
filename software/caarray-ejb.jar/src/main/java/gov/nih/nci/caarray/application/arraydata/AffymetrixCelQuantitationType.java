@@ -82,12 +82,12 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeOld;
 
 /**
  * Quantitation type information for Affymetrix CEL files.
  */
-enum AffymetrixCelQuantitationType implements QuantitationType {
+enum AffymetrixCelQuantitationType implements QuantitationTypeOld {
 
     CEL_X("CELX", Integer.class),
     CEL_Y("CELY", Integer.class),

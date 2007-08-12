@@ -91,7 +91,7 @@ import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeOld;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
 /**
@@ -111,7 +111,7 @@ abstract class AbstractArrayDataHandler {
 
     abstract void importData();
 
-    abstract ArrayDataValues getDataValues(List<AbstractDesignElement> designElements, List<QuantitationType> types);
+    abstract ArrayDataValues getDataValues(List<AbstractDesignElement> designElements, List<QuantitationTypeOld> types);
 
     abstract AbstractArrayData getArrayData();
     

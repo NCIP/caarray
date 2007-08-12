@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.client.arraydata;
 
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeOld;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -100,7 +100,7 @@ public abstract class AbstractDataRetrievalConfiguration implements Serializable
 
     private static final long serialVersionUID = -3487995502696975268L;
     
-    private final List<QuantitationType> types = new ArrayList<QuantitationType>();
+    private final List<QuantitationTypeOld> types = new ArrayList<QuantitationTypeOld>();
     private final List<LSID> designElementLsids = new ArrayList<LSID>();
     
     /**
@@ -114,7 +114,7 @@ public abstract class AbstractDataRetrievalConfiguration implements Serializable
         return designElementLsids;
     }
 
-    List<QuantitationType> getTypes() {
+    List<QuantitationTypeOld> getTypes() {
         return types;
     }
     
@@ -132,7 +132,7 @@ public abstract class AbstractDataRetrievalConfiguration implements Serializable
      * 
      * @param type quantitation type to add
      */
-    public final void addDesignElement(QuantitationType type) {
+    public final void addDesignElement(QuantitationTypeOld type) {
         types.add(type);
     }
 

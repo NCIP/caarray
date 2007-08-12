@@ -86,7 +86,7 @@ import java.util.List;
 
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeOld;
 
 /**
  * Provides hybridization data storage and retrieval functionality.
@@ -117,6 +117,6 @@ public interface ArrayDataService {
      * @return the data.
      */
     ArrayDataValues getDataValues(AbstractArrayData arrayData, List<AbstractDesignElement> designElements, 
-            List<QuantitationType> types);
+            List<QuantitationTypeOld> types);
     
 }

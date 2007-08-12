@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.client.search;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.query.CQLQuery;
 
 import java.util.List;
@@ -106,7 +106,7 @@ public interface CaArraySearchService {
      *
      * @return the matching entities.
      */
-    <T extends AbstractCaArrayEntity> List<T> search(T entityExample);
+    <T extends AbstractCaArrayObject> List<T> search(AbstractCaArrayObject entityExample);
 
     /**
      * Searches for entities based on the given CQL query.
@@ -115,5 +115,5 @@ public interface CaArraySearchService {
      *
      * @return the matching entities.
      */
-    List<AbstractCaArrayEntity> search(CQLQuery cqlQuery);
+    List<AbstractCaArrayObject> search(CQLQuery cqlQuery);
 }

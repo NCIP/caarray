@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -184,7 +185,7 @@ abstract class AbstractTranslator {
      * @param entityToMatch the caArray entity to match.
      * @return a matching caArray that already exists in the database.
      */
-    protected AbstractCaArrayEntity replaceIfExists(AbstractCaArrayEntity entityToMatch) {
+    protected AbstractCaArrayObject replaceIfExists(AbstractCaArrayObject entityToMatch) {
         try {
             List<AbstractCaArrayEntity> matchingEntities = getProjectDao()
                 .queryEntityAndAssociationsByExample(entityToMatch);

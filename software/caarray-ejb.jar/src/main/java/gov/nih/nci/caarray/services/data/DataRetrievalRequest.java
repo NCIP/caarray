@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.services.data;
 
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeOld;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
 import java.io.Serializable;
@@ -101,7 +101,7 @@ public class DataRetrievalRequest implements Serializable {
 
     private final Set<AbstractDesignElement> designElementSet = new HashSet<AbstractDesignElement>();
     private final Set<Hybridization> hybridizationSet = new HashSet<Hybridization>();
-    private final Set<QuantitationType> quantitationTypeSet = new HashSet<QuantitationType>();
+    private final Set<QuantitationTypeOld> quantitationTypeSet = new HashSet<QuantitationTypeOld>();
 
     /**
      * Creates a new, empty request instance.
@@ -150,7 +150,7 @@ public class DataRetrievalRequest implements Serializable {
 //     *
 //     * @param quantiationType
 //     */
-//    public void addQuantitationType(QuantitationType quantiationType) {
+//    public void addQuantitationType(QuantitationTypeOld quantiationType) {
 //
 //    }
 //
@@ -158,7 +158,7 @@ public class DataRetrievalRequest implements Serializable {
 //     *
 //     * @param quantiationTypes
 //     */
-//    public void addQuantitationTypes(Collection<QuantitationType> quantiationTypes) {
+//    public void addQuantitationTypes(Collection<QuantitationTypeOld> quantiationTypes) {
 //
 //    }
 
@@ -170,7 +170,7 @@ public class DataRetrievalRequest implements Serializable {
         return hybridizationSet;
     }
 
-    final Set<QuantitationType> getQuantitationTypes() {
+    final Set<QuantitationTypeOld> getQuantitationTypes() {
         return quantitationTypeSet;
     }
 

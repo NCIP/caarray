@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.translation.magetab;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
@@ -426,8 +427,8 @@ final class SdrfTranslator extends AbstractTranslator {
     // Link a node with one successor.
     private void linkTwoNodes(AbstractSampleDataRelationshipNode leftNode,
         AbstractSampleDataRelationshipNode rightNode) {
-        AbstractCaArrayEntity leftCaArrayNode = nodeTranslations.get(leftNode);
-        AbstractCaArrayEntity rightCaArrayNode = nodeTranslations.get(rightNode);
+        AbstractCaArrayObject leftCaArrayNode = nodeTranslations.get(leftNode);
+        AbstractCaArrayObject rightCaArrayNode = nodeTranslations.get(rightNode);
         SdrfNodeType leftNodeType = leftNode.getNodeType();
         SdrfNodeType rightNodeType = rightNode.getNodeType();
         if (isBioMaterial(leftNodeType)) {
@@ -503,7 +504,7 @@ final class SdrfTranslator extends AbstractTranslator {
      * being generated.
      */
     @SuppressWarnings("PMD")
-    private void linkBioMaterial(AbstractCaArrayEntity leftCaArrayNode, AbstractCaArrayEntity rightCaArrayNode,
+    private void linkBioMaterial(AbstractCaArrayObject leftCaArrayNode, AbstractCaArrayObject rightCaArrayNode,
             SdrfNodeType leftNodeType, SdrfNodeType rightNodeType, String baseGeneratedNodeName) {
         // TODO Handle case where Extract goes to Extract, as shown in ChIP-chip example in MAGE-TAB spec.
         if (leftNodeType.equals(SdrfNodeType.SOURCE)) {

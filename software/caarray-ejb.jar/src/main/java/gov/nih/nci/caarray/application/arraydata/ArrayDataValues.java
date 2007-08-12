@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeOld;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -99,7 +99,7 @@ public class ArrayDataValues implements Serializable {
 
     private static final long serialVersionUID = -3365579491463701461L;
     private final AbstractArrayData arrayData;
-    private List<QuantitationType> quantitationTypes;
+    private List<QuantitationTypeOld> quantitationTypes;
     private List<AbstractDesignElement> elements;
     private Object[][] values;
 
@@ -125,7 +125,7 @@ public class ArrayDataValues implements Serializable {
     /**
      * @return the quantitationTypes
      */
-    public List<QuantitationType> getQuantitationTypes() {
+    public List<QuantitationTypeOld> getQuantitationTypes() {
         return quantitationTypes;
     }
 
@@ -146,8 +146,8 @@ public class ArrayDataValues implements Serializable {
         this.elements = Collections.unmodifiableList(elements);
     }
 
-    void setQuantitationTypes(List<QuantitationType> quantitationTypes) {
-        this.quantitationTypes = Collections.unmodifiableList(quantitationTypes);
+    void setQuantitationTypes(List<QuantitationTypeOld> quantitationTypeOlds) {
+        this.quantitationTypes = Collections.unmodifiableList(quantitationTypeOlds);
     }
     
 }

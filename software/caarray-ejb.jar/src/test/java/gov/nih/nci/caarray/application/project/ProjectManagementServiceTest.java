@@ -95,7 +95,7 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.ProjectDaoStub;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.Proposal;
@@ -181,10 +181,10 @@ public class ProjectManagementServiceTest {
 
     private static class LocalProjectDaoStub extends ProjectDaoStub {
 
-        AbstractCaArrayEntity lastSaved;
+        AbstractCaArrayObject lastSaved;
 
         @Override
-        public void save(AbstractCaArrayEntity caArrayEntity) {
+        public void save(AbstractCaArrayObject caArrayEntity) {
             lastSaved = caArrayEntity;
         }
 
@@ -194,7 +194,7 @@ public class ProjectManagementServiceTest {
             Project project = new Project();
             // Perform voodoo magic
             try {
-                Method m = project.getClass().getSuperclass().getDeclaredMethod("setId", Long.class);
+                Method m = project.getClass().getSuperclass().getSuperclass().getDeclaredMethod("setId", Long.class);
                 m.setAccessible(true);
                 m.invoke(project, id);
             } catch (SecurityException e) {

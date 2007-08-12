@@ -95,7 +95,7 @@ import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeOld;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
@@ -152,7 +152,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
      * {@inheritDoc}
      */
     public ArrayDataValues getDataValues(AbstractArrayData arrayData, List<AbstractDesignElement> designElements, 
-            List<QuantitationType> types) {
+            List<QuantitationTypeOld> types) {
         return getHandler(arrayData).getDataValues(designElements, types);
     }
 
