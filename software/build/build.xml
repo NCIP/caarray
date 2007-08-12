@@ -188,9 +188,10 @@
     <!-- ******************************************************************* -->
 	
     <target name="continuous-integration" depends="clean,
-      build,
-      database:reinitialize,
-      check, test:unit" />
+		database:reinitialize,
+    	build,
+    	check, 
+    	test:unit" />
 
     <target name="nightly-build" depends="continuous-integration,
         deploy:start-jboss,
@@ -793,7 +794,7 @@
         <available property="create-schema-sql.exists" file="${caarraydb.sql.dir}/sql/create_schema.sql"/>
     </target>
 
-    <target name="database:generate-drop-schema-sql" depends="build:caarray-common.jar, configure-datasource-for-test, compile, database:init-sql" unless="drop-schema-sql.exists">
+    <target name="database:generate-drop-schema-sql" depends="compile:caarray-common.jar, configure-datasource-for-test, database:init-sql" unless="drop-schema-sql.exists">
         <hibernatetool destdir="${caarraydb.sql.dir}">
             <annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml"
                                      propertyfile="${caarray-common.test.classes.dir}/hibernate.properties"
@@ -808,7 +809,9 @@
         </hibernatetool>
     </target>
 
-    <target name="database:generate-create-schema-sql" depends="configure-datasource-for-test, compile, database:init-sql" unless="create-schema-sql.exists">
+    <target name="database:generate-create-schema-sql" unless="create-schema-sql.exists" depends="configure-datasource-for-test, 
+    compile:caarray-common.jar, 
+    database:init-sql">
         <hibernatetool destdir="${caarraydb.sql.dir}">
             <annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml"
                                      propertyfile="${caarray-common.test.classes.dir}/hibernate.properties"
@@ -913,8 +916,8 @@
     <property name="envproperties.file" value="${build.env}.properties" />
 
 	<target name="continuous-integration-notest" depends="clean,
-      build,
       database:reinitialize,
+      build,
       check" />
 	
     <target name="validate-properties">
