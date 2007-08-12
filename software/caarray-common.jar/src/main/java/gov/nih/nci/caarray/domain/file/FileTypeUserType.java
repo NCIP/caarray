@@ -80,9 +80,8 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.dao.customtype;
+package gov.nih.nci.caarray.domain.file;
 
-import gov.nih.nci.caarray.domain.file.FileType;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;

@@ -135,7 +135,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      *
      * @return the type
      */
-    @Type(type = "gov.nih.nci.caarray.dao.customtype.FileTypeUserType")
+    @Type(type = "gov.nih.nci.caarray.domain.file.FileTypeUserType")
     public FileType getType() {
         return type;
     }
