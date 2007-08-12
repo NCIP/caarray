@@ -96,6 +96,10 @@ import javax.persistence.MappedSuperclass;
 public abstract class AbstractCaArrayObject implements Serializable {
 
     private static final long serialVersionUID = 2732929116326299995L;
+    /**
+     * The default column size for string columns in the db.
+     */
+    public static final int DEFAULT_STRING_COLUMN_SIZE = 254;
     private Long id;
 
     /**

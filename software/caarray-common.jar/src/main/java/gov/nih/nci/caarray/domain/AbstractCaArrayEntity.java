@@ -95,11 +95,6 @@ public abstract class AbstractCaArrayEntity extends AbstractCaArrayObject {
 
     private static final long serialVersionUID = 2732929116326299995L;
 
-    /**
-     * The default column size for string columns in the db.
-     */
-    public static final int DEFAULT_STRING_COLUMN_SIZE = 254;
-
     private static final String CAARRAY_LSID_AUTHORITY = "gov.nih.nci.caarray";
     private static final String CAARRAY_LSID_NAMESPACE = "domain";
 
