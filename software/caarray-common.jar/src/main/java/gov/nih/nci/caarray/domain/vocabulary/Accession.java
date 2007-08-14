@@ -7,6 +7,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.array.AbstractReporter;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -101,10 +102,10 @@ public class Accession extends AbstractCaArrayEntity {
      */
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The url String.
-     */
     private String url;
+    private String value;
+    private TermSource source;
+    private AbstractReporter reporter;
 
     /**
      * Gets the url.
@@ -124,10 +125,6 @@ public class Accession extends AbstractCaArrayEntity {
     public void setUrl(final String urlVal) {
         this.url = urlVal;
     }
-    /**
-     * The value String.
-     */
-    private String value;
 
     /**
      * Gets the value.
@@ -149,11 +146,6 @@ public class Accession extends AbstractCaArrayEntity {
     }
 
     /**
-     * The source gov.nih.nci.caarray.domain.vocabulary.Source.
-     */
-    private TermSource source;
-
-    /**
      * Gets the source.
      *
      * @return the source
@@ -172,6 +164,21 @@ public class Accession extends AbstractCaArrayEntity {
      */
     public void setSource(final TermSource sourceVal) {
         this.source = sourceVal;
+    }
+
+    /**
+     * @return the reporter
+     */
+    @ManyToOne
+    public AbstractReporter getReporter() {
+        return reporter;
+    }
+
+    /**
+     * @param reporter new reporter
+     */
+    public void setReporter(AbstractReporter reporter) {
+        this.reporter = reporter;
     }
 
     /**

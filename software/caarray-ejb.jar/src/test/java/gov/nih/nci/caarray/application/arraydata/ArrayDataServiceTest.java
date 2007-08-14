@@ -132,7 +132,7 @@ public class ArrayDataServiceTest {
     public void testAffymetrixCelData() throws InvalidDataException {
         RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
         arrayDataService.importData(celData);
-        DataSet dataSet = arrayDataService.getData(celData);
+        DataSet<?> dataSet = arrayDataService.getData(celData);
         checkCelValues(celData, dataSet, AffymetrixArrayDataFiles.TEST3_CEL);
 
         celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CALVIN_CEL);
@@ -141,7 +141,7 @@ public class ArrayDataServiceTest {
         checkCelValues(celData, dataSet, AffymetrixArrayDataFiles.TEST3_CALVIN_CEL);
     }
 
-    private void checkCelValues(RawArrayData celData, DataSet dataSet, File file) {
+    private void checkCelValues(RawArrayData celData, DataSet<?> dataSet, File file) {
         FusionCELData fusionCelData = new FusionCELData();
         fusionCelData.setFileName(file.getAbsolutePath());
         fusionCelData.read();

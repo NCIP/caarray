@@ -100,7 +100,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 public final class QuantitationType extends AbstractCaArrayObject {
 
     private static final long serialVersionUID = 7207891070185665511L;
-    private static final Set<Class> SUPPORTED_TYPES = new HashSet<Class>();
+    private static final Set<Class<?>> SUPPORTED_TYPES = new HashSet<Class<?>>();
 
     static {
         SUPPORTED_TYPES.add(Boolean.class);
@@ -114,7 +114,7 @@ public final class QuantitationType extends AbstractCaArrayObject {
     }
 
     private String name;
-    private Class type;
+    private Class<?> type;
 
     /**
      * @return the name
@@ -135,14 +135,14 @@ public final class QuantitationType extends AbstractCaArrayObject {
      * @return the type
      */
     @Type(type = "org.hibernate.type.ClassType")
-    public Class getType() {
+    public Class<?> getType() {
         return type;
     }
 
     /**
      * @param type the type to set
      */
-    public void setType(Class type) {
+    public void setType(Class<?> type) {
         if (!SUPPORTED_TYPES.contains(type)) {
             throw new IllegalArgumentException("Unsupported data type; allowed types are " + SUPPORTED_TYPES);
         }

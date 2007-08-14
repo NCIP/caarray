@@ -96,7 +96,7 @@ public interface DataRetrievalService {
      * @param arrayData retrieve data contents for this set of data.
      * @return the corresponding data values.
      */
-    DataSet getDataSet(AbstractArrayData arrayData);
+    DataSet<?> getDataSet(AbstractArrayData arrayData);
 
     /**
      * Returns the requested data as configured within the request object.
@@ -104,6 +104,6 @@ public interface DataRetrievalService {
      * @param request specifies precisely which data to retrieve.
      * @return the corresponding data values.
      */
-    DataSet getDataSet(DataRetrievalRequest request);
+    DataSet<?> getDataSet(DataRetrievalRequest request);
 
 }

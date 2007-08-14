@@ -85,14 +85,24 @@ package gov.nih.nci.caarray.domain.sequence;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.vocabulary.Accession;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.ForeignKey;
 
 /**
  */
+@Entity
 public class Sequence extends AbstractCaArrayEntity  {
 
     /**
@@ -100,11 +110,11 @@ public class Sequence extends AbstractCaArrayEntity  {
      */
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The sequence String.
-     */
     @SuppressWarnings("PMD")
     private String sequence;
+    private Term type;
+    private Term polymerType;
+    private Set<Accession> accessions = new HashSet<Accession>();
 
     /**
      * Gets the sequence.
@@ -123,17 +133,15 @@ public class Sequence extends AbstractCaArrayEntity  {
     public void setSequence(final String sequenceVal) {
         this.sequence = sequenceVal;
     }
-    /**
-     * The type gov.nih.nci.caarray.domain.vocabulary.Term.
-     */
-    private gov.nih.nci.caarray.domain.vocabulary.Term type;
 
     /**
      * Gets the type.
      *
      * @return the type
      */
-    public gov.nih.nci.caarray.domain.vocabulary.Term getType() {
+    @ManyToOne
+    @ForeignKey(name = "SEQUENCE_TYPE_FK")
+    public Term getType() {
         return type;
     }
 
@@ -142,21 +150,19 @@ public class Sequence extends AbstractCaArrayEntity  {
      *
      * @param typeVal the type
      */
-    public void setType(final gov.nih.nci.caarray.domain.vocabulary.Term typeVal) {
+    public void setType(final Term typeVal) {
         this.type = typeVal;
     }
 
-    /**
-     * The polymerType gov.nih.nci.caarray.domain.vocabulary.Term.
-     */
-    private gov.nih.nci.caarray.domain.vocabulary.Term polymerType;
 
     /**
      * Gets the polymerType.
      *
      * @return the polymerType
      */
-    public gov.nih.nci.caarray.domain.vocabulary.Term getPolymerType() {
+    @ManyToOne
+    @ForeignKey(name = "SEQUENCE_POLYMERTYPE_FK")
+    public Term getPolymerType() {
         return polymerType;
     }
 
@@ -165,20 +171,22 @@ public class Sequence extends AbstractCaArrayEntity  {
      *
      * @param polymerTypeVal the polymerType
      */
-    public void setPolymerType(final gov.nih.nci.caarray.domain.vocabulary.Term polymerTypeVal) {
+    public void setPolymerType(final Term polymerTypeVal) {
         this.polymerType = polymerTypeVal;
     }
-
-    /**
-     * The accessions set.
-     */
-    private Set<Accession> accessions = new HashSet<Accession>();
 
     /**
      * Gets the accessions.
      *
      * @return the accessions
      */
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "SEQUENCEACCESSION",
+            joinColumns = { @JoinColumn(name = "SEQUENCE_ID") },
+            inverseJoinColumns = { @JoinColumn(name = "ACCESSION_ID") }
+    )
+    @ForeignKey(name = "SEQACC_SEQUENCE_FK", inverseName = "SEQACC_ACCESSION_FK")
     public Set<Accession> getAccessions() {
         return accessions;
     }

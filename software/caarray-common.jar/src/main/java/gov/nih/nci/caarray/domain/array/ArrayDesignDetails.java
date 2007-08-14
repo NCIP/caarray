@@ -86,47 +86,93 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * Contains the low-level array design details (Features, Reporters, and CompositeElements) for a
  * microarray design.
  */
-public final class ArrayDesignDetails implements Serializable {
+@Entity
+@org.hibernate.annotations.Entity(mutable = false)
+public class ArrayDesignDetails implements Serializable {
 
     private static final long serialVersionUID = -4810002388725364910L;
+    private static final String UNUSED = "unused";
+    private static final String MAPPED_BY = "arrayDesignDetails";
 
-    private final Set<Feature> features = new HashSet<Feature>();
-    private final Set<ReporterGroup> reporterGroups = new HashSet<ReporterGroup>();
-    private final Set<PhysicalReporter> reporters = new HashSet<PhysicalReporter>();
-    private final Set<CompositeReporter> compositeReporters = new HashSet<CompositeReporter>();
+    private Long id;
+    private Set<Feature> features = new HashSet<Feature>();
+    private Set<ReporterGroup> reporterGroups = new HashSet<ReporterGroup>();
+    private Set<PhysicalReporter> reporters = new HashSet<PhysicalReporter>();
+    private Set<CompositeReporter> compositeReporters = new HashSet<CompositeReporter>();
 
     /**
-     * Instantiates a new instance.
+     * @return db id
      */
-    public ArrayDesignDetails() {
-        super();
+    @Id
+    public Long getId() {
+        return id;
+    }
+
+    @SuppressWarnings("unused")
+    private void setId(Long id) { // NOPMD
+        this.id = id;
     }
 
     /**
      * @return the features
      */
+    @OneToMany(mappedBy = MAPPED_BY)
     public Set<Feature> getFeatures() {
         return features;
+    }
+
+    @SuppressWarnings(UNUSED)
+    private void setFeatures(Set<Feature> features) { // NOPMD
+        this.features = features;
     }
 
     /**
      * @return the reporters
      */
+    @OneToMany(mappedBy = MAPPED_BY)
     public Set<PhysicalReporter> getReporters() {
         return reporters;
+    }
+
+    @SuppressWarnings(UNUSED)
+    private void setReporters(Set<PhysicalReporter> reporters) { // NOPMD
+        this.reporters = reporters;
     }
 
     /**
      * @return the compositeReporters
      */
-    public Set<CompositeReporter> getCompositeElements() {
+   @OneToMany(mappedBy = MAPPED_BY)
+   public Set<CompositeReporter> getCompositeElements() {
         return compositeReporters;
+    }
+
+    @SuppressWarnings(UNUSED)
+    private void setCompositeElements(Set<CompositeReporter> compositeElements) { // NOPMD
+        this.compositeReporters = compositeElements;
+    }
+
+    /**
+     * @return the reporterGroups
+     */
+    @OneToMany(mappedBy = MAPPED_BY)
+    public Set<ReporterGroup> getReporterGroups() {
+        return reporterGroups;
+    }
+
+    @SuppressWarnings(UNUSED)
+    private void setReporterGroups(Set<ReporterGroup> reporterGroups) { // NOPMD
+        this.reporterGroups = reporterGroups;
     }
 
     /**
@@ -135,12 +181,5 @@ public final class ArrayDesignDetails implements Serializable {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
-    }
-
-    /**
-     * @return the reporterGroups
-     */
-    public Set<ReporterGroup> getReporterGroups() {
-        return reporterGroups;
     }
 }

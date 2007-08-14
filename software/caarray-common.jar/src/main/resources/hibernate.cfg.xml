@@ -21,8 +21,14 @@
         @HIBERNATE_CONFIG_END@ -->
 
         <!-- mapping files -->
+        <mapping class="gov.nih.nci.caarray.domain.array.AbstractReporter"/>
         <mapping class="gov.nih.nci.caarray.domain.array.Array"/>
         <mapping class="gov.nih.nci.caarray.domain.array.ArrayDesign"/>
+        <mapping class="gov.nih.nci.caarray.domain.array.ArrayDesignDetails"/>
+        <mapping class="gov.nih.nci.caarray.domain.array.CompositeReporter"/>
+        <mapping class="gov.nih.nci.caarray.domain.array.Feature"/>
+        <mapping class="gov.nih.nci.caarray.domain.array.PhysicalReporter"/>
+        <mapping class="gov.nih.nci.caarray.domain.array.ReporterGroup"/>
         <mapping class="gov.nih.nci.caarray.domain.contact.Address"/>
         <mapping class="gov.nih.nci.caarray.domain.contact.Organization"/>
         <mapping class="gov.nih.nci.caarray.domain.contact.Person"/>
@@ -49,6 +55,7 @@
         <mapping class="gov.nih.nci.caarray.domain.sample.LabeledExtract"/>
         <mapping class="gov.nih.nci.caarray.domain.sample.Sample"/>
         <mapping class="gov.nih.nci.caarray.domain.sample.Source"/>
+        <mapping class="gov.nih.nci.caarray.domain.sequence.Sequence"/>
         <mapping class="gov.nih.nci.caarray.domain.data.Image"/>
         <mapping class="gov.nih.nci.caarray.domain.data.RawArrayData"/>
         <mapping class="gov.nih.nci.caarray.domain.data.DerivedArrayData"/>

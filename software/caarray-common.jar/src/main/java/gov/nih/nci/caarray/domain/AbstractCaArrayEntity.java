@@ -103,6 +103,26 @@ public abstract class AbstractCaArrayEntity extends AbstractCaArrayObject {
     private String lsidObjectId;
 
     /**
+     * Default constructor.  All lsid information will be blank.
+     */
+    protected AbstractCaArrayEntity() {
+        // blank lsid information / hibernate constructor
+    }
+
+    /**
+     * Constructor with LSID information.
+     *
+     * @param lsidAuthority authority
+     * @param lsidNamespace namespace
+     * @param lsidObjectId object id
+     */
+    protected AbstractCaArrayEntity(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
+        setLsidAuthority(lsidAuthority);
+        setLsidNamespace(lsidNamespace);
+        setLsidObjectId(lsidObjectId);
+    }
+
+    /**
      * Returns the LSID authority.
      *
      * @return the LSID authority
@@ -117,7 +137,7 @@ public abstract class AbstractCaArrayEntity extends AbstractCaArrayObject {
      *
      * @param lsidAuthorityVal the LSID authority to set
      */
-    public void setLsidAuthority(String lsidAuthorityVal) {
+    private void setLsidAuthority(String lsidAuthorityVal) {
         this.lsidAuthority = lsidAuthorityVal;
     }
 
