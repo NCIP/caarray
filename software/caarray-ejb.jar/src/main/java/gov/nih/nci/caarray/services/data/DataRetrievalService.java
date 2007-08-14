@@ -82,8 +82,8 @@
  */
 package gov.nih.nci.caarray.services.data;
 
-import gov.nih.nci.caarray.client.arraydata.DataSet;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.DataSet;
 
 /**
  * Returns requested array data from caArray.

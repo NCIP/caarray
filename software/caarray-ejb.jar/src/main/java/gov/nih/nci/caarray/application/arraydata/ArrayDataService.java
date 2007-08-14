@@ -82,11 +82,15 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import java.util.List;
-
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.QuantitationTypeOld;
+import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.validation.InvalidDataException;
+import gov.nih.nci.caarray.validation.ValidationResult;
+
+import java.util.List;
+
 
 /**
  * Provides hybridization data storage and retrieval functionality.
@@ -99,24 +103,45 @@ public interface ArrayDataService {
     String JNDI_NAME = "caarray/ArrayDataServiceBean/local";
 
     /**
+     * Invoked at system start-up, registers all handlers with the system, ensuring that all supported
+     * array data types and quantitation types are included in the system.
+     */
+    void initialize();
+
+    /**
+     * Validates the array data in the file associated with the <code>AbstractArrayData</code> entity,
+     * ensuring that it can be imported.
+     * 
+     * @param arrayData the array data to validate.
+     * @return the results of the validation.
+     */
+    ValidationResult validate(AbstractArrayData arrayData);
+
+    /**
      * Imports array data from the file associated with the <code>AbstractArrayData</code> entity,
      * making it available for retrieval.
      * 
-     * @param arrayData the array data to import. The associated 
+     * @param arrayData the array data to import.
+     * @throws InvalidDataException if the data to be imported was invalid.
      */
-    void importData(AbstractArrayData arrayData);
-    
+    void importData(AbstractArrayData arrayData) throws InvalidDataException;
+
     /**
-     * Returns the data associated with the specified <code>AbstractArrayData</code>.
+     * Returns the complete data content of the provided array data object.
      * 
-     * @param arrayData return data represented by this array data object.
-     * @param designElements return data corresponding only to these design elements. If argument is null
-     *        or empty, return data for all elements.
-     * @param types return data corresponding only to these <code>QuantitationTypes</code>. If argument is null
-     *        or empty, return data for all types.
+     * @param arrayData get data from this data object
      * @return the data.
      */
-    ArrayDataValues getDataValues(AbstractArrayData arrayData, List<AbstractDesignElement> designElements, 
-            List<QuantitationTypeOld> types);
+    DataSet<? extends AbstractDesignElement> getData(AbstractArrayData arrayData);
+
+    /**
+     * Returns the data content of the provided array data object for only the specified
+     * <code>QuantitationTypes</code>. 
+     * 
+     * @param arrayData get data from this data object
+     * @param types get data for these types only
+     * @return the data.
+     */
+    DataSet<? extends AbstractDesignElement> getData(AbstractArrayData arrayData, List<QuantitationType> types);
     
 }

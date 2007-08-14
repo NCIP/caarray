@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.validation.InvalidDataException;
 
 /**
  * Manages import of array data files.
@@ -107,11 +108,20 @@ final class ArrayDataImporter {
     public void importFiles(CaArrayFileSet fileSet) {
         for (CaArrayFile file : fileSet.getFiles()) {
             if (isDataFile(file)) {
-                arrayDataService.importData(getArrayData(file));
-                file.setStatus(FileStatus.IMPORTED);
-                daoFactory.getProjectDao().save(file);
+                importFile(file);
             }
         }
+    }
+
+    private void importFile(CaArrayFile file) {
+        try {
+            arrayDataService.importData(getArrayData(file));
+            file.setStatus(FileStatus.IMPORTED);
+        } catch (InvalidDataException e) {
+            // TODO Save Validation result with file
+            file.setStatus(FileStatus.VALIDATION_ERRORS);
+        }
+        daoFactory.getProjectDao().save(file);
     }
 
     private boolean isDataFile(CaArrayFile file) {

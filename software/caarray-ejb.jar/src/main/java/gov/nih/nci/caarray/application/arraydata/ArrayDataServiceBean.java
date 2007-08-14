@@ -82,6 +82,21 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
+import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelHandler;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.ArrayDataType;
+import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.util.io.logging.LogUtil;
+import gov.nih.nci.caarray.validation.InvalidDataException;
+import gov.nih.nci.caarray.validation.ValidationResult;
+
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -91,44 +106,156 @@ import javax.ejb.Stateless;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.QuantitationTypeOld;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
-import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.util.io.logging.LogUtil;
-
 /**
- * Implementation entry point for the ArrayDataService subsystem.
+ * Entry point to the ArrayDataService subsystem.
  */
 @Local
 @Stateless
 public class ArrayDataServiceBean implements ArrayDataService {
-
+    
     private static final Log LOG = LogFactory.getLog(ArrayDataServiceBean.class);
 
-    @EJB private FileAccessService fileAccessService;
     @EJB private ArrayDesignService arrayDesignService;
+    @EJB private FileAccessService fileAccessService;
+    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
     /**
      * {@inheritDoc}
      */
-    public void importData(AbstractArrayData arrayData) {
+    public void initialize() {
+        LogUtil.logSubsystemEntry(LOG);
+        initialize(AffymetrixArrayDataTypes.values());
+        LogUtil.logSubsystemExit(LOG);
+    }
+
+    private void initialize(AffymetrixArrayDataTypes[] types) {
+        for (ArrayDataTypeDescriptor type : types) {
+            initialize(type);
+        }
+    }
+
+    private void initialize(ArrayDataTypeDescriptor type) {
+        ensureQuantitationTypesRegistered(type);
+        ensureArrayDataTypeRegistered(type);
+    }
+
+    private void ensureArrayDataTypeRegistered(ArrayDataTypeDescriptor type) {
+        // TODO handle change of registered quantition types?
+        if (!isRegistered(type)) {
+            register(type);
+        }
+    }
+
+    private boolean isRegistered(ArrayDataTypeDescriptor typeDescriptor) {
+        return getType(typeDescriptor) != null;
+    }
+
+    private ArrayDataType getType(ArrayDataTypeDescriptor typeDescriptor) {
+        ArrayDataType exampleType = createType(typeDescriptor);
+        List<ArrayDataType> matchTypes = getDaoFactory().getArrayDao().queryEntityByExample(exampleType);
+        if (matchTypes.isEmpty()) {
+            return null;
+        } else if (matchTypes.size() == 1) {
+            return matchTypes.get(0);
+        } else {
+            throw new IllegalStateException("Multiple ArrayDataTypes are registered with name " 
+                    + typeDescriptor.getName() + " and version " + typeDescriptor.getVersion());
+        }
+    }
+
+    private ArrayDataType createType(ArrayDataTypeDescriptor typeDescriptor) {
+        ArrayDataType arrayDataType = new ArrayDataType();
+        arrayDataType.setName(typeDescriptor.getName());
+        arrayDataType.setVersion(typeDescriptor.getVersion());
+        return arrayDataType;
+    }
+
+    private void register(ArrayDataTypeDescriptor typeDescriptor) {
+        ArrayDataType arrayDataType = createType(typeDescriptor);
+        for (QuantitationTypeDescriptor quantitationTypeDescriptor : typeDescriptor.getQuantitationTypes()) {
+            arrayDataType.getQuantitationTypes().add(getQuantitationType(quantitationTypeDescriptor));
+        }
+        getDaoFactory().getArrayDao().save(arrayDataType);
+    }
+
+    private void ensureQuantitationTypesRegistered(ArrayDataTypeDescriptor type) {
+        for (QuantitationTypeDescriptor quantitationTypeDescriptor : type.getQuantitationTypes()) {
+            ensureQuantitationTypeRegistered(quantitationTypeDescriptor);
+        }
+    }
+
+    private void ensureQuantitationTypeRegistered(QuantitationTypeDescriptor quantitationTypeDescriptor) {
+        if (!isRegistered(quantitationTypeDescriptor)) {
+            register(quantitationTypeDescriptor);
+        }
+    }
+
+    private boolean isRegistered(QuantitationTypeDescriptor quantitationTypeDescriptor) {
+        return getQuantitationType(quantitationTypeDescriptor) != null;
+    }
+
+    private QuantitationType getQuantitationType(QuantitationTypeDescriptor quantitationTypeDescriptor) {
+        QuantitationType exampleType = createQuantitationType(quantitationTypeDescriptor);
+        List<QuantitationType> matchingTypes = getDaoFactory().getArrayDao().queryEntityByExample(exampleType);
+        if (matchingTypes.isEmpty()) {
+            return null;
+        } else if (matchingTypes.size() == 1) {
+            return matchingTypes.get(0);
+        } else {
+            throw new IllegalStateException("Duplicate QuantitationTypes exist for " 
+                    + quantitationTypeDescriptor.getName());
+        }
+    }
+
+    private void register(QuantitationTypeDescriptor quantitationTypeDescriptor) {
+        QuantitationType quantitationType = createQuantitationType(quantitationTypeDescriptor);
+        getDaoFactory().getArrayDao().save(quantitationType);
+    }
+    
+    private QuantitationType createQuantitationType(QuantitationTypeDescriptor quantitationTypeDescriptor) {
+        QuantitationType quantitationType = new QuantitationType();
+        quantitationType.setName(quantitationTypeDescriptor.getName());
+        quantitationType.setType(quantitationTypeDescriptor.getDataType().getTypeClass());
+        return quantitationType;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public DataSet<? extends AbstractDesignElement> getData(AbstractArrayData arrayData) {
+        LogUtil.logSubsystemEntry(LOG, arrayData);
+        DataSet<? extends AbstractDesignElement> dataSet = getHandler(arrayData).getData();
+        LogUtil.logSubsystemExit(LOG);
+        return dataSet;
+    }
+
+    private ArrayDataHandler getHandler(AbstractArrayData arrayData) {
+        if (AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL.isEquivalent(arrayData.getType())) {
+            RawArrayData rawArrayData = (RawArrayData) arrayData;
+            return new AffymetrixCelHandler(rawArrayData, fileAccessService, arrayDesignService, daoFactory);
+        } else {
+            throw new IllegalArgumentException("Unsupported ArrayDataType: " + arrayData.getType());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public DataSet<? extends AbstractDesignElement> getData(AbstractArrayData arrayData, List<QuantitationType> types) {
+        LogUtil.logSubsystemEntry(LOG, arrayData);
+        DataSet<? extends AbstractDesignElement> dataSet = getHandler(arrayData).getData(types);
+        LogUtil.logSubsystemExit(LOG);
+        return dataSet;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void importData(AbstractArrayData arrayData) throws InvalidDataException {
         LogUtil.logSubsystemEntry(LOG, arrayData);
         checkArguments(arrayData);
         getHandler(arrayData).importData();
         LogUtil.logSubsystemExit(LOG);
-    }
-
-    private AbstractArrayDataHandler getHandler(AbstractArrayData arrayData) {
-        FileType fileType = arrayData.getDataFile().getType();
-        if (FileType.AFFYMETRIX_CEL.equals(fileType)) {
-            return new AffymetrixCelHandler((RawArrayData) arrayData, getFileAccessService(), getArrayDesignService());
-        } else {
-            throw new IllegalArgumentException("Unsupported data file type: " + fileType);
-        }
     }
 
     private void checkArguments(AbstractArrayData arrayData) {
@@ -139,21 +266,12 @@ public class ArrayDataServiceBean implements ArrayDataService {
             throw new IllegalArgumentException("No data file is associated with array data object");
         }
     }
-
-    FileAccessService getFileAccessService() {
-        return fileAccessService;
-    }
-
-    void setFileAccessService(FileAccessService fileAccessService) {
-        this.fileAccessService = fileAccessService;
-    }
-
     /**
      * {@inheritDoc}
      */
-    public ArrayDataValues getDataValues(AbstractArrayData arrayData, List<AbstractDesignElement> designElements, 
-            List<QuantitationTypeOld> types) {
-        return getHandler(arrayData).getDataValues(designElements, types);
+    public ValidationResult validate(AbstractArrayData arrayData) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     ArrayDesignService getArrayDesignService() {
@@ -162,6 +280,28 @@ public class ArrayDataServiceBean implements ArrayDataService {
 
     void setArrayDesignService(ArrayDesignService arrayDesignService) {
         this.arrayDesignService = arrayDesignService;
+    }
+
+    CaArrayDaoFactory getDaoFactory() {
+        return daoFactory;
+    }
+
+    void setDaoFactory(CaArrayDaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
+    }
+
+    /**
+     * @return the fileAccessService
+     */
+    final FileAccessService getFileAccessService() {
+        return fileAccessService;
+    }
+
+    /**
+     * @param fileAccessService the fileAccessService to set
+     */
+    final void setFileAccessService(FileAccessService fileAccessService) {
+        this.fileAccessService = fileAccessService;
     }
 
 }

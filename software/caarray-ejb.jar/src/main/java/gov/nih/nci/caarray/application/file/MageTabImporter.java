@@ -99,11 +99,11 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.magetab.InvalidMageTabException;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabInputFileSet;
 import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
+import gov.nih.nci.caarray.validation.InvalidDataException;
 
 /**
  * Responsible for importing parsed MAGE-TAB data into caArray.
@@ -131,13 +131,13 @@ class MageTabImporter {
             CaArrayTranslationResult translationResult = translator.translate(documentSet, fileSet);
             save(targetProject, translationResult);
             updateFileStatus(fileSet, FileStatus.IMPORTED);
-        } catch (InvalidMageTabException e) {
+        } catch (InvalidDataException e) {
             handleInvalidMageTab(targetProject, fileSet, e);
         }
     }
 
     @SuppressWarnings("PMD")
-    private void handleInvalidMageTab(Project targetProject, CaArrayFileSet fileSet, InvalidMageTabException e) {
+    private void handleInvalidMageTab(Project targetProject, CaArrayFileSet fileSet, InvalidDataException e) {
         // TODO Bill -- handle updating file statuses to INVALID
     }
 

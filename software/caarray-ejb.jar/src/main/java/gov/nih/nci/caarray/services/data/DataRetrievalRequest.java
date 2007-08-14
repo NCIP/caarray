@@ -83,13 +83,12 @@
 package gov.nih.nci.caarray.services.data;
 
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
-import gov.nih.nci.caarray.domain.data.QuantitationTypeOld;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Allows for the specification of precisely which array data are to be returned from
@@ -99,9 +98,9 @@ public class DataRetrievalRequest implements Serializable {
 
     private static final long serialVersionUID = 408918013610243473L;
 
-    private final Set<AbstractDesignElement> designElementSet = new HashSet<AbstractDesignElement>();
-    private final Set<Hybridization> hybridizationSet = new HashSet<Hybridization>();
-    private final Set<QuantitationTypeOld> quantitationTypeSet = new HashSet<QuantitationTypeOld>();
+    private final List<AbstractDesignElement> designElements = new ArrayList<AbstractDesignElement>();
+    private final List<Hybridization> hybridizations = new ArrayList<Hybridization>();
+    private final List<QuantitationType> quantitationTypes = new ArrayList<QuantitationType>();
 
     /**
      * Creates a new, empty request instance.
@@ -116,16 +115,7 @@ public class DataRetrievalRequest implements Serializable {
      * @param element find data related to this design element.
      */
     public void addDesignElement(AbstractDesignElement element) {
-        designElementSet.add(element);
-    }
-
-    /**
-     * Include data related to these design elements.
-     *
-     * @param designElements find data related to these design elements.
-     */
-    public void addDesignElements(Collection<AbstractDesignElement> designElements) {
-        designElementSet.addAll(designElements);
+        designElements.add(element);
     }
 
     /**
@@ -134,44 +124,16 @@ public class DataRetrievalRequest implements Serializable {
      * @param hybridization find data related to this hybridization.
      */
     public void addHybridization(Hybridization hybridization) {
-        hybridizationSet.add(hybridization);
-    }
-//
-//    /**
-//     * Include data related to this hybridization.
-//     *
-//     * @param hybridizations find data related to this hybridization.
-//     */
-//    public void addHybridizations(Collection<Hybridization> hybridizations) {
-//
-//    }
-//
-//    /**
-//     *
-//     * @param quantiationType
-//     */
-//    public void addQuantitationType(QuantitationTypeOld quantiationType) {
-//
-//    }
-//
-//    /**
-//     *
-//     * @param quantiationTypes
-//     */
-//    public void addQuantitationTypes(Collection<QuantitationTypeOld> quantiationTypes) {
-//
-//    }
-
-    final Set<AbstractDesignElement> getDesignElements() {
-        return designElementSet;
+        hybridizations.add(hybridization);
     }
 
-    final Set<Hybridization> getHybridizations() {
-        return hybridizationSet;
-    }
-
-    final Set<QuantitationTypeOld> getQuantitationTypes() {
-        return quantitationTypeSet;
+    /**
+     * Return data for this quantitation type.
+     *
+     * @param quantitationType find data related to this quantitation type.
+     */
+    public void addQuantitationType(QuantitationType quantitationType) {
+        quantitationTypes.add(quantitationType);
     }
 
 }
