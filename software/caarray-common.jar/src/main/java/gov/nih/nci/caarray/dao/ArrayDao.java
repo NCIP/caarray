@@ -84,6 +84,10 @@ package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.ArrayDataType;
+import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
 /**
@@ -107,4 +111,23 @@ public interface ArrayDao extends CaArrayDao {
      * @return the associated data or null.
      */
     AbstractArrayData getArrayData(CaArrayFile file);
+
+    /**
+     * Returns the array data type corresponding to the given descriptor, if one
+     * exists.
+     *
+     * @param descriptor search for the matching type
+     * @return the matching type, or null if not in the database.
+     */
+    ArrayDataType getArrayDataType(ArrayDataTypeDescriptor descriptor);
+
+    /**
+     * Returns the quantitation type corresponding to the given descriptor, if one
+     * exists.
+     *
+     * @param descriptor search for the matching type
+     * @return the matching type, or null if not in the database.
+     */
+    QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor);
+
 }

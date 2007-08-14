@@ -82,8 +82,14 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import java.util.List;
+
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.ArrayDataType;
+import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
@@ -116,6 +122,45 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         Query query = session.createQuery("from AbstractArrayData arrayData where arrayData.dataFile = :file");
         query.setEntity("file", file);
         return (AbstractArrayData) query.uniqueResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public ArrayDataType getArrayDataType(ArrayDataTypeDescriptor descriptor) {
+        if (descriptor == null) {
+            return null;
+        }
+        ArrayDataType example = new ArrayDataType();
+        example.setName(descriptor.getName());
+        example.setVersion(descriptor.getVersion());
+        List<ArrayDataType> matches = queryEntityByExample(example);
+        if (matches.isEmpty()) {
+            return null;
+        } else if (matches.size() == 1) {
+            return matches.get(0);
+        } else {
+            throw new IllegalStateException("Duplicate registration of ArrayDataType " + descriptor);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor) {
+        if (descriptor == null) {
+            return null;
+        }
+        QuantitationType example = new QuantitationType();
+        example.setName(descriptor.getName());
+        List<QuantitationType> matches = queryEntityByExample(example);
+        if (matches.isEmpty()) {
+            return null;
+        } else if (matches.size() == 1) {
+            return matches.get(0);
+        } else {
+            throw new IllegalStateException("Duplicate registration of ArrayDataType " + descriptor);
+        }
     }
 
     @Override

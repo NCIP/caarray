@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.dao;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.BeforeClass;
@@ -95,6 +97,11 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.ArrayDataType;
+import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.DataType;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
@@ -103,6 +110,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
  *
  * @author Rashmi Srinivasa
  */
+@SuppressWarnings("PMD")
 public class ArrayDaoTest  extends AbstractDaoTest {
     private static final Log LOG = LogFactory.getLog(ArrayDaoTest.class);
 
@@ -179,6 +187,80 @@ public class ArrayDaoTest  extends AbstractDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());
+        } finally {
+            remove(rawArrayData);
+        }
+    }
+
+    @Test
+    public void testGetArrayDataType() {
+        Transaction tx = null;
+        final long timestamp = System.currentTimeMillis();
+        ArrayDataTypeDescriptor testDescriptor = new ArrayDataTypeDescriptor() {
+            public String getName() {
+                return "name" + timestamp;
+            }
+            public String getVersion() {
+                return "version";
+            }
+            public List<QuantitationTypeDescriptor> getQuantitationTypes() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+            public boolean isEquivalent(ArrayDataType arrayDataType) {
+                // TODO Auto-generated method stub
+                return false;
+            };
+        };
+        ArrayDataType arrayDataType = new ArrayDataType();
+        arrayDataType.setName(testDescriptor.getName());
+        arrayDataType.setVersion(testDescriptor.getVersion());
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            DAO_OBJECT.save(arrayDataType);
+            tx.commit();
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            ArrayDataType retrievedArrayDataType = DAO_OBJECT.getArrayDataType(testDescriptor);
+            assertEquals(arrayDataType, retrievedArrayDataType);
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());
+        } finally {
+            remove(arrayDataType);
+        }
+    }
+
+    @Test
+    public void testGetQuantitationType() {
+        Transaction tx = null;
+        final long timestamp = System.currentTimeMillis();
+        QuantitationTypeDescriptor testDescriptor = new QuantitationTypeDescriptor() {
+            public String getName() {
+                return "name" + timestamp;
+            }
+
+            public DataType getDataType() {
+                // TODO Auto-generated method stub
+                return DataType.FLOAT;
+            }
+        };
+        QuantitationType quantitationType = new QuantitationType();
+        quantitationType.setName(testDescriptor.getName());
+        quantitationType.setType(testDescriptor.getDataType().getTypeClass());
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            DAO_OBJECT.save(quantitationType);
+            tx.commit();
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            QuantitationType retrievedQuantitationType = DAO_OBJECT.getQuantitationType(testDescriptor);
+            assertEquals(quantitationType, retrievedQuantitationType);
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());
+        } finally {
+            remove(quantitationType);
         }
     }
 

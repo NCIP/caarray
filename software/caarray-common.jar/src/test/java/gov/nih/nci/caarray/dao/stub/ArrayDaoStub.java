@@ -85,6 +85,10 @@ package gov.nih.nci.caarray.dao.stub;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.ArrayDataType;
+import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
 /**
@@ -103,6 +107,22 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
      * {@inheritDoc}
      */
     public AbstractArrayData getArrayData(CaArrayFile file) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public ArrayDataType getArrayDataType(ArrayDataTypeDescriptor descriptor) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor) {
+        // TODO Auto-generated method stub
         return null;
     }
 
