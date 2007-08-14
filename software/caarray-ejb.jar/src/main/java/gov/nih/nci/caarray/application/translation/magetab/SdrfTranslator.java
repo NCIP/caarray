@@ -82,17 +82,20 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
+import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.FactorValue;
@@ -327,6 +330,7 @@ final class SdrfTranslator extends AbstractTranslator {
             caArrayData.setName(fileName);
             CaArrayFile dataFile = getFile(fileName);
             caArrayData.setDataFile(dataFile);
+            caArrayData.setType(getArrayDataType(dataFile));
             // Associate Scan with the raw data.
             for (Scan scan : sdrfData.getPredecessorScans()) {
                 associateScanWithData(caArrayData, scan);
@@ -340,11 +344,24 @@ final class SdrfTranslator extends AbstractTranslator {
             caArrayData.setName(fileName);
             CaArrayFile dataFile = getFile(fileName);
             caArrayData.setDataFile(dataFile);
+            caArrayData.setType(getArrayDataType(dataFile));
             // Associate Scan with the raw data.
             for (Scan scan : sdrfData.getPredecessorScans()) {
                 associateScanWithData(caArrayData, scan);
             }
             nodeTranslations.put(sdrfData, caArrayData);
+        }
+    }
+
+    /**
+     * @param dataFile
+     * @return
+     */
+    private ArrayDataType getArrayDataType(CaArrayFile dataFile) {
+        if (FileType.AFFYMETRIX_CEL.equals(dataFile.getType())) {
+            return getDaoFactory().getArrayDao().getArrayDataType(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL);
+        } else {
+            throw new IllegalArgumentException("Unsupported data file type: " + dataFile.getType());
         }
     }
 

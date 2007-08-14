@@ -93,7 +93,9 @@ import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Investigation;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
@@ -103,7 +105,10 @@ import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.AbstractMageTabDocument;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
+import gov.nih.nci.caarray.magetab.adf.AdfDocument;
+import gov.nih.nci.caarray.magetab.data.DataMatrix;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -118,7 +123,6 @@ import org.junit.Test;
  */
 @SuppressWarnings("PMD")
 public class MageTabTranslatorTest {
-    private static final int SIX = 6;
 
     private MageTabTranslator translator;
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
@@ -142,26 +146,11 @@ public class MageTabTranslatorTest {
      */
     @Test
     public void testTranslate() {
-        testSpecificationDocuments();
         testTcgaBroadDocuments();
     }
 
-    private void testSpecificationDocuments() {
-        CaArrayFileSet fileSet = getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
-        CaArrayTranslationResult result = translator.translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET, fileSet );
-        assertEquals(17, result.getTerms().size());
-        assertEquals(1, result.getInvestigations().size());
-        Investigation investigation = result.getInvestigations().iterator().next();
-        assertEquals(SIX, investigation.getSources().size());
-        assertEquals(SIX, investigation.getSamples().size());
-        assertEquals(SIX, investigation.getExtracts().size());
-        assertEquals(SIX, investigation.getLabeledExtracts().size());
-        IdfDocument idf = TestMageTabSets.MAGE_TAB_SPECIFICATION_SET.getIdfDocuments().iterator().next();
-        assertEquals(idf.getInvestigation().getTitle(), investigation.getTitle());
-    }
-
     private void testTcgaBroadDocuments() {
-        CaArrayFileSet fileSet = getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
+        CaArrayFileSet fileSet = getFileSet(TestMageTabSets.TCGA_BROAD_SET);
         CaArrayTranslationResult result = translator.translate(TestMageTabSets.TCGA_BROAD_SET, fileSet);
         assertEquals(10, result.getTerms().size());
         assertEquals(1, result.getInvestigations().size());
@@ -186,7 +175,21 @@ public class MageTabTranslatorTest {
     }
 
     private void addFile(CaArrayFileSet fileSet, AbstractMageTabDocument mageTabDocument) {
-        fileSet.add(fileAccessServiceStub.add(mageTabDocument.getFile()));
+        CaArrayFile caArrayFile = fileAccessServiceStub.add(mageTabDocument.getFile());
+        if (mageTabDocument instanceof IdfDocument) {
+            caArrayFile.setType(FileType.MAGE_TAB_IDF);
+        } else if (mageTabDocument instanceof SdrfDocument) {
+            caArrayFile.setType(FileType.MAGE_TAB_SDRF);
+        } else if (mageTabDocument instanceof AdfDocument) {
+            caArrayFile.setType(FileType.MAGE_TAB_ADF);
+        } else if (mageTabDocument instanceof DataMatrix) {
+            caArrayFile.setType(FileType.MAGE_TAB_DATA_MATRIX);
+        } else if (mageTabDocument.getFile().getName().toLowerCase().endsWith(".cel")) {
+            caArrayFile.setType(FileType.AFFYMETRIX_CEL);
+        } else {
+            throw new IllegalArgumentException("Unrecognized document file " + mageTabDocument.getFile());
+        }
+        fileSet.add(caArrayFile);
     }
 
     private void checkTcgaBroadInvestigation(Investigation investigation) {
