@@ -82,9 +82,9 @@
  */
 package gov.nih.nci.caarray.application.arraydata.affymetrix;
 
-import gov.nih.nci.caarray.application.arraydata.DataType;
-import gov.nih.nci.caarray.application.arraydata.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.DataType;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 
 /**
  * Quantitation type information for Affymetrix CEL files.

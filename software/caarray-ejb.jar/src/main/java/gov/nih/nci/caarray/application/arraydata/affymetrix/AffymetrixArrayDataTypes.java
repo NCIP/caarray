@@ -85,9 +85,9 @@ package gov.nih.nci.caarray.application.arraydata.affymetrix;
 import java.util.Arrays;
 import java.util.List;
 
-import gov.nih.nci.caarray.application.arraydata.ArrayDataTypeDescriptor;
-import gov.nih.nci.caarray.application.arraydata.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
+import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 
 /**
  * The array data types supported for Affymetrix.
