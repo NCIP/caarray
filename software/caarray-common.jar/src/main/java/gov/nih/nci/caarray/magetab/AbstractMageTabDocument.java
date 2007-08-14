@@ -50,10 +50,11 @@
  */
 package gov.nih.nci.caarray.magetab;
 
-import gov.nih.nci.caarray.magetab.ValidationMessage.Type;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
 import gov.nih.nci.caarray.util.io.FileUtility;
+import gov.nih.nci.caarray.validation.ValidationMessage;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
 import java.io.IOException;

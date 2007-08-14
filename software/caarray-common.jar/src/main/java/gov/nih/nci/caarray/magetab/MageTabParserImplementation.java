@@ -83,6 +83,8 @@
 package gov.nih.nci.caarray.magetab;
 
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
+import gov.nih.nci.caarray.validation.InvalidDataException;
+import gov.nih.nci.caarray.validation.ValidationResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -111,14 +113,14 @@ class MageTabParserImplementation implements MageTabParser {
      * {@inheritDoc}
      */
     public MageTabDocumentSet parse(MageTabInputFileSet inputFileSet) 
-    throws MageTabParsingException, InvalidMageTabException {
+    throws MageTabParsingException, InvalidDataException {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, inputFileSet);
         }
         MageTabDocumentSet documentSet = new MageTabDocumentSet(inputFileSet);
         documentSet.parse();
         if (!documentSet.getValidationResult().isValid()) {
-            throw new InvalidMageTabException(documentSet.getValidationResult());
+            throw new InvalidDataException(documentSet.getValidationResult());
         }
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemExit(LOG);

@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -119,6 +120,17 @@ public final class DataSet<DesignElementType extends AbstractDesignElement> impl
         this.hybridizations = Collections.unmodifiableList(hybridizations);
         this.quantitationTypes = Collections.unmodifiableList(quantitationTypes);
         recordIndexes();
+    }
+
+    /**
+     * Instantiates a new <code>DataSet</code> that will contain hybridization data for each
+     * of the quantitation types given for a single hybridization.
+     * 
+     * @param hybridization data associated with this specific hybridization.
+     * @param quantitationTypes data will be provided for each of these quantitationTypes.
+     */
+    public DataSet(Hybridization hybridization, List<QuantitationType> quantitationTypes) {
+        this(Arrays.asList(new Hybridization[] {hybridization}), quantitationTypes);
     }
 
     private void recordIndexes() {

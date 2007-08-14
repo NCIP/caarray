@@ -87,6 +87,7 @@ import java.io.FilenameFilter;
 import java.util.Locale;
 
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.validation.InvalidDataException;
 
 /**
  * MAGE-TAB document sets to be used as test data.
@@ -125,7 +126,7 @@ public final class TestMageTabSets {
         } catch (MageTabParsingException e) {
             e.printStackTrace(System.err);
             return null;
-        } catch (InvalidMageTabException e) {
+        } catch (InvalidDataException e) {
             e.printStackTrace(System.err);
             return null;
         }

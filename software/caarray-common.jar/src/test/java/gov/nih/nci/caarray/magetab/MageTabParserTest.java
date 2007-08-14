@@ -89,6 +89,8 @@ import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.idf.Investigation;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.validation.InvalidDataException;
+import gov.nih.nci.caarray.validation.ValidationResult;
 
 import org.junit.Test;
 
@@ -113,16 +115,16 @@ public class MageTabParserTest {
     }
 
     /**
-     * @throws InvalidMageTabException 
+     * @throws InvalidDataException 
      * @throws MageTabParsingException .
      */
     @Test
-    public void testParse() throws MageTabParsingException, InvalidMageTabException {
+    public void testParse() throws MageTabParsingException, InvalidDataException {
         testSpecificationDocuments();
         testTcgaBroadDocuments();
     }
 
-    private void testTcgaBroadDocuments() throws MageTabParsingException, InvalidMageTabException {
+    private void testTcgaBroadDocuments() throws MageTabParsingException, InvalidDataException {
         MageTabInputFileSet fileSet = TestMageTabSets.TCGA_BROAD_INPUT_SET;
         MageTabDocumentSet documentSet = parser.parse(fileSet);
         assertNotNull(documentSet);
@@ -132,7 +134,7 @@ public class MageTabParserTest {
         assertEquals(26, documentSet.getNativeDataFiles().size());
     }
 
-    private void testSpecificationDocuments() throws MageTabParsingException, InvalidMageTabException {
+    private void testSpecificationDocuments() throws MageTabParsingException, InvalidDataException {
         MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET;
         MageTabDocumentSet documentSet = parser.parse(fileSet);
         assertNotNull(documentSet);

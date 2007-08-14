@@ -88,6 +88,8 @@ import gov.nih.nci.caarray.magetab.data.NativeDataFile;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.util.io.FileUtility;
+import gov.nih.nci.caarray.validation.ValidationMessage;
+import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.io.File;
 import java.io.Serializable;
@@ -349,9 +351,7 @@ public final class MageTabDocumentSet implements Serializable {
     }
     
     ValidationMessage createValidationMessage(File file, ValidationMessage.Type type, String message) {
-        ValidationMessage validationMessage = new ValidationMessage(file, type, message);
-        getValidationResult().add(validationMessage);
-        return validationMessage;
+        return getValidationResult().addMessage(file, type, message);
     }
 
 

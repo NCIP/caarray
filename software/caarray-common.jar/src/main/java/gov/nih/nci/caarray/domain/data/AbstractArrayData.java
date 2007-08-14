@@ -119,6 +119,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
     private String name;
     private CaArrayFile dataFile;
+    private ArrayDataType type;
 
     /**
      * Gets the dataFile.
@@ -183,6 +184,23 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
     @SuppressWarnings("unused")
     private void setProtocolApplications(final Set<ProtocolApplication> protocolApplicationsVal) { // NOPMD
         this.protocolApplications = protocolApplicationsVal;
+    }
+
+    /**
+     * @return the type
+     */
+    @ManyToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ForeignKey(name = "ARRAYDATA_TYPE_FK")
+    public ArrayDataType getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(ArrayDataType type) {
+        this.type = type;
     }
 
 }
