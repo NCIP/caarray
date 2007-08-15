@@ -44,6 +44,18 @@
 			</not>
 		</and>
 	</condition>
+
+
+
+   <property name="jsch.jar" value="jsch-0.1.33.jar"/>
+   <property name="jsch.jar.location" value="${ant.home}/lib/${jsch.jar}"/>
+   <available file="${jsch.jar.location}" property="jsch.jar.present"/>
+
+   	<condition property="fail.if.no.jsch">
+		<not>
+			<isset property="jsch.jar.present"/>
+		</not>
+	</condition>
 	
 	<condition property="build.with.label.dev">
 		<and>
@@ -96,7 +108,14 @@
 		<fail>Target environment not set. Please set target environmant with
 			-Dbuild.env=[DEV|QA|STAGING]</fail>
 	</target>
-	
+
+   <target name="fail-if-no-jsch" if="fail.if.no.jsch">
+        <copy todir="${ant.home}/lib" overwrite="true">
+			<fileset dir="${lib.dir}" includes="${jsch.jar}" />
+		</copy>
+		<fail>${jsch.jar} must be in your ${ant.home}/lib directory. This file (${jsch.jar}) has been copied to your ${ant.home}/lib directory. IMPORTANT: You must rerun your build script again.</fail>
+	</target>
+
 	<target name="fail-if-no-label-qa" if="fail.with.nolabel.qa">
 		<fail>QA label not set. Please set the label with -Dlabel.ear=XYZ</fail>
 	</target>
@@ -126,7 +145,8 @@
 			target="remote-deploy-qa"/>
 	</target>
 	
-	<target name="all">
+	<target name="all">	   
+		<antcall target="fail-if-no-jsch"/>
 		<antcall target="fail-if-no-env"/>
 		<antcall target="fail-if-no-label-qa"/>
 		<antcall target="remote-deployment-dev-nolabel"/>
