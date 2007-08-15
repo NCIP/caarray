@@ -212,7 +212,8 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         Session mySession = HibernateUtil.getCurrentSession();
         try {
             // Create search-criteria with the given entity's attributes.
-            Criteria criteria = mySession.createCriteria(entityToMatch.getClass());
+            Criteria criteria = mySession.createCriteria(entityToMatch.getClass())
+                                         .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
             criteria.add(Example.create(entityToMatch));
             // Add search-criteria with the given entity's associations.
             SearchCriteriaUtil.addCriteriaForAssociations(entityToMatch, criteria);
