@@ -116,6 +116,7 @@ public class ArrayDaoTest  extends AbstractDaoTest {
 
     private static final Organization DUMMY_ORGANIZATION = new Organization();
     private static final ArrayDesign DUMMY_ARRAYDESIGN_1 = new ArrayDesign();
+    private static int uniqueInt = 0;
 
     private static final ArrayDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getArrayDao();
 
@@ -195,28 +196,18 @@ public class ArrayDaoTest  extends AbstractDaoTest {
     @Test
     public void testGetArrayDataType() {
         Transaction tx = null;
-        final long timestamp = System.currentTimeMillis();
-        ArrayDataTypeDescriptor testDescriptor = new ArrayDataTypeDescriptor() {
-            public String getName() {
-                return "name" + timestamp;
-            }
-            public String getVersion() {
-                return "version";
-            }
-            public List<QuantitationTypeDescriptor> getQuantitationTypes() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-            public boolean isEquivalent(ArrayDataType arrayDataType) {
-                // TODO Auto-generated method stub
-                return false;
-            };
-        };
+        ArrayDataTypeDescriptor testDescriptor = createTestArrayDataTypeDescriptor();
         ArrayDataType arrayDataType = new ArrayDataType();
         arrayDataType.setName(testDescriptor.getName());
         arrayDataType.setVersion(testDescriptor.getVersion());
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
+            QuantitationType quantitationType1 = createTestQuantitationType(createTestQuantitationTypeDescriptor());
+            QuantitationType quantitationType2 = createTestQuantitationType(createTestQuantitationTypeDescriptor());
+            DAO_OBJECT.save(quantitationType1);
+            //DAO_OBJECT.save(quantitationType2);
+            arrayDataType.getQuantitationTypes().add(quantitationType1);
+            //arrayDataType.getQuantitationTypes().add(quantitationType2);
             DAO_OBJECT.save(arrayDataType);
             tx.commit();
             tx = HibernateUtil.getCurrentSession().beginTransaction();
@@ -227,27 +218,33 @@ public class ArrayDaoTest  extends AbstractDaoTest {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());
         } finally {
-            remove(arrayDataType);
+            //remove(arrayDataType);
         }
+    }
+
+    private ArrayDataTypeDescriptor createTestArrayDataTypeDescriptor() {
+        return new ArrayDataTypeDescriptor() {
+            private String name = "name" + System.currentTimeMillis() + ":" + uniqueInt++;
+            public String getName() {
+                return name;
+            }
+            public String getVersion() {
+                return "version";
+            }
+            public List<QuantitationTypeDescriptor> getQuantitationTypes() {
+                return null;
+            }
+            public boolean isEquivalent(ArrayDataType arrayDataType) {
+                return false;
+            }
+        };
     }
 
     @Test
     public void testGetQuantitationType() {
         Transaction tx = null;
-        final long timestamp = System.currentTimeMillis();
-        QuantitationTypeDescriptor testDescriptor = new QuantitationTypeDescriptor() {
-            public String getName() {
-                return "name" + timestamp;
-            }
-
-            public DataType getDataType() {
-                // TODO Auto-generated method stub
-                return DataType.FLOAT;
-            }
-        };
-        QuantitationType quantitationType = new QuantitationType();
-        quantitationType.setName(testDescriptor.getName());
-        quantitationType.setType(testDescriptor.getDataType().getTypeClass());
+        QuantitationTypeDescriptor testDescriptor = createTestQuantitationTypeDescriptor();
+        QuantitationType quantitationType = createTestQuantitationType(testDescriptor);
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             DAO_OBJECT.save(quantitationType);
@@ -262,6 +259,25 @@ public class ArrayDaoTest  extends AbstractDaoTest {
         } finally {
             remove(quantitationType);
         }
+    }
+
+    private QuantitationTypeDescriptor createTestQuantitationTypeDescriptor() {
+        return new QuantitationTypeDescriptor() {
+            private String name = "name" + System.currentTimeMillis() + ":" + uniqueInt++;
+            public String getName() {
+                return name;
+            }
+
+            public DataType getDataType() {
+                return DataType.FLOAT;
+            }
+        };
+    }
+    private QuantitationType createTestQuantitationType(QuantitationTypeDescriptor descriptor) {
+        QuantitationType quantitationType = new QuantitationType();
+        quantitationType.setName(descriptor.getName());
+        quantitationType.setType(descriptor.getDataType().getTypeClass());
+        return quantitationType;
     }
 
     private void remove(AbstractCaArrayObject entity) {
