@@ -217,10 +217,10 @@ public class VocabularyServiceTest {
         }
         public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) throws DAOException {
         }
-        public <T extends AbstractCaArrayObject> List<T> queryEntityByExample(AbstractCaArrayObject entityToMatch) throws DAOException {
+        public <T extends AbstractCaArrayObject> List<T> queryEntityByExample(T entityToMatch) throws DAOException {
             return new ArrayList<T>();
         }
-        public <T extends AbstractCaArrayObject> List<T> queryEntityAndAssociationsByExample(AbstractCaArrayObject entityToMatch) throws DAOException {
+        public <T extends AbstractCaArrayObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch) throws DAOException {
             return new ArrayList<T>();
         }
         public <T extends AbstractCaArrayObject> AbstractCaArrayObject queryEntityById(AbstractCaArrayObject entityToMatch) throws DAOException {

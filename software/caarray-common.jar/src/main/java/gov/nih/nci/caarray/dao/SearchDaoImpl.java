@@ -111,7 +111,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
-    public <T extends AbstractCaArrayObject> List<T> query(AbstractCaArrayObject entityToMatch) {
+    public <T extends AbstractCaArrayObject> List<T> query(T entityToMatch) {
         return queryEntityAndAssociationsByExample(entityToMatch);
     }
 

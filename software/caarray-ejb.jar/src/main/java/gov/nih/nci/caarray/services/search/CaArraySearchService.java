@@ -106,7 +106,7 @@ public interface CaArraySearchService {
      *
      * @return the matching entities.
      */
-    <T extends AbstractCaArrayObject> List<T> search(AbstractCaArrayObject entityExample);
+    <T extends AbstractCaArrayObject> List<T> search(T entityExample);
 
     /**
      * Searches for entities based on the given CQL query.

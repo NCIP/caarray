@@ -127,7 +127,7 @@ public interface CaArrayDao {
      * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
      */
-    <T extends AbstractCaArrayObject> List<T> queryEntityByExample(AbstractCaArrayObject entityToMatch);
+    <T extends AbstractCaArrayObject> List<T> queryEntityByExample(T entityToMatch);
 
     /**
      * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity
@@ -137,5 +137,5 @@ public interface CaArrayDao {
      * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
      */
-    <T extends AbstractCaArrayObject> List<T> queryEntityAndAssociationsByExample(AbstractCaArrayObject entityToMatch);
+    <T extends AbstractCaArrayObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch);
 }

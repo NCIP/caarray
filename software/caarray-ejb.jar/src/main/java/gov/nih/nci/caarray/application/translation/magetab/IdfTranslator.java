@@ -107,7 +107,7 @@ import org.apache.commons.logging.LogFactory;
  * Translates entities found in and IDF document.
  */
 final class IdfTranslator extends AbstractTranslator {
-    
+
     private static final Log LOG = LogFactory.getLog(IdfTranslator.class);
 
     IdfTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
@@ -166,7 +166,7 @@ final class IdfTranslator extends AbstractTranslator {
             publication.setPubMedId(idfPublication.getPubMedId());
             Term statusTerm = getTerm(idfPublication.getStatus());
             publication.setStatus(statusTerm);
-            publication = (gov.nih.nci.caarray.domain.publication.Publication) replaceIfExists(publication);
+            publication = replaceIfExists(publication);
             publications.add(publication);
         }
         investigation.getPublications().addAll(publications);
@@ -209,7 +209,7 @@ final class IdfTranslator extends AbstractTranslator {
             // TODO Parse the address before putting it in the Address object.
             address.setStreetAddress1(idfPerson.getAddress());
             person.setAddress(address);
-            person = (gov.nih.nci.caarray.domain.contact.Person) replaceIfExists(person);
+            person = replaceIfExists(person);
             InvestigationContact contact = new InvestigationContact();
             contact.setContact(person);
             Collection<Term> roleTerms = getTerms(idfPerson.getRoles());

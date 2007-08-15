@@ -91,6 +91,7 @@ import org.apache.commons.logging.Log;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Example;
 
 import gov.nih.nci.caarray.util.HibernateUtil;
@@ -171,7 +172,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public <T extends AbstractCaArrayObject> List<T> queryEntityByExample(AbstractCaArrayObject entityToMatch) {
+    public <T extends AbstractCaArrayObject> List<T> queryEntityByExample(T entityToMatch) {
         List<T> resultList = new ArrayList<T>();
         List hibernateReturnedEntities = null;
         if (entityToMatch == null) {
@@ -181,7 +182,8 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         Session mySession = HibernateUtil.getCurrentSession();
         try {
             // Query database for list of entities matching the given entity's attributes.
-            Criteria criteria = mySession.createCriteria(entityToMatch.getClass());
+            Criteria criteria = mySession.createCriteria(entityToMatch.getClass())
+                                         .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
             criteria.add(Example.create(entityToMatch));
             hibernateReturnedEntities = criteria.list();
         } catch (HibernateException he) {
@@ -200,8 +202,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public <T extends AbstractCaArrayObject> List<T> 
-    queryEntityAndAssociationsByExample(AbstractCaArrayObject entityToMatch) {
+    public <T extends AbstractCaArrayObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch) {
         List<T> resultList = new ArrayList<T>();
         List hibernateReturnedEntities = null;
         if (entityToMatch == null) {

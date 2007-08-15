@@ -205,12 +205,14 @@ public class ArrayDaoTest  extends AbstractDaoTest {
             QuantitationType quantitationType1 = createTestQuantitationType(createTestQuantitationTypeDescriptor());
             QuantitationType quantitationType2 = createTestQuantitationType(createTestQuantitationTypeDescriptor());
             DAO_OBJECT.save(quantitationType1);
-            //DAO_OBJECT.save(quantitationType2);
+            DAO_OBJECT.save(quantitationType2);
+            assertNotSame(quantitationType1, quantitationType2);
             arrayDataType.getQuantitationTypes().add(quantitationType1);
-            //arrayDataType.getQuantitationTypes().add(quantitationType2);
+            arrayDataType.getQuantitationTypes().add(quantitationType2);
             DAO_OBJECT.save(arrayDataType);
             tx.commit();
             tx = HibernateUtil.getCurrentSession().beginTransaction();
+            HibernateUtil.getCurrentSession().clear();
             ArrayDataType retrievedArrayDataType = DAO_OBJECT.getArrayDataType(testDescriptor);
             assertEquals(arrayDataType, retrievedArrayDataType);
             tx.commit();

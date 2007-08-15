@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.application.translation.magetab;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.ProjectDao;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -185,9 +184,9 @@ abstract class AbstractTranslator {
      * @param entityToMatch the caArray entity to match.
      * @return a matching caArray that already exists in the database.
      */
-    protected AbstractCaArrayObject replaceIfExists(AbstractCaArrayObject entityToMatch) {
+    protected <T extends AbstractCaArrayObject> T replaceIfExists(T entityToMatch) {
         try {
-            List<AbstractCaArrayEntity> matchingEntities = getProjectDao()
+            List<T> matchingEntities = getProjectDao()
                 .queryEntityAndAssociationsByExample(entityToMatch);
             if (matchingEntities.size() == 1) {
                 // Exactly one match; use existing object in database.

@@ -103,7 +103,7 @@ public interface SearchDao {
      * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
      */
-    <T extends AbstractCaArrayObject> List<T> query(AbstractCaArrayObject entityToMatch);
+    <T extends AbstractCaArrayObject> List<T> query(T entityToMatch);
 
     /**
      * Returns the list of <code>AbstractCaArrayEntity</code> retrieved based on the

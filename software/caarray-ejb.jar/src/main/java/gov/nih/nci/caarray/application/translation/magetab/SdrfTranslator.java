@@ -193,7 +193,7 @@ final class SdrfTranslator extends AbstractTranslator {
             for (Provider sdrfProvider : sdrfSource.getProviders()) {
                 Organization organization = new Organization();
                 organization.setName(sdrfProvider.getName());
-                organization = (Organization) replaceIfExists(organization);
+                organization = replaceIfExists(organization);
                 source.getProviders().add(organization);
             }
             nodeTranslations.put(sdrfSource, source);
@@ -299,7 +299,7 @@ final class SdrfTranslator extends AbstractTranslator {
         arrayDesign.setLsidForEntity(arrayDesignName);
         arrayDesign.setName(arrayDesign.getLsidObjectId());
         // Look up database for ArrayDesign with this lsid. If doesn't exist, create.
-        arrayDesign = (ArrayDesign) replaceIfExists(arrayDesign);
+        arrayDesign = replaceIfExists(arrayDesign);
         return arrayDesign;
     }
 
@@ -369,7 +369,7 @@ final class SdrfTranslator extends AbstractTranslator {
         ProtocolApplication scanProtocolApp = new ProtocolApplication();
         Protocol scanProtocol = new Protocol();
         scanProtocol.setName(scan.getName());
-        scanProtocol = (Protocol) replaceIfExists(scanProtocol);
+        scanProtocol = replaceIfExists(scanProtocol);
         scanProtocolApp.setProtocol(scanProtocol);
         caArrayData.getProtocolApplications().add(scanProtocolApp);
     }
@@ -408,7 +408,7 @@ final class SdrfTranslator extends AbstractTranslator {
         ProtocolApplication normalizationProtocolApp = new ProtocolApplication();
         Protocol normalizationProtocol = new Protocol();
         normalizationProtocol.setName(normalization.getName());
-        normalizationProtocol = (Protocol) replaceIfExists(normalizationProtocol);
+        normalizationProtocol = replaceIfExists(normalizationProtocol);
         normalizationProtocolApp.setProtocol(normalizationProtocol);
         caArrayData.getProtocolApplications().add(normalizationProtocolApp);
     }

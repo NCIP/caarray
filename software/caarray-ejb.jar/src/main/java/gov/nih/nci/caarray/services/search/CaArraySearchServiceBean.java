@@ -111,7 +111,7 @@ public class CaArraySearchServiceBean implements CaArraySearchService {
     /**
      * {@inheritDoc}
      */
-    public <T extends AbstractCaArrayObject> List<T> search(AbstractCaArrayObject entityExample) {
+    public <T extends AbstractCaArrayObject> List<T> search(T entityExample) {
         List<T> retrievedList = new ArrayList<T>();
         if (entityExample == null) {
             LOG.error("Search was called with null example entity.");

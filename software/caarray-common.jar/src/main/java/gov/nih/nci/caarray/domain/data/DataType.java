@@ -127,9 +127,9 @@ public enum DataType {
      */
     STRING(String.class);
 
-    private Class typeClass;
+    private Class<?> typeClass;
 
-    private DataType(Class typeClass) {
+    private DataType(Class<?> typeClass) {
         this.typeClass = typeClass;
     }
 
@@ -138,7 +138,7 @@ public enum DataType {
      *
      * @return the corresponding class.
      */
-    public Class getTypeClass() {
+    public Class<?> getTypeClass() {
         return typeClass;
     }
 
