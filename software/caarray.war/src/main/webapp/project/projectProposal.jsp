@@ -19,17 +19,17 @@
 <table>
   <tr>
     <th>
-      <h:outputLabel for="projectTitle">
+      <h:outputLabel for="projectProposalForm:title">
         <h:outputText value="Title for new project:"/>
       </h:outputLabel>
     </th>
     <td>
-      <h:inputText id="projectTitle" value="#{projectProposalBean.proposal.project.investigation.title}"/>
+      <h:inputText id="title" value="#{projectProposalBean.proposal.project.investigation.title}"/>
     </td>
   </tr>
   <tr>
     <td colspan="2">
-      <h:commandButton id="submitCommandButton" value="Submit" action="#{projectProposalBean.submitNew}"/>
+      <h:commandButton id="submit" value="Submit" action="#{projectProposalBean.submitNew}"/>
     </td>
   </tr>
 </table>

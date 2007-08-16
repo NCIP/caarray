@@ -20,7 +20,7 @@
      like to do?</p>
     <ul>
       <li>
-        <h:commandLink id="manageProjectFilesCommandLink" action="manageProjectFiles">
+        <h:commandLink id="manageFiles" action="manageFiles">
           <h:outputText value="Manage files"/>
         </h:commandLink>
       </li>

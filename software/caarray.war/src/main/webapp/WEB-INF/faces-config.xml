@@ -41,7 +41,7 @@
     
     <navigation-rule>
         <navigation-case>
-            <from-outcome>manageProjectFiles</from-outcome>
+            <from-outcome>manageFiles</from-outcome>
             <to-view-id>/project/files.jsp</to-view-id>
         </navigation-case>
     </navigation-rule>

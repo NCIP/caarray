@@ -15,38 +15,37 @@
 <f:view>
 <%@include file="/navigation/menu.jsp" %>
 
-<h:form>
+<h:form id="filesForm">
   <h:messages/>
   <p>You are managing files for <h:outputText value="#{projectManagementBean.project.investigation.title}"/>.</p>
-  <h:dataTable value="#{projectManagementBean.project.filesList}"
-               var="file">
+  <h:dataTable id="files" value="#{projectManagementBean.project.filesList}" var="file">
     <f:facet name="header">
       <h:outputText value="Current files"/>
     </f:facet>
     <h:column>
       <f:facet name="header">
-        <h:outputText value="Path"/>
+        <h:outputText value="Name"/>
       </f:facet>
-      <h:outputText id="filePath" value="#{file.path}"/>
+      <h:outputText id="filename" value="#{file.name}"/>
     </h:column>
     <h:column>
       <f:facet name="header">
         <h:outputText value="File Type"/>
       </f:facet>
-      <h:outputText id="fileType" value="#{file.type}"/>
+      <h:outputText id="type" value="#{file.type}"/>
     </h:column>
     <h:column>
       <f:facet name="header">
         <h:outputText value="Status"/>
       </f:facet>
-      <h:outputText id="fileStatus" value="#{file.status}"/>
+      <h:outputText id="status" value="#{file.status}"/>
     </h:column>
   </h:dataTable>
-  <h:commandButton id="importCommandButton" action="#{projectManagementBean.importProjectFiles}" value="Import" />
+  <h:commandButton id="import" action="#{projectManagementBean.importProjectFiles}" value="Import" />
 </h:form>
 <h:form id="uploadForm" enctype="multipart/form-data">
   <t:inputFileUpload id="inputFileUpload" value="#{projectManagementBean.uploadFile}" storage="file" required="true"/>
-  <h:commandButton id="uploadCommandButton" action="#{projectManagementBean.upload}" value="Upload"/>
+  <h:commandButton id="upload" action="#{projectManagementBean.upload}" value="Upload"/>
 </h:form>
 </f:view>
 </body>
