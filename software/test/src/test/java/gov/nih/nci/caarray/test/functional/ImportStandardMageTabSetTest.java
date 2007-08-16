@@ -99,6 +99,8 @@ import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
  */
 public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
+    private static final int NUMBER_OF_FILES = 30;
+
     @Override
     public void tearDown() throws Exception {
         // don't
@@ -107,34 +109,23 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
     @Test
     public void testNew() throws Exception {
         
-        // Upload the following files:
-        // - MAGE-TAB IDF
-        // - MAGE-TAB SDRF (with references to included native CEL files and corresponding Affymetrix array design)
-        // - MAGE-TAB Derived Data Matrix
-        // - CEL files referenced in SDRF
-        // 
-        // Import the files.
-        // 
-        // Verify that the files imported successfully.
-        // 
-        // Using the Java remote API, verify:
-        // - Expected entities exist
-        // - Permissions are correct
-        // - Files can be downloaded through API
-        // - Raw and derived data are available and accurate
         selenium.open("/caarray/");
 
         String title = "test" + System.currentTimeMillis();
         // Create project
         clickAndWait("mainMenu:proposeProject");
-        selenium.type("projectProposalForm:projectTitle", title);
-        clickAndWait("projectProposalForm:submitCommandButton");
+        selenium.type("projectProposalForm:title", title);
+        clickAndWait("projectProposalForm:submit");
         assertTrue(selenium.isTextPresent("Proposal with title '" + title + "' has been created successfully"));
 
-        // Upload files
+        // Upload the following files:
+        // - MAGE-TAB IDF
+        // - MAGE-TAB SDRF (with references to included native CEL files and corresponding Affymetrix array design)
+        // - MAGE-TAB Derived Data Matrix
+        // - CEL files referenced in SDRF
         clickAndWait("mainMenu:workspace");
         clickAndWait("link=" + title);
-        clickAndWait("projectManagementForm:manageProjectFilesCommandLink");
+        clickAndWait("projectManagementForm:manageFiles");
 
         upload(MageTabDataFiles.TCGA_BROAD_IDF);
         upload(MageTabDataFiles.TCGA_BROAD_SDRF);
@@ -148,18 +139,31 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         for (File celFile : MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY.listFiles(celFilter)) {
             upload(celFile);
         }
+        checkFileStatus("UPLOADED");
 
-        // Import data
-        clickAndWait("_idJsp1:importCommandButton");
-        // TODO Implement front end checks
+        // Import the files.
+        clickAndWait("filesForm:import");
 
-        // Validate data via API
+        // Verify that the files imported successfully.
+        checkFileStatus("IMPORTED");
+        
+        // Using the Java remote API, verify:
+        // - Expected entities exist
+        // - Permissions are correct
+        // - Files can be downloaded through API
+        // - Raw and derived data are available and accurate
+    }
+
+    private void checkFileStatus(String status) {
+        for (int i = 0; i < NUMBER_OF_FILES; i++) {
+            assertEquals(status, selenium.getText("filesForm:files:" + i + ":status"));
+        }
     }
 
     private void upload(File file) throws IOException {
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
         selenium.type("uploadForm:inputFileUpload", filePath);
-        clickAndWait("uploadForm:uploadCommandButton");
+        clickAndWait("uploadForm:upload");
         assertTrue(selenium.isTextPresent(file.getName()));
     }
 }

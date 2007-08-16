@@ -100,10 +100,10 @@ public class SubmitProjectProposalBasicTest extends AbstractSeleniumTest {
 
         // - Provide a unique project title
         String title = "test" + System.currentTimeMillis();
-        selenium.type("projectProposalForm:projectTitle", title);
+        selenium.type("projectProposalForm:title", title);
 
         // - Submit the proposal
-        clickAndWait("projectProposalForm:submitCommandButton");
+        clickAndWait("projectProposalForm:submit");
 
         // - The system returns to the workspace page (verify)
         assertEquals("User Workspace", selenium.getText("//h1"));
