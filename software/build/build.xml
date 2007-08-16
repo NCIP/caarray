@@ -445,8 +445,6 @@
                 <include name="axis.jar" />
                 <include name="cacore32-client.jar" />
                 <include name="castor-1.0.2.jar" />
-				<include name="jdbc-se2.0.jar" />
-				<include name="xerces-J_1.4.0.jar" />
                 <include name="cglib-2.1.3.jar" />
                 <include name="commons-collections-3.2.jar" />
                 <include name="commons-discovery-0.2.jar" />
