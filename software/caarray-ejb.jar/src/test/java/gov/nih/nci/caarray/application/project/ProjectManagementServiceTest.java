@@ -87,6 +87,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -104,9 +105,7 @@ import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- */
+@SuppressWarnings("PMD")
 public class ProjectManagementServiceTest {
 
     private ProjectManagementService projectManagementService;
@@ -142,9 +141,7 @@ public class ProjectManagementServiceTest {
         files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
         projectManagementService.addFiles(project, files);
         assertNotNull(project.getFiles().iterator().next().getProject());
-
-        // TODO we should be able to uncomment this line, but transaction scoping appears broken in the unit tests
-//        project = projectManagementService.getProject(123L);
+        project = projectManagementService.getProject(123L);
         assertEquals(2, project.getFiles().size());
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
@@ -185,16 +182,21 @@ public class ProjectManagementServiceTest {
 
     private static class LocalProjectDaoStub extends ProjectDaoStub {
 
-        AbstractCaArrayObject lastSaved;
+        private final HashMap<Long, AbstractCaArrayObject> savedObjects = new HashMap<Long, AbstractCaArrayObject>();
+        private AbstractCaArrayObject lastSaved;
 
         @Override
-        public void save(AbstractCaArrayObject caArrayEntity) {
-            lastSaved = caArrayEntity;
+        public void save(AbstractCaArrayObject caArrayObject) {
+            lastSaved = caArrayObject;
+            savedObjects.put(caArrayObject.getId(), caArrayObject);
         }
 
         @Override
         @SuppressWarnings("PMD")
         public Project getProject(long id) {
+            if (savedObjects.containsKey(id)) {
+                return (Project) savedObjects.get(id);
+            }
             Project project = new Project();
             // Perform voodoo magic
             try {
@@ -212,6 +214,7 @@ public class ProjectManagementServiceTest {
             } catch (InvocationTargetException e) {
                 e.printStackTrace();
             }
+            save(project);
             return project;
         }
 
