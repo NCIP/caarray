@@ -115,11 +115,7 @@ public class ArrayDesignServiceTest {
         arrayDesignService = createArrayDesignService(caArrayDaoFactoryStub, fileAccessServiceStub, vocabularyServiceStub);
     }
 
-    public static ArrayDesignService getArrayDesignService() {
-        return createArrayDesignService(new DaoFactoryStub(), new FileAccessServiceStub(), new VocabularyServiceStub());
-    }
-
-    private static ArrayDesignService createArrayDesignService(DaoFactoryStub caArrayDaoFactoryStub,
+    public static ArrayDesignService createArrayDesignService(DaoFactoryStub caArrayDaoFactoryStub,
             final FileAccessServiceStub fileAccessServiceStub,
             VocabularyServiceStub vocabularyServiceStub) {
         ArrayDesignServiceBean bean = new ArrayDesignServiceBean();

@@ -82,17 +82,28 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import static org.junit.Assert.*;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
+import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceTest;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
+import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.DataRow;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.HybridizationDataValues;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
@@ -107,6 +118,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import affymetrix.fusion.cel.FusionCELData;
+import affymetrix.fusion.cel.FusionCELFileEntryType;
 
 /**
  * Tests the ArrayDataService subsystem
@@ -115,9 +127,10 @@ import affymetrix.fusion.cel.FusionCELData;
 public class ArrayDataServiceTest {
 
     private ArrayDataService arrayDataService;
-    ArrayDesignService arrayDesignService = ArrayDesignServiceTest.getArrayDesignService();
     FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
-    DaoFactoryStub daoFactoryStub = new DaoFactoryStub();
+    LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
+    ArrayDesignService arrayDesignService = 
+        ArrayDesignServiceTest.createArrayDesignService(daoFactoryStub, fileAccessServiceStub, new VocabularyServiceStub());
 
     @Before
     public void setUp() throws Exception {
@@ -132,7 +145,7 @@ public class ArrayDataServiceTest {
     public void testAffymetrixCelData() throws InvalidDataException {
         RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
         arrayDataService.importData(celData);
-        DataSet<?> dataSet = arrayDataService.getData(celData);
+        DataSet dataSet = arrayDataService.getData(celData);
         checkCelValues(celData, dataSet, AffymetrixArrayDataFiles.TEST3_CEL);
 
         celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CALVIN_CEL);
@@ -141,36 +154,38 @@ public class ArrayDataServiceTest {
         checkCelValues(celData, dataSet, AffymetrixArrayDataFiles.TEST3_CALVIN_CEL);
     }
 
-    private void checkCelValues(RawArrayData celData, DataSet<?> dataSet, File file) {
+    private void checkCelValues(RawArrayData celData, DataSet dataSet, File file) {
         FusionCELData fusionCelData = new FusionCELData();
         fusionCelData.setFileName(file.getAbsolutePath());
         fusionCelData.read();
         ArrayDesignDetails designDetails = getArrayDesignDetails(celData);
-//        assertEquals(AffymetrixCelQuantitationType.CEL_X, values.getQuantitationTypes().get(0));
-//        assertEquals(AffymetrixCelQuantitationType.CEL_Y, values.getQuantitationTypes().get(1));
-//        assertEquals(AffymetrixCelQuantitationType.CEL_INTENSITY, values.getQuantitationTypes().get(2));
-//        assertEquals(AffymetrixCelQuantitationType.CEL_INTENSITY_STD_DEV, values.getQuantitationTypes().get(3));
-//        assertEquals(AffymetrixCelQuantitationType.CEL_MASK, values.getQuantitationTypes().get(4));
-//        assertEquals(AffymetrixCelQuantitationType.CEL_OUTLIER, values.getQuantitationTypes().get(5));
-//        assertEquals(AffymetrixCelQuantitationType.CEL_PIXELS, values.getQuantitationTypes().get(6));
-//        int rowCount = values.getValues().length;
-//        assertEquals(designDetails.getFeatures().size(), rowCount);
-//        FusionCELFileEntryType fusionCelEntry = new FusionCELFileEntryType();
-//        for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-//            fusionCelData.getEntry(rowIndex, fusionCelEntry);
-//            assertNotNull(values.getElements().get(rowIndex));
-//            Object[] rowValues = values.getValues()[rowIndex];
-//            assertEquals(7, rowValues.length);
-//            Feature feature = (Feature) values.getElements().get(rowIndex);
-//            assertEquals(feature.getColumn(), rowValues[0]);
-//            assertEquals(fusionCelData.indexToX(rowIndex), rowValues[0]);
-//            assertEquals(fusionCelData.indexToY(rowIndex), rowValues[1]);
-//            assertEquals(fusionCelEntry.getIntensity(), rowValues[2]);
-//            assertEquals(fusionCelEntry.getStdv(), rowValues[3]);
-//            assertEquals(fusionCelData.isMasked(rowIndex), rowValues[4]);
-//            assertEquals(fusionCelData.isOutlier(rowIndex), rowValues[5]);
-//            assertEquals(fusionCelEntry.getPixels(), rowValues[6]);
-//        }
+        assertTrue(AffymetrixCelQuantitationType.CEL_X.isEquivalent(dataSet.getQuantitationTypes().get(0)));
+        assertTrue(AffymetrixCelQuantitationType.CEL_Y.isEquivalent(dataSet.getQuantitationTypes().get(1)));
+        assertTrue(AffymetrixCelQuantitationType.CEL_INTENSITY.isEquivalent(dataSet.getQuantitationTypes().get(2)));
+        assertTrue(AffymetrixCelQuantitationType.CEL_INTENSITY_STD_DEV.isEquivalent(dataSet.getQuantitationTypes().get(3)));
+        assertTrue(AffymetrixCelQuantitationType.CEL_MASK.isEquivalent(dataSet.getQuantitationTypes().get(4)));
+        assertTrue(AffymetrixCelQuantitationType.CEL_OUTLIER.isEquivalent(dataSet.getQuantitationTypes().get(5)));
+        assertTrue(AffymetrixCelQuantitationType.CEL_PIXELS.isEquivalent(dataSet.getQuantitationTypes().get(6)));
+        assertEquals(designDetails.getFeatures().size(), dataSet.getRows().size());
+        FusionCELFileEntryType fusionCelEntry = new FusionCELFileEntryType();
+        for (int rowIndex = 0; rowIndex < designDetails.getFeatures().size(); rowIndex++) {
+            fusionCelData.getEntry(rowIndex, fusionCelEntry);
+            DataRow dataRow = dataSet.getRows().get(rowIndex);
+            Feature feature = (Feature) dataRow.getDesignElement();
+            assertNotNull(feature);
+//            assertEquals(fusionCelData.indexToX(rowIndex), feature.getRow());
+//            assertEquals(fusionCelData.indexToY(rowIndex), feature.getColumn());
+            assertEquals(1, dataRow.getHybridizationValues().size());
+            HybridizationDataValues dataValues = dataRow.getHybridizationValues().get(0);
+            assertEquals(7, dataValues.getValues().size());
+            assertEquals(fusionCelData.indexToX(rowIndex), dataValues.getValues().get(0).getValue());
+            assertEquals(fusionCelData.indexToY(rowIndex), dataValues.getValues().get(1).getValue());
+            assertEquals(fusionCelEntry.getIntensity(), dataValues.getValues().get(2).getValue());
+            assertEquals(fusionCelEntry.getStdv(), dataValues.getValues().get(3).getValue());
+            assertEquals(fusionCelData.isMasked(rowIndex), dataValues.getValues().get(4).getValue());
+            assertEquals(fusionCelData.isOutlier(rowIndex), dataValues.getValues().get(5).getValue());
+            assertEquals(fusionCelEntry.getPixels(), dataValues.getValues().get(6).getValue());
+        }
     }
 
     private ArrayDesignDetails getArrayDesignDetails(AbstractArrayData arrayData) {
@@ -192,12 +207,41 @@ public class ArrayDataServiceTest {
         celDataFile.setType(FileType.AFFYMETRIX_CEL);
         celData.setDataFile(celDataFile);
         celData.setHybridization(hybridization);
-        ArrayDataType affymetrixCelType = new ArrayDataType();
-        affymetrixCelType.setName(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL.getName());
-        affymetrixCelType.setVersion(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL.getVersion());
-        celData.setType(affymetrixCelType);
+        celData.setType(daoFactoryStub.getArrayDao().getArrayDataType(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL));
         hybridization.setArrayData(celData);
         return celData;
+    }
+
+    private static final class LocalDaoFactoryStub extends DaoFactoryStub {
+
+        @Override
+        public ArrayDao getArrayDao() {
+            return new ArrayDaoStub() {
+
+                public ArrayDataType getArrayDataType(ArrayDataTypeDescriptor descriptor) {
+                    ArrayDataType arrayDataType = new ArrayDataType();
+                    arrayDataType.setName(descriptor.getName());
+                    arrayDataType.setVersion(descriptor.getVersion());
+                    addQuantitationTypes(arrayDataType, descriptor);
+                    return arrayDataType;
+                }
+
+                private void addQuantitationTypes(ArrayDataType arrayDataType, ArrayDataTypeDescriptor descriptor) {
+                    for (QuantitationTypeDescriptor quantitationTypeDescriptor : descriptor.getQuantitationTypes()) {
+                        arrayDataType.getQuantitationTypes().add(getQuantitationType(quantitationTypeDescriptor));
+                    }
+                }
+
+                public QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor) {
+                    QuantitationType quantitationType = new QuantitationType();
+                    quantitationType.setName(descriptor.getName());
+                    quantitationType.setType(descriptor.getDataType().getTypeClass());
+                    return quantitationType;
+                }
+
+            };
+        }
+        
     }
 
 }

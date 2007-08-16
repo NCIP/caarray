@@ -87,7 +87,6 @@ import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelHandler
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
@@ -206,9 +205,9 @@ public class ArrayDataServiceBean implements ArrayDataService {
     /**
      * {@inheritDoc}
      */
-    public DataSet<? extends AbstractDesignElement> getData(AbstractArrayData arrayData) {
+    public DataSet getData(AbstractArrayData arrayData) {
         LogUtil.logSubsystemEntry(LOG, arrayData);
-        DataSet<? extends AbstractDesignElement> dataSet = getHandler(arrayData).getData();
+        DataSet dataSet = getHandler(arrayData).getData();
         LogUtil.logSubsystemExit(LOG);
         return dataSet;
     }
@@ -225,9 +224,9 @@ public class ArrayDataServiceBean implements ArrayDataService {
     /**
      * {@inheritDoc}
      */
-    public DataSet<? extends AbstractDesignElement> getData(AbstractArrayData arrayData, List<QuantitationType> types) {
+    public DataSet getData(AbstractArrayData arrayData, List<QuantitationType> types) {
         LogUtil.logSubsystemEntry(LOG, arrayData);
-        DataSet<? extends AbstractDesignElement> dataSet = getHandler(arrayData).getData(types);
+        DataSet dataSet = getHandler(arrayData).getData(types);
         LogUtil.logSubsystemExit(LOG);
         return dataSet;
     }
@@ -254,8 +253,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
      * {@inheritDoc}
      */
     public ValidationResult validate(AbstractArrayData arrayData) {
-        // TODO Auto-generated method stub
-        return null;
+        return getHandler(arrayData).validate();
     }
 
     ArrayDesignService getArrayDesignService() {

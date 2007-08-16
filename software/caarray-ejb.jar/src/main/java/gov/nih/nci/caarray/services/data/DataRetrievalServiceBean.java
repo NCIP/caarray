@@ -102,14 +102,14 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
     /**
      * {@inheritDoc}
      */
-    public DataSet<?> getDataSet(AbstractArrayData arrayData) {
+    public DataSet getDataSet(AbstractArrayData arrayData) {
         return arrayDataService.getData(arrayData);
     }
 
     /**
      * {@inheritDoc}
      */
-    public DataSet<?> getDataSet(DataRetrievalRequest request) {
+    public DataSet getDataSet(DataRetrievalRequest request) {
         return null;
     }
 

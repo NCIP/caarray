@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
@@ -132,7 +131,7 @@ public interface ArrayDataService {
      * @param arrayData get data from this data object
      * @return the data.
      */
-    DataSet<? extends AbstractDesignElement> getData(AbstractArrayData arrayData);
+    DataSet getData(AbstractArrayData arrayData);
 
     /**
      * Returns the data content of the provided array data object for only the specified
@@ -142,6 +141,6 @@ public interface ArrayDataService {
      * @param types get data for these types only
      * @return the data.
      */
-    DataSet<? extends AbstractDesignElement> getData(AbstractArrayData arrayData, List<QuantitationType> types);
+    DataSet getData(AbstractArrayData arrayData, List<QuantitationType> types);
     
 }

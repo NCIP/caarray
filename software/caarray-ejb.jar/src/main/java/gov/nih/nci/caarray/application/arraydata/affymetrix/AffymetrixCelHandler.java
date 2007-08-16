@@ -86,7 +86,6 @@ import gov.nih.nci.caarray.application.arraydata.AbstractRawArrayDataHandler;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.Feature;
@@ -99,6 +98,7 @@ import gov.nih.nci.caarray.validation.InvalidDataException;
 import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,13 +131,14 @@ public final class AffymetrixCelHandler extends AbstractRawArrayDataHandler {
     /**
      * {@inheritDoc}
      */
-    public DataSet<? extends AbstractDesignElement> getData() {
+    public DataSet getData() {
         return getData(getCelQuantitationTypeList());
     }
 
     private List<QuantitationType> getCelQuantitationTypeList() {
         List<QuantitationType> celQuantitationTypes = new ArrayList<QuantitationType>();
         celQuantitationTypes.addAll(getArrayData().getType().getQuantitationTypes());
+        Collections.sort(celQuantitationTypes, AffymetrixCelQuantitationType.getComparator());
         return celQuantitationTypes;
     }
 
@@ -151,8 +152,8 @@ public final class AffymetrixCelHandler extends AbstractRawArrayDataHandler {
     /**
      * {@inheritDoc}
      */
-    public DataSet<? extends AbstractDesignElement> getData(List<QuantitationType> types) {
-        DataSet<Feature> celDataSet = new DataSet<Feature>(getRawArrayData().getHybridization(), types);
+    public DataSet getData(List<QuantitationType> types) {
+        DataSet celDataSet = new DataSet(getRawArrayData().getHybridization(), types);
         initializeForRead();
         loadValues(celDataSet);
         return celDataSet;
@@ -193,7 +194,7 @@ public final class AffymetrixCelHandler extends AbstractRawArrayDataHandler {
         return new FeatureKey(x, y);
     }
 
-    private void loadValues(DataSet<Feature> dataSet) {
+    private void loadValues(DataSet dataSet) {
         FusionCELFileEntryType entry = new FusionCELFileEntryType();
         int numberOfCells = celData.getCells();
         for (int cellIndex = 0; cellIndex < numberOfCells; cellIndex++) {
@@ -202,18 +203,18 @@ public final class AffymetrixCelHandler extends AbstractRawArrayDataHandler {
         }
     }
 
-    private void handleEntry(DataSet<Feature> dataSet, FusionCELFileEntryType entry,
+    private void handleEntry(DataSet dataSet, FusionCELFileEntryType entry,
             int cellIndex) {
         int x = celData.indexToX(cellIndex);
         int y = celData.indexToY(cellIndex);
-        DataRow<Feature> row = dataSet.addRow(getFeature(x, y));
+        DataRow row = dataSet.addRow(getFeature(x, y));
         for (QuantitationType quantitationType : dataSet.getQuantitationTypes()) {
             setValue(row, quantitationType, x, y, entry);
         }
     }
 
     @SuppressWarnings("PMD.CyclomaticComplexity") // Allowable for switch-like case
-    private void setValue(DataRow<Feature> row, QuantitationType quantitationType, int x, int y,
+    private void setValue(DataRow row, QuantitationType quantitationType, int x, int y,
             FusionCELFileEntryType entry) {
         final Hybridization hybridization = getRawArrayData().getHybridization();
         if (AffymetrixCelQuantitationType.CEL_X.isEquivalent(quantitationType)) {
@@ -239,8 +240,7 @@ public final class AffymetrixCelHandler extends AbstractRawArrayDataHandler {
      * {@inheritDoc}
      */
     public ValidationResult validate() {
-        // TODO Auto-generated method stub
-        return null;
+        return new ValidationResult();
     }
 
     /**

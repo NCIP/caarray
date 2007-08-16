@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.application.arraydata.affymetrix;
 
+import java.util.Comparator;
+
 import gov.nih.nci.caarray.domain.data.DataType;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
@@ -89,14 +91,41 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 /**
  * Quantitation type information for Affymetrix CEL files.
  */
-enum AffymetrixCelQuantitationType implements QuantitationTypeDescriptor {
-
+public enum AffymetrixCelQuantitationType implements QuantitationTypeDescriptor {
+    
+    /**
+     * CELX quantitation type.
+     */
     CEL_X("CELX", DataType.INTEGER),
+    
+    /**
+     * CELY quantitation type.
+     */
     CEL_Y("CELY", DataType.INTEGER),
+    
+    /**
+     * CELIntensity quantitation type.
+     */
     CEL_INTENSITY("CELIntensity", DataType.FLOAT),
+    
+    /**
+     * CELIntensityStdev quantitation type.
+     */
     CEL_INTENSITY_STD_DEV("CELIntensityStdev", DataType.FLOAT),
+    
+    /**
+     * CELMask quantitation type.
+     */
     CEL_MASK("CELMask", DataType.BOOLEAN),
+    
+    /**
+     * CELOutlier quantitation type.
+     */
     CEL_OUTLIER("CELOutlier", DataType.BOOLEAN),
+    
+    /**
+     * CELPixels quantitation type.
+     */
     CEL_PIXELS("CELPixels", DataType.SHORT);
 
     private final String name;
@@ -135,5 +164,34 @@ enum AffymetrixCelQuantitationType implements QuantitationTypeDescriptor {
         && quantitationType.getName().equals(name);
     }
 
+    static Comparator<QuantitationType> getComparator() {
+        return new AffymetrixCelQuantitationTypeComparator();
+    }
+
+    /**
+     * <code>Comparator</code> that orders QuantitationTypes that correspond to descriptors in this <code>enum</code>
+     * based on the order they are declared.
+     */
+    private static class AffymetrixCelQuantitationTypeComparator implements Comparator<QuantitationType> {
+
+        /**
+         * {@inheritDoc}
+         */
+        public int compare(QuantitationType quantitationType1, QuantitationType quantitationType2) {
+            int index1 = getIndex(quantitationType1);
+            int index2 = getIndex(quantitationType2);
+            return index1 - index2;
+        }
+
+        private int getIndex(QuantitationType quantitationType) {
+            for (int i = 0; i < values().length; i++) {
+                if (values()[i].isEquivalent(quantitationType)) {
+                    return i;
+                }
+            }
+            throw new IllegalArgumentException("Unsupported QuantitationType " + quantitationType);
+        }
+
+    }
 
 }
