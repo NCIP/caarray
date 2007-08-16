@@ -100,9 +100,9 @@ public interface CaArrayDao {
      * Saves the entity to persistent storage, updating or inserting
      * as necessary.
      *
-     * @param caArrayEntity the entity to save
+     * @param caArrayObject the entity to save
      */
-    void save(AbstractCaArrayObject caArrayEntity);
+    void save(AbstractCaArrayObject caArrayObject);
 
     /**
      * Saves the collection of entities to persistent storage, updating or inserting

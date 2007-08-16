@@ -83,6 +83,8 @@
 
 package gov.nih.nci.caarray.domain.file;
 
+import java.io.File;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -129,7 +131,17 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     public void setPath(final String pathVal) {
         this.path = pathVal;
     }
-
+    
+    /**
+     * Returns the name of the file.
+     * 
+     * @return the file name.
+     */
+    @Transient 
+    public String getName() {
+        return new File(getPath()).getName();
+    }
+    
     /**
      * Gets the type.
      *
@@ -169,7 +181,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      */
     @ManyToOne
     @JoinColumn(insertable = false, updatable = false)
-    @ForeignKey(name = "CAARRAYFILE_PROJECT_IDX")
+    @ForeignKey(name = "CAARRAYFILE_PROJECT_FK")
     public Project getProject() {
         return project;
     }
