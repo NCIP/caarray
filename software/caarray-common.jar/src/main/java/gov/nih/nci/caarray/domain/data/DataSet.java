@@ -95,10 +95,8 @@ import java.util.Map;
 
 /**
  * Contains hybridization data requested by a client.
- *
- * @param <DesignElementType> the <code>AbstractDesignElement</code> subclass type associated with this row.
  */
-public final class DataSet<DesignElementType extends AbstractDesignElement> implements Serializable {
+public final class DataSet implements Serializable {
 
     private static final long serialVersionUID = 4430513886275629776L;
     
@@ -106,7 +104,7 @@ public final class DataSet<DesignElementType extends AbstractDesignElement> impl
     private final Map<Hybridization, Integer> hybridizationIndexes = new HashMap<Hybridization, Integer>();
     private final List<QuantitationType> quantitationTypes;
     private final Map<QuantitationType, Integer> quantitationTypeIndexes = new HashMap<QuantitationType, Integer>();
-    private final List<DataRow<DesignElementType>> rows = new ArrayList<DataRow<DesignElementType>>();
+    private final List<DataRow> rows = new ArrayList<DataRow>();
     
     /**
      * Instantiates a new <code>DataSet</code> that will contain hybridization data for each
@@ -145,7 +143,7 @@ public final class DataSet<DesignElementType extends AbstractDesignElement> impl
     /**
      * @return the rows
      */
-    public List<DataRow<DesignElementType>> getRows() {
+    public List<DataRow> getRows() {
         return Collections.unmodifiableList(rows);
     }
 
@@ -169,8 +167,8 @@ public final class DataSet<DesignElementType extends AbstractDesignElement> impl
      * @param designElement the design element associated with the row
      * @return the new row.
      */
-    public DataRow<DesignElementType> addRow(DesignElementType designElement) {
-        DataRow<DesignElementType> row = new DataRow<DesignElementType>(this, designElement);
+    public DataRow addRow(AbstractDesignElement designElement) {
+        DataRow row = new DataRow(this, designElement);
         rows.add(row);
         return row;
     }

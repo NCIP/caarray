@@ -91,18 +91,16 @@ import java.util.List;
 
 /**
  * Contains the hybridization values associated with a specific design element.
- * 
- * @param <DesignElementType> the <code>AbstractDesignElement</code> subclass type associated with this row.
  */
-public final class DataRow<DesignElementType extends AbstractDesignElement> implements Serializable {
+public final class DataRow implements Serializable {
 
     private static final long serialVersionUID = -3145799076687084262L;
     
-    private final DesignElementType designElement;
-    private final DataSet<DesignElementType> dataSet;
+    private final AbstractDesignElement designElement;
+    private final DataSet dataSet;
     private final List<HybridizationDataValues> hybridizationValues;
 
-    DataRow(DataSet<DesignElementType> dataSet, DesignElementType designElement) {
+    DataRow(DataSet dataSet, AbstractDesignElement designElement) {
         super();
         this.dataSet = dataSet;
         this.designElement = designElement;
@@ -121,14 +119,14 @@ public final class DataRow<DesignElementType extends AbstractDesignElement> impl
     /**
      * @return the designElement
      */
-    public DesignElementType getDesignElement() {
+    public AbstractDesignElement getDesignElement() {
         return designElement;
     }
 
     /**
      * @return the dataSet
      */
-    public DataSet<DesignElementType> getDataSet() {
+    public DataSet getDataSet() {
         return dataSet;
     }
     

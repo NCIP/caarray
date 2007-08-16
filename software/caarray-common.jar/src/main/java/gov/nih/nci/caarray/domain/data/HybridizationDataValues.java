@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.domain.data;
 
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
 import java.io.Serializable;
@@ -96,10 +95,10 @@ public final class HybridizationDataValues implements Serializable {
 
     private static final long serialVersionUID = 8804648118447372387L;
     private final List<DataValue> values;
-    private final DataRow<? extends AbstractDesignElement> dataRow;
+    private final DataRow dataRow;
     private final Hybridization hybridization;
 
-    private HybridizationDataValues(DataRow<? extends AbstractDesignElement> dataRow, Hybridization hybridization) {
+    private HybridizationDataValues(DataRow dataRow, Hybridization hybridization) {
         super();
         this.dataRow = dataRow;
         this.hybridization = hybridization;
@@ -115,7 +114,7 @@ public final class HybridizationDataValues implements Serializable {
         return dataValues;
     }
 
-    static HybridizationDataValues create(DataRow<? extends AbstractDesignElement> dataRow,
+    static HybridizationDataValues create(DataRow dataRow,
             Hybridization hybridization) {
         return new HybridizationDataValues(dataRow, hybridization);
     }
@@ -123,7 +122,7 @@ public final class HybridizationDataValues implements Serializable {
     /**
      * @return the dataRow
      */
-    public DataRow<? extends AbstractDesignElement> getDataRow() {
+    public DataRow getDataRow() {
         return dataRow;
     }
 

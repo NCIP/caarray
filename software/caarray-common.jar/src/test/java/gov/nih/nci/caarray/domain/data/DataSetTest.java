@@ -82,14 +82,14 @@
  */
 package gov.nih.nci.caarray.domain.data;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -126,7 +126,7 @@ public class DataSetTest {
 
     @Test
     public void testGetHybridizations() {
-        DataSet<Feature> dataSet = new DataSet<Feature>(hybridizations, quantitationTypes);
+        DataSet dataSet = new DataSet(hybridizations, quantitationTypes);
         assertEquals(hybridizations.size(), dataSet.getHybridizations().size());
         assertEquals(hybridizations.get(0), dataSet.getHybridizations().get(0));
         assertEquals(hybridizations.get(1), dataSet.getHybridizations().get(1));
@@ -141,7 +141,7 @@ public class DataSetTest {
 
     @Test
     public void testGetQuantitationTypes() {
-        DataSet<Feature> dataSet = new DataSet<Feature>(hybridizations, quantitationTypes);
+        DataSet dataSet = new DataSet(hybridizations, quantitationTypes);
         assertEquals(quantitationTypes.size(), dataSet.getQuantitationTypes().size());
         assertEquals(quantitationTypes.get(0), dataSet.getQuantitationTypes().get(0));
         assertEquals(quantitationTypes.get(1), dataSet.getQuantitationTypes().get(1));
@@ -156,9 +156,9 @@ public class DataSetTest {
 
     @Test
     public void testAddRow() {
-        DataSet<Feature> dataSet = new DataSet<Feature>(hybridizations, quantitationTypes);
+        DataSet dataSet = new DataSet(hybridizations, quantitationTypes);
         Feature feature = new Feature("test", "test", "test", new ArrayDesignDetails());
-        DataRow<Feature> row = dataSet.addRow(feature);
+        DataRow row = dataSet.addRow(feature);
         assertEquals(feature, row.getDesignElement());
         assertEquals(hybridizations.size(), row.getHybridizationValues().size());
         row.setValue(hybridizations.get(0), quantitationTypes.get(0), 12.3);
