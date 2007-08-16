@@ -82,17 +82,6 @@
  */
 package gov.nih.nci.caarray.magetab.idf;
 
-import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import gov.nih.nci.caarray.magetab.AbstractMageTabDocument;
 import gov.nih.nci.caarray.magetab.EntryHeading;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
@@ -105,13 +94,25 @@ import gov.nih.nci.caarray.magetab.TermSource;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 
+import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
- * Represents an Investigation Description Format (IDF) file - a tab-delimited file
- * providing general information about the investigation, including its name,
- * a brief description, the investigator’s contact details, bibliographic references,
- * and free text descriptions of the protocols used in the investigation.
+ * Represents an Investigation Description Format (IDF) file - a tab-delimited file providing general information about
+ * the investigation, including its name, a brief description, the investigator’s contact details, bibliographic
+ * references, and free text descriptions of the protocols used in the investigation.
  */
-@SuppressWarnings("PMD.CyclomaticComplexity") // warning suppressed due to long switch statement
+@SuppressWarnings("PMD")
+// warning suppressed due to long switch statement
 public final class IdfDocument extends AbstractMageTabDocument {
 
     private static final long serialVersionUID = 149154919398572572L;
@@ -124,7 +125,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     /**
      * Creates a new IDF from an existing file.
-     *
+     * 
      * @param documentSet the MAGE-TAB document set the IDF belongs to.
      * @param file the file containing the IDF content.
      */
@@ -141,7 +142,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     /**
      * Parses the MAGE-TAB document, creating the object graph of entities.
-     *
+     * 
      * @throws MageTabParsingException if the document couldn't be read.
      */
     @Override
@@ -175,7 +176,8 @@ public final class IdfDocument extends AbstractMageTabDocument {
         return lineContents.isEmpty() || "".equals(lineContents.get(0));
     }
 
-    @SuppressWarnings("PMD") // warnings suppressed due to long switch statement
+    @SuppressWarnings("PMD")
+    // warnings suppressed due to long switch statement
     private void handleValue(IdfRow idfRow, String value, int valueIndex) {
         switch (idfRow.getType()) {
         case INVESTIGATION_TITLE:
@@ -232,7 +234,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
             handleQualityControlType(value);
             break;
         case QUALITY_CONTROL_TERM_SOURCE_REF:
-        case QUALITY_CONTROL_TYPES_TERM_SOURCE_REF:            
+        case QUALITY_CONTROL_TYPES_TERM_SOURCE_REF:
             handleQualityControlTermSourceRef(value);
             break;
         case REPLICATE_TYPE:
@@ -301,7 +303,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
             break;
         case SDRF_FILE:
         case SDRF_FILES:
-           handleSdrfFile(value);
+            handleSdrfFile(value);
             break;
         case TERM_SOURCE_NAME:
             handleTermSourceName(value, valueIndex);
@@ -321,15 +323,23 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handleSdrfFile(String value) {
-        SdrfDocument sdrfDocument = getDocumentSet().getSdrfDocument(value);
-        getSdrfDocuments().add(sdrfDocument);
-        sdrfDocument.setIdfDocument(this);
+        if (StringUtils.isEmpty(value)) {
+            addWarningMessage("SDRF file is missing");
+        } else {
+            SdrfDocument sdrfDocument = getDocumentSet().getSdrfDocument(value);
+            getSdrfDocuments().add(sdrfDocument);
+            sdrfDocument.setIdfDocument(this);
+        }
     }
 
     private void handleProtocolName(String protocolId, int valueIndex) {
-        Protocol protocol = investigation.getOrCreateProtcol(valueIndex);
-        protocol.setName(protocolId);
-        addProtocol(protocol);
+        if (StringUtils.isEmpty(protocolId)) {
+            addWarningMessage("Protocol Name is missing");
+        } else {
+            Protocol protocol = investigation.getOrCreateProtcol(valueIndex);
+            protocol.setName(protocolId);
+            addProtocol(protocol);
+        }
     }
 
     private void handleProtocolDescription(String value, int valueIndex) {
@@ -367,7 +377,6 @@ public final class IdfDocument extends AbstractMageTabDocument {
         protocol.setType(getMgedOntologyTerm(MageTabOntologyCategory.PROTOCOL_TYPE, value));
     }
 
-
     private void handleProtocolTermSourceRef(String value) {
         if (!value.trim().equals("")) {
             Iterator<Protocol> protocols = investigation.getProtocols().iterator();
@@ -378,31 +387,48 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handleTitle(String title) {
-        investigation.setTitle(title);
+        if (StringUtils.isEmpty(title)) {
+            addWarningMessage("Investigation Title is missing");
+        } else {
+            investigation.setTitle(title);
+        }
     }
 
     private void handleExperimentDescription(String description) {
-        investigation.setDescription(description);
+        if (StringUtils.isEmpty(description)) {
+            addWarningMessage("Investigation Description is missing");
+        } else {
+            investigation.setDescription(description);
+        }
     }
 
     private void handleExperimentDate(String dateString) {
         try {
+            format.setLenient(false);
             investigation.setDateOfExperiment(format.parse(dateString));
         } catch (ParseException pe) {
             LOG.error("Error parsing experiment date", pe);
+            addWarningMessage("Experiment Date : Invalid Date Format  - " + dateString);
         }
     }
 
     private void handlePublicReleaseDate(String dateString) {
         try {
+            format.setLenient(false);
             investigation.setPublicReleaseDate(format.parse(dateString));
         } catch (ParseException pe) {
             LOG.error("Error parsing PubRelease Date", pe);
+            addWarningMessage("Public Release Date : Invalid Date Format  - " + dateString);
         }
     }
 
     private void handleExperimentalDesign(String value) {
-        investigation.getDesigns().add(getMgedOntologyTerm(MageTabOntologyCategory.EXPERIMENTAL_DESIGN_TYPE, value));
+        if (StringUtils.isEmpty(value)) {
+            addWarningMessage("Experimental Design is missing");
+        } else {
+            investigation.getDesigns()
+                    .add(getMgedOntologyTerm(MageTabOntologyCategory.EXPERIMENTAL_DESIGN_TYPE, value));
+        }
     }
 
     private void handleExperimentalDesignTermSourceRef(String value, int valueIndex) {
@@ -410,6 +436,9 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handleExperimentalFactorName(String value, int valueIndex) {
+        if (StringUtils.isEmpty(value)) {
+            addWarningMessage("Experimental Factor is missing");
+        }
         investigation.getOrCreateFactor(valueIndex).setName(value);
     }
 
@@ -463,8 +492,8 @@ public final class IdfDocument extends AbstractMageTabDocument {
         }
         Iterator<String> rolesIter = roles.iterator();
         while (rolesIter.hasNext()) {
-            investigation.getOrCreatePerson(valueIndex).getRoles()
-                .add(getMgedOntologyTerm(MageTabOntologyCategory.ROLES, rolesIter.next()));
+            investigation.getOrCreatePerson(valueIndex).getRoles().add(
+                    getMgedOntologyTerm(MageTabOntologyCategory.ROLES, rolesIter.next()));
         }
     }
 
@@ -492,8 +521,8 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handlePublicationStatus(String value, int valueIndex) {
-        investigation.getOrCreatePublication(valueIndex)
-            .setStatus(getMgedOntologyTerm(MageTabOntologyCategory.PUBLICATION_STATUS, value));
+        investigation.getOrCreatePublication(valueIndex).setStatus(
+                getMgedOntologyTerm(MageTabOntologyCategory.PUBLICATION_STATUS, value));
     }
 
     private void handlePublicationStatusTermSourceRef(String value) {
@@ -557,7 +586,6 @@ public final class IdfDocument extends AbstractMageTabDocument {
         }
     }
 
-
     private void handleTermSourceFile(String value, int valueIndex) {
 
         if (docTermSources.size() > valueIndex) {
@@ -571,7 +599,6 @@ public final class IdfDocument extends AbstractMageTabDocument {
             docTermSources.get(valueIndex).setVersion(value);
         }
     }
-
 
     private void updateTermSourceRefs() {
         Iterator<TermSource> docSetSources = getDocumentSet().getTermSources().iterator();
@@ -590,7 +617,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     /**
      * Returns all the SDRF files referenced by the IDF.
-     *
+     * 
      * @return all related SDRF documents.
      */
     public List<SdrfDocument> getSdrfDocuments() {
@@ -598,7 +625,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     /**
-     * @return ExperimentalFactor the factor 
+     * @return ExperimentalFactor the factor
      * @param factorName the name of the factor being returned
      */
     public ExperimentalFactor getFactor(String factorName) {
