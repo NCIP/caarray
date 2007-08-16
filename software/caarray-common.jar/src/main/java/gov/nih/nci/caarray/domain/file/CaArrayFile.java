@@ -131,17 +131,17 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     public void setPath(final String pathVal) {
         this.path = pathVal;
     }
-    
+
     /**
      * Returns the name of the file.
-     * 
+     *
      * @return the file name.
      */
-    @Transient 
+    @Transient
     public String getName() {
         return new File(getPath()).getName();
     }
-    
+
     /**
      * Gets the type.
      *
@@ -180,7 +180,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      * @return the project
      */
     @ManyToOne
-    @JoinColumn(insertable = false, updatable = false)
+    @JoinColumn(updatable = false)
     @ForeignKey(name = "CAARRAYFILE_PROJECT_FK")
     public Project getProject() {
         return project;

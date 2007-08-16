@@ -141,6 +141,10 @@ public class ProjectManagementServiceTest {
         files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
         projectManagementService.addFiles(project, files);
+        assertNotNull(project.getFiles().iterator().next().getProject());
+
+        // TODO we should be able to uncomment this line, but transaction scoping appears broken in the unit tests
+//        project = projectManagementService.getProject(123L);
         assertEquals(2, project.getFiles().size());
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);

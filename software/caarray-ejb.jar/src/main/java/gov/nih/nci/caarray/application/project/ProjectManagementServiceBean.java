@@ -151,6 +151,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         for (File file : files) {
             CaArrayFile caArrayFile = fileAccessService.add(file);
             project.getFiles().add(caArrayFile);
+            caArrayFile.setProject(project);
         }
         getProjectDao().save(project);
         if (LOG.isDebugEnabled()) {
