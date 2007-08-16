@@ -173,8 +173,8 @@ public class ArrayDataServiceTest {
             DataRow dataRow = dataSet.getRows().get(rowIndex);
             Feature feature = (Feature) dataRow.getDesignElement();
             assertNotNull(feature);
-//            assertEquals(fusionCelData.indexToX(rowIndex), feature.getRow());
-//            assertEquals(fusionCelData.indexToY(rowIndex), feature.getColumn());
+            assertEquals(fusionCelData.indexToX(rowIndex), feature.getColumn());
+            assertEquals(fusionCelData.indexToY(rowIndex), feature.getRow());
             assertEquals(1, dataRow.getHybridizationValues().size());
             HybridizationDataValues dataValues = dataRow.getHybridizationValues().get(0);
             assertEquals(7, dataValues.getValues().size());
