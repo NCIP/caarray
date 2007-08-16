@@ -98,6 +98,7 @@ import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.array.PhysicalReporter;
 import gov.nih.nci.caarray.domain.array.ReporterGroup;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.validation.ValidationResult;
 
 /**
  * Contains logic to read Affymetrix CDF files.
@@ -117,6 +118,11 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     AffymetrixCdfHandler(CaArrayFile designFile, VocabularyService vocabularyService,
             FileAccessService fileAccessService) {
         super(designFile, vocabularyService, fileAccessService);
+    }
+
+    @Override
+    ValidationResult validate() {
+        return new ValidationResult();
     }
 
     @Override

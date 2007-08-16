@@ -96,8 +96,10 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
+import gov.nih.nci.caarray.validation.ValidationResult;
 
 /**
  * Implementation entry point for the ArrayDesign subsystem.
@@ -113,30 +115,53 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     @EJB private FileAccessService fileAccessService;
 
     /**
-     * Imports a new array design into the system from an array design file.
-     * 
-     * @param designFile the native file containing the array design details.
-     * @return the new array design.
+     * {@inheritDoc}
      */
-    public ArrayDesign importDesign(CaArrayFile designFile) {
+    public ValidationResult validateDesign(CaArrayFile designFile) {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, designFile);
         }
-        AbstractArrayDesignHandler handler = getHandler(designFile);
-        ArrayDesign design = handler.getArrayDesign();
-        getArrayDao().save(design);
+        ValidationResult result =  getHandler(designFile).validate();
+        if (result.isValid()) {
+            designFile.setStatus(FileStatus.VALIDATED);
+        } else {
+            designFile.setStatus(FileStatus.VALIDATION_ERRORS);
+        }
+        getArrayDao().save(designFile);
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemExit(LOG);
+        }
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public ArrayDesign importDesign(CaArrayFile designFile) {
+        ArrayDesign design = null;
+        if (LOG.isDebugEnabled()) {
+            LogUtil.logSubsystemEntry(LOG, designFile);
+        }
+        if (validateDesign(designFile).isValid()) {
+            design = doImport(designFile);
+        }
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemExit(LOG);
         }
         return design;
     }
 
+    private ArrayDesign doImport(CaArrayFile designFile) {
+        AbstractArrayDesignHandler handler = getHandler(designFile);
+        ArrayDesign design = handler.getArrayDesign();
+        designFile.setStatus(FileStatus.IMPORTED);
+        getArrayDao().save(designFile);
+        getArrayDao().save(design);
+        return design;
+    }
+
     /**
-     * Returns the element-level details (features, reporters, and composite elements) for
-     * an array design.
-     * 
-     * @param arrayDesign retrieve details for this array design
-     * @return the design details.
+     * {@inheritDoc}
      */
     public ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign) {
         if (LOG.isDebugEnabled()) {

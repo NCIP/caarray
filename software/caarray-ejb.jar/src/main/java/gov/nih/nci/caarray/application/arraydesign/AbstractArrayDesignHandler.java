@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.validation.ValidationResult;
 
 /**
  * Base class for all design handlers.
@@ -129,5 +130,7 @@ abstract class AbstractArrayDesignHandler {
     abstract void load(ArrayDesign arrayDesign);
 
     abstract ArrayDesignDetails getDesignDetails();
+
+    abstract ValidationResult validate();
 
 }
