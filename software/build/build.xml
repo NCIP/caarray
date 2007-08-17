@@ -20,6 +20,17 @@
 
     <!-- Components -->
 
+    <property name="caarray-client.dir" value="${basedir}/caarray-client.jar" />
+    <property name="caarray-client.src.dir" value="${caarray-client.dir}/src/main/java" />
+    <property name="caarray-client.resources.dir" value="${caarray-client.dir}/src/main/resources" />
+    <property name="caarray-client.test.src.dir" value="${caarray-client.dir}/src/test/java" />
+    <property name="caarray-client.test.files.dir" value="${caarray-client.dir}/src/test/resources" />
+    <property name="caarray-client.target.dir" value="${caarray-client.dir}/target" />
+    <property name="caarray-client.classes.dir" value="${caarray-client.target.dir}/classes" />
+    <property name="caarray-client.instrumented.classes.dir" value="${caarray-client.target.dir}/instrumented-classes" />
+    <property name="caarray-client.test.classes.dir" value="${caarray-client.target.dir}/test-classes" />
+    <property name="caarray-client.jar" value="${caarray-client.target.dir}/caarray-client.jar" />
+
     <property name="caarray-common.dir" value="${basedir}/caarray-common.jar" />
     <property name="caarray-common.src.dir" value="${caarray-common.dir}/src/main/java" />
     <property name="caarray-common.resources.dir" value="${caarray-common.dir}/src/main/resources" />
@@ -204,13 +215,18 @@
     <!-- ** CLEAN TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
 
-    <target name="clean" depends="clean:caarray-common.jar,
+    <target name="clean" depends="clean:caarray-client.jar,
+    	clean:caarray-common.jar,
         clean:caarray-ejb.jar,
         clean:caarray.war,
         clean:caarray.ear,
         clean:site.dir,
         clean:test.classes.dir,
         clean:target.dir" />
+
+    <target name="clean:caarray-client.jar">
+        <delete dir="${caarray-client.target.dir}" />
+    </target>
 
     <target name="clean:caarray-common.jar">
         <delete dir="${caarray-common.target.dir}" />
@@ -300,9 +316,24 @@
     <!-- ** COMPILE TARGETS                                               ** -->
     <!-- ******************************************************************* -->
 
-    <target name="compile" depends="compile:caarray-common.jar,
+    <target name="compile" depends="compile:caarray-client.jar,
+    	compile:caarray-common.jar,
         compile:caarray-ejb.jar,
         compile:caarray.war" />
+
+    <target name="compile:caarray-client.jar">
+        <mkdir dir="${caarray-client.classes.dir}" />
+        <javac srcdir="${caarray-client.src.dir}" destdir="${caarray-client.classes.dir}" debug="true">
+            <classpath>
+                <pathelement location="${javaee.jar}" />
+                <pathelement location="${commons-collections.jar}" />
+                <pathelement location="${commons-io.jar}" />
+                <pathelement location="${commons-lang.jar}" />
+                <pathelement location="${commons-logging.jar}" />
+                <pathelement location="${caarray-common.resources.dir}" />
+            </classpath>
+        </javac>
+    </target>
 
     <target name="compile:caarray-common.jar">
         <mkdir dir="${caarray-common.classes.dir}" />
@@ -325,11 +356,12 @@
         </javac>
     </target>
 
-    <target name="compile:caarray-ejb.jar" depends="compile:caarray-common.jar">
+    <target name="compile:caarray-ejb.jar" depends="compile:caarray-common.jar,compile:caarray-client.jar">
         <mkdir dir="${caarray-ejb.classes.dir}" />
         <javac srcdir="${caarray-ejb.src.dir}" destdir="${caarray-ejb.classes.dir}" debug="true">
             <classpath>
-                <pathelement location="${caarray-common.classes.dir}" />
+			    <pathelement location="${caarray-client.classes.dir}" />
+			    <pathelement location="${caarray-common.classes.dir}" />
                 <pathelement location="${commons-lang.jar}" />
                 <pathelement location="${commons-io.jar}" />
                 <pathelement location="${cacore32-client.jar}" />
@@ -367,10 +399,18 @@
     <!-- ** BUILD TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
 
-    <target name="build" depends="build:caarray-common.jar,
-        build:caarray-ejb.jar,
+    <target name="build" depends="build:caarray-client.jar,
+	    build:caarray-common.jar,
+	    build:caarray-ejb.jar,
         build:caarray.war,
         build:caarray.ear" />
+
+    <target name="build:caarray-client.jar" depends="compile:caarray-client.jar">
+        <mkdir dir="${caarray-client.target.dir}"/>
+        <jar destfile="${caarray-client.jar}">
+            <fileset dir="${caarray-client.classes.dir}" />
+        </jar>
+    </target>
 
     <target name="build:caarray-common.jar" depends="compile:caarray-common.jar,configure-datasource-for-deploy">
         <mkdir dir="${caarray-common.target.dir}"/>
@@ -383,19 +423,6 @@
         <mkdir dir="${caarray-ejb.target.dir}"/>
         <jar destfile="${caarray-ejb.jar}">
             <fileset dir="${caarray-ejb.classes.dir}" />
-        </jar>
-    </target>
-
-    <target name="build:caarray-client.jar" depends="compile:caarray-common.jar,compile:caarray-ejb.jar">
-        <jar destfile="${caarray-client.jar}">
-            <fileset dir="${caarray-common.classes.dir}">
-                <include name="**/domain/*" />
-                <include name="**/domain/**/*" />
-                <include name="**/query/*" />
-            </fileset>
-            <fileset dir="${caarray-ejb.classes.dir}">
-                <include name="**/CaArraySearchService.class" />
-            </fileset>
         </jar>
     </target>
 
@@ -424,7 +451,7 @@
         </war>
     </target>
 
-    <target name="build:caarray.ear" depends="build:caarray.war,build:caarray-ejb.jar,build:caarray-common.jar">
+    <target name="build:caarray.ear" depends="build:caarray.war,build:caarray-ejb.jar,build:caarray-common.jar,build:caarray-client.jar">
         <mkdir dir="${caarray-ear.target.dir}"/>
         <ear destfile="${caarray.ear}" appxml="${caarray-ear.resources.dir}/application.xml">
             <fileset dir="${caarray-war.target.dir}">
@@ -433,9 +460,12 @@
             <fileset dir="${caarray-ejb.target.dir}">
                 <include name="caarray-ejb.jar" />
             </fileset>
-            <fileset dir="${caarray-common.target.dir}">
-                <include name="caarray-common.jar" />
-            </fileset>
+		    <fileset dir="${caarray-client.target.dir}">
+		        <include name="caarray-client.jar" />
+		    </fileset>
+		    <fileset dir="${caarray-common.target.dir}">
+		        <include name="caarray-common.jar" />
+		    </fileset>
             <fileset dir="${lib.dir}">
                 <include name="activation.jar" />
                 <include name="AffxFusion.jar" />
@@ -478,14 +508,44 @@
 
     <!-- JUnit Test Targets -->
 
-    <target name="test:unit" depends="test:junit-caarray-common.jar,
-      test:junit-caarray-ejb.jar,
-      test:junit-caarray.war,
-      test:junit-report,
-      test:cobertura-report,
-      test:cobertura-check">
+    <target name="test:unit" depends="test:junit-caarray-client.jar,
+	    test:junit-caarray-common.jar,
+	    test:junit-caarray-ejb.jar,
+	    test:junit-caarray.war,
+	    test:junit-report,
+	    test:cobertura-report,
+	    test:cobertura-check">
         <fail if="junit.failure" message="There were JUnit failures." />
         <fail if="cobertura.failure" message="Test coverage was insufficient (see Cobertura report)." />
+    </target>
+
+    <!-- caarray-client.jar -->
+
+    <target name="test:instrument:caarray-client.jar" depends="compile:caarray-client.jar">
+        <cobertura-instrument todir="${caarray-client.instrumented.classes.dir}" datafile="${cobertura.file}">
+            <fileset dir="${caarray-client.classes.dir}" />
+        </cobertura-instrument>
+    </target>
+
+    <target name="test:compile:caarray-client.test.classes" depends="compile:caarray-client.jar,test:functional:compile-tests">
+        <mkdir dir="${caarray-client.test.classes.dir}" />
+        <javac srcdir="${caarray-client.test.src.dir}" destdir="${caarray-client.test.classes.dir}" debug="true">
+            <classpath>
+                <pathelement location="${test.classes.dir}" />
+                <pathelement location="${caarray-client.classes.dir}" />
+                <pathelement location="${caarray-client.test.files.dir}" />
+                <pathelement location="${caarray-client.resources.dir}" />
+                <pathelement location="${javaee.jar}" />
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="test:junit-caarray-client.jar" depends="test:compile:caarray-client.test.classes,test:instrument:caarray-client.jar">
+        <run-junit-tests
+      test.src.dir="${caarray-client.test.src.dir}"
+      xml.output.dir="${caarray-client.target.dir}/junit"
+      instrumented.classes="${caarray-client.instrumented.classes.dir}"
+      classpath="${caarray-client.test.classes.dir};${test.data.dir};${test.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-client.test.files.dir};${caarray-client.classes.dir};${caarray-client.resources.dir};${junit.jar}" />
     </target>
 
     <!-- caarray-common.jar -->
@@ -602,9 +662,12 @@
     <target name="test:junit-report">
         <mkdir dir="${site.dir}/junit" />
         <junitreport todir="${site.dir}/junit">
-            <fileset dir="${caarray-common.target.dir}/junit">
-                <include name="TEST-*.xml" />
-            </fileset>
+		    <fileset dir="${caarray-client.target.dir}/junit">
+		        <include name="TEST-*.xml" />
+		    </fileset>
+		    <fileset dir="${caarray-common.target.dir}/junit">
+		        <include name="TEST-*.xml" />
+		    </fileset>
             <fileset dir="${caarray-ejb.target.dir}/junit">
                 <include name="TEST-*.xml" />
             </fileset>
@@ -618,7 +681,8 @@
     <!-- Cobertura Test Targets -->
     <target name="test:cobertura-report">
         <cobertura-report format="html" destdir="${site.dir}/cobertura" datafile="${cobertura.file}">
-            <fileset dir="${caarray-common.src.dir}" />
+		    <fileset dir="${caarray-client.src.dir}" />
+		    <fileset dir="${caarray-common.src.dir}" />
             <fileset dir="${caarray-ejb.src.dir}" />
             <fileset dir="${caarray-war.src.dir}" />
         </cobertura-report>
@@ -761,6 +825,7 @@
     </target>
 
     <target name="check:pmd:update-eclipse-projects">
+        <copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-client.dir}/.ruleset" />
         <copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-common.dir}/.ruleset" />
         <copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-war.dir}/.ruleset" />
         <copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-ejb.dir}/.ruleset" />

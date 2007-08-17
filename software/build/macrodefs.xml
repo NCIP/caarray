@@ -11,6 +11,9 @@
             <junit printsummary="on" failureproperty="junit.failure" fork="true" forkmode="once" maxmemory="256m">
                 <sysproperty key="net.sourceforge.cobertura.datafile"
                              file="${cobertura.file}" />
+                <sysproperty key="server.hostname" value="${jboss.server.hostname}"/>
+                <sysproperty key="server.port" value="${jboss.server.port}"/>
+                <sysproperty key="server.jndi.port" value="${jboss.server.jndi.port}"/>
                 <classpath>
                     <pathelement path="@{instrumented.classes}" />
                     <pathelement path="@{classpath}" />
