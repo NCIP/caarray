@@ -99,8 +99,8 @@
     <property name="jakarta-oro-2.0.8.jar" value="${lib.dir}/jakarta-oro-2.0.8.jar" />
     <property name="javaee.jar" value="${lib.dir}/javaee.jar" />
     <property name="jaxen.jar" value="${lib.dir}/jaxen-1.1-beta.jar" />
-    <property name="jboss-common.jar" value="${lib.dir}/jboss-common.jar" />
-    <property name="jnpserver.jar" value="${lib.dir}/jnpserver.jar" />
+    <property name="jbossall-client.jar" value="${lib.dir}/jbossall-client.jar" />
+    <property name="jboss-ejb3-client.jar" value="${lib.dir}/jboss-ejb3-client.jar" />
     <property name="jta.jar" value="${lib.dir}/jta.jar" />
     <property name="junit.jar" value="${lib.dir}/junit-4.3.1.jar" />
     <property name="log4j.jar" value="${lib.dir}/log4j-1.2.13.jar" />
@@ -414,8 +414,8 @@
 
     <target name="build:caarray-client.jar" depends="compile:caarray-client.jar,compile:caarray-common.jar">
         <mkdir dir="${caarray-client.target.dir}"/>
-        <unjar src="${jnpserver.jar}" dest="${caarray-client.classes.dir}" overwrite="false" />
-        <unjar src="${jboss-common.jar}" dest="${caarray-client.classes.dir}" overwrite="false" />
+        <unjar src="${jboss-ejb3-client.jar}" dest="${caarray-client.classes.dir}" overwrite="false" />
+        <unjar src="${jbossall-client.jar}" dest="${caarray-client.classes.dir}" overwrite="false" />
         <jar destfile="${caarray-client.jar}">
             <fileset dir="${caarray-client.classes.dir}" />
             <fileset dir="${caarray-common.classes.dir}" >
