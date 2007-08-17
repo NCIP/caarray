@@ -13,7 +13,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/test-data"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/caarray-client-jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/caarray-common-jar"/>
-	<classpathentry kind="lib" path="/lib/jnpserver.jar"/>
-	<classpathentry kind="lib" path="/lib/jboss-common.jar"/>
+	<classpathentry kind="lib" path="/lib/jbossall-client.jar"/>
+	<classpathentry kind="lib" path="/lib/jboss-ejb3-client.jar"/>
 	<classpathentry kind="output" path="target/test-classes"/>
 </classpath>
