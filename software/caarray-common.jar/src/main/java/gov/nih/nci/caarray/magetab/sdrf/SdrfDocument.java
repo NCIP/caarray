@@ -373,6 +373,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     private void handleTermSourceRef(String value) {
         TermSource term = getTermSource(value);
+        if (term.getFile() == null) {
+            addWarningMessage("Term Source " + value + " is not defined in the IDF document");
+        }
         for (Characteristic aCharacteristic : characteristicsList) {
             aCharacteristic.getTerm().setTermSource(term);
         }
