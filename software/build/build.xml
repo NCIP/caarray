@@ -762,6 +762,8 @@
                 <pathelement location="${test.data.classes.dir}" />
                 <pathelement location="${selenium-java-client-driver.jar}" />
                 <pathelement location="${selenium-java-client-driver-tests.jar}" />
+                <pathelement location="${hibernate-annotations.jar}" />
+                <pathelement location="${ejb3-persistence.jar}" />
                 <pathelement location="${junit.jar}" />
             </classpath>
         </javac>
