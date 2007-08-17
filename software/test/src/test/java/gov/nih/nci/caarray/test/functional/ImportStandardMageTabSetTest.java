@@ -82,15 +82,15 @@
  */
 package gov.nih.nci.caarray.test.functional;
 
+import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
+import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 
 import org.junit.Test;
-
-import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
-import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 /**
  * Test case #7959.
@@ -100,11 +100,6 @@ import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 30;
-
-    @Override
-    public void tearDown() throws Exception {
-        // don't
-    }
 
     @Test
     public void testNew() throws Exception {
@@ -152,6 +147,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         // - Permissions are correct
         // - Files can be downloaded through API
         // - Raw and derived data are available and accurate
+        verifyDataViaJavaApi();
     }
 
     private void checkFileStatus(String status) {
@@ -166,4 +162,10 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         clickAndWait("uploadForm:upload");
         assertTrue(selenium.isTextPresent(file.getName()));
     }
+
+    private void verifyDataViaJavaApi() {
+//        CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties.getJndiPort());
+    }
+
+
 }
