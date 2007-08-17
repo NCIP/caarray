@@ -82,13 +82,19 @@
  */
 package gov.nih.nci.caarray.test.functional;
 
+import gov.nih.nci.caarray.domain.project.Investigation;
+import gov.nih.nci.caarray.services.CaArrayServer;
+import gov.nih.nci.caarray.services.ServerConnectionException;
+import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
+import gov.nih.nci.caarray.test.base.TestProperties;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -100,10 +106,12 @@ import org.junit.Test;
 public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 30;
+    private static final String TITLE =
+        "TCGA Analysis of Gene Expression for Glioblastoma Multiforme Using Affymetrix HT_HG-U133A";
 
     @Test
     public void testNew() throws Exception {
-        
+
         selenium.open("/caarray/");
 
         String title = "test" + System.currentTimeMillis();
@@ -141,7 +149,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
         // Verify that the files imported successfully.
         checkFileStatus("IMPORTED");
-        
+
         // Using the Java remote API, verify:
         // - Expected entities exist
         // - Permissions are correct
@@ -163,8 +171,14 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         assertTrue(selenium.isTextPresent(file.getName()));
     }
 
-    private void verifyDataViaJavaApi() {
-//        CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties.getJndiPort());
+    private void verifyDataViaJavaApi() throws ServerConnectionException {
+        CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties.getServerJndiPort());
+        server.connect();
+        CaArraySearchService searchService = server.getSearchService();
+        Investigation searchInvestigation = new Investigation();
+        searchInvestigation.setTitle(TITLE);
+        List<Investigation> matches = searchService.search(searchInvestigation);
+        assertEquals(1, matches.size());
     }
 
 
