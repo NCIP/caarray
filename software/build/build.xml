@@ -554,7 +554,9 @@
 
     <target name="test:instrument:caarray-client.jar" depends="compile:caarray-client.jar">
         <cobertura-instrument todir="${caarray-client.instrumented.classes.dir}" datafile="${cobertura.file}">
-            <fileset dir="${caarray-client.classes.dir}" />
+            <fileset dir="${caarray-client.classes.dir}" >
+                <include name="gov/nih/nci/caarray/**"/>
+            </fileset>
         </cobertura-instrument>
     </target>
 
