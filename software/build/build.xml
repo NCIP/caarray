@@ -1035,7 +1035,7 @@
 			trust="true"
 			username="${ssh.server.username}"
 			keyfile="${ssh.key.file}"
-			passphrase=""		
+			passphrase=""
 			command="${remote.jboss.home}/bin/start_jboss"/>
 	</target>
 	
@@ -1058,12 +1058,22 @@
 			todir="${ssh.server.username}@${ssh.server.hostname}:${remote.jboss.home}/deploy"/>
 	</target>
 	
-	<target name="remote-jboss:deploy-caarray">
-		<echo message="Deploying caarray EAR to jboss server at ${ssh.server.hostname}..." />
+	<target name="remote-jboss:deploy-caarray-temp">
+		<echo message="Copying caarray EAR to jboss temp folder ${remote.jboss.temp.dir} at ${ssh.server.hostname}..." />
 		<scp trust="true" file="${caarray.ear}"
 			keyfile="${ssh.key.file}"
 			passphrase=""
-			todir="${ssh.server.username}@${ssh.server.hostname}:${remote.jboss.home}/deploy"/>
+			todir="${ssh.server.username}@${ssh.server.hostname}:${remote.jboss.temp.dir}"/>
+	</target>
+	
+	<target name="remote-jboss:deploy-caarray" depends="remote-jboss:deploy-caarray-temp">
+		<echo message="Deploying caarray EAR to jboss server at ${ssh.server.hostname}..." />
+		<sshexec host="${ssh.server.hostname}"
+			trust="true"
+			username="${ssh.server.username}"
+			keyfile="${ssh.key.file}"
+			passphrase=""
+			command="mv ${remote.jboss.temp.dir}/caarray.ear ${remote.jboss.home}/deploy/"/>
 	</target>
 	
 	<target name="remote-jboss:undeploy-caarray">
