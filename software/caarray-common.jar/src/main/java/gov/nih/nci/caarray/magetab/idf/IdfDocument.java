@@ -152,27 +152,69 @@ public final class IdfDocument extends AbstractMageTabDocument {
             handleLine(tabDelimitedReader.nextLine());
         }
         updateTermSourceRefs();
+        validateMatchingColumns();
+    }
+
+    private void validateMatchingColumns() {
+        for (Person aPerson : investigation.getPersons()) {
+            if (StringUtils.isEmpty(aPerson.getFirstName()) || StringUtils.isEmpty(aPerson.getLastName())) {
+                addWarningMessage("Name is missing : First name = "
+                        + StringUtils.defaultIfEmpty(aPerson.getFirstName(), "<MISSING>") + " Last name = "
+                        + StringUtils.defaultIfEmpty(aPerson.getLastName(), "<MISSING>"));
+            }
+        }
+        for (Person aPerson : investigation.getPersons()) {
+            if (aPerson.getRoles().size() == 0) {
+                addWarningMessage("Role is missing for : " + StringUtils.defaultIfEmpty(aPerson.getFirstName(), "")
+                        + " " + StringUtils.defaultIfEmpty(aPerson.getLastName(), ""));
+            }
+        }
+        for (TermSource aTermSource : docTermSources) {
+            if (StringUtils.isEmpty(aTermSource.getFile())) {
+                addWarningMessage("File is missing from term source : " + aTermSource.getName());
+            }
+        }
     }
 
     private void handleLine(List<String> lineContents) {
         if (!isEmpty(lineContents)) {
             EntryHeading heading = createHeading(lineContents.get(0));
             IdfRow idfRow = new IdfRow(heading, IdfRowType.get(heading.getTypeName()));
+            validateSingleValueColumns(idfRow, lineContents);
             for (int columnIndex = 1; columnIndex < lineContents.size(); columnIndex++) {
                 int valueIndex = columnIndex - 1;
                 String value = lineContents.get(columnIndex);
-                if (!isEmpty(value)) {
-                    handleValue(idfRow, value, valueIndex);
-                }
+                handleValue(idfRow, value, valueIndex);
             }
         }
     }
 
-    private boolean isEmpty(String value) {
-        return value == null || "".equals(value.trim());
+    private void validateSingleValueColumns(IdfRow idfRow, List<String> lineContents) {
+        switch (idfRow.getType()) {
+        case INVESTIGATION_TITLE:
+        case DATE_OF_EXPERIMENT:
+        case PUBLIC_RELEASE_DATE:
+        case EXPERIMENT_DESCRIPTION:
+            if (lineContents.size() > 2) {
+                addWarningMessage(lineContents.get(0) + " can only have one element but found "
+                        + (lineContents.size() - 1));
+            }
+            break;
+        default:
+            break;
+        }
     }
 
     private boolean isEmpty(List<String> lineContents) {
+        // remove and empty items from the bottom up.
+        for (int j = lineContents.size() - 1; j > 0; j--) {
+            if (StringUtils.isEmpty(lineContents.get(j))) {
+                lineContents.remove(j);
+            } else {
+                // once data is found stop the removal process
+                break;
+            }
+        }
         return lineContents.isEmpty() || "".equals(lineContents.get(0));
     }
 
@@ -408,7 +450,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
             investigation.setDateOfExperiment(format.parse(dateString));
         } catch (ParseException pe) {
             LOG.error("Error parsing experiment date", pe);
-            addWarningMessage("Experiment Date : Invalid Date Format  - " + dateString);
+            addWarningMessage("Experiment Date - Invalid Date or Date Format(YYYY-MM-DD) : " + dateString);
         }
     }
 
@@ -432,7 +474,11 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handleExperimentalDesignTermSourceRef(String value, int valueIndex) {
-        investigation.getDesigns().get(valueIndex).setTermSource(getTermSource(value));
+        if (StringUtils.isEmpty(value)) {
+            addWarningMessage("Experimental Design Term Source Ref is missing");
+        } else {
+            investigation.getDesigns().get(valueIndex).setTermSource(getTermSource(value));
+        }
     }
 
     private void handleExperimentalFactorName(String value, int valueIndex) {
@@ -465,11 +511,19 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handlePersonEmail(String value, int valueIndex) {
-        investigation.getOrCreatePerson(valueIndex).setEmail(value);
+        if (StringUtils.isEmpty(value)) {
+            addWarningMessage("Contact email is missing");
+        } else {
+            investigation.getOrCreatePerson(valueIndex).setEmail(value);
+        }
     }
 
     private void handlePersonPhone(String value, int valueIndex) {
-        investigation.getOrCreatePerson(valueIndex).setPhone(value);
+        if (StringUtils.isEmpty(value)) {
+            addWarningMessage("Contact phone number is missing");
+        } else {
+            investigation.getOrCreatePerson(valueIndex).setPhone(value);
+        }
     }
 
     private void handlePersonFax(String value, int valueIndex) {
@@ -505,7 +559,11 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handlePubMedId(String value, int valueIndex) {
-        investigation.getOrCreatePublication(valueIndex).setPubMedId(value);
+        if (StringUtils.isEmpty(value)) {
+            addWarningMessage("PubMed ID is missing");
+        } else {
+            investigation.getOrCreatePublication(valueIndex).setPubMedId(value);
+        }
     }
 
     private void handlePublicationDoi(String value, int valueIndex) {
@@ -517,7 +575,11 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handlePublicationTitle(String value, int valueIndex) {
-        investigation.getOrCreatePublication(valueIndex).setTitle(value);
+        if (StringUtils.isEmpty(value)) {
+            addWarningMessage("Publication Title is missing");
+        } else {
+            investigation.getOrCreatePublication(valueIndex).setTitle(value);
+        }
     }
 
     private void handlePublicationStatus(String value, int valueIndex) {
@@ -581,13 +643,13 @@ public final class IdfDocument extends AbstractMageTabDocument {
             TermSource trmSource = new TermSource();
             trmSource.setName(value);
             docTermSources.add(trmSource);
+            getTermSource(value);
         } else {
             docTermSources.get(valueIndex).setName(value);
         }
     }
 
     private void handleTermSourceFile(String value, int valueIndex) {
-
         if (docTermSources.size() > valueIndex) {
             docTermSources.get(valueIndex).setFile(value);
         }
@@ -610,6 +672,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
                 if (idfSource.getName().equals(docSetTrmSrc.getName())) {
                     docSetTrmSrc.setFile(idfSource.getFile());
                     docSetTrmSrc.setVersion(idfSource.getVersion());
+                    break;
                 }
             }
         }
