@@ -86,6 +86,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -140,7 +141,9 @@ final class CSVReaderDelimitedFileReader implements DelimitedFileReader {
 
         try {
             if (reader.readRecord()) {
-                nextValues = Arrays.asList(reader.getValues());
+                String[] values = reader.getValues();
+                nextValues = new ArrayList<String>(values.length);
+                nextValues.addAll(Arrays.asList(values));
             } else {
                 nextValues = null;
                 reader.close();
