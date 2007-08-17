@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-ejb.jar
+ * source code form and machine readable, binary, object code form. The caArray
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-ejb.jar Software License (the License) is between NCI and You. You (or
+ * This caArray Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-ejb.jar Software to (i) use, install, access, operate,
+ * its rights in the caArray Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-ejb.jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-ejb.jar Software and any
+ * and prepare derivative works of the caArray Software; (ii) distribute and
+ * have distributed to and by third parties the caArray Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -82,109 +82,50 @@
  */
 package gov.nih.nci.caarray.services;
 
-import gov.nih.nci.caarray.services.search.CaArraySearchService;
-
-import java.util.Hashtable;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.NameCallback;
+import javax.security.auth.callback.PasswordCallback;
+import javax.security.auth.callback.UnsupportedCallbackException;
 
 /**
- * Client-side representation of a caArray server, used to connect to and
- * access a remote server.
- *
- * @author tavelae
+ * Invoked by the Java security framework to authenticate remote caArray users.
  */
-public final class CaArrayServer {
+final class CaArrayCallbackHandler implements CallbackHandler {
 
-    private final String hostname;
-    private final int jndiPort;
-    private InitialContext initialContext;
-    private CaArraySearchService searchService;
+    private final String username;
+    private final String password;
 
-    /**
-     * Creates a new instance configured to attach to the provided hostname and port.
-     *
-     * @param hostname hostname (or IP address) of the caArray server.
-     * @param jndiPort JNDI port of the caArray server.
-     */
-    public CaArrayServer(final String hostname, final int jndiPort) {
-        this.hostname = hostname;
-        this.jndiPort = jndiPort;
+    CaArrayCallbackHandler(final String username, final String password) {
+        super();
+        this.username = username;
+        this.password = password;
     }
 
-    /**
-     * Starts a new session with this server for an anonymous (unauthenticated) user.
-     *
-     * @throws ServerConnectionException
-     */
-    public void connect() throws ServerConnectionException {
-        connectToServer();
-    }
-
-    /**
-     * Starts a new session with this server.
-     *
-     * @param username username to use to authenticate
-     * @param password password to use to authenticate
-     * @throws ServerConnectionException
-     * @throws LoginException
-     */
-    public void connect(String username, String password) throws ServerConnectionException, LoginException {
-        login(username, password);
-        connectToServer();
-    }
-
-    /**
-     * @param username
-     * @param password
-     * @throws LoginException
-     */
-    private void login(String username, String password) throws LoginException {
-        LoginContext loginContext = null;
-        try {
-            final CaArrayCallbackHandler handler = new CaArrayCallbackHandler(username, password);
-            loginContext = new LoginContext("client-login", handler);
-        } catch (LoginException e) {
-            throw new IllegalStateException("The caarray login module could not be found.");
+    public void handle(final Callback[] callbacks) throws UnsupportedCallbackException {
+        for (int i = 0; i < callbacks.length; i++) {
+            final Callback callback = callbacks[i];
+            handle(callback);
         }
-        loginContext.login();
+
     }
 
-    private void connectToServer() throws ServerConnectionException {
-        final Hashtable<String, String> namingProperties = new Hashtable<String, String>(); // NOPMD -- need Hashtable
-        namingProperties.put("java.naming.factory.initial", "org.jnp.interfaces.NamingContextFactory");
-        namingProperties.put("java.naming.factory.url.pkgs", "org.jboss.naming:org.jnp.interfaces");
-        namingProperties.put("java.naming.provider.url", String.valueOf(jndiPort));
-        try {
-            initialContext = new InitialContext(namingProperties);
-            searchService = (CaArraySearchService) initialContext.lookup(CaArraySearchService.JNDI_NAME);
-        } catch (NamingException e) {
-            throw new ServerConnectionException("Couldn't connect to the caArray server", e);
+    private void handle(final Callback callback) throws UnsupportedCallbackException {
+        if (callback instanceof NameCallback) {
+            handleNameCallback((NameCallback) callback);
+        } else if (callback instanceof PasswordCallback) {
+            handlePasswordCallback((PasswordCallback) callback);
+        } else {
+            throw new UnsupportedCallbackException(callback);
         }
     }
 
-    /**
-     * @return the hostname
-     */
-    public String getHostname() {
-        return this.hostname;
+    private void handleNameCallback(final NameCallback callback) {
+        callback.setName(username);
     }
 
-    /**
-     * @return the jndiPort
-     */
-    public int getJndiPort() {
-        return this.jndiPort;
-    }
-
-    /**
-     * @return the searchService
-     */
-    public CaArraySearchService getSearchService() {
-        return searchService;
+    private void handlePasswordCallback(final PasswordCallback callback) {
+        callback.setPassword(password.toCharArray());
     }
 
 }
