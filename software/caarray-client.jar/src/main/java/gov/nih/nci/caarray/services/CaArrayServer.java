@@ -157,13 +157,17 @@ public final class CaArrayServer {
         final Hashtable<String, String> namingProperties = new Hashtable<String, String>(); // NOPMD -- need Hashtable
         namingProperties.put("java.naming.factory.initial", "org.jnp.interfaces.NamingContextFactory");
         namingProperties.put("java.naming.factory.url.pkgs", "org.jboss.naming:org.jnp.interfaces");
-        namingProperties.put("java.naming.provider.url", String.valueOf(jndiPort));
+        namingProperties.put("java.naming.provider.url", getJndiUrl());
         try {
             initialContext = new InitialContext(namingProperties);
             searchService = (CaArraySearchService) initialContext.lookup(CaArraySearchService.JNDI_NAME);
         } catch (NamingException e) {
             throw new ServerConnectionException("Couldn't connect to the caArray server", e);
         }
+    }
+
+    private String getJndiUrl() {
+        return "jnp://" + getHostname() + ":" + getJndiPort();
     }
 
     /**
