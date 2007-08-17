@@ -753,10 +753,12 @@
         <echo taskname="selenium-shutdown" message="DGF Errors during shutdown are expected" />
     </target>
 
-    <target name="test:functional:compile-tests">
+    <target name="test:functional:compile-tests" depends="compile:caarray-common.jar,compile:caarray-client.jar">
         <mkdir dir="${test.classes.dir}" />
         <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}" debug="true">
             <classpath>
+                <pathelement location="${caarray-client.classes.dir}" />
+                <pathelement location="${caarray-common.classes.dir}" />
                 <pathelement location="${test.data.classes.dir}" />
                 <pathelement location="${selenium-java-client-driver.jar}" />
                 <pathelement location="${selenium-java-client-driver-tests.jar}" />
@@ -772,7 +774,7 @@
         <run-junit-tests
             test.src.dir="${test.src.dir}"
             xml.output.dir="${test.target.dir}/junit"
-            classpath="${test.classes.dir};${test.data.classes.dir};${test.data.files.dir};${selenium-server.jar};${selenium-java-client-driver.jar};${selenium-java-client-driver-tests.jar};${junit.jar}" />
+            classpath="${test.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};${test.data.classes.dir};${test.data.files.dir};${selenium-server.jar};${selenium-java-client-driver.jar};${selenium-java-client-driver-tests.jar};${junit.jar}" />
         <antcall target="test:selenium:stop-server" />
     </target>
 
@@ -1086,24 +1088,24 @@
       todir="${ssh.server.username}@${ssh.server.hostname}:${remote.jboss.home}/deploy"/>
   </target>
 
-	<target name="remote-jboss:deploy-caarray-temp">
-		<echo message="Copying caarray EAR to jboss temp folder ${remote.jboss.temp.dir} at ${ssh.server.hostname}..." />
+  <target name="remote-jboss:deploy-caarray-temp">
+    <echo message="Copying caarray EAR to jboss temp folder ${remote.jboss.temp.dir} at ${ssh.server.hostname}..." />
     <scp trust="true" file="${caarray.ear}"
       keyfile="${ssh.key.file}"
       passphrase=""
-			todir="${ssh.server.username}@${ssh.server.hostname}:${remote.jboss.temp.dir}"/>
+      todir="${ssh.server.username}@${ssh.server.hostname}:${remote.jboss.temp.dir}"/>
   </target>
 
-	<target name="remote-jboss:deploy-caarray" depends="remote-jboss:deploy-caarray-temp">
-		<echo message="Deploying caarray EAR to jboss server at ${ssh.server.hostname}..." />
-		<sshexec host="${ssh.server.hostname}"
-			trust="true"
-			username="${ssh.server.username}"
-			keyfile="${ssh.key.file}"
-			passphrase=""
-			command="mv ${remote.jboss.temp.dir}/caarray.ear ${remote.jboss.home}/deploy/"/>
-	</target>
-	
+  <target name="remote-jboss:deploy-caarray" depends="remote-jboss:deploy-caarray-temp">
+    <echo message="Deploying caarray EAR to jboss server at ${ssh.server.hostname}..." />
+    <sshexec host="${ssh.server.hostname}"
+      trust="true"
+      username="${ssh.server.username}"
+      keyfile="${ssh.key.file}"
+      passphrase=""
+      command="mv ${remote.jboss.temp.dir}/caarray.ear ${remote.jboss.home}/deploy/"/>
+  </target>
+
   <target name="remote-jboss:undeploy-caarray">
     <sshexec host="${ssh.server.hostname}"
       trust="true"
