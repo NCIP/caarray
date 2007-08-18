@@ -93,22 +93,29 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.Investigation;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
-  /**
-
-   */
+/**
+ * 
+ */
 @Entity
 public class Publication extends AbstractCaArrayEntity {
-    /**
-     * The serial version UID for serialization.
-     */
+
     private static final long serialVersionUID = 1234567890L;
 
+    private String name;
     private String authors;
     private String doi;
+    private String editor;
+    private String issue;
+    private String pages;
+    private String publisher;
     private String pubMedId;
-    private Term status;
     private String title;
+    private String uri;
+    private String volume;
+    private String year;
     private Investigation investigation;
+    private Term status;
+    private Term type;
 
 
     /**
@@ -175,7 +182,7 @@ public class Publication extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PUBLICATION_STATUS_IDX")
+    @ForeignKey(name = "PUBLICATION_STATUS_FK")
     public Term getStatus() {
         return status;
     }
@@ -187,6 +194,27 @@ public class Publication extends AbstractCaArrayEntity {
      */
     public void setStatus(final Term statusVal) {
         this.status = statusVal;
+    }
+    
+    /**
+     * Gets the type.
+     *
+     * @return the type
+     */
+    @ManyToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ForeignKey(name = "PUBLICATION_TYPE_FK")
+    public Term getType() {
+        return type;
+    }
+
+    /**
+     * Sets the type.
+     *
+     * @param typeVal the type
+     */
+    public void setType(final Term typeVal) {
+        this.type = typeVal;
     }
 
     /**
@@ -230,5 +258,125 @@ public class Publication extends AbstractCaArrayEntity {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * @return the editor
+     */
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    public final String getEditor() {
+        return editor;
+    }
+
+    /**
+     * @param editor the editor to set
+     */
+    public final void setEditor(String editor) {
+        this.editor = editor;
+    }
+
+    /**
+     * @return the issue
+     */
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    public final String getIssue() {
+        return issue;
+    }
+
+    /**
+     * @param issue the issue to set
+     */
+    public final void setIssue(String issue) {
+        this.issue = issue;
+    }
+
+    /**
+     * @return the pages
+     */
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    public final String getPages() {
+        return pages;
+    }
+
+    /**
+     * @param pages the pages to set
+     */
+    public final void setPages(String pages) {
+        this.pages = pages;
+    }
+
+    /**
+     * @return the publisher
+     */
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    public final String getPublisher() {
+        return publisher;
+    }
+
+    /**
+     * @param publisher the publisher to set
+     */
+    public final void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    /**
+     * @return the uri
+     */
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    public final String getUri() {
+        return uri;
+    }
+
+    /**
+     * @param uri the uri to set
+     */
+    public final void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    /**
+     * @return the volume
+     */
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    public final String getVolume() {
+        return volume;
+    }
+
+    /**
+     * @param volume the volume to set
+     */
+    public final void setVolume(String volume) {
+        this.volume = volume;
+    }
+
+    /**
+     * @return the year
+     */
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    public final String getYear() {
+        return year;
+    }
+
+    /**
+     * @param year the year to set
+     */
+    public final void setYear(String year) {
+        this.year = year;
+    }
+
+    /**
+     * @return the name
+     */
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    public final String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public final void setName(String name) {
+        this.name = name;
     }
 }

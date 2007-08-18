@@ -163,7 +163,7 @@ public class Parameter extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @JoinColumn(nullable = false, updatable = false)
-    @ForeignKey(name = "PARAMETER_PROTOCOL_IDX")
+    @ForeignKey(name = "PARAMETER_PROTOCOL_FK")
     public Protocol getProtocol() {
         return protocol;
     }

@@ -115,7 +115,7 @@ public class Proposal extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PROPOSAL_PROJECT_IDX")
+    @ForeignKey(name = "PROPOSAL_PROJECT_FK")
     public Project getProject() {
         return project;
     }

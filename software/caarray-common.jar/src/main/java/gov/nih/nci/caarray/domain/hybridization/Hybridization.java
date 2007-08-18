@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -119,6 +120,8 @@ public class Hybridization extends AbstractCaArrayEntity {
     private static final String MAPPED_BY = "hybridization";
 
     private String name;
+    private float amountOfMaterial;
+    private Term amountOfMaterialUnit;
     private RawArrayData arrayData;
     private Array array;
     private Set<Image> images = new HashSet<Image>();
@@ -279,7 +282,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      *
      * @return the labeledExtract
      */
-    @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "hybridizations")
     public Set<LabeledExtract> getLabeledExtracts() {
         return labeledExtract;
     }
@@ -301,5 +304,34 @@ public class Hybridization extends AbstractCaArrayEntity {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * @return the amountOfMaterial
+     */
+    @Column
+    public final float getAmountOfMaterial() {
+        return amountOfMaterial;
+    }
+
+    /**
+     * @param amountOfMaterial the amountOfMaterial to set
+     */
+    public final void setAmountOfMaterial(float amountOfMaterial) {
+        this.amountOfMaterial = amountOfMaterial;
+    }
+
+    /**
+     * @return the amountOfMaterialUnit
+     */
+    public final Term getAmountOfMaterialUnit() {
+        return amountOfMaterialUnit;
+    }
+
+    /**
+     * @param amountOfMaterialUnit the amountOfMaterialUnit to set
+     */
+    public final void setAmountOfMaterialUnit(Term amountOfMaterialUnit) {
+        this.amountOfMaterialUnit = amountOfMaterialUnit;
     }
 }

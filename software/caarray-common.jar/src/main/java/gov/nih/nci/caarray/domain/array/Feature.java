@@ -108,7 +108,7 @@ public class Feature extends AbstractDesignElement {
     private short row;
 
     private Set<PhysicalReporter> reporters = new HashSet<PhysicalReporter>();
-    private ArrayDesignDetails details;
+    private ArrayDesignDetails arrayDesignDetails;
 
     /**
      * Creates a new Feature with its LSID initialized.
@@ -201,10 +201,10 @@ public class Feature extends AbstractDesignElement {
     @JoinColumn(updatable = false, nullable = false)
     @ForeignKey(name = "FEATURE_DETAILS_FK")
     public ArrayDesignDetails getArrayDesignDetails() {
-        return details;
+        return arrayDesignDetails;
     }
 
-    private void setArrayDesignDetails(ArrayDesignDetails adetails) {
-        this.details = adetails;
+    private void setArrayDesignDetails(ArrayDesignDetails arrayDesignDetails) {
+        this.arrayDesignDetails = arrayDesignDetails;
     }
 }

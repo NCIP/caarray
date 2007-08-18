@@ -98,23 +98,18 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
-  /**
-
-   */
+/**
+ * 
+ */
 @Entity
 @DiscriminatorValue("SO")
 public class Source extends AbstractBioMaterial {
-    /**
-     * The serial version UID for serialization.
-     */
-    private static final long serialVersionUID = 1234567890L;
 
+    private static final long serialVersionUID = 1234567890L;
     private static final String DEFAULT_FK_ID = "SOURCE_ID";
 
-    /**
-     * The samples set.
-     */
     private Set<Sample> samples = new HashSet<Sample>();
+    private Set<AbstractContact> providers = new HashSet<AbstractContact>();
 
     /**
      * Gets the samples.
@@ -142,11 +137,6 @@ public class Source extends AbstractBioMaterial {
     private void setSamples(final Set<Sample> samplesVal) { // NOPMD
         this.samples = samplesVal;
     }
-
-    /**
-     * The providers set.
-     */
-    private Set<AbstractContact> providers = new HashSet<AbstractContact>();
 
     /**
      * Gets the providers.

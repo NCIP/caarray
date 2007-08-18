@@ -83,7 +83,8 @@
 
 package gov.nih.nci.caarray.domain.file;
 
-import java.io.Serializable;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -93,15 +94,12 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 
 /**
  */
-public final class FileType implements Serializable, Comparable<FileType>  {
+public final class FileType extends AbstractCaArrayObject implements Comparable<FileType>  {
     /**
      * The serial version UID for serialization.
      */
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The file type of this instance.
-     */
     private final String name;
 
     /**

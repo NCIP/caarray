@@ -234,7 +234,7 @@ public class Investigation extends AbstractCaArrayEntity {
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = { @JoinColumn(name = TERM_FK_NAME) }
     )
-    @ForeignKey(name = "QUALCTRLTYPE_INVEST_IDX", inverseName = "QUALCTRLTYPE_TERM_IDX")
+    @ForeignKey(name = "QUALCTRLTYPE_INVEST_FK", inverseName = "QUALCTRLTYPE_TERM_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Term> getQualityControlTypes() {
         return qualityControlTypes;
@@ -281,7 +281,7 @@ public class Investigation extends AbstractCaArrayEntity {
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = { @JoinColumn(name = TERM_FK_NAME) }
     )
-    @ForeignKey(name = "REPLTYPE_INVEST_IDX", inverseName = "REPLTYPE_TERM_IDX")
+    @ForeignKey(name = "REPLTYPE_INVEST_FK", inverseName = "REPLTYPE_TERM_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Term> getReplicateTypes() {
         return replicateTypes;
@@ -308,7 +308,7 @@ public class Investigation extends AbstractCaArrayEntity {
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = { @JoinColumn(name = "SOURCE_ID") }
     )
-    @ForeignKey(name = "INVESTIGATIONSOURCE_INVEST_IDX", inverseName = "INVESTIGATIONSOURCE_SOURCE_IDX")
+    @ForeignKey(name = "INVESTIGATIONSOURCE_INVEST_FK", inverseName = "INVESTIGATIONSOURCE_SOURCE_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Source> getSources() {
         return sources;
@@ -335,7 +335,7 @@ public class Investigation extends AbstractCaArrayEntity {
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = { @JoinColumn(name = "SAMPLE_ID") }
     )
-    @ForeignKey(name = "INVESTIGATIONSAMPLE_INVEST_IDX", inverseName = "INVESTIGATIONSAMPLE_SAMPLE_IDX")
+    @ForeignKey(name = "INVESTIGATIONSAMPLE_INVEST_FK", inverseName = "INVESTIGATIONSAMPLE_SAMPLE_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Sample> getSamples() {
         return samples;
@@ -362,7 +362,7 @@ public class Investigation extends AbstractCaArrayEntity {
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = { @JoinColumn(name = "EXTRACT_ID") }
     )
-    @ForeignKey(name = "INVESTIGATIONEXTRACT_INVEST_IDX", inverseName = "INVESTIGATIONEXTRACT_EXTRACT_IDX")
+    @ForeignKey(name = "INVESTIGATIONEXTRACT_INVEST_FK", inverseName = "INVESTIGATIONEXTRACT_EXTRACT_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Extract> getExtracts() {
         return extracts;
@@ -389,7 +389,7 @@ public class Investigation extends AbstractCaArrayEntity {
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = { @JoinColumn(name = "SAMPLE_ID") }
     )
-    @ForeignKey(name = "INVESTIGATIONLE_INVEST_IDX", inverseName = "INVESTIGATIONLE_LE_IDX")
+    @ForeignKey(name = "INVESTIGATIONLE_INVEST_FK", inverseName = "INVESTIGATIONLE_LE_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<LabeledExtract> getLabeledExtracts() {
         return labeledExtracts;
@@ -416,7 +416,7 @@ public class Investigation extends AbstractCaArrayEntity {
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = { @JoinColumn(name = "ARRAYDESIGN_ID") }
     )
-    @ForeignKey(name = "INVESTARRAYDESIGN_INVEST_IDX", inverseName = "INVESTARRAYDESIGN_ARRAYDESIGN_IDX")
+    @ForeignKey(name = "INVESTARRAYDESIGN_INVEST_FK", inverseName = "INVESTARRAYDESIGN_ARRAYDESIGN_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<ArrayDesign> getArrayDesigns() {
         return arrayDesigns;
@@ -485,7 +485,7 @@ public class Investigation extends AbstractCaArrayEntity {
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = { @JoinColumn(name = TERM_FK_NAME) }
     )
-    @ForeignKey(name = "NORMTYPE_INVEST_IDX", inverseName = "NORMTYPE_TERM_IDX")
+    @ForeignKey(name = "NORMTYPE_INVEST_FK", inverseName = "NORMTYPE_TERM_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Term> getNormalizationTypes() {
         return normalizationTypes;
@@ -512,7 +512,7 @@ public class Investigation extends AbstractCaArrayEntity {
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = { @JoinColumn(name = "ARRAY_ID") }
     )
-    @ForeignKey(name = "INVESTARRAY_INVEST_IDX", inverseName = "INVESTARRAY_ARRAY_IDX")
+    @ForeignKey(name = "INVESTARRAY_INVEST_FK", inverseName = "INVESTARRAY_ARRAY_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Array> getArrays() {
         return arrays;

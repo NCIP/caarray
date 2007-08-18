@@ -89,20 +89,19 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
-  /**
-
-   */
+/**
+ * 
+ */
 @Entity
 public class Address extends AbstractCaArrayEntity {
-    /**
-     * The serial version UID for serialization.
-     */
+    
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The city String.
-     */
+    private String streetAddress1;
+    private String streetAddress2;
     private String city;
+    private String state;
+    private String zipCode;
 
     /**
      * Gets the city.
@@ -123,11 +122,6 @@ public class Address extends AbstractCaArrayEntity {
         this.city = cityVal;
     }
     /**
-     * The state String.
-     */
-    private String state;
-
-    /**
      * Gets the state.
      *
      * @return the state
@@ -145,11 +139,6 @@ public class Address extends AbstractCaArrayEntity {
     public void setState(final String stateVal) {
         this.state = stateVal;
     }
-    /**
-     * The streetAddress1 String.
-     */
-    private String streetAddress1;
-
     /**
      * Gets the streetAddress1.
      *
@@ -169,11 +158,6 @@ public class Address extends AbstractCaArrayEntity {
         this.streetAddress1 = streetAddress1Val;
     }
     /**
-     * The streetAddress2 String.
-     */
-    private String streetAddress2;
-
-    /**
      * Gets the streetAddress2.
      *
      * @return the streetAddress2
@@ -191,11 +175,6 @@ public class Address extends AbstractCaArrayEntity {
     public void setStreetAddress2(final String streetAddress2Val) {
         this.streetAddress2 = streetAddress2Val;
     }
-    /**
-     * The zipCode String.
-     */
-    private String zipCode;
-
     /**
      * Gets the zipCode.
      *

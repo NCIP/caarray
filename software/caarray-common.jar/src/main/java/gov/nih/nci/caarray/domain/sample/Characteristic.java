@@ -112,7 +112,7 @@ public class Characteristic extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "CHARACTERISTIC_TERM_IDX")
+    @ForeignKey(name = "CHARACTERISTIC_TERM_FK")
     public Term getTerm() {
         return term;
     }
@@ -152,7 +152,7 @@ public class Characteristic extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "CHARACTERISTIC_UNIT_IDX")
+    @ForeignKey(name = "CHARACTERISTIC_UNIT_FK")
     public Term getUnit() {
         return unit;
     }
@@ -170,7 +170,7 @@ public class Characteristic extends AbstractCaArrayEntity {
      * @return the abstractBioMaterial
      */
     @ManyToOne
-    @ForeignKey(name = "CHARACTERISTIC_BIOMATERIAL_IDX")
+    @ForeignKey(name = "CHARACTERISTIC_BIOMATERIAL_FK")
     public AbstractBioMaterial getBioMaterial() {
         return bioMaterial;
     }

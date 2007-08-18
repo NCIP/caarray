@@ -137,7 +137,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PROJECT_INVESTIGATION_IDX")
+    @ForeignKey(name = "PROJECT_INVESTIGATION_FK")
     public Investigation getInvestigation() {
         return investigation;
     }

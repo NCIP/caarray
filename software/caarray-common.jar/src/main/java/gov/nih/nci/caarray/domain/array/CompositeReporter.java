@@ -104,7 +104,7 @@ public class CompositeReporter extends AbstractReporter {
 
     private Set<PhysicalReporter> reporters = new HashSet<PhysicalReporter>();
 
-    private ArrayDesignDetails details;
+    private ArrayDesignDetails arrayDesignDetails;
 
     /**
      * Creates a new <code>CompositeReporter</code> with its LSID initialized.
@@ -145,10 +145,10 @@ public class CompositeReporter extends AbstractReporter {
     @JoinColumn(updatable = false, nullable = false)
     @ForeignKey(name = "COMREPORTER_DETAILS_FK")
     public ArrayDesignDetails getArrayDesignDetails() {
-        return details;
+        return arrayDesignDetails;
     }
 
-    private void setArrayDesignDetails(ArrayDesignDetails adetails) {
-        this.details = adetails;
+    private void setArrayDesignDetails(ArrayDesignDetails arrayDesignDetails) {
+        this.arrayDesignDetails = arrayDesignDetails;
     }
 }

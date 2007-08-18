@@ -235,7 +235,7 @@ public class Protocol extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PROTOCOL_TYPE_IDX")
+    @ForeignKey(name = "PROTOCOL_TYPE_FK")
     public Term getType() {
         return type;
     }

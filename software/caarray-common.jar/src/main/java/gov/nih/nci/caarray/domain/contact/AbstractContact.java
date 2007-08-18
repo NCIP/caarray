@@ -97,9 +97,9 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
-  /**
-
-   */
+/**
+ * 
+ */
 @Entity
 @Table(name = "CONTACT")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -108,15 +108,14 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
         discriminatorType = DiscriminatorType.STRING
 )
 public abstract class AbstractContact extends AbstractCaArrayEntity {
-    /**
-     * The serial version UID for serialization.
-     */
+
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The email String.
-     */
     private String email;
+    private String fax;
+    private String phone;
+    private String url;
+    private Address address;
 
     /**
      * Gets the email.
@@ -137,11 +136,6 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
         this.email = emailVal;
     }
     /**
-     * The fax String.
-     */
-    private String fax;
-
-    /**
      * Gets the fax.
      *
      * @return the fax
@@ -160,11 +154,6 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
         this.fax = faxVal;
     }
     /**
-     * The phone String.
-     */
-    private String phone;
-
-    /**
      * Gets the phone.
      *
      * @return the phone
@@ -182,11 +171,6 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
     public void setPhone(final String phoneVal) {
         this.phone = phoneVal;
     }
-    /**
-     * The url String.
-     */
-    private String url;
-
     /**
      * Gets the url.
      *
@@ -207,18 +191,13 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
     }
 
     /**
-     * The address gov.nih.nci.caarray.domain.contact.Address.
-     */
-    private Address address;
-
-    /**
      * Gets the address.
      *
      * @return the address
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "CONTACT_ADDRESS_IDX")
+    @ForeignKey(name = "CONTACT_ADDRESS_FK")
     public Address getAddress() {
         return address;
     }

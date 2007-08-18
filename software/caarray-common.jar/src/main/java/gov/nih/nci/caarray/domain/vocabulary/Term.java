@@ -160,7 +160,7 @@ public class Term extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "TERM_ACCESSION_IDX")
+    @ForeignKey(name = "TERM_ACCESSION_FK")
     public Accession getAccession() {
         return accession;
     }
@@ -186,7 +186,7 @@ public class Term extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "TERM_CATEGORY_IDX")
+    @ForeignKey(name = "TERM_CATEGORY_FK")
     public Category getCategory() {
         return category;
     }
@@ -212,7 +212,7 @@ public class Term extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "TERM_SOURCE_IDX")
+    @ForeignKey(name = "TERM_SOURCE_FK")
     public TermSource getSource() {
         return source;
     }

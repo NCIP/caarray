@@ -144,7 +144,7 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
     @ManyToOne
     @JoinColumn
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "CATEGORY_PARENT_IDX")
+    @ForeignKey(name = "CATEGORY_PARENT_FK")
     public Category getParent() {
         return parent;
     }

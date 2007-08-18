@@ -82,12 +82,12 @@
  */
 package gov.nih.nci.caarray.domain.array;
 
-import java.io.Serializable;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -98,30 +98,16 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable = false)
-public class ArrayDesignDetails implements Serializable {
+public class ArrayDesignDetails extends AbstractCaArrayObject {
 
     private static final long serialVersionUID = -4810002388725364910L;
     private static final String UNUSED = "unused";
     private static final String MAPPED_BY = "arrayDesignDetails";
 
-    private Long id;
     private Set<Feature> features = new HashSet<Feature>();
     private Set<ReporterGroup> reporterGroups = new HashSet<ReporterGroup>();
     private Set<PhysicalReporter> reporters = new HashSet<PhysicalReporter>();
     private Set<CompositeReporter> compositeReporters = new HashSet<CompositeReporter>();
-
-    /**
-     * @return db id
-     */
-    @Id
-    public Long getId() {
-        return id;
-    }
-
-    @SuppressWarnings("unused")
-    private void setId(Long id) { // NOPMD
-        this.id = id;
-    }
 
     /**
      * @return the features

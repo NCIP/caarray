@@ -89,18 +89,20 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
-  /**
-
-   */
+/**
+ * 
+ */
 @Entity
 @DiscriminatorValue("LA")
 public class LabeledExtract extends AbstractBioMaterial {
@@ -109,7 +111,7 @@ public class LabeledExtract extends AbstractBioMaterial {
 
     private Term label;
     private Set<Extract> extracts = new HashSet<Extract>();
-    private Hybridization hybridization;
+    private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
 
     /**
      * Gets the label.
@@ -118,7 +120,7 @@ public class LabeledExtract extends AbstractBioMaterial {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "BIOMATERIAL_LABEL_IDX")
+    @ForeignKey(name = "BIOMATERIAL_LABEL_FK")
     public Term getLabel() {
         return label;
     }
@@ -153,19 +155,31 @@ public class LabeledExtract extends AbstractBioMaterial {
     }
 
     /**
-     * @return the hybridization
+     * Gets the hybridizations.
+     *
+     * @return the hybridizations
      */
-    @ManyToOne(cascade = { CascadeType.ALL })
-    @ForeignKey(name = "EXTRACT_HYBRIDIZATION_FK")
-    public Hybridization getHybridization() {
-        return hybridization;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "LABELEDEXTRACTHYBRIDIZATION",
+            joinColumns = { @javax.persistence.JoinColumn(name = "LABELEDEXTRACT_ID") },
+            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "HYBRIDIZATION_ID") }
+    )
+    @ForeignKey(name = "LABELEDEXTRACTHYBRIDIZATION_LABELEDEXTRACT_FK", 
+            inverseName = "LABELEDEXTRACTHYBRIDIZATION_HYBRIDIZATION_FK")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    public Set<Hybridization> getHybridizations() {
+        return hybridizations;
     }
 
     /**
-     * @param hybridization the hybridization to set
+     * Sets the hybridizations.
+     *
+     * @param hybridizationsVal the hybridizations
      */
-    public void setHybridization(Hybridization hybridization) {
-        this.hybridization = hybridization;
+    @SuppressWarnings("unused")
+    private void setHybridizations(final Set<Hybridization> hybridizationsVal) { // NOPMD
+        this.hybridizations = hybridizationsVal;
     }
 
     /**

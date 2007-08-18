@@ -161,7 +161,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "ARRAYDESIGN_POLYMER_IDX")
+    @ForeignKey(name = "ARRAYDESIGN_POLYMER_FK")
     public Term getPolymerType() {
         return polymerType;
     }
@@ -181,7 +181,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "ARRAYDESIGN_SUBSTRAE_IDX")
+    @ForeignKey(name = "ARRAYDESIGN_SUBSTRAE_FK")
     public Term getSubstrateType() {
         return substrateType;
     }
@@ -201,7 +201,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "ARRAYDESIGN_SURFACE_IDX")
+    @ForeignKey(name = "ARRAYDESIGN_SURFACE_FK")
     public Term getSurfaceType() {
         return surfaceType;
     }
@@ -221,7 +221,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "ARRAYDESIGN_TECHNOLOGY_IDX")
+    @ForeignKey(name = "ARRAYDESIGN_TECHNOLOGY_FK")
     public Term getTechnologyType() {
         return technologyType;
     }
@@ -260,7 +260,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "ARRAYDESIGN_PROVIDER_IDX")
+    @ForeignKey(name = "ARRAYDESIGN_PROVIDER_FK")
     public Organization getProvider() {
         return provider;
     }
@@ -281,7 +281,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      * @return the printing
      */
     @ManyToOne
-    @ForeignKey(name = "ARRAYDESIGN_PRINTING_IDX")
+    @ForeignKey(name = "ARRAYDESIGN_PRINTING_FK")
     public ProtocolApplication getPrinting() {
         return printing;
     }

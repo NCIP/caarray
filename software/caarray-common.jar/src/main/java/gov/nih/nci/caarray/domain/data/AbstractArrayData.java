@@ -120,6 +120,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
     private String name;
     private CaArrayFile dataFile;
     private ArrayDataType type;
+    private Set<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
 
     /**
      * Gets the dataFile.
@@ -160,11 +161,6 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
     public void setName(final String nameVal) {
         this.name = nameVal;
     }
-
-    /**
-     * The protocolApplications set.
-     */
-    private Set<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
 
     /**
      * Gets the protocolApplications.

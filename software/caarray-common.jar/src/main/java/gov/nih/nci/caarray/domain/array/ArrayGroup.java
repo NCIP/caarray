@@ -80,119 +80,37 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain;
+package gov.nih.nci.caarray.domain.array;
 
-import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
 /**
- * Base class for all persistent caArray domain objects.
+ * 
  */
-@MappedSuperclass
-public abstract class AbstractCaArrayObject implements Serializable {
+@Entity
+public class ArrayGroup extends AbstractCaArrayEntity {
 
-    private static final long serialVersionUID = 2732929116326299995L;
-    /**
-     * The default column size for string columns in the db.
-     */
-    public static final int DEFAULT_STRING_COLUMN_SIZE = 254;
+    private static final long serialVersionUID = -97953886473272607L;
 
-    private Long id;
-    private String gridIdentifier;
+    private Set<Array> arrays = new HashSet<Array>();
 
     /**
-     * Returns the id.
-     *
-     * @return the id
+     * @return the arrays
      */
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long getId() {
-        return id;
+    @OneToMany(mappedBy = "arrayGroup", fetch = FetchType.EAGER)
+    public final Set<Array> getArrays() {
+        return arrays;
     }
-
-    /**
-     * Sets the id.
-     *
-     * @param id the id to set
-     */
-    @SuppressWarnings({ "PMD.UnusedPrivateMethod", "unused" })
-    private void setId(Long id) {
-        this.id = id;
-    }
-
-    /**
-     * The default comparison uses the id.
-     * @param o other object
-     * @return equal or not
-     */
-    @Override
-    public final boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        }
     
-        if (!(o instanceof AbstractCaArrayObject)) {
-            return false;
-        }
-    
-        if (o == this) {
-            return true;
-        }
-    
-        if (id == null) {
-            // by default, two transient instances cannot ever be equal
-            return false;
-        }
-    
-        AbstractCaArrayObject e = (AbstractCaArrayObject) o;
-        return (id.equals(e.id) && getClass().equals(e.getClass()));
+    @SuppressWarnings("unused")
+    private void setArrays(final Set<Array> arrays) { // NOPMD
+        this.arrays = arrays;
     }
-
-    /**
-     * Default hashCode goes off of id.
-     * @return hashCode
-     */
-    @Override
-    public final int hashCode() {
-        if (id == null) {
-            return System.identityHashCode(this);
-        }
-    
-        return id.hashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append('[');
-        stringBuffer.append(getClass().getSimpleName());
-        stringBuffer.append("] id=");
-        stringBuffer.append(id);
-        return stringBuffer.toString();
-    }
-
-    /**
-     * @return the gridIdentifier
-     */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public final String getGridIdentifier() {
-        return gridIdentifier;
-    }
-
-    /**
-     * @param gridIdentifier the gridIdentifier to set
-     */
-    public final void setGridIdentifier(String gridIdentifier) {
-        this.gridIdentifier = gridIdentifier;
-    }
-
 }

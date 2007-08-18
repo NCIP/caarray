@@ -83,6 +83,7 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
@@ -103,9 +104,9 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
-  /**
-
-   */
+/**
+ * 
+ */
 @Entity
 @Table(name = "BIOMATERIAL")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -113,16 +114,15 @@ import org.hibernate.annotations.ForeignKey;
         name = "DISCRIMINATOR",
         discriminatorType = DiscriminatorType.STRING
 )
-public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaArrayEntity {
-    /**
-     * The serial version UID for serialization.
-     */
+public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
+
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The materialType gov.nih.nci.caarray.domain.vocabulary.Term.
-     */
     private Term materialType;
+    private String name;
+    private String description;
+    private Set<Characteristic> characteristics = new HashSet<Characteristic>();
+    private Set<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
 
     /**
      * Gets the materialType.
@@ -131,7 +131,7 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "BIOMATERIAL_TYPE_IDX")
+    @ForeignKey(name = "BIOMATERIAL_TYPE_FK")
     public Term getMaterialType() {
         return materialType;
     }
@@ -144,11 +144,6 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
     public void setMaterialType(final Term materialTypeVal) {
         this.materialType = materialTypeVal;
     }
-    /**
-     * The name String.
-     */
-    private String name;
-
     /**
      * Gets the name.
      *
@@ -168,11 +163,6 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
         this.name = nameVal;
     }
     /**
-     * The description String.
-     */
-    private String description;
-
-    /**
      * Gets the description.
      *
      * @return the description
@@ -190,11 +180,6 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
     public void setDescription(final String descriptionVal) {
         this.description = descriptionVal;
     }
-
-    /**
-     * The characteristics set.
-     */
-    private Set<Characteristic> characteristics = new HashSet<Characteristic>();
 
     /**
      * Gets the characteristics.
@@ -216,11 +201,6 @@ public class AbstractBioMaterial extends gov.nih.nci.caarray.domain.AbstractCaAr
     private void setCharacteristics(final Set<Characteristic> characteristicsVal) { // NOPMD
         this.characteristics = characteristicsVal;
     }
-
-    /**
-     * The protocolApplications set.
-     */
-    private Set<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
 
     /**
      * Gets the protocolApplications.

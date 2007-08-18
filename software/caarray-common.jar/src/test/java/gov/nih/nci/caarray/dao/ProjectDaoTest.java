@@ -237,7 +237,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
     }
 
     private static void setHybridizations() {
-        DUMMY_LABELED_EXTRACT.setHybridization(DUMMY_HYBRIDIZATION);
+        DUMMY_LABELED_EXTRACT.getHybridizations().add(DUMMY_HYBRIDIZATION);
         DUMMY_HYBRIDIZATION.getLabeledExtracts().add(DUMMY_LABELED_EXTRACT);
         DUMMY_HYBRIDIZATION.setArrayData(DUMMY_RAW_ARRAY_DATA);
         DUMMY_RAW_ARRAY_DATA.setHybridization(DUMMY_HYBRIDIZATION);
@@ -422,8 +422,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
     private void checkHybridizations(Investigation dummyInv, Investigation retrievedInv) {
         LabeledExtract labeledExtract = retrievedInv.getLabeledExtracts().iterator().next();
-        Hybridization hybridization = labeledExtract.getHybridization();
-        assertNotNull(hybridization);
+        Hybridization hybridization = labeledExtract.getHybridizations().iterator().next();
         assertEquals(labeledExtract, hybridization.getLabeledExtracts().iterator().next());
         RawArrayData arrayData = hybridization.getArrayData();
         assertNotNull(arrayData);

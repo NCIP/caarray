@@ -98,21 +98,19 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
-  /**
-
-   */
+/**
+ * 
+ */
 @Entity
 @DiscriminatorValue("P")
 public class Person extends AbstractContact {
-    /**
-     * The serial version UID for serialization.
-     */
+
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The firstName String.
-     */
     private String firstName;
+    private String middleInitials;
+    private String lastName;
+    private Set<Organization> affiliations = new HashSet<Organization>();
 
     /**
      * Gets the firstName.
@@ -133,11 +131,6 @@ public class Person extends AbstractContact {
         this.firstName = firstNameVal;
     }
     /**
-     * The lastName String.
-     */
-    private String lastName;
-
-    /**
      * Gets the lastName.
      *
      * @return the lastName
@@ -156,11 +149,6 @@ public class Person extends AbstractContact {
         this.lastName = lastNameVal;
     }
     /**
-     * The middleInitials String.
-     */
-    private String middleInitials;
-
-    /**
      * Gets the middleInitials.
      *
      * @return the middleInitials
@@ -178,11 +166,6 @@ public class Person extends AbstractContact {
     public void setMiddleInitials(final String middleInitialsVal) {
         this.middleInitials = middleInitialsVal;
     }
-
-    /**
-     * The affiliations set.
-     */
-    private Set<Organization> affiliations = new HashSet<Organization>();
 
     /**
      * Gets the affiliations.

@@ -82,12 +82,12 @@
  */
 package gov.nih.nci.caarray.domain.array;
 
-import java.io.Serializable;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -97,33 +97,19 @@ import javax.persistence.OneToMany;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable = false)
-public class ReporterGroup implements Serializable {
+public class ReporterGroup extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = -7001732731586530134L;
 
-    private Long id;
     private Set<PhysicalReporter> reporters = new HashSet<PhysicalReporter>();
     private String name;
-    private ArrayDesignDetails details;
+    private ArrayDesignDetails arrayDesignDetails;
 
     /**
-     * @return db id
+     * @param arrayDesignDetails array design arrayDesignDetails
      */
-    @Id
-    public Long getId() {
-        return id;
-    }
-
-    @SuppressWarnings("unused")
-    private void setId(Long id) { // NOPMD
-        this.id = id;
-    }
-
-    /**
-     * @param details array design details
-     */
-    public ReporterGroup(ArrayDesignDetails details) {
-        setArrayDesignDetails(details);
+    public ReporterGroup(ArrayDesignDetails arrayDesignDetails) {
+        setArrayDesignDetails(arrayDesignDetails);
     }
 
     ReporterGroup() {
@@ -158,15 +144,15 @@ public class ReporterGroup implements Serializable {
     }
 
     /**
-     * @return the design details
+     * @return the design arrayDesignDetails
      */
     @ManyToOne
     @JoinColumn(updatable = false, nullable = false)
     public ArrayDesignDetails getArrayDesignDetails() {
-        return details;
+        return arrayDesignDetails;
     }
 
     private void setArrayDesignDetails(ArrayDesignDetails adetails) {
-        this.details = adetails;
+        this.arrayDesignDetails = adetails;
     }
 }

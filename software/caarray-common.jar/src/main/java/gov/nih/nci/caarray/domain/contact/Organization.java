@@ -89,20 +89,15 @@ import javax.persistence.Entity;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-  /**
-
-   */
+/**
+ * 
+ */
 @Entity
 @DiscriminatorValue("O")
 public class Organization extends AbstractContact {
-    /**
-     * The serial version UID for serialization.
-     */
+
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The name String.
-     */
     private String name;
 
     /**

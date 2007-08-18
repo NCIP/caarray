@@ -118,7 +118,7 @@ public class FactorValue extends AbstractCaArrayEntity {
      * @return the factor
      */
     @ManyToOne
-    @ForeignKey(name = "FACTORVALUE_FACTOR_IDX")
+    @ForeignKey(name = "FACTORVALUE_FACTOR_FK")
     public Factor getFactor() {
         return factor;
     }
@@ -139,7 +139,7 @@ public class FactorValue extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "FACTORVALUE_UNIT_IDX")
+    @ForeignKey(name = "FACTORVALUE_UNIT_FK")
     public Term getUnit() {
         return unit;
     }

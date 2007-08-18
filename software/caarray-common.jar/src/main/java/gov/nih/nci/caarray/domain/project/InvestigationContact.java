@@ -121,7 +121,7 @@ public class InvestigationContact extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "INVESTIGATIONCONTACT_CONTACT_IDX")
+    @ForeignKey(name = "INVESTIGATIONCONTACT_CONTACT_FK")
     public AbstractContact getContact() {
         return contact;
     }
@@ -167,7 +167,7 @@ public class InvestigationContact extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @JoinColumn(insertable = false, updatable = false)
-    @ForeignKey(name = "INVCONTACT_INVEST_IDX")
+    @ForeignKey(name = "INVCONTACT_INVEST_FK")
     public Investigation getInvestigation() {
         return investigation;
     }

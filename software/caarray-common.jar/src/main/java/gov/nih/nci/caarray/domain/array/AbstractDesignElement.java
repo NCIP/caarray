@@ -91,6 +91,8 @@ import javax.persistence.MappedSuperclass;
  */
 @MappedSuperclass
 public abstract class AbstractDesignElement extends AbstractCaArrayEntity {
+    
+    private String name;
 
     /**
      * @param lsidAuthority lsidAuthority
@@ -106,5 +108,19 @@ public abstract class AbstractDesignElement extends AbstractCaArrayEntity {
 
     AbstractDesignElement() {
         // hibernate constructor
+    }
+
+    /**
+     * @return the name
+     */
+    public final String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public final void setName(String name) {
+        this.name = name;
     }
 }
