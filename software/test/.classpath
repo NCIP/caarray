@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="/lib/jbossall-client.jar"/>
 	<classpathentry kind="lib" path="/lib/jboss-ejb3-client.jar"/>
 	<classpathentry kind="lib" path="/lib/jboss-aop-jdk50-client.jar"/>
+	<classpathentry kind="lib" path="/lib/jboss-aspect-jdk50-client.jar"/>
 	<classpathentry kind="output" path="target/test-classes"/>
 </classpath>
