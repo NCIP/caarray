@@ -201,8 +201,7 @@ public class MageTabTranslatorTest {
 
     private void checkTcgaBroadHybridizations(Investigation investigation) {
         for (LabeledExtract labeledExtract : investigation.getLabeledExtracts()) {
-            Hybridization hybridization = labeledExtract.getHybridization();
-            assertNotNull(hybridization);
+            Hybridization hybridization = labeledExtract.getHybridizations().iterator().next();
             RawArrayData celData = hybridization.getArrayData();
             assertNotNull(celData);
             // TODO Eric -- fix this issue

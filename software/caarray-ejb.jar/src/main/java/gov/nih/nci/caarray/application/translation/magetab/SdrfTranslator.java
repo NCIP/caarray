@@ -614,7 +614,7 @@ final class SdrfTranslator extends AbstractTranslator {
 
     private void linkLabeledExtractAndHybridization(LabeledExtract labeledExtract, Hybridization hybridization) {
         hybridization.getLabeledExtracts().add(labeledExtract);
-        labeledExtract.setHybridization(hybridization);
+        labeledExtract.getHybridizations().add(hybridization);
     }
 
     private boolean isBioMaterial(SdrfNodeType nodeType) {
