@@ -113,6 +113,9 @@ import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.validation.InvalidDataException;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -139,6 +142,13 @@ public class ArrayDataServiceTest {
         arrayDataServiceBean.setFileAccessService(fileAccessServiceStub);
         arrayDataServiceBean.setDaoFactory(daoFactoryStub);
         arrayDataService = arrayDataServiceBean;
+    }
+    
+    @Test
+    public void testInitialize() {
+        arrayDataService.initialize();
+        assertTrue(daoFactoryStub.dataTypeMap.containsKey(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL));
+        assertTrue(daoFactoryStub.quantitationTypeMap.keySet().containsAll(Arrays.asList(AffymetrixCelQuantitationType.values())));
     }
 
     @Test
@@ -213,16 +223,26 @@ public class ArrayDataServiceTest {
     }
 
     private static final class LocalDaoFactoryStub extends DaoFactoryStub {
+        
+        private Map<ArrayDataTypeDescriptor, ArrayDataType> dataTypeMap = 
+            new HashMap<ArrayDataTypeDescriptor, ArrayDataType>();
+        
+        private Map<QuantitationTypeDescriptor, QuantitationType> quantitationTypeMap =
+            new HashMap<QuantitationTypeDescriptor, QuantitationType>();
 
         @Override
         public ArrayDao getArrayDao() {
             return new ArrayDaoStub() {
 
                 public ArrayDataType getArrayDataType(ArrayDataTypeDescriptor descriptor) {
+                    if (dataTypeMap.containsKey(descriptor)) {
+                        return dataTypeMap.get(descriptor);
+                    }
                     ArrayDataType arrayDataType = new ArrayDataType();
                     arrayDataType.setName(descriptor.getName());
                     arrayDataType.setVersion(descriptor.getVersion());
                     addQuantitationTypes(arrayDataType, descriptor);
+                    dataTypeMap.put(descriptor, arrayDataType);
                     return arrayDataType;
                 }
 
@@ -233,9 +253,13 @@ public class ArrayDataServiceTest {
                 }
 
                 public QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor) {
+                    if (quantitationTypeMap.containsKey(descriptor)) {
+                        return quantitationTypeMap.get(descriptor);
+                    }
                     QuantitationType quantitationType = new QuantitationType();
                     quantitationType.setName(descriptor.getName());
                     quantitationType.setType(descriptor.getDataType().getTypeClass());
+                    quantitationTypeMap.put(descriptor, quantitationType);
                     return quantitationType;
                 }
 
