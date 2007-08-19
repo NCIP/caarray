@@ -104,7 +104,7 @@ import org.hibernate.annotations.ForeignKey;
 
    */
 @Entity
-public class InvestigationContact extends AbstractCaArrayEntity {
+public class ExperimentContact extends AbstractCaArrayEntity {
     /**
      * The serial version UID for serialization.
      */
@@ -112,7 +112,7 @@ public class InvestigationContact extends AbstractCaArrayEntity {
 
     private AbstractContact contact;
     private Set<Term> roles = new HashSet<Term>();
-    private Investigation investigation;
+    private Experiment experiment;
 
     /**
      * Gets the contact.
@@ -121,7 +121,7 @@ public class InvestigationContact extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "INVESTIGATIONCONTACT_CONTACT_FK")
+    @ForeignKey(name = "EXPERIMENTCONTACT_CONTACT_FK")
     public AbstractContact getContact() {
         return contact;
     }
@@ -142,8 +142,8 @@ public class InvestigationContact extends AbstractCaArrayEntity {
      */
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "INVESTIGATIONCONTACTROLE",
-            joinColumns = { @JoinColumn(name = "INVESTIGATIONCONTACT_ID") },
+            name = "EXPERIMENTCONTACTROLE",
+            joinColumns = { @JoinColumn(name = "EXPERIMENTCONTACT_ID") },
             inverseJoinColumns = { @JoinColumn(name = "ROLE_ID") }
     )
     @ForeignKey(name = "INVESTCONT_CONTACT_FK", inverseName = "INVESTCONT_ROLE_FK")
@@ -163,20 +163,20 @@ public class InvestigationContact extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the investigation
+     * @return the experiment
      */
     @ManyToOne
     @JoinColumn(insertable = false, updatable = false)
-    @ForeignKey(name = "INVCONTACT_INVEST_FK")
-    public Investigation getInvestigation() {
-        return investigation;
+    @ForeignKey(name = "EXPCONTACT_INVEST_FK")
+    public Experiment getExperiment() {
+        return experiment;
     }
 
     /**
-     * @param investigation the investigation to set
+     * @param experiment the experiment to set
      */
-    public void setInvestigation(Investigation investigation) {
-        this.investigation = investigation;
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
     }
 
     /**

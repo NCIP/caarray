@@ -124,31 +124,31 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     public static Project createNew() {
         Project project = new Project();
-        project.setInvestigation(Investigation.createNew());
+        project.setExperiment(Experiment.createNew());
         return project;
     }
 
-    private Investigation investigation;
+    private Experiment experiment;
 
     /**
-     * Gets the investigation.
+     * Gets the experiment.
      *
-     * @return the investigation
+     * @return the experiment
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PROJECT_INVESTIGATION_FK")
-    public Investigation getInvestigation() {
-        return investigation;
+    @ForeignKey(name = "PROJECT_EXPERIMENT_FK")
+    public Experiment getExperiment() {
+        return experiment;
     }
 
     /**
-     * Sets the investigation.
+     * Sets the experiment.
      *
-     * @param investigationVal the investigation
+     * @param experimentVal the experiment
      */
-    public void setInvestigation(final Investigation investigationVal) {
-        this.investigation = investigationVal;
+    public void setExperiment(final Experiment experimentVal) {
+        this.experiment = experimentVal;
     }
 
     /**

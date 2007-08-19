@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.test.functional;
 
-import gov.nih.nci.caarray.domain.project.Investigation;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
@@ -111,7 +111,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
     @Test
     public void testNew() throws Exception {
-        
+
         selenium.open("/caarray/");
 
         String title = "test" + System.currentTimeMillis();
@@ -175,9 +175,9 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties.getServerJndiPort());
         server.connect();
         CaArraySearchService searchService = server.getSearchService();
-        Investigation searchInvestigation = new Investigation();
+        Experiment searchInvestigation = new Experiment();
         searchInvestigation.setTitle(TITLE);
-        List<Investigation> matches = searchService.search(searchInvestigation);
+        List<Experiment> matches = searchService.search(searchInvestigation);
         assertEquals(1, matches.size());
     }
 

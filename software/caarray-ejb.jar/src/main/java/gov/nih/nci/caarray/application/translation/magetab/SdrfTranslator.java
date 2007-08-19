@@ -99,7 +99,7 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.FactorValue;
-import gov.nih.nci.caarray.domain.project.Investigation;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
@@ -164,7 +164,7 @@ final class SdrfTranslator extends AbstractTranslator {
         translateNodesToEntities(document);
         linkNodes(document);
         String investigationTitle = document.getIdfDocument().getInvestigation().getTitle();
-        for (Investigation investigation : getTranslationResult().getInvestigations()) {
+        for (Experiment investigation : getTranslationResult().getInvestigations()) {
             if (investigationTitle.equals(investigation.getTitle())) {
                 investigation.getSources().addAll(allSources);
                 investigation.getSamples().addAll(allSamples);

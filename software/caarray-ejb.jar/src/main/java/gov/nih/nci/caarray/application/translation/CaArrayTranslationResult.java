@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.application.translation;
 
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.project.Investigation;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.io.Serializable;
@@ -108,7 +108,7 @@ public interface CaArrayTranslationResult extends Serializable {
      * 
      * @return the translated <code>Investigations</code>
      */
-    Collection<Investigation> getInvestigations();
+    Collection<Experiment> getInvestigations();
 
     /**
      * Returns the <code>Investigation</code> objects (with contents) translated from

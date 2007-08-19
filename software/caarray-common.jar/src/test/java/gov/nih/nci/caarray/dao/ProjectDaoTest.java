@@ -94,8 +94,8 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Factor;
-import gov.nih.nci.caarray.domain.project.Investigation;
-import gov.nih.nci.caarray.domain.project.InvestigationContact;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.sample.Extract;
@@ -128,15 +128,15 @@ import org.junit.Test;
 public class ProjectDaoTest extends AbstractDaoTest {
     private static final Log LOG = LogFactory.getLog(ProjectDaoTest.class);
 
-    // Investigation
+    // Experiment
     private static final String UNCHECKED = "unchecked";
     private static Project DUMMY_PROJECT_1 = new Project();
-    private static Investigation DUMMY_INVESTIGATION_1 = new Investigation();
+    private static Experiment DUMMY_EXPERIMENT_1 = new Experiment();
     private static TermSource DUMMY_TERM_SOURCE = new TermSource();
     private static Category DUMMY_CATEGORY = new Category();
 
     // Contacts
-    private static InvestigationContact DUMMY_INVESTIGATION_CONTACT = new InvestigationContact();
+    private static ExperimentContact DUMMY_EXPERIMENT_CONTACT = new ExperimentContact();
     private static Person DUMMY_PERSON = new Person();
     private static Organization DUMMY_ORGANIZATION = new Organization();
 
@@ -175,14 +175,14 @@ public class ProjectDaoTest extends AbstractDaoTest {
      */
     @Before
     public void setup() {
-        // Investigation
+        // Experiment
         DUMMY_PROJECT_1 = new Project();
-        DUMMY_INVESTIGATION_1 = new Investigation();
+        DUMMY_EXPERIMENT_1 = new Experiment();
         DUMMY_TERM_SOURCE = new TermSource();
         DUMMY_CATEGORY = new Category();
 
         // Contacts
-        DUMMY_INVESTIGATION_CONTACT = new InvestigationContact();
+        DUMMY_EXPERIMENT_CONTACT = new ExperimentContact();
         DUMMY_PERSON = new Person();
         DUMMY_ORGANIZATION = new Organization();
         DUMMY_PERSON.setAddress(new Address());
@@ -206,7 +206,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
         DUMMY_FILE_1 = new CaArrayFile();
         DUMMY_FILE_2 = new CaArrayFile();
-        
+
         DUMMY_SOURCE = new Source();
         DUMMY_SAMPLE = new Sample();
         DUMMY_EXTRACT = new Extract();
@@ -223,17 +223,17 @@ public class ProjectDaoTest extends AbstractDaoTest {
      * Initialize the dummy <code>Project</code> objects.
      */
     private static void initializeProjects() {
-        setInvestigationSummary();
-        setInvestigationContacts();
+        setExperimentSummary();
+        setExperimentContacts();
         DUMMY_TERM_SOURCE.setName("Dummy MGED Ontology");
         DUMMY_CATEGORY.setName("Dummy Category");
-        setInvestigationAnnotations();
+        setExperimentAnnotations();
         setExperimentalFactors();
         setPublications();
         setFiles();
         setBioMaterials();
         setHybridizations();
-        DUMMY_PROJECT_1.setInvestigation(DUMMY_INVESTIGATION_1);
+        DUMMY_PROJECT_1.setExperiment(DUMMY_EXPERIMENT_1);
     }
 
     private static void setHybridizations() {
@@ -249,30 +249,30 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DUMMY_SAMPLE.setName("DummySample");
         DUMMY_EXTRACT.setName("DummyExtract");
         DUMMY_LABELED_EXTRACT.setName("DummyLabeledExtract");
-        DUMMY_INVESTIGATION_1.getSources().add(DUMMY_SOURCE);
-        DUMMY_INVESTIGATION_1.getSamples().add(DUMMY_SAMPLE);
-        DUMMY_INVESTIGATION_1.getExtracts().add(DUMMY_EXTRACT);
-        DUMMY_INVESTIGATION_1.getLabeledExtracts().add(DUMMY_LABELED_EXTRACT);
+        DUMMY_EXPERIMENT_1.getSources().add(DUMMY_SOURCE);
+        DUMMY_EXPERIMENT_1.getSamples().add(DUMMY_SAMPLE);
+        DUMMY_EXPERIMENT_1.getExtracts().add(DUMMY_EXTRACT);
+        DUMMY_EXPERIMENT_1.getLabeledExtracts().add(DUMMY_LABELED_EXTRACT);
     }
 
-    private static void setInvestigationSummary() {
-        DUMMY_INVESTIGATION_1.setTitle("DummyInvestigation1");
-        DUMMY_INVESTIGATION_1.setDescription("DummyInvestigation1Desc");
+    private static void setExperimentSummary() {
+        DUMMY_EXPERIMENT_1.setTitle("DummyExperiment1");
+        DUMMY_EXPERIMENT_1.setDescription("DummyExperiment1Desc");
         Date currDate = new Date();
-        DUMMY_INVESTIGATION_1.setDateOfExperiment(currDate);
-        DUMMY_INVESTIGATION_1.setPublicReleaseDate(currDate);
+        DUMMY_EXPERIMENT_1.setDateOfExperiment(currDate);
+        DUMMY_EXPERIMENT_1.setPublicReleaseDate(currDate);
     }
 
-    private static void setInvestigationContacts() {
+    private static void setExperimentContacts() {
         DUMMY_ORGANIZATION.setName("DummyOrganization1");
         DUMMY_PERSON.setFirstName("DummyFirstName1");
         DUMMY_PERSON.setLastName("DummyLastName1");
         DUMMY_PERSON.getAffiliations().add(DUMMY_ORGANIZATION);
-        DUMMY_INVESTIGATION_CONTACT.setContact(DUMMY_PERSON);
-        DUMMY_INVESTIGATION_1.getInvestigationContacts().add(DUMMY_INVESTIGATION_CONTACT);
+        DUMMY_EXPERIMENT_CONTACT.setContact(DUMMY_PERSON);
+        DUMMY_EXPERIMENT_1.getExperimentContacts().add(DUMMY_EXPERIMENT_CONTACT);
     }
 
-    private static void setInvestigationAnnotations() {
+    private static void setExperimentAnnotations() {
         DUMMY_REPLICATE_TYPE.setValue("Dummy Replicate Type");
         DUMMY_REPLICATE_TYPE.setSource(DUMMY_TERM_SOURCE);
         DUMMY_REPLICATE_TYPE.setCategory(DUMMY_CATEGORY);
@@ -282,9 +282,9 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DUMMY_QUALITY_CTRL_TYPE.setValue("Dummy Quality Control Type");
         DUMMY_QUALITY_CTRL_TYPE.setSource(DUMMY_TERM_SOURCE);
         DUMMY_QUALITY_CTRL_TYPE.setCategory(DUMMY_CATEGORY);
-        DUMMY_INVESTIGATION_1.getReplicateTypes().add(DUMMY_REPLICATE_TYPE);
-        DUMMY_INVESTIGATION_1.getNormalizationTypes().add(DUMMY_NORMALIZATION_TYPE);
-        DUMMY_INVESTIGATION_1.getQualityControlTypes().add(DUMMY_QUALITY_CTRL_TYPE);
+        DUMMY_EXPERIMENT_1.getReplicateTypes().add(DUMMY_REPLICATE_TYPE);
+        DUMMY_EXPERIMENT_1.getNormalizationTypes().add(DUMMY_NORMALIZATION_TYPE);
+        DUMMY_EXPERIMENT_1.getQualityControlTypes().add(DUMMY_QUALITY_CTRL_TYPE);
     }
 
     private static void setExperimentalFactors() {
@@ -298,8 +298,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DUMMY_FACTOR_1.setType(DUMMY_FACTOR_TYPE_1);
         DUMMY_FACTOR_2.setName("Dummy Factor 2");
         DUMMY_FACTOR_2.setType(DUMMY_FACTOR_TYPE_2);
-        DUMMY_INVESTIGATION_1.getFactors().add(DUMMY_FACTOR_1);
-        DUMMY_INVESTIGATION_1.getFactors().add(DUMMY_FACTOR_2);
+        DUMMY_EXPERIMENT_1.getFactors().add(DUMMY_FACTOR_1);
+        DUMMY_EXPERIMENT_1.getFactors().add(DUMMY_FACTOR_2);
     }
 
     private static void setFiles() {
@@ -328,8 +328,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DUMMY_PUBLICATION_1.setStatus(DUMMY_PUBLICATION_STATUS);
         DUMMY_PUBLICATION_2.setStatus(DUMMY_PUBLICATION_STATUS);
 
-        DUMMY_INVESTIGATION_1.getPublications().add(DUMMY_PUBLICATION_1);
-        DUMMY_INVESTIGATION_1.getPublications().add(DUMMY_PUBLICATION_2);
+        DUMMY_EXPERIMENT_1.getPublications().add(DUMMY_PUBLICATION_1);
+        DUMMY_EXPERIMENT_1.getPublications().add(DUMMY_PUBLICATION_2);
     }
 
 
@@ -349,7 +349,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             tx.commit();
             if (DUMMY_PROJECT_1.equals(retrievedProject)) {
                 checkFiles(DUMMY_PROJECT_1, retrievedProject);
-                if (compareInvestigations(retrievedProject.getInvestigation(), DUMMY_PROJECT_1.getInvestigation())) {
+                if (compareExperiments(retrievedProject.getExperiment(), DUMMY_PROJECT_1.getExperiment())) {
                     // The retrieved project is the same as the saved project. Test passed.
                     assertTrue(true);
                 }
@@ -373,25 +373,25 @@ public class ProjectDaoTest extends AbstractDaoTest {
     }
 
     /**
-     * Compare 2 investigations to check if they are the same.
+     * Compare 2 experiments to check if they are the same.
      *
-     * @return true if the 2 investigations are the same and false otherwise.
+     * @return true if the 2 experiments are the same and false otherwise.
      */
     @SuppressWarnings("PMD")
-    private boolean compareInvestigations(Investigation retrievedInv, Investigation dummyInv) {
+    private boolean compareExperiments(Experiment retrievedInv, Experiment dummyInv) {
         checkBioMaterials(dummyInv, retrievedInv);
         checkHybridizations(dummyInv, retrievedInv);
 
-        // Investigation summary.
+        // Experiment summary.
         if (!dummyInv.getTitle().equals(retrievedInv.getTitle())) {
             return false;
         }
         // Contacts
-        Collection<InvestigationContact> contacts = retrievedInv.getInvestigationContacts();
+        Collection<ExperimentContact> contacts = retrievedInv.getExperimentContacts();
         if (contacts.isEmpty() || contacts.size() != 1) {
             return false;
         }
-        Iterator<InvestigationContact> i = contacts.iterator();
+        Iterator<ExperimentContact> i = contacts.iterator();
         Person person = (Person) i.next().getContact();
         if (!DUMMY_PERSON.getFirstName().equals(person.getFirstName())) {
             return false;
@@ -420,7 +420,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         return true;
     }
 
-    private void checkHybridizations(Investigation dummyInv, Investigation retrievedInv) {
+    private void checkHybridizations(Experiment dummyInv, Experiment retrievedInv) {
         LabeledExtract labeledExtract = retrievedInv.getLabeledExtracts().iterator().next();
         Hybridization hybridization = labeledExtract.getHybridizations().iterator().next();
         assertEquals(labeledExtract, hybridization.getLabeledExtracts().iterator().next());
@@ -429,7 +429,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         assertEquals(hybridization, arrayData.getHybridization());
     }
 
-    private void checkBioMaterials(Investigation dummyInv, Investigation retrievedInv) {
+    private void checkBioMaterials(Experiment dummyInv, Experiment retrievedInv) {
         assertEquals(dummyInv.getSources().size(), retrievedInv.getSources().size());
         assertEquals(dummyInv.getSamples().size(), retrievedInv.getSamples().size());
         assertEquals(dummyInv.getExtracts().size(), retrievedInv.getExtracts().size());

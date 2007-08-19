@@ -115,11 +115,11 @@ import org.hibernate.annotations.ForeignKey;
  *
  */
 @Entity
-@SuppressWarnings("PMD.TooManyFields") // Investigation is central object -- can't reduce set of linked entities
-public class Investigation extends AbstractCaArrayEntity {
-    
+@SuppressWarnings("PMD.TooManyFields") // Experiment is central object -- can't reduce set of linked entities
+public class Experiment extends AbstractCaArrayEntity {
+
     private static final String UNUSED = "unused";
-    private static final String FK_COLUMN_NAME = "INVESTIGATION_ID";
+    private static final String FK_COLUMN_NAME = "EXPERIMENT_ID";
     private static final String TERM_FK_NAME = "TERM_ID";
 
     private static final long serialVersionUID = 1234567890L;
@@ -129,7 +129,7 @@ public class Investigation extends AbstractCaArrayEntity {
     private Date dateOfExperiment;
     private Date publicReleaseDate;
     private Set<Factor> factors = new HashSet<Factor>();
-    private Set<InvestigationContact> investigationContacts = new HashSet<InvestigationContact>();
+    private Set<ExperimentContact> experimentContacts = new HashSet<ExperimentContact>();
     private Set<Term> qualityControlTypes = new HashSet<Term>();
     private Set<Term> replicateTypes = new HashSet<Term>();
     private Set<Term> normalizationTypes = new HashSet<Term>();
@@ -142,12 +142,12 @@ public class Investigation extends AbstractCaArrayEntity {
     private Set<LabeledExtract> labeledExtracts = new HashSet<LabeledExtract>();
 
     /**
-     * Creates a new, empty <code>Investigation</code>.
+     * Creates a new, empty <code>Experiment</code>.
      *
-     * @return the initialized <code>Investigation</code>.
+     * @return the initialized <code>Experiment</code>.
      */
-    public static Investigation createNew() {
-        return new Investigation();
+    public static Experiment createNew() {
+        return new Experiment();
     }
 
     /**
@@ -255,7 +255,7 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @return the publications
      */
-    @OneToMany(mappedBy = "investigation", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "experiment", fetch = FetchType.EAGER)
     public Set<Publication> getPublications() {
         return publications;
     }
@@ -304,11 +304,11 @@ public class Investigation extends AbstractCaArrayEntity {
      */
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "INVESTIGATIONSOURCE",
+            name = "EXPERIMENTSOURCE",
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = { @JoinColumn(name = "SOURCE_ID") }
     )
-    @ForeignKey(name = "INVESTIGATIONSOURCE_INVEST_FK", inverseName = "INVESTIGATIONSOURCE_SOURCE_FK")
+    @ForeignKey(name = "EXPERIMENTSOURCE_INVEST_FK", inverseName = "EXPERIMENTSOURCE_SOURCE_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Source> getSources() {
         return sources;
@@ -331,11 +331,11 @@ public class Investigation extends AbstractCaArrayEntity {
      */
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "INVESTIGATIONSAMPLE",
+            name = "EXPERIMENTSAMPLE",
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = { @JoinColumn(name = "SAMPLE_ID") }
     )
-    @ForeignKey(name = "INVESTIGATIONSAMPLE_INVEST_FK", inverseName = "INVESTIGATIONSAMPLE_SAMPLE_FK")
+    @ForeignKey(name = "EXPERIMENTSAMPLE_INVEST_FK", inverseName = "EXPERIMENTSAMPLE_SAMPLE_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Sample> getSamples() {
         return samples;
@@ -358,11 +358,11 @@ public class Investigation extends AbstractCaArrayEntity {
      */
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "INVESTIGATIONEXTRACT",
+            name = "EXPERIMENTEXTRACT",
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = { @JoinColumn(name = "EXTRACT_ID") }
     )
-    @ForeignKey(name = "INVESTIGATIONEXTRACT_INVEST_FK", inverseName = "INVESTIGATIONEXTRACT_EXTRACT_FK")
+    @ForeignKey(name = "EXPERIMENTEXTRACT_INVEST_FK", inverseName = "EXPERIMENTEXTRACT_EXTRACT_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Extract> getExtracts() {
         return extracts;
@@ -385,11 +385,11 @@ public class Investigation extends AbstractCaArrayEntity {
      */
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "INVESTIGATIONLABELEDEXTRACT",
+            name = "EXPERIMENTLABELEDEXTRACT",
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = { @JoinColumn(name = "SAMPLE_ID") }
     )
-    @ForeignKey(name = "INVESTIGATIONLE_INVEST_FK", inverseName = "INVESTIGATIONLE_LE_FK")
+    @ForeignKey(name = "EXPERIMENTLE_INVEST_FK", inverseName = "EXPERIMENTLE_LE_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<LabeledExtract> getLabeledExtracts() {
         return labeledExtracts;
@@ -412,7 +412,7 @@ public class Investigation extends AbstractCaArrayEntity {
      */
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "INVESTIGATIONARRAYDESIGN",
+            name = "EXPERIMENTARRAYDESIGN",
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = { @JoinColumn(name = "ARRAYDESIGN_ID") }
     )
@@ -433,24 +433,24 @@ public class Investigation extends AbstractCaArrayEntity {
     }
 
     /**
-     * Gets the investigationContacts.
+     * Gets the experimentContacts.
      *
-     * @return the investigationContacts
+     * @return the experimentContacts
      */
-    @OneToMany(mappedBy = "investigation", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "experiment", fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    public Set<InvestigationContact> getInvestigationContacts() {
-        return investigationContacts;
+    public Set<ExperimentContact> getExperimentContacts() {
+        return experimentContacts;
     }
 
     /**
-     * Sets the investigationContacts.
+     * Sets the experimentContacts.
      *
-     * @param investigationContactsVal the investigationContacts
+     * @param experimentContactsVal the experimentContacts
      */
     @SuppressWarnings(UNUSED)
-    private void setInvestigationContacts(final Set<InvestigationContact> investigationContactsVal) {  // NOPMD
-        this.investigationContacts = investigationContactsVal;
+    private void setExperimentContacts(final Set<ExperimentContact> experimentContactsVal) {  // NOPMD
+        this.experimentContacts = experimentContactsVal;
     }
 
     /**
@@ -458,7 +458,7 @@ public class Investigation extends AbstractCaArrayEntity {
      *
      * @return the factors
      */
-    @OneToMany(mappedBy = "investigation", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "experiment", fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Factor> getFactors() {
         return factors;
@@ -508,11 +508,11 @@ public class Investigation extends AbstractCaArrayEntity {
      */
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "INVESTIGATIONARRAY",
+            name = "EXPERIMENTARRAY",
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = { @JoinColumn(name = "ARRAY_ID") }
     )
-    @ForeignKey(name = "INVESTARRAY_INVEST_FK", inverseName = "INVESTARRAY_ARRAY_FK")
+    @ForeignKey(name = "EXPRARRAY_INVEST_FK", inverseName = "EXPRARRAY_ARRAY_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Array> getArrays() {
         return arrays;

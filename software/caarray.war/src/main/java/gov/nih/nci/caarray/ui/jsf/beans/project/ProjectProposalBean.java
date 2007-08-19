@@ -126,7 +126,7 @@ public final class ProjectProposalBean implements Serializable {
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
                                             String.format("Proposal with title '%s' has been created successfully.",
-                                                          proposal.getProject().getInvestigation().getTitle()),
+                                                          proposal.getProject().getExperiment().getTitle()),
                                             null);
         FacesContext.getCurrentInstance().addMessage(null, msg);
         return "success";

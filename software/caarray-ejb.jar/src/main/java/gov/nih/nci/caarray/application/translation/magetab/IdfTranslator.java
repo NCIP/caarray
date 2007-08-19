@@ -86,8 +86,8 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.contact.Address;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.project.Factor;
-import gov.nih.nci.caarray.domain.project.Investigation;
-import gov.nih.nci.caarray.domain.project.InvestigationContact;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
@@ -126,7 +126,7 @@ final class IdfTranslator extends AbstractTranslator {
     }
 
     private void translate(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation) {
-        Investigation investigation = new Investigation();
+        Experiment investigation = new Experiment();
         translateInvestigationSummary(idfInvestigation, investigation);
         translateTerms(idfInvestigation, investigation);
         translatePublications(idfInvestigation, investigation);
@@ -136,7 +136,7 @@ final class IdfTranslator extends AbstractTranslator {
     }
 
     private void translateInvestigationSummary(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
-            Investigation investigation) {
+            Experiment investigation) {
         investigation.setTitle(idfInvestigation.getTitle());
         investigation.setDescription(idfInvestigation.getDescription());
         investigation.setDateOfExperiment(idfInvestigation.getDateOfExperiment());
@@ -144,14 +144,14 @@ final class IdfTranslator extends AbstractTranslator {
     }
 
     private void translateTerms(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
-            Investigation investigation) {
+            Experiment investigation) {
         investigation.getNormalizationTypes().addAll(getTerms(idfInvestigation.getNormalizationTypes()));
         investigation.getReplicateTypes().addAll(getTerms(idfInvestigation.getReplicateTypes()));
         investigation.getQualityControlTypes().addAll(getTerms(idfInvestigation.getQualityControlTypes()));
     }
 
     private void translatePublications(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
-            Investigation investigation) {
+            Experiment investigation) {
         List<gov.nih.nci.caarray.domain.publication.Publication> publications =
             new ArrayList<gov.nih.nci.caarray.domain.publication.Publication>();
         List<Publication> idfPublications = idfInvestigation.getPublications();
@@ -173,7 +173,7 @@ final class IdfTranslator extends AbstractTranslator {
     }
 
     private void translateFactors(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
-            Investigation investigation) {
+            Experiment investigation) {
         List<Factor> factors = new ArrayList<Factor>();
         List<ExperimentalFactor> idfFactors = idfInvestigation.getFactors();
         Iterator<ExperimentalFactor> iterator = idfFactors.iterator();
@@ -189,8 +189,8 @@ final class IdfTranslator extends AbstractTranslator {
     }
 
     private void translateContacts(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
-            Investigation investigation) {
-        List<InvestigationContact> contacts = new ArrayList<InvestigationContact>();
+            Experiment investigation) {
+        List<ExperimentContact> contacts = new ArrayList<ExperimentContact>();
         List<Person> idfPersons = idfInvestigation.getPersons();
         Iterator<Person> iterator = idfPersons.iterator();
         while (iterator.hasNext()) {
@@ -210,13 +210,13 @@ final class IdfTranslator extends AbstractTranslator {
             address.setStreetAddress1(idfPerson.getAddress());
             person.setAddress(address);
             person = replaceIfExists(person);
-            InvestigationContact contact = new InvestigationContact();
+            ExperimentContact contact = new ExperimentContact();
             contact.setContact(person);
             Collection<Term> roleTerms = getTerms(idfPerson.getRoles());
             contact.getRoles().addAll(roleTerms);
             contacts.add(contact);
         }
-        investigation.getInvestigationContacts().addAll(contacts);
+        investigation.getExperimentContacts().addAll(contacts);
     }
 
     @Override

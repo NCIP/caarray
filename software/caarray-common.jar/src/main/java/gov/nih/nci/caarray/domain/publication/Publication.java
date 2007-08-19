@@ -90,11 +90,11 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.project.Investigation;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 /**
- * 
+ *
  */
 @Entity
 public class Publication extends AbstractCaArrayEntity {
@@ -113,7 +113,7 @@ public class Publication extends AbstractCaArrayEntity {
     private String uri;
     private String volume;
     private String year;
-    private Investigation investigation;
+    private Experiment experiment;
     private Term status;
     private Term type;
 
@@ -195,7 +195,7 @@ public class Publication extends AbstractCaArrayEntity {
     public void setStatus(final Term statusVal) {
         this.status = statusVal;
     }
-    
+
     /**
      * Gets the type.
      *
@@ -237,19 +237,19 @@ public class Publication extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the investigation
+     * @return the experiment
      */
     @ManyToOne
-    @ForeignKey(name = "PUBLICATION_INVEST")
-    public Investigation getInvestigation() {
-        return investigation;
+    @ForeignKey(name = "PUBLICATION_EXPR")
+    public Experiment getExperiment() {
+        return experiment;
     }
 
     /**
-     * @param investigation the investigation to set
+     * @param experiment the experiment to set
      */
-    public void setInvestigation(Investigation investigation) {
-        this.investigation = investigation;
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
     }
 
     /**

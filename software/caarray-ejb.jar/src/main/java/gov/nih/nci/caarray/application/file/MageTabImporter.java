@@ -230,7 +230,7 @@ class MageTabImporter {
     private void saveInvestigations(Project targetProject, CaArrayTranslationResult translationResult) {
         // TODO Handle case where multiple IDFs exist: either disallow or allow Project 1 --> 1..* Investigation
         if (!translationResult.getInvestigations().isEmpty()) {
-            targetProject.setInvestigation(translationResult.getInvestigations().iterator().next());
+            targetProject.setExperiment(translationResult.getInvestigations().iterator().next());
             getProjectDao().save(targetProject);
         }
         getCaArrayDao().save(translationResult.getInvestigations());

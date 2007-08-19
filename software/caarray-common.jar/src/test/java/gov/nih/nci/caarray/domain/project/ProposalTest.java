@@ -98,7 +98,7 @@ public class ProposalTest {
     public void testCreateNew() {
         Proposal proposal = Proposal.createNew();
         assertNotNull(proposal.getProject());
-        assertNotNull(proposal.getProject().getInvestigation());
+        assertNotNull(proposal.getProject().getExperiment());
     }
 
 }

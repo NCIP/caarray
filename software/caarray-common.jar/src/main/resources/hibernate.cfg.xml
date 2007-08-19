@@ -41,8 +41,8 @@
         <mapping class="gov.nih.nci.caarray.domain.hybridization.Hybridization"/>
         <mapping class="gov.nih.nci.caarray.domain.project.Factor"/>
         <mapping class="gov.nih.nci.caarray.domain.project.FactorValue"/>
-        <mapping class="gov.nih.nci.caarray.domain.project.Investigation"/>
-        <mapping class="gov.nih.nci.caarray.domain.project.InvestigationContact"/>
+        <mapping class="gov.nih.nci.caarray.domain.project.Experiment"/>
+        <mapping class="gov.nih.nci.caarray.domain.project.ExperimentContact"/>
         <mapping class="gov.nih.nci.caarray.domain.project.Project"/>
         <mapping class="gov.nih.nci.caarray.domain.project.Proposal"/>
         <mapping class="gov.nih.nci.caarray.domain.protocol.Parameter"/>

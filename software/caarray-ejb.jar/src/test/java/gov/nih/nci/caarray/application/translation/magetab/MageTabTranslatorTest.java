@@ -97,7 +97,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.project.Investigation;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -154,7 +154,7 @@ public class MageTabTranslatorTest {
         CaArrayTranslationResult result = translator.translate(TestMageTabSets.TCGA_BROAD_SET, fileSet);
         assertEquals(10, result.getTerms().size());
         assertEquals(1, result.getInvestigations().size());
-        Investigation investigation = result.getInvestigations().iterator().next();
+        Experiment investigation = result.getInvestigations().iterator().next();
         checkTcgaBroadInvestigation(investigation);
     }
 
@@ -192,14 +192,14 @@ public class MageTabTranslatorTest {
         fileSet.add(caArrayFile);
     }
 
-    private void checkTcgaBroadInvestigation(Investigation investigation) {
+    private void checkTcgaBroadInvestigation(Experiment investigation) {
         IdfDocument idf = TestMageTabSets.TCGA_BROAD_SET.getIdfDocuments().iterator().next();
         assertEquals(idf.getInvestigation().getTitle(), investigation.getTitle());
         checkTcgaBroadBioMaterials(investigation);
         checkTcgaBroadHybridizations(investigation);
     }
 
-    private void checkTcgaBroadHybridizations(Investigation investigation) {
+    private void checkTcgaBroadHybridizations(Experiment investigation) {
         for (LabeledExtract labeledExtract : investigation.getLabeledExtracts()) {
             Hybridization hybridization = labeledExtract.getHybridizations().iterator().next();
             RawArrayData celData = hybridization.getArrayData();
@@ -209,7 +209,7 @@ public class MageTabTranslatorTest {
         }
     }
 
-    private void checkTcgaBroadBioMaterials(Investigation investigation) {
+    private void checkTcgaBroadBioMaterials(Experiment investigation) {
         assertEquals(0, investigation.getSources().size());
         assertEquals(0, investigation.getSamples().size());
         assertEquals(26, investigation.getExtracts().size());

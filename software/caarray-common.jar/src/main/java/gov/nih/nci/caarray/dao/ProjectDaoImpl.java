@@ -117,7 +117,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      */
     @SuppressWarnings("unchecked")
     public List<Project> getAllProjects() {
-        return getCurrentSession().createQuery("FROM " + Project.class.getName() + " p ORDER BY p.investigation.title")
+        return getCurrentSession().createQuery("FROM " + Project.class.getName() + " p ORDER BY p.experiment.title")
                                   .list();
     }
 }

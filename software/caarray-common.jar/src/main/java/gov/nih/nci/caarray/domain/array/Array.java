@@ -95,7 +95,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
 /**
- * Represents a single, physical microarray used in an investigation.
+ * Represents a single, physical microarray used in an experiment.
  */
 @Entity
 public class Array extends AbstractCaArrayEntity {
