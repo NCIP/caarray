@@ -1127,9 +1127,11 @@
       keyfile="${ssh.key.file}"
       passphrase=""
       command="mv ${remote.jboss.temp.dir}/caarray.ear ${remote.jboss.home}/deploy/"/>
+	<echo message="Caarray EAR successfully deployed to http://${remote.jboss.server.hostname}:${remote.jboss.server.port}/caarray" />
   </target>
 
   <target name="remote-jboss:undeploy-caarray">
+	<echo message="Undeploying caarray EAR to jboss server at ${ssh.server.hostname}..." />
     <sshexec host="${ssh.server.hostname}"
       trust="true"
       username="${ssh.server.username}"
