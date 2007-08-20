@@ -96,7 +96,7 @@ import java.util.List;
 public final class ValidationResult implements Serializable {
 
     private static final long serialVersionUID = -5781574225752015910L;
-    
+
     private final List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
 
     /**
@@ -105,10 +105,10 @@ public final class ValidationResult implements Serializable {
     public ValidationResult() {
         super();
     }
-    
+
     /**
      * Returns true if all the documents in the set were valid.
-     *
+     * 
      * @return true if set was valid.
      */
     public boolean isValid() {
@@ -145,7 +145,17 @@ public final class ValidationResult implements Serializable {
     }
 
     private void add(ValidationMessage validationMessage) {
-        messages.add(validationMessage);
+        boolean found = false;
+        for (ValidationMessage aMessage : messages) {
+            if (aMessage.getMessage().equalsIgnoreCase(validationMessage.getMessage())) {
+                found = true;
+                break;
+            }
+
+        }
+        if (!found) {
+            messages.add(validationMessage);
+        }
     }
 
 }
