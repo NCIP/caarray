@@ -103,7 +103,10 @@ public class ArrayDesign extends AbstractSampleDataRelationshipNode implements T
 
     @Override
     void addToSdrfList(SdrfDocument document) {
-        document.getAllArrayDesigns().add(this);
+        if (!document.getAllArrayDesigns().contains(this)) {
+            document.getAllArrayDesigns().add(this);
+        }
+        
     }
 
     /**
