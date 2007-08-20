@@ -119,12 +119,12 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private static final long serialVersionUID = 1116542609494378874L;
     private IdfDocument idfDocument;
     private final List<SdrfColumn> columns = new ArrayList<SdrfColumn>();
-    private final Map<NodeKey, AbstractSampleDataRelationshipNode> nodeCache =
+    private final Map<NodeKey, AbstractSampleDataRelationshipNode> nodeCache = 
         new HashMap<NodeKey, AbstractSampleDataRelationshipNode>();
     private AbstractSampleDataRelationshipNode currentNode;
     private Unitable currentUnitable;
     private TermSourceable currentTermSourceable;
-    private final List<AbstractSampleDataRelationshipNode> leftmostNodes =
+    private final List<AbstractSampleDataRelationshipNode> leftmostNodes = 
         new ArrayList<AbstractSampleDataRelationshipNode>();
     private ProtocolApplication currentProtocolApp;
     private final List<Characteristic> characteristicsList = new ArrayList<Characteristic>();
@@ -142,13 +142,13 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private final List<ArrayDataFile> allArrayDataFiles = new ArrayList<ArrayDataFile>();
     private final List<DerivedArrayDataFile> allDerivedArrayDataFiles = new ArrayList<DerivedArrayDataFile>();
     private final List<ArrayDataMatrixFile> allArrayDataMatrixFiles = new ArrayList<ArrayDataMatrixFile>();
-    private final List<DerivedArrayDataMatrixFile> allDerivedArrayDataMatrixFiles =
+    private final List<DerivedArrayDataMatrixFile> allDerivedArrayDataMatrixFiles = 
         new ArrayList<DerivedArrayDataMatrixFile>();
     private final List<Image> allImages = new ArrayList<Image>();
 
     /**
      * Creates a new SDRF from an existing file.
-     *
+     * 
      * @param documentSet the MAGE-TAB document set the SDRF belongs to.
      * @param file the file containing the SDRF content.
      */
@@ -158,9 +158,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     /**
      * Parses the MAGE-TAB document, creating the object graph of entities.
-     *
+     * 
      * @throws MageTabParsingException
-     *
+     * 
      * @throws MageTabParsingException if the document couldn't be read.
      * @throws MageTabTextFileLoaderException
      */
@@ -171,6 +171,23 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         while (tabDelimitedReader.hasNextLine()) {
             handleLine(tabDelimitedReader.nextLine());
         }
+        minimumColumnCheck();
+    }
+
+    private void minimumColumnCheck() {
+        // file should have
+        // 1. Source
+        // 2. Hybridization
+        // 3. data file
+        boolean hasMinimumColumns = allSources.size() > 0
+                && allHybridizations.size() > 1
+                && (allArrayDataFiles.size() > 1 || allArrayDataMatrixFiles.size() > 1
+                        || allDerivedArrayDataFiles.size() > 1 || allDerivedArrayDataMatrixFiles.size() > 1);
+        if (!hasMinimumColumns) {
+            addWarningMessage("SDRF file does not have the "
+                    + "minimum number of columns (Source, Hybridization, and a data file)");
+        }
+
     }
 
     private void handleHeaderLine(List<String> values) {
@@ -257,21 +274,11 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             // handleDescription(value);
             break;
         case COMMENT:
-           // handleComment(column, value);
+            // handleComment(column, value);
             break;
         default:
             break;
         }
-    }
-
-    private void handleArrayDesignFile(SdrfColumn column, String value) {
-        ArrayDesign arrayDesign = new ArrayDesign();
-        arrayDesign.setFile(getDocumentSet().getAdfDocument(value).getFile());
-        arrayDesign.link(currentNode);
-        arrayDesign.addToSdrfList(this);
-        arrayDesign.setArrayDesignRef(false);
-        arrayDesign.setName(value);
-        currentNode = arrayDesign;
     }
 
     private void handleImageFile(SdrfColumn column, String value) {
@@ -281,22 +288,29 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         currentNode = image;
     }
 
-
-    private void handleArrayDesignRef(SdrfColumn column, String value) {
-        ArrayDesign arrayDesign = new ArrayDesign();
-        arrayDesign.setName(value);
-        if (value.indexOf(":") == -1) {
-            // get the lsid from the column header
-            arrayDesign.setName(column.getHeading().getLsid() + value);
-        }
-        arrayDesign.link(currentNode);
-        arrayDesign.setName(value);
-        arrayDesign.addToSdrfList(this);
-        arrayDesign.setArrayDesignRef(true);
-        currentTermSourceable = arrayDesign;
-        currentNode = arrayDesign;
+    private void handleArrayDesignFile(SdrfColumn column, String value) {
+        ArrayDesign arrayDesign = arrayDesignHelper(column, value);
+        arrayDesign.setFile(getDocumentSet().getAdfDocument(value).getFile());
+        arrayDesign.setArrayDesignRef(false);
+       
     }
 
+    private void handleArrayDesignRef(SdrfColumn column, String value) {
+        ArrayDesign arrayDesign = arrayDesignHelper(column, value);
+        arrayDesign.setArrayDesignRef(true);
+        currentTermSourceable = arrayDesign;
+    }
+    
+    private ArrayDesign arrayDesignHelper(SdrfColumn column, String value) {
+        ArrayDesign arrayDesign = getArrayDesign(value);
+//      ArrayDesign arrayDesign = new ArrayDesign();
+        arrayDesign.setName(value);
+        arrayDesign.link(currentNode);
+        arrayDesign.addToSdrfList(this);
+        currentNode = arrayDesign;
+        
+        return arrayDesign;
+    }
     private void handleFactorValue(SdrfColumn column, String value) {
         FactorValue factorValue = new FactorValue();
         factorValue.setFactor(idfDocument.getFactor(column.getHeading().getQualifier()));
@@ -420,6 +434,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         if (protocolApp.getProtocol() == null) {
             protocolApp.setProtocol(new Protocol());
             protocolApp.getProtocol().setName(value);
+            addWarningMessage("Protocol " + value + " is not defined in the IDF document");
         }
         if (nextColumn != null && nextColumn.getType() == SdrfColumnType.TERM_SOURCE_REF) {
             currentTermSourceable = protocolApp.getProtocol();
