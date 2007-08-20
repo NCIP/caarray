@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.magetab.adf.AdfDocument;
 import gov.nih.nci.caarray.magetab.data.DataMatrix;
 import gov.nih.nci.caarray.magetab.data.NativeDataFile;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
+import gov.nih.nci.caarray.magetab.sdrf.ArrayDesign;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.util.io.FileUtility;
 import gov.nih.nci.caarray.validation.ValidationMessage;
@@ -114,6 +115,7 @@ public final class MageTabDocumentSet implements Serializable {
     private final Set<NativeDataFile> nativeDataFiles = new HashSet<NativeDataFile>();
     private final Map<String, OntologyTerm> termCache = new HashMap<String, OntologyTerm>();
     private final Map<String, TermSource> termSourceCache = new HashMap<String, TermSource>();
+    private final Map<String, ArrayDesign> arrayDesignCache = new HashMap<String, ArrayDesign>();
     private final Map<String, Protocol> protocolCache = new HashMap<String, Protocol>();
     private final ValidationResult validationResult = new ValidationResult();
 
@@ -260,6 +262,16 @@ public final class MageTabDocumentSet implements Serializable {
             termSourceCache.put(name, termSource);
         }
         return termSource;
+    }
+
+    ArrayDesign getArrayDesign(String name) {
+        ArrayDesign arrayDesign = arrayDesignCache.get(name);
+        if (arrayDesign ==  null) {
+            arrayDesign = new ArrayDesign();
+            arrayDesign.setName(name);
+            arrayDesignCache.put(name, arrayDesign);
+        }
+        return arrayDesign;
     }
 
     /**
