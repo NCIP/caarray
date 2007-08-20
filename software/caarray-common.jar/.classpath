@@ -20,7 +20,7 @@
 	<classpathentry kind="lib" path="/lib/commons-lang-2.1.jar"/>
 	<classpathentry kind="lib" path="/lib/ejb3-persistence.jar"/>
 	<classpathentry kind="lib" path="/lib/hibernate-commons-annotations.jar"/>
-	<classpathentry kind="lib" path="/lib/hibernate-annotations.jar"/>
+	<classpathentry kind="lib" path="/lib/hibernate-annotations.jar" sourcepath="/lib/hibernate-annotations-3.3.0.GA-src.jar"/>
 	<classpathentry kind="lib" path="/lib/antlr-2.7.6.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/test-data"/>
 	<classpathentry kind="output" path="target/classes"/>
