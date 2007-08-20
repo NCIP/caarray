@@ -24,7 +24,7 @@
           <h:outputText value="Title" />
         </f:facet>
         <h:commandLink id="openProject" action="#{projectManagementBean.openProject}">
-          <h:outputText id="title" value="#{project.investigation.title}" />
+          <h:outputText id="title" value="#{project.experiment.title}" />
         </h:commandLink>
       </h:column>
     </h:dataTable>

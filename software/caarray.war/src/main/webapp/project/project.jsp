@@ -16,7 +16,7 @@
 
 <h:form id="projectManagementForm">
   <h:messages/>
-  <p>You have selected <h:outputText value="#{projectManagementBean.project.investigation.title}"/>.  What would you
+  <p>You have selected <h:outputText value="#{projectManagementBean.project.experiment.title}"/>.  What would you
      like to do?</p>
     <ul>
       <li>

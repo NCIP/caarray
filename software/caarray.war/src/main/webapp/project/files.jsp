@@ -17,7 +17,7 @@
 
 <h:form id="filesForm">
   <h:messages/>
-  <p>You are managing files for <h:outputText value="#{projectManagementBean.project.investigation.title}"/>.</p>
+  <p>You are managing files for <h:outputText value="#{projectManagementBean.project.experiment.title}"/>.</p>
   <h:dataTable id="files" value="#{projectManagementBean.project.filesList}" var="file">
     <f:facet name="header">
       <h:outputText value="Current files"/>
