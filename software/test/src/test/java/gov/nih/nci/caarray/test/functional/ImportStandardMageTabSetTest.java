@@ -82,7 +82,10 @@
  */
 package gov.nih.nci.caarray.test.functional;
 
+import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
@@ -94,7 +97,9 @@ import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -108,7 +113,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
     private static final int NUMBER_OF_FILES = 30;
     private static final String TITLE =
         "TCGA Analysis of Gene Expression for Glioblastoma Multiforme Using Affymetrix HT_HG-U133A";
-
+    
     @Test
     public void testNew() throws Exception {
 
@@ -175,10 +180,31 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties.getServerJndiPort());
         server.connect();
         CaArraySearchService searchService = server.getSearchService();
-        Experiment searchInvestigation = new Experiment();
-        searchInvestigation.setTitle(TITLE);
-        List<Experiment> matches = searchService.search(searchInvestigation);
+        Experiment searchExperiment = new Experiment();
+        searchExperiment.setTitle(TITLE);
+        List<Experiment> matches = searchService.search(searchExperiment);
         assertEquals(1, matches.size());
+        Experiment experiment = matches.get(0);
+          
+        Set<RawArrayData> celDatas = getAllRawArrayData(experiment);
+        assertEquals(26, celDatas.size());
+    }
+
+    private Set<RawArrayData> getAllRawArrayData(Experiment experiment) {
+        Set<RawArrayData> datas = new HashSet<RawArrayData>();
+        Set<Hybridization> hybridizations = getAllHybridizations(experiment);
+        for (Hybridization hybridization : hybridizations) {
+            datas.add(hybridization.getArrayData());
+        }
+        return datas;
+    }
+
+    private Set<Hybridization> getAllHybridizations(Experiment experiment) {
+        Set<Hybridization> hybridizations = new HashSet<Hybridization>();
+        for (LabeledExtract labeledExtract : experiment.getLabeledExtracts()) {
+            hybridizations.addAll(labeledExtract.getHybridizations());
+        }
+        return hybridizations;
     }
 
 
