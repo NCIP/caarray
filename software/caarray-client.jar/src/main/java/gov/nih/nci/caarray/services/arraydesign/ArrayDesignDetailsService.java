@@ -89,6 +89,11 @@ import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
  * Remote API interface used to retrieve low-level microarray design details.
  */
 public interface ArrayDesignDetailsService {
+    
+    /**
+     * The JNDI name to look up the remote <code>ArrayDesignDetailsService</code> service.
+     */
+    String JNDI_NAME = "caarray/ArrayDesignDetailsServiceBean/remote";
 
     /**
      * Returns complete details of all design elements and relationships for the

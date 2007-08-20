@@ -89,6 +89,11 @@ import gov.nih.nci.caarray.domain.data.DataSet;
  * Returns requested array data from caArray.
  */
 public interface DataRetrievalService {
+    
+    /**
+     * The JNDI name to look up the remote <code>ArrayDesignDetailsService</code> service.
+     */
+    String JNDI_NAME = "caarray/DataRetrievalServiceBean/remote";
 
     /**
      * Returns the data associated with the given <code>AbstractArrayData</code> object.
