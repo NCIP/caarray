@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -200,12 +201,18 @@ public class MageTabTranslatorTest {
     }
 
     private void checkTcgaBroadHybridizations(Experiment investigation) {
-        for (LabeledExtract labeledExtract : investigation.getLabeledExtracts()) {
-            Hybridization hybridization = labeledExtract.getHybridizations().iterator().next();
-            RawArrayData celData = hybridization.getArrayData();
-            assertNotNull(celData);
-            // TODO Eric -- fix this issue
-            // assertNotNull(celData.getDataFile());
+        try {
+            assertEquals(1, investigation.getArrayDesigns().size());
+            ArrayDesign arrayDesign = investigation.getArrayDesigns().iterator().next();
+            for (LabeledExtract labeledExtract : investigation.getLabeledExtracts()) {
+                Hybridization hybridization = labeledExtract.getHybridizations().iterator().next();
+                assertEquals(arrayDesign, hybridization.getArray().getDesign());
+                RawArrayData celData = hybridization.getArrayData();
+                assertNotNull(celData);
+                assertNotNull(celData.getDataFile());
+            }
+        } catch (AssertionError e) {
+            e.printStackTrace();
         }
     }
 
