@@ -176,7 +176,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      *
      * @return the derivedDatas
      */
-    @ManyToMany(mappedBy = "hybridizations")
+    @ManyToMany(mappedBy = "hybridizations", fetch = FetchType.EAGER)
     public Set<DerivedArrayData> getDerivedDatas() {
         return derivedDatas;
     }
@@ -282,7 +282,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      *
      * @return the labeledExtract
      */
-    @ManyToMany(mappedBy = "hybridizations")
+    @ManyToMany(mappedBy = "hybridizations", fetch = FetchType.EAGER)
     public Set<LabeledExtract> getLabeledExtracts() {
         return labeledExtract;
     }

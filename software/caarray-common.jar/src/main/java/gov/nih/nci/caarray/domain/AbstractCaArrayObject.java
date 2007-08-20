@@ -184,14 +184,14 @@ public abstract class AbstractCaArrayObject implements Serializable {
      * @return the gridIdentifier
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public final String getGridIdentifier() {
+    public String getGridIdentifier() {
         return gridIdentifier;
     }
 
     /**
      * @param gridIdentifier the gridIdentifier to set
      */
-    public final void setGridIdentifier(String gridIdentifier) {
+    public void setGridIdentifier(String gridIdentifier) {
         this.gridIdentifier = gridIdentifier;
     }
 

@@ -87,6 +87,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.idf.Investigation;
+import gov.nih.nci.caarray.magetab.sdrf.ArrayDesign;
+import gov.nih.nci.caarray.magetab.sdrf.Hybridization;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.validation.InvalidDataException;
@@ -132,6 +134,21 @@ public class MageTabParserTest {
         assertEquals(1, documentSet.getSdrfDocuments().size());
         assertEquals(1, documentSet.getDataMatrixes().size());
         assertEquals(26, documentSet.getNativeDataFiles().size());
+        checkArrayDesigns(documentSet);
+    }
+
+    private void checkArrayDesigns(MageTabDocumentSet documentSet) {
+        try {
+            SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
+            assertEquals(1, sdrfDocument.getAllArrayDesigns().size());
+            ArrayDesign arrayDesign = sdrfDocument.getAllArrayDesigns().get(0);
+            for (Hybridization hybridization : sdrfDocument.getAllHybridizations()) {
+                assertEquals(1, hybridization.getSuccessorArrayDesigns().size());
+                assertEquals(arrayDesign, hybridization.getSuccessorArrayDesigns().iterator().next());
+            }
+        } catch (AssertionError e) {
+            e.printStackTrace();
+        }
     }
 
     private void testSpecificationDocuments() throws MageTabParsingException, InvalidDataException {

@@ -299,7 +299,9 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     /**
      * @return the designFile
      */
-    @Transient
+    @ManyToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ForeignKey(name = "DESIGN_FILE_FK")
     public CaArrayFile getDesignFile() {
         return designFile;
     }
