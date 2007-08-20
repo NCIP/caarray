@@ -50,6 +50,7 @@
  */
 package gov.nih.nci.caarray.magetab;
 
+import gov.nih.nci.caarray.magetab.sdrf.ArrayDesign;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
 import gov.nih.nci.caarray.util.io.FileUtility;
@@ -132,6 +133,15 @@ public abstract class AbstractMageTabDocument implements Serializable {
      */
     protected final OntologyTerm getOntologyTerm(String category, String value) {
         return getDocumentSet().getOntologyTerm(category, value);
+    }
+    
+    /**
+     * 
+     * @param value the name of the array design
+     * @return ArrayDesign the new or matching array design
+     */
+    protected final ArrayDesign getArrayDesign(String value) {
+        return getDocumentSet().getArrayDesign(value);
     }
 
     /**
