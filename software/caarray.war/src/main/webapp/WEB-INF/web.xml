@@ -60,6 +60,7 @@
     -->
 
     <login-config>
+        <auth-method>FORM</auth-method>
         <form-login-config>
             <form-login-page>/index.faces</form-login-page>
             <form-error-page>/loginError.faces</form-error-page>
