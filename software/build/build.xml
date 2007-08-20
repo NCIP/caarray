@@ -417,11 +417,11 @@
 
     <target name="build:caarray-client.jar" depends="compile:caarray-client.jar,compile:caarray-common.jar">
         <mkdir dir="${caarray-client.target.dir}"/>
-		<unjar src="${hibernate-client.jar}" dest="${caarray-client.classes.dir}" overwrite="false" />
-		<unjar src="${jboss-ejb3-client.jar}" dest="${caarray-client.classes.dir}" overwrite="false" />
+    <unjar src="${hibernate-client.jar}" dest="${caarray-client.classes.dir}" overwrite="false" />
+    <unjar src="${jboss-ejb3-client.jar}" dest="${caarray-client.classes.dir}" overwrite="false" />
         <unjar src="${jbossall-client.jar}" dest="${caarray-client.classes.dir}" overwrite="false" />
-	    <unjar src="${jboss-aspect-jdk50-client.jar}" dest="${caarray-client.classes.dir}" overwrite="false" />
-	    <unjar src="${jboss-aop-jdk50-client.jar}" dest="${caarray-client.classes.dir}" overwrite="false" />
+      <unjar src="${jboss-aspect-jdk50-client.jar}" dest="${caarray-client.classes.dir}" overwrite="false" />
+      <unjar src="${jboss-aop-jdk50-client.jar}" dest="${caarray-client.classes.dir}" overwrite="false" />
         <jar destfile="${caarray-client.jar}">
             <fileset dir="${caarray-client.classes.dir}" />
             <fileset dir="${caarray-common.classes.dir}" >
@@ -942,15 +942,22 @@
 
     <target name="database:drop-schema" depends="database:generate-drop-schema-sql" description="Drop DB schema">
         <run-sql-script sql.file="${caarraydb.sql.dir}/drop_schema.sql" />
+        <run-sql-script sql.file="${caarraydb.sql.dir}/drop-csm-schema.sql"/>
     </target>
 
     <target name="database:create-schema" depends="database:generate-create-schema-sql" description="Create DB schema">
         <run-sql-script sql.file="${caarraydb.sql.dir}/create_schema.sql" />
+        <run-sql-script sql.file="${caarraydb.sql.dir}/init-csm-schema.sql"/>
     </target>
 
     <target name="database:initialize-schema" depends="database:drop-schema,database:create-schema" description="Drop &amp; Create DB schema" />
 
-    <target name="database:reinitialize" depends="database:recreate-database,database:create-schema" description="Completely reset caarraydb by dropping database, recreating, and creating schema" />
+    <target name="database:populate">
+        <run-sql-script sql.file="${caarraydb.sql.dir}/populate-csm.sql"/>
+        <run-sql-script sql.file="${caarraydb.sql.dir}/populate-caarray.sql"/>
+    </target>
+
+    <target name="database:reinitialize" depends="database:recreate-database,database:create-schema,database:populate" description="Completely reset caarraydb by dropping database, recreating, and creating schema" />
 
     <target name="database:recreate-database" depends="database:init-sql" description="Drops and recreates caarraydb database">
         <run-sql-script database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_database_and_user.sql" />
