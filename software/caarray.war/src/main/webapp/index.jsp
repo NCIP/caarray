@@ -14,6 +14,13 @@
 <f:view>
 <%@include file="/navigation/menu.jsp" %>
 <h:messages/>
+<f:verbatim>
+  <form method="POST" action="j_security_check">
+    <input type="text" name="j_username">
+    <input type="password" name="j_password">
+    <input type="submit" />
+  </form>
+</f:verbatim>
 </f:view>
 </body>
 </html>
