@@ -697,6 +697,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
                 return aFactor;
             }
         }
+        addWarningMessage("Experimental Factor " + factorName + " not defined in the IDF file");
         return null;
     }
 }
