@@ -99,13 +99,13 @@ public class ValidationResultTest {
     public void testIsValid() {
         ValidationResult result = new ValidationResult();
         assertTrue(result.isValid());
-        result.addMessage(testFile , ValidationMessage.Type.INFO, TEST_MESSAGE);
+        result.addMessage(testFile , ValidationMessage.Type.INFO, TEST_MESSAGE + "1");
         assertTrue(result.isValid());
-        result.addMessage(testFile , ValidationMessage.Type.WARNING, TEST_MESSAGE);
+        result.addMessage(testFile , ValidationMessage.Type.WARNING, TEST_MESSAGE + "2");
         assertTrue(result.isValid());
-        result.addMessage(testFile , ValidationMessage.Type.ERROR, TEST_MESSAGE);
+        result.addMessage(testFile , ValidationMessage.Type.ERROR, TEST_MESSAGE + "3");
         assertFalse(result.isValid());
-        result.addMessage(testFile , ValidationMessage.Type.INFO, TEST_MESSAGE);
+        result.addMessage(testFile , ValidationMessage.Type.INFO, TEST_MESSAGE + "4");
         assertFalse(result.isValid());
     }
 
