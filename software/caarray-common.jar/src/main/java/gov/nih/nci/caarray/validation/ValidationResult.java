@@ -145,17 +145,7 @@ public final class ValidationResult implements Serializable {
     }
 
     private void add(ValidationMessage validationMessage) {
-        boolean found = false;
-        for (ValidationMessage aMessage : messages) {
-            if (aMessage.getMessage().equalsIgnoreCase(validationMessage.getMessage())) {
-                found = true;
-                break;
-            }
-
-        }
-        if (!found) {
             messages.add(validationMessage);
-        }
     }
 
 }
