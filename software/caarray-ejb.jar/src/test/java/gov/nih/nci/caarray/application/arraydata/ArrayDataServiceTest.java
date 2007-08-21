@@ -258,7 +258,7 @@ public class ArrayDataServiceTest {
                     }
                     QuantitationType quantitationType = new QuantitationType();
                     quantitationType.setName(descriptor.getName());
-                    quantitationType.setType(descriptor.getDataType().getTypeClass());
+                    quantitationType.setTypeClass(descriptor.getDataType().getTypeClass());
                     quantitationTypeMap.put(descriptor, quantitationType);
                     return quantitationType;
                 }

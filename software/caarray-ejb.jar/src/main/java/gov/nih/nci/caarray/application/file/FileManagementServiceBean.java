@@ -185,7 +185,7 @@ public class FileManagementServiceBean implements FileManagementService {
 
     private void validate(CaArrayFileSet fileSet) {
         for (CaArrayFile file : fileSet.getFiles()) {
-            file.setStatus(FileStatus.VALIDATED);
+            file.setFileStatus(FileStatus.VALIDATED);
             getDaoFactory().getProjectDao().save(file);
         }
     }

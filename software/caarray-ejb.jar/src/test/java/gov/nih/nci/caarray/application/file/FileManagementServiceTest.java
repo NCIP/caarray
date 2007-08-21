@@ -85,7 +85,7 @@ public class FileManagementServiceTest {
         CaArrayFileSet fileSet = new CaArrayFileSet();
         CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setPath(file.getAbsolutePath());
-        caArrayFile.setStatus(FileStatus.UPLOADED);
+        caArrayFile.setFileStatus(FileStatus.UPLOADED);
         caArrayFile.setType(FileType.MAGE_TAB_IDF);
 
         fileSet.add(caArrayFile);

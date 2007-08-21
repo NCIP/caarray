@@ -198,7 +198,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
     private QuantitationType createQuantitationType(QuantitationTypeDescriptor quantitationTypeDescriptor) {
         QuantitationType quantitationType = new QuantitationType();
         quantitationType.setName(quantitationTypeDescriptor.getName());
-        quantitationType.setType(quantitationTypeDescriptor.getDataType().getTypeClass());
+        quantitationType.setTypeClass(quantitationTypeDescriptor.getDataType().getTypeClass());
         return quantitationType;
     }
 

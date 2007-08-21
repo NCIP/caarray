@@ -123,9 +123,9 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         }
         ValidationResult result =  getHandler(designFile).validate();
         if (result.isValid()) {
-            designFile.setStatus(FileStatus.VALIDATED);
+            designFile.setFileStatus(FileStatus.VALIDATED);
         } else {
-            designFile.setStatus(FileStatus.VALIDATION_ERRORS);
+            designFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
         }
         getArrayDao().save(designFile);
         if (LOG.isDebugEnabled()) {
@@ -154,7 +154,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     private ArrayDesign doImport(CaArrayFile designFile) {
         AbstractArrayDesignHandler handler = getHandler(designFile);
         ArrayDesign design = handler.getArrayDesign();
-        designFile.setStatus(FileStatus.IMPORTED);
+        designFile.setFileStatus(FileStatus.IMPORTED);
         getArrayDao().save(designFile);
         getArrayDao().save(design);
         return design;

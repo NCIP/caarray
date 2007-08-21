@@ -116,10 +116,10 @@ final class ArrayDataImporter {
     private void importFile(CaArrayFile file) {
         try {
             arrayDataService.importData(getArrayData(file));
-            file.setStatus(FileStatus.IMPORTED);
+            file.setFileStatus(FileStatus.IMPORTED);
         } catch (InvalidDataException e) {
             // TODO Save Validation result with file
-            file.setStatus(FileStatus.VALIDATION_ERRORS);
+            file.setFileStatus(FileStatus.VALIDATION_ERRORS);
         }
         daoFactory.getProjectDao().save(file);
     }
