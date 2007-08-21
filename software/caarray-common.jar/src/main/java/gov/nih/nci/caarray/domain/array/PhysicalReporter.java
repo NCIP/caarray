@@ -98,7 +98,6 @@ import org.hibernate.annotations.ForeignKey;
  * Represents a phsyical probe on a microarray.
  */
 @Entity
-@org.hibernate.annotations.Entity(mutable = false)
 public class PhysicalReporter extends AbstractReporter {
 
     private static final long serialVersionUID = -7343503650075935784L;

@@ -310,28 +310,28 @@ public class Hybridization extends AbstractCaArrayEntity {
      * @return the amountOfMaterial
      */
     @Column
-    public final float getAmountOfMaterial() {
+    public float getAmountOfMaterial() {
         return amountOfMaterial;
     }
 
     /**
      * @param amountOfMaterial the amountOfMaterial to set
      */
-    public final void setAmountOfMaterial(float amountOfMaterial) {
+    public void setAmountOfMaterial(float amountOfMaterial) {
         this.amountOfMaterial = amountOfMaterial;
     }
 
     /**
      * @return the amountOfMaterialUnit
      */
-    public final Term getAmountOfMaterialUnit() {
+    public Term getAmountOfMaterialUnit() {
         return amountOfMaterialUnit;
     }
 
     /**
      * @param amountOfMaterialUnit the amountOfMaterialUnit to set
      */
-    public final void setAmountOfMaterialUnit(Term amountOfMaterialUnit) {
+    public void setAmountOfMaterialUnit(Term amountOfMaterialUnit) {
         this.amountOfMaterialUnit = amountOfMaterialUnit;
     }
 }

@@ -106,7 +106,17 @@ public final class HibernateUtil {
     static {
         try {
             HIBERNATE_CONFIG = new AnnotationConfiguration().setNamingStrategy(new NamingStrategy());
-            SESSION_FACTORY = HIBERNATE_CONFIG.configure("hibernate.cfg.xml").buildSessionFactory();
+            SESSION_FACTORY = HIBERNATE_CONFIG.configure("hibernate.cfg.xml")
+              .addClass(gov.nih.nci.security.authorization.domainobjects.Application.class)
+              .addClass(gov.nih.nci.security.authorization.domainobjects.Group.class)
+              .addClass(gov.nih.nci.security.authorization.domainobjects.Privilege.class)
+              .addClass(gov.nih.nci.security.authorization.domainobjects.ProtectionElement.class)
+              .addClass(gov.nih.nci.security.authorization.domainobjects.ProtectionGroup.class)
+              .addClass(gov.nih.nci.security.authorization.domainobjects.Role.class)
+              .addClass(gov.nih.nci.security.authorization.domainobjects.User.class)
+              .addClass(gov.nih.nci.security.authorization.domainobjects.UserGroupRoleProtectionGroup.class)
+              .addClass(gov.nih.nci.security.authorization.domainobjects.UserProtectionElement.class)
+              .buildSessionFactory();
         } catch (HibernateException e) {
             LOG.error(e.getMessage(), e);
             throw new ExceptionInInitializerError(e);

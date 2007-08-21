@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.protocol.Parameter;
 import gov.nih.nci.caarray.domain.protocol.ParameterValue;
 import gov.nih.nci.caarray.util.HibernateUtil;
@@ -117,7 +118,7 @@ public class AbstractDaoTest {
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             Session s = HibernateUtil.getCurrentSession();
-            Class<?>[] classes = new Class<?>[] {ParameterValue.class, Parameter.class, Object.class};
+            Class<?>[] classes = new Class<?>[] {ParameterValue.class, Parameter.class, AbstractCaArrayObject.class};
             for (Class<?> c : classes) {
                 List<?> allObjs = s.createQuery("FROM " + c.getName()).list();
                 for (Object o : allObjs) {

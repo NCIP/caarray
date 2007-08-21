@@ -227,14 +227,14 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      * @return the status
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    final String getStatus() {
+    String getStatus() {
         return status;
     }
 
     /**
      * @param status the status to set
      */
-    final void setStatus(String status) {
+    void setStatus(String status) {
         checkForLegalStatusValue(status);
         this.status = status;
     }
@@ -244,5 +244,5 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
             FileStatus.valueOf(checkStatus);
         }
     }
-    
+
 }

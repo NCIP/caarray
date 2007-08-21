@@ -264,14 +264,14 @@ public class Publication extends AbstractCaArrayEntity {
      * @return the editor
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public final String getEditor() {
+    public String getEditor() {
         return editor;
     }
 
     /**
      * @param editor the editor to set
      */
-    public final void setEditor(String editor) {
+    public void setEditor(String editor) {
         this.editor = editor;
     }
 
@@ -279,14 +279,14 @@ public class Publication extends AbstractCaArrayEntity {
      * @return the issue
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public final String getIssue() {
+    public String getIssue() {
         return issue;
     }
 
     /**
      * @param issue the issue to set
      */
-    public final void setIssue(String issue) {
+    public void setIssue(String issue) {
         this.issue = issue;
     }
 
@@ -294,14 +294,14 @@ public class Publication extends AbstractCaArrayEntity {
      * @return the pages
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public final String getPages() {
+    public String getPages() {
         return pages;
     }
 
     /**
      * @param pages the pages to set
      */
-    public final void setPages(String pages) {
+    public void setPages(String pages) {
         this.pages = pages;
     }
 
@@ -309,14 +309,14 @@ public class Publication extends AbstractCaArrayEntity {
      * @return the publisher
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public final String getPublisher() {
+    public String getPublisher() {
         return publisher;
     }
 
     /**
      * @param publisher the publisher to set
      */
-    public final void setPublisher(String publisher) {
+    public void setPublisher(String publisher) {
         this.publisher = publisher;
     }
 
@@ -324,14 +324,14 @@ public class Publication extends AbstractCaArrayEntity {
      * @return the uri
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public final String getUri() {
+    public  String getUri() {
         return uri;
     }
 
     /**
      * @param uri the uri to set
      */
-    public final void setUri(String uri) {
+    public void setUri(String uri) {
         this.uri = uri;
     }
 
@@ -339,14 +339,14 @@ public class Publication extends AbstractCaArrayEntity {
      * @return the volume
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public final String getVolume() {
+    public String getVolume() {
         return volume;
     }
 
     /**
      * @param volume the volume to set
      */
-    public final void setVolume(String volume) {
+    public void setVolume(String volume) {
         this.volume = volume;
     }
 
@@ -354,14 +354,14 @@ public class Publication extends AbstractCaArrayEntity {
      * @return the year
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public final String getYear() {
+    public String getYear() {
         return year;
     }
 
     /**
      * @param year the year to set
      */
-    public final void setYear(String year) {
+    public void setYear(String year) {
         this.year = year;
     }
 
@@ -369,14 +369,14 @@ public class Publication extends AbstractCaArrayEntity {
      * @return the name
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public final String getName() {
+    public String getName() {
         return name;
     }
 
     /**
      * @param name the name to set
      */
-    public final void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 }

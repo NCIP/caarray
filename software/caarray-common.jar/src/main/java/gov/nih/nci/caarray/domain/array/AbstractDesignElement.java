@@ -91,7 +91,7 @@ import javax.persistence.MappedSuperclass;
  */
 @MappedSuperclass
 public abstract class AbstractDesignElement extends AbstractCaArrayEntity {
-    
+
     private String name;
 
     /**
@@ -113,14 +113,14 @@ public abstract class AbstractDesignElement extends AbstractCaArrayEntity {
     /**
      * @return the name
      */
-    public final String getName() {
+    public String getName() {
         return name;
     }
 
     /**
      * @param name the name to set
      */
-    public final void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 }

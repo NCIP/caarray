@@ -118,6 +118,7 @@
     <property name="netcdf.jar" value="${lib.dir}/nc2.2.jar" />
     <property name="javacsv.jar" value="${lib.dir}/javacsv.jar" />
     <property name="tomahawk.jar" value="${lib.dir}/tomahawk-1.1.6.jar" />
+    <property name="csmapi.jar" value="${lib.dir}/csmapi.jar" />
 
     <!-- Test-related properties -->
     <property name="test.dir" value="${basedir}/test" />
@@ -362,6 +363,7 @@
                 <pathelement location="${netcdf.jar}" />
                 <pathelement location="${caarray-common.resources.dir}" />
                 <pathelement location="${caarray-common.test.files.dir}" />
+                <pathelement location="${csmapi.jar}" />
             </classpath>
         </javac>
     </target>
@@ -514,6 +516,7 @@
                 <include name="xercesImpl.jar" />
                 <include name="xml-apis.jar" />
                 <include name="netcdf.jar" />
+                <include name="csmapi.jar"/>
             </fileset>
         </ear>
     </target>
@@ -621,7 +624,7 @@
       test.src.dir="${caarray-common.test.src.dir}"
       xml.output.dir="${caarray-common.target.dir}/junit"
       instrumented.classes="${caarray-common.instrumented.classes.dir}"
-      classpath="${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-common.resources.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar};${javacsv.jar};${hibernate-annotations.jar};${hibernate-commons-annotations.jar};${ejb3-persistence.jar}" />
+      classpath="${csmapi.jar};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-common.resources.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar};${javacsv.jar};${hibernate-annotations.jar};${hibernate-commons-annotations.jar};${ejb3-persistence.jar}" />
     </target>
 
     <!-- caarray-ejb.jar -->
@@ -1127,11 +1130,11 @@
       keyfile="${ssh.key.file}"
       passphrase=""
       command="mv ${remote.jboss.temp.dir}/caarray.ear ${remote.jboss.home}/deploy/"/>
-	<echo message="Caarray EAR successfully deployed to http://${remote.jboss.server.hostname}:${remote.jboss.server.port}/caarray" />
+  <echo message="Caarray EAR successfully deployed to http://${remote.jboss.server.hostname}:${remote.jboss.server.port}/caarray" />
   </target>
 
   <target name="remote-jboss:undeploy-caarray">
-	<echo message="Undeploying caarray EAR to jboss server at ${ssh.server.hostname}..." />
+  <echo message="Undeploying caarray EAR to jboss server at ${ssh.server.hostname}..." />
     <sshexec host="${ssh.server.hostname}"
       trust="true"
       username="${ssh.server.username}"

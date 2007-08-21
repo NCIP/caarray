@@ -97,7 +97,6 @@ import org.hibernate.annotations.ForeignKey;
  * A logical probe corresponding to a sequence that is composed of multiple physical probes.
  */
 @Entity
-@org.hibernate.annotations.Entity(mutable = false)
 public class CompositeReporter extends AbstractReporter {
 
     private static final long serialVersionUID = 4406463229622624441L;
