@@ -120,4 +120,14 @@ public class DataValue implements Serializable {
         return type;
     }
     
+    /**
+     * This operation implemented solely for caDSR compatibility. Clients should not expect this
+     * field to contain a valid, unique ID.
+     * 
+     * @return the spurious placeholder value.
+     */
+    public Long getId() {
+        return 0L;
+    }
+
 }

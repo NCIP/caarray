@@ -143,5 +143,15 @@ public final class HybridizationDataValues implements Serializable {
     void setValue(QuantitationType type, Object value) {
         values.get(getDataRow().getDataSet().indexOf(type)).setValue(value);
     }
+    
+    /**
+     * This operation implemented solely for caDSR compatibility. Clients should not expect this
+     * field to contain a valid, unique ID.
+     * 
+     * @return the spurious placeholder value.
+     */
+    public Long getId() {
+        return 0L;
+    }
 
 }

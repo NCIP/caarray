@@ -82,18 +82,17 @@
  */
 package gov.nih.nci.caarray.domain.data;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-
-import org.hibernate.annotations.Type;
-
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import javax.persistence.Transient;
 
 /**
- * Represents the heading for a "column" of array data, indicating the name and primitive type
+ * Represents the heading for a "column" of array data, indicating the name and primitive typeClass
  * of the data.
  */
 @Entity
@@ -114,7 +113,7 @@ public final class QuantitationType extends AbstractCaArrayObject {
     }
 
     private String name;
-    private Class<?> type;
+    private String type;
 
     /**
      * @return the name
@@ -132,21 +131,25 @@ public final class QuantitationType extends AbstractCaArrayObject {
     }
 
     /**
-     * @return the type
+     * @return the typeClass
      */
-    @Type(type = "org.hibernate.type.ClassType")
-    public Class<?> getType() {
-        return type;
+    @Transient
+    public Class<?> getTypeClass() {
+        try {
+            return getType() != null ? Class.forName(getType()) : null;
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("Couldn't locate class for QuantitationType", e);
+        }
     }
 
     /**
-     * @param type the type to set
+     * @param typeClass the typeClass to set
      */
-    public void setType(Class<?> type) {
-        if (!SUPPORTED_TYPES.contains(type)) {
-            throw new IllegalArgumentException("Unsupported data type; allowed types are " + SUPPORTED_TYPES);
+    public void setTypeClass(Class<?> typeClass) {
+        if (!SUPPORTED_TYPES.contains(typeClass)) {
+            throw new IllegalArgumentException("Unsupported data typeClass; allowed types are " + SUPPORTED_TYPES);
         }
-        this.type = type;
+        this.type = typeClass.getName();
     }
 
     /**
@@ -155,6 +158,21 @@ public final class QuantitationType extends AbstractCaArrayObject {
     @Override
     public String toString() {
         return name;
+    }
+
+    /**
+     * @return the type
+     */
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(String type) {
+        this.type = type;
     }
 
 }

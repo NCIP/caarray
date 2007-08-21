@@ -110,7 +110,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
 
     private String path;
     private FileType type;
-    private FileStatus status = FileStatus.UPLOADED;
+    private String status = FileStatus.UPLOADED.name();
     private Project project;
 
     /**
@@ -162,18 +162,22 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     }
 
     /**
-     * @return the status
+     * @return the fileStatus
      */
     @Transient
-    public FileStatus getStatus() {
-        return status;
+    public FileStatus getFileStatus() {
+        return getStatus() != null ? FileStatus.valueOf(getStatus()) : null;
     }
 
     /**
-     * @param status the status to set
+     * @param fileStatus the fileStatus to set
      */
-    public void setStatus(FileStatus status) {
-        this.status = status;
+    public void setFileStatus(FileStatus fileStatus) {
+        if (fileStatus != null) {
+            setStatus(fileStatus.name());
+        } else {
+            setStatus(null);
+        }
     }
 
     /**
@@ -199,7 +203,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     public int compareTo(CaArrayFile o) {
         return new CompareToBuilder()
             .append(getProject(), o.getProject())
-            .append(getStatus(), o.getStatus())
+            .append(getFileStatus(), o.getFileStatus())
             .append(getType(), o.getType())
             .append(getPath(), o.getPath())
             .append(getId(), o.getId())
@@ -214,8 +218,31 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
         return new ToStringBuilder(this)
             .appendSuper(super.toString())
             .append("path", path)
-            .append("status", status)
+            .append("fileStatus", status)
             .append("type", type)
             .toString();
     }
+
+    /**
+     * @return the status
+     */
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    final String getStatus() {
+        return status;
+    }
+
+    /**
+     * @param status the status to set
+     */
+    final void setStatus(String status) {
+        checkForLegalStatusValue(status);
+        this.status = status;
+    }
+
+    private void checkForLegalStatusValue(String checkStatus) {
+        if (checkStatus != null) {
+            FileStatus.valueOf(checkStatus);
+        }
+    }
+    
 }

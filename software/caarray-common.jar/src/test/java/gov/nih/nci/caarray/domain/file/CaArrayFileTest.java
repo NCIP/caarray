@@ -80,127 +80,41 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain.data;
+package gov.nih.nci.caarray.domain.file;
 
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import static org.junit.Assert.*;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.junit.Test;
 
-/**
- * Contains hybridization data requested by a client.
- */
-public final class DataSet implements Serializable {
+@SuppressWarnings("PMD")
+public class CaArrayFileTest {
 
-    private static final long serialVersionUID = 4430513886275629776L;
-    
-    private final List<Hybridization> hybridizations;
-    private final Map<Hybridization, Integer> hybridizationIndexes = new HashMap<Hybridization, Integer>();
-    private final List<QuantitationType> quantitationTypes;
-    private final Map<QuantitationType, Integer> quantitationTypeIndexes = new HashMap<QuantitationType, Integer>();
-    private final List<DataRow> rows = new ArrayList<DataRow>();
-    
-    /**
-     * Instantiates a new <code>DataSet</code> that will contain hybridization data for each
-     * of the quantitation types given.
-     * 
-     * @param hybridizations data associated with these specific hybridizations.
-     * @param quantitationTypes data will be provided for each of these quantitationTypes.
-     */
-    public DataSet(List<Hybridization> hybridizations, List<QuantitationType> quantitationTypes) {
-        super();
-        this.hybridizations = Collections.unmodifiableList(hybridizations);
-        this.quantitationTypes = Collections.unmodifiableList(quantitationTypes);
-        recordIndexes();
+    @Test
+    public void testSetFileStatus() {
+        CaArrayFile file = new CaArrayFile();
+        file.setFileStatus(FileStatus.IMPORTED);
+        assertEquals(FileStatus.IMPORTED, file.getFileStatus());
+        assertEquals("IMPORTED", file.getStatus());
+        file.setFileStatus(null);
+        assertEquals(null, file.getFileStatus());
+        assertEquals(null, file.getStatus());
     }
 
-    /**
-     * Instantiates a new <code>DataSet</code> that will contain hybridization data for each
-     * of the quantitation types given for a single hybridization.
-     * 
-     * @param hybridization data associated with this specific hybridization.
-     * @param quantitationTypes data will be provided for each of these quantitationTypes.
-     */
-    public DataSet(Hybridization hybridization, List<QuantitationType> quantitationTypes) {
-        this(Arrays.asList(new Hybridization[] {hybridization}), quantitationTypes);
-    }
-
-    private void recordIndexes() {
-        for (int index = 0; index < hybridizations.size(); index++) {
-            hybridizationIndexes.put(hybridizations.get(index), index);
+    @Test
+    public void testSetStatus() {
+        CaArrayFile file = new CaArrayFile();
+        file.setStatus("IMPORTED");
+        assertEquals(FileStatus.IMPORTED, file.getFileStatus());
+        assertEquals("IMPORTED", file.getStatus());
+        file.setStatus(null);
+        assertEquals(null, file.getFileStatus());
+        assertEquals(null, file.getStatus());
+        try {
+            file.setStatus("ILLEGAL STATUS");
+            fail("Shouldn't be able to set status not in FileStatus");
+        } catch (IllegalArgumentException e) {
+            // expected
         }
-        for (int index = 0; index < quantitationTypes.size(); index++) {
-            quantitationTypeIndexes.put(quantitationTypes.get(index), index);
-        }
-    }
-
-    /**
-     * @return the rows
-     */
-    public List<DataRow> getRows() {
-        return Collections.unmodifiableList(rows);
-    }
-
-    /**
-     * @return the hybridizations
-     */
-    public List<Hybridization> getHybridizations() {
-        return hybridizations;
-    }
-
-    /**
-     * @return the quantitationTypes
-     */
-    public List<QuantitationType> getQuantitationTypes() {
-        return quantitationTypes;
-    }
-    
-    /**
-     * Creates a new row at the end of the row list.
-     * 
-     * @param designElement the design element associated with the row
-     * @return the new row.
-     */
-    public DataRow addRow(AbstractDesignElement designElement) {
-        DataRow row = new DataRow(this, designElement);
-        rows.add(row);
-        return row;
-    }
-    
-    void checkHybridization(Hybridization hybridization) {
-        if (!hybridizationIndexes.containsKey(hybridization)) {
-            throw new IllegalArgumentException("Illegal Hybridization for this DataSet: " + hybridization);
-        }
-    }
-    
-    void checkQuantitationType(QuantitationType type) {
-        if (!quantitationTypeIndexes.containsKey(type)) {
-            throw new IllegalArgumentException("Illegal QuantitationType for this DataSet: " + type);
-        }
-    }
-
-    int indexOf(Hybridization hybridization) {
-        return hybridizationIndexes.get(hybridization);
-    }
-
-    int indexOf(QuantitationType type) {
-        return quantitationTypeIndexes.get(type);
-    }
-    
-    /**
-     * This operation implemented solely for caDSR compatibility. Clients should not expect this
-     * field to contain a valid, unique ID.
-     * 
-     * @return the spurious placeholder value.
-     */
-    public Long getId() {
-        return 0L;
     }
 
 }

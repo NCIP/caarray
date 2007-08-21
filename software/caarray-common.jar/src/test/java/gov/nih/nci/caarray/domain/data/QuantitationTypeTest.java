@@ -92,10 +92,10 @@ public class QuantitationTypeTest {
     @SuppressWarnings("PMD")
     public void testSetType() {
         QuantitationType quantitationType = new QuantitationType();
-        quantitationType.setType(String.class);
-        assertEquals(String.class, quantitationType.getType());
+        quantitationType.setTypeClass(String.class);
+        assertEquals(String.class, quantitationType.getTypeClass());
         try {
-            quantitationType.setType(QuantitationTypeTest.class);
+            quantitationType.setTypeClass(QuantitationTypeTest.class);
             fail("Should have thrown IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // expected;

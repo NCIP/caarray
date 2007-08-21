@@ -120,7 +120,7 @@ public class DataSetTest {
     private QuantitationType createQuantitationType(String name, Class<?> type) {
         QuantitationType quantitationType = new QuantitationType();
         quantitationType.setName(name);
-        quantitationType.setType(type);
+        quantitationType.setTypeClass(type);
         return quantitationType;
     }
 

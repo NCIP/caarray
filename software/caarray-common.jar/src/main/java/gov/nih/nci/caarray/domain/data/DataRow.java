@@ -149,5 +149,15 @@ public final class DataRow implements Serializable {
     public List<HybridizationDataValues> getHybridizationValues() {
         return hybridizationValues;
     }
+    
+    /**
+     * This operation implemented solely for caDSR compatibility. Clients should not expect this
+     * field to contain a valid, unique ID.
+     * 
+     * @return the spurious placeholder value.
+     */
+    public Long getId() {
+        return 0L;
+    }
 
 }
