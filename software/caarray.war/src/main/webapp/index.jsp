@@ -14,13 +14,12 @@
 <f:view>
 <%@include file="/navigation/menu.jsp" %>
 <h:messages/>
-<f:verbatim>
-  <form method="POST" action="j_security_check">
-    <input type="text" name="j_username">
-    <input type="password" name="j_password">
-    <input type="submit" />
-  </form>
-</f:verbatim>
 </f:view>
+<a href="test">Test going to a protected resource.</a>
+
+<%
+  out.print("Current user: " + request.getRemoteUser() + "\tTest role?: " + request.isUserInRole("test"));
+%>
+
 </body>
 </html>

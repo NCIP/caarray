@@ -123,6 +123,10 @@ public class Feature extends AbstractDesignElement {
         setArrayDesignDetails(details);
     }
 
+    Feature() {
+        // hibernate-only constructor
+    }
+
     /**
      * @return the blockColumn
      */

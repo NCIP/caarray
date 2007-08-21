@@ -1,0 +1,37 @@
+<?xml version='1.0'?>
+<!DOCTYPE policy PUBLIC
+"-//JBoss//DTD JBOSS Security Config 3.0//EN"
+"http://www.jboss.org/j2ee/dtd/security_config.dtd">
+
+<policy>
+        <application-policy name="caarray">
+        <authentication>
+<!--  example of ldap auth
+            <login-module code="org.jboss.security.auth.spi.LdapExtLoginModule" flag="sufficient">
+                <module-option name="java.naming.provider.url">ldap://cbiodev502.nci.nih.gov:389</module-option>
+                <module-option name="bindDN">cn=Manager,dc=ncicb-dev,dc=nci,dc=nih,dc=gov</module-option>
+                <module-option name="bindCredential">firebird</module-option>
+                <module-option name="baseCtxDN">ou=Users,dc=ncicb-dev,dc=nci,dc=nih,dc=gov</module-option>
+                <module-option name="baseFilter">(uid={0})</module-option>
+                <module-option name="rolesCtxDN">ou=Groups,dc=ncicb-dev,dc=nci,dc=nih,dc=gov</module-option>
+                <module-option name="roleFilter">(member={1})</module-option>
+                <module-option name="roleAttributeID">uniqueMember</module-option>
+                <module-option name="roleRecursion">0</module-option>
+            </login-module>
+-->
+            <login-module code="gov.nih.nci.security.authentication.loginmodules.RDBMSLoginModule" flag="required" >
+                <module-option name="driver">@database.driver@</module-option>
+                <module-option name="url">@database.url@@database.name@</module-option>
+                <module-option name="user">@database.user@</module-option>
+                <module-option name="passwd">@database.password@</module-option>
+                <module-option name="query">SELECT * FROM csm_user WHERE login_name=? and password=?</module-option>
+                <module-option name="encryption-enabled">YES</module-option>
+            </login-module>
+            <login-module code="org.jboss.security.auth.spi.DatabaseServerLoginModule" flag="required">
+              <module-option name="password-stacking">useFirstPass</module-option>
+              <module-option name="dsJndiName">java:jdbc/CaArrayDataSource</module-option>
+              <module-option name="rolesQuery">SELECT cg.group_name, 'Roles' FROM csm_group cg, csm_user_group cug, csm_user cu WHERE cg.group_id = cug.group_id AND cug.user_id = cu.user_id AND cu.login_name = ?</module-option>
+            </login-module>
+        </authentication>
+    </application-policy>
+</policy>

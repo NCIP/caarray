@@ -49,21 +49,26 @@
         <welcome-file>index.faces</welcome-file>
     </welcome-file-list>
 
-    <!--
     <security-constraint>
         <web-resource-collection>
-            <web-resource-name>project pages</web-resource-name>
-            <url-pattern>/project/*</url-pattern>
+            <web-resource-name>FOR TESTING ONLY</web-resource-name>
+            <url-pattern>/test/*</url-pattern>
         </web-resource-collection>
-        <auth-constraint/>
+        <auth-constraint>
+          <role-name>test</role-name>
+        </auth-constraint>
     </security-constraint>
-    -->
+
+    <security-role>
+        <description>Testing security role - development purposes only</description>
+        <role-name>test</role-name>
+    </security-role>
 
     <login-config>
         <auth-method>FORM</auth-method>
         <form-login-config>
-            <form-login-page>/index.faces</form-login-page>
-            <form-error-page>/loginError.faces</form-error-page>
+            <form-login-page>/login/login.jsp</form-login-page>
+            <form-error-page>/login/login.jsp</form-error-page>
         </form-login-config>
     </login-config>
 

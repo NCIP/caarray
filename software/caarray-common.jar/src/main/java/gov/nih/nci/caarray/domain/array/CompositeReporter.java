@@ -119,6 +119,10 @@ public class CompositeReporter extends AbstractReporter {
         setArrayDesignDetails(details);
     }
 
+    CompositeReporter() {
+        // Hibernate-only constructor
+    }
+
     /**
      * @return the reporters
      */

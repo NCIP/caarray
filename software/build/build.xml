@@ -473,7 +473,19 @@
 
     <target name="build:caarray.ear" depends="build:caarray.war,build:caarray-ejb.jar,build:caarray-common.jar,build:caarray-client.jar">
         <mkdir dir="${caarray-ear.target.dir}"/>
+        <mkdir dir="${caarray-ear.target.dir}/xml"/>
+        <copy todir="${caarray-ear.target.dir}/xml">
+            <fileset dir="${caarray-ear.resources.dir}" includes="*.xml" excludes="application.xml"/>
+            <!-- 2 filter sets here because the database.url line has substitutions that otherwise wouldn't be applied -->
+            <filterset>
+                <filter token="database.url" value="${database.url}"/>
+            </filterset>
+            <filterset refid="caarray.filterset"/>
+        </copy>
         <ear destfile="${caarray.ear}" appxml="${caarray-ear.resources.dir}/application.xml">
+            <metainf dir="${caarray-ear.target.dir}/xml" includes="*.xml" excludes="jboss-service.xml"/>
+            <fileset dir="${caarray-ear.target.dir}/xml" includes="jboss-service.xml">
+            </fileset>
             <fileset dir="${caarray-war.target.dir}">
                 <include name="caarray.war" />
             </fileset>
@@ -955,12 +967,12 @@
 
     <target name="database:initialize-schema" depends="database:drop-schema,database:create-schema" description="Drop &amp; Create DB schema" />
 
-    <target name="database:populate">
+    <target name="database:populate" description="populates db with initial data">
         <run-sql-script sql.file="${caarraydb.sql.dir}/populate-csm.sql"/>
         <run-sql-script sql.file="${caarraydb.sql.dir}/populate-caarray.sql"/>
     </target>
 
-    <target name="database:reinitialize" depends="database:recreate-database,database:create-schema,database:populate" description="Completely reset caarraydb by dropping database, recreating, and creating schema" />
+    <target name="database:reinitialize" depends="database:recreate-database,database:create-schema,database:populate" description="Completely reset caarraydb by dropping database, recreating, and creating schema, and pouplating with initial data" />
 
     <target name="database:recreate-database" depends="database:init-sql" description="Drops and recreates caarraydb database">
         <run-sql-script database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_database_and_user.sql" />
@@ -971,10 +983,10 @@
     <!-- ******************************************************************* -->
 
     <target name="deploy" depends="build:caarray.ear,prepare:create-local.properties">
-        <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
         <copy file="${resource.dir}/deploy/caarray-mysql-ds.xml" todir="${jboss.deploy.dir}">
             <filterset refid="caarray.filterset" />
         </copy>
+        <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
     </target>
 
     <target name="undeploy">
