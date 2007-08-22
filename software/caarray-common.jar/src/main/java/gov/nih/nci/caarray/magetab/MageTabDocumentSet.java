@@ -101,8 +101,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A set of parsed, interrelated MAGE-TAB documents. This class provides access to the files and
- * the entities defined within them.
+ * A set of parsed, interrelated MAGE-TAB documents. This class provides access to the files and the entities defined
+ * within them.
  */
 public final class MageTabDocumentSet implements Serializable {
 
@@ -157,7 +157,7 @@ public final class MageTabDocumentSet implements Serializable {
     public Set<NativeDataFile> getNativeDataFiles() {
         return nativeDataFiles;
     }
-    
+
     /**
      * Returns all <code>TermSources</code> used in the document set.
      * 
@@ -166,7 +166,7 @@ public final class MageTabDocumentSet implements Serializable {
     public Collection<TermSource> getTermSources() {
         return termSourceCache.values();
     }
-    
+
     /**
      * Returns all <code>OntologyTerms</code> used in the document set.
      * 
@@ -217,9 +217,12 @@ public final class MageTabDocumentSet implements Serializable {
 
     void parse() throws MageTabParsingException {
         parse(idfDocuments);
-//        parse(adfDocuments);
-        parse(sdrfDocuments);
-//        parse(dataMatrixFiles);
+        // if the idf does not have a pointer to the sdrf then skip processing the non-existent SDRF file.
+        if (idfDocuments.iterator().next().getSdrfDocuments().size() != 0) {
+            // parse(adfDocuments);
+            parse(sdrfDocuments);
+            // parse(dataMatrixFiles);
+        }
     }
 
     private void parse(Set<? extends AbstractMageTabDocument> documents) throws MageTabParsingException {
@@ -228,12 +231,10 @@ public final class MageTabDocumentSet implements Serializable {
         }
     }
 
-
     /**
-     * Returns an <code>OntologyTerm</code> matching the category and name given. Reuses an
-     * existing matching <code>OntologyTerm</code> in the document set if one exists,
-     * otherwise creates one.
-     *
+     * Returns an <code>OntologyTerm</code> matching the category and name given. Reuses an existing matching
+     * <code>OntologyTerm</code> in the document set if one exists, otherwise creates one.
+     * 
      * @param category category of the term
      * @param value value of the term
      * @return the new or matching term.
@@ -256,7 +257,7 @@ public final class MageTabDocumentSet implements Serializable {
 
     TermSource getTermSource(String name) {
         TermSource termSource = termSourceCache.get(name);
-        if (termSource ==  null) {
+        if (termSource == null) {
             termSource = new TermSource();
             termSource.setName(name);
             termSourceCache.put(name, termSource);
@@ -266,7 +267,7 @@ public final class MageTabDocumentSet implements Serializable {
 
     ArrayDesign getArrayDesign(String name) {
         ArrayDesign arrayDesign = arrayDesignCache.get(name);
-        if (arrayDesign ==  null) {
+        if (arrayDesign == null) {
             arrayDesign = new ArrayDesign();
             arrayDesign.setName(name);
             arrayDesignCache.put(name, arrayDesign);
@@ -276,7 +277,7 @@ public final class MageTabDocumentSet implements Serializable {
 
     /**
      * Adds a new Protocol to the document set.
-     *
+     * 
      * @param protocol the new protocol.
      */
     void addProtocol(Protocol protocol) {
@@ -288,14 +289,14 @@ public final class MageTabDocumentSet implements Serializable {
 
     /**
      * Returns the protocol with the id (name) provided.
-     *
+     * 
      * @param protocolId find protocol with this name.
      * @return the matching protocol or null if none exists for name.
      */
     Protocol getProtocol(String protocolId) {
         return protocolCache.get(protocolId);
     }
-    
+
     /**
      * Returns the <code>IdfDocument</code> that matches the filename provided, or null if none match.
      * 
@@ -305,7 +306,7 @@ public final class MageTabDocumentSet implements Serializable {
     public IdfDocument getIdfDocument(String filename) {
         return (IdfDocument) getDocument(idfDocuments, filename);
     }
-    
+
     /**
      * Returns the <code>SdrfDocument</code> that matches the filename provided, or null if none match.
      * 
@@ -315,7 +316,7 @@ public final class MageTabDocumentSet implements Serializable {
     public SdrfDocument getSdrfDocument(String filename) {
         return (SdrfDocument) getDocument(sdrfDocuments, filename);
     }
-    
+
     /**
      * Returns the <code>AdfDocument</code> that matches the filename provided, or null if none match.
      * 
@@ -325,7 +326,7 @@ public final class MageTabDocumentSet implements Serializable {
     public AdfDocument getAdfDocument(String filename) {
         return (AdfDocument) getDocument(adfDocuments, filename);
     }
-    
+
     /**
      * Returns the <code>DataMatrix</code> that matches the filename provided, or null if none match.
      * 
@@ -335,7 +336,7 @@ public final class MageTabDocumentSet implements Serializable {
     public DataMatrix getArrayDataMatrix(String filename) {
         return (DataMatrix) getDocument(dataMatrixes, filename);
     }
-    
+
     /**
      * Returns the <code>NativeDataFile</code> that matches the filename provided, or null if none match.
      * 
@@ -361,10 +362,9 @@ public final class MageTabDocumentSet implements Serializable {
     public ValidationResult getValidationResult() {
         return validationResult;
     }
-    
+
     ValidationMessage createValidationMessage(File file, ValidationMessage.Type type, String message) {
         return getValidationResult().addMessage(file, type, message);
     }
-
 
 }
