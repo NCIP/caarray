@@ -169,6 +169,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
             fail("Now that null arrayData bug is fixed, removed this try/catch block");
         } catch (SeleniumException e) {
             // This exception is an indication of the null arrayData bug in translation and import
+            e.printStackTrace();
             return;
         }
 
