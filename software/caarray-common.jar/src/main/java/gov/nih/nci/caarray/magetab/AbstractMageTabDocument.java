@@ -136,6 +136,8 @@ public abstract class AbstractMageTabDocument implements Serializable {
     }
     
     /**
+     * Returns a <code>ArrayDesign</code> that has the given name. Reuses an existing matching
+     * <code>ArrayDesign</code> if one exists, otherwise creates one.
      * 
      * @param value the name of the array design
      * @return ArrayDesign the new or matching array design
