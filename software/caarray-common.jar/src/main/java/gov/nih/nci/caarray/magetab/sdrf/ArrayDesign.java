@@ -88,14 +88,11 @@ import gov.nih.nci.caarray.magetab.TermSourceable;
 import java.io.File;
 
 /**
- * 
+ * An Array Design and Array Design Ref as defined by the SDRF file.
  * 
  */
 public class ArrayDesign extends AbstractSampleDataRelationshipNode implements TermSourceable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -5219974664880778410L;
     private TermSource termSource;
     private File file;
