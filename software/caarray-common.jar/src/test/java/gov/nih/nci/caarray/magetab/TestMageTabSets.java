@@ -106,9 +106,20 @@ public final class TestMageTabSets {
     public static final MageTabInputFileSet MAGE_TAB_SPECIFICATION_INPUT_SET = getSpecificationInputSet();
 
     /**
+     * Example set of documents with ERRORS based on the MAGE-TAB specification.
+     */
+    public static final MageTabInputFileSet MAGE_TAB_ERROR_SPECIFICATION_INPUT_SET = getErrorSpecificationInputSet();
+
+    /**
+     * Error Document set parsed from the MAGE-TAB specification example files.
+     */
+    public static final MageTabDocumentSet MAGE_TAB_ERROR_SPECIFICATION_SET = getSet(MAGE_TAB_ERROR_SPECIFICATION_INPUT_SET);
+
+    /**
      * Document set parsed from the MAGE-TAB specification example files.
      */
     public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_SET = getSet(MAGE_TAB_SPECIFICATION_INPUT_SET);
+
 
     /**
      * MAGE-TAB input set from TCGA Broad data.
@@ -148,6 +159,13 @@ public final class TestMageTabSets {
         MageTabInputFileSet fileSet = new MageTabInputFileSet();
         fileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
+        return fileSet;
+    }
+
+    private static MageTabInputFileSet getErrorSpecificationInputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.SPECIFICATION_ERROR_EXAMPLE_IDF);
+        fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_ERROR_EXAMPLE_SDRF);
         return fileSet;
     }
 
