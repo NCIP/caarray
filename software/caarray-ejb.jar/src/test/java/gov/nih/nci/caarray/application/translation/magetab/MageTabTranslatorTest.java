@@ -121,7 +121,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- *
+ * 
  */
 @SuppressWarnings("PMD")
 public class MageTabTranslatorTest {
@@ -144,7 +144,8 @@ public class MageTabTranslatorTest {
     }
 
     /**
-     * Test method for {@link gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator#translate(gov.nih.nci.caarray.magetab.MageTabDocumentSet)}.
+     * Test method for
+     * {@link gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator#translate(gov.nih.nci.caarray.magetab.MageTabDocumentSet)}.
      */
     @Test
     public void testTranslate() {
@@ -202,19 +203,14 @@ public class MageTabTranslatorTest {
     }
 
     private void checkTcgaBroadHybridizations(Experiment investigation) {
-        try {
-            assertEquals(1, investigation.getArrayDesigns().size());
-            fail("Remove the try/catch for AssertionError once ArrayDesign translation bug is fixed.");
-            ArrayDesign arrayDesign = investigation.getArrayDesigns().iterator().next();
-            for (LabeledExtract labeledExtract : investigation.getLabeledExtracts()) {
-                Hybridization hybridization = labeledExtract.getHybridizations().iterator().next();
-                assertEquals(arrayDesign, hybridization.getArray().getDesign());
-                RawArrayData celData = hybridization.getArrayData();
-                assertNotNull(celData);
-                assertNotNull(celData.getDataFile());
-            }
-        } catch (AssertionError e) {
-            e.printStackTrace();
+        assertEquals(1, investigation.getArrayDesigns().size());
+        ArrayDesign arrayDesign = investigation.getArrayDesigns().iterator().next();
+        for (LabeledExtract labeledExtract : investigation.getLabeledExtracts()) {
+            Hybridization hybridization = labeledExtract.getHybridizations().iterator().next();
+            assertEquals(arrayDesign, hybridization.getArray().getDesign());
+            RawArrayData celData = hybridization.getArrayData();
+            assertNotNull(celData);
+            assertNotNull(celData.getDataFile());
         }
     }
 
