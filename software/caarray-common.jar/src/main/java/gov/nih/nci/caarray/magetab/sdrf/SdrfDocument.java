@@ -168,26 +168,47 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     protected void parse() throws MageTabParsingException {
         DelimitedFileReader tabDelimitedReader = createTabDelimitedReader();
         handleHeaderLine(tabDelimitedReader.nextLine());
-        while (tabDelimitedReader.hasNextLine()) {
-            handleLine(tabDelimitedReader.nextLine());
-        }
-        minimumColumnCheck();
-    }
-
-    private void minimumColumnCheck() {
-        // file should have
-        // 1. Source
-        // 2. Hybridization
-        // 3. data file
-        boolean hasMinimumColumns = allSources.size() > 0
-                && allHybridizations.size() > 1
-                && (allArrayDataFiles.size() > 1 || allArrayDataMatrixFiles.size() > 1
-                        || allDerivedArrayDataFiles.size() > 1 || allDerivedArrayDataMatrixFiles.size() > 1);
-        if (!hasMinimumColumns) {
-            addWarningMessage("SDRF file does not have the "
+        if (minimumColumnCheck()) {
+            while (tabDelimitedReader.hasNextLine()) {
+                handleLine(tabDelimitedReader.nextLine());
+            }
+        } else {
+            addErrorMessage("SDRF file does not have the "
                     + "minimum number of columns (Source, Hybridization, and a data file)");
         }
 
+    }
+
+    private boolean minimumColumnCheck() {
+        boolean bioMaterial = false;
+        boolean hybridization = false;
+        boolean dataFile = false;
+        // file should have
+        // 1. BioMaterial (Souce, Sample, Extract, Labeled Extract)
+        // 2. Hybridization
+        // 3. data file
+        for (SdrfColumn aColumn : columns) {
+            switch (aColumn.getType()) {
+            case SOURCE_NAME:
+            case SAMPLE_NAME:
+            case EXTRACT_NAME:
+            case LABELED_EXTRACT_NAME:
+                bioMaterial = true;
+                break;
+            case HYBRIDIZATION_NAME:
+                hybridization = true;
+                break;
+            case ARRAY_DESIGN_FILE:
+            case DERIVED_ARRAY_DATA_FILE:
+            case ARRAY_DATA_FILE:
+            case ARRAY_DATA_MATRIX_FILE:
+            case DERIVED_ARRAY_DATA_MATRIX_FILE:
+                dataFile = true;
+            default:
+                break;
+            }
+        }
+        return bioMaterial && hybridization && dataFile;
     }
 
     private void handleHeaderLine(List<String> values) {
@@ -292,7 +313,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         ArrayDesign arrayDesign = arrayDesignHelper(column, value);
         arrayDesign.setFile(getDocumentSet().getAdfDocument(value).getFile());
         arrayDesign.setArrayDesignRef(false);
-       
+
     }
 
     private void handleArrayDesignRef(SdrfColumn column, String value) {
@@ -300,17 +321,18 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         arrayDesign.setArrayDesignRef(true);
         currentTermSourceable = arrayDesign;
     }
-    
+
     private ArrayDesign arrayDesignHelper(SdrfColumn column, String value) {
         ArrayDesign arrayDesign = getArrayDesign(value);
-//      ArrayDesign arrayDesign = new ArrayDesign();
+        // ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.setName(value);
         arrayDesign.link(currentNode);
         arrayDesign.addToSdrfList(this);
         currentNode = arrayDesign;
-        
+
         return arrayDesign;
     }
+
     private void handleFactorValue(SdrfColumn column, String value) {
         FactorValue factorValue = new FactorValue();
         factorValue.setFactor(idfDocument.getFactor(column.getHeading().getQualifier()));
