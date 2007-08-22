@@ -290,6 +290,10 @@ final class SdrfTranslator extends AbstractTranslator {
             Array array = new Array();
             array.setDesign(arrayDesign);
             nodeTranslations.put(sdrfArrayDesign, array);
+            getTranslationResult().getArrayDesigns().add(arrayDesign);
+            if (getTranslationResult().getInvestigations().size() > 0) {
+                getTranslationResult().getInvestigations().iterator().next().getArrayDesigns().add(arrayDesign);
+            }
         }
     }
 
