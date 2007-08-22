@@ -165,9 +165,7 @@
   <property file="${build.dir}/${build.env}.properties" />
     <property file="${build.dir}/local.properties" />
     <property file="${build.dir}/default.properties" />
-    <property name="jboss.server.home.dir" value="${jboss.home}/server/${jboss.server.name}" />
-    <property name="jboss.deploy.dir" value="${jboss.server.home.dir}/deploy" />
-    <property name="jboss.conf.dir" value="${jboss.server.home.dir}/conf" />
+    <property name="jboss.deploy.dir" value="${jboss.home}/server/${jboss.server.name}/deploy" />
 
     <filterset id="caarray.filterset">
         <filtersfile file="${build.dir}/default.properties" />
@@ -986,9 +984,6 @@
 
     <target name="deploy" depends="build:caarray.ear,prepare:create-local.properties">
         <copy file="${resource.dir}/deploy/caarray-mysql-ds.xml" todir="${jboss.deploy.dir}">
-            <filterset refid="caarray.filterset" />
-        </copy>
-        <copy file="${resource.dir}/deploy/login-config.xml" todir="${jboss.conf.dir}">
             <filterset refid="caarray.filterset" />
         </copy>
         <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
