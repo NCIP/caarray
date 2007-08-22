@@ -104,4 +104,9 @@ public class MageTabDataFiles {
     public static final File TCGA_BROAD_DATA_MATRIX =
         new File(MageTabDataFiles.class.getResource("/magetab/tcga/broad/broad.mit.edu_GBM.HT_HG-U133A.1.data").getFile());
 
+    public static final File SPECIFICATION_ERROR_EXAMPLE_IDF =
+        new File(MageTabDataFiles.class.getResource("/magetab/baddata/error-e-mexp-428_v1.0.idf").getFile());
+
+    public static final File SPECIFICATION_ERROR_EXAMPLE_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/baddata/error-e-mexp-428_v1.0.sdrf").getFile());
 }
