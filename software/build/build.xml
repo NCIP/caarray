@@ -1040,6 +1040,7 @@
                 <copy todir="@{toDir}">
                     <fileset dir="${caarray-war.webapp.dir}">
                         <include name="**/*.jsp"/>
+                        <include name="**/*.faces"/>
                     </fileset>
                 </copy>
             </sequential>

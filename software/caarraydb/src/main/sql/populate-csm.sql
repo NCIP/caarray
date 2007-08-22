@@ -14,8 +14,9 @@
 insert into csm_application(APPLICATION_NAME,APPLICATION_DESCRIPTION,DECLARATIVE_FLAG,ACTIVE_FLAG,UPDATE_DATE)
 values ("csmupt","CSM UPT Super Admin Application",0,0,sysdate());
 
+ -- f1rebird05 is password
 insert into csm_user (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("caarrayadmin","caArray","Administrator","zJPWCwDeSgG8j2uyHEABIQ==",sysdate());
+values ("caarrayadmin","caArray","Administrator","gJ5bRQxV/Qnei3BvqISY2Q==",sysdate());
 
 insert into csm_protection_element(PROTECTION_ELEMENT_NAME,PROTECTION_ELEMENT_DESCRIPTION,OBJECT_ID,APPLICATION_ID,UPDATE_DATE)
 values("csmupt","CSM UPT Super Admin Application Protection Element","csmupt",1,sysdate());
@@ -28,6 +29,11 @@ values('test', sysdate(), 1);
 
 insert into csm_user_group (user_id, group_id)
 values(1, 1);
+
+insert into csm_user (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
+values ("fb_admin","caArray","ldapuser","ldap_only_no_pass",sysdate());
+insert into csm_user_group (user_id, group_id)
+values(2, 1);
 
 #
 # The following entry is for your application.

@@ -15,6 +15,7 @@
                    mechanism.
              -->
             <login-module code="org.jboss.security.auth.spi.LdapExtLoginModule" flag="optional">
+                <module-option name="password-stacking">useFirstPass</module-option>
                 <module-option name="java.naming.provider.url">@ldap.provider.url@</module-option>
                 <module-option name="bindDN">@ldap.rootDN@</module-option>
                 <module-option name="bindCredential">@ldap.rootPW@</module-option>
