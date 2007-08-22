@@ -138,7 +138,8 @@ class MageTabImporter {
 
     @SuppressWarnings("PMD")
     private void handleInvalidMageTab(Project targetProject, CaArrayFileSet fileSet, InvalidDataException e) {
-        // TODO Bill -- handle updating file statuses to INVALID
+        // TBD - ask Eric about how this method is supposed to work
+        updateFileStatus(fileSet, FileStatus.VALIDATION_ERRORS);
     }
 
     private void updateFileStatus(CaArrayFileSet fileSet, FileStatus status) {
