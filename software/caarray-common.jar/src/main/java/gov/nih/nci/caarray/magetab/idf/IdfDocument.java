@@ -173,6 +173,9 @@ public final class IdfDocument extends AbstractMageTabDocument {
             if (StringUtils.isEmpty(aTermSource.getFile())) {
                 addWarningMessage("File is missing from term source : " + aTermSource.getName());
             }
+            if (StringUtils.isEmpty(aTermSource.getName())) {
+                addWarningMessage("No term source associated with the file name : " + aTermSource.getFile());
+            }
         }
     }
 
@@ -180,16 +183,18 @@ public final class IdfDocument extends AbstractMageTabDocument {
         if (!isEmpty(lineContents)) {
             EntryHeading heading = createHeading(lineContents.get(0));
             IdfRow idfRow = new IdfRow(heading, IdfRowType.get(heading.getTypeName()));
-            validateSingleValueColumns(idfRow, lineContents);
+            validateColumnValues(idfRow, lineContents);
             for (int columnIndex = 1; columnIndex < lineContents.size(); columnIndex++) {
                 int valueIndex = columnIndex - 1;
                 String value = lineContents.get(columnIndex);
-                handleValue(idfRow, value, valueIndex);
+                if (!StringUtils.isEmpty(value)) {
+                    handleValue(idfRow, value, valueIndex);
+                }
             }
         }
     }
 
-    private void validateSingleValueColumns(IdfRow idfRow, List<String> lineContents) {
+    private void validateColumnValues(IdfRow idfRow, List<String> lineContents) {
         switch (idfRow.getType()) {
         case INVESTIGATION_TITLE:
         case DATE_OF_EXPERIMENT:
@@ -199,7 +204,22 @@ public final class IdfDocument extends AbstractMageTabDocument {
                 addWarningMessage(lineContents.get(0) + " can only have one element but found "
                         + (lineContents.size() - 1));
             }
+        case EXPERIMENTAL_FACTOR_NAME:
+        case PERSON_EMAIL:
+        case PERSON_PHONE:
+        case PUBMED_ID:
+        case PUBLICATION_TITLE:
+        case PROTOCOL_NAME:
+        case EXPERIMENTAL_DESIGN:
+            if (lineContents.size() == 1) {
+                addWarningMessage(lineContents.get(0) + " value is missing ");
+            }
             break;
+        case SDRF_FILE:
+        case SDRF_FILES:
+            if (lineContents.size() == 1) {
+                addErrorMessage(lineContents.get(0) + " value is missing ");
+            }
         default:
             break;
         }
@@ -365,23 +385,15 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handleSdrfFile(String value) {
-        if (StringUtils.isEmpty(value)) {
-            addWarningMessage("SDRF file is missing");
-        } else {
-            SdrfDocument sdrfDocument = getDocumentSet().getSdrfDocument(value);
-            getSdrfDocuments().add(sdrfDocument);
-            sdrfDocument.setIdfDocument(this);
-        }
+        SdrfDocument sdrfDocument = getDocumentSet().getSdrfDocument(value);
+        getSdrfDocuments().add(sdrfDocument);
+        sdrfDocument.setIdfDocument(this);
     }
 
     private void handleProtocolName(String protocolId, int valueIndex) {
-        if (StringUtils.isEmpty(protocolId)) {
-            addWarningMessage("Protocol Name is missing");
-        } else {
-            Protocol protocol = investigation.getOrCreateProtcol(valueIndex);
-            protocol.setName(protocolId);
-            addProtocol(protocol);
-        }
+        Protocol protocol = investigation.getOrCreateProtcol(valueIndex);
+        protocol.setName(protocolId);
+        addProtocol(protocol);
     }
 
     private void handleProtocolDescription(String value, int valueIndex) {
@@ -429,19 +441,11 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handleTitle(String title) {
-        if (StringUtils.isEmpty(title)) {
-            addWarningMessage("Investigation Title is missing");
-        } else {
-            investigation.setTitle(title);
-        }
+        investigation.setTitle(title);
     }
 
     private void handleExperimentDescription(String description) {
-        if (StringUtils.isEmpty(description)) {
-            addWarningMessage("Investigation Description is missing");
-        } else {
-            investigation.setDescription(description);
-        }
+        investigation.setDescription(description);
     }
 
     private void handleExperimentDate(String dateString) {
@@ -460,31 +464,19 @@ public final class IdfDocument extends AbstractMageTabDocument {
             investigation.setPublicReleaseDate(format.parse(dateString));
         } catch (ParseException pe) {
             LOG.error("Error parsing PubRelease Date", pe);
-            addWarningMessage("Public Release Date : Invalid Date Format  - " + dateString);
+            addWarningMessage("Public Release Date - Invalid Date or Date Format(YYYY-MM-DD) : " + dateString);
         }
     }
 
     private void handleExperimentalDesign(String value) {
-        if (StringUtils.isEmpty(value)) {
-            addWarningMessage("Experimental Design is missing");
-        } else {
-            investigation.getDesigns()
-                    .add(getMgedOntologyTerm(MageTabOntologyCategory.EXPERIMENTAL_DESIGN_TYPE, value));
-        }
+        investigation.getDesigns().add(getMgedOntologyTerm(MageTabOntologyCategory.EXPERIMENTAL_DESIGN_TYPE, value));
     }
 
     private void handleExperimentalDesignTermSourceRef(String value, int valueIndex) {
-        if (StringUtils.isEmpty(value)) {
-            addWarningMessage("Experimental Design Term Source Ref is missing");
-        } else {
-            investigation.getDesigns().get(valueIndex).setTermSource(getTermSource(value));
-        }
+        investigation.getDesigns().get(valueIndex).setTermSource(getTermSource(value));
     }
 
     private void handleExperimentalFactorName(String value, int valueIndex) {
-        if (StringUtils.isEmpty(value)) {
-            addWarningMessage("Experimental Factor is missing");
-        }
         investigation.getOrCreateFactor(valueIndex).setName(value);
     }
 
@@ -511,19 +503,11 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handlePersonEmail(String value, int valueIndex) {
-        if (StringUtils.isEmpty(value)) {
-            addWarningMessage("Contact email is missing");
-        } else {
-            investigation.getOrCreatePerson(valueIndex).setEmail(value);
-        }
+        investigation.getOrCreatePerson(valueIndex).setEmail(value);
     }
 
     private void handlePersonPhone(String value, int valueIndex) {
-        if (StringUtils.isEmpty(value)) {
-            addWarningMessage("Contact phone number is missing");
-        } else {
-            investigation.getOrCreatePerson(valueIndex).setPhone(value);
-        }
+        investigation.getOrCreatePerson(valueIndex).setPhone(value);
     }
 
     private void handlePersonFax(String value, int valueIndex) {
@@ -559,11 +543,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handlePubMedId(String value, int valueIndex) {
-        if (StringUtils.isEmpty(value)) {
-            addWarningMessage("PubMed ID is missing");
-        } else {
-            investigation.getOrCreatePublication(valueIndex).setPubMedId(value);
-        }
+        investigation.getOrCreatePublication(valueIndex).setPubMedId(value);
     }
 
     private void handlePublicationDoi(String value, int valueIndex) {
@@ -575,11 +555,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handlePublicationTitle(String value, int valueIndex) {
-        if (StringUtils.isEmpty(value)) {
-            addWarningMessage("Publication Title is missing");
-        } else {
-            investigation.getOrCreatePublication(valueIndex).setTitle(value);
-        }
+        investigation.getOrCreatePublication(valueIndex).setTitle(value);
     }
 
     private void handlePublicationStatus(String value, int valueIndex) {
@@ -693,7 +669,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
      */
     public ExperimentalFactor getFactor(String factorName) {
         for (ExperimentalFactor aFactor : investigation.getFactors()) {
-            if (aFactor.getName().equalsIgnoreCase(factorName)) {
+            if (factorName.equalsIgnoreCase(aFactor.getName())) {
                 return aFactor;
             }
         }
