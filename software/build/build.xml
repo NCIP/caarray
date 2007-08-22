@@ -403,6 +403,7 @@
                 <pathelement location="${hibernate-annotations.jar}" />
                 <pathelement location="${hibernate-commons-annotations.jar}" />
                 <pathelement location="${javaee.jar}" />
+                <pathelement location="${csmapi.jar}" />
             </classpath>
         </javac>
     </target>
