@@ -105,12 +105,13 @@ public final class ValidationMessage implements Serializable, Comparable<Validat
         this.message = message;
     }
 
-    /**
+    /** 
+     * Sorts the message by file name.
      * {@inheritDoc}
      */
     public int compareTo(ValidationMessage o) {
-        // TODO Implement to sort on type, file, and then line
-        return 0;
+        String fileName = o.getFile().getName();  
+        return fileName.compareTo(this.getFile().getName());
     }
 
     /**
