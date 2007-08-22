@@ -110,14 +110,22 @@ public class MageTabParserTest {
      * @throws MageTabParsingException .
      */
     @Test
-    public void testValidate() throws MageTabParsingException {
-        MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET;
-        ValidationResult result = parser.validate(fileSet);
-        assertTrue(result.isValid());
+    public void testValidate() {
+        MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_ERROR_SPECIFICATION_INPUT_SET;
+        ValidationResult result;
+        try {
+            result = parser.validate(fileSet);
+            assertTrue(result.isValid());
+            assertEquals(73, result.getMessages().size());
+        } catch (MageTabParsingException e) {
+            e.printStackTrace();
+        } catch (InvalidDataException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
-     * @throws InvalidDataException 
+     * @throws InvalidDataException
      * @throws MageTabParsingException .
      */
     @Test
@@ -126,28 +134,30 @@ public class MageTabParserTest {
         testTcgaBroadDocuments();
     }
 
-    private void testTcgaBroadDocuments() throws MageTabParsingException, InvalidDataException {
+    private void testTcgaBroadDocuments() throws MageTabParsingException {
         MageTabInputFileSet fileSet = TestMageTabSets.TCGA_BROAD_INPUT_SET;
-        MageTabDocumentSet documentSet = parser.parse(fileSet);
-        assertNotNull(documentSet);
-        assertEquals(1, documentSet.getIdfDocuments().size());
-        assertEquals(1, documentSet.getSdrfDocuments().size());
-        assertEquals(1, documentSet.getDataMatrixes().size());
-        assertEquals(26, documentSet.getNativeDataFiles().size());
-        checkArrayDesigns(documentSet);
+        MageTabDocumentSet documentSet = null;
+        try {
+            documentSet = parser.parse(fileSet);
+            assertNotNull(documentSet);
+            assertEquals(1, documentSet.getIdfDocuments().size());
+            assertEquals(1, documentSet.getSdrfDocuments().size());
+            assertEquals(1, documentSet.getDataMatrixes().size());
+            assertEquals(26, documentSet.getNativeDataFiles().size());
+            checkArrayDesigns(documentSet);
+            assertTrue(documentSet.getValidationResult().isValid());
+        } catch (InvalidDataException e) {
+            e.printStackTrace();
+        }
     }
 
     private void checkArrayDesigns(MageTabDocumentSet documentSet) {
-        try {
-            SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
-            assertEquals(1, sdrfDocument.getAllArrayDesigns().size());
-            ArrayDesign arrayDesign = sdrfDocument.getAllArrayDesigns().get(0);
-            for (Hybridization hybridization : sdrfDocument.getAllHybridizations()) {
-                assertEquals(1, hybridization.getSuccessorArrayDesigns().size());
-                assertEquals(arrayDesign, hybridization.getSuccessorArrayDesigns().iterator().next());
-            }
-        } catch (AssertionError e) {
-            e.printStackTrace();
+        SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
+        assertEquals(1, sdrfDocument.getAllArrayDesigns().size());
+        ArrayDesign arrayDesign = sdrfDocument.getAllArrayDesigns().get(0);
+        for (Hybridization hybridization : sdrfDocument.getAllHybridizations()) {
+            assertEquals(1, hybridization.getSuccessorArrayDesigns().size());
+            assertEquals(arrayDesign, hybridization.getSuccessorArrayDesigns().iterator().next());
         }
     }
 
@@ -162,8 +172,8 @@ public class MageTabParserTest {
         assertEquals(3, investigation.getProtocols().size());
         assertEquals("submitter", investigation.getPersons().get(0).getRoles().get(0).getValue());
         assertEquals(2, investigation.getPersons().get(0).getRoles().size());
-        assertEquals("http://mged.sourceforge.net/ontologies/MGEDontology.php",
-                investigation.getProtocols().get(0).getType().getTermSource().getFile());
+        assertEquals("http://mged.sourceforge.net/ontologies/MGEDontology.php", investigation.getProtocols().get(0)
+                .getType().getTermSource().getFile());
         assertEquals("University of Heidelberg H sapiens TK6", investigation.getTitle());
         SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
         assertNotNull(sdrfDocument);
