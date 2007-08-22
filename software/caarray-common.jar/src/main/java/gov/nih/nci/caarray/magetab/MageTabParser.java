@@ -103,8 +103,9 @@ public interface MageTabParser {
      * @param fileSet the documents to validate
      * @return the validation result
      * @throws MageTabParsingException if I/O failed reading the MAGE-TAB file.
+     * @throws InvalidDataException validation fails
      */
-    ValidationResult validate(MageTabInputFileSet fileSet) throws MageTabParsingException;
+    ValidationResult validate(MageTabInputFileSet fileSet) throws MageTabParsingException, InvalidDataException;
 
     /**
      * Parses the content of the documents contained in the MAGE-TAB file set to produce

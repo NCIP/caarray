@@ -98,15 +98,19 @@ class MageTabParserImplementation implements MageTabParser {
 
     /**
      * {@inheritDoc}
+     * @throws InvalidDataException 
+     * @throws MageTabParsingException 
      */
-    public ValidationResult validate(MageTabInputFileSet fileSet) {
+    public ValidationResult validate(MageTabInputFileSet fileSet) throws MageTabParsingException, InvalidDataException {
+        MageTabDocumentSet parsedDocuments = null;
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, fileSet);
         }
+           parsedDocuments = parse(fileSet);
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemExit(LOG);
         }
-        return new ValidationResult();
+        return parsedDocuments.getValidationResult();
     }
 
     /**
