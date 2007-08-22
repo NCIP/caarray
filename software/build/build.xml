@@ -825,7 +825,14 @@
 
     <target name="check:checkstyle" depends="build:caarray-common.jar,build:caarray-ejb.jar,compile:caarray.war">
         <mkdir dir="${site.dir}/checkstyle" />
-        <checkstyle config="${checkstyle.config}" failureProperty="checkstyle.failure" failOnViolation="false">
+        <checkstyle config="${checkstyle.config}"
+                    failureProperty="checkstyle.failure"
+                    failOnViolation="false"
+                    maxerrors="1">
+            <!--
+              Allowing 1 error due to the following checkstyle bug:
+                http://sourceforge.net/tracker/index.php?func=detail&aid=875539&group_id=80344&atid=559494
+            -->
             <classpath>
                 <pathelement location="${caarray-common.jar}" />
                 <pathelement location="${caarray-ejb.jar}" />
