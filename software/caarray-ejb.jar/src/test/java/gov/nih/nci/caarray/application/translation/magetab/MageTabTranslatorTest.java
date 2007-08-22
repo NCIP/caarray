@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.translation.magetab;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
@@ -203,6 +204,7 @@ public class MageTabTranslatorTest {
     private void checkTcgaBroadHybridizations(Experiment investigation) {
         try {
             assertEquals(1, investigation.getArrayDesigns().size());
+            fail("Remove the try/catch for AssertionError once ArrayDesign translation bug is fixed.");
             ArrayDesign arrayDesign = investigation.getArrayDesigns().iterator().next();
             for (LabeledExtract labeledExtract : investigation.getLabeledExtracts()) {
                 Hybridization hybridization = labeledExtract.getHybridizations().iterator().next();
