@@ -112,6 +112,10 @@ public class CaArrayLoginModule extends RDBMSLoginModule {
         this.state = sharedState;
     }
 
+    /**
+     * Delegates to the superclass and, if successful, adds options for JBoss password stacking.
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     @Override
     protected boolean validate(Map options, String user, char[] password, Subject subject)
