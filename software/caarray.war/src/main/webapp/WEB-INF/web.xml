@@ -59,11 +59,6 @@
         </auth-constraint>
     </security-constraint>
 
-    <security-role>
-        <description>Testing security role - development purposes only</description>
-        <role-name>test</role-name>
-    </security-role>
-
     <login-config>
         <auth-method>FORM</auth-method>
         <form-login-config>
@@ -72,4 +67,9 @@
         </form-login-config>
     </login-config>
 
+    <security-role>
+        <description>Testing security role - development purposes only</description>
+        <role-name>test</role-name>
+    </security-role>
+    
 </web-app>
