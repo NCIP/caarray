@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-app
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-app Software License (the License) is between NCI and You. You (or
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-app Software to (i) use, install, access, operate,
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-app Software; (ii) distribute and
- * have distributed to and by third parties the caarray-app Software and any
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -82,83 +82,63 @@
  */
 package gov.nih.nci.caarray.util;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.security.AuthorizationManager;
+import gov.nih.nci.security.SecurityServiceProvider;
+import gov.nih.nci.security.exceptions.CSConfigurationException;
+import gov.nih.nci.security.exceptions.CSException;
+
+import java.io.Serializable;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.cfg.AnnotationConfiguration;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.SessionFactory;
-import org.hibernate.Session;
-import org.hibernate.HibernateException;
-import org.hibernate.Transaction;
+import org.hibernate.EmptyInterceptor;
+import org.hibernate.type.Type;
 
 /**
- * Utility class to create and retrieve Hibernate sessions.
- *
- * @author Rashmi Srinivasa
+ * Hibernate interceptor that adds CSM protection elements and other security
+ * features as objects are saved.
  */
-public final class HibernateUtil {
+public class SecurityInterceptor extends EmptyInterceptor {
 
-    private static final Log LOG = LogFactory.getLog(HibernateUtil.class);
+    //
+    // DEVELOPER NOTE: this class must be thread safe, because we enable it at the
+    //                 SessionFactory level in hibernate.
+    //
 
-    private static final Configuration HIBERNATE_CONFIG;
-    private static final SessionFactory SESSION_FACTORY;
+    private static final Log LOG = LogFactory.getLog(SecurityInterceptor.class);
+    private static final long serialVersionUID = -2071964672876972370L;
+    private static final AuthorizationManager AUTH_MGR;
 
     static {
+        AuthorizationManager am = null;
         try {
-            HIBERNATE_CONFIG = new AnnotationConfiguration().setNamingStrategy(new NamingStrategy());
-            SESSION_FACTORY = HIBERNATE_CONFIG.configure()
-              .addClass(gov.nih.nci.security.authorization.domainobjects.Application.class)
-              .addClass(gov.nih.nci.security.authorization.domainobjects.Group.class)
-              .addClass(gov.nih.nci.security.authorization.domainobjects.Privilege.class)
-              .addClass(gov.nih.nci.security.authorization.domainobjects.ProtectionElement.class)
-              .addClass(gov.nih.nci.security.authorization.domainobjects.ProtectionGroup.class)
-              .addClass(gov.nih.nci.security.authorization.domainobjects.Role.class)
-              .addClass(gov.nih.nci.security.authorization.domainobjects.User.class)
-              .addClass(gov.nih.nci.security.authorization.domainobjects.UserGroupRoleProtectionGroup.class)
-              .addClass(gov.nih.nci.security.authorization.domainobjects.UserProtectionElement.class)
-              .setInterceptor(new SecurityInterceptor())
-              .buildSessionFactory();
-        } catch (HibernateException e) {
-            LOG.error(e.getMessage(), e);
-            throw new ExceptionInInitializerError(e);
+            am = SecurityServiceProvider.getAuthorizationManager("caarray");
+        } catch (CSConfigurationException e) {
+            LOG.error("Unable to initialize CSM: " + e.getMessage(), e);
+        } catch (CSException e) {
+            LOG.error("Unable to initialize CSM: " + e.getMessage(), e);
         }
+
+        AUTH_MGR = am;
+        LOG.debug("Set up new authManager: " + AUTH_MGR);
     }
 
     /**
-     * A private constructor because this class should not be instantiated.
-     * All callable methods are static methods.
-     */
-    private HibernateUtil() {
-    }
-
-    /**
-     * Returns the Hibernate configuration.
+     * Adds security records to the db for saved entities.
      *
-     * @return a Hibernate configuration.
+     * {@inheritDoc}
      */
-    public static Configuration getConfiguration() {
-        return HIBERNATE_CONFIG;
-    }
+    @Override
+    public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 
-    /**
-     * Returns the current Hibernate session.
-     * Note that this returns a special session that can be used only in the context of a transaction.
-     * (Assuming that the hibernate properties are set to use a JTA or JDBC transaction factory.)
-     *
-     * @return a Hibernate session.
-     */
-    public static Session getCurrentSession() {
-        return SESSION_FACTORY.getCurrentSession();
-    }
 
-    /**
-     * Checks if the transaction is active and then rolls it back.
-     *
-     * @param tx the Transaction to roll back.
-     */
-    public static void rollbackTransaction(Transaction tx) {
-        if ((tx != null) && (tx.isActive())) {
-            tx.rollback();
+        if (entity instanceof AbstractCaArrayObject) {
+            // TODO create the CSM records here
+            LOG.debug("Creating access record for obj of type: " + entity.getClass().getName() + " for user "
+                      + UsernameHolder.getUser());
         }
+
+        return false;
     }
 }

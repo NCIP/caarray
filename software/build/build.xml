@@ -287,10 +287,9 @@
     <!-- Copy hibernate files to classes directory and configure datasource and transaction management -->
     <target name="configure-datasource-for-deploy">
         <copy todir="${caarray-common.classes.dir}" overwrite="true">
-            <fileset dir="${caarray-common.resources.dir}" includes="hibernate*" />
-            <fileset dir="${caarray-common.resources.dir}" includes="**/*.hbm.xml" />
+            <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*" />
         </copy>
-        <replace file="${caarray-common.classes.dir}/hibernate.cfg.xml">
+        <replace dir="${caarray-common.classes.dir}" includes="*.cfg.xml">
             <replacefilter token="@DATASOURCE_CONFIG_START@" value="${comment.end}" />
             <replacefilter token="@DATASOURCE_CONFIG_END@" value="${comment.start}" />
         </replace>
@@ -303,10 +302,9 @@
 
     <target name="configure-datasource-for-test">
         <copy todir="${caarray-common.test.classes.dir}" overwrite="true">
-            <fileset dir="${caarray-common.resources.dir}" includes="hibernate*" />
-            <fileset dir="${caarray-common.resources.dir}" includes="**/*.hbm.xml" />
+            <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*" />
         </copy>
-        <replace file="${caarray-common.test.classes.dir}/hibernate.cfg.xml">
+        <replace dir="${caarray-common.test.classes.dir}" includes="*.cfg.xml">
             <replacefilter token="@HIBERNATE_CONFIG_START@" value="${comment.end}" />
             <replacefilter token="@HIBERNATE_CONFIG_END@" value="${comment.start}" />
             <replacefilter token="@SERVERNAME@" value="${database.server}" />
@@ -829,9 +827,9 @@
         <checkstyle config="${checkstyle.config}"
                     failureProperty="checkstyle.failure"
                     failOnViolation="false"
-                    maxerrors="1">
+                    maxerrors="2">
             <!--
-              Allowing 1 error due to the following checkstyle bug:
+              Allowing 2 errors due to the following checkstyle bug:
                 http://sourceforge.net/tracker/index.php?func=detail&aid=875539&group_id=80344&atid=559494
             -->
             <classpath>
