@@ -82,13 +82,6 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
-import affymetrix.fusion.cdf.FusionCDFData;
-import affymetrix.fusion.cdf.FusionCDFHeader;
-import affymetrix.fusion.cdf.FusionCDFProbeGroupInformation;
-import affymetrix.fusion.cdf.FusionCDFProbeInformation;
-import affymetrix.fusion.cdf.FusionCDFProbeSetInformation;
-import affymetrix.fusion.cdf.FusionCDFQCProbeInformation;
-import affymetrix.fusion.cdf.FusionCDFQCProbeSetInformation;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -98,7 +91,18 @@ import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.array.PhysicalReporter;
 import gov.nih.nci.caarray.domain.array.ReporterGroup;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
+
+import java.io.File;
+
+import affymetrix.fusion.cdf.FusionCDFData;
+import affymetrix.fusion.cdf.FusionCDFHeader;
+import affymetrix.fusion.cdf.FusionCDFProbeGroupInformation;
+import affymetrix.fusion.cdf.FusionCDFProbeInformation;
+import affymetrix.fusion.cdf.FusionCDFProbeSetInformation;
+import affymetrix.fusion.cdf.FusionCDFQCProbeInformation;
+import affymetrix.fusion.cdf.FusionCDFQCProbeSetInformation;
 
 /**
  * Contains logic to read Affymetrix CDF files.
@@ -122,7 +126,16 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
 
     @Override
     ValidationResult validate() {
-        return new ValidationResult();
+        ValidationResult vr = new ValidationResult();
+        if (!loadFusionCDFData()) {
+            if (fusionCDFData == null) {
+                vr.addMessage(new File("empty"), ValidationMessage.Type.ERROR, "CDF file is missing");
+            } else {
+                vr.addMessage(new File(fusionCDFData.getFileName()), ValidationMessage.Type.ERROR,
+                        "Unable to read the CDF file : " + fusionCDFData.getFileName());
+            }
+        }
+        return vr;
     }
 
     @Override
@@ -134,8 +147,8 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     ArrayDesignDetails getDesignDetails() {
         ArrayDesignDetails designDetails = new ArrayDesignDetails();
         reporterGroup = new ReporterGroup(designDetails);
-        reporterGroup.setName(LSID_AUTHORITY + ":" + reporterGroup.getClass().getSimpleName()
-                              + ":All." + this.getFusionCDFData().getChipType());
+        reporterGroup.setName(LSID_AUTHORITY + ":" + reporterGroup.getClass().getSimpleName() + ":All."
+                + this.getFusionCDFData().getChipType());
         initializeFeaturesCreated(getFusionCDFHeader());
         handleProbeSets(designDetails);
         handleQCProbeSets(designDetails);
@@ -176,7 +189,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void handleProbeGroup(FusionCDFProbeGroupInformation probeGroupInformation,
+    private void handleProbeGroup(FusionCDFProbeGroupInformation probeGroupInformation, 
             ArrayDesignDetails designDetails) {
         int numCells = probeGroupInformation.getNumCells();
         FusionCDFProbeInformation probeInformation = new FusionCDFProbeInformation();
@@ -209,7 +222,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void handleQCProbeSet(FusionCDFQCProbeSetInformation qcProbeSetInformation,
+    private void handleQCProbeSet(FusionCDFQCProbeSetInformation qcProbeSetInformation, 
             ArrayDesignDetails designDetails) {
         int numCells = qcProbeSetInformation.getNumCells();
         FusionCDFQCProbeInformation qcProbeInformation = new FusionCDFQCProbeInformation();
@@ -245,10 +258,10 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
         return getFusionCDFData().getHeader();
     }
 
-    private void loadFusionCDFData() {
+    private boolean loadFusionCDFData() {
         fusionCDFData = new FusionCDFData();
         fusionCDFData.setFileName(getFile(getDesignFile()).getAbsolutePath());
-        fusionCDFData.read();
+        return fusionCDFData.read();
     }
 
 }
