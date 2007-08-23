@@ -1084,16 +1084,6 @@
     </svn>
   </target>
 
-  <!-- Integrate MySQL -->
-  <target name="database:run-db-integration">
-    <echo message="Starting MySQL 5.0.45 database integration on ${database.url}..." />
-    <sql driver="${database.driver}" url="${database.url}" userid="${database.system.user}"
-    password="${database.system.password}" classpathref="project.classpath" delimiter=";">
-    <fileset file="${caarraydb.sql.dir}/create_database_and_user.sql"/>
-    <fileset file="${caarraydb.sql.dir}/create_schema.sql"/>
-    </sql>
-  </target>
-
   <!-- Integrate JBoss -->
   <target name="remote-jboss:stop">
     <echo message="Stopping jboss server at ${ssh.server.hostname}..." />
