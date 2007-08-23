@@ -418,12 +418,12 @@
 
     <target name="build:caarray-client.jar" depends="compile:caarray-client.jar,compile:caarray-common.jar">
         <mkdir dir="${caarray-client.target.dir}"/>
-    <unjar src="${hibernate-client.jar}" dest="${caarray-client.classes.dir}" overwrite="false" />
-    <unjar src="${jboss-ejb3-client.jar}" dest="${caarray-client.classes.dir}" overwrite="false" />
-        <unjar src="${jbossall-client.jar}" dest="${caarray-client.classes.dir}" overwrite="false" />
-      <unjar src="${jboss-aspect-jdk50-client.jar}" dest="${caarray-client.classes.dir}" overwrite="false" />
-      <unjar src="${jboss-aop-jdk50-client.jar}" dest="${caarray-client.classes.dir}" overwrite="false" />
         <jar destfile="${caarray-client.jar}">
+			<zipfileset src="${hibernate-client.jar}"/>
+			<zipfileset src="${jboss-ejb3-client.jar}"/>
+			<zipfileset src="${jbossall-client.jar}"/>
+			<zipfileset src="${jboss-aspect-jdk50-client.jar}"/>
+			<zipfileset src="${jboss-aop-jdk50-client.jar}"/>
             <fileset dir="${caarray-client.classes.dir}" />
             <fileset dir="${caarray-common.classes.dir}" >
                 <include name="**/domain/**"/>
