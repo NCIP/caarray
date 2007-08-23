@@ -688,14 +688,15 @@
         </cobertura-instrument>
     </target>
 
-    <target name="test:compile:caarray-war.test.classes" depends="compile:caarray.war,compile:caarray-common.jar">
+    <target name="test:compile:caarray-war.test.classes" depends="compile:caarray.war,compile:caarray-common.jar,compile:caarray-ejb.jar,test:compile:caarray-ejb.test.classes,test:compile:caarray-common.test.classes">
         <mkdir dir="${caarray-war.test.classes.dir}" />
         <javac srcdir="${caarray-war.test.src.dir}" destdir="${caarray-war.test.classes.dir}" debug="true">
             <classpath>
                 <pathelement location="${caarray-war.classes.dir}" />
                 <pathelement location="${caarray-common.classes.dir}" />
                 <pathelement location="${caarray-ejb.classes.dir}" />
-                <pathelement location="${caarray-ejb.test.classes.dir}" />
+			    <pathelement location="${caarray-ejb.test.classes.dir}" />
+			    <pathelement location="${caarray-common.test.classes.dir}" />
                 <pathelement location="${caarray-common.test.files.dir}" />
                 <pathelement location="${myfaces-api.jar}" />
                 <pathelement location="${junit.jar}" />
@@ -712,7 +713,7 @@
       test.src.dir="${caarray-war.test.src.dir}"
         xml.output.dir="${caarray-war.target.dir}/junit"
       instrumented.classes="${caarray-war.instrumented.classes.dir}"
-        classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-logging.jar};${caarray-ejb.test.classes.dir};${myfaces-api.jar};${junit.jar}" />
+        classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-logging.jar};${caarray-common.test.classes.dir};${caarray-ejb.test.classes.dir};${myfaces-api.jar};${junit.jar}" />
     </target>
 
     <target name="test:junit-report">
