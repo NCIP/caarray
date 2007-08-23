@@ -153,6 +153,7 @@ public final class FileValidationResult implements Serializable, Comparable<File
      */
     public List<ValidationMessage> getMessages() {
         List<ValidationMessage> messageList = new ArrayList<ValidationMessage>();
+        messageList.addAll(getMessageSet());
         Collections.sort(messageList);
         return Collections.unmodifiableList(messageList);
     }
