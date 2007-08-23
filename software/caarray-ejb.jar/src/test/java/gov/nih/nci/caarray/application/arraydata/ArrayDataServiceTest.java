@@ -111,6 +111,7 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.validation.InvalidDataException;
+import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.io.File;
 import java.util.Arrays;
@@ -154,6 +155,10 @@ public class ArrayDataServiceTest {
     @Test
     public void testAffymetrixCelData() throws InvalidDataException {
         RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
+
+        ValidationResult result = arrayDataService.validate(celData);
+        assertTrue(result.isValid());
+
         arrayDataService.importData(celData);
         DataSet dataSet = arrayDataService.getData(celData);
         checkCelValues(celData, dataSet, AffymetrixArrayDataFiles.TEST3_CEL);

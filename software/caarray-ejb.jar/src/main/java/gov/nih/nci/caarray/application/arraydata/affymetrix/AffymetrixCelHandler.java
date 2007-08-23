@@ -95,13 +95,17 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.validation.InvalidDataException;
+import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
 
 import affymetrix.fusion.cel.FusionCELData;
 import affymetrix.fusion.cel.FusionCELFileEntryType;
@@ -109,7 +113,8 @@ import affymetrix.fusion.cel.FusionCELFileEntryType;
 /**
  * Handles validation and reading of Affymetrix CEL files.
  */
-@SuppressWarnings("PMD.CyclomaticComplexity") // Allowable for switch-like case
+@SuppressWarnings("PMD.CyclomaticComplexity")
+// Allowable for switch-like case
 public final class AffymetrixCelHandler extends AbstractRawArrayDataHandler {
 
     private final FusionCELData celData = new FusionCELData();
@@ -117,7 +122,7 @@ public final class AffymetrixCelHandler extends AbstractRawArrayDataHandler {
 
     /**
      * Instantiates a new handler.
-     *
+     * 
      * @param rawArrayData the data object that represents the CEL data
      * @param fileAccessService used by handler to get file contents
      * @param arrayDesignService used by handler to get array design details
@@ -203,8 +208,7 @@ public final class AffymetrixCelHandler extends AbstractRawArrayDataHandler {
         }
     }
 
-    private void handleEntry(DataSet dataSet, FusionCELFileEntryType entry,
-            int cellIndex) {
+    private void handleEntry(DataSet dataSet, FusionCELFileEntryType entry, int cellIndex) {
         int x = celData.indexToX(cellIndex);
         int y = celData.indexToY(cellIndex);
         DataRow row = dataSet.addRow(getFeature(x, y));
@@ -213,9 +217,9 @@ public final class AffymetrixCelHandler extends AbstractRawArrayDataHandler {
         }
     }
 
-    @SuppressWarnings("PMD.CyclomaticComplexity") // Allowable for switch-like case
-    private void setValue(DataRow row, QuantitationType quantitationType, int x, int y,
-            FusionCELFileEntryType entry) {
+    @SuppressWarnings("PMD.CyclomaticComplexity")
+    // Allowable for switch-like case
+    private void setValue(DataRow row, QuantitationType quantitationType, int x, int y, FusionCELFileEntryType entry) {
         final Hybridization hybridization = getRawArrayData().getHybridization();
         if (AffymetrixCelQuantitationType.CEL_X.isEquivalent(quantitationType)) {
             row.setValue(hybridization, quantitationType, x);
@@ -240,7 +244,17 @@ public final class AffymetrixCelHandler extends AbstractRawArrayDataHandler {
      * {@inheritDoc}
      */
     public ValidationResult validate() {
-        return new ValidationResult();
+        String celDataFileName;
+        ValidationResult vr = new ValidationResult();
+        
+        celData.setFileName(getArrayDataFile().getAbsolutePath());
+        celDataFileName = StringUtils.defaultIfEmpty(celData.getFileName(), "<MISSING FILE NAME>");
+
+        if (!celData.read()) {
+            vr.addMessage(new File(celDataFileName), ValidationMessage.Type.ERROR, "Unable to read the cell file : "
+                    + celDataFileName);
+        }
+        return vr;
     }
 
     /**
