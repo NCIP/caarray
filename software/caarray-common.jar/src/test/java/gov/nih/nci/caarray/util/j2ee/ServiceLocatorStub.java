@@ -80,105 +80,26 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.validation;
+package gov.nih.nci.caarray.util.j2ee;
 
-import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * A single entry in a <code>ValidationResult</code> that describes an issue and the location (if known).
+ * Simple stub implementation of locator -- allows clients to seed a lookup table with other stubs by JNDI name.
  */
-public final class ValidationMessage implements Serializable, Comparable<ValidationMessage> {
+public class ServiceLocatorStub implements ServiceLocator {
 
-    private static final long serialVersionUID = 8575821452264941994L;
+    private static final long serialVersionUID = 4520519885611921043L;
     
-    private final Type type;
-    private final String message;
-    private int line;
-    private int column;
+    private final Map<String, Object> lookupMap = new HashMap<String, Object>();
+  
+    public Object lookup(String jndiName) {
+        return lookupMap.get(jndiName);
+    }
     
-    ValidationMessage(Type type, String message) {
-        super();
-        this.type = type;
-        this.message = message;
-    }
-
-    /** 
-     * Sorts the message type, line number, and then message.
-     * {@inheritDoc}
-     */
-    public int compareTo(ValidationMessage o) {
-        if (!type.equals(o.getType())) {
-            return type.compareTo(o.getType());
-        } else if (line != o.line) {
-            return line - o.line;
-        } else {
-            return o.message.compareTo(message);
-        }
-    }
-
-    /**
-     * @return the column
-     */
-    public int getColumn() {
-        return column;
-    }
-
-    /**
-     * @param column the column to set
-     */
-    public void setColumn(int column) {
-        this.column = column;
-    }
-
-    /**
-     * @return the line
-     */
-    public int getLine() {
-        return line;
-    }
-
-    /**
-     * @param line the line to set
-     */
-    public void setLine(int line) {
-        this.line = line;
-    }
-
-    /**
-     * @return the message
-     */
-    public String getMessage() {
-        return message;
-    }
-
-    /**
-     * @return the type
-     */
-    public Type getType() {
-        return type;
-    }
-
-    /**
-     * Indicates the type/level of the message.
-     */
-    public static enum Type implements Comparable<Type> {
-        
-        /**
-         * Indicates invalid content.
-         */
-        ERROR,
-        
-        /**
-         * Warning of potentially problematic content.
-         */
-        WARNING,
-        
-        /**
-         * Informational message.
-         */
-        INFO;
-
-        
+    public void addLookup(String jndiName, Object object) {
+        lookupMap.put(jndiName, object);
     }
 
 }

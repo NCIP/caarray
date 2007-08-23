@@ -82,103 +82,82 @@
  */
 package gov.nih.nci.caarray.validation;
 
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
+
+import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * A single entry in a <code>ValidationResult</code> that describes an issue and the location (if known).
+ * Contains all the validation messsages for a single file.
  */
-public final class ValidationMessage implements Serializable, Comparable<ValidationMessage> {
+public final class FileValidationResult implements Serializable, Comparable<FileValidationResult> {
 
-    private static final long serialVersionUID = 8575821452264941994L;
+    private static final long serialVersionUID = -5402207496806890698L;
     
-    private final Type type;
-    private final String message;
-    private int line;
-    private int column;
-    
-    ValidationMessage(Type type, String message) {
-        super();
-        this.type = type;
-        this.message = message;
+    private final File file;
+    private final List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
+
+    FileValidationResult(File file) {
+        this.file = file;
     }
 
+    /**
+     * @return the file
+     */
+    public File getFile() {
+        return file;
+    }
+    
     /** 
-     * Sorts the message type, line number, and then message.
+     * Sorts the result by file name.
      * {@inheritDoc}
      */
-    public int compareTo(ValidationMessage o) {
-        if (!type.equals(o.getType())) {
-            return type.compareTo(o.getType());
-        } else if (line != o.line) {
-            return line - o.line;
-        } else {
-            return o.message.compareTo(message);
+    public int compareTo(FileValidationResult o) {
+        String fileName = o.getFile().getName();  
+        return fileName.compareTo(this.getFile().getName());
+    }
+
+    /**
+     * Returns true if all the documents in the set were valid.
+     * 
+     * @return true if set was valid.
+     */
+    public boolean isValid() {
+        for (ValidationMessage message : messages) {
+            if (ValidationMessage.Type.ERROR.equals(message.getType())) {
+                return false;
+            }
         }
+        return true;
     }
 
     /**
-     * @return the column
+     * Returns the messages ordered by type and location.
+     * 
+     * @return the messages.
      */
-    public int getColumn() {
-        return column;
+    public List<ValidationMessage> getMessages() {
+        Collections.sort(messages);
+        return Collections.unmodifiableList(messages);
     }
 
     /**
-     * @param column the column to set
+     * Adds a new validation message to the result.
+     * 
+     * @param type the type/level of the message
+     * @param message the actual message content
+     * @return the newly added message, if additional configuration of the message is required.
      */
-    public void setColumn(int column) {
-        this.column = column;
+    public ValidationMessage addMessage(Type type, String message) {
+        ValidationMessage validationMessage = new ValidationMessage(type, message);
+        add(validationMessage);
+        return validationMessage;
     }
 
-    /**
-     * @return the line
-     */
-    public int getLine() {
-        return line;
+    private void add(ValidationMessage validationMessage) {
+            messages.add(validationMessage);
     }
-
-    /**
-     * @param line the line to set
-     */
-    public void setLine(int line) {
-        this.line = line;
-    }
-
-    /**
-     * @return the message
-     */
-    public String getMessage() {
-        return message;
-    }
-
-    /**
-     * @return the type
-     */
-    public Type getType() {
-        return type;
-    }
-
-    /**
-     * Indicates the type/level of the message.
-     */
-    public static enum Type implements Comparable<Type> {
-        
-        /**
-         * Indicates invalid content.
-         */
-        ERROR,
-        
-        /**
-         * Warning of potentially problematic content.
-         */
-        WARNING,
-        
-        /**
-         * Informational message.
-         */
-        INFO;
-
-        
-    }
-
 }

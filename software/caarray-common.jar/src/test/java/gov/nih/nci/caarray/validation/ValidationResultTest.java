@@ -112,13 +112,21 @@ public class ValidationResultTest {
     @Test
     public void testAddMessage() {
         ValidationResult result = new ValidationResult();
-        result.addMessage(testFile , ValidationMessage.Type.INFO, TEST_MESSAGE + "1");
-        result.addMessage(testFile , ValidationMessage.Type.WARNING, TEST_MESSAGE + "2");
+        ValidationMessage message1 = result.addMessage(testFile, ValidationMessage.Type.INFO, TEST_MESSAGE + "1");
+        ValidationMessage message2 = result.addMessage(testFile, ValidationMessage.Type.WARNING, TEST_MESSAGE + "2");
+        ValidationMessage message3 = result.addMessage(testFile, ValidationMessage.Type.WARNING, TEST_MESSAGE + "3");
+        message2.setLine(10);
+        message3.setLine(1);
+        List<FileValidationResult> fileValidationResults = result.getFileValidationResults();
+        assertEquals(1, fileValidationResults.size());
+        assertEquals(testFile, fileValidationResults.get(0).getFile());
+        assertEquals(3, fileValidationResults.get(0).getMessages().size());
         List<ValidationMessage> messages = result.getMessages();
-        assertEquals(2, messages.size());
-        assertEquals(testFile, messages.get(0).getFile());
-        assertEquals(ValidationMessage.Type.INFO, messages.get(0).getType());
-        assertEquals(TEST_MESSAGE + "1", messages.get(0).getMessage());
+        assertEquals(3, messages.size());
+        assertEquals(ValidationMessage.Type.WARNING, messages.get(0).getType());
+        assertEquals(message3.getMessage(), messages.get(0).getMessage());
+        assertEquals(message2.getMessage(), messages.get(1).getMessage());
+        assertEquals(message1.getMessage(), messages.get(2).getMessage());
     }
 
 }

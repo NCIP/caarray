@@ -84,8 +84,16 @@ package gov.nih.nci.caarray.magetab;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.Collection;
 import java.util.Locale;
 
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.magetab.adf.AdfDocument;
+import gov.nih.nci.caarray.magetab.data.DataMatrix;
+import gov.nih.nci.caarray.magetab.idf.IdfDocument;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.validation.InvalidDataException;
 
@@ -177,4 +185,38 @@ public final class TestMageTabSets {
         };    
     }
 
+    public static CaArrayFileSet getFileSet(MageTabDocumentSet documentSet) {
+        CaArrayFileSet fileSet = new CaArrayFileSet();
+        addFiles(fileSet, documentSet.getIdfDocuments());
+        addFiles(fileSet, documentSet.getSdrfDocuments());
+        addFiles(fileSet, documentSet.getAdfDocuments());
+        addFiles(fileSet, documentSet.getDataMatrixes());
+        addFiles(fileSet, documentSet.getNativeDataFiles());
+        return fileSet;
+    }
+
+    private static void addFiles(CaArrayFileSet fileSet, Collection<? extends AbstractMageTabDocument> mageTabDocuments) {
+        for (AbstractMageTabDocument mageTabDocument : mageTabDocuments) {
+            addFile(fileSet, mageTabDocument);
+        }
+    }
+
+    private static void addFile(CaArrayFileSet fileSet, AbstractMageTabDocument mageTabDocument) {
+        CaArrayFile caArrayFile = new CaArrayFile();
+        caArrayFile.setPath(mageTabDocument.getFile().getAbsolutePath());
+        if (mageTabDocument instanceof IdfDocument) {
+            caArrayFile.setType(FileType.MAGE_TAB_IDF);
+        } else if (mageTabDocument instanceof SdrfDocument) {
+            caArrayFile.setType(FileType.MAGE_TAB_SDRF);
+        } else if (mageTabDocument instanceof AdfDocument) {
+            caArrayFile.setType(FileType.MAGE_TAB_ADF);
+        } else if (mageTabDocument instanceof DataMatrix) {
+            caArrayFile.setType(FileType.MAGE_TAB_DATA_MATRIX);
+        } else if (mageTabDocument.getFile().getName().toLowerCase().endsWith(".cel")) {
+            caArrayFile.setType(FileType.AFFYMETRIX_CEL);
+        } else {
+            throw new IllegalArgumentException("Unrecognized document file " + mageTabDocument.getFile());
+        }
+        fileSet.add(caArrayFile);
+    }
 }

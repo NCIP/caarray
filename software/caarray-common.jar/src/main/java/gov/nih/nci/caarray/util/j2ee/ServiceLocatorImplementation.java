@@ -80,105 +80,41 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.validation;
+package gov.nih.nci.caarray.util.j2ee;
 
-import java.io.Serializable;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
- * A single entry in a <code>ValidationResult</code> that describes an issue and the location (if known).
+ * Looks up EJBs, Queues, etc. on behalf of clients.
  */
-public final class ValidationMessage implements Serializable, Comparable<ValidationMessage> {
+final class ServiceLocatorImplementation implements ServiceLocator {
 
-    private static final long serialVersionUID = 8575821452264941994L;
+    private static final long serialVersionUID = 7010735119922566807L;
     
-    private final Type type;
-    private final String message;
-    private int line;
-    private int column;
+    private static final Log LOG = LogFactory.getLog(ServiceLocatorImplementation.class);
     
-    ValidationMessage(Type type, String message) {
+    ServiceLocatorImplementation() {
         super();
-        this.type = type;
-        this.message = message;
     }
 
-    /** 
-     * Sorts the message type, line number, and then message.
-     * {@inheritDoc}
+    /**
+     * Returns the resource at the JNDI name given.
+     * 
+     * @param jndiName get the resource for this name.
+     * @return the resource.
      */
-    public int compareTo(ValidationMessage o) {
-        if (!type.equals(o.getType())) {
-            return type.compareTo(o.getType());
-        } else if (line != o.line) {
-            return line - o.line;
-        } else {
-            return o.message.compareTo(message);
+    public Object lookup(String jndiName) {
+        try {
+            InitialContext initialContext = new InitialContext();
+            return initialContext.lookup(jndiName);
+        } catch (NamingException e) {
+            LOG.error("Couldn't get InitialContex", e);
+            throw new IllegalStateException(e);
         }
-    }
-
-    /**
-     * @return the column
-     */
-    public int getColumn() {
-        return column;
-    }
-
-    /**
-     * @param column the column to set
-     */
-    public void setColumn(int column) {
-        this.column = column;
-    }
-
-    /**
-     * @return the line
-     */
-    public int getLine() {
-        return line;
-    }
-
-    /**
-     * @param line the line to set
-     */
-    public void setLine(int line) {
-        this.line = line;
-    }
-
-    /**
-     * @return the message
-     */
-    public String getMessage() {
-        return message;
-    }
-
-    /**
-     * @return the type
-     */
-    public Type getType() {
-        return type;
-    }
-
-    /**
-     * Indicates the type/level of the message.
-     */
-    public static enum Type implements Comparable<Type> {
-        
-        /**
-         * Indicates invalid content.
-         */
-        ERROR,
-        
-        /**
-         * Warning of potentially problematic content.
-         */
-        WARNING,
-        
-        /**
-         * Informational message.
-         */
-        INFO;
-
-        
     }
 
 }

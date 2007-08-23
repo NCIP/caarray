@@ -88,7 +88,9 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The result of validating a set of files.
@@ -97,7 +99,7 @@ public final class ValidationResult implements Serializable {
 
     private static final long serialVersionUID = -5781574225752015910L;
 
-    private final List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
+    private final Map<File, FileValidationResult> fileValidationResults = new HashMap<File, FileValidationResult>();
 
     /**
      * Instantiates a new, empty result.
@@ -112,8 +114,8 @@ public final class ValidationResult implements Serializable {
      * @return true if set was valid.
      */
     public boolean isValid() {
-        for (ValidationMessage message : messages) {
-            if (ValidationMessage.Type.ERROR.equals(message.getType())) {
+        for (FileValidationResult fileValidationResult : fileValidationResults.values()) {
+            if (!fileValidationResult.isValid()) {
                 return false;
             }
         }
@@ -121,13 +123,28 @@ public final class ValidationResult implements Serializable {
     }
 
     /**
-     * Returns the messages ordered by type and location.
+     * Returns the messages ordered by file, type and location.
      * 
      * @return the messages.
      */
     public List<ValidationMessage> getMessages() {
-        Collections.sort(messages);
+        List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
+        for (FileValidationResult fileValidationResult : getFileValidationResults()) {
+            messages.addAll(fileValidationResult.getMessages());
+        }
         return Collections.unmodifiableList(messages);
+    }
+    
+    /**
+     * Returns all the file validation results in order by file.
+     * 
+     * @return the file validation results.
+     */
+    public List<FileValidationResult> getFileValidationResults() {
+        List<FileValidationResult> fileResultList = new ArrayList<FileValidationResult>(fileValidationResults.size());
+        fileResultList.addAll(fileValidationResults.values());
+        Collections.sort(fileResultList);
+        return Collections.unmodifiableList(fileResultList);
     }
 
     /**
@@ -139,13 +156,14 @@ public final class ValidationResult implements Serializable {
      * @return the newly added message, if additional configuration of the message is required.
      */
     public ValidationMessage addMessage(File file, Type type, String message) {
-        ValidationMessage validationMessage = new ValidationMessage(file, type, message);
-        add(validationMessage);
-        return validationMessage;
+        return getFileValidationResult(file).addMessage(type, message);
     }
 
-    private void add(ValidationMessage validationMessage) {
-            messages.add(validationMessage);
+    private FileValidationResult getFileValidationResult(File file) {
+        if (!fileValidationResults.containsKey(file)) {
+            fileValidationResults.put(file, new FileValidationResult(file));
+        }
+        return fileValidationResults.get(file);
     }
 
 }
