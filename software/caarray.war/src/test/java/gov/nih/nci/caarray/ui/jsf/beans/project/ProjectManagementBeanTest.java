@@ -80,33 +80,61 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.startup;
+package gov.nih.nci.caarray.ui.jsf.beans.project;
 
-import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
+import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.application.file.FileManagementService;
+import gov.nih.nci.caarray.application.file.FileManagementServiceStub;
+import gov.nih.nci.caarray.application.project.ProjectManagementService;
+import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- * Performs initialization operations required at startup of the caArray application.
- */
-public class StartupHandler implements ServletContextListener {
+public class ProjectManagementBeanTest {
+
+    private final ProjectManagementBean projectManagementBean = new ProjectManagementBean();
+    private final ServiceLocatorStub locatorStub = new ServiceLocatorStub();
+    private final LocalProjectManagementServiceStub projectServiceStub = new LocalProjectManagementServiceStub();
+    private final LocalFileManagementServiceStub fileManagementStub = new LocalFileManagementServiceStub();
 
     /**
-     * {@inheritDoc}
+     * @throws java.lang.Exception
      */
-    public void contextDestroyed(ServletContextEvent arg0) {
-        // do nothing
+    @Before
+    public void setUp() throws Exception {
+        projectManagementBean.setLocator(locatorStub);
+        locatorStub.addLookup(ProjectManagementService.JNDI_NAME, projectServiceStub);
+        locatorStub.addLookup(FileManagementService.JNDI_NAME, fileManagementStub);
     }
 
     /**
-     * {@inheritDoc}
+     * Test method for {@link gov.nih.nci.caarray.ui.jsf.beans.project.ProjectManagementBean#validateProjectFiles()}.
      */
-    public void contextInitialized(ServletContextEvent event) {
-        ArrayDataService arrayDataService = 
-            (ArrayDataService) ServiceLocator.INSTANCE.lookup(ArrayDataService.JNDI_NAME);
-        arrayDataService.initialize();
+    @Test
+    public void testValidateProjectFiles() {
+        projectManagementBean.setProject(new Project());
+        projectManagementBean.validateProjectFiles();
+        assertTrue(fileManagementStub.calledValidateFiles);
+    }
+
+    private static class LocalProjectManagementServiceStub extends ProjectManagementServiceStub {
+        
+    }
+
+    private static class LocalFileManagementServiceStub extends FileManagementServiceStub {
+
+        boolean calledValidateFiles;
+        
+        @Override
+        public void validateFiles(CaArrayFileSet fileSet) {
+            super.validateFiles(fileSet);
+            calledValidateFiles = true;
+        }
+        
     }
 
 }

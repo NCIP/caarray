@@ -111,11 +111,14 @@ import org.apache.myfaces.custom.fileupload.UploadedFile;
 public final class ProjectManagementBean implements Serializable {
 
     private static final long serialVersionUID = -1814579234979957046L;
+
+    private static final String MANAGE_FILES_OUTCOME = "manageFiles";
     private static final Log LOG = LogFactory.getLog(ProjectManagementBean.class);
 
-    private Project project;
+    private ServiceLocator locator = ServiceLocator.INSTANCE;
     private ProjectManagementService projectManagementService;
     private FileManagementService fileManagementService;
+    private Project project;
     private UIData projectTable;
     private UploadedFile uploadFile;
 
@@ -140,7 +143,6 @@ public final class ProjectManagementBean implements Serializable {
      */
     public String openProject() {
         project = (Project) projectTable.getRowData();
-
         return "project";
     }
 
@@ -186,7 +188,7 @@ public final class ProjectManagementBean implements Serializable {
             String msg = "Unable to upload file: " + e.getMessage();
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, ""));
             LOG.error(msg, e);
-            return "manageProjectFiles";
+            return MANAGE_FILES_OUTCOME;
         } finally {
             if (os != null) {
                 try {
@@ -198,7 +200,7 @@ public final class ProjectManagementBean implements Serializable {
             }
         }
 
-        return "manageProjectFiles";
+        return MANAGE_FILES_OUTCOME;
     }
 
     /**
@@ -218,7 +220,15 @@ public final class ProjectManagementBean implements Serializable {
      */
     public String importProjectFiles() {
         getFileManagementService().importFiles(project, project.getFileSet());
-        return "manageProjectFiles";
+        return MANAGE_FILES_OUTCOME;
+    }
+    /**
+     * Validate files.
+     * @return back to manage
+     */
+    public String validateProjectFiles() {
+        getFileManagementService().validateFiles(project.getFileSet());
+        return MANAGE_FILES_OUTCOME;
     }
 
     /**
@@ -238,17 +248,38 @@ public final class ProjectManagementBean implements Serializable {
     private ProjectManagementService getProjectManagementService() {
         if (projectManagementService == null) {
             projectManagementService =
-                (ProjectManagementService) ServiceLocator.getInstance().lookup(ProjectManagementService.JNDI_NAME);
+                (ProjectManagementService) getLocator().lookup(ProjectManagementService.JNDI_NAME);
         }
         return projectManagementService;
     }
 
     private FileManagementService getFileManagementService() {
         if (fileManagementService == null) {
-            fileManagementService =
-                (FileManagementService) ServiceLocator.getInstance().lookup(FileManagementService.JNDI_NAME);
+            fileManagementService = (FileManagementService) getLocator().lookup(FileManagementService.JNDI_NAME);
         }
         return fileManagementService;
+    }
+
+    ServiceLocator getLocator() {
+        return locator;
+    }
+
+    /**
+     * For use by unit tests.
+     * 
+     * @param locator
+     */
+    void setLocator(ServiceLocator locator) {
+        this.locator = locator;
+    }
+
+    /**
+     * For use by unit tests.
+     * 
+     * @param project
+     */
+    void setProject(Project project) {
+        this.project = project;
     }
 
 }

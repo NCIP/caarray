@@ -98,6 +98,7 @@ public final class ProjectProposalBean implements Serializable {
 
     private static final long serialVersionUID = 1648254551870740481L;
     private Proposal proposal;
+    private ServiceLocator locator = ServiceLocator.INSTANCE;
     private ProjectManagementService projectManagementService;
 
     /**
@@ -134,9 +135,22 @@ public final class ProjectProposalBean implements Serializable {
 
     private ProjectManagementService getProjectManagementService() {
         if (projectManagementService == null) {
-            projectManagementService =
-                (ProjectManagementService) ServiceLocator.getInstance().lookup(ProjectManagementService.JNDI_NAME);
+            projectManagementService = 
+                (ProjectManagementService) getLocator().lookup(ProjectManagementService.JNDI_NAME);
         }
         return projectManagementService;
+    }
+
+    private ServiceLocator getLocator() {
+        return locator;
+    }
+
+    /**
+     * For use by unit tests.
+     * 
+     * @param locator
+     */
+    void setLocator(ServiceLocator locator) {
+        this.locator = locator;
     }
 }
