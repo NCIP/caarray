@@ -64,5 +64,7 @@
         <mapping class="gov.nih.nci.caarray.domain.vocabulary.Category"/>
         <mapping class="gov.nih.nci.caarray.domain.vocabulary.Term"/>
         <mapping class="gov.nih.nci.caarray.domain.vocabulary.TermSource"/>
+        <mapping class="gov.nih.nci.caarray.validation.ValidationMessage"/>
+        <mapping class="gov.nih.nci.caarray.validation.FileValidationResult"/>
     </session-factory>
 </hibernate-configuration>
