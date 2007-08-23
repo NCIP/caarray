@@ -103,8 +103,8 @@ public final class ValidationMessage implements Serializable, Comparable<Validat
     private static final int MAXIMUM_MESSAGE_LENGTH = 1024;
     private static final int MAX_TYPE_LENGTH = 10;
 
-    private final Type type;
-    private final String message;
+    private Type type;
+    private String message;
     private int line;
     private int column;
 
@@ -112,8 +112,8 @@ public final class ValidationMessage implements Serializable, Comparable<Validat
 
     ValidationMessage(Type type, String message) {
         super();
-        this.type = type;
-        this.message = message;
+        setType(type);
+        setMessage(message);
     }
 
     /**
@@ -168,6 +168,10 @@ public final class ValidationMessage implements Serializable, Comparable<Validat
         return message;
     }
 
+    private void setMessage(String message) {
+        this.message = message;
+    }
+
     /**
      * @return the type
      */
@@ -209,6 +213,9 @@ public final class ValidationMessage implements Serializable, Comparable<Validat
         INFO;
 
 
+    }
+    private void setType(Type type) {
+        this.type = type;
     }
 
 }
