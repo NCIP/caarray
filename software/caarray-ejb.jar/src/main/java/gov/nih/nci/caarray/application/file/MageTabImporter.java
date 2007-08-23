@@ -252,8 +252,6 @@ class MageTabImporter {
             MageTabParser.INSTANCE.validate(inputSet);
         } catch (MageTabParsingException e) {
             updateFileStatus(fileSet, FileStatus.VALIDATION_ERRORS);
-        } catch (InvalidDataException e) {
-            updateFileStatus(fileSet, FileStatus.VALIDATION_ERRORS);
         }
         updateFileStatus(fileSet, FileStatus.VALIDATED);
     }

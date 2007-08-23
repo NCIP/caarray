@@ -119,8 +119,6 @@ public class MageTabParserTest {
             assertEquals(73, result.getMessages().size());
         } catch (MageTabParsingException e) {
             e.printStackTrace();
-        } catch (InvalidDataException e) {
-            e.printStackTrace();
         }
     }
 

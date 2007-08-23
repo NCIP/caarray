@@ -93,31 +93,39 @@ import org.apache.commons.logging.LogFactory;
  * Implementation entry point for the MAGE-TAB parsing subsystem.
  */
 class MageTabParserImplementation implements MageTabParser {
-    
+
     private static final Log LOG = LogFactory.getLog(MageTabParserImplementation.class);
 
     /**
      * {@inheritDoc}
-     * @throws InvalidDataException 
-     * @throws MageTabParsingException 
+     * 
+     * @throws InvalidDataException
+     * @throws MageTabParsingException
      */
-    public ValidationResult validate(MageTabInputFileSet fileSet) throws MageTabParsingException, InvalidDataException {
+    public ValidationResult validate(MageTabInputFileSet fileSet) throws MageTabParsingException {
         MageTabDocumentSet parsedDocuments = null;
+        ValidationResult vr = null;
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, fileSet);
         }
-           parsedDocuments = parse(fileSet);
+        try {
+            parsedDocuments = parse(fileSet);
+            vr = parsedDocuments.getValidationResult();
+        } catch (InvalidDataException e) {
+            vr = e.getValidationResult();
+        }
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemExit(LOG);
         }
-        return parsedDocuments.getValidationResult();
+
+        return vr;
     }
 
     /**
      * {@inheritDoc}
      */
-    public MageTabDocumentSet parse(MageTabInputFileSet inputFileSet) 
-    throws MageTabParsingException, InvalidDataException {
+    public MageTabDocumentSet parse(MageTabInputFileSet inputFileSet) throws MageTabParsingException,
+            InvalidDataException {
         if (LOG.isDebugEnabled()) {
             LogUtil.logSubsystemEntry(LOG, inputFileSet);
         }
@@ -133,4 +141,3 @@ class MageTabParserImplementation implements MageTabParser {
     }
 
 }
-
