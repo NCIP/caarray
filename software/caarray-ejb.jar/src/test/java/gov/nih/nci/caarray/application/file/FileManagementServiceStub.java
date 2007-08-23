@@ -82,50 +82,24 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.project.Project;
 
 /**
- * Responsible for importing all the array designs in a file set.
+ * Simple stub with no functionality.
  */
-class ArrayDesignImporter {
+public class FileManagementServiceStub implements FileManagementService {
 
-    private final CaArrayFileSet fileSet;
-    private final ArrayDesignService arrayDesignService;
-
-    ArrayDesignImporter(CaArrayFileSet fileSet, ArrayDesignService arrayDesignService) {
-        this.fileSet = fileSet;
-        this.arrayDesignService = arrayDesignService;
+    public void importFiles(CaArrayFileSet fileSet) {
+        // no-op
     }
 
-    void importArrayDesigns() {
-        for (CaArrayFile file : fileSet.getFiles()) {
-            if (isArrayDesign(file)) {
-                importArrayDesign(file);
-            }
-        }
+    public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
+        // no-op
     }
 
-    private boolean isArrayDesign(CaArrayFile file) {
-        return file.getType() != null && file.getType().isArrayDesign();
-    }
-
-    private void importArrayDesign(CaArrayFile file) {
-        arrayDesignService.importDesign(file);
-    }
-
-    void validateFiles(CaArrayFileSet fileSet2) {
-        for (CaArrayFile file : fileSet.getFiles()) {
-            if (isArrayDesign(file)) {
-                validateFile(file);
-            }
-        }
-
-    }
-
-    private void validateFile(CaArrayFile file) {
-        arrayDesignService.validateDesign(file);
+    public void validateFiles(CaArrayFileSet fileSet) {
+        // no-op
     }
 
 }

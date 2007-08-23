@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import java.io.File;
-
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
@@ -97,13 +95,15 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabInputFileSet;
 import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
 import gov.nih.nci.caarray.validation.InvalidDataException;
+
+import java.io.File;
 
 /**
  * Responsible for importing parsed MAGE-TAB data into caArray.
@@ -243,6 +243,19 @@ class MageTabImporter {
 
     private ProjectDao getProjectDao() {
         return daoFactory.getProjectDao();
+    }
+
+    void validateFiles(CaArrayFileSet fileSet) {
+        updateFileStatus(fileSet, FileStatus.VALIDATING);
+        MageTabInputFileSet inputSet = getInputFileSet(fileSet);
+        try {
+            MageTabParser.INSTANCE.validate(inputSet);
+        } catch (MageTabParsingException e) {
+            updateFileStatus(fileSet, FileStatus.VALIDATION_ERRORS);
+        } catch (InvalidDataException e) {
+            updateFileStatus(fileSet, FileStatus.VALIDATION_ERRORS);
+        }
+        updateFileStatus(fileSet, FileStatus.VALIDATED);
     }
 
 }

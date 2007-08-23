@@ -80,52 +80,42 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.file;
+package gov.nih.nci.caarray.application.arraydata;
 
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.validation.InvalidDataException;
+import gov.nih.nci.caarray.validation.ValidationResult;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Responsible for importing all the array designs in a file set.
+ * Simple stub for array data service.
  */
-class ArrayDesignImporter {
+public class ArrayDataServiceStub implements ArrayDataService {
 
-    private final CaArrayFileSet fileSet;
-    private final ArrayDesignService arrayDesignService;
-
-    ArrayDesignImporter(CaArrayFileSet fileSet, ArrayDesignService arrayDesignService) {
-        this.fileSet = fileSet;
-        this.arrayDesignService = arrayDesignService;
+    public DataSet getData(AbstractArrayData arrayData) {
+        List<QuantitationType> types = new ArrayList<QuantitationType>();
+        return getData(arrayData, types);
     }
 
-    void importArrayDesigns() {
-        for (CaArrayFile file : fileSet.getFiles()) {
-            if (isArrayDesign(file)) {
-                importArrayDesign(file);
-            }
-        }
+    public DataSet getData(AbstractArrayData arrayData, List<QuantitationType> types) {
+        return new DataSet(new Hybridization(), types);
     }
 
-    private boolean isArrayDesign(CaArrayFile file) {
-        return file.getType() != null && file.getType().isArrayDesign();
+    public void importData(AbstractArrayData arrayData) throws InvalidDataException {
+        // no-op
     }
 
-    private void importArrayDesign(CaArrayFile file) {
-        arrayDesignService.importDesign(file);
+    public void initialize() {
+        // no-op
     }
 
-    void validateFiles(CaArrayFileSet fileSet2) {
-        for (CaArrayFile file : fileSet.getFiles()) {
-            if (isArrayDesign(file)) {
-                validateFile(file);
-            }
-        }
-
-    }
-
-    private void validateFile(CaArrayFile file) {
-        arrayDesignService.validateDesign(file);
+    public ValidationResult validate(AbstractArrayData arrayData) {
+        return new ValidationResult();
     }
 
 }

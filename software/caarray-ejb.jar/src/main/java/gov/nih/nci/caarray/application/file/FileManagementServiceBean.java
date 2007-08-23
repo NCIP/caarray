@@ -88,7 +88,6 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -153,7 +152,7 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private void doImport(Project targetProject, CaArrayFileSet fileSet) {
-        validate(fileSet);
+        validateFiles(fileSet);
         if (fileSet.getStatus().equals(FileStatus.VALIDATED)) {
             importArrayDesigns(fileSet);
             importAnnontation(targetProject, fileSet);
@@ -162,32 +161,56 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private void importArrayDesigns(CaArrayFileSet fileSet) {
-        ArrayDesignImporter arrayDesignImporter =
-            new ArrayDesignImporter(fileSet, getArrayDesignService());
-        arrayDesignImporter.importArrayDesigns();
+        getArrayDesignImporter(fileSet).importArrayDesigns();
+    }
+
+    private ArrayDesignImporter getArrayDesignImporter(CaArrayFileSet fileSet) {
+        return new ArrayDesignImporter(fileSet, getArrayDesignService());
     }
 
     private void importAnnontation(Project targetProject, CaArrayFileSet fileSet) {
-        MageTabImporter mageTabImporter = new MageTabImporter(fileAccessService, vocabularyService, mageTabTranslator,
-                daoFactory);
         try {
-            mageTabImporter.importFiles(targetProject, fileSet);
+            getMageTabImporter().importFiles(targetProject, fileSet);
         } catch (MageTabParsingException e) {
             // TODO notify client of error and rollback
             LOG.error(e.getMessage(), e);
         }
     }
 
+    private MageTabImporter getMageTabImporter() {
+        MageTabImporter mageTabImporter = new MageTabImporter(fileAccessService, vocabularyService, mageTabTranslator,
+                daoFactory);
+        return mageTabImporter;
+    }
+
     private void importArrayData(CaArrayFileSet fileSet) {
-        ArrayDataImporter arrayDataImporter = new ArrayDataImporter(arrayDataService, daoFactory);
+        ArrayDataImporter arrayDataImporter = getArrayDataImporter();
         arrayDataImporter.importFiles(fileSet);
     }
 
-    private void validate(CaArrayFileSet fileSet) {
-        for (CaArrayFile file : fileSet.getFiles()) {
-            file.setFileStatus(FileStatus.VALIDATED);
-            getDaoFactory().getProjectDao().save(file);
-        }
+    private ArrayDataImporter getArrayDataImporter() {
+        return new ArrayDataImporter(arrayDataService, daoFactory);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void validateFiles(CaArrayFileSet fileSet) {
+        validateArrayDesigns(fileSet);
+        validateAnnotation(fileSet);
+        validateArrayData(fileSet);
+    }
+
+    private void validateArrayDesigns(CaArrayFileSet fileSet) {
+        getArrayDesignImporter(fileSet).validateFiles(fileSet);
+    }
+
+    private void validateAnnotation(CaArrayFileSet fileSet) {
+        getMageTabImporter().validateFiles(fileSet);
+    }
+
+    private void validateArrayData(CaArrayFileSet fileSet) {
+        getArrayDataImporter().validateFiles(fileSet);
     }
 
     CaArrayDaoFactory getDaoFactory() {
@@ -198,10 +221,7 @@ public class FileManagementServiceBean implements FileManagementService {
         this.daoFactory = daoFactory;
     }
 
-    /**
-     * @return FileAccessService service
-     */
-    protected FileAccessService getFileAccessService() {
+    FileAccessService getFileAccessService() {
         return fileAccessService;
     }
 

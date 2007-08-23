@@ -50,63 +50,32 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import java.io.File;
-import java.net.URL;
+import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceStub;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.magetab.TestMageTabSets;
 
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceBean;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
-
-
-/**
- * @author John Pike
- *
- */
 public class FileManagementServiceTest {
-
-    private static final String FILENAME = "test1.idf";
-
+    
+    private FileManagementService fileManagementService;
+    
+    @Before
+    public void setUp() {
+        FileManagementServiceBean fileManagementServiceBean = new FileManagementServiceBean();
+        fileManagementServiceBean.setArrayDataService(new ArrayDataServiceStub());
+        fileManagementServiceBean.setArrayDesignService(new ArrayDesignServiceStub());
+        fileManagementServiceBean.setDaoFactory(new DaoFactoryStub());
+        fileManagementServiceBean.setFileAccessService(new FileAccessServiceStub());
+        fileManagementService = fileManagementServiceBean;
+    }
+    
     @Test
-    public void testNoOp() {
-        assertTrue(1 == 1);
-    }
-    public void testService() {
-       URL url = ClassLoader.getSystemResource(FILENAME);
-        if (url == null) {
-            url = getClass().getResource(FILENAME);
-        }
-        File file = new File(url.getFile());
-        CaArrayFileSet fileSet = new CaArrayFileSet();
-        CaArrayFile caArrayFile = new CaArrayFile();
-        caArrayFile.setPath(file.getAbsolutePath());
-        caArrayFile.setFileStatus(FileStatus.UPLOADED);
-        caArrayFile.setType(FileType.MAGE_TAB_IDF);
-
-        fileSet.add(caArrayFile);
-
-        FileManagementService fileService = new FileServiceBeanStub();
-        fileService.importFiles(fileSet);
-
-
-        fail("THis isn't done yet");
-
+    public void testValidateFiles() {
+        fileManagementService.validateFiles(TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_SET));
     }
 
-    class FileServiceBeanStub extends FileManagementServiceBean {
-        @Override
-        public FileAccessService getFileAccessService() {
-            return new FileAccessBeanStub();
-        }
-    }
-
-    class FileAccessBeanStub extends FileAccessServiceBean {
-
-
-    }
 }

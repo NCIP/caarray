@@ -80,52 +80,35 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.file;
+package gov.nih.nci.caarray.application.project;
 
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.project.Proposal;
+
+import java.io.File;
+import java.util.List;
+import java.util.Set;
 
 /**
- * Responsible for importing all the array designs in a file set.
+ * Basic sintub -- returns null for all methods returning objects. Subclass and override
+ * to provide desired functionality in tests.
  */
-class ArrayDesignImporter {
+public class ProjectManagementServiceStub implements ProjectManagementService {
 
-    private final CaArrayFileSet fileSet;
-    private final ArrayDesignService arrayDesignService;
-
-    ArrayDesignImporter(CaArrayFileSet fileSet, ArrayDesignService arrayDesignService) {
-        this.fileSet = fileSet;
-        this.arrayDesignService = arrayDesignService;
+    public void addFiles(Project project, Set<File> files) {
+        // no-op
     }
 
-    void importArrayDesigns() {
-        for (CaArrayFile file : fileSet.getFiles()) {
-            if (isArrayDesign(file)) {
-                importArrayDesign(file);
-            }
-        }
+    public List<Project> getAll() {
+        return null;
     }
 
-    private boolean isArrayDesign(CaArrayFile file) {
-        return file.getType() != null && file.getType().isArrayDesign();
+    public Project getProject(long id) {
+        return null;
     }
 
-    private void importArrayDesign(CaArrayFile file) {
-        arrayDesignService.importDesign(file);
-    }
-
-    void validateFiles(CaArrayFileSet fileSet2) {
-        for (CaArrayFile file : fileSet.getFiles()) {
-            if (isArrayDesign(file)) {
-                validateFile(file);
-            }
-        }
-
-    }
-
-    private void validateFile(CaArrayFile file) {
-        arrayDesignService.validateDesign(file);
+    public void submitProposal(Proposal proposal) {
+        // no-op
     }
 
 }

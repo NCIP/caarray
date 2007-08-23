@@ -132,4 +132,16 @@ final class ArrayDataImporter {
         return daoFactory.getArrayDao().getArrayData(file);
     }
 
+    void validateFiles(CaArrayFileSet fileSet) {
+        for (CaArrayFile file : fileSet.getFiles()) {
+            if (isDataFile(file)) {
+                validateFile(file);
+            }
+        }
+    }
+
+    private void validateFile(CaArrayFile file) {
+        arrayDataService.validate(getArrayData(file));
+    }
+
 }

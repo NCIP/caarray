@@ -97,6 +97,13 @@ public interface FileManagementService {
     String JNDI_NAME = "caarray/FileManagementServiceBean/local";
 
     /**
+     * Validates the files provided.
+     *
+     * @param fileSet the files to validate.
+     */
+    void validateFiles(CaArrayFileSet fileSet);
+
+    /**
      * Imports the files provided. This method provided for imports that are not associated
      * with a project (e.g. array design files).
      *

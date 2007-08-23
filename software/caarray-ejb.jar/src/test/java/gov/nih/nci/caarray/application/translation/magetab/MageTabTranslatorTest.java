@@ -94,25 +94,17 @@ import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.magetab.AbstractMageTabDocument;
-import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
-import gov.nih.nci.caarray.magetab.adf.AdfDocument;
-import gov.nih.nci.caarray.magetab.data.DataMatrix;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
-import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -152,7 +144,7 @@ public class MageTabTranslatorTest {
     }
 
     private void testTcgaBroadDocuments() {
-        CaArrayFileSet fileSet = getFileSet(TestMageTabSets.TCGA_BROAD_SET);
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_SET);
         CaArrayTranslationResult result = translator.translate(TestMageTabSets.TCGA_BROAD_SET, fileSet);
         assertEquals(10, result.getTerms().size());
         assertEquals(1, result.getInvestigations().size());
@@ -160,39 +152,6 @@ public class MageTabTranslatorTest {
         checkTcgaBroadInvestigation(investigation);
     }
 
-    private CaArrayFileSet getFileSet(MageTabDocumentSet documentSet) {
-        CaArrayFileSet fileSet = new CaArrayFileSet();
-        addFiles(fileSet, documentSet.getIdfDocuments());
-        addFiles(fileSet, documentSet.getSdrfDocuments());
-        addFiles(fileSet, documentSet.getAdfDocuments());
-        addFiles(fileSet, documentSet.getDataMatrixes());
-        addFiles(fileSet, documentSet.getNativeDataFiles());
-        return fileSet;
-    }
-
-    private void addFiles(CaArrayFileSet fileSet, Collection<? extends AbstractMageTabDocument> mageTabDocuments) {
-        for (AbstractMageTabDocument mageTabDocument : mageTabDocuments) {
-            addFile(fileSet, mageTabDocument);
-        }
-    }
-
-    private void addFile(CaArrayFileSet fileSet, AbstractMageTabDocument mageTabDocument) {
-        CaArrayFile caArrayFile = fileAccessServiceStub.add(mageTabDocument.getFile());
-        if (mageTabDocument instanceof IdfDocument) {
-            caArrayFile.setType(FileType.MAGE_TAB_IDF);
-        } else if (mageTabDocument instanceof SdrfDocument) {
-            caArrayFile.setType(FileType.MAGE_TAB_SDRF);
-        } else if (mageTabDocument instanceof AdfDocument) {
-            caArrayFile.setType(FileType.MAGE_TAB_ADF);
-        } else if (mageTabDocument instanceof DataMatrix) {
-            caArrayFile.setType(FileType.MAGE_TAB_DATA_MATRIX);
-        } else if (mageTabDocument.getFile().getName().toLowerCase().endsWith(".cel")) {
-            caArrayFile.setType(FileType.AFFYMETRIX_CEL);
-        } else {
-            throw new IllegalArgumentException("Unrecognized document file " + mageTabDocument.getFile());
-        }
-        fileSet.add(caArrayFile);
-    }
 
     private void checkTcgaBroadInvestigation(Experiment investigation) {
         IdfDocument idf = TestMageTabSets.TCGA_BROAD_SET.getIdfDocuments().iterator().next();
