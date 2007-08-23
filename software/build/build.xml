@@ -982,7 +982,7 @@
     <target name="database:reinitialize" depends="database:recreate-database,database:create-schema,database:populate" description="Completely reset caarraydb by dropping database, recreating, and creating schema, and pouplating with initial data" />
 
     <target name="database:recreate-database" depends="database:init-sql" description="Drops and recreates caarraydb database">
-        <run-sql-script database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_database_and_user.sql" />
+        <run-sql-script database.url="${database.system.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_database_and_user.sql" />
     </target>
 
     <!-- ******************************************************************* -->
