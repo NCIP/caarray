@@ -93,9 +93,9 @@ import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
+import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.sample.Extract;
@@ -107,7 +107,10 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -444,7 +447,6 @@ public class ProjectDaoTest extends AbstractDaoTest {
     @Test
     public void testDeepSearchPersonByExample() {
         Transaction tx = null;
-
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             DAO_OBJECT.save(DUMMY_PERSON);
@@ -472,4 +474,38 @@ public class ProjectDaoTest extends AbstractDaoTest {
             LOG.error(e.getMessage(), e);
         }
     }
+    
+    @Test
+    public void testValidationMessages() {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            File file = new File("test/path/file.txt");
+            DUMMY_FILE_1.setPath(file.getPath());
+            FileValidationResult result = new FileValidationResult(file);
+            ValidationMessage message1 = result.addMessage(ValidationMessage.Type.INFO, "info message");
+            ValidationMessage message2 = result.addMessage(ValidationMessage.Type.ERROR, "error message");
+            DUMMY_FILE_1.setValidationResult(result);
+            DAO_OBJECT.save(DUMMY_FILE_1);
+            tx.commit();
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            CaArrayFile retrievedFile = DAO_OBJECT.queryEntityByExample(DUMMY_FILE_1).iterator().next();
+            assertNotNull(retrievedFile.getValidationResult());
+            FileValidationResult retrievedResult = retrievedFile.getValidationResult();
+            assertEquals(2, retrievedResult.getMessages().size());
+            ValidationMessage retrievedMesssage1 = retrievedResult.getMessages().get(0);
+            ValidationMessage retrievedMesssage2 = retrievedResult.getMessages().get(1);
+            // order of messages should be swapped (ERRORs returned before INFOs)
+            assertEquals(message2.getType(), retrievedMesssage1.getType());
+            assertEquals(message2.getMessage(), retrievedMesssage1.getMessage());
+            assertEquals(message1.getType(), retrievedMesssage2.getType());
+            assertEquals(message1.getMessage(), retrievedMesssage2.getMessage());
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during search of person: " + e.getMessage());
+            LOG.error(e.getMessage(), e);
+        }
+    }
+    
 }

@@ -83,12 +83,18 @@
 
 package gov.nih.nci.caarray.domain.file;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+
 import java.io.File;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -96,9 +102,6 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
-
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.project.Project;
 
 /**
  */
@@ -112,6 +115,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     private FileType type;
     private String status = FileStatus.UPLOADED.name();
     private Project project;
+    private FileValidationResult validationResult;
 
     /**
      * Gets the path.
@@ -243,6 +247,22 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
         if (checkStatus != null) {
             FileStatus.valueOf(checkStatus);
         }
+    }
+
+    /**
+     * @return the validationResult
+     */
+    @OneToOne(cascade = CascadeType.ALL)
+    @ForeignKey(name = "CAARRAYFILE_VALIDATION_RESULT_FK")
+    public FileValidationResult getValidationResult() {
+        return validationResult;
+    }
+
+    /**
+     * @param validationResult the validationResult to set
+     */
+    public void setValidationResult(FileValidationResult validationResult) {
+        this.validationResult = validationResult;
     }
 
 }

@@ -93,6 +93,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -103,15 +104,26 @@ import javax.persistence.Transient;
 /**
  * Contains all the validation messsages for a single file.
  */
+@Entity
 public final class FileValidationResult implements Serializable, Comparable<FileValidationResult> {
 
     private static final long serialVersionUID = -5402207496806890698L;
 
     private Long id;
-    private final File file;
+    private File file;
     private Set<ValidationMessage> messageSet = new HashSet<ValidationMessage>();
 
-    FileValidationResult(File file) {
+    private FileValidationResult() {
+        super();
+    }
+    
+    /**
+     * Creates a new result for the file provided.
+     * 
+     * @param file messages apply to this file.
+     */
+    public FileValidationResult(File file) {
+        super();
         this.file = file;
     }
 
@@ -123,6 +135,11 @@ public final class FileValidationResult implements Serializable, Comparable<File
         return file;
     }
 
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" }) // NOPMD
+    private void setFile(File file) {
+        this.file = file;
+    }
+    
     /**
      * Sorts the result by file name.
      * {@inheritDoc}
@@ -137,6 +154,7 @@ public final class FileValidationResult implements Serializable, Comparable<File
      *
      * @return true if set was valid.
      */
+    @Transient
     public boolean isValid() {
         for (ValidationMessage message : messageSet) {
             if (ValidationMessage.Type.ERROR.equals(message.getType())) {
@@ -151,6 +169,7 @@ public final class FileValidationResult implements Serializable, Comparable<File
      *
      * @return the messages.
      */
+    @Transient
     public List<ValidationMessage> getMessages() {
         List<ValidationMessage> messageList = new ArrayList<ValidationMessage>();
         messageList.addAll(getMessageSet());
@@ -176,7 +195,7 @@ public final class FileValidationResult implements Serializable, Comparable<File
     }
 
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" }) // NOPMD
-    @OneToMany(mappedBy = "fileValidationResult", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<ValidationMessage> getMessageSet() {
         return messageSet;
     }
@@ -197,4 +216,5 @@ public final class FileValidationResult implements Serializable, Comparable<File
     private void setId(Long id) {
         this.id = id;
     }
+
 }
