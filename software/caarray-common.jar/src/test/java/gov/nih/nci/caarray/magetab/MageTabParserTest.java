@@ -132,21 +132,17 @@ public class MageTabParserTest {
         testTcgaBroadDocuments();
     }
 
-    private void testTcgaBroadDocuments() throws MageTabParsingException {
+    private void testTcgaBroadDocuments() throws MageTabParsingException, InvalidDataException {
         MageTabInputFileSet fileSet = TestMageTabSets.TCGA_BROAD_INPUT_SET;
         MageTabDocumentSet documentSet = null;
-        try {
-            documentSet = parser.parse(fileSet);
-            assertNotNull(documentSet);
-            assertEquals(1, documentSet.getIdfDocuments().size());
-            assertEquals(1, documentSet.getSdrfDocuments().size());
-            assertEquals(1, documentSet.getDataMatrixes().size());
-            assertEquals(26, documentSet.getNativeDataFiles().size());
-            checkArrayDesigns(documentSet);
-            assertTrue(documentSet.getValidationResult().isValid());
-        } catch (InvalidDataException e) {
-            e.printStackTrace();
-        }
+        documentSet = parser.parse(fileSet);
+        assertNotNull(documentSet);
+        assertEquals(1, documentSet.getIdfDocuments().size());
+        assertEquals(1, documentSet.getSdrfDocuments().size());
+        assertEquals(1, documentSet.getDataMatrixes().size());
+        assertEquals(26, documentSet.getNativeDataFiles().size());
+        checkArrayDesigns(documentSet);
+        assertTrue(documentSet.getValidationResult().isValid());
     }
 
     private void checkArrayDesigns(MageTabDocumentSet documentSet) {
