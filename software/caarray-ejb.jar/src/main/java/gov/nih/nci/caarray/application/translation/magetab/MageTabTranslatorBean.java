@@ -117,17 +117,13 @@ public class MageTabTranslatorBean implements MageTabTranslator {
      */
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public CaArrayTranslationResult translate(MageTabDocumentSet documentSet, CaArrayFileSet fileSet) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, documentSet);
-        }
+        LogUtil.logSubsystemEntry(LOG, documentSet);
         MageTabTranslationResult translationResult = new MageTabTranslationResult();
         translateTermSources(documentSet, translationResult);
         translateTerms(documentSet, translationResult, getVocabularyService());
         translateIdfs(documentSet, translationResult);
         translateSdrfs(documentSet, fileSet, translationResult);
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
+        LogUtil.logSubsystemExit(LOG);
         return translationResult;
     }
 

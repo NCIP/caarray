@@ -123,13 +123,10 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Project getProject(long id) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, id);
-        }
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
-        return getProjectDao().getProject(id);
+        LogUtil.logSubsystemEntry(LOG, id);
+        Project project = getProjectDao().getProject(id);
+        LogUtil.logSubsystemExit(LOG);
+        return project;
     }
 
     private ProjectDao getProjectDao() {
@@ -145,18 +142,14 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void addFiles(Project project, Set<File> files) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, project, files);
-        }
+        LogUtil.logSubsystemEntry(LOG, project, files);
         for (File file : files) {
             CaArrayFile caArrayFile = fileAccessService.add(file);
             project.getFiles().add(caArrayFile);
             caArrayFile.setProject(project);
         }
         getProjectDao().save(project);
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
+        LogUtil.logSubsystemExit(LOG);
     }
 
     /**
@@ -164,13 +157,9 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void submitProposal(Proposal proposal) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, proposal);
-        }
+        LogUtil.logSubsystemEntry(LOG, proposal);
         getProjectDao().save(proposal);
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
+        LogUtil.logSubsystemExit(LOG);
     }
 
     /**

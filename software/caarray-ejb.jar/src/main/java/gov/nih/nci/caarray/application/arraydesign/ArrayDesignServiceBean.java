@@ -118,9 +118,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      * {@inheritDoc}
      */
     public ValidationResult validateDesign(CaArrayFile designFile) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, designFile);
-        }
+        LogUtil.logSubsystemEntry(LOG, designFile);
         ValidationResult result =  getHandler(designFile).validate();
         if (result.isValid()) {
             designFile.setFileStatus(FileStatus.VALIDATED);
@@ -128,9 +126,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             designFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
         }
         getArrayDao().save(designFile);
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
+        LogUtil.logSubsystemExit(LOG);
         return result;
     }
 
@@ -139,15 +135,11 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      */
     public ArrayDesign importDesign(CaArrayFile designFile) {
         ArrayDesign design = null;
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, designFile);
-        }
+        LogUtil.logSubsystemEntry(LOG, designFile);
         if (validateDesign(designFile).isValid()) {
             design = doImport(designFile);
         }
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
+        LogUtil.logSubsystemExit(LOG);
         return design;
     }
 
@@ -164,13 +156,9 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      * {@inheritDoc}
      */
     public ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, arrayDesign);
-        }
+        LogUtil.logSubsystemEntry(LOG, arrayDesign);
         AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile());
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
+        LogUtil.logSubsystemExit(LOG);
         return handler.getDesignDetails();
     }
 

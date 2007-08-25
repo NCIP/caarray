@@ -125,26 +125,18 @@ public class FileManagementServiceBean implements FileManagementService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void importFiles(CaArrayFileSet fileSet) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, fileSet);
-        }
+        LogUtil.logSubsystemEntry(LOG, fileSet);
         doImport(fileSet);
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
+        LogUtil.logSubsystemExit(LOG);
     }
 
     /**
      * {@inheritDoc}
      */
     public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, fileSet);
-        }
+        LogUtil.logSubsystemEntry(LOG, fileSet);
         doImport(targetProject, fileSet);
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
+        LogUtil.logSubsystemExit(LOG);
     }
 
     private void doImport(CaArrayFileSet fileSet) {

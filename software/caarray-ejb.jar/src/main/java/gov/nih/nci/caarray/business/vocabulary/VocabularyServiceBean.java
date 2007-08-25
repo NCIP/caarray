@@ -140,9 +140,7 @@ public class VocabularyServiceBean implements VocabularyService {
     */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public List<Term> getTerms(final String categoryName) throws VocabularyServiceException {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, categoryName);
-        }
+        LogUtil.logSubsystemEntry(LOG, categoryName);
         if (categoryName == null) {
             throw new IllegalArgumentException("CategoryName is null");
         }
@@ -153,9 +151,7 @@ public class VocabularyServiceBean implements VocabularyService {
                 saveTermsLocally(termList);
             }
         }
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
+        LogUtil.logSubsystemExit(LOG);
         return termList;
     }
 
@@ -207,20 +203,13 @@ public class VocabularyServiceBean implements VocabularyService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public TermSource getSource(String name) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, name);
-        }
+        LogUtil.logSubsystemEntry(LOG, name);
         TermSource querySource = new TermSource();
         querySource.setName(name);
         List<TermSource> result = getVocabularyDao().queryEntityByExample(querySource);
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
-        if (result.isEmpty()) {
-            return null;
-        } else {
-            return result.iterator().next();
-        }
+        LogUtil.logSubsystemExit(LOG);
+        return result.isEmpty() ? null : result.iterator().next();
+
     }
 
     /**
@@ -228,14 +217,10 @@ public class VocabularyServiceBean implements VocabularyService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public TermSource createSource(String name) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, name);
-        }
+        LogUtil.logSubsystemEntry(LOG, name);
         TermSource source = new TermSource();
         source.setName(name);
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
+        LogUtil.logSubsystemExit(LOG);
         return source;
     }
 
@@ -244,20 +229,13 @@ public class VocabularyServiceBean implements VocabularyService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Category getCategory(TermSource source, String categoryName) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, source, categoryName);
-        }
+        LogUtil.logSubsystemEntry(LOG, source, categoryName);
         Category queryCategory = new Category();
         queryCategory.setName(categoryName);
         List<Category> result = getVocabularyDao().queryEntityByExample(queryCategory);
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
-        if (result.isEmpty()) {
-            return null;
-        } else {
-            return result.iterator().next();
-        }
+        LogUtil.logSubsystemExit(LOG);
+        return result.isEmpty() ? null : result.iterator().next();
+
     }
 
     /**
@@ -265,15 +243,11 @@ public class VocabularyServiceBean implements VocabularyService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Category createCategory(TermSource source, String categoryName) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, source, categoryName);
-        }
+        LogUtil.logSubsystemEntry(LOG, source, categoryName);
         Category category = new Category();
         category.setName(categoryName);
         getVocabularyDao().save(category);
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
+        LogUtil.logSubsystemExit(LOG);
         return category;
     }
 
@@ -282,17 +256,13 @@ public class VocabularyServiceBean implements VocabularyService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Term createTerm(TermSource source, Category category, String value) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, source, category, value);
-        }
+        LogUtil.logSubsystemEntry(LOG, source, category, value);
         Term term = new Term();
         term.setSource(source);
         term.setCategory(category);
         term.setValue(value);
         getVocabularyDao().save(term);
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
+        LogUtil.logSubsystemExit(LOG);
         return term;
     }
 
@@ -301,27 +271,20 @@ public class VocabularyServiceBean implements VocabularyService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Term getTerm(TermSource source, Category category, String value) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, source, category, value);
-        }
+        LogUtil.logSubsystemEntry(LOG, source, category, value);
         Term queryTerm = new Term();
         queryTerm.setCategory(category);
         queryTerm.setSource(source);
         queryTerm.setValue(value);
-        List<Term> result =
-            getVocabularyDao().queryEntityAndAssociationsByExample(queryTerm);
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
-        if (result.isEmpty()) {
-            return null;
-        } else {
-            return result.iterator().next();
-        }
+        List<Term> result = getVocabularyDao().queryEntityAndAssociationsByExample(queryTerm);
+        LogUtil.logSubsystemExit(LOG);
+        return result.isEmpty() ? null : result.iterator().next();
     }
+    
     final CaArrayDaoFactory getDaoFactory() {
         return daoFactory;
     }
+    
     final void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }

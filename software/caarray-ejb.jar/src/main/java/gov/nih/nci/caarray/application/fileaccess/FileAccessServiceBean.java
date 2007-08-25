@@ -113,16 +113,12 @@ public class FileAccessServiceBean implements FileAccessService {
      * @return the caArray file object.
      */
     public CaArrayFile add(File file) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, file);
-        }
+        LogUtil.logSubsystemEntry(LOG, file);
         CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setPath(file.getAbsolutePath());
         setTypeFromExtension(caArrayFile, file);
         // TODO -- add call to FileDao.save when implemented
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
+        LogUtil.logSubsystemExit(LOG);
         return caArrayFile;
     }
 
@@ -141,12 +137,8 @@ public class FileAccessServiceBean implements FileAccessService {
      * @return the file
      */
     public File getFile(CaArrayFile caArrayFile) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        }
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
+        LogUtil.logSubsystemEntry(LOG, caArrayFile);
+        LogUtil.logSubsystemExit(LOG);
         return new File(caArrayFile.getPath());
     }
     
@@ -157,16 +149,12 @@ public class FileAccessServiceBean implements FileAccessService {
      * @return the files.
      */
     public Set<File> getFiles(CaArrayFileSet fileSet) {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, fileSet);
-        }
+        LogUtil.logSubsystemEntry(LOG, fileSet);
         Set<File> files = new HashSet<File>();
         for (CaArrayFile caArrayFile : fileSet.getFiles()) {
             files.add(getFile(caArrayFile));
         }
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
+        LogUtil.logSubsystemExit(LOG);
         return files;
     }
 
