@@ -747,12 +747,11 @@
         <cobertura-check failureproperty="cobertura.failure"
                          datafile="${cobertura.file}"
                          haltonfailure="false"
-                         branchrate="0"
                          linerate="0"
                          packagebranchrate="0"
                          packagelinerate="0"
-                         totalbranchrate="42"
-                         totallinerate="58" />
+                         totalbranchrate="49"
+                         totallinerate="62" />
     </target>
 
     <!-- Functional (Selenium) Test Targets -->
