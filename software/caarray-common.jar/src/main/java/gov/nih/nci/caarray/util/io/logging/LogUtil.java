@@ -101,7 +101,9 @@ public final class LogUtil {
      * @param arguments the arguments to the method call.
      */
     public static void logSubsystemEntry(Log log, Object... arguments) {
-        logMethodCall(LoggingSource.SUBSYSTEM, log, arguments, MethodTraceType.ENTRY);
+        if (log.isDebugEnabled()) {
+            logMethodCall(LoggingSource.SUBSYSTEM, log, arguments, MethodTraceType.ENTRY);
+        }
     }
 
     /**
@@ -110,7 +112,9 @@ public final class LogUtil {
      * @param log write to this log.
      */
     public static void logSubsystemExit(Log log) {
-        logMethodCall(LoggingSource.SUBSYSTEM, log, new Object[0], MethodTraceType.EXIT);
+        if (log.isDebugEnabled()) {
+            logMethodCall(LoggingSource.SUBSYSTEM, log, new Object[0], MethodTraceType.EXIT);
+        }
     }
 
     /**

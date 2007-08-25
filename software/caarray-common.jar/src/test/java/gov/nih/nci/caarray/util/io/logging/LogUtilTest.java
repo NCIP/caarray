@@ -92,7 +92,9 @@ import org.junit.Test;
  */
 public class LogUtilTest {
     
-    private final TestLog testLog = new TestLog();
+    private final TestLog testLog = new TestLog() {
+        public boolean isDebugEnabled() {return true;}
+    };
 
     /**
      * Test method for {@link logSubsystemEntry(org.apache.commons.logging.Log, java.lang.Object[])}.
