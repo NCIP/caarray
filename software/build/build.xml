@@ -750,8 +750,8 @@
                          linerate="0"
                          packagebranchrate="0"
                          packagelinerate="0"
-                         totalbranchrate="49"
-                         totallinerate="62" />
+                         totalbranchrate="48"
+                         totallinerate="61" />
     </target>
 
     <!-- Functional (Selenium) Test Targets -->
