@@ -98,27 +98,13 @@ class MageTabParserImplementation implements MageTabParser {
 
     /**
      * {@inheritDoc}
-     * 
-     * @throws InvalidDataException
-     * @throws MageTabParsingException
      */
     public ValidationResult validate(MageTabInputFileSet fileSet) throws MageTabParsingException {
-        MageTabDocumentSet parsedDocuments = null;
-        ValidationResult vr = null;
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, fileSet);
-        }
-        try {
-            parsedDocuments = parse(fileSet);
-            vr = parsedDocuments.getValidationResult();
-        } catch (InvalidDataException e) {
-            vr = e.getValidationResult();
-        }
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
-
-        return vr;
+        LogUtil.logSubsystemEntry(LOG, fileSet);
+        ValidationResult result = null;
+        result = doParse(fileSet).getValidationResult();
+        LogUtil.logSubsystemExit(LOG);
+        return result;
     }
 
     /**
@@ -126,17 +112,18 @@ class MageTabParserImplementation implements MageTabParser {
      */
     public MageTabDocumentSet parse(MageTabInputFileSet inputFileSet) throws MageTabParsingException,
             InvalidDataException {
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemEntry(LOG, inputFileSet);
-        }
-        MageTabDocumentSet documentSet = new MageTabDocumentSet(inputFileSet);
-        documentSet.parse();
+        LogUtil.logSubsystemEntry(LOG, inputFileSet);
+        MageTabDocumentSet documentSet =  doParse(inputFileSet);
         if (!documentSet.getValidationResult().isValid()) {
             throw new InvalidDataException(documentSet.getValidationResult());
         }
-        if (LOG.isDebugEnabled()) {
-            LogUtil.logSubsystemExit(LOG);
-        }
+        LogUtil.logSubsystemExit(LOG);
+        return documentSet;
+    }
+
+    private MageTabDocumentSet doParse(MageTabInputFileSet inputFileSet) throws MageTabParsingException {
+        MageTabDocumentSet documentSet = new MageTabDocumentSet(inputFileSet);
+        documentSet.parse();
         return documentSet;
     }
 
