@@ -82,18 +82,6 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.protocol.Parameter;
-import gov.nih.nci.caarray.domain.protocol.ParameterValue;
-import gov.nih.nci.caarray.util.HibernateUtil;
-
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.junit.After;
 
 /**
@@ -101,39 +89,10 @@ import org.junit.After;
  */
 @SuppressWarnings("PMD")
 public class AbstractDaoTest {
-    private static final Log LOG = LogFactory.getLog(AbstractDaoTest.class);
 
     @After
-    public void doCleanup() {
-        doCleanupInternal();
-        if (!doCleanupInternal()) {
-            // This means we saw an object again, and that's a problem
-            throw new RuntimeException("Last unit test didn't fully clean up after itself");
-        }
+    public void tearDown() {
+        HibernateIntegrationTestCleanUpUtility.cleanUp();
     }
 
-    private boolean doCleanupInternal() {
-        boolean done = true;
-        Transaction tx = null;
-        try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
-            Session s = HibernateUtil.getCurrentSession();
-            Class<?>[] classes = new Class<?>[] {ParameterValue.class, Parameter.class, AbstractCaArrayObject.class};
-            for (Class<?> c : classes) {
-                List<?> allObjs = s.createQuery("FROM " + c.getName()).list();
-                for (Object o : allObjs) {
-                    done = false;
-                    s.delete(o);
-                }
-            }
-            tx.commit();
-        } catch (DAOException deleteException) {
-            HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up dummy category and terms.", deleteException);
-        } catch (HibernateException he) {
-            HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up dummy category and terms.", he);
-        }
-        return done;
-    }
 }
