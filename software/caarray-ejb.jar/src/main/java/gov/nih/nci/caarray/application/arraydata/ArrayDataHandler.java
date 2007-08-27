@@ -82,8 +82,10 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.validation.InvalidDataException;
 import gov.nih.nci.caarray.validation.ValidationResult;
 
@@ -97,31 +99,35 @@ public interface ArrayDataHandler {
      * Validates the array data in the file associated with the <code>AbstractArrayData</code> entity,
      * ensuring that it can be imported.
      * 
+     * @param dataFile data file to validate
      * @return the results of the validation.
      */
-    ValidationResult validate();
+    ValidationResult validate(CaArrayFile dataFile);
 
     /**
      * Imports array data from the file associated with the <code>AbstractArrayData</code> entity,
      * making it available for retrieval.
      * 
+     * @param arrayData import data content for this data object
      * @throws InvalidDataException if the data to be imported was invalid.
      */
-    void importData() throws InvalidDataException;
+    void importData(AbstractArrayData arrayData) throws InvalidDataException;
 
     /**
      * Returns the complete data content of the provided array data object.
-     * 
+     *
+     * @param arrayData retrieve data content for this data object
      * @return the data.
      */
-    DataSet getData();
+    DataSet getData(AbstractArrayData arrayData);
 
     /**
      * Returns the data content of the provided array data object for only the specified
      * <code>QuantitationTypes</code>. 
      * 
+     * @param arrayData retrieve data content for this data object
      * @param types get data for these types only
      * @return the data.
      */
-    DataSet getData(List<QuantitationType> types);    
+    DataSet getData(AbstractArrayData arrayData, List<QuantitationType> types);    
 }

@@ -85,36 +85,31 @@ package gov.nih.nci.caarray.application.arraydata;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 
 /**
- * 
+ * Common handler base for derived data.
  */
 public abstract class AbstractDerivedArrayDataHandler extends AbstractArrayDataHandler {
 
-    private final DerivedArrayData derivedArrayData;
 
     /**
      * Base class constructor.
-     * 
-     * @param derivedArrayData the array data for this handler
      * @param fileAccessService used by handler to get file contents
      * @param arrayDesignService used by handler to get array design details
      * @param daoFactory used to look up persistent objects
      */
-    protected AbstractDerivedArrayDataHandler(DerivedArrayData derivedArrayData, FileAccessService fileAccessService, 
-            ArrayDesignService arrayDesignService, CaArrayDaoFactory daoFactory) {
+    protected AbstractDerivedArrayDataHandler(FileAccessService fileAccessService, 
+            ArrayDesignService arrayDesignService, 
+            CaArrayDaoFactory daoFactory) {
         super(fileAccessService, arrayDesignService, daoFactory);
-        this.derivedArrayData = derivedArrayData;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the derivedArrayData
      */
-    @Override
-    protected AbstractArrayData getArrayData() {
-        return derivedArrayData;
+    protected DerivedArrayData getDerivedArrayData() {
+        return (DerivedArrayData) getArrayData();
     }
 
 }

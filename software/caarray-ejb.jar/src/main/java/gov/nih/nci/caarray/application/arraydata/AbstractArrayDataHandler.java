@@ -88,17 +88,23 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.validation.InvalidDataException;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Base class for all data handlers.
  */
-public abstract class AbstractArrayDataHandler implements ArrayDataHandler {
+abstract class AbstractArrayDataHandler implements ArrayDataHandler {
 
     private final FileAccessService fileAccessService;
     private final ArrayDesignService arrayDesignService;
     private final CaArrayDaoFactory daoFactory;
+    private AbstractArrayData arrayData;
 
     AbstractArrayDataHandler(FileAccessService fileAccessService, ArrayDesignService arrayDesignService,
             CaArrayDaoFactory daoFactory) {
@@ -128,7 +134,53 @@ public abstract class AbstractArrayDataHandler implements ArrayDataHandler {
     FileAccessService getFileAccessService() {
         return fileAccessService;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public final void importData(AbstractArrayData arrayDataToImport) throws InvalidDataException {
+        setArrayData(arrayDataToImport);
+        importData();
+    }
+    
+    /**
+     * Imports the data in the file associated with the <code>AbstractArrayData</code> associated with this handler.
+     * @throws InvalidDataException 
+     */
+    protected abstract void importData() throws InvalidDataException;
 
+    /**
+     * {@inheritDoc}
+     */
+    public final DataSet getData(AbstractArrayData forArrayData) {
+        setArrayData(forArrayData);
+        return getData(getAllQuantitationTypes());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public final DataSet getData(AbstractArrayData forArrayData, List<QuantitationType> types) {
+        setArrayData(forArrayData);
+        return getData(types);
+    }
+
+    /**
+     * Returns the data corresponding to these specific <code>QuantitationTypes</code> for the 
+     * <code>AbstractArrayData</code> associated with this handler.
+     * 
+     * @param types retrieve data corresponding to these types
+     * @return the data.
+     */
+    protected abstract DataSet getData(List<QuantitationType> types);
+
+    /**
+     * Returns the complete list of <code>QuantitationTypes</code> supported for the current
+     * file from which data is being retrieved.
+     * 
+     * @return the quantitation types.
+     */
+    protected abstract List<QuantitationType> getAllQuantitationTypes();
 
     /**
      * Returns the low level design details of an array design for use in
@@ -142,19 +194,37 @@ public abstract class AbstractArrayDataHandler implements ArrayDataHandler {
     }
 
     /**
-     * Returns the array data object for this handler.
-     *
-     * @return the array data.
-     */
-    protected abstract AbstractArrayData getArrayData();
-
-    /**
      * Returns the file associated with the array data, or null if none.
      *
      * @return the file.
      */
     protected File getArrayDataFile() {
-        return fileAccessService.getFile(getArrayData().getDataFile());
+        return getArrayDataFile(getArrayData().getDataFile());
+    }
+
+    /**
+     * Returns the file associated with the <code>CaArrayFile</code>.
+     *
+     * @return the file.
+     */
+    protected File getArrayDataFile(CaArrayFile caArrayFile) {
+        return fileAccessService.getFile(caArrayFile);
+    }
+
+    /**
+     * Returns the array data object for this handler.
+     *
+     * @return the array data.
+     */
+    protected final AbstractArrayData getArrayData() {
+        return arrayData;
+    }
+
+    /**
+     * @param arrayData the arrayData to set
+     */
+    private void setArrayData(AbstractArrayData arrayData) {
+        this.arrayData = arrayData;
     }
 
 

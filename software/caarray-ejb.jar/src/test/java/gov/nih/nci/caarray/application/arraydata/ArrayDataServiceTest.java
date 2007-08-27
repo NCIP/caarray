@@ -156,7 +156,7 @@ public class ArrayDataServiceTest {
     public void testAffymetrixCelData() throws InvalidDataException {
         RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
 
-        ValidationResult result = arrayDataService.validate(celData);
+        ValidationResult result = arrayDataService.validate(celData.getDataFile());
         assertTrue(result.isValid());
 
         arrayDataService.importData(celData);

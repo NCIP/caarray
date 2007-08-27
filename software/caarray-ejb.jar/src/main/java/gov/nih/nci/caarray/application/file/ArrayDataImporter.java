@@ -141,7 +141,7 @@ final class ArrayDataImporter {
     }
 
     private void validateFile(CaArrayFile file) {
-        arrayDataService.validate(getArrayData(file));
+        arrayDataService.validate(file);
     }
 
 }

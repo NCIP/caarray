@@ -89,11 +89,10 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
-import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
-import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.validation.InvalidDataException;
 import gov.nih.nci.caarray.validation.ValidationResult;
@@ -125,81 +124,8 @@ public class ArrayDataServiceBean implements ArrayDataService {
      */
     public void initialize() {
         LogUtil.logSubsystemEntry(LOG);
-        initialize(AffymetrixArrayDataTypes.values());
+        new TypeRegistrationManager(getDaoFactory().getArrayDao()).registerNewTypes();
         LogUtil.logSubsystemExit(LOG);
-    }
-
-    private void initialize(AffymetrixArrayDataTypes[] types) {
-        for (ArrayDataTypeDescriptor type : types) {
-            initialize(type);
-        }
-    }
-
-    private void initialize(ArrayDataTypeDescriptor type) {
-        ensureQuantitationTypesRegistered(type);
-        ensureArrayDataTypeRegistered(type);
-    }
-
-    private void ensureArrayDataTypeRegistered(ArrayDataTypeDescriptor type) {
-        // TODO handle change of registered quantition types?
-        if (!isRegistered(type)) {
-            register(type);
-        }
-    }
-
-    private boolean isRegistered(ArrayDataTypeDescriptor typeDescriptor) {
-        return getType(typeDescriptor) != null;
-    }
-
-    private ArrayDataType getType(ArrayDataTypeDescriptor typeDescriptor) {
-        return getDaoFactory().getArrayDao().getArrayDataType(typeDescriptor);
-    }
-
-    private ArrayDataType createType(ArrayDataTypeDescriptor typeDescriptor) {
-        ArrayDataType arrayDataType = new ArrayDataType();
-        arrayDataType.setName(typeDescriptor.getName());
-        arrayDataType.setVersion(typeDescriptor.getVersion());
-        return arrayDataType;
-    }
-
-    private void register(ArrayDataTypeDescriptor typeDescriptor) {
-        ArrayDataType arrayDataType = createType(typeDescriptor);
-        for (QuantitationTypeDescriptor quantitationTypeDescriptor : typeDescriptor.getQuantitationTypes()) {
-            arrayDataType.getQuantitationTypes().add(getQuantitationType(quantitationTypeDescriptor));
-        }
-        getDaoFactory().getArrayDao().save(arrayDataType);
-    }
-
-    private void ensureQuantitationTypesRegistered(ArrayDataTypeDescriptor type) {
-        for (QuantitationTypeDescriptor quantitationTypeDescriptor : type.getQuantitationTypes()) {
-            ensureQuantitationTypeRegistered(quantitationTypeDescriptor);
-        }
-    }
-
-    private void ensureQuantitationTypeRegistered(QuantitationTypeDescriptor quantitationTypeDescriptor) {
-        if (!isRegistered(quantitationTypeDescriptor)) {
-            register(quantitationTypeDescriptor);
-        }
-    }
-
-    private boolean isRegistered(QuantitationTypeDescriptor quantitationTypeDescriptor) {
-        return getQuantitationType(quantitationTypeDescriptor) != null;
-    }
-
-    private QuantitationType getQuantitationType(QuantitationTypeDescriptor quantitationTypeDescriptor) {
-        return daoFactory.getArrayDao().getQuantitationType(quantitationTypeDescriptor);
-    }
-
-    private void register(QuantitationTypeDescriptor quantitationTypeDescriptor) {
-        QuantitationType quantitationType = createQuantitationType(quantitationTypeDescriptor);
-        getDaoFactory().getArrayDao().save(quantitationType);
-    }
-
-    private QuantitationType createQuantitationType(QuantitationTypeDescriptor quantitationTypeDescriptor) {
-        QuantitationType quantitationType = new QuantitationType();
-        quantitationType.setName(quantitationTypeDescriptor.getName());
-        quantitationType.setTypeClass(quantitationTypeDescriptor.getDataType().getTypeClass());
-        return quantitationType;
     }
 
     /**
@@ -207,17 +133,24 @@ public class ArrayDataServiceBean implements ArrayDataService {
      */
     public DataSet getData(AbstractArrayData arrayData) {
         LogUtil.logSubsystemEntry(LOG, arrayData);
-        DataSet dataSet = getHandler(arrayData).getData();
+        DataSet dataSet = getHandler(arrayData.getType()).getData(arrayData);
         LogUtil.logSubsystemExit(LOG);
         return dataSet;
     }
-
-    private ArrayDataHandler getHandler(AbstractArrayData arrayData) {
-        if (AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL.isEquivalent(arrayData.getType())) {
-            RawArrayData rawArrayData = (RawArrayData) arrayData;
-            return new AffymetrixCelHandler(rawArrayData, fileAccessService, arrayDesignService, daoFactory);
+    
+    private ArrayDataHandler getHandler(ArrayDataType arrayDataType) {
+        if (AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL.isEquivalent(arrayDataType)) {
+            return new AffymetrixCelHandler(fileAccessService, arrayDesignService, daoFactory);
         } else {
-            throw new IllegalArgumentException("Unsupported ArrayDataType: " + arrayData.getType());
+            throw new IllegalArgumentException("Unsupported ArrayDataType: " + arrayDataType);
+        }
+    }
+    
+    private ArrayDataHandler getHandler(FileType type) {
+        if (FileType.AFFYMETRIX_CEL.equals(type)) {
+            return new AffymetrixCelHandler(fileAccessService, arrayDesignService, daoFactory);
+        } else {
+            throw new IllegalArgumentException("Unsupported FileType: " + type);
         }
     }
 
@@ -226,7 +159,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
      */
     public DataSet getData(AbstractArrayData arrayData, List<QuantitationType> types) {
         LogUtil.logSubsystemEntry(LOG, arrayData);
-        DataSet dataSet = getHandler(arrayData).getData(types);
+        DataSet dataSet = getHandler(arrayData.getType()).getData(arrayData, types);
         LogUtil.logSubsystemExit(LOG);
         return dataSet;
     }
@@ -237,7 +170,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
     public void importData(AbstractArrayData arrayData) throws InvalidDataException {
         LogUtil.logSubsystemEntry(LOG, arrayData);
         checkArguments(arrayData);
-        getHandler(arrayData).importData();
+        getHandler(arrayData.getType()).importData(arrayData);
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -252,8 +185,8 @@ public class ArrayDataServiceBean implements ArrayDataService {
     /**
      * {@inheritDoc}
      */
-    public ValidationResult validate(AbstractArrayData arrayData) {
-        return getHandler(arrayData).validate();
+    public ValidationResult validate(CaArrayFile arrayDataFile) {
+        return getHandler(arrayDataFile.getType()).validate(arrayDataFile);
     }
 
     ArrayDesignService getArrayDesignService() {

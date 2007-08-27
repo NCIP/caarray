@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.arraydata;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.validation.InvalidDataException;
 import gov.nih.nci.caarray.validation.ValidationResult;
@@ -114,7 +115,7 @@ public class ArrayDataServiceStub implements ArrayDataService {
         // no-op
     }
 
-    public ValidationResult validate(AbstractArrayData arrayData) {
+    public ValidationResult validate(CaArrayFile arrayDataFile) {
         return new ValidationResult();
     }
 

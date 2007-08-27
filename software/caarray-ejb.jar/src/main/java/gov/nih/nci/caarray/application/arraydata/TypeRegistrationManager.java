@@ -82,65 +82,98 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.domain.data.ArrayDataType;
+import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.validation.InvalidDataException;
-import gov.nih.nci.caarray.validation.ValidationResult;
-
-import java.util.List;
-
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 
 /**
- * Provides hybridization data storage and retrieval functionality.
+ * Responsible for ensuring all known data types are registered in the system at initialization time.
  */
-public interface ArrayDataService {
+final class TypeRegistrationManager {
 
-    /**
-     * The default JNDI name to use to lookup <code>ArrayDataService</code>.
-     */
-    String JNDI_NAME = "caarray/ArrayDataServiceBean/local";
+    private final ArrayDao arrayDao;
 
-    /**
-     * Invoked at system start-up, registers all handlers with the system, ensuring that all supported
-     * array data types and quantitation types are included in the system.
-     */
-    void initialize();
+    TypeRegistrationManager(ArrayDao arrayDao) {
+        this.arrayDao = arrayDao;
+    }
 
-    /**
-     * Validates the array data in the file given, ensuring that it can be imported.
-     * 
-     * @param arrayDataFile the array data file to validate.
-     * @return the results of the validation.
-     */
-    ValidationResult validate(CaArrayFile arrayDataFile);
+    public void registerNewTypes() {
+        initialize(AffymetrixArrayDataTypes.values());
+    }
 
-    /**
-     * Imports array data from the file associated with the <code>AbstractArrayData</code> entity,
-     * making it available for retrieval.
-     * 
-     * @param arrayData the array data to import.
-     * @throws InvalidDataException if the data to be imported was invalid.
-     */
-    void importData(AbstractArrayData arrayData) throws InvalidDataException;
+    private void initialize(AffymetrixArrayDataTypes[] types) {
+        for (ArrayDataTypeDescriptor type : types) {
+            initialize(type);
+        }
+    }
 
-    /**
-     * Returns the complete data content of the provided array data object.
-     * 
-     * @param arrayData get data from this data object
-     * @return the data.
-     */
-    DataSet getData(AbstractArrayData arrayData);
+    private void initialize(ArrayDataTypeDescriptor type) {
+        ensureQuantitationTypesRegistered(type);
+        ensureArrayDataTypeRegistered(type);
+    }
 
-    /**
-     * Returns the data content of the provided array data object for only the specified
-     * <code>QuantitationTypes</code>. 
-     * 
-     * @param arrayData get data from this data object
-     * @param types get data for these types only
-     * @return the data.
-     */
-    DataSet getData(AbstractArrayData arrayData, List<QuantitationType> types);
-    
+    private void ensureArrayDataTypeRegistered(ArrayDataTypeDescriptor type) {
+        // TODO handle change of registered quantition types?
+        if (!isRegistered(type)) {
+            register(type);
+        }
+    }
+
+    private boolean isRegistered(ArrayDataTypeDescriptor typeDescriptor) {
+        return getType(typeDescriptor) != null;
+    }
+
+    private ArrayDataType getType(ArrayDataTypeDescriptor typeDescriptor) {
+        return arrayDao.getArrayDataType(typeDescriptor);
+    }
+
+    private ArrayDataType createType(ArrayDataTypeDescriptor typeDescriptor) {
+        ArrayDataType arrayDataType = new ArrayDataType();
+        arrayDataType.setName(typeDescriptor.getName());
+        arrayDataType.setVersion(typeDescriptor.getVersion());
+        return arrayDataType;
+    }
+
+    private void register(ArrayDataTypeDescriptor typeDescriptor) {
+        ArrayDataType arrayDataType = createType(typeDescriptor);
+        for (QuantitationTypeDescriptor quantitationTypeDescriptor : typeDescriptor.getQuantitationTypes()) {
+            arrayDataType.getQuantitationTypes().add(getQuantitationType(quantitationTypeDescriptor));
+        }
+        arrayDao.save(arrayDataType);
+    }
+
+    private void ensureQuantitationTypesRegistered(ArrayDataTypeDescriptor type) {
+        for (QuantitationTypeDescriptor quantitationTypeDescriptor : type.getQuantitationTypes()) {
+            ensureQuantitationTypeRegistered(quantitationTypeDescriptor);
+        }
+    }
+
+    private void ensureQuantitationTypeRegistered(QuantitationTypeDescriptor quantitationTypeDescriptor) {
+        if (!isRegistered(quantitationTypeDescriptor)) {
+            register(quantitationTypeDescriptor);
+        }
+    }
+
+    private boolean isRegistered(QuantitationTypeDescriptor quantitationTypeDescriptor) {
+        return getQuantitationType(quantitationTypeDescriptor) != null;
+    }
+
+    private QuantitationType getQuantitationType(QuantitationTypeDescriptor quantitationTypeDescriptor) {
+        return arrayDao.getQuantitationType(quantitationTypeDescriptor);
+    }
+
+    private void register(QuantitationTypeDescriptor quantitationTypeDescriptor) {
+        QuantitationType quantitationType = createQuantitationType(quantitationTypeDescriptor);
+        arrayDao.save(quantitationType);
+    }
+
+    private QuantitationType createQuantitationType(QuantitationTypeDescriptor quantitationTypeDescriptor) {
+        QuantitationType quantitationType = new QuantitationType();
+        quantitationType.setName(quantitationTypeDescriptor.getName());
+        quantitationType.setTypeClass(quantitationTypeDescriptor.getDataType().getTypeClass());
+        return quantitationType;
+    }
 }

@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.application.arraydata;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 
 /**
@@ -93,35 +92,22 @@ import gov.nih.nci.caarray.domain.data.RawArrayData;
  */
 public abstract class AbstractRawArrayDataHandler extends AbstractArrayDataHandler {
 
-    private final RawArrayData rawArrayData;
-
     /**
      * Base class constructor.
-     * 
-     * @param rawArrayData the array data for this handler
      * @param fileAccessService used by handler to get file contents
      * @param arrayDesignService used by handler to get array design details
      * @param daoFactory used to look up persistent objects
      */
-    protected AbstractRawArrayDataHandler(RawArrayData rawArrayData, FileAccessService fileAccessService, 
-            ArrayDesignService arrayDesignService, CaArrayDaoFactory daoFactory) {
+    protected AbstractRawArrayDataHandler(FileAccessService fileAccessService, ArrayDesignService arrayDesignService, 
+            CaArrayDaoFactory daoFactory) {
         super(fileAccessService, arrayDesignService, daoFactory);
-        this.rawArrayData = rawArrayData;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected AbstractArrayData getArrayData() {
-        return getRawArrayData();
     }
 
     /**
      * @return the rawArrayData
      */
     protected final RawArrayData getRawArrayData() {
-        return rawArrayData;
+        return (RawArrayData) getArrayData();
     }
 
 }
