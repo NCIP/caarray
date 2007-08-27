@@ -18,10 +18,16 @@
 <h:form id="filesForm">
   <h:messages/>
   <p>You are managing files for <h:outputText value="#{projectManagementBean.project.experiment.title}"/>.</p>
-  <h:dataTable id="files" value="#{projectManagementBean.project.filesList}" var="file">
+  <h:dataTable id="files" value="#{projectManagementBean.project.filesList}" var="file" binding="#{projectManagementBean.fileTable}" >
     <f:facet name="header">
       <h:outputText value="Current files"/>
     </f:facet>
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="Select"/>
+      </f:facet>
+      <h:selectBooleanCheckbox id="selected" binding="#{projectManagementBean.fileSelected}"/>
+    </h:column>
     <h:column>
       <f:facet name="header">
         <h:outputText value="Name"/>
@@ -42,6 +48,7 @@
     </h:column>
   </h:dataTable>
   <h:commandButton id="import" action="#{projectManagementBean.importProjectFiles}" value="Import" />
+  <h:commandButton id="validate" action="#{projectManagementBean.validateProjectFiles}" value="Validate" />
 </h:form>
 <h:form id="uploadForm" enctype="multipart/form-data">
   <t:inputFileUpload id="inputFileUpload" value="#{projectManagementBean.uploadFile}" storage="file" required="true"/>

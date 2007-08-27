@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.ui.jsf.beans.project;
 
 import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 
@@ -99,6 +101,7 @@ import java.util.Set;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIData;
+import javax.faces.component.UISelectBoolean;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
@@ -112,7 +115,8 @@ public final class ProjectManagementBean implements Serializable {
 
     private static final long serialVersionUID = -1814579234979957046L;
 
-    private static final String MANAGE_FILES_OUTCOME = "manageFiles";
+    private static final String MANAGE_FILES_FORWARD = "manageFiles";
+    private static final String WORKSPACE = "workspace";
     private static final Log LOG = LogFactory.getLog(ProjectManagementBean.class);
 
     private ServiceLocator locator = ServiceLocator.INSTANCE;
@@ -120,13 +124,16 @@ public final class ProjectManagementBean implements Serializable {
     private FileManagementService fileManagementService;
     private Project project;
     private UIData projectTable;
+    private CaArrayFile caArrayFile;
+    private UIData fileTable;
+    private UISelectBoolean fileSelected;
     private UploadedFile uploadFile;
 
     /**
      * @return JSF forward
      */
     public String openWorkspace() {
-        return "workspace";
+        return WORKSPACE;
     }
 
     /**
@@ -188,7 +195,7 @@ public final class ProjectManagementBean implements Serializable {
             String msg = "Unable to upload file: " + e.getMessage();
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, ""));
             LOG.error(msg, e);
-            return MANAGE_FILES_OUTCOME;
+            return MANAGE_FILES_FORWARD;
         } finally {
             if (os != null) {
                 try {
@@ -200,7 +207,7 @@ public final class ProjectManagementBean implements Serializable {
             }
         }
 
-        return MANAGE_FILES_OUTCOME;
+        return MANAGE_FILES_FORWARD;
     }
 
     /**
@@ -211,7 +218,8 @@ public final class ProjectManagementBean implements Serializable {
     private File getFile() {
         File projectDirectory = new File(System.getProperty("java.io.tmpdir"), getProject().getId().toString());
         projectDirectory.mkdirs();
-        return new File(projectDirectory, getUploadFile().getName());
+        String filename = new File(getUploadFile().getName()).getName();
+        return new File(projectDirectory, filename);
     }
 
     /**
@@ -219,16 +227,32 @@ public final class ProjectManagementBean implements Serializable {
      * @return back to manage
      */
     public String importProjectFiles() {
-        getFileManagementService().importFiles(project, project.getFileSet());
-        return MANAGE_FILES_OUTCOME;
+        getFileManagementService().importFiles(project, getSelectedFiles());
+        return MANAGE_FILES_FORWARD;
     }
+
+    private CaArrayFileSet getSelectedFiles() {
+        return getProject().getFileSet();
+        // Trying to get file selection to work -- temporarily commented out
+//        CaArrayFileSet fileSet = new CaArrayFileSet();
+//        int first = fileTable.getFirst();
+//        int rows = fileTable.getRows();
+//        for (int index = first; index < (first + rows); index++) {
+//            fileTable.setRowIndex(index);
+//            if (getFileSelected().isSelected()) {
+//                fileSet.add((CaArrayFile) fileTable.getRowData());
+//            }
+//        }
+//        return fileSet;
+    }
+
     /**
      * Validate files.
      * @return back to manage
      */
     public String validateProjectFiles() {
-        getFileManagementService().validateFiles(project.getFileSet());
-        return MANAGE_FILES_OUTCOME;
+        getFileManagementService().validateFiles(getSelectedFiles());
+        return MANAGE_FILES_FORWARD;
     }
 
     /**
@@ -280,6 +304,48 @@ public final class ProjectManagementBean implements Serializable {
      */
     void setProject(Project project) {
         this.project = project;
+    }
+
+    /**
+     * @return the caArrayFile
+     */
+    public CaArrayFile getCaArrayFile() {
+        return caArrayFile;
+    }
+
+    /**
+     * @param caArrayFile the caArrayFile to set
+     */
+    public void setCaArrayFile(CaArrayFile caArrayFile) {
+        this.caArrayFile = caArrayFile;
+    }
+
+    /**
+     * @return the fileTable
+     */
+    public UIData getFileTable() {
+        return fileTable;
+    }
+
+    /**
+     * @param fileTable the fileTable to set
+     */
+    public void setFileTable(UIData fileTable) {
+        this.fileTable = fileTable;
+    }
+
+    /**
+     * @return the fileSelected
+     */
+    public UISelectBoolean getFileSelected() {
+        return fileSelected;
+    }
+
+    /**
+     * @param fileSelected the fileSelected to set
+     */
+    public void setFileSelected(UISelectBoolean fileSelected) {
+        this.fileSelected = fileSelected;
     }
 
 }

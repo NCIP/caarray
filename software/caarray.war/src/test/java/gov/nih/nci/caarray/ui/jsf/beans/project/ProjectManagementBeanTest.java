@@ -83,6 +83,9 @@
 package gov.nih.nci.caarray.ui.jsf.beans.project;
 
 import static org.junit.Assert.assertTrue;
+
+import javax.faces.component.UIData;
+
 import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.file.FileManagementServiceStub;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
@@ -111,14 +114,20 @@ public class ProjectManagementBeanTest {
         locatorStub.addLookup(FileManagementService.JNDI_NAME, fileManagementStub);
     }
 
-    /**
-     * Test method for {@link gov.nih.nci.caarray.ui.jsf.beans.project.ProjectManagementBean#validateProjectFiles()}.
-     */
     @Test
     public void testValidateProjectFiles() {
         projectManagementBean.setProject(new Project());
+        projectManagementBean.setFileTable(new UIData());
         projectManagementBean.validateProjectFiles();
         assertTrue(fileManagementStub.calledValidateFiles);
+    }
+
+    @Test
+    public void testImportProjectFiles() {
+        projectManagementBean.setProject(new Project());
+        projectManagementBean.setFileTable(new UIData());
+        projectManagementBean.importProjectFiles();
+        assertTrue(fileManagementStub.calledImportFiles);
     }
 
     private static class LocalProjectManagementServiceStub extends ProjectManagementServiceStub {
@@ -128,11 +137,18 @@ public class ProjectManagementBeanTest {
     private static class LocalFileManagementServiceStub extends FileManagementServiceStub {
 
         boolean calledValidateFiles;
+        boolean calledImportFiles;
         
         @Override
         public void validateFiles(CaArrayFileSet fileSet) {
             super.validateFiles(fileSet);
             calledValidateFiles = true;
+        }
+        
+        @Override
+        public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
+            super.importFiles(targetProject, fileSet);
+            calledImportFiles = true;
         }
         
     }
