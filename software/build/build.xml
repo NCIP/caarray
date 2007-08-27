@@ -1075,7 +1075,7 @@
     <mkdir dir="${ear.dist.dir}/${label.ear}" />
     <copy file="${caarray.ear}" todir="${ear.dist.dir}/${label.ear}" />
     <copy file="${caarray-client.jar}" todir="${ear.dist.dir}/${label.ear}" />
-    <svn username="duvallp" password="I8eiderm" >
+    <svn username="${svn.user.name}" password="${svn.user.pwd}" >
       <add dir="${ear.dist.dir}/${label.ear}" />
       <commit message="${caarray.TODAY} - Automated commit from Ant..." dir="${ear.dist.dir}/${label.ear}" />
     </svn>
