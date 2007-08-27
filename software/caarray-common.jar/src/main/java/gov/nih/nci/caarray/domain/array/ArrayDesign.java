@@ -94,6 +94,7 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.file.ArrayType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -107,6 +108,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 
     private String name;
+    private String type;
     private ProtocolApplication printing;
     private Term polymerType;
     private Integer numberOfFeatures;
@@ -320,4 +322,46 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
+
+    /**
+     * @return the type
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    public void setType(String type) {
+        checkType(type);
+        this.type = type;
+    }
+
+    private void checkType(String typeValue) {
+        if (typeValue != null) {
+            ArrayType.valueOf(typeValue);
+        }
+    }
+
+    /**
+     * @return the arrayType
+     */
+    @Transient
+    public ArrayType getArrayType() {
+        return getType() == null ? null : ArrayType.valueOf(getType());
+    }
+
+    /**
+     * @param arrayType the arrayType to set
+     */
+    public void setArrayType(ArrayType arrayType) {
+        if (arrayType == null) {
+            setType(null);
+        } else {
+            setType(arrayType.name());
+        }
+    }
+
 }
