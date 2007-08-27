@@ -420,6 +420,9 @@
         <mkdir dir="${caarray-client.target.dir}"/>
         <jar destfile="${caarray-client.jar}">
 			<zipfileset src="${hibernate-client.jar}"/>
+			<zipfileset src="${hibernate-annotations.jar}"/>
+			<zipfileset src="${hibernate-commons-annotations.jar}"/>
+			<zipfileset src="${ejb3-persistence.jar}"/>
 			<zipfileset src="${jboss-ejb3-client.jar}"/>
 			<zipfileset src="${jbossall-client.jar}"/>
 			<zipfileset src="${jboss-aspect-jdk50-client.jar}"/>
