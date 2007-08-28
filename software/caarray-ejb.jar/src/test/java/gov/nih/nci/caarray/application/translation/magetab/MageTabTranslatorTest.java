@@ -104,7 +104,6 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
-import gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile;
 
 import java.util.ArrayList;
 import java.util.HashSet;
