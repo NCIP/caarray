@@ -93,7 +93,7 @@
     <property name="commons-logging.jar" value="${lib.dir}/commons-logging-1.1.jar" />
     <property name="dom4j.jar" value="${lib.dir}/dom4j-1.6.1.jar" />
     <property name="hibernate.jar" value="${lib.dir}/hibernate3.jar" />
-    <property name="hibernate-client.jar" value="${lib.dir}/hibernate3.jar" />
+    <property name="hibernate-client.jar" value="${lib.dir}/hibernate-client.jar" />
     <property name="ejb3-persistence.jar" value="${lib.dir}/ejb3-persistence.jar" />
     <property name="hibernate-annotations.jar" value="${lib.dir}/hibernate-annotations.jar" />
     <property name="hibernate-commons-annotations.jar" value="${lib.dir}/hibernate-commons-annotations.jar" />
