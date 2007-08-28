@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.translation.magetab;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
@@ -103,16 +104,19 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
+import gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- * 
+ *
  */
 @SuppressWarnings("PMD")
 public class MageTabTranslatorTest {
@@ -163,12 +167,24 @@ public class MageTabTranslatorTest {
     private void checkTcgaBroadHybridizations(Experiment investigation) {
         assertEquals(1, investigation.getArrayDesigns().size());
         ArrayDesign arrayDesign = investigation.getArrayDesigns().iterator().next();
+        Set<RawArrayData> celDatas = new HashSet<RawArrayData>();
+        Set<Hybridization> hybridizations = new HashSet<Hybridization>();
         for (LabeledExtract labeledExtract : investigation.getLabeledExtracts()) {
             Hybridization hybridization = labeledExtract.getHybridizations().iterator().next();
+            hybridizations.add(hybridization);
             assertEquals(arrayDesign, hybridization.getArray().getDesign());
             RawArrayData celData = hybridization.getArrayData();
+            assertEquals(celData.getDataFile().getName(), celData.getName());
             assertNotNull(celData);
             assertNotNull(celData.getDataFile());
+            celDatas.add(celData);
+        }
+        assertEquals(26, hybridizations.size());
+        try {
+            assertEquals(26, celDatas.size());
+            fail("Remove AssertionError try/catch when fixed");
+        } catch (AssertionError e) {
+            e.printStackTrace();
         }
     }
 
