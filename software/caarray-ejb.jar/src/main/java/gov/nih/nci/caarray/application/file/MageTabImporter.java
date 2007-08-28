@@ -124,6 +124,17 @@ class MageTabImporter {
         this.daoFactory = daoFactory;
     }
 
+    void validateFiles(CaArrayFileSet fileSet) {
+        updateFileStatus(fileSet, FileStatus.VALIDATING);
+        MageTabInputFileSet inputSet = getInputFileSet(fileSet);
+        try {
+            MageTabParser.INSTANCE.validate(inputSet);
+        } catch (MageTabParsingException e) {
+            updateFileStatus(fileSet, FileStatus.VALIDATION_ERRORS);
+        }
+        updateFileStatus(fileSet, FileStatus.VALIDATED);
+    }
+
     void importFiles(Project targetProject, CaArrayFileSet fileSet) throws MageTabParsingException {
         updateFileStatus(fileSet, FileStatus.IMPORTING);
         MageTabInputFileSet inputSet = getInputFileSet(fileSet);
@@ -260,17 +271,6 @@ class MageTabImporter {
 
     private ProjectDao getProjectDao() {
         return daoFactory.getProjectDao();
-    }
-
-    void validateFiles(CaArrayFileSet fileSet) {
-        updateFileStatus(fileSet, FileStatus.VALIDATING);
-        MageTabInputFileSet inputSet = getInputFileSet(fileSet);
-        try {
-            MageTabParser.INSTANCE.validate(inputSet);
-        } catch (MageTabParsingException e) {
-            updateFileStatus(fileSet, FileStatus.VALIDATION_ERRORS);
-        }
-        updateFileStatus(fileSet, FileStatus.VALIDATED);
     }
 
 }
