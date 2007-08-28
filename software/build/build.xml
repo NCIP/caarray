@@ -419,14 +419,14 @@
     <target name="build:caarray-client.jar" depends="compile:caarray-client.jar,compile:caarray-common.jar">
         <mkdir dir="${caarray-client.target.dir}"/>
         <jar destfile="${caarray-client.jar}">
-			<zipfileset src="${hibernate-client.jar}"/>
-			<zipfileset src="${hibernate-annotations.jar}"/>
-			<zipfileset src="${hibernate-commons-annotations.jar}"/>
-			<zipfileset src="${ejb3-persistence.jar}"/>
-			<zipfileset src="${jboss-ejb3-client.jar}"/>
-			<zipfileset src="${jbossall-client.jar}"/>
-			<zipfileset src="${jboss-aspect-jdk50-client.jar}"/>
-			<zipfileset src="${jboss-aop-jdk50-client.jar}"/>
+      <zipfileset src="${hibernate-client.jar}"/>
+      <zipfileset src="${hibernate-annotations.jar}"/>
+      <zipfileset src="${hibernate-commons-annotations.jar}"/>
+      <zipfileset src="${ejb3-persistence.jar}"/>
+      <zipfileset src="${jboss-ejb3-client.jar}"/>
+      <zipfileset src="${jbossall-client.jar}"/>
+      <zipfileset src="${jboss-aspect-jdk50-client.jar}"/>
+      <zipfileset src="${jboss-aop-jdk50-client.jar}"/>
             <fileset dir="${caarray-client.classes.dir}" />
             <fileset dir="${caarray-common.classes.dir}" >
                 <include name="**/domain/**"/>
@@ -696,8 +696,8 @@
                 <pathelement location="${caarray-war.classes.dir}" />
                 <pathelement location="${caarray-common.classes.dir}" />
                 <pathelement location="${caarray-ejb.classes.dir}" />
-			    <pathelement location="${caarray-ejb.test.classes.dir}" />
-			    <pathelement location="${caarray-common.test.classes.dir}" />
+          <pathelement location="${caarray-ejb.test.classes.dir}" />
+          <pathelement location="${caarray-common.test.classes.dir}" />
                 <pathelement location="${caarray-common.test.files.dir}" />
                 <pathelement location="${myfaces-api.jar}" />
                 <pathelement location="${junit.jar}" />
@@ -714,7 +714,7 @@
       test.src.dir="${caarray-war.test.src.dir}"
         xml.output.dir="${caarray-war.target.dir}/junit"
       instrumented.classes="${caarray-war.instrumented.classes.dir}"
-        classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-logging.jar};${caarray-common.test.classes.dir};${caarray-ejb.test.classes.dir};${myfaces-api.jar};${junit.jar}" />
+        classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-logging.jar};${caarray-common.test.classes.dir};${caarray-ejb.test.classes.dir};${myfaces-api.jar};${junit.jar}" />
     </target>
 
     <target name="test:junit-report">
@@ -834,9 +834,9 @@
                 <pathelement location="${caarray-common.jar}" />
                 <pathelement location="${caarray-ejb.jar}" />
                 <pathelement location="${caarray-war.classes.dir}" />
-			    <pathelement location="${cacore32-client.jar}" />
-			    <pathelement location="${csmapi.jar}" />
-			    <pathelement location="${javaee.jar}" />
+          <pathelement location="${cacore32-client.jar}" />
+          <pathelement location="${csmapi.jar}" />
+          <pathelement location="${javaee.jar}" />
             </classpath>
             <formatter type="xml" tofile="${site.dir}/checkstyle/checkstyle.xml" />
             <fileset dir="${caarray-common.src.dir}" includes="**/*.java" />
