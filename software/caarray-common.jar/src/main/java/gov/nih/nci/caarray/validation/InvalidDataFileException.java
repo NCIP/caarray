@@ -84,29 +84,29 @@ package gov.nih.nci.caarray.validation;
 
 
 /**
- * Indicates that a files can't be handled because the content is invalid.
+ * Indicates that a single file can't be handled because the content is invalid.
  */
-public final class InvalidDataException extends Exception {
+public final class InvalidDataFileException extends Exception {
 
     private static final long serialVersionUID = 107348410227852110L;
     
-    private final ValidationResult validationResult;
+    private final FileValidationResult fileValidationResult;
 
     /**
      * Creates a new instance that wraps a validation result.
      * 
-     * @param validationResult contains validation messages, including the error that caused this exception.
+     * @param fileValidationResult contains validation messages, including the error that caused this exception.
      */
-    public InvalidDataException(ValidationResult validationResult) {
+    public InvalidDataFileException(FileValidationResult fileValidationResult) {
         super();
-        this.validationResult = validationResult;
+        this.fileValidationResult = fileValidationResult;
     }
 
     /**
-     * @return the validationResult
+     * @return the fileValidationResult
      */
-    public ValidationResult getValidationResult() {
-        return validationResult;
+    public FileValidationResult getFileValidationResult() {
+        return fileValidationResult;
     }
     
 }
