@@ -82,100 +82,49 @@
  */
 package gov.nih.nci.caarray.ui.jsf.beans.project;
 
-import static org.junit.Assert.*;
-
-import javax.faces.component.UIData;
-
-import gov.nih.nci.caarray.application.file.FileManagementService;
-import gov.nih.nci.caarray.application.file.FileManagementServiceStub;
-import gov.nih.nci.caarray.application.project.ProjectManagementService;
-import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
-import org.junit.Before;
-import org.junit.Test;
+import java.io.Serializable;
 
-public class ProjectManagementBeanTest {
+/**
+ * UI representation of a <code>CaArrayFile</code> in a list.
+ */
+public class FileEntry implements Serializable {
 
-    private final ProjectManagementBean projectManagementBean = new ProjectManagementBean();
-    private final ServiceLocatorStub locatorStub = new ServiceLocatorStub();
-    private final LocalProjectManagementServiceStub projectServiceStub = new LocalProjectManagementServiceStub();
-    private final LocalFileManagementServiceStub fileManagementStub = new LocalFileManagementServiceStub();
+    private static final long serialVersionUID = -5086451191536156969L;
+
+    private boolean selected;
+    private final CaArrayFile caArrayFile;
 
     /**
-     * @throws java.lang.Exception
+     * Creates a new file entry wrapping the given <code>CaArrayFile</code>.
+     *
+     * @param caArrayFile the file
      */
-    @Before
-    public void setUp() throws Exception {
-        projectManagementBean.setLocator(locatorStub);
-        locatorStub.addLookup(ProjectManagementService.JNDI_NAME, projectServiceStub);
-        locatorStub.addLookup(FileManagementService.JNDI_NAME, fileManagementStub);
-        loadTestProject();
-    }
-
-    private void loadTestProject() {
-        final Project project = new Project();
-        CaArrayFile file1 = new CaArrayFile();
-        file1.setFileStatus(FileStatus.UPLOADED);
-        file1.setPath("path/file1.ext");
-        CaArrayFile file2 = new CaArrayFile();
-        file2.setFileStatus(FileStatus.UPLOADED);
-        file2.setPath("path/file2.ext");
-        CaArrayFile file3 = new CaArrayFile();
-        file3.setFileStatus(FileStatus.UPLOADED);
-        file3.setPath("path/file3.ext");
-        project.getFiles().add(file1);
-        project.getFiles().add(file2);
-        project.getFiles().add(file3);
-        projectManagementBean.setProjectTable(new UIData() {
-            @Override
-            public Object getRowData() {
-                return project;
-            }
-        });
-    }
-
-    @Test
-    public void testValidateProjectFiles() {
-        projectManagementBean.openProject();
-        projectManagementBean.getFileEntries().get(0).setSelected(true);
-        projectManagementBean.getFileEntries().get(2).setSelected(true);
-        projectManagementBean.validateProjectFiles();
-        assertEquals(2, fileManagementStub.filesToValidate.getFiles().size());
-    }
-
-    @Test
-    public void testImportProjectFiles() {
-        projectManagementBean.openProject();
-        projectManagementBean.importProjectFiles();
-        assertTrue(fileManagementStub.calledImportFiles);
-    }
-
-    private static class LocalProjectManagementServiceStub extends ProjectManagementServiceStub {
+    public FileEntry(CaArrayFile caArrayFile) {
+        this.caArrayFile = caArrayFile;
 
     }
 
-    private static class LocalFileManagementServiceStub extends FileManagementServiceStub {
+    /**
+     * @return the selected
+     */
+    public boolean isSelected() {
+        return selected;
+    }
 
-        CaArrayFileSet filesToValidate;
-        boolean calledImportFiles;
+    /**
+     * @param selected the selected to set
+     */
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
 
-        @Override
-        public void validateFiles(CaArrayFileSet fileSet) {
-            super.validateFiles(fileSet);
-            filesToValidate = fileSet;
-        }
-
-        @Override
-        public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
-            super.importFiles(targetProject, fileSet);
-            calledImportFiles = true;
-        }
-
+    /**
+     * @return the caArrayFile
+     */
+    public CaArrayFile getCaArrayFile() {
+        return caArrayFile;
     }
 
 }

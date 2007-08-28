@@ -95,13 +95,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIData;
-import javax.faces.component.UISelectBoolean;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
@@ -113,10 +113,12 @@ import org.apache.myfaces.custom.fileupload.UploadedFile;
  */
 public final class ProjectManagementBean implements Serializable {
 
+
     private static final long serialVersionUID = -1814579234979957046L;
 
     private static final String MANAGE_FILES_FORWARD = "manageFiles";
     private static final String WORKSPACE = "workspace";
+    private static final String PROJECT_FORWARD = "project";
     private static final Log LOG = LogFactory.getLog(ProjectManagementBean.class);
 
     private ServiceLocator locator = ServiceLocator.INSTANCE;
@@ -124,10 +126,10 @@ public final class ProjectManagementBean implements Serializable {
     private FileManagementService fileManagementService;
     private Project project;
     private UIData projectTable;
-    private CaArrayFile caArrayFile;
     private UIData fileTable;
-    private UISelectBoolean fileSelected;
     private UploadedFile uploadFile;
+
+    private List<FileEntry> fileEntries;
 
     /**
      * @return JSF forward
@@ -150,7 +152,15 @@ public final class ProjectManagementBean implements Serializable {
      */
     public String openProject() {
         project = (Project) projectTable.getRowData();
-        return "project";
+        loadFileEntries();
+        return PROJECT_FORWARD;
+    }
+
+    private void loadFileEntries() {
+        fileEntries = new ArrayList<FileEntry>(project.getFiles().size());
+        for (CaArrayFile caArrayFile : project.getFilesList()) {
+            fileEntries.add(new FileEntry(caArrayFile));
+        }
     }
 
     /**
@@ -231,19 +241,23 @@ public final class ProjectManagementBean implements Serializable {
         return MANAGE_FILES_FORWARD;
     }
 
+    /**
+     * Returns the file entries for the current project.
+     *
+     * @return  the file entries for display.
+     */
+    public List<FileEntry> getFileEntries() {
+        return fileEntries;
+    }
+
     private CaArrayFileSet getSelectedFiles() {
-        return getProject().getFileSet();
-        // Trying to get file selection to work -- temporarily commented out
-//        CaArrayFileSet fileSet = new CaArrayFileSet();
-//        int first = fileTable.getFirst();
-//        int rows = fileTable.getRows();
-//        for (int index = first; index < (first + rows); index++) {
-//            fileTable.setRowIndex(index);
-//            if (getFileSelected().isSelected()) {
-//                fileSet.add((CaArrayFile) fileTable.getRowData());
-//            }
-//        }
-//        return fileSet;
+        CaArrayFileSet fileSet = new CaArrayFileSet();
+        for (FileEntry fileEntry : fileEntries) {
+            if (fileEntry.isSelected()) {
+                fileSet.add(fileEntry.getCaArrayFile());
+            }
+        }
+        return fileSet;
     }
 
     /**
@@ -290,7 +304,7 @@ public final class ProjectManagementBean implements Serializable {
 
     /**
      * For use by unit tests.
-     * 
+     *
      * @param locator
      */
     void setLocator(ServiceLocator locator) {
@@ -299,25 +313,11 @@ public final class ProjectManagementBean implements Serializable {
 
     /**
      * For use by unit tests.
-     * 
+     *
      * @param project
      */
     void setProject(Project project) {
         this.project = project;
-    }
-
-    /**
-     * @return the caArrayFile
-     */
-    public CaArrayFile getCaArrayFile() {
-        return caArrayFile;
-    }
-
-    /**
-     * @param caArrayFile the caArrayFile to set
-     */
-    public void setCaArrayFile(CaArrayFile caArrayFile) {
-        this.caArrayFile = caArrayFile;
     }
 
     /**
@@ -334,18 +334,5 @@ public final class ProjectManagementBean implements Serializable {
         this.fileTable = fileTable;
     }
 
-    /**
-     * @return the fileSelected
-     */
-    public UISelectBoolean getFileSelected() {
-        return fileSelected;
-    }
-
-    /**
-     * @param fileSelected the fileSelected to set
-     */
-    public void setFileSelected(UISelectBoolean fileSelected) {
-        this.fileSelected = fileSelected;
-    }
 
 }

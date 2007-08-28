@@ -18,7 +18,7 @@
 <h:form id="filesForm">
   <h:messages/>
   <p>You are managing files for <h:outputText value="#{projectManagementBean.project.experiment.title}"/>.</p>
-  <h:dataTable id="files" value="#{projectManagementBean.project.filesList}" var="file" binding="#{projectManagementBean.fileTable}" >
+  <h:dataTable id="files" value="#{projectManagementBean.fileEntries}" var="fileEntry" binding="#{projectManagementBean.fileTable}" >
     <f:facet name="header">
       <h:outputText value="Current files"/>
     </f:facet>
@@ -26,25 +26,25 @@
       <f:facet name="header">
         <h:outputText value="Select"/>
       </f:facet>
-      <h:selectBooleanCheckbox id="selected" binding="#{projectManagementBean.fileSelected}"/>
+      <h:selectBooleanCheckbox id="selected" value="#{fileEntry.selected}" />
     </h:column>
     <h:column>
       <f:facet name="header">
         <h:outputText value="Name"/>
       </f:facet>
-      <h:outputText id="filename" value="#{file.name}"/>
+      <h:outputText id="filename" value="#{fileEntry.file.name}"/>
     </h:column>
     <h:column>
       <f:facet name="header">
         <h:outputText value="File Type"/>
       </f:facet>
-      <h:outputText id="type" value="#{file.type}"/>
+      <h:outputText id="type" value="#{fileEntry.file.type}"/>
     </h:column>
     <h:column>
       <f:facet name="header">
         <h:outputText value="Status"/>
       </f:facet>
-      <h:outputText id="status" value="#{file.status}"/>
+      <h:outputText id="status" value="#{fileEntry.file.status}"/>
     </h:column>
   </h:dataTable>
   <h:commandButton id="import" action="#{projectManagementBean.importProjectFiles}" value="Import" />
