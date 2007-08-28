@@ -86,8 +86,8 @@ import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.validation.InvalidDataException;
-import gov.nih.nci.caarray.validation.ValidationResult;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.util.List;
 /**
@@ -102,16 +102,16 @@ public interface ArrayDataHandler {
      * @param dataFile data file to validate
      * @return the results of the validation.
      */
-    ValidationResult validate(CaArrayFile dataFile);
+    FileValidationResult validate(CaArrayFile dataFile);
 
     /**
      * Imports array data from the file associated with the <code>AbstractArrayData</code> entity,
      * making it available for retrieval.
      * 
      * @param arrayData import data content for this data object
-     * @throws InvalidDataException if the data to be imported was invalid.
+     * @throws InvalidDataFileException TODO
      */
-    void importData(AbstractArrayData arrayData) throws InvalidDataException;
+    void importData(AbstractArrayData arrayData) throws InvalidDataFileException;
 
     /**
      * Returns the complete data content of the provided array data object.

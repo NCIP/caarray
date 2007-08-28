@@ -80,25 +80,17 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydesign;
+package gov.nih.nci.caarray.application.translation.magetab;
 
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 
-public class ArrayDesignServiceStub implements ArrayDesignService {
 
-    public ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign) {
-        return null;
-    }
+public class MageTabTranslatorStub implements MageTabTranslator {
 
-    public ArrayDesign importDesign(CaArrayFile designFile) {
-        return null;
-    }
-
-    public FileValidationResult validateDesign(CaArrayFile designFile) {
-        return null;
+    public CaArrayTranslationResult translate(MageTabDocumentSet documentSet, CaArrayFileSet fileSet) {
+        return new MageTabTranslationResult();
     }
 
 }

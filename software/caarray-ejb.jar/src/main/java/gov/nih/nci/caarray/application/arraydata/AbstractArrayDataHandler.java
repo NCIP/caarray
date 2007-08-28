@@ -84,14 +84,14 @@ package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.validation.InvalidDataException;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
 import java.util.List;
@@ -103,15 +103,12 @@ abstract class AbstractArrayDataHandler implements ArrayDataHandler {
 
     private final FileAccessService fileAccessService;
     private final ArrayDesignService arrayDesignService;
-    private final CaArrayDaoFactory daoFactory;
     private AbstractArrayData arrayData;
 
-    AbstractArrayDataHandler(FileAccessService fileAccessService, ArrayDesignService arrayDesignService,
-            CaArrayDaoFactory daoFactory) {
+    AbstractArrayDataHandler(FileAccessService fileAccessService, ArrayDesignService arrayDesignService) {
         super();
         this.fileAccessService = fileAccessService;
         this.arrayDesignService = arrayDesignService;
-        this.daoFactory = daoFactory;
     }
 
     /**
@@ -119,13 +116,6 @@ abstract class AbstractArrayDataHandler implements ArrayDataHandler {
      */
     ArrayDesignService getArrayDesignService() {
         return arrayDesignService;
-    }
-
-    /**
-     * @return the daoFactory
-     */
-    CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
     }
 
     /**
@@ -138,16 +128,21 @@ abstract class AbstractArrayDataHandler implements ArrayDataHandler {
     /**
      * {@inheritDoc}
      */
-    public final void importData(AbstractArrayData arrayDataToImport) throws InvalidDataException {
+    public final void importData(AbstractArrayData arrayDataToImport) throws InvalidDataFileException {
         setArrayData(arrayDataToImport);
         importData();
     }
     
     /**
      * Imports the data in the file associated with the <code>AbstractArrayData</code> associated with this handler.
-     * @throws InvalidDataException 
+     * @throws InvalidDataFileException
      */
-    protected abstract void importData() throws InvalidDataException;
+    private void importData() throws InvalidDataFileException {
+        FileValidationResult result = validate(getArrayData().getDataFile());
+        if (!result.isValid()) {
+            throw new InvalidDataFileException(result);
+        }
+    }
 
     /**
      * {@inheritDoc}

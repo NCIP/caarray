@@ -82,7 +82,9 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
@@ -106,12 +108,13 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
-import gov.nih.nci.caarray.validation.InvalidDataException;
-import gov.nih.nci.caarray.validation.ValidationResult;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
 import java.util.Arrays;
@@ -153,11 +156,12 @@ public class ArrayDataServiceTest {
     }
 
     @Test
-    public void testAffymetrixCelData() throws InvalidDataException {
+    public void testAffymetrixCelData() throws InvalidDataFileException {
         RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
 
-        ValidationResult result = arrayDataService.validate(celData.getDataFile());
+        FileValidationResult result = arrayDataService.validate(celData.getDataFile());
         assertTrue(result.isValid());
+        assertEquals(FileStatus.VALIDATED, celData.getDataFile().getFileStatus());
 
         arrayDataService.importData(celData);
         DataSet dataSet = arrayDataService.getData(celData);

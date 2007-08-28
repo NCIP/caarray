@@ -91,11 +91,8 @@ import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.array.PhysicalReporter;
 import gov.nih.nci.caarray.domain.array.ReporterGroup;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
-import gov.nih.nci.caarray.validation.ValidationResult;
-
-import java.io.File;
-
 import affymetrix.fusion.cdf.FusionCDFData;
 import affymetrix.fusion.cdf.FusionCDFHeader;
 import affymetrix.fusion.cdf.FusionCDFProbeGroupInformation;
@@ -125,17 +122,17 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     }
 
     @Override
-    ValidationResult validate() {
-        ValidationResult vr = new ValidationResult();
+    FileValidationResult validate() {
+        FileValidationResult result = new FileValidationResult(getFile(getDesignFile()));
         if (!loadFusionCDFData()) {
             if (fusionCDFData == null) {
-                vr.addMessage(new File("empty"), ValidationMessage.Type.ERROR, "CDF file is missing");
+                result.addMessage(ValidationMessage.Type.ERROR, "CDF file is missing");
             } else {
-                vr.addMessage(new File(fusionCDFData.getFileName()), ValidationMessage.Type.ERROR,
+                result.addMessage(ValidationMessage.Type.ERROR, 
                         "Unable to read the CDF file : " + fusionCDFData.getFileName());
             }
         }
-        return vr;
+        return result;
     }
 
     @Override

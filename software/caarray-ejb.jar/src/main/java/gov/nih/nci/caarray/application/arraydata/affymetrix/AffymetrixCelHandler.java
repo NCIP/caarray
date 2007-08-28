@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.application.arraydata.affymetrix;
 import gov.nih.nci.caarray.application.arraydata.AbstractRawArrayDataHandler;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.Feature;
@@ -94,9 +93,8 @@ import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.validation.InvalidDataException;
+import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
-import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -124,11 +122,9 @@ public final class AffymetrixCelHandler extends AbstractRawArrayDataHandler {
      * Instantiates a new handler.
      * @param fileAccessService used by handler to get file contents
      * @param arrayDesignService used by handler to get array design details
-     * @param daoFactory used to look up persistent objects
      */
-    public AffymetrixCelHandler(FileAccessService fileAccessService, ArrayDesignService arrayDesignService,
-            CaArrayDaoFactory daoFactory) {
-        super(fileAccessService, arrayDesignService, daoFactory);
+    public AffymetrixCelHandler(FileAccessService fileAccessService, ArrayDesignService arrayDesignService) {
+        super(fileAccessService, arrayDesignService);
     }
 
     /**
@@ -142,18 +138,19 @@ public final class AffymetrixCelHandler extends AbstractRawArrayDataHandler {
     /**
      * {@inheritDoc}
      */
-    public ValidationResult validate(CaArrayFile dataFile) {
+    public FileValidationResult validate(CaArrayFile dataFile) {
         String celDataFileName;
-        ValidationResult vr = new ValidationResult();
+        File file = getArrayDataFile(dataFile);
+        FileValidationResult result = new FileValidationResult(file);
         
-        celData.setFileName(getArrayDataFile(dataFile).getAbsolutePath());
+        celData.setFileName(file.getAbsolutePath());
         celDataFileName = StringUtils.defaultIfEmpty(celData.getFileName(), "<MISSING FILE NAME>");
 
         if (!celData.read()) {
-            vr.addMessage(new File(celDataFileName), ValidationMessage.Type.ERROR, "Unable to read the cell file : "
+            result.addMessage(ValidationMessage.Type.ERROR, "Unable to read the cell file : "
                     + celDataFileName);
         }
-        return vr;    
+        return result;    
     }
     
     /**
@@ -168,13 +165,6 @@ public final class AffymetrixCelHandler extends AbstractRawArrayDataHandler {
         celQuantitationTypes.addAll(getArrayData().getType().getQuantitationTypes());
         Collections.sort(celQuantitationTypes, AffymetrixCelQuantitationType.getComparator());
         return celQuantitationTypes;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void importData() throws InvalidDataException {
-        validate(getArrayData().getDataFile());
     }
 
     /**

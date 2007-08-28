@@ -87,9 +87,10 @@ import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.validation.InvalidDataException;
-import gov.nih.nci.caarray.validation.ValidationResult;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -107,7 +108,7 @@ public class ArrayDataServiceStub implements ArrayDataService {
         return new DataSet(new Hybridization(), types);
     }
 
-    public void importData(AbstractArrayData arrayData) throws InvalidDataException {
+    public void importData(AbstractArrayData arrayData) throws InvalidDataFileException {
         // no-op
     }
 
@@ -115,8 +116,8 @@ public class ArrayDataServiceStub implements ArrayDataService {
         // no-op
     }
 
-    public ValidationResult validate(CaArrayFile arrayDataFile) {
-        return new ValidationResult();
+    public FileValidationResult validate(CaArrayFile arrayDataFile) {
+        return new FileValidationResult(new File(arrayDataFile.getName()));
     }
 
 }

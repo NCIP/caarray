@@ -92,10 +92,11 @@ import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
-import gov.nih.nci.caarray.validation.InvalidDataException;
-import gov.nih.nci.caarray.validation.ValidationResult;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.util.List;
 
@@ -140,7 +141,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
     
     private ArrayDataHandler getHandler(ArrayDataType arrayDataType) {
         if (AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL.isEquivalent(arrayDataType)) {
-            return new AffymetrixCelHandler(fileAccessService, arrayDesignService, daoFactory);
+            return new AffymetrixCelHandler(fileAccessService, arrayDesignService);
         } else {
             throw new IllegalArgumentException("Unsupported ArrayDataType: " + arrayDataType);
         }
@@ -148,7 +149,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
     
     private ArrayDataHandler getHandler(FileType type) {
         if (FileType.AFFYMETRIX_CEL.equals(type)) {
-            return new AffymetrixCelHandler(fileAccessService, arrayDesignService, daoFactory);
+            return new AffymetrixCelHandler(fileAccessService, arrayDesignService);
         } else {
             throw new IllegalArgumentException("Unsupported FileType: " + type);
         }
@@ -167,7 +168,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
     /**
      * {@inheritDoc}
      */
-    public void importData(AbstractArrayData arrayData) throws InvalidDataException {
+    public void importData(AbstractArrayData arrayData) throws InvalidDataFileException {
         LogUtil.logSubsystemEntry(LOG, arrayData);
         checkArguments(arrayData);
         getHandler(arrayData.getType()).importData(arrayData);
@@ -185,8 +186,16 @@ public class ArrayDataServiceBean implements ArrayDataService {
     /**
      * {@inheritDoc}
      */
-    public ValidationResult validate(CaArrayFile arrayDataFile) {
-        return getHandler(arrayDataFile.getType()).validate(arrayDataFile);
+    public FileValidationResult validate(CaArrayFile arrayDataFile) {
+        FileValidationResult result = getHandler(arrayDataFile.getType()).validate(arrayDataFile);
+        arrayDataFile.setValidationResult(result);
+        if (result.isValid()) {
+            arrayDataFile.setFileStatus(FileStatus.VALIDATED);
+        } else {
+            arrayDataFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
+        }
+        getDaoFactory().getArrayDao().save(arrayDataFile);
+        return result;
     }
 
     ArrayDesignService getArrayDesignService() {

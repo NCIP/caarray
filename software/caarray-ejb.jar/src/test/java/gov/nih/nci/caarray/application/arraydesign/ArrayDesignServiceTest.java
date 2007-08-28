@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.arraydesign;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
@@ -92,6 +93,9 @@ import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+
+import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -100,7 +104,6 @@ import org.junit.Test;
  * Test class for ArrayDesignService subsystem.
  *
  * TODO Add complete details to tests
- * TODO Add test for largest Affymetrix design
  */
 @SuppressWarnings("PMD")
 public class ArrayDesignServiceTest {
@@ -125,27 +128,38 @@ public class ArrayDesignServiceTest {
         return bean;
     }
 
-    /**
-     * Test method for {@link gov.nih.nci.caarray.application.arraydesign.ArrayDesignService#importDesign(gov.nih.nci.caarray.domain.file.CaArrayFile)}.
-     */
     @Test
-    public void testImportDesign_AffymetrixGeneExpression() {
-        CaArrayFile caArrayFile = getAffymetrixGeneExpressionCdfFile();
-        ArrayDesign arrayDesign = arrayDesignService.importDesign(caArrayFile);
+    public void testImportDesign_AffymetrixTest3() {
+        CaArrayFile designFile = getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF);
+        ArrayDesign arrayDesign = arrayDesignService.importDesign(designFile);
         assertEquals("Test3", arrayDesign.getName());
     }
 
     @Test
-    public void testGetDesignDetails_AffymetrixGeneExpression() {
-        CaArrayFile caArrayFile = getAffymetrixGeneExpressionCdfFile();
+    public void testValidateDesign_AffymetrixTest3() {
+        CaArrayFile designFile = getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF);
+        FileValidationResult result = arrayDesignService.validateDesign(designFile);
+        assertTrue(result.isValid());
+    }
+    
+    @Test
+    public void testValidateDesign_AffymetrixHG_U133_Plus2() {
+        CaArrayFile designFile = getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF);
+        FileValidationResult result = arrayDesignService.validateDesign(designFile);
+        assertTrue(result.isValid());
+    }
+
+    @Test
+    public void testGetDesignDetails_AffymetrixTest3() {
+        CaArrayFile caArrayFile = getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF);
         ArrayDesign arrayDesign = arrayDesignService.importDesign(caArrayFile);
         ArrayDesignDetails details = arrayDesignService.getDesignDetails(arrayDesign);
         assertNotNull(details);
         assertEquals(15876, details.getFeatures().size());
     }
 
-    private CaArrayFile getAffymetrixGeneExpressionCdfFile() {
-        CaArrayFile caArrayFile = fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
+    private CaArrayFile getAffymetrixCaArrayFile(File file) {
+        CaArrayFile caArrayFile = fileAccessServiceStub.add(file);
         caArrayFile.setType(FileType.AFFYMETRIX_CDF);
         return caArrayFile;
     }

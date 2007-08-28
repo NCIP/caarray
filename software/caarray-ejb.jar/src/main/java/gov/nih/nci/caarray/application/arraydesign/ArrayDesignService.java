@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.application.arraydesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.validation.ValidationResult;
+import gov.nih.nci.caarray.validation.FileValidationResult;
 
 /**
  * Provides array design detail parsing, storage, and retrieval functionality. Interface to the
@@ -99,7 +99,7 @@ public interface ArrayDesignService {
      * @param designFile the native file to validate
      * @return the validation result.
      */
-    ValidationResult validateDesign(CaArrayFile designFile);
+    FileValidationResult validateDesign(CaArrayFile designFile);
 
     /**
      * Imports a new array design into the system from an array design file.

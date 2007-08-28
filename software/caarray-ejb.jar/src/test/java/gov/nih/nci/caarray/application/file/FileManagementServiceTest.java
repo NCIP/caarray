@@ -50,32 +50,79 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceStub;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+
+import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class FileManagementServiceTest {
-    
+
     private FileManagementService fileManagementService;
     
     @Before
     public void setUp() {
         FileManagementServiceBean fileManagementServiceBean = new FileManagementServiceBean();
-        fileManagementServiceBean.setArrayDataService(new ArrayDataServiceStub());
-        fileManagementServiceBean.setArrayDesignService(new ArrayDesignServiceStub());
+        fileManagementServiceBean.setArrayDataService(new LocalArrayDataServiceStub());
+        fileManagementServiceBean.setArrayDesignService(new LocalArrayDesignServiceStub());
+        fileManagementServiceBean.setMageTabTranslator(new MageTabTranslatorStub());
         fileManagementServiceBean.setDaoFactory(new DaoFactoryStub());
         fileManagementServiceBean.setFileAccessService(new FileAccessServiceStub());
         fileManagementService = fileManagementServiceBean;
     }
-    
+
     @Test
     public void testValidateFiles() {
-        fileManagementService.validateFiles(TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_SET));
+        Project project = getTgaBroadTestProject();
+        fileManagementService.validateFiles(project.getFileSet());
+        for (CaArrayFile file : project.getFiles()) {
+            assertEquals(FileStatus.VALIDATED, file.getFileStatus());
+        }
+    }
+    @Test
+    public void testImportFiles() {
+        Project project = getTgaBroadTestProject();
+        fileManagementService.importFiles(project, project.getFileSet());
+        for (CaArrayFile file : project.getFiles()) {
+            assertEquals(FileStatus.IMPORTED, file.getFileStatus());
+        }
+    }
+
+    private Project getTgaBroadTestProject() {
+        Project project = new Project();
+        project.getFiles().addAll(TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_SET).getFiles());
+        assertEquals(29, project.getFiles().size());
+        return project;
+    }
+
+    private static class LocalArrayDataServiceStub extends ArrayDataServiceStub {
+
+        @Override
+        public FileValidationResult validate(CaArrayFile arrayDataFile) {
+            arrayDataFile.setFileStatus(FileStatus.VALIDATED);
+            return new FileValidationResult(new File(arrayDataFile.getName()));
+        }
+    }
+
+    private static class LocalArrayDesignServiceStub extends ArrayDesignServiceStub {
+
+        @Override
+        public FileValidationResult validateDesign(CaArrayFile designFile) {
+            designFile.setFileStatus(FileStatus.VALIDATED);
+            return new FileValidationResult(new File(designFile.getName()));
+        }
+        
     }
 
 }

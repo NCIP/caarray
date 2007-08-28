@@ -82,13 +82,6 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
-import javax.ejb.EJB;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.ArrayDao;
@@ -99,7 +92,14 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
-import gov.nih.nci.caarray.validation.ValidationResult;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+
+import javax.ejb.EJB;
+import javax.ejb.Local;
+import javax.ejb.Stateless;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Implementation entry point for the ArrayDesign subsystem.
@@ -117,9 +117,10 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
-    public ValidationResult validateDesign(CaArrayFile designFile) {
+    public FileValidationResult validateDesign(CaArrayFile designFile) {
         LogUtil.logSubsystemEntry(LOG, designFile);
-        ValidationResult result =  getHandler(designFile).validate();
+        FileValidationResult result = getHandler(designFile).validate();
+        designFile.setValidationResult(result);
         if (result.isValid()) {
             designFile.setFileStatus(FileStatus.VALIDATED);
         } else {

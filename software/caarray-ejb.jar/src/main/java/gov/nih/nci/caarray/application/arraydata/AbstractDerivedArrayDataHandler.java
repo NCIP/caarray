@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 
 /**
@@ -97,12 +96,10 @@ public abstract class AbstractDerivedArrayDataHandler extends AbstractArrayDataH
      * Base class constructor.
      * @param fileAccessService used by handler to get file contents
      * @param arrayDesignService used by handler to get array design details
-     * @param daoFactory used to look up persistent objects
      */
     protected AbstractDerivedArrayDataHandler(FileAccessService fileAccessService, 
-            ArrayDesignService arrayDesignService, 
-            CaArrayDaoFactory daoFactory) {
-        super(fileAccessService, arrayDesignService, daoFactory);
+            ArrayDesignService arrayDesignService) {
+        super(fileAccessService, arrayDesignService);
     }
 
     /**

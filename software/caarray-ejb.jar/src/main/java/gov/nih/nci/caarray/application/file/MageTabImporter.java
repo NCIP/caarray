@@ -101,7 +101,9 @@ import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabInputFileSet;
 import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
+import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataException;
+import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.io.File;
 
@@ -132,14 +134,29 @@ class MageTabImporter {
             save(targetProject, translationResult);
             updateFileStatus(fileSet, FileStatus.IMPORTED);
         } catch (InvalidDataException e) {
-            handleInvalidMageTab(targetProject, fileSet, e);
+            handleInvalidMageTab(fileSet, e);
+        }
+    }
+    
+    private void handleInvalidMageTab(CaArrayFileSet fileSet, InvalidDataException e) {
+        ValidationResult validationResult = e.getValidationResult();
+        for (CaArrayFile caArrayFile : fileSet.getFiles()) {
+            File file = getFile(caArrayFile);
+            FileValidationResult fileValidationResult = validationResult.getFileValidationResult(file);
+            if (fileValidationResult != null) {
+                handleValidationResult(caArrayFile, fileValidationResult);
+            }
         }
     }
 
-    @SuppressWarnings("PMD")
-    private void handleInvalidMageTab(Project targetProject, CaArrayFileSet fileSet, InvalidDataException e) {
-        // TBD - ask Eric about how this method is supposed to work
-        updateFileStatus(fileSet, FileStatus.VALIDATION_ERRORS);
+    private void handleValidationResult(CaArrayFile caArrayFile, FileValidationResult fileValidationResult) {
+        if (fileValidationResult.isValid()) {
+            caArrayFile.setFileStatus(FileStatus.VALIDATED);
+        } else {
+            caArrayFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
+        }
+        caArrayFile.setValidationResult(fileValidationResult);
+        daoFactory.getProjectDao().save(caArrayFile);
     }
 
     private void updateFileStatus(CaArrayFileSet fileSet, FileStatus status) {
