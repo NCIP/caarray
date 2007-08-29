@@ -139,12 +139,23 @@ public class ProjectManagementServiceTest {
         Set<File> files = new HashSet<File>();
         files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
-        projectManagementService.addFiles(project, files);
+        Set<CaArrayFile> caArrayFiles = projectManagementService.addFiles(project, files);
+        assertEquals(2, caArrayFiles.size());
         assertNotNull(project.getFiles().iterator().next().getProject());
         project = projectManagementService.getProject(123L);
         assertEquals(2, project.getFiles().size());
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
+    }
+    
+    @Test
+    public void testAddFile() {
+        Project project = projectManagementService.getProject(123L);
+        CaArrayFile file = projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        assertEquals(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName(), file.getName());
+        assertEquals(1, project.getFiles().size());
+        assertNotNull(project.getFiles().iterator().next().getProject());
+        assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
     }
 
     private void assertContains(Set<CaArrayFile> caArrayFiles, File file) {

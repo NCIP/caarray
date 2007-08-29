@@ -86,6 +86,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.Proposal;
 
@@ -109,13 +110,24 @@ public interface ProjectManagementService {
     Project getProject(long id);
 
     /**
+     * Associates a single file with a project. After calling this method, clients can expect a new
+     * <code>CaArrayFile</code> to be associated with the project.
+     *
+     * @param project project to add the file to
+     * @param file the file to add to the project
+     * @return the new <code>CaArrayFile</code>.
+     */
+    CaArrayFile addFile(Project project, File file);
+
+    /**
      * Associates files with a project. After calling this method, clients can expect a new
      * <code>CaArrayFile</code> to be associated with the project for each file added.
      *
      * @param project project to add files to
      * @param files the files to add to the project
+     * @return the new <code>CaArrayFiles</code>.
      */
-    void addFiles(Project project, Set<File> files);
+    Set<CaArrayFile> addFiles(Project project, Set<File> files);
 
     /**
      * Persists a new proposal.

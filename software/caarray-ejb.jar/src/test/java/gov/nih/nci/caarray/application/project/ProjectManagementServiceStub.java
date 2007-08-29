@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.project;
 
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.Proposal;
 
@@ -95,8 +96,8 @@ import java.util.Set;
  */
 public class ProjectManagementServiceStub implements ProjectManagementService {
 
-    public void addFiles(Project project, Set<File> files) {
-        // no-op
+    public Set<CaArrayFile> addFiles(Project project, Set<File> files) {
+        return null;
     }
 
     public List<Project> getAll() {
@@ -109,6 +110,10 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
 
     public void submitProposal(Proposal proposal) {
         // no-op
+    }
+
+    public CaArrayFile addFile(Project project, File file) {
+        return null;
     }
 
 }

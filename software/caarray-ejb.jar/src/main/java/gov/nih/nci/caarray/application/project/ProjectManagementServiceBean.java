@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.project;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -134,22 +135,38 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     }
 
     /**
-     * Associates files with a project. After calling this method, clients can expect a new
-     * <code>CaArrayFile</code> to be associated with the project for each file added.
-     *
-     * @param project project to add files to
-     * @param files the files to add to the project
+     * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void addFiles(Project project, Set<File> files) {
+    public CaArrayFile addFile(Project project, File file) {
+        LogUtil.logSubsystemEntry(LOG, project, file);
+        CaArrayFile caArrayFile = doAddFile(project, file);
+        getProjectDao().save(project);
+        LogUtil.logSubsystemExit(LOG);
+        return caArrayFile;
+    }
+
+    private CaArrayFile doAddFile(Project project, File file) {
+        CaArrayFile caArrayFile = fileAccessService.add(file);
+        project.getFiles().add(caArrayFile);
+        caArrayFile.setProject(project);
+        return caArrayFile;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public Set<CaArrayFile> addFiles(Project project, Set<File> files) {
         LogUtil.logSubsystemEntry(LOG, project, files);
+        Set<CaArrayFile> caArrayFiles = new HashSet<CaArrayFile>();
         for (File file : files) {
-            CaArrayFile caArrayFile = fileAccessService.add(file);
-            project.getFiles().add(caArrayFile);
-            caArrayFile.setProject(project);
+            CaArrayFile caArrayFile = doAddFile(project, file);
+            caArrayFiles.add(caArrayFile);
         }
         getProjectDao().save(project);
         LogUtil.logSubsystemExit(LOG);
+        return caArrayFiles;
     }
 
     /**
