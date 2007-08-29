@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.domain.file;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -199,5 +200,14 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
         return new CompareToBuilder()
             .append(this.name, o.name)
             .toComparison();
+    }
+
+    /**
+     * Returns all file types.
+     * 
+     * @return the file types.
+     */
+    public static Collection<FileType> getTypes() {
+        return INSTANCES.values();
     }
 }
