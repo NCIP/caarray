@@ -28,7 +28,7 @@
             </login-module>
             <login-module code="gov.nih.nci.caarray.authentication.CaArrayLoginModule" flag="optional" >
                 <module-option name="driver">@database.driver@</module-option>
-                <module-option name="url">@database.url@@database.name@</module-option>
+                <module-option name="url">@database.url@</module-option>
                 <module-option name="user">@database.user@</module-option>
                 <module-option name="passwd">@database.password@</module-option>
                 <module-option name="query">SELECT * FROM csm_user WHERE login_name=? and password=?</module-option>
