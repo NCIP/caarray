@@ -25,7 +25,7 @@
             <svnbootstrapper localworkingcopy="projects/caarray2" file="software\build\delegating-build.xml" />
         </bootstrappers>
 
-        <modificationset quietperiod="0" ignoreFiles="/docs/*.*">
+        <modificationset quietperiod="0" ignoreFiles="*/docs/*/*.*">
             <svn localworkingcopy="projects/caarray2" />
         </modificationset>
 
