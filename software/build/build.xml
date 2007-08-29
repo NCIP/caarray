@@ -1030,7 +1030,7 @@
         </condition>
     </target>
 
-    <target name="copy-jsp" description="Copies the jsp's over to the unpacked war directory in jboss">
+    <target name="deploy:copy-jsp" description="Copies the jsp's over to the unpacked war directory in jboss">
         <for param="toDir">
             <path>
                 <dirset dir="${jboss.deploy.dir}/../tmp/deploy" includes="tmp*caarray.ear-contents/caarray-exp.war"/>
