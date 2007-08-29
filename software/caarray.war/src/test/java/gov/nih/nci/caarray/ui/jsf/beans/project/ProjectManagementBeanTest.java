@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
@@ -156,6 +157,12 @@ public class ProjectManagementBeanTest {
         projectManagementBean.openProject();
         projectManagementBean.importProjectFiles();
         assertTrue(fileManagementStub.calledImportFiles);
+    }
+    
+    @Test
+    public void testGetFileTypes() {
+        assertNotNull(projectManagementBean.getFileTypes());
+        assertEquals(FileType.getTypes().size() + 1, projectManagementBean.getFileTypes().size());
     }
 
     private static class LocalProjectManagementServiceStub extends ProjectManagementServiceStub {

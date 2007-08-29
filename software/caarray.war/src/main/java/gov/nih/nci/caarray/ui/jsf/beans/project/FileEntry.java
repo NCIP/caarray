@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.ui.jsf.beans.project;
 
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileType;
 
 import java.io.Serializable;
 
@@ -125,6 +126,28 @@ public class FileEntry implements Serializable {
      */
     public CaArrayFile getCaArrayFile() {
         return caArrayFile;
+    }
+
+    /**
+     * Returns the type name of caArrayFile.getType().
+     * 
+     * @return the type name
+     */
+    public String getTypeName() {
+        return getCaArrayFile().getType() != null ? getCaArrayFile().getType().toString() : "";
+    }
+
+    /**
+     * Sets the type of the wrapped <code>CaArrayFile</code> by name.
+     * 
+     * @param typeName the name of the type to set (or "" for null)
+     */
+    public void setTypeName(String typeName) {
+        if ("".equals(typeName)) {
+            getCaArrayFile().setType(null);
+        } else {
+            getCaArrayFile().setType(FileType.getInstance(typeName));
+        }
     }
 
 }

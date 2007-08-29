@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 
@@ -101,6 +102,7 @@ import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIData;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -328,6 +330,20 @@ public final class ProjectManagementBean implements Serializable {
      */
     public void setFileTable(UIData fileTable) {
         this.fileTable = fileTable;
+    }
+    
+    /**
+     * Returns all <code>FileTypes</code> as <code>SelectItem</code>.
+     * 
+     * @return the file types.
+     */
+    public List<SelectItem> getFileTypes() {
+        List<SelectItem> items = new ArrayList<SelectItem>();
+        items.add(new SelectItem("", "UNKNOWN"));
+        for (FileType fileType : FileType.getTypes()) {
+            items.add(new SelectItem(fileType.toString()));
+        }
+        return items;
     }
 
 

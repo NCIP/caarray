@@ -38,7 +38,9 @@
       <f:facet name="header">
         <h:outputText value="File Type"/>
       </f:facet>
-      <h:outputText id="type" value="#{fileEntry.caArrayFile.type}"/>
+      <h:selectOneMenu id="type" value="#{fileEntry.typeName}">
+        <f:selectItems id="types" value="#{projectManagementBean.fileTypes}" />
+      </h:selectOneMenu>
     </h:column>
     <h:column>
       <f:facet name="header">
