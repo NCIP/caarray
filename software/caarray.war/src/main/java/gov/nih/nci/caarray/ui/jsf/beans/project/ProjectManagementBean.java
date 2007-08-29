@@ -96,9 +96,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIData;
@@ -192,32 +190,30 @@ public final class ProjectManagementBean implements Serializable {
     public String upload() {
         OutputStream os = null;
         try {
-            File f = getFile();
-            LOG.info("Writing uploaded file to " + f.getAbsolutePath());
-
-            os = new BufferedOutputStream(new FileOutputStream(f));
+            File uploadedFile = getFile();
+            LOG.info("Writing uploaded file to " + uploadedFile.getAbsolutePath());
+            os = new BufferedOutputStream(new FileOutputStream(uploadedFile));
             os.write(getUploadFile().getBytes());
-
-            Set<File> files = new HashSet<File>();
-            files.add(f);
-            getProjectManagementService().addFiles(getProject(), files);
+            fileEntries.add(new FileEntry(getProjectManagementService().addFile(getProject(), uploadedFile)));
         } catch (IOException e) {
             String msg = "Unable to upload file: " + e.getMessage();
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, ""));
             LOG.error(msg, e);
             return MANAGE_FILES_FORWARD;
         } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException e) {
-                    String msg = "Unable to upload file: " + e.getMessage();
-                    LOG.error(msg, e);
-                }
+            close(os);
+        }
+        return MANAGE_FILES_FORWARD;
+    }
+
+    private void close(OutputStream os) {
+        if (os != null) {
+            try {
+                os.close();
+            } catch (IOException e) {
+                LOG.error("Unable to close output stream for uploaded file", e);
             }
         }
-
-        return MANAGE_FILES_FORWARD;
     }
 
     /**
@@ -251,7 +247,7 @@ public final class ProjectManagementBean implements Serializable {
     }
 
     private CaArrayFileSet getSelectedFiles() {
-        CaArrayFileSet fileSet = new CaArrayFileSet();
+        CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
         for (FileEntry fileEntry : fileEntries) {
             if (fileEntry.isSelected()) {
                 fileSet.add(fileEntry.getCaArrayFile());

@@ -32,19 +32,19 @@
       <f:facet name="header">
         <h:outputText value="Name"/>
       </f:facet>
-      <h:outputText id="filename" value="#{fileEntry.file.name}"/>
+      <h:outputText id="filename" value="#{fileEntry.caArrayFile.name}"/>
     </h:column>
     <h:column>
       <f:facet name="header">
         <h:outputText value="File Type"/>
       </f:facet>
-      <h:outputText id="type" value="#{fileEntry.file.type}"/>
+      <h:outputText id="type" value="#{fileEntry.caArrayFile.type}"/>
     </h:column>
     <h:column>
       <f:facet name="header">
         <h:outputText value="Status"/>
       </f:facet>
-      <h:outputText id="status" value="#{fileEntry.file.status}"/>
+      <h:outputText id="status" value="#{fileEntry.caArrayFile.status}"/>
     </h:column>
   </h:dataTable>
   <h:commandButton id="import" action="#{projectManagementBean.importProjectFiles}" value="Import" />

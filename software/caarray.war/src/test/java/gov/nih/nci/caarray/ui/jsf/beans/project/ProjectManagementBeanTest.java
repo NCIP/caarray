@@ -120,14 +120,17 @@ public class ProjectManagementBeanTest {
     private void loadTestProject() {
         final Project project = new Project();
         CaArrayFile file1 = new CaArrayFile();
+        file1.setProject(project);
         file1.setFileStatus(FileStatus.UPLOADED);
         file1.setPath("path/file1.ext");
         CaArrayFile file2 = new CaArrayFile();
         file2.setFileStatus(FileStatus.UPLOADED);
         file2.setPath("path/file2.ext");
+        file2.setProject(project);
         CaArrayFile file3 = new CaArrayFile();
         file3.setFileStatus(FileStatus.UPLOADED);
         file3.setPath("path/file3.ext");
+        file3.setProject(project);
         project.getFiles().add(file1);
         project.getFiles().add(file2);
         project.getFiles().add(file3);
