@@ -80,138 +80,123 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.ui.jsf.beans.project;
+package gov.nih.nci.caarray.ui.jsf;
 
-import static org.junit.Assert.*;
+import java.util.Iterator;
 
-import gov.nih.nci.caarray.application.file.FileManagementService;
-import gov.nih.nci.caarray.application.file.FileManagementServiceStub;
-import gov.nih.nci.caarray.application.project.ProjectManagementService;
-import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.ui.jsf.FacesContextStub;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
-import javax.faces.component.UIData;
+import javax.faces.application.FacesMessage.Severity;
+import javax.faces.component.UIViewRoot;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.faces.context.ResponseStream;
+import javax.faces.context.ResponseWriter;
+import javax.faces.render.RenderKit;
 
-import org.junit.Before;
-import org.junit.Test;
+/**
+ * Stubbed implementation of FacesContext
+ */
+public class FacesContextStub extends FacesContext {
 
-public class ProjectManagementBeanTest {
-
-    private final ProjectManagementBean projectManagementBean = new ProjectManagementBean();
-    private final ServiceLocatorStub locatorStub = new ServiceLocatorStub();
-    private final LocalProjectManagementServiceStub projectServiceStub = new LocalProjectManagementServiceStub();
-    private final LocalFileManagementServiceStub fileManagementStub = new LocalFileManagementServiceStub();
-    private final LocalFacesContextStub facesContextStub = new LocalFacesContextStub();
-
-    @Before
-    public void setUp() throws Exception {
-        projectManagementBean.setLocator(locatorStub);
-        locatorStub.addLookup(ProjectManagementService.JNDI_NAME, projectServiceStub);
-        locatorStub.addLookup(FileManagementService.JNDI_NAME, fileManagementStub);
-        loadTestProject();
-        facesContextStub.clearMessages();
+    protected FacesContextStub() {
+        super();
+        setCurrentInstance(this);
     }
 
-    private void loadTestProject() {
-        final Project project = new Project();
-        CaArrayFile file1 = new CaArrayFile();
-        file1.setProject(project);
-        file1.setFileStatus(FileStatus.UPLOADED);
-        file1.setPath("path/file1.ext");
-        file1.setType(FileType.AFFYMETRIX_CEL);
-        CaArrayFile file2 = new CaArrayFile();
-        file2.setFileStatus(FileStatus.UPLOADED);
-        file2.setPath("path/file2.ext");
-        file2.setType(FileType.AFFYMETRIX_CEL);
-        file2.setProject(project);
-        CaArrayFile file3 = new CaArrayFile();
-        file3.setFileStatus(FileStatus.UPLOADED);
-        file3.setPath("path/file3.ext");
-        file3.setType(FileType.AFFYMETRIX_CEL);
-        file3.setProject(project);
-        project.getFiles().add(file1);
-        project.getFiles().add(file2);
-        project.getFiles().add(file3);
-        projectManagementBean.setProjectTable(new UIData() {
-            @Override
-            public Object getRowData() {
-                return project;
-            }
-        });
+    @Override
+    public void addMessage(String clientId, FacesMessage message) {
+        // no-op
     }
 
-    @Test
-    public void testValidateProjectFiles() {
-        projectManagementBean.openProject();
-        projectManagementBean.getFileEntries().get(0).setSelected(true);
-        projectManagementBean.getFileEntries().get(2).setSelected(true);
-        projectManagementBean.validateProjectFiles();
-        assertEquals(2, fileManagementStub.filesToValidate.getFiles().size());
-        assertTrue(facesContextStub.messages.isEmpty());
-        projectManagementBean.getFileEntries().get(0).setTypeName("");
-        projectManagementBean.validateProjectFiles();
-        assertFalse(facesContextStub.messages.isEmpty());
+    @Override
+    public Application getApplication() {
+        return null;
     }
 
-    @Test
-    public void testImportProjectFiles() {
-        projectManagementBean.openProject();
-        projectManagementBean.importProjectFiles();
-        assertTrue(fileManagementStub.calledImportFiles);
+    @Override
+    public Iterator getClientIdsWithMessages() {
+        return null;
     }
 
-    @Test
-    public void testGetFileTypes() {
-        assertNotNull(projectManagementBean.getFileTypes());
-        assertEquals(FileType.getTypes().size() + 1, projectManagementBean.getFileTypes().size());
+    @Override
+    public ExternalContext getExternalContext() {
+        return null;
     }
 
-    private static class LocalProjectManagementServiceStub extends ProjectManagementServiceStub {
-
+    @Override
+    public Severity getMaximumSeverity() {
+        return null;
     }
 
-    private static class LocalFacesContextStub extends FacesContextStub {
-
-        private final List<FacesMessage> messages = new ArrayList<FacesMessage>();
-
-        @Override
-        public void addMessage(String clientId, FacesMessage message) {
-            messages.add(message);
-        }
-
-        public void clearMessages() {
-            messages.clear();
-        }
-
+    @Override
+    public Iterator getMessages() {
+        return null;
     }
 
-    private static class LocalFileManagementServiceStub extends FileManagementServiceStub {
+    @Override
+    public Iterator getMessages(String clientId) {
+        return null;
+    }
 
-        CaArrayFileSet filesToValidate;
-        boolean calledImportFiles;
+    @Override
+    public RenderKit getRenderKit() {
+        return null;
+    }
 
-        @Override
-        public void validateFiles(CaArrayFileSet fileSet) {
-            super.validateFiles(fileSet);
-            filesToValidate = fileSet;
-        }
+    @Override
+    public boolean getRenderResponse() {
+        return false;
+    }
 
-        @Override
-        public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
-            super.importFiles(targetProject, fileSet);
-            calledImportFiles = true;
-        }
+    @Override
+    public boolean getResponseComplete() {
+        return false;
+    }
 
+    @Override
+    public ResponseStream getResponseStream() {
+        return null;
+    }
+
+    @Override
+    public ResponseWriter getResponseWriter() {
+        return null;
+    }
+
+    @Override
+    public UIViewRoot getViewRoot() {
+        return null;
+    }
+
+    @Override
+    public void release() {
+        // no-op
+    }
+
+    @Override
+    public void renderResponse() {
+        // no-op
+    }
+
+    @Override
+    public void responseComplete() {
+        // no-op
+    }
+
+    @Override
+    public void setResponseStream(ResponseStream responseStream) {
+        // no-op
+    }
+
+    @Override
+    public void setResponseWriter(ResponseWriter responseWriter) {
+        // no-op
+    }
+
+    @Override
+    public void setViewRoot(UIViewRoot root) {
+        // no-op
     }
 
 }

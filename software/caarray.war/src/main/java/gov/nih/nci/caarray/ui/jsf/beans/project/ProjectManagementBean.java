@@ -235,8 +235,34 @@ public final class ProjectManagementBean implements Serializable {
      * @return back to manage
      */
     public String importProjectFiles() {
-        getFileManagementService().importFiles(project, getSelectedFiles());
+        if (typesSetForSelectedFiles()) {
+            getFileManagementService().importFiles(project, getSelectedFiles());
+        } else {
+            handleUnsetFileTypes();
+        }
         return MANAGE_FILES_FORWARD;
+    }
+
+    private boolean typesSetForSelectedFiles() {
+        for (CaArrayFile caArrayFile : getSelectedFiles().getFiles()) {
+            if (caArrayFile.getType() == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void handleUnsetFileTypes() {
+        StringBuffer messageBuffer = new StringBuffer();
+        messageBuffer.append("Type needs to be selected for the following files: ");
+        for (CaArrayFile caArrayFile : getSelectedFiles().getFiles()) {
+            if (caArrayFile.getType() == null) {
+                messageBuffer.append(caArrayFile.getName());
+                messageBuffer.append(' ');
+            }
+        }
+        FacesContext.getCurrentInstance().addMessage(
+                null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBuffer.toString(), ""));
     }
 
     /**
@@ -263,7 +289,11 @@ public final class ProjectManagementBean implements Serializable {
      * @return back to manage
      */
     public String validateProjectFiles() {
-        getFileManagementService().validateFiles(getSelectedFiles());
+        if (typesSetForSelectedFiles()) {
+            getFileManagementService().validateFiles(getSelectedFiles());
+        } else {
+            handleUnsetFileTypes();
+        }
         return MANAGE_FILES_FORWARD;
     }
 
@@ -331,10 +361,10 @@ public final class ProjectManagementBean implements Serializable {
     public void setFileTable(UIData fileTable) {
         this.fileTable = fileTable;
     }
-    
+
     /**
      * Returns all <code>FileTypes</code> as <code>SelectItem</code>.
-     * 
+     *
      * @return the file types.
      */
     public List<SelectItem> getFileTypes() {
