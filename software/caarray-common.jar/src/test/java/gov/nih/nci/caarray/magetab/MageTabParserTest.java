@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.magetab;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.idf.Investigation;
@@ -108,9 +109,6 @@ public class MageTabParserTest {
     private static final int SIX = 6;
     private MageTabParser parser = MageTabParser.INSTANCE;
 
-    /**
-     * @throws MageTabParsingException .
-     */
     @Test
     public void testValidate() {
         MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_ERROR_SPECIFICATION_INPUT_SET;
@@ -124,10 +122,18 @@ public class MageTabParserTest {
         }
     }
 
-    /**
-     * @throws InvalidDataException
-     * @throws MageTabParsingException .
-     */
+    @Test
+    public void testParseEmptySet() throws InvalidDataException, MageTabParsingException  {
+        try {
+            MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
+            MageTabDocumentSet documentSet = parser.parse(inputFileSet);
+            assertNotNull(documentSet);
+            fail("Remove try/catch once empty set handling is correctly implemented");
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+        }
+    }
+    
     @Test
     public void testParse() throws MageTabParsingException, InvalidDataException {
         testSpecificationDocuments();
