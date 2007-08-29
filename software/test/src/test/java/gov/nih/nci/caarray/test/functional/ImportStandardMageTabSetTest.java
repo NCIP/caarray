@@ -161,12 +161,13 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         checkFileStatus("UPLOADED");
 
         // Import the files.
+        selectAllFiles();
         clickAndWait("filesForm:import");
 
         // Verify that the files imported successfully.
         try {
             checkFileStatus("IMPORTED");
-            fail("Now that null arrayData bug is fixed, removed this try/catch block");
+            fail("Now that null arrayData bug is fixed, remove this try/catch block");
         } catch (SeleniumException e) {
             // This exception is an indication of the null arrayData bug in translation and import
             e.printStackTrace();
@@ -179,6 +180,12 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         // - Files can be downloaded through API
         // - Raw and derived data are available and accurate
         verifyDataViaJavaApi();
+    }
+
+    private void selectAllFiles() {
+        for (int i = 0; i < NUMBER_OF_FILES; i++) {
+            selenium.click("filesForm:files:" + i + ":selected");
+        }
     }
 
     private void checkFileStatus(String status) {
