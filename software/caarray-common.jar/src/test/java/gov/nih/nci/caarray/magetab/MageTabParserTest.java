@@ -82,11 +82,9 @@
  */
 package gov.nih.nci.caarray.magetab;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-import java.util.NoSuchElementException;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.idf.Investigation;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile;
@@ -96,6 +94,8 @@ import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.validation.InvalidDataException;
 import gov.nih.nci.caarray.validation.ValidationResult;
+
+import java.util.List;
 
 import org.junit.Test;
 
@@ -124,14 +124,9 @@ public class MageTabParserTest {
 
     @Test
     public void testParseEmptySet() throws InvalidDataException, MageTabParsingException  {
-        try {
             MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
             MageTabDocumentSet documentSet = parser.parse(inputFileSet);
             assertNotNull(documentSet);
-            fail("Remove try/catch once empty set handling is correctly implemented");
-        } catch (NoSuchElementException e) {
-            e.printStackTrace();
-        }
     }
     
     @Test
@@ -155,18 +150,13 @@ public class MageTabParserTest {
     }
 
     private void checkSdrfTranslation(SdrfDocument document) {
-        try {
-            List<Hybridization> hybridizations = document.getAllHybridizations();
-            assertEquals(26, hybridizations.size());
-            for (Hybridization hybridization : hybridizations) {
-                assertEquals(1, hybridization.getSuccessorArrayDataFiles().size());
-            }
-            List<ArrayDataFile> arrayDataFiles = document.getAllArrayDataFiles();
-            assertEquals(26, arrayDataFiles.size());
-            fail("Remove AssertionError try/catch when fixed");
-        } catch (AssertionError e) {
-            e.printStackTrace();
+        List<Hybridization> hybridizations = document.getAllHybridizations();
+        assertEquals(26, hybridizations.size());
+        for (Hybridization hybridization : hybridizations) {
+            assertEquals(1, hybridization.getSuccessorArrayDataFiles().size());
         }
+        List<ArrayDataFile> arrayDataFiles = document.getAllArrayDataFiles();
+        assertEquals(26, arrayDataFiles.size());
     }
 
     private void checkArrayDesigns(MageTabDocumentSet documentSet) {
@@ -174,8 +164,7 @@ public class MageTabParserTest {
         assertEquals(1, sdrfDocument.getAllArrayDesigns().size());
         ArrayDesign arrayDesign = sdrfDocument.getAllArrayDesigns().get(0);
         for (Hybridization hybridization : sdrfDocument.getAllHybridizations()) {
-            assertEquals(1, hybridization.getSuccessorArrayDesigns().size());
-            assertEquals(arrayDesign, hybridization.getSuccessorArrayDesigns().iterator().next());
+            assertEquals(arrayDesign, hybridization.getArrayDesign());
         }
     }
 
