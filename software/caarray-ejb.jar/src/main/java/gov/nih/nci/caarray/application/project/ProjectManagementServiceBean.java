@@ -82,20 +82,6 @@
  */
 package gov.nih.nci.caarray.application.project;
 
-import java.io.File;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.ejb.EJB;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ProjectDao;
@@ -103,6 +89,22 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.Proposal;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
+
+import java.io.File;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.Resource;
+import javax.ejb.EJB;
+import javax.ejb.Local;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Implementation entry point for the ProjectManagement subsystem.
@@ -114,6 +116,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     private static final Log LOG = LogFactory.getLog(ProjectManagementServiceBean.class);
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
+    @Resource private SessionContext sessionContext;
     @EJB private FileAccessService fileAccessService;
 
     /**
@@ -182,8 +185,9 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public List<Project> getAll() {
-        return getProjectDao().getAllProjects();
+    public List<Project> getWorkspaceProjects() {
+        String username = getSessionContext().getCallerPrincipal().getName();
+        return getProjectDao().getProjectsForUser(username);
     }
 
     FileAccessService getFileAccessService() {
@@ -200,5 +204,12 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
 
     void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
+    }
+    SessionContext getSessionContext() {
+        return sessionContext;
+    }
+
+    void setSessionContext(SessionContext sessionContext) {
+        this.sessionContext = sessionContext;
     }
 }

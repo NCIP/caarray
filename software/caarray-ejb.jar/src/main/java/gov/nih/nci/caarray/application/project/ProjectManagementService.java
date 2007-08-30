@@ -137,9 +137,9 @@ public interface ProjectManagementService {
     void submitProposal(Proposal proposal);
 
     /**
-     * Gets all projects.
+     * Gets all projects belonging to the current user.
      *
-     * @return all projects
+     * @return all projects belonging to the user.
      */
-    List<Project> getAll();
+    List<Project> getWorkspaceProjects();
 }

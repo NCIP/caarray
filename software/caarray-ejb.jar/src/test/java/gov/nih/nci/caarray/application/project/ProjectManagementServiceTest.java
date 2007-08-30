@@ -87,10 +87,14 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import gov.nih.nci.caarray.application.SessionContextStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.dao.ProjectDao;
@@ -111,18 +115,24 @@ public class ProjectManagementServiceTest {
     private ProjectManagementService projectManagementService;
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     private final FileAccessService fileAccessService = new FileAccessServiceStub();
+    private final LocalSessionContextStub sessionContextStub = new LocalSessionContextStub();
 
     @Before
     public void setUpService() {
         ProjectManagementServiceBean projectManagementServiceBean = new ProjectManagementServiceBean();
         projectManagementServiceBean.setDaoFactory(daoFactoryStub);
         projectManagementServiceBean.setFileAccessService(fileAccessService);
+        projectManagementServiceBean.setSessionContext(sessionContextStub);
         projectManagementService = projectManagementServiceBean;
     }
 
-    /**
-     * Test method for {@link gov.nih.nci.caarray.application.project.ProjectManagementService#getProject(long)}.
-     */
+    @Test
+    public void testGetWorkspaceProjects() {
+        List<Project> projects = projectManagementService.getWorkspaceProjects();
+        assertNotNull(projects);
+        assertEquals("testusername", daoFactoryStub.projectDao.username);
+    }
+    
     @Test
     public void testGetProject() {
         Project project = projectManagementService.getProject(123L);
@@ -195,6 +205,7 @@ public class ProjectManagementServiceTest {
 
         private final HashMap<Long, AbstractCaArrayObject> savedObjects = new HashMap<Long, AbstractCaArrayObject>();
         private AbstractCaArrayObject lastSaved;
+        private String username;
 
         @Override
         public void save(AbstractCaArrayObject caArrayObject) {
@@ -202,6 +213,12 @@ public class ProjectManagementServiceTest {
             savedObjects.put(caArrayObject.getId(), caArrayObject);
         }
 
+        @Override
+        public List<Project> getProjectsForUser(String username) {
+            this.username = username;
+            return new ArrayList<Project>();
+        }
+        
         @Override
         @SuppressWarnings("PMD")
         public Project getProject(long id) {
@@ -231,4 +248,17 @@ public class ProjectManagementServiceTest {
 
     }
 
+    private static class LocalSessionContextStub extends SessionContextStub {
+
+        @Override
+        public Principal getCallerPrincipal() {
+            return new Principal() {
+                public String getName() {
+                    return "testusername";
+                }
+            };
+            
+        }
+        
+    }
 }
