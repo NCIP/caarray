@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Object Mapping DTD Version 1.0//EN" "http://www.castor.org/mapping.dtd">
+
+<mapping>
+  <class name="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
+    <map-to xml="AbstractCaArrayEntity" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.caarray.domain" />
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.caarray.domain.protocol.Parameter" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
+    <map-to xml="Parameter" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.caarray.domain.protocol" />
+    <field name="name" type="string">
+      <bind-xml name="name" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.caarray.domain.protocol.Protocol" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
+    <map-to xml="Protocol" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.caarray.domain.protocol" />
+    <field name="accession" type="string">
+      <bind-xml name="accession" node="attribute" />
+    </field>
+    <field name="name" type="string">
+      <bind-xml name="name" node="attribute" />
+    </field>
+    <field name="text" type="string">
+      <bind-xml name="text" node="attribute" />
+    </field>
+    <field name="title" type="string">
+      <bind-xml name="title" node="attribute" />
+    </field>
+    <field name="type" type="gov.nih.nci.caarray.domain.vocabulary.Term">
+      <bind-xml name="type" node="attribute" />
+    </field>
+    <field name="url" type="string">
+      <bind-xml name="url" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.caarray.domain.protocol.ProtocolApplication" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
+    <map-to xml="ProtocolApplication" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.caarray.domain.protocol" />
+  </class>
+  <class name="gov.nih.nci.caarray.domain.protocol.ParameterValue" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
+    <map-to xml="ParameterValue" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.caarray.domain.protocol" />
+    <field name="unit" type="string">
+      <bind-xml name="unit" node="attribute" />
+    </field>
+    <field name="value" type="string">
+      <bind-xml name="value" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.caarray.domain.vocabulary.Accession" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
+    <map-to xml="Accession" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.caarray.domain.vocabulary" />
+    <field name="url" type="string">
+      <bind-xml name="url" node="attribute" />
+    </field>
+    <field name="value" type="string">
+      <bind-xml name="value" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.caarray.domain.vocabulary.Source" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
+    <map-to xml="Source" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.caarray.domain.vocabulary" />
+    <field name="name" type="string">
+      <bind-xml name="name" node="attribute" />
+    </field>
+    <field name="url" type="string">
+      <bind-xml name="url" node="attribute" />
+    </field>
+    <field name="version" type="string">
+      <bind-xml name="version" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.caarray.domain.vocabulary.Category" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
+    <map-to xml="Category" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.caarray.domain.vocabulary" />
+    <field name="name" type="string">
+      <bind-xml name="name" node="attribute" />
+    </field>
+  </class>
+  <class name="gov.nih.nci.caarray.domain.vocabulary.Term" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
+    <map-to xml="Term" ns-uri="gme://caCORE.cabig/3.2/gov.nih.nci.caarray.domain.vocabulary" />
+    <field name="description" type="string">
+      <bind-xml name="description" node="attribute" />
+    </field>
+    <field name="value" type="string">
+      <bind-xml name="value" node="attribute" />
+    </field>
+  </class>
+</mapping>
+

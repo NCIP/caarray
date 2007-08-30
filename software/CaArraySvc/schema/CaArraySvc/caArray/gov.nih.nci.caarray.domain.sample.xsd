@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sample" xmlns:gov.nih.nci.caarray.domain="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain" xmlns:gov.nih.nci.caarray.domain.array="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array" xmlns:gov.nih.nci.caarray.domain.contact="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.contact" xmlns:gov.nih.nci.caarray.domain.data="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data" xmlns:gov.nih.nci.caarray.domain.file="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.file" xmlns:gov.nih.nci.caarray.domain.hybridization="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.hybridization" xmlns:gov.nih.nci.caarray.domain.project="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.project" xmlns:gov.nih.nci.caarray.domain.protocol="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.protocol" xmlns:gov.nih.nci.caarray.domain.publication="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.publication" xmlns:gov.nih.nci.caarray.domain.sequence="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sequence" xmlns:gov.nih.nci.caarray.domain.vocabulary="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.vocabulary" targetNamespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sample" elementFormDefault="qualified">
+  <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data" schemaLocation="gov.nih.nci.caarray.domain.data.xsd" />
+  <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.project" schemaLocation="gov.nih.nci.caarray.domain.project.xsd" />
+  <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.publication" schemaLocation="gov.nih.nci.caarray.domain.publication.xsd" />
+  <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain" schemaLocation="gov.nih.nci.caarray.domain.xsd" />
+  <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.vocabulary" schemaLocation="gov.nih.nci.caarray.domain.vocabulary.xsd" />
+  <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.contact" schemaLocation="gov.nih.nci.caarray.domain.contact.xsd" />
+  <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sequence" schemaLocation="gov.nih.nci.caarray.domain.sequence.xsd" />
+  <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.hybridization" schemaLocation="gov.nih.nci.caarray.domain.hybridization.xsd" />
+  <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.file" schemaLocation="gov.nih.nci.caarray.domain.file.xsd" />
+  <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.protocol" schemaLocation="gov.nih.nci.caarray.domain.protocol.xsd" />
+  <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array" schemaLocation="gov.nih.nci.caarray.domain.array.xsd" />
+  <xs:element name="AbstractBioMaterial" type="AbstractBioMaterial" />
+  <xs:complexType name="AbstractBioMaterial">
+    <xs:complexContent>
+      <xs:extension base="gov.nih.nci.caarray.domain:AbstractCaArrayEntity">
+        <xs:sequence>
+          <xs:element name="protocolApplications" minOccurs="0" maxOccurs="unbounded" type="gov.nih.nci.caarray.domain.protocol:ProtocolApplication" />
+          <xs:element name="characteristics" minOccurs="0" maxOccurs="unbounded" type="Characteristic" />
+          <xs:element name="materialType" minOccurs="0" maxOccurs="1" type="gov.nih.nci.caarray.domain.vocabulary:Term" />
+        </xs:sequence>
+        <xs:attribute name="description" type="xs:string" />
+        <xs:attribute name="name" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="LabeledExtract" type="LabeledExtract" />
+  <xs:complexType name="LabeledExtract">
+    <xs:complexContent>
+      <xs:extension base="AbstractBioMaterial">
+        <xs:sequence>
+          <xs:element name="extracts" minOccurs="0" maxOccurs="unbounded" type="Extract" />
+          <xs:element name="hybridizations" minOccurs="0" maxOccurs="unbounded" type="gov.nih.nci.caarray.domain.hybridization:Hybridization" />
+          <xs:element name="label" minOccurs="0" maxOccurs="1" type="gov.nih.nci.caarray.domain.vocabulary:Term" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Characteristic" type="Characteristic" />
+  <xs:complexType name="Characteristic">
+    <xs:complexContent>
+      <xs:extension base="gov.nih.nci.caarray.domain:AbstractCaArrayEntity">
+        <xs:sequence>
+          <xs:element name="unit" minOccurs="0" maxOccurs="1" type="gov.nih.nci.caarray.domain.vocabulary:Term" />
+          <xs:element name="bioMaterial" minOccurs="1" maxOccurs="1" type="AbstractBioMaterial" />
+          <xs:element name="term" minOccurs="0" maxOccurs="1" type="gov.nih.nci.caarray.domain.vocabulary:Term" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Source" type="Source" />
+  <xs:complexType name="Source">
+    <xs:complexContent>
+      <xs:extension base="AbstractBioMaterial">
+        <xs:sequence>
+          <xs:element name="samples" minOccurs="0" maxOccurs="unbounded" type="Sample" />
+          <xs:element name="providers" minOccurs="0" maxOccurs="unbounded" type="gov.nih.nci.caarray.domain.contact:AbstractContact" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Sample" type="Sample" />
+  <xs:complexType name="Sample">
+    <xs:complexContent>
+      <xs:extension base="AbstractBioMaterial">
+        <xs:sequence>
+          <xs:element name="extracts" minOccurs="0" maxOccurs="unbounded" type="Extract" />
+          <xs:element name="sources" minOccurs="0" maxOccurs="unbounded" type="Source" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Extract" type="Extract" />
+  <xs:complexType name="Extract">
+    <xs:complexContent>
+      <xs:extension base="AbstractBioMaterial">
+        <xs:sequence>
+          <xs:element name="samples" minOccurs="0" maxOccurs="unbounded" type="Sample" />
+          <xs:element name="labeledExtracts" minOccurs="0" maxOccurs="unbounded" type="LabeledExtract" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>
+

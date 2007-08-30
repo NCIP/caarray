@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ServiceGroupRegistrationParameters xmlns:sgc="http://mds.globus.org/servicegroup/client"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/03/addressing"
+  xmlns:agg="http://mds.globus.org/aggregator/types"
+  xmlns="http://mds.globus.org/servicegroup/client">
+  <!-- The ServiceGroupEPR defines the servicegroup to which registrations will be made -->
+  <ServiceGroupEPR>
+    <wsa:Address>INDEX_SERVICE_URL</wsa:Address>
+  </ServiceGroupEPR>
+  <!-- Specifies that the registration will be renewed every 10 minutes -->
+  <RefreshIntervalSecs>REGISTRATION_REFRESH</RefreshIntervalSecs>
+  <Content xsi:type="agg:AggregatorContent" xmlns:agg="http://mds.globus.org/aggregator/types">
+    <agg:AggregatorConfig xsi:type="agg:AggregatorConfig">
+      <agg:GetMultipleResourcePropertiesPollType
+			xmlns:ns6="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.protocol"
+			xmlns:ns10="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.vocabulary"
+			xmlns:ns11="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain"
+			xmlns:ns15="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLQuery"
+			xmlns:ns14="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata"
+			xmlns:ns19="http://gov.nih.nci.cagrid.data/DataServiceExceptions"
+			xmlns:ns12="http://caarray.cagrid.nci.nih.gov/CaArraySvc/types"
+			xmlns:ns2="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data"
+			xmlns:ns18="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice"
+			xmlns:ns1="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.contact"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:ns13="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security"
+			xmlns:ns4="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.hybridization"
+			xmlns:ns0="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array"
+			xmlns:ns7="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.publication"
+			xmlns:ns3="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.file"
+			xmlns:ns16="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLResultSet"
+			xmlns:ns5="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.project"
+			xmlns:ns17="http://caarray.cagrid.nci.nih.gov/CaArraySvc/CQLResultTypes"
+			xmlns:ns8="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sample"
+			xmlns:ns9="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sequence">
+        <!-- Specifies that the index should refresh information
+            every 300000 milliseconds (once every 5 minutes) -->
+        <agg:PollIntervalMillis>INDEX_REFRESH</agg:PollIntervalMillis>
+        <!-- specifies all Resource Properties that should be retrieved from the service -->
+		<agg:ResourcePropertyNames>ns14:ServiceMetadata</agg:ResourcePropertyNames>
+	
+		<agg:ResourcePropertyNames>ns18:DomainModel</agg:ResourcePropertyNames>
+	
+      </agg:GetMultipleResourcePropertiesPollType>
+    </agg:AggregatorConfig>
+    <agg:AggregatorData/>
+  </Content>
+</ServiceGroupRegistrationParameters>
