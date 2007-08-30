@@ -471,11 +471,9 @@ final class SdrfTranslator extends AbstractTranslator {
 
     private void linkHybridizationToArrays(gov.nih.nci.caarray.magetab.sdrf.Hybridization sdrfHybridization,
             Hybridization hybridization) {
-        for (gov.nih.nci.caarray.magetab.sdrf.ArrayDesign sdrfArrayDesign
-                : sdrfHybridization.getSuccessorArrayDesigns()) {
-            Array array = (Array) nodeTranslations.get(sdrfArrayDesign);
+            
+            Array array = (Array) nodeTranslations.get(sdrfHybridization.getArrayDesign());
             hybridization.setArray(array);
-        }
     }
 
     private void linkHybridizationToImages(gov.nih.nci.caarray.magetab.sdrf.Hybridization sdrfHybridization,

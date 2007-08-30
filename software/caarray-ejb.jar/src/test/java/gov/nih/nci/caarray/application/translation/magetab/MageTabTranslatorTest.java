@@ -170,8 +170,7 @@ public class MageTabTranslatorTest {
         for (LabeledExtract labeledExtract : investigation.getLabeledExtracts()) {
             Hybridization hybridization = labeledExtract.getHybridizations().iterator().next();
             hybridizations.add(hybridization);
-            // commented out to fix build but still working on it
-            // assertEquals(arrayDesign, hybridization.getArrayDesign());
+            assertEquals(arrayDesign, hybridization.getArray().getDesign());
             RawArrayData celData = hybridization.getArrayData();
             assertEquals(celData.getDataFile().getName(), celData.getName());
             assertNotNull(celData);
