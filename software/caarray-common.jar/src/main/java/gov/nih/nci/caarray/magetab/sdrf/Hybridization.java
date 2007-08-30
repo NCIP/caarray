@@ -91,7 +91,8 @@ import java.util.List;
 public final class Hybridization extends AbstractSampleDataRelationshipNode {
 
     private static final long serialVersionUID = -244337508880218634L;
-    private final List<FactorValue> factorValues = new ArrayList<FactorValue>(); 
+    private final List<FactorValue> factorValues = new ArrayList<FactorValue>();
+    private ArrayDesign arrayDesign;
 
     /**
      * {@inheritDoc}
@@ -105,11 +106,26 @@ public final class Hybridization extends AbstractSampleDataRelationshipNode {
     void addToSdrfList(SdrfDocument document) {
         document.getAllHybridizations().add(this);
     }
+
     /**
      * @return the factor values
      */
     public List<FactorValue> getFactorValues() {
         return factorValues;
+    }
+
+    /**
+     * @return the array design
+     */
+    public ArrayDesign getArrayDesign() {
+        return arrayDesign;
+    }
+
+    /**
+     * @param arrayDesign the arrayDesign to be set
+     */
+    public void setArrayDesign(ArrayDesign arrayDesign) {
+        this.arrayDesign = arrayDesign;
     }
 
 }

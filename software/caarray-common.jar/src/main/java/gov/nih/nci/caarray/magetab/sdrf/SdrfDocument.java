@@ -313,7 +313,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         ArrayDesign arrayDesign = arrayDesignHelper(column, value);
         arrayDesign.setFile(getDocumentSet().getAdfDocument(value).getFile());
         arrayDesign.setArrayDesignRef(false);
-
+      
     }
 
     private void handleArrayDesignRef(SdrfColumn column, String value) {
@@ -324,12 +324,12 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     private ArrayDesign arrayDesignHelper(SdrfColumn column, String value) {
         ArrayDesign arrayDesign = getArrayDesign(value);
-        // ArrayDesign arrayDesign = new ArrayDesign();
+        //ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.setName(value);
-        arrayDesign.link(currentNode);
+        //arrayDesign.link(currentNode);
         arrayDesign.addToSdrfList(this);
-        currentNode = arrayDesign;
-
+        //currentNode = arrayDesign;
+        allHybridizations.get(allHybridizations.size() - 1).setArrayDesign(arrayDesign);
         return arrayDesign;
     }
 
