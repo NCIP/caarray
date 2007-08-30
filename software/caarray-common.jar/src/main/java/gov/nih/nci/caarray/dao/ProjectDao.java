@@ -102,7 +102,9 @@ public interface ProjectDao extends CaArrayDao {
 
     /**
      * Returns all projects.
-     * @return all projects
+     * 
+     * @param username return projects belonging to this user.
+     * @return all projects for the given user.
      */
-    List<Project> getAllProjects();
+    List<Project> getProjectsForUser(String username);
 }

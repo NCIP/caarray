@@ -104,7 +104,7 @@ public class ProjectDaoStub extends AbstractDaoStub implements ProjectDao {
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public List<Project> getAllProjects() {
+    public List<Project> getProjectsForUser(String username) {
         return Collections.EMPTY_LIST;
     }
 
