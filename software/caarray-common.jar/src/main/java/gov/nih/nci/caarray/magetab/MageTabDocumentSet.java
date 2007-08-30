@@ -218,7 +218,7 @@ public final class MageTabDocumentSet implements Serializable {
     void parse() throws MageTabParsingException {
         parse(idfDocuments);
         // if the idf does not have a pointer to the sdrf then skip processing the non-existent SDRF file.
-        if (idfDocuments.isEmpty() && idfDocuments.iterator().next().getSdrfDocuments().size() != 0) {
+        if (!idfDocuments.isEmpty() && idfDocuments.iterator().next().getSdrfDocuments().size() != 0) {
             // parse(adfDocuments);
             parse(sdrfDocuments);
             // parse(dataMatrixFiles);
