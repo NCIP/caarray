@@ -12,14 +12,19 @@
 <body>
 <h1>Welcome to caArray 2</h1>
 <f:view>
-<%@include file="/navigation/menu.jsp" %>
 <h:messages/>
+<f:verbatim>
+<form method="POST" action="j_security_check">
+
+  Username: <input type="text"     name="j_username"><br />
+  Password: <input type="password" name="j_password"><br />
+  <br />
+
+  <input type="submit" value="Login">
+  <input type="reset"  value="Reset">
+
+</form>
+</f:verbatim>
 </f:view>
-<a href="test">Test going to a protected resource.</a>
-
-<%
-  out.print("Current user: " + request.getRemoteUser() + "\tTest role?: " + request.isUserInRole("test"));
-%>
-
 </body>
 </html>
