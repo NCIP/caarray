@@ -142,7 +142,7 @@ public final class ProjectManagementBean implements Serializable {
      * @return all projects
      */
     public List<Project> getProjects() {
-        return getProjectManagementService().getAll();
+        return getProjectManagementService().getWorkspaceProjects();
     }
 
     /**
