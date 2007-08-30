@@ -112,4 +112,11 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         waitForPageToLoad();
     }
 
+    protected void loginAsPrincipalInvestigator() {
+        selenium.open("/caarray/");
+        selenium.type("j_username", "caarrayadmin");
+        selenium.type("j_password", "f1rebird05");
+        clickAndWait("//input[@value='Login']");
+    }
+
 }

@@ -128,7 +128,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
     @Test
     public void testNew() throws Exception {
 
-        selenium.open("/caarray/");
+        loginAsPrincipalInvestigator();
 
         String title = "test" + System.currentTimeMillis();
         // Create project
