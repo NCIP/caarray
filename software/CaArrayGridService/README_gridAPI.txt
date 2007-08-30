@@ -50,6 +50,7 @@ example of the code that must be generated and written.
    (h) Go to C:\projects\CaArrayGridService\server-config.wsdd, and add the following in the service section:
        <parameter name="castorMapping" value="/gov/nih/nci/cagrid/caarray/xml-mapping.xml" />
    (i) Go to C:\projects\CaArrayGridService\server-config.wsdd, and add the following in the globalConfiguration section:
+   	-- SMM: Should this be the client-config.wsdd file?
        <parameter name="castorMapping" value="/gov/nih/nci/cagrid/caarray/xml-mapping.xml" />
 6. In Introduce, under the Operations tab, add each method that you want to expose:
    (a) Add a method called "search".
