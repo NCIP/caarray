@@ -119,6 +119,7 @@ public final class ProjectManagementBean implements Serializable {
     private static final String MANAGE_FILES_FORWARD = "manageFiles";
     private static final String WORKSPACE = "workspace";
     private static final String PROJECT_FORWARD = "project";
+    private static final String VALIDATION_MESSAGES_FORWARD = "validationMessages";
     private static final Log LOG = LogFactory.getLog(ProjectManagementBean.class);
 
     private ServiceLocator locator = ServiceLocator.INSTANCE;
@@ -128,6 +129,7 @@ public final class ProjectManagementBean implements Serializable {
     private UIData projectTable;
     private UIData fileTable;
     private UploadedFile uploadFile;
+    private CaArrayFile caArrayFile;
 
     private List<FileEntry> fileEntries;
 
@@ -158,8 +160,8 @@ public final class ProjectManagementBean implements Serializable {
 
     private void loadFileEntries() {
         fileEntries = new ArrayList<FileEntry>(project.getFiles().size());
-        for (CaArrayFile caArrayFile : project.getFilesList()) {
-            fileEntries.add(new FileEntry(caArrayFile));
+        for (CaArrayFile nextCaArrayFile : project.getFilesList()) {
+            fileEntries.add(new FileEntry(nextCaArrayFile));
         }
     }
 
@@ -244,8 +246,8 @@ public final class ProjectManagementBean implements Serializable {
     }
 
     private boolean typesSetForSelectedFiles() {
-        for (CaArrayFile caArrayFile : getSelectedFiles().getFiles()) {
-            if (caArrayFile.getType() == null) {
+        for (CaArrayFile selectedCaArrayFile : getSelectedFiles().getFiles()) {
+            if (selectedCaArrayFile.getType() == null) {
                 return false;
             }
         }
@@ -255,9 +257,9 @@ public final class ProjectManagementBean implements Serializable {
     private void handleUnsetFileTypes() {
         StringBuffer messageBuffer = new StringBuffer();
         messageBuffer.append("Type needs to be selected for the following files: ");
-        for (CaArrayFile caArrayFile : getSelectedFiles().getFiles()) {
-            if (caArrayFile.getType() == null) {
-                messageBuffer.append(caArrayFile.getName());
+        for (CaArrayFile selectedCaArrayFile : getSelectedFiles().getFiles()) {
+            if (selectedCaArrayFile.getType() == null) {
+                messageBuffer.append(selectedCaArrayFile.getName());
                 messageBuffer.append(' ');
             }
         }
@@ -374,6 +376,27 @@ public final class ProjectManagementBean implements Serializable {
             items.add(new SelectItem(fileType.toString()));
         }
         return items;
+    }
+    
+    /**
+     * Opens the project for the select project.
+     *
+     * @return navigation to project page
+     */
+    public String viewValidationMessages() {
+        setCaArrayFile(((FileEntry) fileTable.getRowData()).getCaArrayFile());
+        return VALIDATION_MESSAGES_FORWARD;
+    }
+
+    /**
+     * @return the caArrayFile
+     */
+    public CaArrayFile getCaArrayFile() {
+        return caArrayFile;
+    }
+
+    private void setCaArrayFile(CaArrayFile caArrayFile) {
+        this.caArrayFile = caArrayFile;
     }
 
 

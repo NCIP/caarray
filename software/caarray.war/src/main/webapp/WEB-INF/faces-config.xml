@@ -47,6 +47,13 @@
     </navigation-rule>
     
     <navigation-rule>
+        <navigation-case>
+            <from-outcome>validationMessages</from-outcome>
+            <to-view-id>/project/validationMessages.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
         <from-view-id>/project/projectProposal.jsp</from-view-id>
         <navigation-case>
             <from-outcome>success</from-outcome>

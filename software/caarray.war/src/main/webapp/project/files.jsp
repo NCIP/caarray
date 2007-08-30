@@ -46,7 +46,9 @@
       <f:facet name="header">
         <h:outputText value="Status"/>
       </f:facet>
-      <h:outputText id="status" value="#{fileEntry.caArrayFile.status}"/>
+        <h:commandLink id="viewValidationMessages" action="#{projectManagementBean.viewValidationMessages}">
+          <h:outputText id="status" value="#{fileEntry.caArrayFile.status}"/>
+        </h:commandLink>
     </h:column>
   </h:dataTable>
   <h:commandButton id="import" action="#{projectManagementBean.importProjectFiles}" value="Import" />
