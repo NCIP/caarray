@@ -25,7 +25,7 @@ insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(1,1,sysdate());
 
 insert into csm_group (group_name, update_date, application_id)
-values('test', sysdate(), 1);
+values('PrincipalInvestigator', sysdate(), 1);
 
 insert into csm_user_group (user_id, group_id)
 values(1, 1);
