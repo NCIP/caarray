@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<wsdl:definitions name="CaArrayGridService" targetNamespace="http://caarray.cagrid.nci.nih.gov/CaArrayGridService/service" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:binding="http://caarray.cagrid.nci.nih.gov/CaArrayGridService/bindings" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
-  <wsdl:import namespace="http://caarray.cagrid.nci.nih.gov/CaArrayGridService/bindings" location="CaArrayGridService_bindings.wsdl"/>
-  <wsdl:service name="CaArrayGridService">
-    <wsdl:port name="CaArrayGridServicePortTypePort" binding="binding:CaArrayGridServicePortTypeSOAPBinding">
-      <soap:address location="http://localhost:8080/wsrf/services/"/>
-    </wsdl:port>
-  </wsdl:service>
-</wsdl:definitions>
