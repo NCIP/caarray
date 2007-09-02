@@ -133,6 +133,9 @@ public class ArrayDesignServiceTest {
         CaArrayFile designFile = getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF);
         ArrayDesign arrayDesign = arrayDesignService.importDesign(designFile);
         assertEquals("Test3", arrayDesign.getName());
+        assertEquals("Affymetrix.com", arrayDesign.getLsidAuthority());
+        assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
+        assertEquals("Test3", arrayDesign.getLsidObjectId());
     }
 
     @Test
@@ -141,7 +144,7 @@ public class ArrayDesignServiceTest {
         FileValidationResult result = arrayDesignService.validateDesign(designFile);
         assertTrue(result.isValid());
     }
-    
+
     @Test
     public void testValidateDesign_AffymetrixHG_U133_Plus2() {
         CaArrayFile designFile = getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF);

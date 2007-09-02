@@ -128,7 +128,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
             if (fusionCDFData == null) {
                 result.addMessage(ValidationMessage.Type.ERROR, "CDF file is missing");
             } else {
-                result.addMessage(ValidationMessage.Type.ERROR, 
+                result.addMessage(ValidationMessage.Type.ERROR,
                         "Unable to read the CDF file : " + fusionCDFData.getFileName());
             }
         }
@@ -138,6 +138,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     @Override
     void load(ArrayDesign arrayDesign) {
         arrayDesign.setName(getFusionCDFData().getChipType());
+        arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + getFusionCDFData().getChipType());
     }
 
     @Override
@@ -186,7 +187,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void handleProbeGroup(FusionCDFProbeGroupInformation probeGroupInformation, 
+    private void handleProbeGroup(FusionCDFProbeGroupInformation probeGroupInformation,
             ArrayDesignDetails designDetails) {
         int numCells = probeGroupInformation.getNumCells();
         FusionCDFProbeInformation probeInformation = new FusionCDFProbeInformation();
@@ -219,7 +220,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void handleQCProbeSet(FusionCDFQCProbeSetInformation qcProbeSetInformation, 
+    private void handleQCProbeSet(FusionCDFQCProbeSetInformation qcProbeSetInformation,
             ArrayDesignDetails designDetails) {
         int numCells = qcProbeSetInformation.getNumCells();
         FusionCDFQCProbeInformation qcProbeInformation = new FusionCDFQCProbeInformation();
