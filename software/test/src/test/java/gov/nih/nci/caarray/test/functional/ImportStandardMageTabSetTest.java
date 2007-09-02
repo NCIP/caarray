@@ -104,8 +104,6 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import com.thoughtworks.selenium.SeleniumException;
-
 /**
  * Test case #7959.
  *
@@ -116,17 +114,11 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
     private static final int NUMBER_OF_FILES = 30;
     private static final String TITLE =
         "TCGA Analysis of Gene Expression for Glioblastoma Multiforme Using Affymetrix HT_HG-U133A";
-    
-    /* (non-Javadoc)
-     * @see com.thoughtworks.selenium.SeleneseTestCase#tearDown()
-     */
-    @Override
-    public void tearDown() throws Exception {
-        // don't
-    }
-    
+
     @Test
     public void testNew() throws Exception {
+
+        verifyDataViaJavaApi();
 
         loginAsPrincipalInvestigator();
 
@@ -142,9 +134,8 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         // - MAGE-TAB SDRF (with references to included native CEL files and corresponding Affymetrix array design)
         // - MAGE-TAB Derived Data Matrix
         // - CEL files referenced in SDRF
-        clickAndWait("mainMenu:workspace");
         clickAndWait("link=" + title);
-        clickAndWait("projectManagementForm:manageFiles");
+        clickAndWait("projectMenu:manageFiles");
 
         upload(MageTabDataFiles.TCGA_BROAD_IDF);
         upload(MageTabDataFiles.TCGA_BROAD_SDRF);
@@ -164,15 +155,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         selectAllFiles();
         clickAndWait("filesForm:import");
 
-        // Verify that the files imported successfully.
-        try {
-            checkFileStatus("IMPORTED");
-            fail("Now that null arrayData bug is fixed, remove this try/catch block");
-        } catch (SeleniumException e) {
-            // This exception is an indication of the null arrayData bug in translation and import
-            e.printStackTrace();
-            return;
-        }
+        checkFileStatus("IMPORTED");
 
         // Using the Java remote API, verify:
         // - Expected entities exist
@@ -210,10 +193,10 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         List<Experiment> matches = searchService.search(searchExperiment);
         assertEquals(1, matches.size());
         Experiment experiment = matches.get(0);
-          
+
         Set<RawArrayData> celDatas = getAllRawArrayData(experiment);
         assertEquals(26, celDatas.size());
-        
+
         RawArrayData celData = celDatas.iterator().next();
         DataSet dataSet = server.getDataRetrievalService().getDataSet(celData);
         assertNotNull(dataSet);

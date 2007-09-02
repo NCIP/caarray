@@ -92,7 +92,7 @@ import com.thoughtworks.selenium.SeleneseTestCase;
  */
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
-    private static final String PAGE_TIMEOUT = "60000";
+    private static final String PAGE_TIMEOUT = "120000";
 
     @Override
     public void setUp() throws Exception {
@@ -101,6 +101,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         int port = TestProperties.getServerPort();
         String browser = System.getProperty("test.browser", "*chrome");
         super.setUp("http://" + hostname + ":" + port, browser);
+        selenium.setTimeout(PAGE_TIMEOUT);
     }
 
     protected void waitForPageToLoad() {
