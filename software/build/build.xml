@@ -743,7 +743,6 @@
     <target name="test:selenium:start-server">
         <echo message="Starting Selenium RC server on port ${selenium.server.port}" />
         <java jar="${selenium-server.jar}" fork="true" spawn="true">
-            <arg line="-timeout 30" />
             <arg value="-port" />
             <arg value="${selenium.server.port}" />
         </java>
