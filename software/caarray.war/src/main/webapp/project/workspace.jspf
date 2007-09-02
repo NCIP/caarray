@@ -1,0 +1,18 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
+<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
+
+  <h:form id="workspaceForm">
+    <h:messages />
+    <h:dataTable id="projects" value="#{projectManagementBean.projects}" var="project" binding="#{projectManagementBean.projectTable}">
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="Experiment Title" />
+        </f:facet>
+        <h:commandLink id="openProject" action="#{projectManagementBean.openProject}">
+          <h:outputText id="title" value="#{project.experiment.title}" />
+        </h:commandLink>
+      </h:column>
+    </h:dataTable>
+  </h:form>
+

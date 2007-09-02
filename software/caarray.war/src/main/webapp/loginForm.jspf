@@ -1,0 +1,32 @@
+<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
+<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
+<f:view>
+<h:messages/>
+<f:verbatim>
+<form method="POST" action="j_security_check">
+
+    <table class="login">
+        <tr>
+            <td colspan="2" class="space">&nbsp;</td>
+        </tr>
+        <tr>
+            <td scope="row" class="label"><label for="username">Username:</label></td>
+            <td class="value"><input type="text" id="username" name="j_username" maxlength="100" size="15" value="" style="width:90px" /></td>
+        </tr>
+        <tr>
+            <td scope="row" class="label"><label for="password">Password:</label></td>
+            <td class="value"><input type="password" id="password" name="j_password" maxlength="100" size="15" value="" style="width:90px" /></td>
+        </tr>
+        <tr>
+            <td colspan="2" class="centered"><input type="image" src="images/btn_login.gif" value="Login" class="button" /></td>
+        </tr>
+        <tr>
+            <td colspan="2" class="centeredsmall">
+                <a href="register.htm">Register</a> |
+                <a href="password_reminder.htm">Forgot Password?</a>
+            </td>
+        </tr>
+    </table>
+</form>
+</f:verbatim>
+</f:view>
