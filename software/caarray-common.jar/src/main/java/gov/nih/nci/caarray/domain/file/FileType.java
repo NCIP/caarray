@@ -204,10 +204,36 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
 
     /**
      * Returns all file types.
-     * 
+     *
      * @return the file types.
      */
     public static Collection<FileType> getTypes() {
         return INSTANCES.values();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        } else if (!(o instanceof FileType)) {
+            return false;
+        } else if (o == this) {
+            return true;
+        } else {
+            FileType otherFileType = (FileType) o;
+            return name.equals(otherFileType.name);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
 }
