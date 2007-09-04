@@ -13,25 +13,25 @@
     </f:facet>
     <h:column>
       <f:facet name="header">
-        <h:outputText value="type"/>
+        <h:outputText value="Type"/>
       </f:facet>
       <h:outputText id="type" value="#{message.type}"/>
     </h:column>
     <h:column>
       <f:facet name="header">
-        <h:outputText value="line"/>
+        <h:outputText value="Line"/>
       </f:facet>
       <h:outputText id="line" value="#{message.line}"/>
     </h:column>
     <h:column>
       <f:facet name="header">
-        <h:outputText value="column"/>
+        <h:outputText value="Column"/>
       </f:facet>
       <h:outputText id="column" value="#{message.column}"/>
     </h:column>
     <h:column>
       <f:facet name="header">
-        <h:outputText value="message"/>
+        <h:outputText value="Message"/>
       </f:facet>
       <h:outputText id="message" value="#{message.message}"/>
     </h:column>

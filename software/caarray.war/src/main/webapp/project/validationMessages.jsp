@@ -122,16 +122,20 @@
           <h1>Actions</h1>
 
           <table>
+            <h:form id="projectMenu">
             <tr>
               <td>
-              <h:form id="projectMenu">
               <h:commandLink id="manageFiles" action="manageFiles">
                 <h:outputText value="Manage files"/>
               </h:commandLink>
+              </td>
+             </tr>
+             <tr>
+              <td>
               <h:commandLink id="workspace" action="#{projectManagementBean.openWorkspace}" value="Return to Workspace" />
-              </h:form>
               </td>
             </tr>
+            </h:form>
           </table>
 
           <h1 style="border-top:1px solid #fff;">What's New</h1>
