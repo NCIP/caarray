@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.domain.file;
 
 import gov.nih.nci.caarray.domain.project.Project;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
@@ -197,5 +198,21 @@ public final class CaArrayFileSet implements Serializable {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * Returns the <code>CaArrayFile</code> in the set corresponding to the
+     * given file object or null if no match.
+     *
+     * @param file get <code>CaArrayFile</code> for this file.
+     * @return the matching <code>CaArrayFile</code>.
+     */
+    public CaArrayFile getFile(File file) {
+        for (CaArrayFile caArrayFile : files) {
+            if (caArrayFile.isMatch(file)) {
+                return caArrayFile;
+            }
+        }
+        return null;
     }
 }

@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.magetab.Protocol;
 import gov.nih.nci.caarray.magetab.TermSource;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
+import gov.nih.nci.caarray.validation.ValidationMessage;
 
 import java.io.File;
 import java.text.ParseException;
@@ -122,10 +123,12 @@ public final class IdfDocument extends AbstractMageTabDocument {
     private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
     private final List<TermSource> docTermSources = new ArrayList<TermSource>();
     private final List<SdrfDocument> sdrfDocuments = new ArrayList<SdrfDocument>();
+    private int currentLineNumber;
+    private int currentColumnNumber;
 
     /**
      * Creates a new IDF from an existing file.
-     * 
+     *
      * @param documentSet the MAGE-TAB document set the IDF belongs to.
      * @param file the file containing the IDF content.
      */
@@ -142,14 +145,16 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     /**
      * Parses the MAGE-TAB document, creating the object graph of entities.
-     * 
+     *
      * @throws MageTabParsingException if the document couldn't be read.
      */
     @Override
     protected void parse() throws MageTabParsingException {
         DelimitedFileReader tabDelimitedReader = createTabDelimitedReader();
         while (tabDelimitedReader.hasNextLine()) {
-            handleLine(tabDelimitedReader.nextLine());
+            List<String> lineValues = tabDelimitedReader.nextLine();
+            currentLineNumber = tabDelimitedReader.getCurrentLineNumber();
+            handleLine(lineValues);
         }
         updateTermSourceRefs();
         validateMatchingColumns();
@@ -185,6 +190,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
             IdfRow idfRow = new IdfRow(heading, IdfRowType.get(heading.getTypeName()));
             validateColumnValues(idfRow, lineContents);
             for (int columnIndex = 1; columnIndex < lineContents.size(); columnIndex++) {
+                currentColumnNumber = columnIndex + 1;
                 int valueIndex = columnIndex - 1;
                 String value = lineContents.get(columnIndex);
                 if (!StringUtils.isEmpty(value)) {
@@ -386,8 +392,23 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleSdrfFile(String value) {
         SdrfDocument sdrfDocument = getDocumentSet().getSdrfDocument(value);
-        getSdrfDocuments().add(sdrfDocument);
-        sdrfDocument.setIdfDocument(this);
+        if (sdrfDocument == null) {
+            ValidationMessage message =
+                addErrorMessage("Referenced SDRF file " + value + " was not included in the MAGE-TAB document set");
+            message.setLine(getCurrentLineNumber());
+            message.setColumn(getCurrentColumnNumber());
+        } else {
+            getSdrfDocuments().add(sdrfDocument);
+            sdrfDocument.setIdfDocument(this);
+        }
+    }
+
+    private int getCurrentLineNumber() {
+        return currentLineNumber;
+    }
+
+    private int getCurrentColumnNumber() {
+        return currentColumnNumber;
     }
 
     private void handleProtocolName(String protocolId, int valueIndex) {
@@ -656,7 +677,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     /**
      * Returns all the SDRF files referenced by the IDF.
-     * 
+     *
      * @return all related SDRF documents.
      */
     public List<SdrfDocument> getSdrfDocuments() {

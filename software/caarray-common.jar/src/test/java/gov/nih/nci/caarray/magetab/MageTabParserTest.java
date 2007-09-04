@@ -82,9 +82,7 @@
  */
 package gov.nih.nci.caarray.magetab;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.idf.Investigation;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile;
@@ -92,7 +90,9 @@ import gov.nih.nci.caarray.magetab.sdrf.ArrayDesign;
 import gov.nih.nci.caarray.magetab.sdrf.Hybridization;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataException;
+import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.util.List;
@@ -128,7 +128,25 @@ public class MageTabParserTest {
             MageTabDocumentSet documentSet = parser.parse(inputFileSet);
             assertNotNull(documentSet);
     }
-    
+
+    @Test
+    public void testValidateMissingSdrf() throws InvalidDataException, MageTabParsingException  {
+            MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
+            inputFileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+            ValidationResult result = parser.validate(inputFileSet);
+            assertNotNull(result);
+            assertFalse(result.isValid());
+            assertEquals(1, result.getFileValidationResults().size());
+            FileValidationResult fileValidationResult = result.getFileValidationResults().get(0);
+            assertEquals(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF, fileValidationResult.getFile());
+            assertEquals(1, fileValidationResult.getMessages().size());
+            ValidationMessage message = fileValidationResult.getMessages().get(0);
+            assertEquals(33, message.getLine());
+            assertEquals(2, message.getColumn());
+            assertTrue(message.getMessage().startsWith("Referenced SDRF file "));
+            assertTrue(message.getMessage().endsWith( " was not included in the MAGE-TAB document set"));
+    }
+
     @Test
     public void testParse() throws MageTabParsingException, InvalidDataException {
         testSpecificationDocuments();

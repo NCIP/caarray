@@ -110,6 +110,7 @@ final class CSVReaderDelimitedFileReader implements DelimitedFileReader {
     private final File file;
     private final char separator;
     private final char delimiter;
+    private int currentLineNumber = -1;
 
     /**
      * Creates a new instance wrapping access to the given <code>File</code>.
@@ -119,7 +120,7 @@ final class CSVReaderDelimitedFileReader implements DelimitedFileReader {
      * @param delimiter the field delimiter
      * @throws IOException if the file couldn't be opened for reading
      */
-    public CSVReaderDelimitedFileReader(File file, char separator, char delimiter) throws IOException {
+    CSVReaderDelimitedFileReader(File file, char separator, char delimiter) throws IOException {
         this.file = file;
         this.separator = separator;
         this.delimiter = delimiter;
@@ -153,7 +154,7 @@ final class CSVReaderDelimitedFileReader implements DelimitedFileReader {
             nextValues = null;
             reader.close();
         }
-
+        currentLineNumber++;
         return result;
     }
 
@@ -167,6 +168,14 @@ final class CSVReaderDelimitedFileReader implements DelimitedFileReader {
         BufferedReader br = new BufferedReader(new FileReader(file));
         reader = new CsvReader(br, separator);
         reader.setTextQualifier(delimiter);
+        reader.setSkipEmptyRecords(false);
         nextLine();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public int getCurrentLineNumber() {
+        return currentLineNumber;
     }
 }

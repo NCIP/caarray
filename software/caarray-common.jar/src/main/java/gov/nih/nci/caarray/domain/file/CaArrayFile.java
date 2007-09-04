@@ -265,4 +265,15 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
         this.validationResult = validationResult;
     }
 
+    /**
+     * Returns true if this <code>CaArrayFile</code> wraps access to the given physical
+     * file.
+     *
+     * @param file check if this is the wrapped file
+     * @return true if this is the wrapped file.
+     */
+    public boolean isMatch(File file) {
+        return file != null && getPath() != null && file.equals(new File(getPath()));
+    }
+
 }
