@@ -128,11 +128,23 @@ class MageTabImporter {
         updateFileStatus(fileSet, FileStatus.VALIDATING);
         MageTabInputFileSet inputSet = getInputFileSet(fileSet);
         try {
-            MageTabParser.INSTANCE.validate(inputSet);
+            updateFileStatus(fileSet, FileStatus.VALIDATED);
+            handleResult(fileSet, MageTabParser.INSTANCE.validate(inputSet));
         } catch (MageTabParsingException e) {
             updateFileStatus(fileSet, FileStatus.VALIDATION_ERRORS);
         }
-        updateFileStatus(fileSet, FileStatus.VALIDATED);
+    }
+
+    private void handleResult(CaArrayFileSet fileSet, ValidationResult result) {
+        for (FileValidationResult fileValidationResult : result.getFileValidationResults()) {
+            CaArrayFile caArrayFile = fileSet.getFile(fileValidationResult.getFile());
+            if (!result.isValid()) {
+                caArrayFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
+            } else {
+                caArrayFile.setFileStatus(FileStatus.VALIDATED);
+            }
+            caArrayFile.setValidationResult(fileValidationResult);
+        }
     }
 
     void importFiles(Project targetProject, CaArrayFileSet fileSet) throws MageTabParsingException {
@@ -148,7 +160,7 @@ class MageTabImporter {
             handleInvalidMageTab(fileSet, e);
         }
     }
-    
+
     private void handleInvalidMageTab(CaArrayFileSet fileSet, InvalidDataException e) {
         ValidationResult validationResult = e.getValidationResult();
         for (CaArrayFile caArrayFile : fileSet.getFiles()) {

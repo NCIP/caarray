@@ -50,53 +50,31 @@
  */
 package gov.nih.nci.caarray.business.vocabulary;
 
+import static org.junit.Assert.*;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
+import java.net.UnknownHostException;
 import java.util.List;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
-/**
- * @author John Pike
- *
- */
 @SuppressWarnings("PMD")
 public class EVSUtilityTest {
 
-    /**
-     * Create the test case.
-     *
-     *
-     */
-    public EVSUtilityTest() {
-
-    }
-
-    /**
-    * Tests basic search in EVS.
-    */
-  //  @Test public final void searchEVS() throws VocabularyServiceException {
-  //      EVSUtility evs = new EVSUtility();
-  //      List<Term> results = evs.getConcepts("ProtocolType");
-  //      List<String> termNames = new ArrayList<String>();
-  //      for (Iterator<Term> i = results.iterator(); i.hasNext();) {
-  //          Term aTerm = i.next();
-  //          termNames.add(aTerm.getValue());
-  //      }
-//
- //       assertTrue(!termNames.isEmpty());
- //   }
-
-    /**
-     * Tests basic search in EVS, where search should return no results.
-     */
-     @Test public final void searchEVSNoResults() throws VocabularyServiceException {
-        EVSUtility evs = new EVSUtility(new DaoFactoryStub());
-        List<Term> results = evs.getConcepts("Foo");
-
-        assertTrue(results.isEmpty());
+     @Test
+     public final void searchEVSNoResults() throws VocabularyServiceException {
+         try {
+             EVSUtility evs = new EVSUtility(new DaoFactoryStub());
+             List<Term> results = evs.getConcepts("Foo");
+             assertTrue(results.isEmpty());
+         } catch (VocabularyServiceException e) {
+             assertNotNull(e.getCause());
+             assertNotNull(e.getCause().getCause());
+             assertTrue(e.getCause().getCause() instanceof UnknownHostException);
+             System.err.println("WARNING -- Couldn't run EVSUtilityTest successfully due to network problems.");
+             e.printStackTrace(System.err);
+         }
 
     }
 
