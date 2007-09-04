@@ -769,11 +769,11 @@
         </javac>
     </target>
 
-    <target name="test:functional:run-tests" depends="test:selenium:run-tests,test:unpack-test-data" />
+    <target name="test:functional:run-tests" depends="test:selenium:run-tests" />
 
-    <target name="test:selenium:run-tests" depends="test:functional:compile-tests">
+    <target name="test:selenium:run-tests" depends="test:functional:compile-tests,test:unpack-test-data,build:caarray-client.jar,database:reinitialize">
         <antcall target="test:selenium:start-server" />
-        <run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit" classpath="${test.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};${test.data.classes.dir};${test.data.files.dir};${selenium-server.jar};${selenium-java-client-driver.jar};${selenium-java-client-driver-tests.jar};${junit.jar}" />
+        <run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit" classpath="${test.classes.dir};${caarray-client.jar};${test.data.classes.dir};${test.data.files.dir};${selenium-server.jar};${selenium-java-client-driver.jar};${selenium-java-client-driver-tests.jar};${junit.jar}" />
         <antcall target="test:selenium:stop-server" />
     </target>
 
