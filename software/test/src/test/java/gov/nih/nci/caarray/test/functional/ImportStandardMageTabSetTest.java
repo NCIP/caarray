@@ -118,8 +118,6 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
     @Test
     public void testNew() throws Exception {
 
-        verifyDataViaJavaApi();
-
         loginAsPrincipalInvestigator();
 
         String title = "test" + System.currentTimeMillis();
