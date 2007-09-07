@@ -140,8 +140,26 @@
 		<ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml"
 			target="remote-deploy-qa"/>
 	</target>
+
+	<target name="help">
+	  <echo>
+        Example usage: ant -f remote-build.xml -Dbuild.envpropertyfile=C:\dev\caarray2\software\build\DEV.properties
+   	  </echo>
+	</target>
+
+	<target name="diagnostics">
+	  <echo> Diagnostics...</echo>
+	  <echo> basedir is ${basedir} </echo>
+	  <echo> ant.file is ${ant.file} </echo>
+	  <echo> ant.version is ${ant.version} </echo>
+	  <echo> ant.java.version is ${ant.java.version} </echo>
+	  <echo> build.env is ${build.env} </echo>
+	  <echo> svn.local.trunk is ${svn.local.trunk} </echo>	  
+ 	  <echo> ssh.key.file is ${ssh.key.file} </echo>	  	  
+	</target>
 	
 	<target name="all">	   
+       	<antcall target="diagnostics"/>
 		<antcall target="fail-if-no-jsch"/>
 		<antcall target="fail-if-no-env"/>
 		<antcall target="fail-if-no-label-qa"/>
