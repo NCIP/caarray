@@ -206,7 +206,7 @@
     <!-- ** MAIN TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
 
-    <target name="continuous-integration" depends="clean,
+    <target name="continuous-integration" unless="build.notest" depends="clean,
     database:reinitialize,
       build,
       check,
@@ -1005,7 +1005,7 @@
     <property name="keyfile.file" value="caarray2-key.properties" />
     <property name="envproperties.file" value="${build.env}.properties" />
 
-    <target name="continuous-integration-notest" depends="clean,
+    <target name="continuous-integration-notest" if="build.notest" depends="clean,
       database:reinitialize,
       build,
       check" />
@@ -1016,8 +1016,7 @@
                 <pathelement location="${lib.dir}/nci-ant.jar" />
             </classpath>
         </taskdef>
-    <!--   <ncitask keyFile="${properties.dir}/${keyfile.file}" compareFile="${properties.dir}/$(build.envpropertyfile)" /> -->
-        <ncitask keyFile="${properties.dir}/${keyfile.file}" compareFile=$(build.envpropertyfile) />
+        <ncitask keyFile="${properties.dir}/${keyfile.file}" compareFile="${build.envpropertyfile}" />
     </target>
 
     <tstamp prefix="caarray" />
@@ -1078,6 +1077,7 @@
 
     <target name="remote-deploy">
         <antcall target="validate-properties" />
+		<antcall target="continuous-integration" />
         <antcall target="continuous-integration-notest" />
         <antcall target="database:reinitialize" />
         <antcall target="remote-jboss:stop" />
