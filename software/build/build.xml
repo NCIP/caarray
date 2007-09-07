@@ -162,6 +162,7 @@
     <!-- Environment properties -->
     <property environment="env" />
     <!-- Environment properties file - launch build with -Dbuild.env=DEV/QA/STAGING/PROD -->
+    <property file="${build.dir}/$(build.envpropertyfile)" />
     <property file="${build.dir}/${build.env}.properties" />
     <property file="${build.dir}/local.properties" />
     <property file="${build.dir}/default.properties" />
@@ -1015,7 +1016,7 @@
                 <pathelement location="${lib.dir}/nci-ant.jar" />
             </classpath>
         </taskdef>
-        <ncitask keyFile="${properties.dir}/${keyfile.file}" compareFile="${properties.dir}/${envproperties.file}" />
+        <ncitask keyFile="${properties.dir}/${keyfile.file}" compareFile="${properties.dir}/$(build.envpropertyfile)" />
     </target>
 
     <tstamp prefix="caarray" />
