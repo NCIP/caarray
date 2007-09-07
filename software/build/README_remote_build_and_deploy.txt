@@ -8,7 +8,11 @@ Prereqs: It is assumed you have Ant 1.7 and a JDK installed and in your System's
    3. Modify the ssh.key.file attribute in your [caarray2]/software/build/[DEV/QA].properties file to point to the location of your id_dsa file (SSH private key). The path must be fully qualified.
    4. For the DEV environment and from the command line in your [caarray2]/software/build directory, type: 
 
+   (Without Tag)
    ant -f remote-build.xml -Dbuild.envpropertyfile=C:\dev\caarray2\software\build\DEV.properties
+    
+   (With Tag)
+   ant -f remote-build.xml -Dbuild.envpropertyfile=C:\dev\caarray2\software\build\DEV.properties -Dlabel.ear=CAARRAY_R2_0_0_QA2
 
    5. Once deployment is complete, verify a successful remote deployment by going to http://cbvapp-d1002.nci.nih.gov:19280/caarray/ 
 
