@@ -1003,7 +1003,8 @@
 
     <property name="properties.dir" value="${basedir}/build" />
     <property name="keyfile.file" value="caarray2-key.properties" />
-    <property name="envproperties.file" value="${build.env}.properties" />
+   <!--  <property name="envproperties.file" value="${build.env}.properties" /> -->
+    <property name="envproperties.file" value=$(build.envpropertyfile) /> 
 
     <target name="continuous-integration-notest" depends="clean,
       database:reinitialize,
@@ -1016,7 +1017,8 @@
                 <pathelement location="${lib.dir}/nci-ant.jar" />
             </classpath>
         </taskdef>
-        <ncitask keyFile="${properties.dir}/${keyfile.file}" compareFile="${properties.dir}/$(build.envpropertyfile)" />
+    <!--    <ncitask keyFile="${properties.dir}/${keyfile.file}" compareFile="${properties.dir}/$(build.envpropertyfile)" /> -->
+        <ncitask keyFile="${properties.dir}/${keyfile.file}" compareFile=$(build.envpropertyfile) />
     </target>
 
     <tstamp prefix="caarray" />
