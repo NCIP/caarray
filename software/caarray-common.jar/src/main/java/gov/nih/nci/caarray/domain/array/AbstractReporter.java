@@ -110,7 +110,11 @@ public abstract class AbstractReporter extends AbstractDesignElement {
         super(lsidAuthority, lsidNamespace, lsidObjectId);
     }
 
-    AbstractReporter() {
+    /**
+     * @deprecated hibernate & castor only
+     */
+    @Deprecated
+    public AbstractReporter() {
         // hibernate-only constructor
     }
 
@@ -134,15 +138,15 @@ public abstract class AbstractReporter extends AbstractDesignElement {
      * @return the probeAccessions
      */
     @OneToMany(mappedBy = "reporter")
-    public Set<Accession> getProbeAccessions() {
+    public Set<Accession> getProbeAccession() {
         return probeAccessions;
     }
 
     /**
-     * @param probeAccessions the probeAccessions to set
+     * @param probeAccession the probeAccessions to set
      */
     @SuppressWarnings("unused")
-    private void setProbeAccessions(Set<Accession> probeAccessions) { // NOPMD
-        this.probeAccessions = probeAccessions;
+    private void setProbeAccession(Set<Accession> probeAccession) { // NOPMD
+        this.probeAccessions = probeAccession;
     }
 }

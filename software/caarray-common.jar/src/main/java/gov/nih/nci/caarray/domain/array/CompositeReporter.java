@@ -119,7 +119,11 @@ public class CompositeReporter extends AbstractReporter {
         setArrayDesignDetails(details);
     }
 
-    CompositeReporter() {
+    /**
+     * @deprecated hibernate & castor only
+     */
+    @Deprecated
+    public CompositeReporter() {
         // Hibernate-only constructor
     }
 

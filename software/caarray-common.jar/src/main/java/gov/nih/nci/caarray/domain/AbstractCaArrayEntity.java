@@ -105,7 +105,7 @@ public abstract class AbstractCaArrayEntity extends AbstractCaArrayObject {
     /**
      * Default constructor.  All lsid information will be blank.
      */
-    protected AbstractCaArrayEntity() {
+    public AbstractCaArrayEntity() {
         // blank lsid information / hibernate constructor
     }
 

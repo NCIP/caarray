@@ -111,6 +111,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
     private Image image;
     private AbstractBioMaterial bioMaterial;
     private AbstractArrayData arrayData;
+    private String notes;
 
     /**
      * Gets the protocol.
@@ -209,6 +210,20 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      */
     public void setArrayData(AbstractArrayData arrayData) {
         this.arrayData = arrayData;
+    }
+
+    /**
+     * @return the notes
+     */
+    public String getNotes() {
+        return notes;
+    }
+
+    /**
+     * @param notes the notes to set
+     */
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 
     /**

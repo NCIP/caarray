@@ -106,7 +106,11 @@ public abstract class AbstractDesignElement extends AbstractCaArrayEntity {
         }
     }
 
-    AbstractDesignElement() {
+    /**
+     * @deprecated for castor & hibernate use only
+     */
+    @Deprecated
+    public AbstractDesignElement() {
         // hibernate constructor
     }
 

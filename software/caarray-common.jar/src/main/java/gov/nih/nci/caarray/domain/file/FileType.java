@@ -101,7 +101,7 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
      */
     private static final long serialVersionUID = 1234567890L;
 
-    private final String name;
+    private String name;
 
     /**
      * The MAGE_TAB Array Design Format file type.
@@ -160,6 +160,14 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
     }
 
     /**
+     * @deprecated for castor use only
+     */
+    @Deprecated
+    public FileType() {
+        // don't use this
+    }
+
+    /**
      * Gets the file type.
      *
      * @param nameVal the file type
@@ -176,6 +184,15 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
      */
     @Override
     public String toString() {
+        return name;
+    }
+
+    /**
+     * Returns the name of the file type.
+     *
+     * @return the name of the file type
+     */
+    public String getName() {
         return name;
     }
 

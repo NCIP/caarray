@@ -167,7 +167,7 @@ public class DataSetTest {
             assertEquals(hybridizations.get(i), row.getHybridizationValues().get(i).getHybridization());
             assertEquals(quantitationTypes.size(), row.getHybridizationValues().get(i).getValues().size());
             for (int j = 0; j < quantitationTypes.size(); j++) {
-                assertEquals(quantitationTypes.get(j), row.getHybridizationValues().get(i).getValues().get(j).getType());
+                assertEquals(quantitationTypes.get(j), row.getHybridizationValues().get(i).getValues().get(j).getQuantitationType());
             }
         }
         assertEquals(1, dataSet.getRows().size());

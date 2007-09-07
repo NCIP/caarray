@@ -145,7 +145,7 @@ public class DerivedArrayData extends AbstractArrayData {
     )
     @ForeignKey(name = "DERIVEDFROM_ARRAYDATA_FK", inverseName = "DERIVEDFROM_DERIVEDARRAYDATA_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    public Set<DerivedArrayData> getDerivedFromDatas() {
+    public Set<DerivedArrayData> getDerivedFromArrayDatas() {
         return derivedFromDatas;
     }
 
@@ -155,7 +155,7 @@ public class DerivedArrayData extends AbstractArrayData {
      * @param derivedFromDatasVal the derivedFromDatas
      */
     @SuppressWarnings("unused")
-    private void setDerivedFromDatas(final Set<DerivedArrayData> derivedFromDatasVal) { // NOPMD
+    private void setDerivedFromArrayDatas(final Set<DerivedArrayData> derivedFromDatasVal) { // NOPMD
         this.derivedFromDatas = derivedFromDatasVal;
     }
 

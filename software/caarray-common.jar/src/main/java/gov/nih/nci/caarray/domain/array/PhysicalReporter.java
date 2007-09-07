@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.domain.array;
 
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -105,8 +107,9 @@ public class PhysicalReporter extends AbstractReporter {
     private ReporterGroup reporterGroup;
     private Set<Feature> features = new HashSet<Feature>();
     private Set<CompositeReporter> compositeReporters = new HashSet<CompositeReporter>();
-
     private ArrayDesignDetails arrayDesignDetails;
+    private Term controlType;
+
     /**
      * Creates a new <code>PhysicalReporter</code> with its LSID initialized.
      *
@@ -123,7 +126,11 @@ public class PhysicalReporter extends AbstractReporter {
         setArrayDesignDetails(details);
     }
 
-    PhysicalReporter() {
+    /**
+     * @deprecated hibernate & castor only
+     */
+    @Deprecated
+    public PhysicalReporter() {
         // hibernate constructor
     }
 
@@ -184,5 +191,21 @@ public class PhysicalReporter extends AbstractReporter {
 
     private void setArrayDesignDetails(ArrayDesignDetails arrayDesignDetails) {
         this.arrayDesignDetails = arrayDesignDetails;
+    }
+
+    /**
+     * @return the controlType
+     */
+    @ManyToOne
+    @ForeignKey(name = "PHYREPORTER_CONTROLTYPE_FK")
+    public Term getControlType() {
+        return controlType;
+    }
+
+    /**
+     * @param controlType the controlType to set
+     */
+    public void setControlType(Term controlType) {
+        this.controlType = controlType;
     }
 }

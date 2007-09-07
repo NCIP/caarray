@@ -112,6 +112,7 @@ public class Image extends AbstractCaArrayEntity {
     private Set<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
     private CaArrayFile imageFile;
     private Hybridization hybridization;
+    private RawArrayData rawArrayData;
 
     /**
      * Gets the name.
@@ -194,5 +195,21 @@ public class Image extends AbstractCaArrayEntity {
      */
     public void setHybridization(Hybridization hybridization) {
         this.hybridization = hybridization;
+    }
+
+    /**
+     * @return the raw array data
+     */
+    @ManyToOne
+    @ForeignKey(name = "IMAGE_RAWARRAYDATA_FK")
+    public RawArrayData getRawArrayData() {
+        return rawArrayData;
+    }
+
+    /**
+     * @param rawArrayData the raw array data to set
+     */
+    public void setRawArrayData(RawArrayData rawArrayData) {
+        this.rawArrayData = rawArrayData;
     }
 }

@@ -17,6 +17,8 @@ import org.oasis.wsrf.properties.GetResourcePropertyResponse;
 
 import org.globus.gsi.GlobusCredential;
 
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
@@ -107,6 +109,7 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
                     //SMOKE: test the echo() service method
                     System.out.println(client.echo("steve was here"));
 
+                    /*
                     //SMOKE: test the query() data service method
                     CQLQuery query = new CQLQuery();
                     gov.nih.nci.cagrid.cqlquery.Object target = new gov.nih.nci.cagrid.cqlquery.Object();
@@ -120,9 +123,13 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
                         Object object = iter.next();
                         System.out.println(object);
                     }
-
+*/
                     //SMOKE: test the getDataSet() service method..
-                    DataSet dataSet = client.getDataSet(new RawArrayData());
+//                    DataSet dataSet = client.getDataSet(new RawArrayData());
+
+                    // SMOKE: test the getDesignDetails
+                    ArrayDesignDetails add = client.getDesignDetails(new ArrayDesign());
+                    System.out.println("TCPTCP: " + add);
 
                 } else {
                     usage();

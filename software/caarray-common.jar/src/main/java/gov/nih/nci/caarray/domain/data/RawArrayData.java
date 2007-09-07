@@ -83,11 +83,15 @@
 
 package gov.nih.nci.caarray.domain.data;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -103,8 +107,9 @@ import org.hibernate.annotations.ForeignKey;
 public class RawArrayData extends AbstractArrayData {
 
     private static final long serialVersionUID = 1234567890L;
-    
+
     private Hybridization hybridization;
+    private Set<Image> sourceImages = new HashSet<Image>();
 
     /**
      * {@inheritDoc}
@@ -128,5 +133,18 @@ public class RawArrayData extends AbstractArrayData {
      */
     public void setHybridization(Hybridization hybridization) {
         this.hybridization = hybridization;
+    }
+
+    /**
+     * @return source images
+     */
+    @OneToMany(mappedBy = "rawArrayData")
+    public Set<Image> getSourceImages() {
+        return sourceImages;
+    }
+
+    @SuppressWarnings("unused")
+    private void setSourceImages(Set<Image> sourceImages) { // NOPMD
+        this.sourceImages = sourceImages;
     }
 }

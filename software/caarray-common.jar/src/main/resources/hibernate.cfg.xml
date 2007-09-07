@@ -23,6 +23,7 @@
         <!-- mapping files -->
         <mapping class="gov.nih.nci.caarray.domain.array.AbstractReporter"/>
         <mapping class="gov.nih.nci.caarray.domain.array.Array"/>
+        <mapping class="gov.nih.nci.caarray.domain.array.ArrayGroup"/>
         <mapping class="gov.nih.nci.caarray.domain.array.ArrayDesign"/>
         <mapping class="gov.nih.nci.caarray.domain.array.ArrayDesignDetails"/>
         <mapping class="gov.nih.nci.caarray.domain.array.CompositeReporter"/>

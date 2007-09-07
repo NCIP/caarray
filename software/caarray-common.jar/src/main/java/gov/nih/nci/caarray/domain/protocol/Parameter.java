@@ -113,7 +113,11 @@ public class Parameter extends AbstractCaArrayEntity {
         this.protocol = protocol;
     }
 
-    Parameter() {
+    /**
+     * @deprecated for castor & hibernate only
+     */
+    @Deprecated
+    public Parameter() {
         // hibernate-only constructor
     }
 

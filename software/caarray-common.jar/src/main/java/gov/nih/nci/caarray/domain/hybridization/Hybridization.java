@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
@@ -129,6 +130,8 @@ public class Hybridization extends AbstractCaArrayEntity {
     private ProtocolApplication protocolApplication;
     private Set<LabeledExtract> labeledExtract = new HashSet<LabeledExtract>();
     private Set<FactorValue> factorValues = new HashSet<FactorValue>();
+    private Term label;
+    private Experiment experiment;
 
     /**
      * Gets the name.
@@ -333,5 +336,34 @@ public class Hybridization extends AbstractCaArrayEntity {
      */
     public void setAmountOfMaterialUnit(Term amountOfMaterialUnit) {
         this.amountOfMaterialUnit = amountOfMaterialUnit;
+    }
+
+    /**
+     * @return the label
+     */
+    public Term getLabel() {
+        return label;
+    }
+
+    /**
+     * @param label the label to set
+     */
+    public void setLabel(Term label) {
+        this.label = label;
+    }
+
+    /**
+     * @return associated experiment
+     */
+    @ManyToOne
+    public Experiment getExperiment() {
+        return experiment;
+    }
+
+    /**
+     * @param experiment experiment to set
+     */
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
     }
 }

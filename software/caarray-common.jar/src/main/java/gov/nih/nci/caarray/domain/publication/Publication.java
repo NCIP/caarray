@@ -97,6 +97,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
  *
  */
 @Entity
+@SuppressWarnings("PMD.TooManyFields") // All fields are required
 public class Publication extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
@@ -116,6 +117,8 @@ public class Publication extends AbstractCaArrayEntity {
     private Experiment experiment;
     private Term status;
     private Term type;
+    @SuppressWarnings("PMD")
+    private String publication;
 
 
     /**
@@ -378,5 +381,20 @@ public class Publication extends AbstractCaArrayEntity {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * @return the publication
+     */
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    public String getPublication() {
+        return publication;
+    }
+
+    /**
+     * @param publication the publication to set
+     */
+    public void setPublication(String publication) {
+        this.publication = publication;
     }
 }

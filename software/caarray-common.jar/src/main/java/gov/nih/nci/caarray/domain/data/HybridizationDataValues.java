@@ -94,15 +94,23 @@ import java.util.List;
 public final class HybridizationDataValues implements Serializable {
 
     private static final long serialVersionUID = 8804648118447372387L;
-    private final List<DataValue> values;
-    private final DataRow dataRow;
-    private final Hybridization hybridization;
+    private List<DataValue> values;
+    private DataRow dataRow;
+    private Hybridization hybridization;
 
     private HybridizationDataValues(DataRow dataRow, Hybridization hybridization) {
         super();
         this.dataRow = dataRow;
         this.hybridization = hybridization;
         values = initializeValues();
+    }
+
+    /**
+     * @deprecated For castor only - do no user otherwise
+     */
+    @Deprecated
+    public HybridizationDataValues() {
+        // do nothing
     }
 
     private List<DataValue> initializeValues() {
@@ -122,7 +130,7 @@ public final class HybridizationDataValues implements Serializable {
     /**
      * @return the dataRow
      */
-    public DataRow getDataRow() {
+    public DataRow getRow() {
         return dataRow;
     }
 
@@ -141,13 +149,13 @@ public final class HybridizationDataValues implements Serializable {
     }
 
     void setValue(QuantitationType type, Object value) {
-        values.get(getDataRow().getDataSet().indexOf(type)).setValue(value);
+        values.get(getRow().getDataSet().indexOf(type)).setValue(value);
     }
-    
+
     /**
      * This operation implemented solely for caDSR compatibility. Clients should not expect this
      * field to contain a valid, unique ID.
-     * 
+     *
      * @return the spurious placeholder value.
      */
     public Long getId() {

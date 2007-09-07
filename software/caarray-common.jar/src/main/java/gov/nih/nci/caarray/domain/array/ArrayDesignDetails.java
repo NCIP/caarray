@@ -139,12 +139,12 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
      * @return the compositeReporters
      */
    @OneToMany(mappedBy = MAPPED_BY)
-   public Set<CompositeReporter> getCompositeElements() {
+   public Set<CompositeReporter> getCompositeReporters() {
         return compositeReporters;
     }
 
     @SuppressWarnings(UNUSED)
-    private void setCompositeElements(Set<CompositeReporter> compositeElements) { // NOPMD
+    private void setCompositeReporters(Set<CompositeReporter> compositeElements) { // NOPMD
         this.compositeReporters = compositeElements;
     }
 

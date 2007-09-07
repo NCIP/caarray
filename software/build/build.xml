@@ -426,6 +426,7 @@
             <fileset dir="${caarray-client.classes.dir}" />
             <fileset dir="${caarray-common.classes.dir}">
                 <include name="**/domain/**" />
+                <include name="**/validation/**" />
             </fileset>
         </jar>
     </target>

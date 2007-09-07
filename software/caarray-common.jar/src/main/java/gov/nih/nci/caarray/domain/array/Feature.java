@@ -102,10 +102,10 @@ public class Feature extends AbstractDesignElement {
 
     private static final long serialVersionUID = -6319120292398781186L;
 
-    private short blockColumn;
-    private short blockRow;
-    private short column;
-    private short row;
+    private int blockColumn;
+    private int blockRow;
+    private int column;
+    private int row;
 
     private Set<PhysicalReporter> reporters = new HashSet<PhysicalReporter>();
     private ArrayDesignDetails arrayDesignDetails;
@@ -123,35 +123,39 @@ public class Feature extends AbstractDesignElement {
         setArrayDesignDetails(details);
     }
 
-    Feature() {
+    /**
+     * @deprecated hibernate & castor only
+     */
+    @Deprecated
+    public Feature() {
         // hibernate-only constructor
     }
 
     /**
      * @return the blockColumn
      */
-    public short getBlockColumn() {
+    public int getBlockColumn() {
         return blockColumn;
     }
 
     /**
      * @param blockColumn the blockColumn to set
      */
-    public void setBlockColumn(short blockColumn) {
+    public void setBlockColumn(int blockColumn) {
         this.blockColumn = blockColumn;
     }
 
     /**
      * @return the blockRow
      */
-    public short getBlockRow() {
+    public int getBlockRow() {
         return blockRow;
     }
 
     /**
      * @param blockRow the blockRow to set
      */
-    public void setBlockRow(short blockRow) {
+    public void setBlockRow(int blockRow) {
         this.blockRow = blockRow;
     }
 
@@ -159,14 +163,14 @@ public class Feature extends AbstractDesignElement {
      * @return the column
      */
     @Column(name = "feature_column")
-    public short getColumn() {
+    public int getColumn() {
         return column;
     }
 
     /**
      * @param column the column to set
      */
-    public void setColumn(short column) {
+    public void setColumn(int column) {
         this.column = column;
     }
 
@@ -174,14 +178,14 @@ public class Feature extends AbstractDesignElement {
      * @return the row
      */
     @Column(name = "feature_row")
-    public short getRow() {
+    public int getRow() {
         return row;
     }
 
     /**
      * @param row the row to set
      */
-    public void setRow(short row) {
+    public void setRow(int row) {
         this.row = row;
     }
 

@@ -106,6 +106,7 @@ public class Array extends AbstractCaArrayEntity {
     private String serialNumber;
     private ProtocolApplication production;
     private ArrayDesign design;
+    private ArrayGroup arrayGroup;
 
     /**
      * Gets the batch.
@@ -188,6 +189,22 @@ public class Array extends AbstractCaArrayEntity {
      */
     public void setDesign(final ArrayDesign designVal) {
         this.design = designVal;
+    }
+
+    /**
+     * @return the array group
+     */
+    @ManyToOne
+    @ForeignKey(name = "ARRAY_GROUP_IDK")
+    public ArrayGroup getArrayGroup() {
+        return arrayGroup;
+    }
+
+    /**
+     * @param arrayGroup new array group
+     */
+    public void setArrayGroup(ArrayGroup arrayGroup) {
+        this.arrayGroup = arrayGroup;
     }
 
     /**

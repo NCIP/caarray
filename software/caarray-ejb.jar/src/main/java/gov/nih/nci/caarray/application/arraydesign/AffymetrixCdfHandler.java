@@ -172,7 +172,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
         CompositeReporter compositeReporter = new CompositeReporter(LSID_AUTHORITY, LSID_NAMESPACE, getFusionCDFData()
                 .getChipType()
                 + "." + probeSetName, designDetails);
-        designDetails.getCompositeElements().add(compositeReporter);
+        designDetails.getCompositeReporters().add(compositeReporter);
         int numLists = probeSetInformation.getNumLists();
         for (int listIndex = 0; listIndex < numLists; listIndex++) {
             PhysicalReporter reporter = new PhysicalReporter(LSID_AUTHORITY, LSID_NAMESPACE, probeSetName

@@ -104,6 +104,7 @@
 	<classpathentry kind="lib" path="lib/caGrid-1.1-caDSR-stubs.jar"/>
 	<classpathentry kind="lib" path="lib/caGrid-1.1-caDSR-tests.jar"/>
 	<classpathentry kind="lib" path="ext/caarray-client.jar"/>
-	<classpathentry kind="lib" path="lib/castor-1.0.5.jar" sourcepath="C:/dev/tools/castor-1.0.5"/>
+	<classpathentry kind="lib" path="lib/castor-1.0.4.jar"/>
+	<classpathentry kind="lib" path="/cacordsdk_fromcvs/eclipse-out"/>
 	<classpathentry kind="output" path="eclipse-out"/>
 </classpath>

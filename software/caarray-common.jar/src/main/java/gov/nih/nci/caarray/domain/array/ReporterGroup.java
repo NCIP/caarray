@@ -112,7 +112,11 @@ public class ReporterGroup extends AbstractCaArrayEntity {
         setArrayDesignDetails(arrayDesignDetails);
     }
 
-    ReporterGroup() {
+    /**
+     * @deprecated for castor & hibernate use only
+     */
+    @Deprecated
+    public ReporterGroup() {
         // hibernate constructor
     }
 

@@ -86,6 +86,8 @@ package gov.nih.nci.caarray.domain.project;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayGroup;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
@@ -121,6 +123,7 @@ public class Experiment extends AbstractCaArrayEntity {
     private static final String UNUSED = "unused";
     private static final String FK_COLUMN_NAME = "EXPERIMENT_ID";
     private static final String TERM_FK_NAME = "TERM_ID";
+    private static final String EXPERIMENT_REF = "experiment";
 
     private static final long serialVersionUID = 1234567890L;
 
@@ -140,6 +143,8 @@ public class Experiment extends AbstractCaArrayEntity {
     private Set<Sample> samples = new HashSet<Sample>();
     private Set<Extract> extracts = new HashSet<Extract>();
     private Set<LabeledExtract> labeledExtracts = new HashSet<LabeledExtract>();
+    private Set<ArrayGroup> arrayGroups = new HashSet<ArrayGroup>();
+    private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
 
     /**
      * Creates a new, empty <code>Experiment</code>.
@@ -255,7 +260,7 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the publications
      */
-    @OneToMany(mappedBy = "experiment", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.EAGER)
     public Set<Publication> getPublications() {
         return publications;
     }
@@ -437,7 +442,7 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the experimentContacts
      */
-    @OneToMany(mappedBy = "experiment", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<ExperimentContact> getExperimentContacts() {
         return experimentContacts;
@@ -458,7 +463,7 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the factors
      */
-    @OneToMany(mappedBy = "experiment", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Factor> getFactors() {
         return factors;
@@ -526,6 +531,32 @@ public class Experiment extends AbstractCaArrayEntity {
     @SuppressWarnings(UNUSED)
     private void setArrays(final Set<Array> arraysVal) {  // NOPMD
         this.arrays = arraysVal;
+    }
+
+    /**
+     * @return array groups
+     */
+    @OneToMany(mappedBy = EXPERIMENT_REF)
+    public Set<ArrayGroup> getArrayGroups() {
+        return arrayGroups;
+    }
+
+    @SuppressWarnings("unused")
+    private void setArrayGroups(Set<ArrayGroup> arrayGroups) { // NOPMD
+        this.arrayGroups = arrayGroups;
+    }
+
+    /**
+     * @return hybridizations
+     */
+    @OneToMany(mappedBy = EXPERIMENT_REF)
+    public Set<Hybridization> getHybridizations() {
+        return hybridizations;
+    }
+
+    @SuppressWarnings("unused")
+    private void setHybridizations(Set<Hybridization> hybridizations) { // NOPMD
+        this.hybridizations = hybridizations;
     }
 
     /**
