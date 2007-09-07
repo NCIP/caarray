@@ -20,6 +20,9 @@ For QA, use the same procedures with the following exceptions:
    ant -f remote-build.xml -Dbuild.env=QA -Dlabel.ear=CAARRAY_R2_0_0_QA2
    5. Once deployment is complete, verify a successful remote deployment by going to    http://cbvapp-q1001.nci.nih.gov:19280/caarray/
 
+For additonal detail on this process, see https://gforge.nci.nih.gov/svnroot/caarray2/trunk/docs/deployment/auto-remote-deploy/
+
+
 
 
 
