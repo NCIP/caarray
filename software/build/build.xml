@@ -1016,7 +1016,7 @@
                 <pathelement location="${lib.dir}/nci-ant.jar" />
             </classpath>
         </taskdef>
-    <!--    <ncitask keyFile="${properties.dir}/${keyfile.file}" compareFile="${properties.dir}/$(build.envpropertyfile)" /> -->
+    <!--   <ncitask keyFile="${properties.dir}/${keyfile.file}" compareFile="${properties.dir}/$(build.envpropertyfile)" /> -->
         <ncitask keyFile="${properties.dir}/${keyfile.file}" compareFile=$(build.envpropertyfile) />
     </target>
 
