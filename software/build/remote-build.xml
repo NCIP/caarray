@@ -6,10 +6,9 @@
 	
 	
 	<!-- PROPERTIES -->
-	<property file="${build.env}.properties" />
+	<property file="${build.envpropertyfile}" />
 	<property file="local.properties" />
 	<property name="lib.dir" value="../lib" />
-	
 	
 		
 	<!-- PATHS -->
@@ -23,17 +22,14 @@
 	<!-- CONDITIONS -->
 	<condition property="fail.if.no.env">
 		<not>
-			<isset property="build.env"/>
+			<available file="${build.envpropertyfile}" />
 		</not>
 	</condition>
 	
 	<condition property="build.with.nolabel.dev">
-		<and>
-			<equals arg1="${build.env}" arg2="DEV" casesensitive="false"/>
-			<not>
-				<isset property="label.ear"/>
-			</not>
-		</and>
+		<not>
+			<isset property="label.ear"/>
+		</not>
 	</condition>
 	
 	<condition property="fail.with.nolabel.qa">
@@ -105,8 +101,8 @@
 	</target>
 	
 	<target name="fail-if-no-env" if="fail.if.no.env">
-		<fail>Target environment not set. Please set target environmant with
-			-Dbuild.env=[DEV|QA|STAGING]</fail>
+		<fail>Target environment file not found. Please set target environment file with
+			-Dbuild.envpropertyfile=[FULLY QUALIFIED PATH TO PROPERTY FILE]</fail>
 	</target>
 
    <target name="fail-if-no-jsch" if="fail.if.no.jsch">
