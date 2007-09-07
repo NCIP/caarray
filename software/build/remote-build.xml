@@ -153,6 +153,7 @@
 	  <echo> ant.file is ${ant.file} </echo>
 	  <echo> ant.version is ${ant.version} </echo>
 	  <echo> ant.java.version is ${ant.java.version} </echo>
+	  <echo> build.envpropertyfile is ${build.envpropertyfile} </echo>
 	  <echo> build.env is ${build.env} </echo>
 	  <echo> svn.local.trunk is ${svn.local.trunk} </echo>	  
  	  <echo> ssh.key.file is ${ssh.key.file} </echo>	  	  
