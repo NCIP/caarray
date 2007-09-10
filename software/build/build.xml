@@ -168,7 +168,7 @@
     <property file="${build.dir}/default.properties" />
     <property name="jboss.deploy.dir" value="${jboss.home}/server/${jboss.server.name}/deploy" />
 
-    <filterset id="caarray.filterset">
+    <filterset id="caarray.filterset" onmissingfiltersfile="warn">
         <filtersfile file="${build.dir}/default.properties" />
         <filtersfile file="${build.dir}/local.properties" />
     </filterset>
