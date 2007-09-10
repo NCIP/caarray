@@ -929,7 +929,12 @@
         <run-sql-script sql.file="${caarraydb.sql.dir}/populate-caarray.sql" />
     </target>
 
-    <target name="database:reinitialize" depends="database:recreate-database,database:create-schema,database:populate" description="Completely reset caarraydb by dropping database, recreating, and creating schema, and pouplating with initial data" />
+    <target name="database:reinitialize" unless="build.nodbintegration" 
+			description="Completely reset caarraydb by dropping database, recreating, and creating schema, and pouplating with initial data">
+		<antcall target="database:recreate-database" />
+		<antcall target="database:create-schema" />
+		<antcall target="database:populate" />
+	</target>
 
     <target name="database:recreate-database" depends="database:init-sql" description="Drops and recreates caarraydb database">
         <run-sql-script database.url="${database.system.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_database_and_user.sql" />
