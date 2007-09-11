@@ -1083,17 +1083,20 @@
         <sshexec host="${ssh.server.hostname}" trust="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" command="rm -rf ${remote.jboss.home}/deploy/caarray.ear ${remote.jboss.home}/deploy/caarray-mysql-ds.xml" />
     </target>
 
-
+	<target name="remote-jboss:deploy" unless="build.nodeploy">
+		<antcall target="remote-jboss:stop"/>
+		<antcall target="remote-jboss:undeploy-caarray"/>
+		<antcall target="remote-jboss:configure-jboss-ds"/>
+		<antcall target="remote-jboss:deploy-caarray"/>
+		<antcall target="remote-jboss:copy-jboss-config"/>
+		<antcall target="remote-jboss:start"/>
+	</target>
+	
     <target name="remote-deploy">
         <antcall target="validate-properties" />
 		<antcall target="continuous-integration" />
         <antcall target="continuous-integration-notest" />
-        <antcall target="remote-jboss:stop" />
-		<antcall target="remote-jboss:undeploy-caarray" />
-        <antcall target="remote-jboss:configure-jboss-ds" />
-        <antcall target="remote-jboss:deploy-caarray" />
-        <antcall target="remote-jboss:copy-jboss-config" />
-        <antcall target="remote-jboss:start" />
+        <antcall target="remote-jboss:deploy" />
     </target>
 
     <target name="remote-deploy-label">
@@ -1104,11 +1107,7 @@
     <target name="remote-deploy-qa">
         <antcall target="validate-properties" />
         <antcall target="database:reinitialize" />
-        <antcall target="remote-jboss:stop" />
-        <antcall target="remote-jboss:configure-jboss-ds" />
-        <antcall target="remote-jboss:deploy-caarray" />
-        <antcall target="remote-jboss:copy-jboss-config" />
-        <antcall target="remote-jboss:start" />
+        <antcall target="remote-jboss:deploy" />
     </target>
 
     <!-- END STELLIGENT ADD -->
