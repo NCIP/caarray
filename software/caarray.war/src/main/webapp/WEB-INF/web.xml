@@ -1,13 +1,27 @@
-<!DOCTYPE web-app PUBLIC
- "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
- "http://java.sun.com/dtd/web-app_2_3.dtd" >
+<?xml version="1.0" encoding="UTF-8"?>
 
-<web-app>
+<web-app version="2.4" 
+    xmlns="http://java.sun.com/xml/ns/j2ee" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
     <display-name>caArray</display-name>
     <description>
         caArray Portal
     </description>
+
+    <context-param>
+        <param-name>caarrayVersion</param-name>
+        <param-value>@caarray.version@</param-value>
+    </context-param>
+    <context-param>
+        <param-name>svnUrl</param-name>
+        <param-value>@svn.url@</param-value>
+    </context-param>
+    <context-param>
+        <param-name>svnRevision</param-name>
+        <param-value>@svn.revision@</param-value>
+    </context-param>
 
     <filter>
         <filter-name>UserFilter</filter-name>
@@ -81,5 +95,4 @@
         <description>A Principal Investigator (PI) typically owns experiments and studies/projects.</description>
         <role-name>PrincipalInvestigator</role-name>
     </security-role>
-
 </web-app>

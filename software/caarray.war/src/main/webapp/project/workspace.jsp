@@ -2,6 +2,7 @@
     pageEncoding="ISO-8859-1"%>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="caarray" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -46,7 +47,7 @@
 
     <div id="infobar">
 
-      <div id="rightinfo">Version: <span>caArray v2.0</span>  |  Node: <span>NCICB</span></div>
+      <div id="rightinfo"> <caarray:version/> |  Node: <span>NCICB</span></div>
 
     </div>
 

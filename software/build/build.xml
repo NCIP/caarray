@@ -9,6 +9,7 @@
     <!-- ******************************************************************* -->
 
     <!-- Main -->
+    <property name="root.dir" value="${basedir}/.." />
     <property name="build.dir" value="${basedir}/build" />
     <property name="lib.dir" value="${basedir}/lib" />
     <property name="resource.dir" value="${build.dir}/resources" />
@@ -76,6 +77,7 @@
 
     <!-- Third-party -->
     <property name="affxfusion.jar" value="${lib.dir}/AffxFusion.jar" />
+    <property name="ant-contrib.jar" value="${lib.dir}/ant-contrib-1.0b3.jar" />
     <property name="antlr.jar" value="${lib.dir}/antlr-2.7.6.jar" />
     <property name="asm.jar" value="${lib.dir}/asm.jar" />
     <property name="asm-2.2.1.jar" value="${lib.dir}/asm-2.2.1.jar" />
@@ -119,6 +121,9 @@
     <property name="javacsv.jar" value="${lib.dir}/javacsv.jar" />
     <property name="tomahawk.jar" value="${lib.dir}/tomahawk-1.1.6.jar" />
     <property name="csmapi.jar" value="${lib.dir}/csmapi.jar" />
+    <property name="svnant.jar" value="${lib.dir}/svnant.jar" />
+    <property name="svnClientAdapter.jar" value="${lib.dir}/svnClientAdapter.jar" />
+    <property name="svnjavahl.jar" value="${lib.dir}/svnjavahl.jar" />
 
     <!-- Test-related properties -->
     <property name="test.dir" value="${basedir}/test" />
@@ -190,11 +195,7 @@
 
     <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpath="${pmd.jar};${jaxen.jar};${asm.jar};${backport-util-concurrent}" />
 
-    <taskdef name="for" classname="net.sf.antcontrib.logic.ForTask">
-        <classpath>
-            <fileset dir="${lib.dir}" />
-        </classpath>
-    </taskdef>
+    <taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${ant-contrib.jar}"/>
 
     <taskdef name="hibernatetool" classname="org.hibernate.tool.ant.HibernateToolTask">
         <classpath>
@@ -406,6 +407,22 @@
     </target>
 
     <!-- ******************************************************************* -->
+    <!-- ** SVN TARGETS                                                 ** -->
+    <!-- ******************************************************************* -->
+    <target name="svn:getinfo" description="obtain subversion revision info">
+      <taskdef resource="org/tigris/subversion/svnant/svnantlib.xml" classpath="${svnant.jar};${svnClientAdapter.jar}"/>
+      <svn javahl="false">
+        <status path="${root.dir}" revisionProperty="svn.revision" urlProperty="svn.url"/>
+      </svn>
+      <!--
+          Note that if you explicitly define caarray.version it will take 
+          precedence over the one obtained from SVN
+      -->
+      <propertyregex property="caarray.version" input="${svn.url}" regexp="\/([^\/]+)$" select="\1" casesensitive="false"/>
+      <echo message="found svn info: ${svn.url} ${svn.revision} ${caarray.version}"/>
+    </target>
+
+    <!-- ******************************************************************* -->
     <!-- ** BUILD TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
 
@@ -448,9 +465,16 @@
         </jar>
     </target>
 
-    <target name="build:caarray.war" depends="compile:caarray.war">
+    <target name="build:caarray.war" depends="compile:caarray.war,svn:getinfo">
         <mkdir dir="${caarray-war.target.dir}" />
-        <war destfile="${caarray.war}" webxml="${caarray-war.webapp.dir}/WEB-INF/web.xml">
+        <copy todir="${caarray-war.target.dir}/xml" file="${caarray-war.webapp.dir}/WEB-INF/web.xml" overwrite="true">
+          <filterset>
+            <filter token="caarray.version" value="${caarray.version}"/>
+            <filter token="svn.url" value="${svn.url}"/>
+            <filter token="svn.revision" value="${svn.revision}"/>
+          </filterset>
+        </copy>
+        <war destfile="${caarray.war}" webxml="${caarray-war.target.dir}/xml/web.xml">
             <fileset dir="${caarray-war.webapp.dir}">
                 <exclude name="WEB-INF/**" />
             </fileset>
