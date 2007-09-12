@@ -1115,12 +1115,7 @@
 		<antcall target="remote-jboss:start"/>
 	</target>
 	
-    <target name="remote-deploy">
-        <antcall target="validate-properties" />
-		<antcall target="continuous-integration" />
-        <antcall target="continuous-integration-notest" />
-        <antcall target="remote-jboss:deploy" />
-    </target>
+    <target name="remote-deploy" depends="validate-properties,continuous-integration,continuous-integration-notest,remote-jboss:deploy" />
 
     <target name="remote-deploy-label">
         <antcall target="remote-deploy" />
