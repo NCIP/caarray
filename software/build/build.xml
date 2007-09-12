@@ -1043,6 +1043,10 @@
 	</target>
 
     <target name="validate-properties">
+	    <echo> lib.dir is ${lib.dir} </echo>
+		<echo> properties.dir is ${properties.dir} </echo>
+		<echo> keyfile.file is ${keyfile.file} </echo>
+		<echo> build.envpropertyfile is ${build.envpropertyfile} </echo>
         <taskdef name="ncitask" classname="com.stelligent.nci.anttasks.PropertyChecker">
             <classpath>
                 <pathelement location="${lib.dir}/nci-ant.jar" />
