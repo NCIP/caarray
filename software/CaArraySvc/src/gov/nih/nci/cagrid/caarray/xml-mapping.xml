@@ -62,7 +62,7 @@
       <bind-xml name="DataRow" type="gov.nih.nci.caarray.domain.data.DataRow" location="row" node="element" />
     </field>
   </class>
-  <class name="gov.nih.nci.caarray.domain.project.Proposal" identity="id">
+  <class name="gov.nih.nci.caarray.domain.project.Proposal" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayObject">
     <map-to xml="Proposal" ns-uri="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.project" />
   </class>
   <class name="gov.nih.nci.caarray.domain.sequence.Sequence" identity="id">
@@ -81,12 +81,6 @@
     </field>
     <field name="accessions" type="gov.nih.nci.caarray.domain.vocabulary.Accession" collection="collection" handler="gov.nih.nci.common.util.CastorCollectionFieldHandler">
       <bind-xml name="Accession" type="gov.nih.nci.caarray.domain.vocabulary.Accession" location="accessions" node="element" />
-    </field>
-  </class>
-  <class name="gov.nih.nci.caarray.domain.test.Todd" identity="id">
-    <map-to xml="Todd" ns-uri="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.test" />
-    <field name="name" type="string">
-      <bind-xml name="name" node="attribute" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.AbstractCaArrayEntity" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayObject">

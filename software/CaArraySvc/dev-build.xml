@@ -1,179 +1,181 @@
 <?xml version="1.0"?>
 <project name="Developer Modified Build File" basedir=".">
-	<!-- ============================================================== -->
-	<!-- This file is designed to allow the developer to extend the     -->
-	<!-- build process without having to edit the master build.xml      -->
-	<!-- file. DO NOT REMOVE ANY TARGETS                                -->
-	<!-- ============================================================== -->
+  <!-- ============================================================== -->
+  <!-- This file is designed to allow the developer to extend the     -->
+  <!-- build process without having to edit the master build.xml      -->
+  <!-- file. DO NOT REMOVE ANY TARGETS                                -->
+  <!-- ============================================================== -->
 
 
-	<!-- ============================================================== -->
-	<!-- Place any other properties you will need here                  -->
-	<!-- ============================================================== -->
+  <!-- ============================================================== -->
+  <!-- Place any other properties you will need here                  -->
+  <!-- ============================================================== -->
 
 
 
 
-	<!-- ============================================================== -->
-	<!-- Create any extended Classpaths here                            -->
-	<!-- ============================================================== -->
-	<target name="defineExtendedClasspaths">
-		<path id="base.extended.classpath">
-			<pathelement location="./ext/caarray-client.jar"/>
-		</path>
-		<path id="service.build.extended.classpath">
-		</path>
-		<path id="service.run.extended.classpath">
-		</path>
-		<path id="test.build.extended.classpath">
-		</path>
-		<path id="test.run.extended.classpath">
-			<pathelement location="${build.lib.dir}/${common.jar.name}"/>
-			<pathelement location="${build.lib.dir}/${client.jar.name}"/>
-			<pathelement location="${build.lib.dir}/${stubs.jar.name}"/>
-			<pathelement location="${build.lib.dir}/${test.jar.name}"/>
-		</path>
-		<path id="run.extended.classpath">
-		</path>
-	</target>
+  <!-- ============================================================== -->
+  <!-- Create any extended Classpaths here                            -->
+  <!-- ============================================================== -->
+  <target name="defineExtendedClasspaths">
+    <path id="base.extended.classpath">
+      <pathelement location="./ext/caarray-client.jar"/>
+      <pathelement location="C:/5am/cacoresdk_fromCVS/eclipse-out"/>
+      <pathelement location="../lib/commons-lang-2.1.jar"/>
+    </path>
+    <path id="service.build.extended.classpath">
+    </path>
+    <path id="service.run.extended.classpath">
+    </path>
+    <path id="test.build.extended.classpath">
+    </path>
+    <path id="test.run.extended.classpath">
+      <pathelement location="${build.lib.dir}/${common.jar.name}"/>
+      <pathelement location="${build.lib.dir}/${client.jar.name}"/>
+      <pathelement location="${build.lib.dir}/${stubs.jar.name}"/>
+      <pathelement location="${build.lib.dir}/${test.jar.name}"/>
+    </path>
+    <path id="run.extended.classpath">
+    </path>
+  </target>
 
 
-	<!-- ============================================================== -->
-	<!-- Pre Init Target                                                -->
-	<!-- ============================================================== -->
-	<target name="preInit">
+  <!-- ============================================================== -->
+  <!-- Pre Init Target                                                -->
+  <!-- ============================================================== -->
+  <target name="preInit">
 
-	</target>
+  </target>
 
-	<!-- ============================================================== -->
-	<!-- Post Init Build Target                                         -->
-	<!-- ============================================================== -->
-	<target name="postInit">
+  <!-- ============================================================== -->
+  <!-- Post Init Build Target                                         -->
+  <!-- ============================================================== -->
+  <target name="postInit">
 
-	</target>
-
-
-	<!-- ============================================================== -->
-	<!-- Pre Stubs Target                                               -->
-	<!-- ============================================================== -->
-	<target name="preStubs">
-
-	</target>
-
-	<!-- ============================================================== -->
-	<!-- Post Stubs Build Target                                        -->
-	<!-- ============================================================== -->
-	<target name="postStubs">
-
-	</target>
-
-	<!-- ============================================================== -->
-	<!-- Pre Compile Stubs Build Target                                 -->
-	<!-- ============================================================== -->
-	<target name="preCompileStubs">
-		<path id="base.extended.classpath">
-			<pathelement location="./ext/caarray-client.jar"/>
-		</path>
-	</target>
-
-	<!-- ============================================================== -->
-	<!-- Post Compile Stubs Build Target                                -->
-	<!-- ============================================================== -->
-	<target name="postCompileStubs">
-
-	</target>
-
-	<!-- ============================================================== -->
-	<!-- Pre Jar Stubs Build Target                                     -->
-	<!-- ============================================================== -->
-	<target name="preJarStubs">
-
-	</target>
-
-	<!-- ============================================================== -->
-	<!-- Post Jar Stubs Build Target                                    -->
-	<!-- ============================================================== -->
-	<target name="postJarStubs">
-
-	</target>
-
-	<!-- ============================================================== -->
-	<!-- Pre Compile Build Target                                       -->
-	<!-- ============================================================== -->
-	<target name="preCompile">
-
-	</target>
-
-	<!-- ============================================================== -->
-	<!-- Post Compile Build Target                                       -->
-	<!-- ============================================================== -->
-	<target name="postCompile">
-
-	</target>
-
-	<!-- ============================================================== -->
-	<!-- Pre Jar Build Target                                       -->
-	<!-- ============================================================== -->
-	<target name="preJar">
-
-	</target>
-
-	<!-- ============================================================== -->
-	<!-- Post Jar Build Target                                          -->
-	<!-- ============================================================== -->
-	<target name="postJar">
-
-	</target>
-
-	<!-- ============================================================== -->
-	<!-- Pre Compile Tests Build Target                                 -->
-	<!-- ============================================================== -->
-	<target name="preCompileTests">
-
-	</target>
-
-	<!-- ============================================================== -->
-	<!-- Post Compile Tests Build Target                                -->
-	<!-- ============================================================== -->
-	<target name="postCompileTests">
-
-	</target>
-
-	<!-- ============================================================== -->
-	<!-- Pre Jar Tests Build Target                                     -->
-	<!-- ============================================================== -->
-	<target name="preJarTests">
-
-	</target>
-
-	<!-- ============================================================== -->
-	<!-- Post Jar Tests Build Target                                    -->
-	<!-- ============================================================== -->
-	<target name="postJarTests">
-
-	</target>
-
-	<!-- ============================================================== -->
-	<!-- Pre Clean Target                                               -->
-	<!-- ============================================================== -->
-	<target name="preClean">
-
-	</target>
-
-	<!-- ============================================================== -->
-	<!-- Post Clean Target                                              -->
-	<!-- ============================================================== -->
-	<target name="postClean">
-
-	</target>
+  </target>
 
 
-	<!-- ============================================================== -->
-	<!-- Call any tests.                                                -->
-	<!-- ============================================================== -->
-	<target name="checkGlobus" description="overridden target">
-		<echo message=":checkGlobus: overridden target"/>
-	</target>
+  <!-- ============================================================== -->
+  <!-- Pre Stubs Target                                               -->
+  <!-- ============================================================== -->
+  <target name="preStubs">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Post Stubs Build Target                                        -->
+  <!-- ============================================================== -->
+  <target name="postStubs">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Pre Compile Stubs Build Target                                 -->
+  <!-- ============================================================== -->
+  <target name="preCompileStubs">
+    <path id="base.extended.classpath">
+      <pathelement location="./ext/caarray-client.jar"/>
+    </path>
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Post Compile Stubs Build Target                                -->
+  <!-- ============================================================== -->
+  <target name="postCompileStubs">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Pre Jar Stubs Build Target                                     -->
+  <!-- ============================================================== -->
+  <target name="preJarStubs">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Post Jar Stubs Build Target                                    -->
+  <!-- ============================================================== -->
+  <target name="postJarStubs">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Pre Compile Build Target                                       -->
+  <!-- ============================================================== -->
+  <target name="preCompile">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Post Compile Build Target                                       -->
+  <!-- ============================================================== -->
+  <target name="postCompile">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Pre Jar Build Target                                       -->
+  <!-- ============================================================== -->
+  <target name="preJar">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Post Jar Build Target                                          -->
+  <!-- ============================================================== -->
+  <target name="postJar">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Pre Compile Tests Build Target                                 -->
+  <!-- ============================================================== -->
+  <target name="preCompileTests">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Post Compile Tests Build Target                                -->
+  <!-- ============================================================== -->
+  <target name="postCompileTests">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Pre Jar Tests Build Target                                     -->
+  <!-- ============================================================== -->
+  <target name="preJarTests">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Post Jar Tests Build Target                                    -->
+  <!-- ============================================================== -->
+  <target name="postJarTests">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Pre Clean Target                                               -->
+  <!-- ============================================================== -->
+  <target name="preClean">
+
+  </target>
+
+  <!-- ============================================================== -->
+  <!-- Post Clean Target                                              -->
+  <!-- ============================================================== -->
+  <target name="postClean">
+
+  </target>
+
+
+  <!-- ============================================================== -->
+  <!-- Call any tests.                                                -->
+  <!-- ============================================================== -->
+  <target name="checkGlobus" description="overridden target">
+    <echo message=":checkGlobus: overridden target"/>
+  </target>
     <target name="test" depends="checkGlobus" description="Runs the service's tests.">
         <echo message="Test results dir: ${junit.results.dir}" />
         <mkdir dir="${junit.results.dir}" />

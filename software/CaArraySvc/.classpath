@@ -64,7 +64,7 @@
 	<classpathentry kind="var" path="GLOBUS_LOCATION/lib/xml-apis.jar"/>
 	<classpathentry kind="var" path="GLOBUS_LOCATION/lib/xmlsec.jar"/>
 	<classpathentry kind="lib" path="lib/caGrid-1.1-advertisement.jar"/>
-	<classpathentry kind="lib" path="lib/caGrid-1.1-core.jar" sourcepath="C:/ncicb_cvs/caArray_caGrid/cagrid-1-1/caGrid/projects/core"/>
+	<classpathentry kind="lib" path="lib/caGrid-1.1-core.jar" sourcepath="/core"/>
 	<classpathentry kind="lib" path="lib/caGrid-1.1-Introduce-1.1-serviceTools.jar"/>
 	<classpathentry kind="lib" path="lib/caGrid-1.1-metadata-security.jar"/>
 	<classpathentry kind="lib" path="lib/caGrid-1.1-ServiceSecurityProvider-client.jar"/>
@@ -104,7 +104,7 @@
 	<classpathentry kind="lib" path="lib/caGrid-1.1-caDSR-stubs.jar"/>
 	<classpathentry kind="lib" path="lib/caGrid-1.1-caDSR-tests.jar"/>
 	<classpathentry kind="lib" path="ext/caarray-client.jar"/>
-	<classpathentry kind="lib" path="lib/castor-1.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/castor-1.0.4.jar" sourcepath="C:/Downloads/castor-1.0.4/src/main/java"/>
 	<classpathentry kind="lib" path="/cacordsdk_fromcvs/eclipse-out"/>
 	<classpathentry kind="output" path="eclipse-out"/>
 </classpath>
