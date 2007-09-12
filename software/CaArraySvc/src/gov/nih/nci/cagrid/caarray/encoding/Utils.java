@@ -1,12 +1,10 @@
 package gov.nih.nci.cagrid.caarray.encoding;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 
 import org.exolab.castor.mapping.Mapping;
-import org.exolab.castor.mapping.MappingException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.w3c.dom.Element;
 import org.xml.sax.EntityResolver;

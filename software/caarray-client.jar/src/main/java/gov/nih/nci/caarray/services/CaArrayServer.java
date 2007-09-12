@@ -152,7 +152,7 @@ public final class CaArrayServer {
             final CaArrayCallbackHandler handler = new CaArrayCallbackHandler(username, password);
             loginContext = new LoginContext("client-login", handler);
         } catch (LoginException e) {
-            throw new IllegalStateException("The caarray login module could not be found.");
+            throw new IllegalStateException("The caarray login module could not be found.", e);
         }
         loginContext.login();
     }

@@ -24,7 +24,7 @@ public class CaArrayCQLQueryProcessor extends CQLQueryProcessor {
         System.out.println("CaArrayCQLQueryProcessor::processQuery ...");
         CQLQueryResults results = null;
         try {
-            List coreResultsList = queryCaArrayService(cqlQuery);
+            List<Object> coreResultsList = queryCaArrayService(cqlQuery);
             String targetName = cqlQuery.getTarget().getName();
 
             Mappings mappings = null;
@@ -74,9 +74,9 @@ public class CaArrayCQLQueryProcessor extends CQLQueryProcessor {
         }
     }
 
-    private List queryCaArrayService(CQLQuery cqlQuery) {
+    private List<Object> queryCaArrayService(CQLQuery cqlQuery) {
         LOG.debug("querying ....");
-        ArrayList list = new ArrayList();
+        ArrayList<Object> list = new ArrayList<Object>();
         gov.nih.nci.caarray.domain.protocol.Protocol obj = new gov.nih.nci.caarray.domain.protocol.Protocol();
         obj.setName("test-protocol");
         obj.setDescription("my description");

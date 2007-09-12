@@ -200,6 +200,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
         }
     }
 
+    @SuppressWarnings("fallthrough")
     private void validateColumnValues(IdfRow idfRow, List<String> lineContents) {
         switch (idfRow.getType()) {
         case INVESTIGATION_TITLE:
@@ -210,6 +211,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
                 addWarningMessage(lineContents.get(0) + " can only have one element but found "
                         + (lineContents.size() - 1));
             }
+            // falling through on purpose here
         case EXPERIMENTAL_FACTOR_NAME:
         case PERSON_EMAIL:
         case PERSON_PHONE:

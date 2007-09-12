@@ -22,8 +22,6 @@ import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
-import gov.nih.nci.cagrid.caarray.stubs.CaArraySvcPortType;
-import gov.nih.nci.cagrid.caarray.stubs.service.CaArraySvcServiceAddressingLocator;
 import gov.nih.nci.cagrid.caarray.common.CaArraySvcI;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;

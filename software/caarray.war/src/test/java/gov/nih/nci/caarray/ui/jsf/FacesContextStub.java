@@ -115,7 +115,7 @@ public class FacesContextStub extends FacesContext {
     }
 
     @Override
-    public Iterator getClientIdsWithMessages() {
+    public Iterator<?> getClientIdsWithMessages() {
         return null;
     }
 
@@ -130,12 +130,12 @@ public class FacesContextStub extends FacesContext {
     }
 
     @Override
-    public Iterator getMessages() {
+    public Iterator<?> getMessages() {
         return null;
     }
 
     @Override
-    public Iterator getMessages(String clientId) {
+    public Iterator<?> getMessages(String clientId) {
         return null;
     }
 

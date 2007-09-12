@@ -130,7 +130,7 @@ public class MageTabParserTest {
     }
 
     @Test
-    public void testValidateMissingSdrf() throws InvalidDataException, MageTabParsingException  {
+    public void testValidateMissingSdrf() throws MageTabParsingException  {
             MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
             inputFileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
             ValidationResult result = parser.validate(inputFileSet);

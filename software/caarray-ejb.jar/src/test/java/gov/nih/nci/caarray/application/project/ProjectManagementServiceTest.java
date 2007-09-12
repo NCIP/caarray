@@ -132,7 +132,7 @@ public class ProjectManagementServiceTest {
         assertNotNull(projects);
         assertEquals("testusername", daoFactoryStub.projectDao.username);
     }
-    
+
     @Test
     public void testGetProject() {
         Project project = projectManagementService.getProject(123L);
@@ -157,7 +157,7 @@ public class ProjectManagementServiceTest {
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
     }
-    
+
     @Test
     public void testAddFile() {
         Project project = projectManagementService.getProject(123L);
@@ -214,11 +214,11 @@ public class ProjectManagementServiceTest {
         }
 
         @Override
-        public List<Project> getProjectsForUser(String username) {
-            this.username = username;
+        public List<Project> getProjectsForUser(String name) {
+            this.username = name;
             return new ArrayList<Project>();
         }
-        
+
         @Override
         @SuppressWarnings("PMD")
         public Project getProject(long id) {
@@ -257,8 +257,8 @@ public class ProjectManagementServiceTest {
                     return "testusername";
                 }
             };
-            
+
         }
-        
+
     }
 }

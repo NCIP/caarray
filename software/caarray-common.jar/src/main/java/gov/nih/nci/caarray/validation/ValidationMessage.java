@@ -109,7 +109,8 @@ public final class ValidationMessage implements Serializable, Comparable<Validat
     private int column;
 
     private Long id;
-    
+
+    @SuppressWarnings("unused")
     private ValidationMessage() {
         super();
     }

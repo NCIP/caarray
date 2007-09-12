@@ -142,7 +142,7 @@ public final class AffymetrixCelHandler extends AbstractRawArrayDataHandler {
         String celDataFileName;
         File file = getArrayDataFile(dataFile);
         FileValidationResult result = new FileValidationResult(file);
-        
+
         celData.setFileName(file.getAbsolutePath());
         celDataFileName = StringUtils.defaultIfEmpty(celData.getFileName(), "<MISSING FILE NAME>");
 
@@ -150,9 +150,9 @@ public final class AffymetrixCelHandler extends AbstractRawArrayDataHandler {
             result.addMessage(ValidationMessage.Type.ERROR, "Unable to read the cell file : "
                     + celDataFileName);
         }
-        return result;    
+        return result;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -170,6 +170,7 @@ public final class AffymetrixCelHandler extends AbstractRawArrayDataHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public DataSet getData(List<QuantitationType> types) {
         DataSet celDataSet = new DataSet(getRawArrayData().getHybridization(), types);
         initializeForRead();

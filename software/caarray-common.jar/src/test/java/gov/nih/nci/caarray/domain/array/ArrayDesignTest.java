@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class ArrayDesignTest {
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testSetType() {
         ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.setType(ArrayType.EXON.name());
@@ -16,12 +16,7 @@ public class ArrayDesignTest {
         arrayDesign.setType(null);
         assertNull(arrayDesign.getArrayType());
         assertNull(arrayDesign.getType());
-        try {
-            arrayDesign.setType("illegal value");
-            fail("Illegal values shouldn't be allowed");
-        } catch (IllegalArgumentException e) { // NOPMD
-            // expected
-        }
+        arrayDesign.setType("illegal value");
     }
 
     @Test

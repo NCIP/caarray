@@ -3,7 +3,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test/src"/>
-	<classpathentry kind="src" path="build/stubs-CaArraySvc/src"/>
 	<classpathentry kind="var" path="GLOBUS_LOCATION/lib/addressing-1.0.jar"/>
 	<classpathentry kind="var" path="GLOBUS_LOCATION/lib/axis.jar" sourcepath="C:/dev/tools/ws-core-4.0.3/java/lib-src/ws-axis/ws-axis.zip"/>
 	<classpathentry kind="var" path="GLOBUS_LOCATION/lib/axis-url.jar"/>
@@ -104,7 +103,7 @@
 	<classpathentry kind="lib" path="lib/caGrid-1.1-caDSR-stubs.jar"/>
 	<classpathentry kind="lib" path="lib/caGrid-1.1-caDSR-tests.jar"/>
 	<classpathentry kind="lib" path="ext/caarray-client.jar"/>
-	<classpathentry kind="lib" path="lib/castor-1.0.4.jar" sourcepath="C:/Downloads/castor-1.0.4/src/main/java"/>
 	<classpathentry kind="lib" path="/cacordsdk_fromcvs/eclipse-out"/>
+	<classpathentry kind="lib" path="lib/castor-1.0.5.jar"/>
 	<classpathentry kind="output" path="eclipse-out"/>
 </classpath>

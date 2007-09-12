@@ -136,7 +136,7 @@ public class ArrayDataServiceTest {
     private ArrayDataService arrayDataService;
     FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
     LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
-    ArrayDesignService arrayDesignService = 
+    ArrayDesignService arrayDesignService =
         ArrayDesignServiceTest.createArrayDesignService(daoFactoryStub, fileAccessServiceStub, new VocabularyServiceStub());
 
     @Before
@@ -147,7 +147,7 @@ public class ArrayDataServiceTest {
         arrayDataServiceBean.setDaoFactory(daoFactoryStub);
         arrayDataService = arrayDataServiceBean;
     }
-    
+
     @Test
     public void testInitialize() {
         arrayDataService.initialize();
@@ -232,10 +232,10 @@ public class ArrayDataServiceTest {
     }
 
     private static final class LocalDaoFactoryStub extends DaoFactoryStub {
-        
-        private Map<ArrayDataTypeDescriptor, ArrayDataType> dataTypeMap = 
+
+        private Map<ArrayDataTypeDescriptor, ArrayDataType> dataTypeMap =
             new HashMap<ArrayDataTypeDescriptor, ArrayDataType>();
-        
+
         private Map<QuantitationTypeDescriptor, QuantitationType> quantitationTypeMap =
             new HashMap<QuantitationTypeDescriptor, QuantitationType>();
 
@@ -243,6 +243,7 @@ public class ArrayDataServiceTest {
         public ArrayDao getArrayDao() {
             return new ArrayDaoStub() {
 
+                @Override
                 public ArrayDataType getArrayDataType(ArrayDataTypeDescriptor descriptor) {
                     if (dataTypeMap.containsKey(descriptor)) {
                         return dataTypeMap.get(descriptor);
@@ -261,6 +262,7 @@ public class ArrayDataServiceTest {
                     }
                 }
 
+                @Override
                 public QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor) {
                     if (quantitationTypeMap.containsKey(descriptor)) {
                         return quantitationTypeMap.get(descriptor);
@@ -274,7 +276,7 @@ public class ArrayDataServiceTest {
 
             };
         }
-        
+
     }
 
 }

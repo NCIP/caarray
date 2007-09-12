@@ -108,18 +108,20 @@ import javax.persistence.Transient;
 public final class FileValidationResult implements Serializable, Comparable<FileValidationResult> {
 
     private static final long serialVersionUID = -5402207496806890698L;
+    private static final String UNUSED = "unused";
 
     private Long id;
     private File file;
     private Set<ValidationMessage> messageSet = new HashSet<ValidationMessage>();
 
+    @SuppressWarnings(UNUSED)
     private FileValidationResult() {
         super();
     }
-    
+
     /**
      * Creates a new result for the file provided.
-     * 
+     *
      * @param file messages apply to this file.
      */
     public FileValidationResult(File file) {
@@ -135,11 +137,11 @@ public final class FileValidationResult implements Serializable, Comparable<File
         return file;
     }
 
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" }) // NOPMD
+    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" }) // NOPMD
     private void setFile(File file) {
         this.file = file;
     }
-    
+
     /**
      * Sorts the result by file name.
      * {@inheritDoc}
@@ -194,25 +196,25 @@ public final class FileValidationResult implements Serializable, Comparable<File
         messageSet.add(validationMessage);
     }
 
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" }) // NOPMD
+    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" }) // NOPMD
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<ValidationMessage> getMessageSet() {
         return messageSet;
     }
 
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" }) // NOPMD
+    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" }) // NOPMD
     private void setMessageSet(Set<ValidationMessage> messageSet) {
         this.messageSet = messageSet;
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" }) // NOPMD
+    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" }) // NOPMD
     private Long getId() {
         return id;
     }
 
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" }) // NOPMD
+    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" }) // NOPMD
     private void setId(Long id) {
         this.id = id;
     }

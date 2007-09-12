@@ -63,7 +63,7 @@ import org.junit.Test;
 public class EVSUtilityTest {
 
      @Test
-     public final void searchEVSNoResults() throws VocabularyServiceException {
+     public final void searchEVSNoResults() {
          try {
              EVSUtility evs = new EVSUtility(new DaoFactoryStub());
              List<Term> results = evs.getConcepts("Foo");
