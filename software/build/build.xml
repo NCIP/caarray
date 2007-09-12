@@ -167,7 +167,7 @@
     <!-- Environment properties -->
     <property environment="env" />
     <!-- Environment properties file - launch build with -Dbuild.env=DEV/QA/STAGING/PROD -->
-    <property file="$(build.envpropertyfile)" />
+    <property file="${build.envpropertyfile}" />
     <property file="${build.dir}/${build.env}.properties" />
     <property file="${build.dir}/local.properties" />
     <property file="${build.dir}/default.properties" />
@@ -1117,6 +1117,7 @@
 	</target>
 	
     <target name="remote-deploy">
+		<echo message="Hi from line 1120" />
         <antcall target="validate-properties" />
 		<antcall target="continuous-integration" />
         <antcall target="continuous-integration-notest" />
