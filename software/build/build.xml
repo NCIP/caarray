@@ -167,7 +167,7 @@
     <!-- Environment properties -->
     <property environment="env" />
     <!-- Environment properties file - launch build with -Dbuild.env=DEV/QA/STAGING/PROD -->
-    <property file="$(build.envpropertyfile)" />
+    <property file="${build.envpropertyfile}" />
     <property file="${build.dir}/${build.env}.properties" />
     <property file="${build.dir}/local.properties" />
     <property file="${build.dir}/default.properties" />
@@ -1117,10 +1117,10 @@
 	</target>
 	
     <target name="remote-deploy">
-		<echo message="build.envpropertyfile=$(build.envpropertyfile)" />
-		<echo message="ssh.key.file=$(ssh.key.file)" />
-		<echo message="ssh.server.username=$(ssh.server.username)" />
-		<echo message="ssh.server.hostname=$(ssh.server.hostname)" />
+		<echo message="build.envpropertyfile=${build.envpropertyfile}" />
+		<echo message="ssh.key.file=${ssh.key.file}" />
+		<echo message="ssh.server.username=${ssh.server.username}" />
+		<echo message="ssh.server.hostname=${ssh.server.hostname}" />
 		
         <antcall target="validate-properties" />
 		<antcall target="continuous-integration" />
