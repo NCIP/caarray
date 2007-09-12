@@ -1116,7 +1116,6 @@
 	</target>
 	
     <target name="remote-deploy">
-		<echo message="Hi from line 1120" />
         <antcall target="validate-properties" />
 		<antcall target="continuous-integration" />
         <antcall target="continuous-integration-notest" />
