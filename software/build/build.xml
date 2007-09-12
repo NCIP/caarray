@@ -166,9 +166,8 @@
 
     <!-- Environment properties -->
     <property environment="env" />
-    <!-- Environment properties file - launch build with -Dbuild.env=DEV/QA/STAGING/PROD -->
     <property file="${build.envpropertyfile}" />
-    <property file="${build.dir}/${build.env}.properties" />
+    <!--<property file="${build.dir}/${build.env}.properties" />-->
     <property file="${build.dir}/local.properties" />
     <property file="${build.dir}/default.properties" />
     <property name="jboss.deploy.dir" value="${jboss.home}/server/${jboss.server.name}/deploy" />
@@ -1034,7 +1033,7 @@
 
     <property name="properties.dir" value="${basedir}/build" />
     <property name="keyfile.file" value="caarray2-key.properties" />
-    <property name="envproperties.file" value="${build.env}.properties" />
+    <!--<property name="envproperties.file" value="${build.env}.properties" />-->
 
 	<target name="continuous-integration-notest" if="build.notest">
 		<antcall target="clean"/>
