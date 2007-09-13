@@ -1117,7 +1117,7 @@
 		<antcall target="remote-jboss:copy-jboss-config"/>
 	</target>
 	
-    <target name="remote-deploy-dev">
+    <target name="remote-deploy">
         <antcall target="validate-properties" />
 		<antcall target="continuous-integration" />
         <antcall target="continuous-integration-notest" />
