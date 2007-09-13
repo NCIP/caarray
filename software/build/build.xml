@@ -1111,12 +1111,10 @@
     </target>
 
 	<target name="remote-jboss:deploy" unless="build.nodeploy">
-		<antcall target="remote-jboss:stop"/>
 		<antcall target="remote-jboss:undeploy-caarray"/>
 		<antcall target="remote-jboss:configure-jboss-ds"/>
 		<antcall target="remote-jboss:deploy-caarray"/>
 		<antcall target="remote-jboss:copy-jboss-config"/>
-		<antcall target="remote-jboss:start"/>
 	</target>
 	
     <target name="remote-deploy-dev">
