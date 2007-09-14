@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://caarray.cagrid.nci.nih.gov/CaArraySvc" xmlns:wsrp="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.xsd" xmlns:wsrlw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceLifetime-1.2-draft-01.wsdl" xmlns:wsdlpp="http://www.globus.org/namespaces/2004/10/WSDLPreprocessor" xmlns:gtwsdl1="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ServiceGroup-1.2-draft-01.wsdl" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/03/addressing" xmlns:wsntw="http://docs.oasis-open.org/wsn/2004/06/wsn-WS-BaseNotification-1.2-draft-01.wsdl" xmlns:wsrbfw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.wsdl" xmlns:wsrpw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" xmlns:wns1="http://gov.nih.nci.cagrid.data/DataService" xmlns:wns0="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity" xmlns:ns6="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.protocol" xmlns:ns10="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.vocabulary" xmlns:ns11="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain" xmlns:ns15="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLQuery" xmlns:ns14="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata" xmlns:ns19="http://gov.nih.nci.cagrid.data/DataServiceExceptions" xmlns:ns12="http://caarray.cagrid.nci.nih.gov/CaArraySvc/types" xmlns:ns2="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data" xmlns:ns18="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice" xmlns:ns1="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.contact" xmlns:ns13="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" xmlns:ns4="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.hybridization" xmlns:ns0="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array" xmlns:ns7="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.publication" xmlns:ns3="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.file" xmlns:ns16="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLResultSet" xmlns:ns5="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.project" xmlns:ns17="http://caarray.cagrid.nci.nih.gov/CaArraySvc/CQLResultTypes" xmlns:ns8="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sample" xmlns:ns9="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sequence" name="CaArraySvc" targetNamespace="http://caarray.cagrid.nci.nih.gov/CaArraySvc">
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://caarray.cagrid.nci.nih.gov/CaArraySvc" xmlns:wsrp="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.xsd" xmlns:wsrlw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceLifetime-1.2-draft-01.wsdl" xmlns:wsdlpp="http://www.globus.org/namespaces/2004/10/WSDLPreprocessor" xmlns:gtwsdl1="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ServiceGroup-1.2-draft-01.wsdl" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/03/addressing" xmlns:wsntw="http://docs.oasis-open.org/wsn/2004/06/wsn-WS-BaseNotification-1.2-draft-01.wsdl" xmlns:wsrbfw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.wsdl" xmlns:wsrpw="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" xmlns:wns0="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity" xmlns:ns6="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.protocol" xmlns:ns10="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.vocabulary" xmlns:ns11="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain" xmlns:ns15="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLQuery" xmlns:ns14="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata" xmlns:ns19="http://gov.nih.nci.cagrid.data/DataServiceExceptions" xmlns:ns12="http://caarray.cagrid.nci.nih.gov/CaArraySvc/types" xmlns:ns2="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.data" xmlns:ns18="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice" xmlns:ns1="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.contact" xmlns:ns13="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" xmlns:ns4="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.hybridization" xmlns:ns0="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.array" xmlns:ns7="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.publication" xmlns:ns3="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.file" xmlns:ns16="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLResultSet" xmlns:ns5="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.project" xmlns:ns17="http://caarray.cagrid.nci.nih.gov/CaArraySvc/CQLResultTypes" xmlns:ns8="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sample" xmlns:ns9="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sequence" name="CaArraySvc" targetNamespace="http://caarray.cagrid.nci.nih.gov/CaArraySvc">
   <import namespace="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl" location="../wsrf/properties/WS-ResourceProperties.wsdl" />
   <import namespace="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.wsdl" location="../wsrf/faults/WS-BaseFaults.wsdl" />
-  <import namespace="http://gov.nih.nci.cagrid.data/DataService" location="./DataService.wsdl" />
   <import namespace="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity" location="./ServiceSecurity.wsdl" />
   <!--============================================================
 
@@ -32,6 +31,26 @@
       <import namespace="http://caarray.cagrid.nci.nih.gov/CaArraySvc/CQLResultTypes" schemaLocation="./CaArraySvc_CQLResultTypes.xsd" />
       <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sample" schemaLocation="./caArray/gov.nih.nci.caarray.domain.sample.xsd" />
       <import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.sequence" schemaLocation="./caArray/gov.nih.nci.caarray.domain.sequence.xsd" />
+      <element name="QueryRequest">
+        <complexType>
+          <sequence>
+            <element name="cqlQuery">
+              <complexType>
+                <sequence>
+                  <element ref="ns15:CQLQuery" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="QueryResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns16:CQLQueryResultCollection" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
       <element name="GetDesignDetailsRequest">
         <complexType>
           <sequence>
@@ -52,26 +71,6 @@
           </sequence>
         </complexType>
       </element>
-      <element name="GetDataSetRequest">
-        <complexType>
-          <sequence>
-            <element name="abstractArrayData">
-              <complexType>
-                <sequence>
-                  <element ref="ns2:AbstractArrayData" minOccurs="1" maxOccurs="1" />
-                </sequence>
-              </complexType>
-            </element>
-          </sequence>
-        </complexType>
-      </element>
-      <element name="GetDataSetResponse">
-        <complexType>
-          <sequence>
-            <element ref="ns2:DataSet" minOccurs="1" maxOccurs="1" />
-          </sequence>
-        </complexType>
-      </element>
       <element name="EchoRequest">
         <complexType>
           <sequence>
@@ -86,6 +85,66 @@
           </sequence>
         </complexType>
       </element>
+      <element name="ReadFileRequest">
+        <complexType>
+          <sequence>
+            <element name="caArrayFile">
+              <complexType>
+                <sequence>
+                  <element ref="ns3:CaArrayFile" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="ReadFileResponse">
+        <complexType>
+          <sequence>
+            <element name="response" type="xs:byte" minOccurs="1" maxOccurs="unbounded" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetDataSetForDerivedRequest">
+        <complexType>
+          <sequence>
+            <element name="derivedArrayData">
+              <complexType>
+                <sequence>
+                  <element ref="ns2:DerivedArrayData" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetDataSetForDerivedResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns2:DataSet" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetDataSetForRawRequest">
+        <complexType>
+          <sequence>
+            <element name="rawArrayData">
+              <complexType>
+                <sequence>
+                  <element ref="ns2:RawArrayData" minOccurs="1" maxOccurs="1" />
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetDataSetForRawResponse">
+        <complexType>
+          <sequence>
+            <element ref="ns2:DataSet" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
       <element name="CaArraySvcResourceProperties">
         <complexType>
           <sequence>
@@ -97,17 +156,17 @@
     </schema>
   </types>
   <!--  place service messages here -->
+  <message name="QueryRequest">
+    <part name="parameters" element="tns:QueryRequest" />
+  </message>
+  <message name="QueryResponse">
+    <part name="parameters" element="tns:QueryResponse" />
+  </message>
   <message name="GetDesignDetailsRequest">
     <part name="parameters" element="tns:GetDesignDetailsRequest" />
   </message>
   <message name="GetDesignDetailsResponse">
     <part name="parameters" element="tns:GetDesignDetailsResponse" />
-  </message>
-  <message name="GetDataSetRequest">
-    <part name="parameters" element="tns:GetDataSetRequest" />
-  </message>
-  <message name="GetDataSetResponse">
-    <part name="parameters" element="tns:GetDataSetResponse" />
   </message>
   <message name="EchoRequest">
     <part name="parameters" element="tns:EchoRequest" />
@@ -115,23 +174,61 @@
   <message name="EchoResponse">
     <part name="parameters" element="tns:EchoResponse" />
   </message>
+  <message name="ReadFileRequest">
+    <part name="parameters" element="tns:ReadFileRequest" />
+  </message>
+  <message name="ReadFileResponse">
+    <part name="parameters" element="tns:ReadFileResponse" />
+  </message>
+  <message name="GetDataSetForDerivedRequest">
+    <part name="parameters" element="tns:GetDataSetForDerivedRequest" />
+  </message>
+  <message name="GetDataSetForDerivedResponse">
+    <part name="parameters" element="tns:GetDataSetForDerivedResponse" />
+  </message>
+  <message name="GetDataSetForRawRequest">
+    <part name="parameters" element="tns:GetDataSetForRawRequest" />
+  </message>
+  <message name="GetDataSetForRawResponse">
+    <part name="parameters" element="tns:GetDataSetForRawResponse" />
+  </message>
+  <message name="QueryProcessingExceptionFaultMessage">
+    <part name="fault" element="ns19:QueryProcessingException" />
+  </message>
+  <message name="MalformedQueryExceptionFaultMessage">
+    <part name="fault" element="ns19:MalformedQueryException" />
+  </message>
   <!--============================================================
 
                        P O R T T Y P E
                       
   ============================================================-->
   <portType name="CaArraySvcPortType" wsrp:ResourceProperties="tns:CaArraySvcResourceProperties">
+    <operation name="query">
+      <input message="tns:QueryRequest" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/QueryRequest" />
+      <output message="tns:QueryResponse" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/QueryResponse" />
+      <fault name="QueryProcessingException" message="tns:QueryProcessingExceptionFaultMessage" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/QueryProcessingExceptionFaultMessage" />
+      <fault name="MalformedQueryException" message="tns:MalformedQueryExceptionFaultMessage" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/MalformedQueryExceptionFaultMessage" />
+    </operation>
     <operation name="getDesignDetails">
       <input message="tns:GetDesignDetailsRequest" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/GetDesignDetailsRequest" />
       <output message="tns:GetDesignDetailsResponse" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/GetDesignDetailsResponse" />
     </operation>
-    <operation name="getDataSet">
-      <input message="tns:GetDataSetRequest" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/GetDataSetRequest" />
-      <output message="tns:GetDataSetResponse" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/GetDataSetResponse" />
-    </operation>
     <operation name="echo">
       <input message="tns:EchoRequest" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/EchoRequest" />
       <output message="tns:EchoResponse" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/EchoResponse" />
+    </operation>
+    <operation name="readFile">
+      <input message="tns:ReadFileRequest" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/ReadFileRequest" />
+      <output message="tns:ReadFileResponse" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/ReadFileResponse" />
+    </operation>
+    <operation name="getDataSetForDerived">
+      <input message="tns:GetDataSetForDerivedRequest" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/GetDataSetForDerivedRequest" />
+      <output message="tns:GetDataSetForDerivedResponse" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/GetDataSetForDerivedResponse" />
+    </operation>
+    <operation name="getDataSetForRaw">
+      <input message="tns:GetDataSetForRawRequest" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/GetDataSetForRawRequest" />
+      <output message="tns:GetDataSetForRawResponse" wsa:Action="http://caarray.cagrid.nci.nih.gov/CaArraySvc/GetDataSetForRawResponse" />
     </operation>
     <operation name="GetResourceProperty">
       <input name="GetResourcePropertyRequest" message="wsrpw:GetResourcePropertyRequest" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetResourceProperty" />
@@ -157,12 +254,6 @@
     <operation name="getServiceSecurityMetadata">
       <input message="wns0:GetServiceSecurityMetadataRequest" wsa:Action="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity/GetServiceSecurityMetadataRequest" />
       <output message="wns0:GetServiceSecurityMetadataResponse" wsa:Action="http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity/GetServiceSecurityMetadataResponse" />
-    </operation>
-    <operation name="query">
-      <input message="wns1:QueryRequest" wsa:Action="http://data.cagrid.nci.nih.gov/DataService/QueryRequest" />
-      <output message="wns1:QueryResponse" wsa:Action="http://data.cagrid.nci.nih.gov/DataService/QueryResponse" />
-      <fault name="QueryProcessingException" message="wns1:QueryProcessingExceptionFaultMessage" wsa:Action="http://gov.nih.nci.cagrid.data/DataService/QueryProcessingExceptionFaultMessage" />
-      <fault name="MalformedQueryException" message="wns1:MalformedQueryExceptionFaultMessage" wsa:Action="http://gov.nih.nci.cagrid.data/DataService/MalformedQueryExceptionFaultMessage" />
     </operation>
   </portType>
 </definitions>

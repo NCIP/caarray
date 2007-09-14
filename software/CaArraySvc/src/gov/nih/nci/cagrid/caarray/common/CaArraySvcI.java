@@ -13,6 +13,20 @@ import java.rmi.RemoteException;
 public interface CaArraySvcI {
 
   /**
+   * Returns the data associated with the given derived array data
+   *
+   * @param derivedArrayData
+   */
+  public gov.nih.nci.caarray.domain.data.DataSet getDataSetForDerived(gov.nih.nci.caarray.domain.data.DerivedArrayData derivedArrayData) throws RemoteException ;
+
+  /**
+   * Returns the data associated with the given raw array data
+   *
+   * @param rawArrayData
+   */
+  public gov.nih.nci.caarray.domain.data.DataSet getDataSetForRaw(gov.nih.nci.caarray.domain.data.RawArrayData rawArrayData) throws RemoteException ;
+
+  /**
    * The standard caGrid Data Service query method.
    *
    * @param cqlQuery
@@ -33,13 +47,18 @@ public interface CaArraySvcI {
   public gov.nih.nci.caarray.domain.array.ArrayDesignDetails getDesignDetails(gov.nih.nci.caarray.domain.array.ArrayDesign arrayDesign) throws RemoteException ;
 
   /**
-   * Returns the data associated with the given <code>AbstractArrayData</code> object.
+   * test method that verifies the service is operational
    *
-   * @param abstractArrayData
+   * @param string
    */
-  public gov.nih.nci.caarray.domain.data.DataSet getDataSet(gov.nih.nci.caarray.domain.data.AbstractArrayData abstractArrayData) throws RemoteException ;
-
   public java.lang.String echo(java.lang.String string) throws RemoteException ;
+
+  /**
+   * Returns the file contents
+   *
+   * @param caArrayFile
+   */
+  public byte[] readFile(gov.nih.nci.caarray.domain.file.CaArrayFile caArrayFile) throws RemoteException ;
 
 }
 

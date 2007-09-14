@@ -63,12 +63,22 @@ public class CaArraySvcAuthorization implements PDP {
 		
 	}
 					
-	public static void authorizeGetDataSet() throws RemoteException {
+	public static void authorizeEcho() throws RemoteException {
 		
 		
 	}
 					
-	public static void authorizeEcho() throws RemoteException {
+	public static void authorizeReadFile() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeGetDataSetForDerived() throws RemoteException {
+		
+		
+	}
+					
+	public static void authorizeGetDataSetForRaw() throws RemoteException {
 		
 		
 	}
@@ -104,17 +114,33 @@ public class CaArraySvcAuthorization implements PDP {
 				e.printStackTrace();
 				return false;
 			}
-		} else if(operation.getLocalPart().equals("getDataSet")){
+		} else if(operation.getLocalPart().equals("echo")){
 			try{
-				authorizeGetDataSet();
+				authorizeEcho();
 				return true;
 			} catch (Exception e){
 				e.printStackTrace();
 				return false;
 			}
-		} else if(operation.getLocalPart().equals("echo")){
+		} else if(operation.getLocalPart().equals("readFile")){
 			try{
-				authorizeEcho();
+				authorizeReadFile();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("getDataSetForDerived")){
+			try{
+				authorizeGetDataSetForDerived();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("getDataSetForRaw")){
+			try{
+				authorizeGetDataSetForRaw();
 				return true;
 			} catch (Exception e){
 				e.printStackTrace();

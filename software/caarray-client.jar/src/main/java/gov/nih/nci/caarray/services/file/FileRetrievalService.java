@@ -92,6 +92,11 @@ import java.io.InputStream;
 public interface FileRetrievalService {
 
     /**
+     * The JNDI name to look up the remote <code>FileRetrievalService</code> service.
+     */
+    String JNDI_NAME = "caarray/FileRetrievalServiceBean/remote";
+
+    /**
      * Returns a stream from which to read the requested file's contents.
      *
      * @param file the caArray file to retrieve

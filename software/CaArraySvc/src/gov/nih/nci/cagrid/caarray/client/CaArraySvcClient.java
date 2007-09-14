@@ -2,6 +2,9 @@ package gov.nih.nci.cagrid.caarray.client;
 
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.cagrid.caarray.common.CaArraySvcI;
 import gov.nih.nci.cagrid.caarray.stubs.CaArraySvcPortType;
 import gov.nih.nci.cagrid.caarray.stubs.service.CaArraySvcServiceAddressingLocator;
@@ -98,29 +101,42 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
                     // test....
 
                     //SMOKE: test the echo() service method
+                    System.out.println("\n\nRunning echo...\n\n");
                     System.out.println(client.echo("steve was here"));
 
-                    /*
-                    //SMOKE: test the query() data service method
-                    CQLQuery query = new CQLQuery();
-                    gov.nih.nci.cagrid.cqlquery.Object target = new gov.nih.nci.cagrid.cqlquery.Object();
-                    target.setName("gov.nih.nci.caarray.domain.protocol.Protocol");
-                    query.setTarget(target);
-                    CQLQueryResults queryResults = client.query(query);
-
-                    Iterator iter = new CQLQueryResultsIterator(queryResults, CaArraySvcClient.class
-                            .getResourceAsStream("client-config.wsdd"));
-                    while (iter.hasNext()) {
-                        Object object = iter.next();
-                        System.out.println(object);
-                    }
-*/
                     //SMOKE: test the getDataSet() service method..
-//                    DataSet dataSet = client.getDataSet(new RawArrayData());
+                    try {
+                        System.out.println("\n\nRunning getDataSetForRaw...\n\n");
+                        final DataSet dataSet = client.getDataSetForRaw(new RawArrayData());
+                        System.out.println(dataSet);
+                    } catch (final Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        System.out.println("\n\nRunning getDataSetForDerived...\n\n");
+                        final DataSet dataSet = client.getDataSetForDerived(new DerivedArrayData());
+                        System.out.println(dataSet);
+                    } catch (final Exception e) {
+                        e.printStackTrace();
+                    }
 
                     // SMOKE: test the getDesignDetails
-                    final ArrayDesignDetails add = client.getDesignDetails(new ArrayDesign());
-                    System.out.println("TCPTCP: " + add);
+                    try {
+                        System.out.println("\n\nRunning getDesignDetails...\n\n");
+                        final ArrayDesignDetails add = client.getDesignDetails(new ArrayDesign());
+                        System.out.println("TCPTCP: " + add);
+                    } catch (final Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    // SMOKE: test search
+                    try {
+                        System.out.println("\n\nRunning search...\n\n");
+                        //System.out.println(client.search(new ArrayDesign()));
+                    } catch (final Exception e) {
+                        e.printStackTrace();
+                    }
 
                 } else {
                     usage();
@@ -136,54 +152,74 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
         }
     }
 
-    public gov.nih.nci.cagrid.cqlresultset.CQLQueryResults query(final gov.nih.nci.cagrid.cqlquery.CQLQuery cqlQuery)
-            throws RemoteException, gov.nih.nci.cagrid.data.faults.QueryProcessingExceptionType,
-            gov.nih.nci.cagrid.data.faults.MalformedQueryExceptionType {
-        synchronized (portTypeMutex) {
-            configureStubSecurity((Stub) portType, "query");
-            final gov.nih.nci.cagrid.data.QueryRequest params = new gov.nih.nci.cagrid.data.QueryRequest();
-            final gov.nih.nci.cagrid.data.QueryRequestCqlQuery cqlQueryContainer = new gov.nih.nci.cagrid.data.QueryRequestCqlQuery();
-            cqlQueryContainer.setCQLQuery(cqlQuery);
-            params.setCqlQuery(cqlQueryContainer);
-            final gov.nih.nci.cagrid.data.QueryResponse boxedResult = portType.query(params);
-            return boxedResult.getCQLQueryResultCollection();
-        }
+  public gov.nih.nci.caarray.domain.data.DataSet getDataSetForDerived(final gov.nih.nci.caarray.domain.data.DerivedArrayData derivedArrayData) throws RemoteException {
+    synchronized(portTypeMutex){
+      configureStubSecurity((Stub)portType,"getDataSetForDerived");
+    final gov.nih.nci.cagrid.caarray.stubs.GetDataSetForDerivedRequest params = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetForDerivedRequest();
+    final gov.nih.nci.cagrid.caarray.stubs.GetDataSetForDerivedRequestDerivedArrayData derivedArrayDataContainer = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetForDerivedRequestDerivedArrayData();
+    derivedArrayDataContainer.setDerivedArrayData(derivedArrayData);
+    params.setDerivedArrayData(derivedArrayDataContainer);
+    final gov.nih.nci.cagrid.caarray.stubs.GetDataSetForDerivedResponse boxedResult = portType.getDataSetForDerived(params);
+    return boxedResult.getDataSet();
     }
+  }
 
-    public gov.nih.nci.caarray.domain.array.ArrayDesignDetails getDesignDetails(
-            final gov.nih.nci.caarray.domain.array.ArrayDesign arrayDesign) throws RemoteException {
-        synchronized (portTypeMutex) {
-            configureStubSecurity((Stub) portType, "getDesignDetails");
-            final gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsRequest params = new gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsRequest();
-            final gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsRequestArrayDesign arrayDesignContainer = new gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsRequestArrayDesign();
-            arrayDesignContainer.setArrayDesign(arrayDesign);
-            params.setArrayDesign(arrayDesignContainer);
-            final gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsResponse boxedResult = portType.getDesignDetails(params);
-            return boxedResult.getArrayDesignDetails();
-        }
+  public gov.nih.nci.caarray.domain.data.DataSet getDataSetForRaw(final gov.nih.nci.caarray.domain.data.RawArrayData rawArrayData) throws RemoteException {
+    synchronized(portTypeMutex){
+      configureStubSecurity((Stub)portType,"getDataSetForRaw");
+    final gov.nih.nci.cagrid.caarray.stubs.GetDataSetForRawRequest params = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetForRawRequest();
+    final gov.nih.nci.cagrid.caarray.stubs.GetDataSetForRawRequestRawArrayData rawArrayDataContainer = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetForRawRequestRawArrayData();
+    rawArrayDataContainer.setRawArrayData(rawArrayData);
+    params.setRawArrayData(rawArrayDataContainer);
+    final gov.nih.nci.cagrid.caarray.stubs.GetDataSetForRawResponse boxedResult = portType.getDataSetForRaw(params);
+    return boxedResult.getDataSet();
     }
+  }
 
-    public gov.nih.nci.caarray.domain.data.DataSet getDataSet(
-            final gov.nih.nci.caarray.domain.data.AbstractArrayData abstractArrayData) throws RemoteException {
-        synchronized (portTypeMutex) {
-            configureStubSecurity((Stub) portType, "getDataSet");
-            final gov.nih.nci.cagrid.caarray.stubs.GetDataSetRequest params = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetRequest();
-            final gov.nih.nci.cagrid.caarray.stubs.GetDataSetRequestAbstractArrayData abstractArrayDataContainer = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetRequestAbstractArrayData();
-            abstractArrayDataContainer.setAbstractArrayData(abstractArrayData);
-            params.setAbstractArrayData(abstractArrayDataContainer);
-            final gov.nih.nci.cagrid.caarray.stubs.GetDataSetResponse boxedResult = portType.getDataSet(params);
-            return boxedResult.getDataSet();
-        }
+  public gov.nih.nci.cagrid.cqlresultset.CQLQueryResults query(final gov.nih.nci.cagrid.cqlquery.CQLQuery cqlQuery) throws RemoteException, gov.nih.nci.cagrid.data.faults.QueryProcessingExceptionType, gov.nih.nci.cagrid.data.faults.MalformedQueryExceptionType {
+    synchronized(portTypeMutex){
+      configureStubSecurity((Stub)portType,"query");
+    final gov.nih.nci.cagrid.caarray.stubs.QueryRequest params = new gov.nih.nci.cagrid.caarray.stubs.QueryRequest();
+    final gov.nih.nci.cagrid.caarray.stubs.QueryRequestCqlQuery cqlQueryContainer = new gov.nih.nci.cagrid.caarray.stubs.QueryRequestCqlQuery();
+    cqlQueryContainer.setCQLQuery(cqlQuery);
+    params.setCqlQuery(cqlQueryContainer);
+    final gov.nih.nci.cagrid.caarray.stubs.QueryResponse boxedResult = portType.query(params);
+    return boxedResult.getCQLQueryResultCollection();
     }
+  }
 
-    public java.lang.String echo(final java.lang.String string) throws RemoteException {
-        synchronized (portTypeMutex) {
-            configureStubSecurity((Stub) portType, "echo");
-            final gov.nih.nci.cagrid.caarray.stubs.EchoRequest params = new gov.nih.nci.cagrid.caarray.stubs.EchoRequest();
-            params.setString(string);
-            final gov.nih.nci.cagrid.caarray.stubs.EchoResponse boxedResult = portType.echo(params);
-            return boxedResult.getResponse();
-        }
+  public gov.nih.nci.caarray.domain.array.ArrayDesignDetails getDesignDetails(final gov.nih.nci.caarray.domain.array.ArrayDesign arrayDesign) throws RemoteException {
+    synchronized(portTypeMutex){
+      configureStubSecurity((Stub)portType,"getDesignDetails");
+    final gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsRequest params = new gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsRequest();
+    final gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsRequestArrayDesign arrayDesignContainer = new gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsRequestArrayDesign();
+    arrayDesignContainer.setArrayDesign(arrayDesign);
+    params.setArrayDesign(arrayDesignContainer);
+    final gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsResponse boxedResult = portType.getDesignDetails(params);
+    return boxedResult.getArrayDesignDetails();
     }
+  }
+
+  public java.lang.String echo(final java.lang.String string) throws RemoteException {
+    synchronized(portTypeMutex){
+      configureStubSecurity((Stub)portType,"echo");
+    final gov.nih.nci.cagrid.caarray.stubs.EchoRequest params = new gov.nih.nci.cagrid.caarray.stubs.EchoRequest();
+    params.setString(string);
+    final gov.nih.nci.cagrid.caarray.stubs.EchoResponse boxedResult = portType.echo(params);
+    return boxedResult.getResponse();
+    }
+  }
+
+  public byte[] readFile(final gov.nih.nci.caarray.domain.file.CaArrayFile caArrayFile) throws RemoteException {
+    synchronized(portTypeMutex){
+      configureStubSecurity((Stub)portType,"readFile");
+    final gov.nih.nci.cagrid.caarray.stubs.ReadFileRequest params = new gov.nih.nci.cagrid.caarray.stubs.ReadFileRequest();
+    final gov.nih.nci.cagrid.caarray.stubs.ReadFileRequestCaArrayFile caArrayFileContainer = new gov.nih.nci.cagrid.caarray.stubs.ReadFileRequestCaArrayFile();
+    caArrayFileContainer.setCaArrayFile(caArrayFile);
+    params.setCaArrayFile(caArrayFileContainer);
+    final gov.nih.nci.cagrid.caarray.stubs.ReadFileResponse boxedResult = portType.readFile(params);
+    return boxedResult.getResponse();
+    }
+  }
 
 }

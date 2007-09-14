@@ -19,11 +19,13 @@
   <!-- ============================================================== -->
   <target name="defineExtendedClasspaths">
     <path id="base.extended.classpath">
-      <pathelement location="./ext/caarray-client.jar"/>
-      <pathelement location="C:/5am/cacoresdk_fromCVS/eclipse-out"/>
-      <pathelement location="../lib/commons-lang-2.1.jar"/>
+<!--        <pathelement location="../caarray-client.jar/target/caarray-client.jar"/> -->
+<!--      <pathelement location="C:/5am/cacoresdk_fromCVS/eclipse-out"/> -->
+<!--        <pathelement location="../lib/commons-lang-2.1.jar"/> -->
     </path>
     <path id="service.build.extended.classpath">
+        <pathelement location="../caarray-client.jar/target/classes"/>
+        <pathelement location="../caarray-common.jar/target/classes/"/>
     </path>
     <path id="service.run.extended.classpath">
     </path>

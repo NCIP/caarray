@@ -75,6 +75,8 @@
     <property name="caarraydb.sql.src.dir" value="${caarraydb.dir}/src/main/sql" />
     <property name="caarraydb.sql.dir" value="${caarraydb.target.dir}/sql" />
 
+    <property name="caaray-svc.dir" value="${basedir}/CaArraySvc"/>
+
     <!-- Third-party -->
     <property name="affxfusion.jar" value="${lib.dir}/AffxFusion.jar" />
     <property name="ant-contrib.jar" value="${lib.dir}/ant-contrib-1.0b3.jar" />
@@ -206,13 +208,13 @@
     <!-- ** MAIN TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
 
-	<target name="continuous-integration" unless="build.notest">
-		<antcall target="clean"/>
-		<antcall target="database:reinitialize"/>
-		<antcall target="build"/>
-		<antcall target="check"/>
-		<antcall target="test:unit"/>
-	</target>
+  <target name="continuous-integration" unless="build.notest">
+    <antcall target="clean"/>
+    <antcall target="database:reinitialize"/>
+    <antcall target="build"/>
+    <antcall target="check"/>
+    <antcall target="test:unit"/>
+  </target>
 
     <target name="nightly-build" depends="continuous-integration,
         deploy:start-jboss,
@@ -232,7 +234,9 @@
         clean:caarray.ear,
         clean:site.dir,
         clean:test.classes.dir,
-        clean:target.dir" />
+        clean:target.dir,
+        clean:gridsvc,
+        clean:caarraydb" />
 
     <target name="clean:caarray-client.jar">
         <delete dir="${caarray-client.target.dir}" />
@@ -264,6 +268,14 @@
 
     <target name="clean:target.dir">
         <delete dir="${target.dir}" />
+    </target>
+
+    <target name="clean:gridsvc">
+      <ant dir="${caaray-svc.dir}" target="clean" inheritall="false"/>
+    </target>
+
+    <target name="clean:caarraydb">
+      <delete dir="${caarraydb.target.dir}"/>
     </target>
 
 
@@ -325,7 +337,8 @@
     <target name="compile" depends="compile:caarray-client.jar,
       compile:caarray-common.jar,
         compile:caarray-ejb.jar,
-        compile:caarray.war" />
+        compile:caarray.war,
+        compile:caarray-svc"/>
 
     <target name="compile:caarray-client.jar" depends="compile:caarray-common.jar">
         <mkdir dir="${caarray-client.classes.dir}" />
@@ -405,16 +418,20 @@
         </javac>
     </target>
 
+    <target name="compile:caarray-svc" depends="compile:caarray-common.jar,compile:caarray-client.jar,compile:caarray-ejb.jar">
+      <ant dir="${caaray-svc.dir}" target="compile" inheritall="false"/>
+    </target>
+
     <!-- ******************************************************************* -->
     <!-- ** SVN TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
-    <target name="svn:getinfo" description="obtain subversion revision info">
+    <target name="svn:getinfo" description="obtain subversion revision info" unless="nosvn">
       <taskdef resource="org/tigris/subversion/svnant/svnantlib.xml" classpath="${svnant.jar};${svnClientAdapter.jar}"/>
       <svn javahl="false">
         <status path="${root.dir}" revisionProperty="svn.revision" urlProperty="svn.url"/>
       </svn>
       <!--
-          Note that if you explicitly define caarray.version it will take 
+          Note that if you explicitly define caarray.version it will take
           precedence over the one obtained from SVN
       -->
       <propertyregex property="caarray.version" input="${svn.url}" regexp="\/([^\/]+)$" select="\1" casesensitive="false"/>
@@ -429,7 +446,8 @@
       build:caarray-common.jar,
       build:caarray-ejb.jar,
         build:caarray.war,
-        build:caarray.ear" />
+        build:caarray.ear,
+        build:caarray-svc" />
 
     <target name="build:caarray-client.jar" depends="compile:caarray-client.jar,compile:caarray-common.jar">
         <mkdir dir="${caarray-client.target.dir}" />
@@ -558,6 +576,8 @@
         </ear>
     </target>
 
+    <target name="build:caarray-svc" depends="compile:caarray-svc"/>
+
     <!-- ******************************************************************* -->
     <!-- ** TEST TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
@@ -592,6 +612,7 @@
       test:junit-report,
       test:cobertura-report,
       test:cobertura-check">
+        <ant dir="${caaray-svc.dir}" target="test" inheritall="false"/>
         <fail if="junit.failure" message="There were JUnit failures." />
         <fail if="cobertura.failure" message="Test coverage was insufficient (see Cobertura report)." />
     </target>
@@ -952,12 +973,12 @@
         <run-sql-script sql.file="${caarraydb.sql.dir}/populate-caarray.sql" />
     </target>
 
-    <target name="database:reinitialize" unless="build.nodbintegration" 
-			description="Completely reset caarraydb by dropping database, recreating, and creating schema, and pouplating with initial data">
-		<antcall target="database:recreate-database" />
-		<antcall target="database:create-schema" />
-		<antcall target="database:populate" />
-	</target>
+    <target name="database:reinitialize" unless="build.nodbintegration"
+      description="Completely reset caarraydb by dropping database, recreating, and creating schema, and pouplating with initial data">
+    <antcall target="database:recreate-database" />
+    <antcall target="database:create-schema" />
+    <antcall target="database:populate" />
+  </target>
 
     <target name="database:recreate-database" depends="database:init-sql" description="Drops and recreates caarraydb database">
         <run-sql-script database.url="${database.system.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_database_and_user.sql" />
@@ -967,11 +988,12 @@
     <!-- ** DEPLOY TARGETS                                                ** -->
     <!-- ******************************************************************* -->
 
-    <target name="deploy" depends="build:caarray.ear,prepare:create-local.properties">
+    <target name="deploy" depends="build:caarray.ear,build:caarray-svc,prepare:create-local.properties">
         <copy file="${resource.dir}/deploy/caarray-mysql-ds.xml" todir="${jboss.deploy.dir}">
             <filterset refid="caarray.filterset" />
         </copy>
         <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
+        <ant dir="${caaray-svc.dir}" target="deployGlobus" inheritall="false"/>
     </target>
 
     <target name="undeploy">
@@ -1035,18 +1057,18 @@
     <property name="keyfile.file" value="caarray2-key.properties" />
     <!--<property name="envproperties.file" value="${build.env}.properties" />-->
 
-	<target name="continuous-integration-notest" if="build.notest">
-		<antcall target="clean"/>
-		<antcall target="database:reinitialize"/>
-		<antcall target="build"/>
-		<antcall target="check"/>
-	</target>
+  <target name="continuous-integration-notest" if="build.notest">
+    <antcall target="clean"/>
+    <antcall target="database:reinitialize"/>
+    <antcall target="build"/>
+    <antcall target="check"/>
+  </target>
 
     <target name="validate-properties">
-	    <echo> lib.dir is ${lib.dir} </echo>
-		<echo> properties.dir is ${properties.dir} </echo>
-		<echo> keyfile.file is ${keyfile.file} </echo>
-		<echo> build.envpropertyfile is ${build.envpropertyfile} </echo>
+      <echo> lib.dir is ${lib.dir} </echo>
+    <echo> properties.dir is ${properties.dir} </echo>
+    <echo> keyfile.file is ${keyfile.file} </echo>
+    <echo> build.envpropertyfile is ${build.envpropertyfile} </echo>
         <taskdef name="ncitask" classname="com.stelligent.nci.anttasks.PropertyChecker">
             <classpath>
                 <pathelement location="${lib.dir}/nci-ant.jar" />
@@ -1110,18 +1132,18 @@
         <sshexec host="${ssh.server.hostname}" trust="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" command="rm -rf ${remote.jboss.home}/deploy/caarray.ear ${remote.jboss.home}/deploy/caarray-mysql-ds.xml" />
     </target>
 
-	<target name="remote-jboss:deploy" unless="build.nodeploy">
-		<antcall target="remote-jboss:stop"/>
-		<antcall target="remote-jboss:undeploy-caarray"/>
-		<antcall target="remote-jboss:configure-jboss-ds"/>
-		<antcall target="remote-jboss:deploy-caarray"/>
-		<antcall target="remote-jboss:copy-jboss-config"/>
-		<antcall target="remote-jboss:start"/>
-	</target>
-	
+  <target name="remote-jboss:deploy" unless="build.nodeploy">
+    <antcall target="remote-jboss:stop"/>
+    <antcall target="remote-jboss:undeploy-caarray"/>
+    <antcall target="remote-jboss:configure-jboss-ds"/>
+    <antcall target="remote-jboss:deploy-caarray"/>
+    <antcall target="remote-jboss:copy-jboss-config"/>
+    <antcall target="remote-jboss:start"/>
+  </target>
+
     <target name="remote-deploy">
         <antcall target="validate-properties" />
-		<antcall target="continuous-integration" />
+    <antcall target="continuous-integration" />
         <antcall target="continuous-integration-notest" />
         <antcall target="remote-jboss:deploy" />
     </target>
@@ -1141,7 +1163,7 @@
         <antcall target="validate-properties" />
         <antcall target="database:reinitialize" />
         <antcall target="remote-jboss:deploy" />
-		<antcall target="svn:checkin-caarray-ear" />
+    <antcall target="svn:checkin-caarray-ear" />
     </target>
 
 

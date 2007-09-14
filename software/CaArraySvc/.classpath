@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="build/stubs-CaArraySvc/src"/>
 	<classpathentry kind="src" path="test/src"/>
 	<classpathentry kind="var" path="GLOBUS_LOCATION/lib/addressing-1.0.jar"/>
 	<classpathentry kind="var" path="GLOBUS_LOCATION/lib/axis.jar" sourcepath="C:/dev/tools/ws-core-4.0.3/java/lib-src/ws-axis/ws-axis.zip"/>
@@ -102,8 +103,11 @@
 	<classpathentry kind="lib" path="lib/caGrid-1.1-caDSR-common.jar"/>
 	<classpathentry kind="lib" path="lib/caGrid-1.1-caDSR-stubs.jar"/>
 	<classpathentry kind="lib" path="lib/caGrid-1.1-caDSR-tests.jar"/>
-	<classpathentry kind="lib" path="ext/caarray-client.jar"/>
-	<classpathentry kind="lib" path="/cacordsdk_fromcvs/eclipse-out"/>
-	<classpathentry kind="lib" path="lib/castor-1.0.5.jar"/>
+	<classpathentry kind="lib" path="lib/castor-0.9.9.jar"/>
+	<classpathentry kind="lib" path="build/stubs-CaArraySvc/classes"/>
+	<classpathentry kind="lib" path="/caarray-client-jar/target/classes" sourcepath="/caarray-client-jar/src/main/java"/>
+	<classpathentry kind="lib" path="/caarray-common-jar/target/classes"/>
+	<classpathentry kind="lib" path="/lib/hibernate-annotations.jar" sourcepath="/lib/hibernate-annotations-3.3.0.GA-src.jar"/>
+	<classpathentry kind="lib" path="/lib/javaee.jar"/>
 	<classpathentry kind="output" path="eclipse-out"/>
 </classpath>

@@ -93,7 +93,7 @@ import java.util.List;
  * @author Rashmi Srinivasa
  */
 public interface CaArraySearchService {
-    
+
     /**
      * The JNDI name to look up the remote <code>CaArraySearch</code> service.
      */

@@ -26,21 +26,33 @@ public class CaArraySvcProviderImpl{
 	}
 	
 
+    public gov.nih.nci.cagrid.caarray.stubs.GetDataSetForDerivedResponse getDataSetForDerived(gov.nih.nci.cagrid.caarray.stubs.GetDataSetForDerivedRequest params) throws RemoteException {
+    gov.nih.nci.cagrid.caarray.stubs.GetDataSetForDerivedResponse boxedResult = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetForDerivedResponse();
+    boxedResult.setDataSet(impl.getDataSetForDerived(params.getDerivedArrayData().getDerivedArrayData()));
+    return boxedResult;
+  }
+
+    public gov.nih.nci.cagrid.caarray.stubs.GetDataSetForRawResponse getDataSetForRaw(gov.nih.nci.cagrid.caarray.stubs.GetDataSetForRawRequest params) throws RemoteException {
+    gov.nih.nci.cagrid.caarray.stubs.GetDataSetForRawResponse boxedResult = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetForRawResponse();
+    boxedResult.setDataSet(impl.getDataSetForRaw(params.getRawArrayData().getRawArrayData()));
+    return boxedResult;
+  }
+
     public gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsResponse getDesignDetails(gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsRequest params) throws RemoteException {
     gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsResponse boxedResult = new gov.nih.nci.cagrid.caarray.stubs.GetDesignDetailsResponse();
     boxedResult.setArrayDesignDetails(impl.getDesignDetails(params.getArrayDesign().getArrayDesign()));
     return boxedResult;
   }
 
-    public gov.nih.nci.cagrid.caarray.stubs.GetDataSetResponse getDataSet(gov.nih.nci.cagrid.caarray.stubs.GetDataSetRequest params) throws RemoteException {
-    gov.nih.nci.cagrid.caarray.stubs.GetDataSetResponse boxedResult = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetResponse();
-    boxedResult.setDataSet(impl.getDataSet(params.getAbstractArrayData().getAbstractArrayData()));
-    return boxedResult;
-  }
-
     public gov.nih.nci.cagrid.caarray.stubs.EchoResponse echo(gov.nih.nci.cagrid.caarray.stubs.EchoRequest params) throws RemoteException {
     gov.nih.nci.cagrid.caarray.stubs.EchoResponse boxedResult = new gov.nih.nci.cagrid.caarray.stubs.EchoResponse();
     boxedResult.setResponse(impl.echo(params.getString()));
+    return boxedResult;
+  }
+
+    public gov.nih.nci.cagrid.caarray.stubs.ReadFileResponse readFile(gov.nih.nci.cagrid.caarray.stubs.ReadFileRequest params) throws RemoteException {
+    gov.nih.nci.cagrid.caarray.stubs.ReadFileResponse boxedResult = new gov.nih.nci.cagrid.caarray.stubs.ReadFileResponse();
+    boxedResult.setResponse(impl.readFile(params.getCaArrayFile().getCaArrayFile()));
     return boxedResult;
   }
 

@@ -12,13 +12,13 @@
   <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.vocabulary" schemaLocation="gov.nih.nci.caarray.domain.vocabulary.xsd" />
   <xs:import namespace="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.contact" schemaLocation="gov.nih.nci.caarray.domain.contact.xsd" />
   <xs:element name="AbstractCaArrayObject" type="AbstractCaArrayObject" />
-  <xs:complexType name="AbstractCaArrayObject">
+  <xs:complexType name="AbstractCaArrayObject" abstract="true">
     <xs:sequence />
     <xs:attribute name="gridIdentifier" type="xs:string" />
     <xs:attribute name="id" type="xs:long" />
   </xs:complexType>
   <xs:element name="AbstractCaArrayEntity" type="AbstractCaArrayEntity" />
-  <xs:complexType name="AbstractCaArrayEntity">
+  <xs:complexType name="AbstractCaArrayEntity" abstract="true">
     <xs:complexContent>
       <xs:extension base="AbstractCaArrayObject">
         <xs:sequence />

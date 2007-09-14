@@ -1,9 +1,12 @@
 package gov.nih.nci.cagrid.caarray;
+import java.io.IOException;
+
 import gov.nih.nci.cagrid.caarray.encoding.Utils;
 import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.exolab.castor.mapping.MappingException;
 
 public class LoadCastorMappingTest extends TestCase {
 
@@ -14,7 +17,7 @@ public class LoadCastorMappingTest extends TestCase {
     public static final String DEFAULT_XML_MAPPING = "/xml-mapping.xml";
     public static final String CASTOR_MAPPING_PROPERTY = "castorMapping";
 
-    public void testLoadMapping() {
+    public void testLoadMapping() throws IOException, MappingException {
         LOG.debug("123");
         assertNotNull(Utils.getMapping("gov/nih/nci/cagrid/caarray/xml-mapping.xml"));
     }
