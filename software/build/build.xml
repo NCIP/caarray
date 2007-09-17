@@ -1100,12 +1100,12 @@
     <!-- Integrate JBoss -->
     <target name="remote-jboss:stop">
         <echo message="Stopping jboss server at ${ssh.server.hostname}..." />
-        <sshexec host="${ssh.server.hostname}" trust="true" keyfile="${ssh.key.file}" passphrase="" username="${ssh.server.username}" command="${remote.jboss.home}/bin/stop_jboss" />
+        <sshexec host="${ssh.server.hostname}" trust="true" keyfile="${ssh.key.file}" passphrase="" username="${ssh.server.username}" verbose="true" command="${remote.jboss.home}/bin/stop_jboss" />
     </target>
 
     <target name="remote-jboss:start">
         <echo message="Starting jboss server at ${ssh.server.hostname}..." />
-        <sshexec host="${ssh.server.hostname}" trust="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" command="${remote.jboss.home}/bin/start_jboss" />
+        <sshexec host="${ssh.server.hostname}" trust="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" verbose="true" command="${remote.jboss.home}/bin/start_jboss" />
     </target>
 
     <target name="remote-jboss:configure-jboss-ds">
@@ -1120,23 +1120,23 @@
 
     <target name="remote-jboss:copy-jboss-config">
         <echo message="Copying caarray-mysql configuration to jboss server at ${ssh.server.hostname}..." />
-        <scp file="${resource.dir}/deploy/caarray-mysql-ds.xml" keyfile="${ssh.key.file}" passphrase="" trust="true" todir="${ssh.server.username}@${ssh.server.hostname}:${remote.jboss.home}/deploy" />
+        <scp file="${resource.dir}/deploy/caarray-mysql-ds.xml" keyfile="${ssh.key.file}" passphrase="" trust="true" verbose="true" todir="${ssh.server.username}@${ssh.server.hostname}:${remote.jboss.home}/deploy" />
     </target>
 
     <target name="remote-jboss:deploy-caarray-temp">
         <echo message="Copying caarray EAR to jboss temp folder ${remote.jboss.temp.dir} at ${ssh.server.hostname}..." />
-        <scp trust="true" file="${caarray.ear}" keyfile="${ssh.key.file}" passphrase="" todir="${ssh.server.username}@${ssh.server.hostname}:${remote.jboss.temp.dir}" />
+        <scp trust="true" file="${caarray.ear}" keyfile="${ssh.key.file}" verbose="true" passphrase="" todir="${ssh.server.username}@${ssh.server.hostname}:${remote.jboss.temp.dir}" />
     </target>
 
     <target name="remote-jboss:deploy-caarray" depends="remote-jboss:deploy-caarray-temp">
         <echo message="Deploying caarray EAR to jboss server at ${ssh.server.hostname}..." />
-        <sshexec host="${ssh.server.hostname}" trust="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" command="mv ${remote.jboss.temp.dir}/caarray.ear ${remote.jboss.home}/deploy/" />
+        <sshexec host="${ssh.server.hostname}" trust="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" verbose="true" command="mv ${remote.jboss.temp.dir}/caarray.ear ${remote.jboss.home}/deploy/" />
         <echo message="Caarray EAR successfully deployed to http://${remote.jboss.server.hostname}:${remote.jboss.server.port}/caarray" />
     </target>
 
     <target name="remote-jboss:undeploy-caarray">
         <echo message="Undeploying caarray EAR to jboss server at ${ssh.server.hostname}..." />
-        <sshexec host="${ssh.server.hostname}" trust="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" command="rm -rf ${remote.jboss.home}/deploy/caarray.ear ${remote.jboss.home}/deploy/caarray-mysql-ds.xml" />
+        <sshexec host="${ssh.server.hostname}" trust="true" verbose="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" command="rm -rf ${remote.jboss.home}/deploy/caarray.ear ${remote.jboss.home}/deploy/caarray-mysql-ds.xml" />
     </target>
 
   <target name="remote-jboss:deploy" unless="build.nodeploy">
