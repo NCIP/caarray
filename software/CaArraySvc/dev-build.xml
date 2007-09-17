@@ -19,7 +19,7 @@
   <!-- ============================================================== -->
   <target name="defineExtendedClasspaths">
     <path id="base.extended.classpath">
-<!--        <pathelement location="../caarray-client.jar/target/caarray-client.jar"/> -->
+        <pathelement location="../caarray-client.jar/target/caarray-client.jar"/>
 <!--      <pathelement location="C:/5am/cacoresdk_fromCVS/eclipse-out"/> -->
 <!--        <pathelement location="../lib/commons-lang-2.1.jar"/> -->
     </path>
@@ -75,9 +75,6 @@
   <!-- Pre Compile Stubs Build Target                                 -->
   <!-- ============================================================== -->
   <target name="preCompileStubs">
-    <path id="base.extended.classpath">
-      <pathelement location="./ext/caarray-client.jar"/>
-    </path>
   </target>
 
   <!-- ============================================================== -->
