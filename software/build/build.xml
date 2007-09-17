@@ -1066,18 +1066,12 @@
   <target name="continuous-integration-notest" if="build.notest">
     <antcall target="clean"/>
     <antcall target="database:reinitialize"/>
-    <antcall target="build"/>
-    <antcall target="check"/>
-  </target>
-
-  <target name="continuous-integration-noglobus" if="build.noglobus">
-    <antcall target="clean"/>
-    <antcall target="database:reinitialize"/>
     <antcall target="build-noglobus"/>
+	<!--<antcall target="build"/>-->
     <antcall target="check"/>
   </target>
 
-    <target name="validate-properties">
+  <target name="validate-properties">
       <echo> lib.dir is ${lib.dir} </echo>
     <echo> properties.dir is ${properties.dir} </echo>
     <echo> keyfile.file is ${keyfile.file} </echo>
