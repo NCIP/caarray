@@ -1,0 +1,60 @@
+<project name="test-build" default="all" basedir="." xmlns:au="antlib:org.apache.ant.antunit" xmlns="antlib:org.apache.tools.ant">
+
+<!-- IMPORTANT: This file works with tightly coupled with remote-build.xml 
+  and does not work indepently of it -->
+
+<taskdef uri="antlib:org.apache.ant.antunit"
+  resource="org/apache/ant/antunit/antlib.xml">
+  <classpath>
+    <pathelement location="${antunit.jar.location}"/>
+  </classpath>
+</taskdef>
+
+  <target name="setUp">
+    <!--<property name="build.envpropertyfile" value="SomeValue" />-->
+  </target>
+
+  <target name="all" depends="display-properties,setUp,testSuite,tearDown" />
+
+  <!-- is called after the test, even if that caused an error -->
+  <target name="tearDown">
+    
+  </target>
+
+  <target name="display-properties">
+  	  <echo> Diagnostics...</echo>
+	  <echoproperties/>
+  </target>
+
+  <target name="testSuite" depends="testEnvPropertyFile,testEnvProperty,testPropertiesFileExists,
+  testSshKeyFileExists,testSvnLocalTrunk,testBuildNoTest" />
+
+  <target name="testEnvPropertyFile">
+	<au:assertPropertySet name="build.envpropertyfile" message="Target environment file not found. 
+	Please set target environment file with -Dbuild.envpropertyfile=[FULLY QUALIFIED PATH TO PROPERTY FILE]" />  
+  </target>
+
+  <target name="testEnvProperty">
+	<au:assertPropertySet name="build.env" message="build.env property not found. Please set this property using
+			-Dbuild.env=[DEV/QA]"/>  
+  </target>
+
+  <target name="testBuildNoTest">
+	<au:assertPropertySet name="build.notest" message="build.notest is a required system property. Please set this property using -Dbuild.notest=true"/>  
+  </target> 
+
+  <target name="testSvnLocalTrunk">
+	<au:assertPropertySet name="svn.local.trunk" message="svn.local.trunk property not set. Please set this property using -Dbuild.env=[DEV/QA]"/>  
+  </target>
+
+  <target name="testPropertiesFileExists">
+	<au:assertFileExists file="${build.envpropertyfile}" message="Unable to find the file: ${build.envpropertyfile}. The path to -Dbuild.envpropertyfile must be fully-qualified." />  
+  </target>
+
+  <target name="testSshKeyFileExists">
+	<au:assertFileExists file="${ssh.key.file}" message="Unable to find the file: ${ssh.key.file}. Please update the value of the ssh.key.file attribute in the ${build.envpropertyfile} file." />  
+  </target>
+
+
+
+</project>
