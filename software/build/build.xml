@@ -449,6 +449,12 @@
         build:caarray.ear,
         build:caarray-svc" />
 
+    <target name="build-noglobus" depends="build:caarray-client.jar,
+      build:caarray-common.jar,
+      build:caarray-ejb.jar,
+        build:caarray.war,
+        build:caarray.ear" />
+
     <target name="build:caarray-client.jar" depends="compile:caarray-client.jar,compile:caarray-common.jar">
         <mkdir dir="${caarray-client.target.dir}" />
         <jar destfile="${caarray-client.jar}">
@@ -1061,6 +1067,13 @@
     <antcall target="clean"/>
     <antcall target="database:reinitialize"/>
     <antcall target="build"/>
+    <antcall target="check"/>
+  </target>
+
+  <target name="continuous-integration-noglobus" if="build.noglobus">
+    <antcall target="clean"/>
+    <antcall target="database:reinitialize"/>
+    <antcall target="build-noglobus"/>
     <antcall target="check"/>
   </target>
 
