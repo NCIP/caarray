@@ -2,72 +2,124 @@
 <!-- ** PROJECT:   caArray - remote deployment                            ** -->
 <!-- *********************************************************************** -->
 
-<project name="caarray-deploy" default="all" basedir=".">
-	
+<project name="caarray-remote-deploy" default="all" basedir=".">	
 	
 	<!-- PROPERTIES -->
 	<property file="${build.envpropertyfile}" />
 	<property file="local.properties" />
 	<property name="lib.dir" value="../lib" />
-	
-		
+
 	<!-- PATHS -->
     <path id="project.classpath">
        <fileset dir="${lib.dir}">
           <include name="**/*.jar" />
        </fileset>
-    </path>
-	
+    </path>	
+
+	<taskdef name="svn" classpathref="project.classpath" classname="org.tigris.subversion.svnant.SvnTask"/>
 	
 	<!-- CONDITIONS -->
-	<condition property="fail.if.no.env">
+	<condition property="no.env.file">
 		<not>
 			<available file="${build.envpropertyfile}" />
 		</not>
 	</condition>
-	
-	<condition property="build.with.nolabel.dev">
+
+	<condition property="no.env.property">
 		<not>
-			<isset property="label.ear"/>
+			<isset property="${build.env}"/>
 		</not>
 	</condition>
-	
-	<condition property="fail.with.nolabel.qa">
-		<and>
-			<equals arg1="${build.env}" arg2="QA" casesensitive="false"/>
-			<not>
-				<isset property="label.ear"/>
-			</not>
-		</and>
-	</condition>
-
-
 
    <property name="jsch.jar" value="jsch-0.1.33.jar"/>
+   <property name="antunit.jar" value="ant-antunit-1.0.jar"/>
    <property name="jsch.jar.location" value="${ant.home}/lib/${jsch.jar}"/>
+   <property name="antunit.jar.location" value="${ant.home}/lib/${antunit.jar}"/>
    <available file="${jsch.jar.location}" property="jsch.jar.present"/>
+   <available file="${antunit.jar.location}" property="antunit.jar.present"/>
 
-   	<condition property="fail.if.no.jsch">
+   	<condition property="no.jsch">
 		<not>
 			<isset property="jsch.jar.present"/>
 		</not>
 	</condition>
-	
-	<condition property="build.with.label.dev">
+
+	<condition property="no.antunit">
+		<not>
+			<isset property="antunit.jar.present"/>
+		</not>
+	</condition>
+
+	<condition property="build.dev.use.label">
 		<and>
 			<equals arg1="${build.env}" arg2="DEV" casesensitive="false"/>
-			<isset property="label.ear"/>
+			<isset property="use.label"/>
 		</and>
 	</condition>
-	
-	<condition property="build.with.label.qa">
+
+	<condition property="build.dev.create.label">
+		<and>
+			<equals arg1="${build.env}" arg2="DEV" casesensitive="false"/>
+			<isset property="create.label"/>
+		</and>
+	</condition>
+
+	<condition property="build.dev.no.label">
+		<and>
+			<equals arg1="${build.env}" arg2="DEV" casesensitive="false"/>
+			<not>
+				<isset property="create.label"/>
+			</not>
+			<not>
+				<isset property="use.label"/>
+			</not>
+		</and>
+	</condition>
+
+	<condition property="build.qa.use.label">
 		<and>
 			<equals arg1="${build.env}" arg2="QA" casesensitive="false"/>
-			<isset property="label.ear"/>
+			<isset property="use.label"/>
 		</and>
 	</condition>
-	
-	
+
+	<condition property="build.qa.create.label">
+		<and>
+			<equals arg1="${build.env}" arg2="QA" casesensitive="false"/>
+			<isset property="create.label"/>
+		</and>
+	</condition>
+
+	<condition property="build.qa.no.label">
+		<and>
+			<equals arg1="${build.env}" arg2="QA" casesensitive="false"/>
+			<not>
+				<isset property="create.label"/>
+			</not>
+			<not>
+				<isset property="use.label"/>
+			</not>
+		</and>
+	</condition>
+
+	<condition property="build.with.use.label">
+		<or>
+			<isset property="build.dev.use.label"/>
+			<isset property="build.qa.use.label"/>
+		</or>
+	</condition>
+
+    <condition property="label.error">
+		<and>
+			<isset property="label.ear"/>
+			<not>
+				<isset property="use.label"/>
+			</not>
+			<not>
+				<isset property="create.label"/>
+			</not>
+		</and>
+	</condition>
 	
 	<!-- TARGETS -->
 	
@@ -76,21 +128,19 @@
 		<delete dir="${svn.local.trunk}" />
 	</target>
 	
-	<target name="svn:checkout-caarray">
-		<echo message="Checking out latest caarray version from ${svn.caarray.trunk}..." />
-		<taskdef resource="svntask.properties" classpathref="project.classpath"/>
-		<svn username="anonymous" password="">
-			  <checkout url="${svn.caarray.trunk}"
-				  revision="HEAD" destPath="${svn.local.trunk}" />
-		</svn>
-	</target>
-	
-	<target name="svn:checkout-caarray-ear">
-		<echo message="Checking out caarray.ear with label ${label.ear} from ${svn.caarray.trunk}..." />
-		<taskdef resource="svntask.properties" classpathref="project.classpath"/>
+	<target name="svn:checkout-caarray-ear" if="build.with.use.label">
+		<echo message="Checking out caarray.ear with label ${label.ear} from ${svn.caarray.trunk}..." />		
 		<svn username="anonymous" password="">
 			  <checkout url="${svn.caarray.trunk}/dist/ear/${label.ear}"
 				  revision="HEAD" destPath="${svn.local.trunk}/caarray.ear/target" />
+		</svn>
+	</target>
+
+	<target name="svn:checkout-caarray" unless="build.with.use.label">
+		<echo message="Checking out latest caarray version from ${svn.caarray.trunk}...(no label)" />
+		<svn username="anonymous" password="">
+			  <checkout url="${svn.caarray.trunk}"
+				  revision="HEAD" destPath="${svn.local.trunk}" />
 		</svn>
 	</target>
 	
@@ -100,73 +150,86 @@
 		</copy>
 	</target>
 	
-	<target name="fail-if-no-env" if="fail.if.no.env">
-		<fail>Target environment file not found. Please set target environment file with
-			-Dbuild.envpropertyfile=[FULLY QUALIFIED PATH TO PROPERTY FILE]</fail>
+   <target name="remote-deployment">
+		<antcall target="svn:scorch" />
+		<antcall target="svn:checkout-caarray" />
+		<antcall target="svn:checkout-caarray-ear" />
+		<antcall target="prepare-remote-properties" />
 	</target>
 
-   <target name="fail-if-no-jsch" if="fail.if.no.jsch">
+	<target name="remote-deployment-dev-createlabel" if="build.dev.create.label">
+	  <echo message="Deploying to ${build.env} and CREATING a label..." />
+	  <antcall target="remote-deployment" />
+	  <ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml"
+			target="remote-deploy-dev-create-label"/>		
+	</target>
+
+	<target name="remote-deployment-dev-uselabel" if="build.dev.use.label">
+	  <echo message="Deploying to ${build.env} and USING a label..." />
+	  <antcall target="remote-deployment" />
+	  <ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml"
+			target="remote-deploy"/>		
+	</target>
+
+	<target name="remote-deployment-dev-nolabel" if="build.dev.no.label">
+      <echo message="Deploying to ${build.env} WITHOUT using a label..." />
+	  <antcall target="remote-deployment" />
+	  <ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml"
+			target="remote-deploy"/>		
+	</target>
+
+	<target name="remote-deployment-qa-createlabel" if="build.qa.create.label">
+      <echo message="Deploying to ${build.env} and CREATING a label..." />
+	  <antcall target="remote-deployment" />
+      <ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml"
+			target="remote-deploy-qa-create-label"/>		
+	</target>
+
+	<target name="remote-deployment-qa-uselabel" if="build.qa.use.label">
+	    <echo message="Deploying to ${build.env} and USING a label..." />
+    	<antcall target="remote-deployment" />
+		<ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml"
+			target="remote-deploy-qa"/>		
+	</target>
+
+	<target name="remote-deployment-qa-nolabel" if="build.qa.no.label">
+   	    <echo message="Deploying to ${build.env} WITHOUT using a label..." />
+    	<antcall target="remote-deployment" />
+		<ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml"
+			target="remote-deploy-qa"/>		
+	</target>
+
+	<target name="help">
+	  <echo>
+        Example usage: ant -f remote-build.xml -Dbuild.env=DEV -Dbuild.envpropertyfile=C:/dev/caarray2/software/build/DEV.properties -Dbuild.notest=true -Dbuild.noglobus=true
+   	  </echo>
+	</target>
+
+	<target name="diagnostics">
+	  <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/test-build.xml" />
+	</target>
+
+	<target name="fail-if-no-label" if="label.error">
+      <fail>ERROR: When label.ear property is passed, there must be either a use.label or create.label System property</fail>
+	</target>
+
+	 <target name="fail-if-no-jsch" if="no.jsch">
         <copy todir="${ant.home}/lib" overwrite="true">
 			<fileset dir="${lib.dir}" includes="${jsch.jar}" />
 		</copy>
 		<fail>${jsch.jar} must be in your ${ant.home}/lib directory. This file (${jsch.jar}) has been copied to your ${ant.home}/lib directory. IMPORTANT: You must rerun your build script again.</fail>
 	</target>
 
-	<target name="fail-if-no-label-qa" if="fail.with.nolabel.qa">
-		<fail>QA label not set. Please set the label with -Dlabel.ear=XYZ</fail>
+	<target name="fail-if-no-antunit" if="no.antunit">
+        <copy todir="${ant.home}/lib" overwrite="true">
+			<fileset dir="${lib.dir}" includes="${antunit.jar}" />
+		</copy>
+		<fail>${antunit.jar} must be in your ${ant.home}/lib directory. This file (${antunit.jar}) has been copied to your ${ant.home}/lib directory. IMPORTANT: You must rerun your build script again.</fail>
 	</target>
 	
-	<target name="remote-deployment-dev-nolabel" if="build.with.nolabel.dev">
-		<antcall target="svn:scorch" />
-		<antcall target="svn:checkout-caarray" />
-		<antcall target="prepare-remote-properties" />
-		<ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml"
-			target="remote-deploy"/>
-	</target>
-	
-	<target name="remote-deployment-dev-label" if="build.with.label.dev">
-		<antcall target="svn:scorch" />
-		<antcall target="svn:checkout-caarray" />
-		<antcall target="prepare-remote-properties" />
-		<ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml"
-			target="remote-deploy-label"/>
-	</target>
-	
-	<target name="remote-deployment-qa" if="build.with.label.qa">
-		<antcall target="svn:scorch" />
-		<antcall target="svn:checkout-caarray" />
-		<antcall target="svn:checkout-caarray-ear" />
-		<antcall target="prepare-remote-properties" />
-		<ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml"
-			target="remote-deploy-qa"/>
-	</target>
+	<target name="all" depends="diagnostics,fail-if-no-antunit,fail-if-no-jsch,
+	    fail-if-no-label,remote-deployment-dev-createlabel,remote-deployment-dev-uselabel,
+		remote-deployment-dev-nolabel,remote-deployment-qa-createlabel,
+		remote-deployment-qa-uselabel,remote-deployment-qa-nolabel " />	   
 
-	<target name="help">
-	  <echo>
-        Example usage: ant -f remote-build.xml -Dbuild.envpropertyfile=C:\dev\caarray2\software\build\DEV.properties
-   	  </echo>
-	</target>
-
-	<target name="diagnostics">
-	  <echo> Diagnostics...</echo>
-	  <echo> basedir is ${basedir} </echo>
-	  <echo> ant.file is ${ant.file} </echo>
-	  <echo> ant.version is ${ant.version} </echo>
-	  <echo> ant.java.version is ${ant.java.version} </echo>
-	  <echo> build.envpropertyfile is ${build.envpropertyfile} </echo>
-	  <echo> build.env is ${build.env} </echo>
-	  <echo> svn.local.trunk is ${svn.local.trunk} </echo>	  
- 	  <echo> ssh.key.file is ${ssh.key.file} </echo>	  	  
-	</target>
-	
-	<target name="all">	   
-       	<antcall target="diagnostics"/>
-		<antcall target="fail-if-no-jsch"/>
-		<antcall target="fail-if-no-env"/>
-		<antcall target="fail-if-no-label-qa"/>
-		<antcall target="remote-deployment-dev-nolabel"/>
-		<antcall target="remote-deployment-dev-label"/>
-		<antcall target="remote-deployment-qa"/>
-	</target>
-	
-</project>
+</project> 
