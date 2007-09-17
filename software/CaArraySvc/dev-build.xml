@@ -10,7 +10,8 @@
   <!-- ============================================================== -->
   <!-- Place any other properties you will need here                  -->
   <!-- ============================================================== -->
-
+    <property name="jboss.server.hostname" value="localhost"/>
+    <property name="jboss.server.jndi.port" value="1099"/>
 
 
 
@@ -109,7 +110,10 @@
   <!-- Post Compile Build Target                                       -->
   <!-- ============================================================== -->
   <target name="postCompile">
-
+      <replace file="${build.dest}/gov/nih/nci/cagrid/caarray/jndi.properties">
+          <replacefilter token="jboss.server.hostname" value="${jboss.server.hostname}"/>
+          <replacefilter token="jboss.server.jndi.port" value="${jboss.server.jndi.port}"/>
+      </replace>
   </target>
 
   <!-- ============================================================== -->

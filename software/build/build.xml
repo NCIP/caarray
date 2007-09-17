@@ -419,7 +419,10 @@
     </target>
 
     <target name="compile:caarray-svc" depends="compile:caarray-common.jar,compile:caarray-client.jar,compile:caarray-ejb.jar">
-      <ant dir="${caaray-svc.dir}" target="compile" inheritall="false"/>
+      <ant dir="${caaray-svc.dir}" target="compile" inheritall="false">
+          <property name="jboss.server.hostname" value="${jboss.server.hostname}"/>
+          <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}"/>
+      </ant>
     </target>
 
     <!-- ******************************************************************* -->
@@ -1067,7 +1070,7 @@
     <antcall target="clean"/>
     <antcall target="database:reinitialize"/>
     <antcall target="build-noglobus"/>
-	<!--<antcall target="build"/>-->
+  <!--<antcall target="build"/>-->
     <antcall target="check"/>
   </target>
 
