@@ -998,7 +998,7 @@
     <!-- ******************************************************************* -->
 
     <target name="deploy" depends="build:caarray.ear,build:caarray-svc,prepare:create-local.properties">
-        <copy file="${resource.dir}/deploy/caarray-mysql-ds.xml" todir="${jboss.deploy.dir}">
+        <copy file="${resource.dir}/deploy/caarray-mysql-ds.xml" todir="${jboss.deploy.dir}" overwrite="true">
             <filterset refid="caarray.filterset" />
         </copy>
         <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />

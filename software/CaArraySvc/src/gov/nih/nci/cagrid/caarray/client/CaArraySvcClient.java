@@ -5,6 +5,7 @@ import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.cagrid.caarray.common.CaArraySvcI;
 import gov.nih.nci.cagrid.caarray.stubs.CaArraySvcPortType;
 import gov.nih.nci.cagrid.caarray.stubs.service.CaArraySvcServiceAddressingLocator;
@@ -100,6 +101,15 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
                     // place client calls here if you want to use this main as a
                     // test....
 
+                    CaArrayFile caArrayFile = new CaArrayFile();
+                    caArrayFile.setPath("C:\\temp\\3_fb_extras.sql");
+
+                    byte[] bytes = client.readFile(caArrayFile);
+                    System.out.println("TCPTCP: " + new String(bytes));
+
+                    if (1 == 1) {
+                        System.exit(0);
+                    }
                     //SMOKE: test the echo() service method
                     System.out.println("\n\nRunning echo...\n\n");
                     System.out.println(client.echo("steve was here"));

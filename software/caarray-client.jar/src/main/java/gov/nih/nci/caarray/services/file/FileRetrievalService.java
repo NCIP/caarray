@@ -84,8 +84,6 @@ package gov.nih.nci.caarray.services.file;
 
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
-import java.io.InputStream;
-
 /**
  * Allows remote API access to download files stored in caArray.
  */
@@ -97,11 +95,12 @@ public interface FileRetrievalService {
     String JNDI_NAME = "caarray/FileRetrievalServiceBean/remote";
 
     /**
-     * Returns a stream from which to read the requested file's contents.
+     * Returns the requested file's contents.
      *
      * @param file the caArray file to retrieve
      * @return a stream to read the file from
      */
-    InputStream readFile(CaArrayFile file);
+    // TODO this requires full byte array in memory - need to figure out correct API
+    byte[] readFile(CaArrayFile file);
 
 }

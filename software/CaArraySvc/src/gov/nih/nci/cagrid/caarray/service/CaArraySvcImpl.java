@@ -10,9 +10,6 @@ import gov.nih.nci.caarray.services.data.DataRetrievalService;
 import gov.nih.nci.caarray.services.file.FileRetrievalService;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.Properties;
 
@@ -107,24 +104,7 @@ public class CaArraySvcImpl extends CaArraySvcImplBase {
             LOG.debug("readFile(" + caArrayFile + ")");
         }
 
-        final InputStream is = fileRetrievalService.readFile(caArrayFile);
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        final byte[] bytes = new byte[4096];
-        int size = 0;
-        try {
-            while ((size = is.read(bytes)) != -1) {
-                baos.write(bytes, 0, size);
-            }
-        } catch (final IOException ioe) {
-            throw new RemoteException("Unable to read file.", ioe);
-        } finally {
-            try {
-                is.close();
-            } catch (final IOException ioe) {
-                LOG.warn("IOException closing inputstream.", ioe);
-            }
-        }
-        return baos.toByteArray();
+        return fileRetrievalService.readFile(caArrayFile);
     }
 
     /**

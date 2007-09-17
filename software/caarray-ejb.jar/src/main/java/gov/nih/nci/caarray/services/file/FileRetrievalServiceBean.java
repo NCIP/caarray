@@ -84,8 +84,9 @@ package gov.nih.nci.caarray.services.file;
 
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.ejb.EJB;
@@ -103,6 +104,7 @@ import org.apache.commons.logging.LogFactory;
 public class FileRetrievalServiceBean implements FileRetrievalService {
 
     private static final Log LOG = LogFactory.getLog(FileRetrievalServiceBean.class);
+    private static final int CHUNK_SIZE = 4096;
 
     @EJB private FileRetrievalService fileRetrievalService;
 
@@ -116,14 +118,29 @@ public class FileRetrievalServiceBean implements FileRetrievalService {
 
     /**
      * {@inheritDoc}
-     * @throws FileNotFoundException
      */
-    public InputStream readFile(final CaArrayFile file) {
+    public byte[] readFile(final CaArrayFile file) {
+        InputStream is = null;
         try {
-            return new FileInputStream(file.getPath());
-        } catch (final FileNotFoundException e) {
-            LOG.error("File not found: " + file, e);
+            is = new FileInputStream(file.getPath());
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final byte[] bytes = new byte[CHUNK_SIZE];
+            int size = 0;
+            while ((size = is.read(bytes)) != -1) {
+                baos.write(bytes, 0, size);
+            }
+            return baos.toByteArray();
+        } catch (final IOException e) {
+            LOG.error("IOException: " + file, e);
             return null;
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (final IOException ioe) {
+                LOG.warn("IOException closing inputstream.", ioe);
+            }
         }
     }
 

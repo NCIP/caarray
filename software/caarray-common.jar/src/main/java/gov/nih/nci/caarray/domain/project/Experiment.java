@@ -536,26 +536,26 @@ public class Experiment extends AbstractCaArrayEntity {
     /**
      * @return array groups
      */
-    @OneToMany(mappedBy = EXPERIMENT_REF)
+    @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.EAGER)
     public Set<ArrayGroup> getArrayGroups() {
         return arrayGroups;
     }
 
     @SuppressWarnings("unused")
-    private void setArrayGroups(Set<ArrayGroup> arrayGroups) { // NOPMD
+    private void setArrayGroups(final Set<ArrayGroup> arrayGroups) { // NOPMD
         this.arrayGroups = arrayGroups;
     }
 
     /**
      * @return hybridizations
      */
-    @OneToMany(mappedBy = EXPERIMENT_REF)
+    @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.EAGER)
     public Set<Hybridization> getHybridizations() {
         return hybridizations;
     }
 
     @SuppressWarnings("unused")
-    private void setHybridizations(Set<Hybridization> hybridizations) { // NOPMD
+    private void setHybridizations(final Set<Hybridization> hybridizations) { // NOPMD
         this.hybridizations = hybridizations;
     }
 
