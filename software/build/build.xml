@@ -208,13 +208,13 @@
     <!-- ** MAIN TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
 
-  <target name="continuous-integration" unless="build.notest">
-    <antcall target="clean"/>
-    <antcall target="database:reinitialize"/>
-    <antcall target="build"/>
-    <antcall target="check"/>
-    <antcall target="test:unit"/>
-  </target>
+	<target name="continuous-integration" unless="build.notest">
+		<antcall target="clean"/>
+		<antcall target="database:reinitialize"/>
+		<antcall target="build"/>
+		<antcall target="check"/>
+		<antcall target="test:unit"/>
+	</target>
 
     <target name="nightly-build" depends="continuous-integration,
         deploy:start-jboss,
@@ -471,8 +471,10 @@
             <zipfileset src="${jboss-aop-jdk50-client.jar}" />
             <fileset dir="${caarray-client.classes.dir}" />
             <fileset dir="${caarray-common.classes.dir}">
-                <include name="**/domain/**" />
-                <include name="**/validation/**" />
+	            <include name="**/domain/**" />
+	            <include name="**/query/**" />
+	            <include name="**/util/**" />
+	            <include name="**/validation/**" />
             </fileset>
         </jar>
     </target>
@@ -1066,15 +1068,15 @@
     <property name="keyfile.file" value="caarray2-key.properties" />
     <!--<property name="envproperties.file" value="${build.env}.properties" />-->
 
-  <target name="continuous-integration-notest" if="build.notest">
-    <antcall target="clean"/>
-    <antcall target="database:reinitialize"/>
+	<target name="continuous-integration-notest" if="build.notest">
+		<antcall target="clean"/>
+		<antcall target="database:reinitialize"/>
     <antcall target="build-noglobus"/>
   <!--<antcall target="build"/>-->
-    <antcall target="check"/>
-  </target>
+		<antcall target="check"/>
+	</target>
 
-  <target name="validate-properties">
+    <target name="validate-properties">
       <echo> lib.dir is ${lib.dir} </echo>
     <echo> properties.dir is ${properties.dir} </echo>
     <echo> keyfile.file is ${keyfile.file} </echo>
@@ -1143,17 +1145,17 @@
     </target>
 
   <target name="remote-jboss:deploy" unless="build.nodeploy">
-    <antcall target="remote-jboss:stop"/>
-    <antcall target="remote-jboss:undeploy-caarray"/>
-    <antcall target="remote-jboss:configure-jboss-ds"/>
-    <antcall target="remote-jboss:deploy-caarray"/>
-    <antcall target="remote-jboss:copy-jboss-config"/>
-    <antcall target="remote-jboss:start"/>
-  </target>
+        <antcall target="remote-jboss:stop" />
+		<antcall target="remote-jboss:undeploy-caarray" />
+        <antcall target="remote-jboss:configure-jboss-ds" />
+        <antcall target="remote-jboss:deploy-caarray" />
+        <antcall target="remote-jboss:copy-jboss-config" />
+        <antcall target="remote-jboss:start" />
+    </target>
 
     <target name="-remote-deploy">
         <antcall target="validate-properties" />
-        <antcall target="continuous-integration" />
+    <antcall target="continuous-integration" />
         <antcall target="continuous-integration-notest" />
         <antcall target="remote-jboss:deploy" />
     </target>
