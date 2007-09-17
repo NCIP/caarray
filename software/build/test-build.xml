@@ -26,7 +26,7 @@
 	  <echoproperties/>
   </target>
 
-  <target name="testSuite" depends="testEnvPropertyFile,testEnvProperty,testPropertiesFileExists,
+  <target name="testSuite" depends="testEnvPropertyFile,testPropertiesFileExists,
   testSshKeyFileExists,testSvnLocalTrunk,testBuildNoTest" />
 
   <target name="testEnvPropertyFile">
