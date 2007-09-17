@@ -1151,32 +1151,20 @@
     <antcall target="remote-jboss:start"/>
   </target>
 
-    <target name="remote-deploy">
+    <target name="-remote-deploy">
         <antcall target="validate-properties" />
-    <antcall target="continuous-integration" />
+        <antcall target="continuous-integration" />
         <antcall target="continuous-integration-notest" />
         <antcall target="remote-jboss:deploy" />
     </target>
 
-    <target name="remote-deploy-dev-create-label">
-        <antcall target="remote-deploy" />
+    <target name="remote-deploy-create-label">
+        <antcall target="-remote-deploy" />
         <antcall target="svn:checkin-caarray-ear" />
     </target>
 
-    <target name="remote-deploy-qa">
-        <antcall target="validate-properties" />
-        <antcall target="database:reinitialize" />
-        <antcall target="remote-jboss:deploy" />
+    <target name="remote-deploy" depends="-remote-deploy">
     </target>
-
-    <target name="remote-deploy-qa-create-label">
-        <antcall target="validate-properties" />
-        <antcall target="database:reinitialize" />
-        <antcall target="remote-jboss:deploy" />
-    <antcall target="svn:checkin-caarray-ear" />
-    </target>
-
-
     <!-- END STELLIGENT ADD -->
 
 </project>
