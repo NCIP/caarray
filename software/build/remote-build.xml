@@ -94,11 +94,12 @@
 		<antcall target="svn:checkout-caarray" />
 		<antcall target="svn:checkout-caarray-label" />
 		<antcall target="prepare-remote-properties" />
+	    <ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml" target="remote-deploy"/>
 	</target>
 
 	<tstamp prefix="caarray" />
 	<target name="remote-deployment-createlabel" if="create.label">
-	   <echo message="Deploying to ${ssh.server.hostname} and adding SVN tag ${svn.tag}..." />
+	    <echo message="Deploying to ${ssh.server.hostname} and adding SVN tag ${svn.tag}..." />
 	    <antcall target="remote-deployment" />
 	    <ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml" target="remote-deploy"/>
 	    <svn username="${svn.user.name}" password="${svn.user.pwd}">
