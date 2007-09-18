@@ -11,7 +11,6 @@
 </taskdef>
 
   <target name="setUp">
-    <!--<property name="build.envpropertyfile" value="SomeValue" />-->
   </target>
 
   <target name="all" depends="display-properties,setUp,testSuite,tearDown" />
@@ -26,8 +25,8 @@
 	  <echoproperties/>
   </target>
 
-  <target name="testSuite" depends="testEnvPropertyFile,testPropertiesFileExists,
-  testSshKeyFileExists,testSvnLocalTrunk,testBuildNoTest" />
+  <target name="testSuite" depends="testEnvPropertyFile,testJavaSecureChannelFileExists, 
+  testPropertiesFileExists,testSshKeyFileExists,testSvnLocalTrunk,testBuildNoTest" />
 
   <target name="testEnvPropertyFile">
 	<au:assertPropertySet name="build.envpropertyfile" message="Target environment file not found. 
@@ -55,6 +54,8 @@
 	<au:assertFileExists file="${ssh.key.file}" message="Unable to find the file: ${ssh.key.file}. Please update the value of the ssh.key.file attribute in the ${build.envpropertyfile} file." />  
   </target>
 
-
+  <target name="testJavaSecureChannelFileExists">
+	<au:assertFileExists file="${jsch.jar.location}" message="Unable to find the file: ${jsch.jar.location}." />  
+  </target>
 
 </project>
