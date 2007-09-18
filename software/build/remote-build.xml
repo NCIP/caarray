@@ -8,6 +8,8 @@
 	<property file="${build.envpropertyfile}" />
 	<property file="local.properties" />
 	<property name="lib.dir" value="../lib" />
+	<property name="svn.tags.folder" value="tags" />
+	<property name="svn.trunk.folder" value="trunk" />
 
 	<!-- PATHS -->
     <path id="project.classpath">
@@ -37,18 +39,6 @@
 		</not>
 	</condition>
 
-	<condition property="build.use.label">
-		<and>
-			<isset property="use.label"/>
-		</and>
-	</condition>
-
-	<condition property="build.create.label">
-		<and>
-			<isset property="create.label"/>
-		</and>
-	</condition>
-
 	<condition property="build.no.label">
 		<and>
 			<not>
@@ -60,15 +50,9 @@
 		</and>
 	</condition>
 
-	<condition property="build.with.use.label">
-		<and>
-			<isset property="build.use.label"/>
-		</and>
-	</condition>
-
     <condition property="label.error">
 		<and>
-			<isset property="label.ear"/>
+			<isset property="svn.tag"/>
 			<not>
 				<isset property="use.label"/>
 			</not>
@@ -85,19 +69,17 @@
 		<delete dir="${svn.local.trunk}" />
 	</target>
 	
-	<target name="svn:checkout-caarray-ear" if="build.with.use.label">
-		<echo message="Checking out caarray.ear with label ${label.ear} from ${svn.caarray.trunk}..." />		
+	<target name="svn:checkout-caarray" unless="use.label">
+		<echo message="Checking out latest caarray version from ${svn.caarray.url}...(no label)" />
 		<svn username="anonymous" password="">
-			  <checkout url="${svn.caarray.trunk}/dist/ear/${label.ear}"
-				  revision="HEAD" destPath="${svn.local.trunk}/caarray.ear/target" />
+			<checkout url="${svn.caarray.url}/${svn.trunk.folder}/software" revision="HEAD" destPath="${svn.local.trunk}" />
 		</svn>
 	</target>
-
-	<target name="svn:checkout-caarray" unless="build.with.use.label">
-		<echo message="Checking out latest caarray version from ${svn.caarray.trunk}...(no label)" />
+	
+	<target name="svn:checkout-caarray-label" if="use.label">
+		<echo message="Checking out caarray from ${svn.caarray.url} using SVN tag ${svn.tag}..." />
 		<svn username="anonymous" password="">
-			  <checkout url="${svn.caarray.trunk}"
-				  revision="HEAD" destPath="${svn.local.trunk}" />
+			<checkout url="${svn.caarray.url}${svn.tags.folder}/${svn.tag}/software" revision="HEAD" destPath="${svn.local.trunk}" />
 		</svn>
 	</target>
 	
@@ -110,29 +92,21 @@
    <target name="remote-deployment">
 		<antcall target="svn:scorch" />
 		<antcall target="svn:checkout-caarray" />
-		<antcall target="svn:checkout-caarray-ear" />
+		<antcall target="svn:checkout-caarray-label" />
 		<antcall target="prepare-remote-properties" />
 	</target>
 
-	<target name="remote-deployment-createlabel" if="build.create.label">
-	  <echo message="Deploying to ${ssh.server.hostname} and CREATING a label..." />
-	  <antcall target="remote-deployment" />
-	  <ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml"
-			target="remote-deploy-create-label"/>		
-	</target>
-
-	<target name="remote-deployment-uselabel" if="build.use.label">
-	  <echo message="Deploying to ${ssh.server.hostname} and USING a label..." />
-	  <antcall target="remote-deployment" />
-	  <ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml"
-			target="remote-deploy"/>		
-	</target>
-
-	<target name="remote-deployment-nolabel" if="build.no.label">
-      <echo message="Deploying to ${build.env} WITHOUT using a label..." />
-	  <antcall target="remote-deployment" />
-	  <ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml"
-			target="remote-deploy"/>		
+	<tstamp prefix="caarray" />
+	<target name="remote-deployment-createlabel" if="create.label">
+	   <echo message="Deploying to ${ssh.server.hostname} and adding SVN tag ${svn.tag}..." />
+	    <antcall target="remote-deployment" />
+	    <ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml" target="remote-deploy"/>
+	    <svn username="${svn.user.name}" password="${svn.user.pwd}">
+            <copy 
+				srcUrl="${svn.caarray.url}/${svn.trunk.folder}"
+				destUrl="${svn.caarray.url}/${svn.tags.folder}/${svn.tag}"
+				message="Tag created by automated build and deployment script - ${caarray.TODAY}" />
+        </svn>
 	</target>
 
 	<target name="help">
@@ -141,12 +115,12 @@
    	  </echo>
 	</target>
 
-	<target name="diagnostics">
+	<target name="diagnostics" depends="fail-if-no-antunit, fail-if-no-jsch">
 	  <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/test-build.xml" />
 	</target>
 
 	<target name="fail-if-no-label" if="label.error">
-      <fail>ERROR: When label.ear property is passed, there must be either a use.label or create.label System property</fail>
+      <fail>ERROR: When svn.tag property is passed, there must be either a use.label or create.label System property</fail>
 	</target>
 
 	 <target name="fail-if-no-jsch" if="no.jsch">
@@ -163,8 +137,6 @@
 		<fail>${antunit.jar} must be in your ${ant.home}/lib directory. This file (${antunit.jar}) has been copied to your ${ant.home}/lib directory. IMPORTANT: You must rerun your build script again.</fail>
 	</target>
 	
-	<target name="all" depends="diagnostics,fail-if-no-antunit,fail-if-no-jsch,
-	    fail-if-no-label,remote-deployment-createlabel,remote-deployment-uselabel,
-		remote-deployment-nolabel" />	   
+	<target name="all" depends="diagnostics, fail-if-no-label, remote-deployment-createlabel, remote-deployment" />	   
 
 </project> 

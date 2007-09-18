@@ -1058,51 +1058,29 @@
     </target>
 
     <!-- BEGIN STELLIGENT ADD -->
-    <property name="jboss.dir" value="${target.dir}/jboss" />
-    <property name="jboss.tmp.dir" value="${target.dir}/jboss-test" />
-    <property name="jboss.refid" value="tmptmct01" />
-    <property name="jboss.installer.url" value="http://downloads.sourceforge.net/jboss/jboss-4.0.4.GA.zip" />
-
-
-    <property name="properties.dir" value="${basedir}/build" />
     <property name="keyfile.file" value="caarray2-key.properties" />
-    <!--<property name="envproperties.file" value="${build.env}.properties" />-->
 
 	<target name="continuous-integration-notest" if="build.notest">
 		<antcall target="clean"/>
 		<antcall target="database:reinitialize"/>
-    <antcall target="build-noglobus"/>
-  <!--<antcall target="build"/>-->
+		<antcall target="build-noglobus"/>
 		<antcall target="check"/>
 	</target>
 
     <target name="validate-properties">
-      <echo> lib.dir is ${lib.dir} </echo>
-    <echo> properties.dir is ${properties.dir} </echo>
-    <echo> keyfile.file is ${keyfile.file} </echo>
-    <echo> build.envpropertyfile is ${build.envpropertyfile} </echo>
+		<echo>lib.dir is ${lib.dir} </echo>
+		<echo>properties.dir is ${build.dir} </echo>
+		<echo>keyfile.file is ${keyfile.file} </echo>
+		<echo>build.envpropertyfile is ${build.envpropertyfile} </echo>
+		
         <taskdef name="ncitask" classname="com.stelligent.nci.anttasks.PropertyChecker">
             <classpath>
                 <pathelement location="${lib.dir}/nci-ant.jar" />
             </classpath>
         </taskdef>
-        <ncitask keyFile="${properties.dir}/${keyfile.file}" compareFile="${build.envpropertyfile}" />
+        <ncitask keyFile="${build.dir}/${keyfile.file}" compareFile="${build.envpropertyfile}" />
     </target>
 
-    <tstamp prefix="caarray" />
-    <target name="svn:checkin-caarray-ear">
-        <echo message="Checking in caarray EAR file to ${svn.caarray.trunk}..." />
-        <taskdef resource="svntask.properties" classpathref="project.classpath" />
-        <mkdir dir="${ear.dist.dir}/${label.ear}" />
-        <copy file="${caarray.ear}" todir="${ear.dist.dir}/${label.ear}" />
-        <copy file="${caarray-client.jar}" todir="${ear.dist.dir}/${label.ear}" />
-        <svn username="${svn.user.name}" password="${svn.user.pwd}">
-            <add dir="${ear.dist.dir}/${label.ear}" />
-            <commit message="${caarray.TODAY} - Automated commit from Ant..." dir="${ear.dist.dir}/${label.ear}" />
-        </svn>
-    </target>
-
-    <!-- Integrate JBoss -->
     <target name="remote-jboss:stop">
         <echo message="Stopping jboss server at ${ssh.server.hostname}..." />
         <sshexec host="${ssh.server.hostname}" trust="true" keyfile="${ssh.key.file}" passphrase="" username="${ssh.server.username}" verbose="true" command="${remote.jboss.home}/bin/stop_jboss" />
@@ -1153,20 +1131,13 @@
         <antcall target="remote-jboss:start" />
     </target>
 
-    <target name="-remote-deploy">
+    <target name="remote-deploy">
         <antcall target="validate-properties" />
-    <antcall target="continuous-integration" />
+		<antcall target="continuous-integration" />
         <antcall target="continuous-integration-notest" />
         <antcall target="remote-jboss:deploy" />
     </target>
 
-    <target name="remote-deploy-create-label">
-        <antcall target="-remote-deploy" />
-        <antcall target="svn:checkin-caarray-ear" />
-    </target>
-
-    <target name="remote-deploy" depends="-remote-deploy">
-    </target>
     <!-- END STELLIGENT ADD -->
 
 </project>
