@@ -18,11 +18,14 @@
         <ant antfile="build/build.xml"
             dir="software"
             target="continuous-integration" />
-        <svn username="${svn.username}" password="${svn.password}">
+        <!--REMOVING LABELING TEMPORARILY
+		
+		<svn username="${svn.username}" password="${svn.password}">
             <copy message="Tagging with ${label}"
                 srcurl="http://gforge.nci.nih.gov/svnroot/caarray2/trunk"
                 desturl="http://gforge.nci.nih.gov/svnroot/caarray2/tags/${label}" />
         </svn>
+		-->
   </target>
 
 </project>
