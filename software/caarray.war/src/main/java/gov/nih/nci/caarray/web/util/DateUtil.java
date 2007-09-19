@@ -1,21 +1,23 @@
 package gov.nih.nci.caarray.web.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import gov.nih.nci.caarray.web.util.Constants;
-
-import org.springframework.context.i18n.LocaleContextHolder;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 
 /**
- * Date Utility Class used to convert Strings to Dates and Timestamps
+ * Date Utility Class used to convert Strings to Dates and Timestamps.
  */
-public class DateUtil {
+public final class DateUtil {
     //~ Static fields/initializers =============================================
 
     private static Log log = LogFactory.getLog(DateUtil.class);
@@ -23,8 +25,12 @@ public class DateUtil {
 
     //~ Methods ================================================================
 
+    private DateUtil() {
+        //private default constructor
+    }
+
     /**
-     * Return default datePattern (MM/dd/yyyy)
+     * Return default datePattern (MM/dd/yyyy).
      * @return a string representing the date pattern on the UI
      */
     public static String getDatePattern() {
@@ -40,6 +46,10 @@ public class DateUtil {
         return defaultDatePattern;
     }
 
+    /**
+     * get date time pattern.
+     * @return String String
+     */
     public static String getDateTimePattern() {
         return DateUtil.getDatePattern() + " HH:mm:ss.S";
     }
@@ -65,13 +75,13 @@ public class DateUtil {
 
     /**
      * This method generates a string representation of a date/time
-     * in the format you specify on input
+     * in the format you specify on input.
      *
      * @param aMask the date pattern the string is in
      * @param strDate a string representation of a date
      * @return a converted Date object
      * @see java.text.SimpleDateFormat
-     * @throws ParseException
+     * @throws ParseException ParseException
      */
     public static Date convertStringToDate(String aMask, String strDate)
       throws ParseException {
@@ -96,7 +106,7 @@ public class DateUtil {
 
     /**
      * This method returns the current date time in the format:
-     * MM/dd/yyyy HH:MM a
+     * MM/dd/yyyy HH:MM a.
      *
      * @param theTime the current time
      * @return the current date/time
@@ -106,10 +116,10 @@ public class DateUtil {
     }
 
     /**
-     * This method returns the current date in the format: MM/dd/yyyy
+     * This method returns the current date in the format: MM/dd/yyyy.
      *
      * @return the current date
-     * @throws ParseException
+     * @throws ParseException ParseException
      */
     public static Calendar getToday() throws ParseException {
         Date today = new Date();
@@ -126,7 +136,7 @@ public class DateUtil {
 
     /**
      * This method generates a string representation of a date's date/time
-     * in the format you specify on input
+     * in the format you specify on input.
      *
      * @param aMask the date pattern the string is in
      * @param aDate a date object
@@ -151,7 +161,7 @@ public class DateUtil {
     /**
      * This method generates a string representation of a date based
      * on the System Property 'dateFormat'
-     * in the format you specify on input
+     * in the format you specify on input.
      *
      * @param aDate A date to convert
      * @return a string representation of the date
@@ -161,12 +171,12 @@ public class DateUtil {
     }
 
     /**
-     * This method converts a String to a date using the datePattern
+     * This method converts a String to a date using the datePattern.
      *
      * @param strDate the date to convert (in format MM/dd/yyyy)
      * @return a date object
      *
-     * @throws ParseException
+     * @throws ParseException ParseException
      */
     public static Date convertStringToDate(String strDate)
       throws ParseException {
@@ -181,10 +191,7 @@ public class DateUtil {
         } catch (ParseException pe) {
             log.error("Could not convert '" + strDate
                       + "' to a date, throwing exception");
-            pe.printStackTrace();
-            throw new ParseException(pe.getMessage(),
-                                     pe.getErrorOffset());
-
+            throw new ParseException(pe.getMessage(), pe.getErrorOffset());
         }
 
         return aDate;

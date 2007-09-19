@@ -94,11 +94,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.struts2.ServletActionContext;
 import org.springframework.mail.SimpleMailMessage;
 
-import org.apache.struts2.ServletActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 /**
@@ -118,44 +116,39 @@ public class BaseAction extends ActionSupport {
     public static final String CANCEL = "cancel";
 
     /**
-     * Transient log to prevent session synchronization issues - children can use instance for logging.
-     */
-    protected transient final Log log = LogFactory.getLog(getClass());
-
-    /**
      * Indicator if the user clicked cancel
      */
-    protected String cancel;
+    private String cancel;
 
     /**
      * Indicator for the page the user came from.
      */
-    protected String from;
+    private String from;
 
     /**
-     * Set to "delete" when a "delete" request parameter is passed in
+     * Set to "delete" when a "delete" request parameter is passed in.
      */
-    protected String delete;
+    private String delete;
 
     /**
      * Set to "save" when a "save" request parameter is passed in
      */
-    protected String save;
+    private String save;
 
     /**
      * MailEngine for sending e-mail
      */
-    protected MailEngine mailEngine;
+    private MailEngine mailEngine;
 
     /**
      * A message pre-populated with default data
      */
-    protected SimpleMailMessage mailMessage;
+    private SimpleMailMessage mailMessage;
 
     /**
      * Velocity template to use for e-mailing
      */
-    protected String templateName;
+    private String templateName;
 
     /**
      * Simple method that returns "cancel" result
@@ -234,7 +227,6 @@ public class BaseAction extends ActionSupport {
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("user", user);
-        // TODO: figure out how to get bundle specified in struts.xml
         // model.put("bundle", getTexts());
         model.put("message", msg);
         model.put("applicationURL", url);
@@ -242,14 +234,26 @@ public class BaseAction extends ActionSupport {
     }
     */
 
+    /**
+     * set mail engine.
+     * @param mailEngine MailEngine
+     */
     public void setMailEngine(MailEngine mailEngine) {
         this.mailEngine = mailEngine;
     }
 
+    /**
+     * set mail message.
+     * @param mailMessage SimpleMailMessage
+     */
     public void setMailMessage(SimpleMailMessage mailMessage) {
         this.mailMessage = mailMessage;
     }
 
+    /**
+     * set template name.
+     * @param templateName String
+     */
     public void setTemplateName(String templateName) {
         this.templateName = templateName;
     }
@@ -262,10 +266,18 @@ public class BaseAction extends ActionSupport {
         this.from = from;
     }
 
+    /**
+     * set delete.
+     * @param delete String
+     */
     public void setDelete(String delete) {
         this.delete = delete;
     }
 
+    /**
+     * set save.
+     * @param save String
+     */
     public void setSave(String save) {
         this.save = save;
     }

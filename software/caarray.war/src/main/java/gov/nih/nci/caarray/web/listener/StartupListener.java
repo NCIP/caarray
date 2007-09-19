@@ -108,6 +108,7 @@ public class StartupListener implements ServletContextListener {
     /**
      * Creates connection to DataService as well as sets configuration in
      * application scope.
+     * @param event ServletContextEvent
      */
     public void contextInitialized(ServletContextEvent event) {
         ArrayDataService arrayDataService =

@@ -107,24 +107,37 @@ import org.springframework.ui.velocity.VelocityEngineUtils;
  */
 public class MailEngine {
 
-    protected static final Log log = LogFactory.getLog(MailEngine.class);
+    /**
+     * mail logger.
+     */
+    private static Log log = LogFactory.getLog(MailEngine.class);
+
     private MailSender mailSender;
     private VelocityEngine velocityEngine;
 
+    /**
+     * set mail sender.
+     * @param mailSender MailSender
+     */
     public void setMailSender(MailSender mailSender) {
         this.mailSender = mailSender;
     }
 
+    /**
+     * set velocity engine.
+     * @param velocityEngine VelocityEngine
+     */
     public void setVelocityEngine(VelocityEngine velocityEngine) {
         this.velocityEngine = velocityEngine;
     }
 
     /**
      * Send a simple message based on a Velocity template.
-     * @param msg
-     * @param templateName
-     * @param model
+     * @param msg SimpleMailMessage
+     * @param templateName String
+     * @param model Map
      */
+    @SuppressWarnings("unchecked")
     public void sendMessage(SimpleMailMessage msg, String templateName, Map model)
     {
         String result = null;
@@ -140,7 +153,7 @@ public class MailEngine {
 
     /**
      * Send a simple message with pre-populated values.
-     * @param msg
+     * @param msg SimpleMailMessage
      */
     public void send(SimpleMailMessage msg) {
         try {
@@ -154,14 +167,13 @@ public class MailEngine {
     /**
      * Convenience method for sending messages with attachments.
      *
-     * @param recipients
-     * @param sender
-     * @param resource
-     * @param bodyText
-     * @param subject
-     * @param attachmentName
-     * @throws MessagingException
-     * @author Ben Gill
+     * @param recipients String[]
+     * @param sender String
+     * @param resource ClassPathResource
+     * @param bodyText String
+     * @param subject String
+     * @param attachmentName String
+     * @throws MessagingException MessagingException
      */
     public void sendMessage(String[] recipients, String sender,
                             ClassPathResource resource, String bodyText,

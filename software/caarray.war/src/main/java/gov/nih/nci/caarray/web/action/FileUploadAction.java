@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.web.action;
 
+import gov.nih.nci.caarray.web.exception.CaArrayException;
 import gov.nih.nci.caarray.web.util.Constants;
 
 import java.io.File;
@@ -104,21 +105,26 @@ public class FileUploadAction extends BaseAction implements ValidationAware {
     private String fileContentType;
     private String fileFileName;
     private String name;
+    static final int FILE_LENGTH = 2097152;
+    static final int BYTE_LENGTH = 8192;
 
-    public String execute() throws Exception {
-        if (this.cancel != null) {
-            return "cancel";
-        }
+    /**
+     * default execute method.
+     * @return String
+     * @throws CaArrayException CaArrayException
+     */
+    public String execute() throws CaArrayException {
 
-        if (file == null || file.length() > 2097152) {
+
+        if (file == null || file.length() > FILE_LENGTH) {
             addActionError(getText("maxLengthExceeded"));
             return INPUT;
         }
 
         // the directory to upload to
         String uploadDir =
-            ServletActionContext.getServletContext().getRealPath("/resources") +
-            "/" + getRequest().getRemoteUser() + "/";
+            ServletActionContext.getServletContext().getRealPath("/resources")
+            + "/" + getRequest().getRemoteUser() + "/";
 
         // write the file to the file specified
         File dirPath = new File(uploadDir);
@@ -128,19 +134,24 @@ public class FileUploadAction extends BaseAction implements ValidationAware {
         }
 
         //retrieve the file data
-        InputStream stream = new FileInputStream(file);
+        InputStream stream;
+        try {
+            stream = new FileInputStream(file);
 
-        //write the file to the file specified
-        OutputStream bos = new FileOutputStream(uploadDir + fileFileName);
-        int bytesRead = 0;
-        byte[] buffer = new byte[8192];
+            //write the file to the file specified
+            OutputStream bos = new FileOutputStream(uploadDir + fileFileName);
+            int bytesRead = 0;
+            byte[] buffer = new byte[BYTE_LENGTH];
 
-        while ((bytesRead = stream.read(buffer, 0, 8192)) != -1) {
-            bos.write(buffer, 0, bytesRead);
+            while ((bytesRead = stream.read(buffer, 0, BYTE_LENGTH)) != -1) {
+                bos.write(buffer, 0, bytesRead);
+            }
+
+            bos.close();
+            stream.close();
+        } catch (Exception e) {
+           throw new CaArrayException(e);
         }
-
-        bos.close();
-        stream.close();
 
         // place the data into the request for retrieval on next page
         getRequest().setAttribute("location", dirPath.getAbsolutePath()
@@ -155,38 +166,74 @@ public class FileUploadAction extends BaseAction implements ValidationAware {
         return SUCCESS;
     }
 
+    /**
+     * get start string.
+     * @return String
+     */
     public String start() {
         return INPUT;
     }
 
+    /**
+     * set file.
+     * @param file File
+     */
     public void setFile(File file) {
         this.file = file;
     }
 
+    /**
+     * set file content type.
+     * @param fileContentType String
+     */
     public void setFileContentType(String fileContentType) {
         this.fileContentType = fileContentType;
     }
 
+    /**
+     *  set files file name.
+     * @param fileFileName String
+     */
     public void setFileFileName(String fileFileName) {
         this.fileFileName = fileFileName;
     }
 
+    /**
+     * set name.
+     * @param name String
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * get name.
+     * @return name String
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * get file.
+     * @return file File
+     */
     public File getFile() {
         return file;
     }
 
+    /**
+     * get file content type.
+     * @return String
+     */
     public String getFileContentType() {
         return fileContentType;
     }
 
+    /**
+     * get files file name.
+     * @return String
+     */
     public String getFileFileName() {
         return fileFileName;
     }

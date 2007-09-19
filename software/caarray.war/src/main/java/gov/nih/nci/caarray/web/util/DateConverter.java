@@ -17,6 +17,13 @@ import org.apache.commons.lang.StringUtils;
  */
 public class DateConverter implements Converter {
 
+    /**
+     * convert date to string.
+     * @param type Class
+     * @param value Object
+     * @return Object object
+     */
+    @SuppressWarnings("unchecked")
     public Object convert(Class type, Object value) {
         if (value == null) {
             return null;
@@ -28,11 +35,19 @@ public class DateConverter implements Converter {
             return convertToString(type, value);
         }
 
-        throw new ConversionException("Could not convert " +
-                                      value.getClass().getName() + " to " +
-                                      type.getName());
+        throw new ConversionException("Could not convert "
+                + value.getClass().getName() + " to "
+                + type.getName());
     }
 
+    /**
+     * convert to date
+     * @param type Class
+     * @param value Object
+     * @param pattern String
+     * @return Object Object
+     */
+    @SuppressWarnings("unchecked")
     protected Object convertToDate(Class type, Object value, String pattern) {
         DateFormat df = new SimpleDateFormat(pattern);
         if (value instanceof String) {
@@ -52,11 +67,18 @@ public class DateConverter implements Converter {
             }
         }
 
-        throw new ConversionException("Could not convert " +
-                                      value.getClass().getName() + " to " +
-                                      type.getName());
+        throw new ConversionException("Could not convert "
+                + value.getClass().getName() + " to "
+                + type.getName());
     }
 
+    /**
+     * convert to string.
+     * @param type Class
+     * @param value Object
+     * @return Object Object
+     */
+    @SuppressWarnings("unchecked")
     protected Object convertToString(Class type, Object value) {
 
         if (value instanceof Date) {
@@ -68,7 +90,6 @@ public class DateConverter implements Converter {
             try {
                 return df.format(value);
             } catch (Exception e) {
-                e.printStackTrace();
                 throw new ConversionException("Error converting Date to String");
             }
         } else {

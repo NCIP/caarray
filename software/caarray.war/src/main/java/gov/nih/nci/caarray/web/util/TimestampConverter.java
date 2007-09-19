@@ -13,8 +13,19 @@ import org.apache.commons.lang.StringUtils;
  * properties.
  */
 public class TimestampConverter extends DateConverter {
+
+    /**
+     * time stamp format.
+     */
     public static final String TS_FORMAT = DateUtil.getDatePattern() + " HH:mm:ss.S";
 
+    /**
+     * convert to date.
+     * @param type Class
+     * @param value Object
+     * @return date Object
+     */
+    @SuppressWarnings("unchecked")
     protected Object convertToDate(Class type, Object value) {
         DateFormat df = new SimpleDateFormat(TS_FORMAT);
         if (value instanceof String) {
@@ -33,6 +44,13 @@ public class TimestampConverter extends DateConverter {
                 + value.getClass().getName() + " to " + type.getName());
     }
 
+    /**
+     * convert to string.
+     * @param type Class
+     * @param value Object
+     * @return date Object
+     */
+    @SuppressWarnings("unchecked")
     protected Object convertToString(Class type, Object value) {
         DateFormat df = new SimpleDateFormat(TS_FORMAT);
         if (value instanceof Date) {
