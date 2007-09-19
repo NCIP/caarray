@@ -21,6 +21,7 @@
   <target name="defineExtendedClasspaths">
     <path id="base.extended.classpath">
         <pathelement location="../caarray-client.jar/target/caarray-client.jar"/>
+        <pathelement location="../lib/cacore32-client.jar"/>
 <!--      <pathelement location="C:/5am/cacoresdk_fromCVS/eclipse-out"/> -->
 <!--        <pathelement location="../lib/commons-lang-2.1.jar"/> -->
     </path>

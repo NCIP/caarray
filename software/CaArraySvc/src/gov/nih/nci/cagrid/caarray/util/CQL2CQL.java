@@ -119,10 +119,13 @@ public final class CQL2CQL {
 
     public static gov.nih.nci.system.query.cql.CQLQuery convert(final CQLQuery query) {
         CACHE.set(new HashMap<java.lang.Object, java.lang.Object>());
-        gov.nih.nci.system.query.cql.CQLQuery result = new gov.nih.nci.system.query.cql.CQLQuery();
-        result.setTarget(convertObject(query.getTarget()));
-        CACHE.set(null);
-        return result;
+        try {
+            gov.nih.nci.system.query.cql.CQLQuery result = new gov.nih.nci.system.query.cql.CQLQuery();
+            result.setTarget(convertObject(query.getTarget()));
+            return result;
+        } finally {
+            CACHE.set(null);
+        }
     }
 
     private static CQLObject convertObject(final Object from) {
