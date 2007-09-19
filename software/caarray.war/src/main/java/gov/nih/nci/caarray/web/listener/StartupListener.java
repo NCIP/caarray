@@ -110,6 +110,7 @@ public class StartupListener implements ServletContextListener {
      * application scope.
      * @param event ServletContextEvent
      */
+    @SuppressWarnings("unchecked")
     public void contextInitialized(ServletContextEvent event) {
         ArrayDataService arrayDataService =
             (ArrayDataService) ServiceLocator.INSTANCE.lookup(ArrayDataService.JNDI_NAME);

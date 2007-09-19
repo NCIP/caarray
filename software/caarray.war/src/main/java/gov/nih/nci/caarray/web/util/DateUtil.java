@@ -20,7 +20,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 public final class DateUtil {
     //~ Static fields/initializers =============================================
 
-    private static Log log = LogFactory.getLog(DateUtil.class);
+    private static final Log LOG = LogFactory.getLog(DateUtil.class);
     private static String timePattern = "HH:mm";
 
     //~ Methods ================================================================
@@ -62,11 +62,12 @@ public final class DateUtil {
      * @return formatted string for the ui
      */
     public static String getDate(Date aDate) {
+        Locale locale = Locale.US;
         SimpleDateFormat df;
         String returnValue = "";
 
         if (aDate != null) {
-            df = new SimpleDateFormat(getDatePattern());
+            df = new SimpleDateFormat(getDatePattern(), locale);
             returnValue = df.format(aDate);
         }
 
@@ -85,22 +86,17 @@ public final class DateUtil {
      */
     public static Date convertStringToDate(String aMask, String strDate)
       throws ParseException {
+        Locale locale = Locale.US;
         SimpleDateFormat df;
         Date date;
-        df = new SimpleDateFormat(aMask);
+        df = new SimpleDateFormat(aMask, locale);
 
-        if (log.isDebugEnabled()) {
-            log.debug("converting '" + strDate + "' to date with mask '"
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("converting '" + strDate + "' to date with mask '"
                       + aMask + "'");
         }
 
-        try {
-            date = df.parse(strDate);
-        } catch (ParseException pe) {
-            //log.error("ParseException: " + pe);
-            throw new ParseException(pe.getMessage(), pe.getErrorOffset());
-        }
-
+        date = df.parse(strDate);
         return (date);
     }
 
@@ -123,7 +119,8 @@ public final class DateUtil {
      */
     public static Calendar getToday() throws ParseException {
         Date today = new Date();
-        SimpleDateFormat df = new SimpleDateFormat(getDatePattern());
+        Locale locale = Locale.US;
+        SimpleDateFormat df = new SimpleDateFormat(getDatePattern(), locale);
 
         // This seems like quite a hack (date -> string -> date),
         // but it works ;-)
@@ -146,15 +143,15 @@ public final class DateUtil {
      */
     public static String getDateTime(String aMask, Date aDate) {
         SimpleDateFormat df = null;
+        Locale locale = Locale.US;
         String returnValue = "";
 
         if (aDate == null) {
-            log.error("aDate is null!");
+            LOG.error("aDate is null!");
         } else {
-            df = new SimpleDateFormat(aMask);
+            df = new SimpleDateFormat(aMask, locale);
             returnValue = df.format(aDate);
         }
-
         return (returnValue);
     }
 
@@ -181,19 +178,7 @@ public final class DateUtil {
     public static Date convertStringToDate(String strDate)
       throws ParseException {
         Date aDate = null;
-
-        try {
-            if (log.isDebugEnabled()) {
-                log.debug("converting date with pattern: " + getDatePattern());
-            }
-
-            aDate = convertStringToDate(getDatePattern(), strDate);
-        } catch (ParseException pe) {
-            log.error("Could not convert '" + strDate
-                      + "' to a date, throwing exception");
-            throw new ParseException(pe.getMessage(), pe.getErrorOffset());
-        }
-
+        aDate = convertStringToDate(getDatePattern(), strDate);
         return aDate;
     }
 }

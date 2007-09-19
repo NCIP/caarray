@@ -3,6 +3,7 @@ package gov.nih.nci.caarray.web.util;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import org.apache.commons.beanutils.ConversionException;
 import org.apache.commons.lang.StringUtils;
@@ -27,7 +28,8 @@ public class TimestampConverter extends DateConverter {
      */
     @SuppressWarnings("unchecked")
     protected Object convertToDate(Class type, Object value) {
-        DateFormat df = new SimpleDateFormat(TS_FORMAT);
+        Locale locale = Locale.US;
+        DateFormat df = new SimpleDateFormat(TS_FORMAT, locale);
         if (value instanceof String) {
             try {
                 if (StringUtils.isEmpty(value.toString())) {
@@ -36,7 +38,7 @@ public class TimestampConverter extends DateConverter {
 
                 return df.parse((String) value);
             } catch (Exception pe) {
-                throw new ConversionException("Error converting String to Timestamp");
+                throw new ConversionException("Error converting String to Timestamp" + pe);
             }
         }
 
@@ -52,12 +54,13 @@ public class TimestampConverter extends DateConverter {
      */
     @SuppressWarnings("unchecked")
     protected Object convertToString(Class type, Object value) {
-        DateFormat df = new SimpleDateFormat(TS_FORMAT);
+        Locale locale = Locale.US;
+        DateFormat df = new SimpleDateFormat(TS_FORMAT, locale);
         if (value instanceof Date) {
             try {
                 return df.format(value);
             } catch (Exception e) {
-                throw new ConversionException("Error converting Timestamp to String");
+                throw new ConversionException("Error converting Timestamp to String" + e);
             }
         }
 

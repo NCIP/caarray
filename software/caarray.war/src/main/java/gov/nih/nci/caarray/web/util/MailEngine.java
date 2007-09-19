@@ -110,7 +110,7 @@ public class MailEngine {
     /**
      * mail logger.
      */
-    private static Log log = LogFactory.getLog(MailEngine.class);
+    private static final Log LOG = LogFactory.getLog(MailEngine.class);
 
     private MailSender mailSender;
     private VelocityEngine velocityEngine;
@@ -144,7 +144,7 @@ public class MailEngine {
         try {
             result = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templateName, model);
         } catch (VelocityException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         }
 
         msg.setText(result);
@@ -158,9 +158,9 @@ public class MailEngine {
     public void send(SimpleMailMessage msg) {
         try {
             mailSender.send(msg);
-        } catch (MailException ex) {
+        } catch (MailException e) {
             //log it and go on
-            log.error(ex.getMessage());
+            LOG.error(e.getMessage(), e);
         }
     }
 
@@ -175,6 +175,7 @@ public class MailEngine {
      * @param attachmentName String
      * @throws MessagingException MessagingException
      */
+    @SuppressWarnings("PMD")
     public void sendMessage(String[] recipients, String sender,
                             ClassPathResource resource, String bodyText,
                             String subject, String attachmentName)

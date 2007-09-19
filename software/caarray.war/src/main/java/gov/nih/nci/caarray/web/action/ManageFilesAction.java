@@ -2,9 +2,6 @@ package gov.nih.nci.caarray.web.action;
 
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.web.delegate.DelegateFactory;
-import gov.nih.nci.caarray.web.delegate.ManageFilesDelegate;
-import gov.nih.nci.caarray.web.exception.CaArrayException;
 import gov.nih.nci.caarray.web.helper.FileEntry;
 import gov.nih.nci.caarray.web.util.LabelValue;
 
@@ -25,7 +22,6 @@ public class ManageFilesAction extends BaseAction {
      */
     private static final long serialVersionUID = 1L;
     private Project project;
-    private CaArrayFile caArrayFile;
     private List<FileEntry> fileEntries;
 
     /**
@@ -46,6 +42,7 @@ public class ManageFilesAction extends BaseAction {
      * @return path String
      * @throws Exception Exception
      */
+    @SuppressWarnings("PMD")
     public String manageFiles() throws Exception {
 
         loadFileEntries();
@@ -62,9 +59,5 @@ public class ManageFilesAction extends BaseAction {
         for (CaArrayFile nextCaArrayFile : project.getFilesList()) {
             fileEntries.add(new FileEntry(nextCaArrayFile));
         }
-    }
-
-    private ManageFilesDelegate getDelegate() throws CaArrayException {
-        return (ManageFilesDelegate) DelegateFactory.getDelegate(DelegateFactory.MANAGE_FILES);
     }
 }

@@ -28,6 +28,7 @@ public class ProjectAction extends BaseAction {
      * @return path String
      * @throws Exception Exception
      */
+    @SuppressWarnings("PMD")
     public String list() throws Exception {
         HttpServletRequest request = getRequest();
         request.setAttribute("contentLabel", "Experiment Workspace");
@@ -46,6 +47,7 @@ public class ProjectAction extends BaseAction {
      * @return path String
      * @throws Exception Exception
      */
+    @SuppressWarnings("PMD")
     public String create() throws Exception {
         HttpServletRequest request = getRequest();
         request.setAttribute("contentLabel", "Propose Experiment");
@@ -61,6 +63,7 @@ public class ProjectAction extends BaseAction {
      * @return path String
      * @throws Exception Exception
      */
+    @SuppressWarnings("PMD")
     public String save() throws Exception {
         proposal = Proposal.createNew();
         proposal.getProject().getExperiment().setTitle(getProjectName());
@@ -77,6 +80,7 @@ public class ProjectAction extends BaseAction {
      * @return path String
      * @throws Exception Exception
      */
+    @SuppressWarnings("PMD")
     public String edit() throws Exception {
         HttpServletRequest request = getRequest();
         request.setAttribute("projectName", getProjectName());

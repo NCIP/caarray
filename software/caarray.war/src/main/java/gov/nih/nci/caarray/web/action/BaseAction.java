@@ -108,15 +108,21 @@ import com.opensymphony.xwork2.ActionSupport;
  * be a base class for all Action classes.
  *
  */
+@SuppressWarnings("PMD")
 public class BaseAction extends ActionSupport {
 
     /**
-     * Constant for cancel result String
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Constant for cancel result String.
      */
     public static final String CANCEL = "cancel";
 
     /**
-     * Indicator if the user clicked cancel
+     * Indicator if the user clicked cancel.
      */
     private String cancel;
 
@@ -131,27 +137,27 @@ public class BaseAction extends ActionSupport {
     private String delete;
 
     /**
-     * Set to "save" when a "save" request parameter is passed in
+     * Set to "save" when a "save" request parameter is passed in.
      */
     private String save;
 
     /**
-     * MailEngine for sending e-mail
+     * MailEngine for sending e-mail.
      */
     private MailEngine mailEngine;
 
     /**
-     * A message pre-populated with default data
+     * A message pre-populated with default data.
      */
     private SimpleMailMessage mailMessage;
 
     /**
-     * Velocity template to use for e-mailing
+     * Velocity template to use for e-mailing.
      */
     private String templateName;
 
     /**
-     * Simple method that returns "cancel" result
+     * Simple method that returns "cancel" result.
      * @return "cancel"
      */
     public String cancel() {
@@ -159,8 +165,8 @@ public class BaseAction extends ActionSupport {
     }
 
     /**
-     * Save the message in the session, appending if messages already exist
-     * @param msg the message to put in the session
+     * Save the message in the session, appending if messages already exist.
+     * @param msg the message to put in the session.
      */
     @SuppressWarnings("unchecked")
     protected void saveMessage(String msg) {
@@ -178,6 +184,7 @@ public class BaseAction extends ActionSupport {
      *
      * @return the user's populated form from the session
      */
+    @SuppressWarnings("unchecked")
     protected Map getConfiguration() {
         Map config = (HashMap) getSession().getServletContext().getAttribute(Constants.CONFIG);
         // so unit tests don't puke when nothing's been set
@@ -188,7 +195,7 @@ public class BaseAction extends ActionSupport {
     }
 
     /**
-     * Convenience method to get the request
+     * Convenience method to get the request.
      * @return current request
      */
     protected HttpServletRequest getRequest() {
@@ -196,7 +203,7 @@ public class BaseAction extends ActionSupport {
     }
 
     /**
-     * Convenience method to get the response
+     * Convenience method to get the response.
      * @return current response
      */
     protected HttpServletResponse getResponse() {

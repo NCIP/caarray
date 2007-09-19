@@ -110,6 +110,7 @@ public final class DelegateFactory {
      * The Hashmap that holds all the singleton instances of the delegate
      * objects.
      */
+    @SuppressWarnings("PMD")
     private static HashMap<String, BaseDelegate> delegates;
 
     static

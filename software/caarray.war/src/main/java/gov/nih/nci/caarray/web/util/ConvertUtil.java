@@ -19,7 +19,7 @@ import java.util.ResourceBundle;
 public final class ConvertUtil {
     //~ Static fields/initializers =============================================
 
-    private static Log log = LogFactory.getLog(ConvertUtil.class);
+    private static final Log LOG = LogFactory.getLog(ConvertUtil.class);
 
     //~ Methods ================================================================
 
@@ -86,7 +86,7 @@ public final class ConvertUtil {
             Map<String, String> map = convertBundleToMap(rb);
             BeanUtils.copyProperties(obj, map);
         } catch (Exception e) {
-            log.error("Exception occurred populating object: " + e.getMessage());
+            LOG.error("Exception occurred populating object: " + e.getMessage());
         }
 
         return obj;

@@ -88,6 +88,7 @@ package gov.nih.nci.caarray.web.delegate;
  * Package is used to decouple framework from business tier.
  *
  */
+@SuppressWarnings("PMD")
 public abstract class BaseDelegate {
 
 }

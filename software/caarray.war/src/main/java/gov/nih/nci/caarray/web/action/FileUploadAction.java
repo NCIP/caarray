@@ -82,11 +82,11 @@
  */
 package gov.nih.nci.caarray.web.action;
 
-import gov.nih.nci.caarray.web.exception.CaArrayException;
 import gov.nih.nci.caarray.web.util.Constants;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -101,6 +101,7 @@ import com.opensymphony.xwork2.ValidationAware;
  */
 public class FileUploadAction extends BaseAction implements ValidationAware {
 
+    private static final long serialVersionUID = 1L;
     private File file;
     private String fileContentType;
     private String fileFileName;
@@ -111,9 +112,10 @@ public class FileUploadAction extends BaseAction implements ValidationAware {
     /**
      * default execute method.
      * @return String
-     * @throws CaArrayException CaArrayException
+     * @throws Exception Exception
      */
-    public String execute() throws CaArrayException {
+    @SuppressWarnings("PMD")
+    public String execute() throws Exception {
 
 
         if (file == null || file.length() > FILE_LENGTH) {
@@ -149,8 +151,8 @@ public class FileUploadAction extends BaseAction implements ValidationAware {
 
             bos.close();
             stream.close();
-        } catch (Exception e) {
-           throw new CaArrayException(e);
+        } catch (FileNotFoundException e) {
+           throw new Exception(e);
         }
 
         // place the data into the request for retrieval on next page

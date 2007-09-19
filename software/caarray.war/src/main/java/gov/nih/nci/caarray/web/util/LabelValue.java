@@ -127,38 +127,8 @@ public class LabelValue implements Comparable, Serializable {
         sb.append(this.label);
         sb.append(", ");
         sb.append(this.value);
-        sb.append("]");
+        sb.append("]end");
         return (sb.toString());
-    }
-
-    /**
-     * LabelValueBeans are equal if their values are both null or equal.
-     * @param obj Object
-     * @return boolean boolean
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-
-        if (!(obj instanceof LabelValue)) {
-            return false;
-        }
-
-        LabelValue bean = (LabelValue) obj;
-        int nil = (this.getValue() == null) ? 1 : 0;
-        nil += (bean.getValue() == null) ? 1 : 0;
-
-        if (nil == 2) {
-            return true;
-        } else if (nil == 1) {
-            return false;
-        } else {
-            return this.getValue().equals(bean.getValue());
-        }
-
     }
 
     /**

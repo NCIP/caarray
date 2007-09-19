@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import java.util.Date;
+import java.util.Locale;
 import java.sql.Timestamp;
 
 import org.apache.commons.beanutils.ConversionException;
@@ -41,7 +42,7 @@ public class DateConverter implements Converter {
     }
 
     /**
-     * convert to date
+     * convert to date.
      * @param type Class
      * @param value Object
      * @param pattern String
@@ -49,7 +50,8 @@ public class DateConverter implements Converter {
      */
     @SuppressWarnings("unchecked")
     protected Object convertToDate(Class type, Object value, String pattern) {
-        DateFormat df = new SimpleDateFormat(pattern);
+        Locale locale = Locale.US;
+        DateFormat df = new SimpleDateFormat(pattern, locale);
         if (value instanceof String) {
             try {
                 if (StringUtils.isEmpty(value.toString())) {
@@ -62,8 +64,7 @@ public class DateConverter implements Converter {
                 }
                 return date;
             } catch (Exception pe) {
-                pe.printStackTrace();
-                throw new ConversionException("Error converting String to Date");
+                throw new ConversionException("Error converting String to Date" + pe);
             }
         }
 
@@ -82,15 +83,16 @@ public class DateConverter implements Converter {
     protected Object convertToString(Class type, Object value) {
 
         if (value instanceof Date) {
-            DateFormat df = new SimpleDateFormat(DateUtil.getDatePattern());
+            Locale locale = Locale.US;
+            DateFormat df = new SimpleDateFormat(DateUtil.getDatePattern(), locale);
             if (value instanceof Timestamp) {
-                df = new SimpleDateFormat(DateUtil.getDateTimePattern());
+                df = new SimpleDateFormat(DateUtil.getDateTimePattern(), locale);
             }
 
             try {
                 return df.format(value);
             } catch (Exception e) {
-                throw new ConversionException("Error converting Date to String");
+                throw new ConversionException("Error converting Date to String" + e);
             }
         } else {
             return value.toString();

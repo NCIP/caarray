@@ -11,7 +11,7 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
  */
 public class ManageFilesDelegate extends BaseDelegate {
 
-    private ServiceLocator locator = ServiceLocator.INSTANCE;
+    private final ServiceLocator locator = ServiceLocator.INSTANCE;
     private ProjectManagementService projectManagementService;
     private FileManagementService fileManagementService;
 
