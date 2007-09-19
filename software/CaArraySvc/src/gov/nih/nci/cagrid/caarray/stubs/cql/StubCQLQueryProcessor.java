@@ -19,16 +19,23 @@ import java.util.Properties;
  * @deprecated The stub CQL query processor is a placeholder to provide a starting point for
  * implementation of CQL against a backend data source.
  */
+@Deprecated
 public class StubCQLQueryProcessor extends CQLQueryProcessor {
 
-	public CQLQueryResults processQuery(CQLQuery cqlQuery) throws MalformedQueryException, QueryProcessingException {
+    @Override
+    public CQLQueryResults processQuery(final CQLQuery cqlQuery) throws MalformedQueryException, QueryProcessingException {
+        // convert to my CQLQuery class
+
+
+//        CaArraySearchSeruery, false, true);
         CQLQueryResults queryResults = new CQLQueryResults();
         return queryResults;
-	}
+    }
 
 
-	public Properties getRequiredParameters() {
-		// TODO Auto-generated method stub
-		return new Properties();
-	}
+    @Override
+    public Properties getRequiredParameters() {
+        // TODO Auto-generated method stub
+        return new Properties();
+    }
 }

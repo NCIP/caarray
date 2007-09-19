@@ -230,7 +230,9 @@
   <ns21:Extension name="data" version="1.1" xsi:type="ns21:ExtensionType">
    <ns21:ExtensionData>
     <ns22:Data xsi:type="ns22:Data" xmlns:ns22="http://CQL.caBIG/1/gov.nih.nci.cagrid.data.extension">
-         <ns22:CadsrInformation noDomainModel="false" serviceUrl="http://cagrid05.bmi.ohio-state.edu:8080/wsrf/services/cagrid/CaDSRService" useSuppliedModel="false" xsi:type="ns22:CadsrInformation"/>
+         <ns22:AdditionalLibraries xsi:type="ns22:AdditionalLibraries"/>
+
+         <ns22:CadsrInformation noDomainModel="true" serviceUrl="http://cagrid05.bmi.ohio-state.edu:8080/wsrf/services/cagrid/CaDSRService" useSuppliedModel="false" xsi:type="ns22:CadsrInformation"/>
 
          <ns22:ServiceFeatures useBdt="false" useGridIdeitifiers="false" useSdkDataSource="false" useWsEnumeration="false" xsi:type="ns22:ServiceFeatures"/>
 

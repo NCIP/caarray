@@ -89,12 +89,12 @@ import gov.nih.nci.caarray.domain.protocol.Parameter;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.query.CQLAssociation;
-import gov.nih.nci.caarray.query.CQLAttribute;
-import gov.nih.nci.caarray.query.CQLObject;
-import gov.nih.nci.caarray.query.CQLPredicate;
-import gov.nih.nci.caarray.query.CQLQuery;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.system.query.cql.CQLAssociation;
+import gov.nih.nci.system.query.cql.CQLAttribute;
+import gov.nih.nci.system.query.cql.CQLObject;
+import gov.nih.nci.system.query.cql.CQLPredicate;
+import gov.nih.nci.system.query.cql.CQLQuery;
 
 import java.util.List;
 

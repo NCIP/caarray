@@ -13,20 +13,6 @@ import java.rmi.RemoteException;
 public interface CaArraySvcI {
 
   /**
-   * Returns the data associated with the given derived array data
-   *
-   * @param derivedArrayData
-   */
-  public gov.nih.nci.caarray.domain.data.DataSet getDataSetForDerived(gov.nih.nci.caarray.domain.data.DerivedArrayData derivedArrayData) throws RemoteException ;
-
-  /**
-   * Returns the data associated with the given raw array data
-   *
-   * @param rawArrayData
-   */
-  public gov.nih.nci.caarray.domain.data.DataSet getDataSetForRaw(gov.nih.nci.caarray.domain.data.RawArrayData rawArrayData) throws RemoteException ;
-
-  /**
    * The standard caGrid Data Service query method.
    *
    * @param cqlQuery
@@ -59,6 +45,20 @@ public interface CaArraySvcI {
    * @param caArrayFile
    */
   public byte[] readFile(gov.nih.nci.caarray.domain.file.CaArrayFile caArrayFile) throws RemoteException ;
+
+  /**
+   * Returns the data associated with the given derived array data
+   *
+   * @param derivedArrayData
+   */
+  public gov.nih.nci.caarray.domain.data.DataSet getDataSetForDerived(gov.nih.nci.caarray.domain.data.DerivedArrayData derivedArrayData) throws RemoteException ;
+
+  /**
+   * Returns the data associated with the given raw array data
+   *
+   * @param rawArrayData
+   */
+  public gov.nih.nci.caarray.domain.data.DataSet getDataSetForRaw(gov.nih.nci.caarray.domain.data.RawArrayData rawArrayData) throws RemoteException ;
 
 }
 

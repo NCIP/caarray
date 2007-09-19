@@ -86,7 +86,7 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.query.CQLQuery;
+import gov.nih.nci.system.query.cql.CQLQuery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,7 +111,7 @@ public class CaArraySearchServiceBean implements CaArraySearchService {
     /**
      * {@inheritDoc}
      */
-    public <T extends AbstractCaArrayObject> List<T> search(T entityExample) {
+    public <T extends AbstractCaArrayObject> List<T> search(final T entityExample) {
         List<T> retrievedList = new ArrayList<T>();
         if (entityExample == null) {
             LOG.error("Search was called with null example entity.");
@@ -136,7 +136,7 @@ public class CaArraySearchServiceBean implements CaArraySearchService {
      *
      * @return the matching entities.
      */
-    public List<AbstractCaArrayObject> search(CQLQuery cqlQuery) {
+    public List<AbstractCaArrayObject> search(final CQLQuery cqlQuery) {
         List<AbstractCaArrayObject> retrievedList = new ArrayList<AbstractCaArrayObject>();
         if (cqlQuery == null) {
             LOG.error("Search was called with null CQL query.");

@@ -82,12 +82,12 @@
  */
 package gov.nih.nci.caarray.dao.stub;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.query.CQLQuery;
+import gov.nih.nci.system.query.cql.CQLQuery;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -97,14 +97,14 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
     /**
      * {@inheritDoc}
      */
-    public List<AbstractCaArrayObject> query(AbstractCaArrayObject entityToMatch) {
+    public List<AbstractCaArrayObject> query(final AbstractCaArrayObject entityToMatch) {
         return new ArrayList<AbstractCaArrayObject>();
     }
 
     /**
      * {@inheritDoc}
      */
-    public List<AbstractCaArrayObject> query(CQLQuery cqlQuery) {
+    public List<AbstractCaArrayObject> query(final CQLQuery cqlQuery) {
         return new ArrayList<AbstractCaArrayObject>();
     }
 

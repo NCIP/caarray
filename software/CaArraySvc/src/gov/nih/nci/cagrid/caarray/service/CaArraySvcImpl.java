@@ -35,7 +35,6 @@ public class CaArraySvcImpl extends CaArraySvcImplBase {
     final ArrayDesignDetailsService arrayDesignDetailsService;
     final DataRetrievalService dataRetrievalService;
     final FileRetrievalService fileRetrievalService;
-    //final CaArraySearchService searchService;
 
     /**
      * Constructs the service implementation.
@@ -57,7 +56,6 @@ public class CaArraySvcImpl extends CaArraySvcImplBase {
             arrayDesignDetailsService = (ArrayDesignDetailsService) context.lookup(ArrayDesignDetailsService.JNDI_NAME);
             dataRetrievalService = (DataRetrievalService) context.lookup(DataRetrievalService.JNDI_NAME);
             fileRetrievalService = (FileRetrievalService) context.lookup(FileRetrievalService.JNDI_NAME);
-            //searchService = (CaArraySearchService) context.lookup(CaArraySearchService.JNDI_NAME);
         } catch (final Exception e) {
             throw new RemoteException("Problems establishing jndi connection to server", e);
         }
@@ -69,7 +67,7 @@ public class CaArraySvcImpl extends CaArraySvcImplBase {
      * @param string input string
      * @return the input string
      */
-  public java.lang.String echo(final java.lang.String string) {
+  public java.lang.String echo(final java.lang.String string) throws RemoteException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("echo(" + string + ")");
         }
@@ -99,7 +97,7 @@ public class CaArraySvcImpl extends CaArraySvcImplBase {
      * @throws RemoteException on IOException or other remote failure
      * @see FileRetrievalService
      */
-    public byte[] readFile(final gov.nih.nci.caarray.domain.file.CaArrayFile caArrayFile) throws RemoteException {
+  public byte[] readFile(final gov.nih.nci.caarray.domain.file.CaArrayFile caArrayFile) throws RemoteException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("readFile(" + caArrayFile + ")");
         }

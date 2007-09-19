@@ -83,11 +83,11 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.query.CQL2HQL;
-import gov.nih.nci.caarray.query.CQLQuery;
-import gov.nih.nci.caarray.query.HibernateQueryWrapper;
-import gov.nih.nci.caarray.query.QueryException;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.common.util.CQL2HQL;
+import gov.nih.nci.common.util.HibernateQueryWrapper;
+import gov.nih.nci.system.dao.QueryException;
+import gov.nih.nci.system.query.cql.CQLQuery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,7 +111,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
-    public <T extends AbstractCaArrayObject> List<T> query(T entityToMatch) {
+    public <T extends AbstractCaArrayObject> List<T> query(final T entityToMatch) {
         return queryEntityAndAssociationsByExample(entityToMatch);
     }
 
@@ -122,13 +122,13 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
      * @param cqlQuery CQL query to use as search criteria.
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
      */
-    public List<AbstractCaArrayObject> query(CQLQuery cqlQuery) {
+    public List<AbstractCaArrayObject> query(final CQLQuery cqlQuery) {
         HibernateQueryWrapper hqlWrapper = null;
         try {
-            hqlWrapper = CQL2HQL.translate(cqlQuery, true);
+            hqlWrapper = CQL2HQL.translate(cqlQuery, false, true);
         } catch (QueryException e) {
-            getLog().error("Unable to parse CQL query", e);
-            throw new DAOException("Unable to parse CQL query", e);
+          getLog().error("Unable to parse CQL query", e);
+          throw new DAOException("Unable to parse CQL query", e);
         }
         String hqlString = hqlWrapper.getHql();
         List<?> params = hqlWrapper.getParameters();
@@ -137,7 +137,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     }
 
     @SuppressWarnings("unchecked")
-    private List<AbstractCaArrayObject> runHqlQuery(String hqlString, List<?> params) {
+    private List<AbstractCaArrayObject> runHqlQuery(final String hqlString, final List<?> params) {
         Session mySession = HibernateUtil.getCurrentSession();
         List<AbstractCaArrayObject> matchingEntities = new ArrayList<AbstractCaArrayObject>();
         List hibernateReturnedEntities = null;

@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.services.search;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.query.CQLQuery;
+import gov.nih.nci.system.query.cql.CQLQuery;
 
 import java.util.List;
 

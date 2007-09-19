@@ -24,5 +24,6 @@
 	<classpathentry kind="lib" path="/lib/antlr-2.7.6.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/test-data"/>
 	<classpathentry kind="lib" path="/lib/csmapi.jar" sourcepath="/lib/src/csmapi-3.2-src.jar"/>
+	<classpathentry kind="lib" path="/lib/cacore32-client.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
