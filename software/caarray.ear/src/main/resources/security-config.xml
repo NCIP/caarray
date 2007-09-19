@@ -26,7 +26,7 @@
                 <module-option name="roleAttributeID">uniqueMember</module-option>
                 <module-option name="roleRecursion">0</module-option>
             </login-module>
-            <login-module code="gov.nih.nci.caarray.authentication.CaArrayLoginModule" flag="optional" >
+            <login-module code="gov.nih.nci.caarray.web.authentication.CaArrayLoginModule" flag="optional" >
                 <module-option name="driver">@database.driver@</module-option>
                 <module-option name="url">@database.url@</module-option>
                 <module-option name="user">@database.user@</module-option>
