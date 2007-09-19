@@ -34,7 +34,7 @@ public class ProjectAction extends BaseAction {
         request.setAttribute("contentLabel", "Experiment Workspace");
 
         LabelValue labelValue = new LabelValue("Propose Project", "createProject.action");
-        request.setAttribute("labelValue", labelValue);
+        request.setAttribute("proproseProject", labelValue);
 
         List<Project> projects = getDelegate().getProjectManagementService().getWorkspaceProjects();
         request.setAttribute("projects", projects);
@@ -53,7 +53,7 @@ public class ProjectAction extends BaseAction {
         request.setAttribute("contentLabel", "Propose Experiment");
 
         LabelValue labelValue = new LabelValue("Return to Workspace", "listProjects.action");
-        request.setAttribute("labelValue", labelValue);
+        request.setAttribute("workspace", labelValue);
 
         return SUCCESS;
     }
@@ -86,7 +86,7 @@ public class ProjectAction extends BaseAction {
         request.setAttribute("projectName", getProjectName());
 
         LabelValue labelValue = new LabelValue("Return to Workspace", "listProjects.action");
-        request.setAttribute("labelValue", labelValue);
+        request.setAttribute("workspace", labelValue);
 
         LabelValue manageFiles = new LabelValue("Manage Files", "manageFiles.action");
         request.setAttribute("manageFiles", manageFiles);

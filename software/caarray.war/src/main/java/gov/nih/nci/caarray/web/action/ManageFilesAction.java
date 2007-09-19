@@ -32,7 +32,7 @@ public class ManageFilesAction extends BaseAction {
 
         HttpServletRequest request = getRequest();
         LabelValue labelValue = new LabelValue("Return to Workspace", "listProjects.action");
-        request.setAttribute("labelValue", labelValue);
+        request.setAttribute("workspace", labelValue);
 
         return SUCCESS;
     }
@@ -49,7 +49,7 @@ public class ManageFilesAction extends BaseAction {
 
         HttpServletRequest request = getRequest();
         LabelValue labelValue = new LabelValue("Return to Workspace", "listProjects.action");
-        request.setAttribute("labelValue", labelValue);
+        request.setAttribute("workspace", labelValue);
 
         return SUCCESS;
     }
