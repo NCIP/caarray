@@ -5,6 +5,7 @@
 <body>
     <div id="content" class="homepage">
         <h1><c:out value="${requestScope.contentLabel}" /></h1>
+        <%@ include file="/common/messages.jsp" %>
         <s:form action="saveProject" method="post" validate="false">
             <table>
                 <tr>

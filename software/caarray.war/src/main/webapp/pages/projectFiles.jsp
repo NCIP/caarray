@@ -5,18 +5,19 @@
 <body>
     <div id="content" class="homepage">
         <h1>Experiment Files</h1>
+        <%@ include file="/common/messages.jsp" %>
         <s:form action="uploadFile" enctype="multipart/form-data" method="post" validate="true">
             <s:file name="file" required="true"/>
             <table>
                 <tr>
                     <td>
-                        <s:submit method="importFile" key="button.import" id="import" name="import" />
+                        <s:submit name="import" value="Import" method="importFile" key="button.import" id="import" />
                     </td>
                      <td>
-                        <s:submit method="validate" key="button.validate" id="validate" name="validate" />
+                        <s:submit name="validate" value="Validate" method="validate" key="button.validate" id="validate" />
                     </td>
                     <td>
-                        <s:submit method="upload" key="button.upload" id="upload" name="upload" />
+                        <s:submit name="upload" value="Upload" method="upload" key="button.upload" id="upload"/>
                     </td>
                 </tr>
             </table>
