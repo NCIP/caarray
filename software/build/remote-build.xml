@@ -112,7 +112,7 @@
 
 	<target name="help">
 	  <echo>
-        Example usage: ant -f remote-build.xml -Dbuild.envpropertyfile=C:/dev/caarray2/software/build/DEV.properties -Dnotest=true -Dnoglobus=true
+        Example usage: ant -f remote-build.xml -Denvpropertyfile=C:/dev/caarray2/software/build/DEV.properties -Dnotest=true -Dnoglobus=true
         envpropertyfile Required sets the environment property file. Has to be a fully qualified file
         notest  When present, all tests will be skipped (required, temporary)
         nodbintegration when present,  skips database integration

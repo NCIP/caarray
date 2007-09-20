@@ -29,29 +29,24 @@
   testPropertiesFileExists,testSshKeyFileExists,testSvnLocalTrunk,testBuildNoTest" />
 
   <target name="testEnvPropertyFile">
-	<au:assertPropertySet name="build.envpropertyfile" message="Target environment file not found. 
-	Please set target environment file with -Dbuild.envpropertyfile=[FULLY QUALIFIED PATH TO PROPERTY FILE]" />  
-  </target>
-
-  <target name="testEnvProperty">
-	<au:assertPropertySet name="build.env" message="build.env property not found. Please set this property using
-			-Dbuild.env=[DEV/QA]"/>  
+	<au:assertPropertySet name="envpropertyfile" message="Target environment file not found. 
+	Please set target environment file with -Denvpropertyfile=[FULLY QUALIFIED PATH TO PROPERTY FILE]" />  
   </target>
 
   <target name="testBuildNoTest">
-	<au:assertPropertySet name="build.notest" message="build.notest is a required system property. Please set this property using -Dbuild.notest=true"/>  
+	<au:assertPropertySet name="notest" message="notest is a required system property. Please set this property using -Dnotest=true"/>  
   </target> 
 
   <target name="testSvnLocalTrunk">
-	<au:assertPropertySet name="svn.local.trunk" message="svn.local.trunk property not set. Please set this property using -Dbuild.env=[DEV/QA]"/>  
+	<au:assertPropertySet name="svn.local.trunk" message="svn.local.trunk property not set."/>  
   </target>
 
   <target name="testPropertiesFileExists">
-	<au:assertFileExists file="${build.envpropertyfile}" message="Unable to find the file: ${build.envpropertyfile}. The path to -Dbuild.envpropertyfile must be fully-qualified." />  
+	<au:assertFileExists file="${envpropertyfile}" message="Unable to find the file: ${envpropertyfile}. The path to -Denvpropertyfile must be fully-qualified." />  
   </target>
 
   <target name="testSshKeyFileExists">
-	<au:assertFileExists file="${ssh.key.file}" message="Unable to find the file: ${ssh.key.file}. Please update the value of the ssh.key.file attribute in the ${build.envpropertyfile} file." />  
+	<au:assertFileExists file="${ssh.key.file}" message="Unable to find the file: ${ssh.key.file}. Please update the value of the ssh.key.file attribute in the ${envpropertyfile} file." />  
   </target>
 
   <target name="testJavaSecureChannelFileExists">
