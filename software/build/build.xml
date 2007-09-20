@@ -1104,11 +1104,13 @@
     <target name="remote-jboss:stop">
         <echo message="Stopping jboss server at ${ssh.server.hostname}..." />
         <sshexec host="${ssh.server.hostname}" trust="true" keyfile="${ssh.key.file}" passphrase="" username="${ssh.server.username}" verbose="true" command="${remote.jboss.home}/bin/stop_jboss" />
+		<sleep seconds="60" />
     </target>
 
     <target name="remote-jboss:start">
         <echo message="Starting jboss server at ${ssh.server.hostname}..." />
         <sshexec host="${ssh.server.hostname}" trust="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" verbose="true" command="${remote.jboss.home}/bin/start_jboss" />
+		<sleep seconds="120" />
     </target>
 
     <target name="remote-jboss:configure-jboss-ds">
