@@ -96,7 +96,8 @@ import junit.framework.TestCase;
 /**
  * Exercise the cql query processor
  */
-public class ProcessonTest extends TestCase {
+public class ProcessorTest extends TestCase {
+    @SuppressWarnings("deprecation")
     public void testProcessor() throws Exception {
         StubProcessor processor = new StubProcessor(); // extends CaArrayCQLQueryProcessor
 
