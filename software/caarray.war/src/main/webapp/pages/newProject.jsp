@@ -10,12 +10,12 @@
                 <tr>
                     <th>Title for new project:</th>
                     <td>
-                        <s:textfield name="projectName" required="true"/>
+                        <s:textfield id="projectName" name="projectName" required="true"/>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <s:submit key="button.save" />
+                        <s:submit id="submit" key="button.save" />
                     </td>
                 </tr>
             </table>

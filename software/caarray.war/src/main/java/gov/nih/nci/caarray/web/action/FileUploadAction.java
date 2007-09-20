@@ -82,16 +82,7 @@
  */
 package gov.nih.nci.caarray.web.action;
 
-import gov.nih.nci.caarray.web.util.Constants;
-
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import org.apache.struts2.ServletActionContext;
 
 import com.opensymphony.xwork2.ValidationAware;
 
@@ -117,53 +108,21 @@ public class FileUploadAction extends BaseAction implements ValidationAware {
     @SuppressWarnings("PMD")
     public String execute() throws Exception {
 
+        return SUCCESS;
+    }
 
-        if (file == null || file.length() > FILE_LENGTH) {
-            addActionError(getText("maxLengthExceeded"));
-            return INPUT;
-        }
+    public String uploadFile() throws Exception {
 
-        // the directory to upload to
-        String uploadDir =
-            ServletActionContext.getServletContext().getRealPath("/resources")
-            + "/" + getRequest().getRemoteUser() + "/";
+        return SUCCESS;
+    }
 
-        // write the file to the file specified
-        File dirPath = new File(uploadDir);
+    public String importFile() throws Exception {
 
-        if (!dirPath.exists()) {
-            dirPath.mkdirs();
-        }
+        return SUCCESS;
+    }
 
-        //retrieve the file data
-        InputStream stream;
-        try {
-            stream = new FileInputStream(file);
 
-            //write the file to the file specified
-            OutputStream bos = new FileOutputStream(uploadDir + fileFileName);
-            int bytesRead = 0;
-            byte[] buffer = new byte[BYTE_LENGTH];
-
-            while ((bytesRead = stream.read(buffer, 0, BYTE_LENGTH)) != -1) {
-                bos.write(buffer, 0, bytesRead);
-            }
-
-            bos.close();
-            stream.close();
-        } catch (FileNotFoundException e) {
-           throw new Exception(e);
-        }
-
-        // place the data into the request for retrieval on next page
-        getRequest().setAttribute("location", dirPath.getAbsolutePath()
-                + Constants.FILE_SEP + fileFileName);
-
-        String link =
-            getRequest().getContextPath() + "/resources" + "/"
-            + getRequest().getRemoteUser() + "/";
-
-        getRequest().setAttribute("link", link + fileFileName);
+    public String validateFile() throws Exception {
 
         return SUCCESS;
     }

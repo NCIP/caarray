@@ -2,7 +2,6 @@
 
 <div id="sidebar" class="homepage">
     <h1>Actions</h1>
-    <s:form id="mainMenu">
     <table>
         <tr>
             <td>
@@ -21,12 +20,11 @@
          <tr>
             <td>
                 <a id="proposeProject" href='<c:out value="${requestScope.proproseProject.value}" />'>
-                    <c:out value="${requestScope.project.label}" />
+                    <c:out value="${requestScope.proproseProject.label}" />
                 </a>
             </td>
         </tr>
     </table>
-    </s:form>
     <h1 style="border-top:1px solid #fff;">What's New</h1>
     <p class="small">
         caArray 2.0 software is available for download now. This installation features a new interface and increased functionality.<br />

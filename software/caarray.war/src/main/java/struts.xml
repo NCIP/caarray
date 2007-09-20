@@ -20,8 +20,6 @@
     <!-- Configuration for the default package. -->
     <package name="default" extends="struts-default">
         <interceptors>
-            <!-- Interceptor to handle allowing only admins to certain actions -->
-            <!-- <interceptor name="adminOnly" class="adminInterceptor"/> -->
             <!-- Copied from struts-default.xml and changed validation exclude methods -->
             <interceptor-stack name="defaultStack">
                 <interceptor-ref name="exception"/>
@@ -54,7 +52,6 @@
             </interceptor-stack>
             <interceptor-stack name="adminCheck">
                 <interceptor-ref name="defaultStack"/>
-                <!-- <interceptor-ref name="adminOnly"/>  -->
             </interceptor-stack>
         </interceptors>
 
@@ -85,6 +82,21 @@
         
         <action name="manageFiles" class="manageFilesAction"> 
             <result name="success">/pages/projectFiles.jsp</result>
+        </action>
+        
+        <action name="uploadFile" class="fileUploadAction" method="importFile">
+            <interceptor-ref name="fileUploadStack"/>
+            <result name="success" type="chain">manageFiles</result>
+        </action>
+        
+        <action name="uploadFile" class="fileUploadAction" method="validateFile">
+            <interceptor-ref name="fileUploadStack"/>
+            <result name="success" type="chain">manageFiles</result>
+        </action>
+        
+        <action name="uploadFile" class="fileUploadAction" method="uploadFile">
+            <interceptor-ref name="fileUploadStack"/>
+            <result name="success" type="chain">manageFiles</result>
         </action>
         
     </package>
