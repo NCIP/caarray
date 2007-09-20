@@ -15,12 +15,18 @@ import gov.nih.nci.cagrid.data.mapping.Mappings;
 import gov.nih.nci.cagrid.data.service.ServiceConfigUtil;
 import gov.nih.nci.cagrid.data.utilities.CQLResultsCreationUtil;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -50,7 +56,7 @@ public class CaArrayCQLQueryProcessor extends CQLQueryProcessor {
 
     @Override
     public CQLQueryResults processQuery(final CQLQuery cqlQuery) throws MalformedQueryException, QueryProcessingException {
-        System.out.println("CaArrayCQLQueryProcessor::processQuery ...");
+        LOG.debug("CaArrayCQLQueryProcessor::processQuery ...");
         CQLQueryResults results = null;
         try {
             List<AbstractCaArrayObject> coreResultsList = queryCaArrayService(cqlQuery);
@@ -76,22 +82,22 @@ public class CaArrayCQLQueryProcessor extends CQLQueryProcessor {
                     throw new QueryProcessingException("Error creating object results: " + ex.getMessage(), ex);
                 }
             } else if (mod.isCountOnly()) {
-
-                Long val = Long.valueOf(coreResultsList.get(0).toString());
                 LOG.debug("invoking CQLResultsCreationUtil.createCountResults");
-                results = CQLResultsCreationUtil.createCountResults(val.longValue(), targetName);
+                results = CQLResultsCreationUtil.createCountResults(coreResultsList.size(), targetName);
             } else {
 
                 // attributes distinct or otherwise
                 String[] names = null;
-                if (mod.getDistinctAttribute() != null) {
+                boolean distinct = mod.getDistinctAttribute() != null;
+                if (distinct) {
                     names = new String[] { mod.getDistinctAttribute() };
                 } else {
                     names = mod.getAttributeNames();
                 }
                 try {
                     LOG.debug("invoking CQLResultsCreationUtil.createAttributeResults");
-                    results = CQLResultsCreationUtil.createAttributeResults(coreResultsList, targetName, names);
+                    List<Object[]> attributeList = convert(coreResultsList, names, distinct);
+                    results = CQLResultsCreationUtil.createAttributeResults(attributeList, targetName, names);
                 } catch (Exception ex) {
                     throw new RuntimeException("Error creating attribute results: " + ex.getMessage(), ex);
                 }
@@ -103,12 +109,41 @@ public class CaArrayCQLQueryProcessor extends CQLQueryProcessor {
         }
     }
 
-    private List<AbstractCaArrayObject> queryCaArrayService(final CQLQuery cqlQuery) {
+    private List<Object[]> convert(List<AbstractCaArrayObject> objs, String[] names, boolean distinct)
+        throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException,
+               InvocationTargetException {
+        String[] upcaseNames = new String[names.length];
+        for (int i = 0; i < names.length; ++i) {
+            upcaseNames[i] = StringUtils.capitalize(names[i]);
+        }
+
+        Set<Object> seenObjs = new HashSet<Object>();
+
+        List<Object[]> result = new ArrayList<Object[]>();
+        for (AbstractCaArrayObject curObj : objs) {
+            Object[] row = new Object[names.length];
+            for (int i = 0; i < names.length; ++i) {
+                Method m = curObj.getClass().getMethod("get" + upcaseNames[i]);
+                row[i] = m.invoke(curObj);
+            }
+            if (distinct) {
+                if (!seenObjs.contains(row[0])) {
+                    result.add(row);
+                }
+                seenObjs.add(row[0]);
+            } else {
+                result.add(row);
+            }
+        }
+        return result;
+    }
+
+    protected List<AbstractCaArrayObject> queryCaArrayService(final CQLQuery cqlQuery) {
         LOG.debug("querying ....");
         return searchService.search(CQL2CQL.convert(cqlQuery));
     }
 
-    private Mappings getClassToQnameMappings() throws Exception {
+    protected Mappings getClassToQnameMappings() throws Exception {
         // get the mapping file name
         String filename = ServiceConfigUtil.getClassToQnameMappingsFile();
         Mappings mappings = (Mappings) Utils.deserializeDocument(filename, Mappings.class);

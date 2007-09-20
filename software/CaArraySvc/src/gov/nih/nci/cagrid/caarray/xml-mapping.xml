@@ -268,12 +268,12 @@
     <field name="path" type="string">
       <bind-xml name="path" node="attribute" />
     </field>
-    <field name="type" type="gov.nih.nci.caarray.domain.file.FileType" handler="gov.nih.nci.common.util.CastorDomainObjectFieldHandler">
-      <bind-xml name="FileType" type="gov.nih.nci.caarray.domain.file.FileType" location="type" node="element" />
+    <field name="type" type="gov.nih.nci.caarray.domain.file.FileType">
+      <bind-xml name="FileType"/>
     </field>
-    <field name="project" type="gov.nih.nci.caarray.domain.project.Project" handler="gov.nih.nci.common.util.CastorDomainObjectFieldHandler">
-      <bind-xml name="Project" type="gov.nih.nci.caarray.domain.project.Project" location="project" node="element" />
-    </field>
+    <field name="project" type="gov.nih.nci.caarray.domain.project.Project">
+      <bind-xml name="Project2" location="project"/>
+    </field >
   </class>
   <class name="gov.nih.nci.caarray.domain.hybridization.Hybridization" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
     <map-to xml="Hybridization" ns-uri="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.hybridization" />
@@ -358,8 +358,8 @@
     <field name="sources" type="gov.nih.nci.caarray.domain.sample.Source" collection="collection" handler="gov.nih.nci.common.util.CastorCollectionFieldHandler">
       <bind-xml name="Source" type="gov.nih.nci.caarray.domain.sample.Source" location="sources" node="element" />
     </field>
-    <field name="publications" type="gov.nih.nci.caarray.domain.publication.Publication" collection="collection" handler="gov.nih.nci.common.util.CastorCollectionFieldHandler">
-      <bind-xml name="Publication" type="gov.nih.nci.caarray.domain.publication.Publication" location="publications" node="element" />
+    <field name="publications" type="gov.nih.nci.caarray.domain.publication.Publication" collection="collection">
+      <bind-xml name="Publication" type="gov.nih.nci.caarray.domain.publication.Publication" node="element" />
     </field>
     <field name="extracts" type="gov.nih.nci.caarray.domain.sample.Extract" collection="collection" handler="gov.nih.nci.common.util.CastorCollectionFieldHandler">
       <bind-xml name="Extract" type="gov.nih.nci.caarray.domain.sample.Extract" location="extracts" node="element" />
@@ -373,9 +373,19 @@
   </class>
   <class name="gov.nih.nci.caarray.domain.project.Project" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
     <map-to xml="Project" ns-uri="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.project" />
-    <field name="files" type="gov.nih.nci.caarray.domain.file.CaArrayFile" collection="collection" handler="gov.nih.nci.common.util.CastorCollectionFieldHandler">
-      <bind-xml name="CaArrayFile" type="gov.nih.nci.caarray.domain.file.CaArrayFile" location="files" node="element" />
+    <field name="files" type="gov.nih.nci.caarray.domain.file.CaArrayFile" collection="collection">
+      <bind-xml name="CaArrayFile" type="gov.nih.nci.caarray.domain.file.CaArrayFile" node="element" />
     </field>
+    <field name="experiment">
+      <bind-xml name="Experiment"/>
+    </field>
+    <field name="id" type="long">
+      <bind-xml name="id" node="attribute" />
+    </field>
+    <!--
+    <field name="experiment" type="gov.nih.nci.caarray.domain.project.Experiment" handler="gov.nih.nci.common.util.CastorDomainObjectFieldHandler">
+      <bind-xml name="Experiment" type="gov.nih.nci.caarray.domain.project.Experiment" location="experiment" node="element" />
+    </field> -->
   </class>
   <class name="gov.nih.nci.caarray.domain.project.FactorValue" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
     <map-to xml="FactorValue" ns-uri="gme://caArray.caBIG/2.0/gov.nih.nci.caarray.domain.project" />

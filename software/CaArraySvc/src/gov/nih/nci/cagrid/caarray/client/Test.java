@@ -82,7 +82,12 @@
  */
 package gov.nih.nci.cagrid.caarray.client;
 
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.publication.Publication;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -91,6 +96,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Date;
 
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Marshaller;
@@ -107,31 +113,53 @@ public class Test {
      * @param args
      */
     public static void main(final String[] args) throws Throwable {
-        final ArrayDesign ad = new ArrayDesign();
-        ad.setName("foo");
+        Experiment e = new Experiment();
+        e.setTitle("experimentTitle");
+        e.setDescription("mydescription");
+        e.setDateOfExperiment(new Date());
+        e.setPublicReleaseDate(new Date());
+        e.setGridIdentifier("mygridid");
+
+        Publication publication = new Publication();
+        publication.setTitle("title");
+        e.getPublications().add(publication);
+        publication.setExperiment(e);
+
+        Project p = new Project();
+        p.setExperiment(e);
+        p.setGridIdentifier("projectgridid");
+
+        CaArrayFile f = new CaArrayFile();
+        f.setFileStatus(FileStatus.IMPORTED);
+        f.setGridIdentifier("filegridid");
+        f.setPath("zpath");
+        f.setType(FileType.AFFYMETRIX_CDF);
+        f.setProject(p);
+        p.getFiles().add(f);
 
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final Writer w = new OutputStreamWriter(baos);
         final Marshaller m = new Marshaller(w);
         final Mapping mapping = new Mapping("".getClass().getClassLoader());
-        final InputSource is = new InputSource(new FileReader("C:\\5am\\caarray\\software\\CaArraySvc\\build\\classes\\gov\\nih\\nci\\cagrid\\caarray\\xml-mapping.xml"));
+        final InputSource is = new InputSource(new FileReader("C:\\5am\\caarray\\software\\CaArraySvc\\src\\gov\\nih\\nci\\cagrid\\caarray\\xml-mapping.xml"));
         mapping.loadMapping(is);
         m.setMapping(mapping);
         m.setValidation(true);
-        m.marshal(ad);
+        m.marshal(p);
 
-        final byte[] bytes = baos.toByteArray();
-        final String s = new String(bytes);
+        byte[] bytes = baos.toByteArray();
+        String s = new String(bytes);
+        bytes = s.getBytes();
 
         System.out.println(s);
 
 
         final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         final Reader r = new InputStreamReader(bais);
-        final Unmarshaller um = new Unmarshaller(ArrayDesign.class);
-        final ArrayDesign ad2 = (ArrayDesign) um.unmarshal(r);
-        System.out.println(ad2.getName());
-
+        final Unmarshaller um = new Unmarshaller(Project.class);
+        um.setMapping(mapping);
+        final Project ad2 = (Project) um.unmarshal(r);
+        System.out.println(ad2);
     }
 
 }

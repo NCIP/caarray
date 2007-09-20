@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The CaArraySvc
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This CaArraySvc Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the CaArraySvc Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the CaArraySvc Software; (ii) distribute and
+ * have distributed to and by third parties the CaArraySvc Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,120 +80,41 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain;
+package gov.nih.nci.cagrid.caarray;
 
-import java.io.Serializable;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.cagrid.caarray.stubs.cql.CaArrayCQLQueryProcessor;
+import gov.nih.nci.cagrid.common.Utils;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.data.mapping.Mappings;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import java.util.List;
 
 /**
- * Base class for all persistent caArray domain objects.
+ * Stub implementation that doesn't actually require the jndi to be set up.
  */
-@MappedSuperclass
-public abstract class AbstractCaArrayObject implements Serializable {
+public class StubProcessor extends CaArrayCQLQueryProcessor {
 
-    private static final long serialVersionUID = 2732929116326299995L;
-    /**
-     * The default column size for string columns in the db.
-     */
-    public static final int DEFAULT_STRING_COLUMN_SIZE = 254;
+    private List<AbstractCaArrayObject> results;
 
-    private Long id;
-    private String gridIdentifier;
-
-    /**
-     * Returns the id.
-     *
-     * @return the id
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long getId() {
-        return id;
-    }
-
-    /**
-     * Sets the id.
-     *
-     * @param id the id to set
-     * @deprecated should only be used by castor and hibernate
-     */
-    @Deprecated
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    /**
-     * The default comparison uses the id.
-     * @param o other object
-     * @return equal or not
-     */
     @Override
-    public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        }
-
-        if (!(o instanceof AbstractCaArrayObject)) {
-            return false;
-        }
-
-        if (o == this) {
-            return true;
-        }
-
-        if (id == null) {
-            // by default, two transient instances cannot ever be equal
-            return false;
-        }
-
-        AbstractCaArrayObject e = (AbstractCaArrayObject) o;
-        return (id.equals(e.id) && getClass().equals(e.getClass()));
+    protected List<AbstractCaArrayObject> queryCaArrayService(CQLQuery cqlQuery) {
+        return results;
     }
 
     /**
-     * Default hashCode goes off of id.
-     * @return hashCode
+     * @param results raw, underlying objects that would be returned via the actual service
      */
+    public void setResults(List<AbstractCaArrayObject> results) {
+        this.results = results;
+    }
+
     @Override
-    public int hashCode() {
-        if (id == null) {
-            return System.identityHashCode(this);
-        }
-
-        return id.hashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append('[');
-        stringBuffer.append(getClass().getSimpleName());
-        stringBuffer.append("] id=");
-        stringBuffer.append(id);
-        return stringBuffer.toString();
-    }
-
-    /**
-     * @return the gridIdentifier
-     */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public String getGridIdentifier() {
-        return gridIdentifier;
-    }
-
-    /**
-     * @param gridIdentifier the gridIdentifier to set
-     */
-    public void setGridIdentifier(String gridIdentifier) {
-        this.gridIdentifier = gridIdentifier;
+    protected Mappings getClassToQnameMappings() throws Exception {
+        // get the mapping file name
+        String filename = "./etc/classToQname.xml";
+        Mappings mappings = (Mappings) Utils.deserializeDocument(filename, Mappings.class);
+        return mappings;
     }
 
 }

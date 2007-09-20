@@ -120,6 +120,9 @@ public final class CQL2CQL {
     public static gov.nih.nci.system.query.cql.CQLQuery convert(final CQLQuery query) {
         CACHE.set(new HashMap<java.lang.Object, java.lang.Object>());
         try {
+            if (query == null) {
+                return null;
+            }
             gov.nih.nci.system.query.cql.CQLQuery result = new gov.nih.nci.system.query.cql.CQLQuery();
             result.setTarget(convertObject(query.getTarget()));
             return result;
@@ -129,6 +132,10 @@ public final class CQL2CQL {
     }
 
     private static CQLObject convertObject(final Object from) {
+        if (from == null) {
+            return null;
+        }
+
         if (CACHE.get().get(from) != null) {
             return (CQLObject) CACHE.get().get(from);
         }
@@ -145,6 +152,10 @@ public final class CQL2CQL {
     }
 
     private static CQLAssociation convertAssociation(final Association from) {
+        if (from == null) {
+            return null;
+        }
+
         if (CACHE.get().get(from) != null) {
             return (CQLAssociation) CACHE.get().get(from);
         }
@@ -163,6 +174,10 @@ public final class CQL2CQL {
     }
 
     private static CQLAttribute convertAttribute(final Attribute from) {
+        if (from == null) {
+            return null;
+        }
+
         if (CACHE.get().get(from) != null) {
             return (CQLAttribute) CACHE.get().get(from);
         }
@@ -178,6 +193,10 @@ public final class CQL2CQL {
     }
 
     private static CQLGroup convertGroup(final Group from) {
+        if (from == null) {
+            return null;
+        }
+
         if (CACHE.get().get(from) != null) {
             return (CQLGroup) CACHE.get().get(from);
         }
@@ -208,6 +227,10 @@ public final class CQL2CQL {
     }
 
     private static CQLLogicalOperator convertOperator(final LogicalOperator logicRelation) {
+        if (logicRelation == null) {
+            return null;
+        }
+
         if (logicRelation.equals(LogicalOperator.AND)) {
             return CQLLogicalOperator.AND;
         } else if (logicRelation.equals(LogicalOperator.OR)) {
@@ -218,6 +241,10 @@ public final class CQL2CQL {
     }
 
     private static CQLPredicate convertPredicate(final Predicate predicate) {
+        if (predicate == null) {
+            return null;
+        }
+
         if (predicate.equals(Predicate.EQUAL_TO)) {
             return CQLPredicate.EQUAL_TO;
         } else if (predicate.equals(Predicate.GREATER_THAN)) {

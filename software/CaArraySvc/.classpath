@@ -110,5 +110,6 @@
 	<classpathentry kind="lib" path="/lib/hibernate-annotations.jar" sourcepath="/lib/hibernate-annotations-3.3.0.GA-src.jar"/>
 	<classpathentry kind="lib" path="/lib/javaee.jar"/>
 	<classpathentry kind="lib" path="/lib/cacore32-client.jar"/>
+	<classpathentry kind="lib" path="/lib/commons-lang-2.1.jar"/>
 	<classpathentry kind="output" path="eclipse-out"/>
 </classpath>

@@ -197,6 +197,23 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
     }
 
     /**
+     * @deprecated for castor only
+     * @param name file type name
+     */
+    @Deprecated
+    public void setName(String name) {
+        if (this.name == null || this.name.equals(name)) {
+            if (INSTANCES.keySet().contains(name)) {
+                this.name = name;
+                return;
+            } else {
+                throw new IllegalArgumentException("Invalid name: " + name);
+            }
+        }
+        throw new IllegalArgumentException("Cannot set name if already non-null: " + this.name + ", " + name);
+    }
+
+    /**
      * @return true if this file type is an array design.
      */
     public boolean isArrayDesign() {
@@ -250,6 +267,9 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
      */
     @Override
     public int hashCode() {
+        if (name == null) {
+            return System.identityHashCode(this);
+        }
         return name.hashCode();
     }
 

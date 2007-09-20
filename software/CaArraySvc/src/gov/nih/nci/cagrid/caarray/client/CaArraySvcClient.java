@@ -10,6 +10,9 @@ import gov.nih.nci.cagrid.caarray.common.CaArraySvcI;
 import gov.nih.nci.cagrid.caarray.stubs.CaArraySvcPortType;
 import gov.nih.nci.cagrid.caarray.stubs.service.CaArraySvcServiceAddressingLocator;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Object;
+import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
+import gov.nih.nci.cagrid.data.utilities.CQLQueryResultsIterator;
 import gov.nih.nci.cagrid.introduce.security.client.ServiceSecurityClient;
 
 import java.io.InputStream;
@@ -103,7 +106,22 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
                     // test....
 
                     CQLQuery cqlQuery = new CQLQuery();
-                    client.query(cqlQuery);
+
+                    Object target = new Object();
+                    cqlQuery.setTarget(target);
+
+                    target.setName("gov.nih.nci.caarray.domain.project.Project");
+
+                    CQLQueryResults results = client.query(cqlQuery);
+
+                    System.out.println("TCPTCP: " + results);
+                    System.out.println("TCPTCP: " + results.getCountResult());
+                    CQLQueryResultsIterator iter = new CQLQueryResultsIterator(results, CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
+
+                    while (iter.hasNext()) {
+                        java.lang.Object o = iter.next();
+                        System.out.println("TCPTCP2: " + o);
+                    }
 
                     if (1 == 1) {
                         System.exit(0);
@@ -141,14 +159,6 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
                         System.out.println("\n\nRunning getDesignDetails...\n\n");
                         final ArrayDesignDetails add = client.getDesignDetails(new ArrayDesign());
                         System.out.println("TCPTCP: " + add);
-                    } catch (final Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    // SMOKE: test search
-                    try {
-                        System.out.println("\n\nRunning search...\n\n");
-                        //System.out.println(client.search(new ArrayDesign()));
                     } catch (final Exception e) {
                         e.printStackTrace();
                     }
