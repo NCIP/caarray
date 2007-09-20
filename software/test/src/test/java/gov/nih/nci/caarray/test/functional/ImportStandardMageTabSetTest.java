@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.test.functional;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
