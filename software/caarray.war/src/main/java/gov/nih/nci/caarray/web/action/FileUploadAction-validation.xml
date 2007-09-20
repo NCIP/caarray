@@ -3,7 +3,7 @@
 <validators>
     <field name="file">
         <field-validator type="required">
-            <message>Validation Error: File to Upload is a required field.</message>
+            <message>File to Upload is a required field.</message>
         </field-validator>
     </field>
 </validators>

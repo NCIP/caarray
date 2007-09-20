@@ -82,7 +82,18 @@
  */
 package gov.nih.nci.caarray.web.action;
 
+import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.web.delegate.DelegateFactory;
+import gov.nih.nci.caarray.web.delegate.ManageFilesDelegate;
+import gov.nih.nci.caarray.web.exception.CaArrayException;
+import gov.nih.nci.caarray.web.helper.FileEntry;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
 
 import com.opensymphony.xwork2.ValidationAware;
 
@@ -94,9 +105,12 @@ public class FileUploadAction extends BaseAction implements ValidationAware {
 
     private static final long serialVersionUID = 1L;
     private File file;
+    private Project project;
     private String fileContentType;
     private String fileFileName;
     private String name;
+    private List<FileEntry> fileEntries;
+
     static final int FILE_LENGTH = 2097152;
     static final int BYTE_LENGTH = 8192;
 
@@ -111,20 +125,55 @@ public class FileUploadAction extends BaseAction implements ValidationAware {
         return SUCCESS;
     }
 
-    public String uploadFile() throws Exception {
+
+    /**
+     * uploads file.
+     * @return String
+     * @throws Exception Exception
+     */
+    @SuppressWarnings("PMD")
+    public String upload() throws Exception {
+
+        if (file == null || file.length() > FILE_LENGTH) {
+            addActionError(getText("maxLengthExceeded"));
+            return INPUT;
+        }
+
+        // the directory to upload to
+        String uploadDir = System.getProperty("java.io.tmpdir");
+
+        // write the file to the file specified
+        File dirPath = new File(uploadDir, getProject().getId().toString());
+
+        if (!dirPath.exists()) {
+            dirPath.mkdirs();
+        }
+
+        //retrieve the file data
+        InputStream stream = new FileInputStream(file);
+
+        //write the file to the file specified
+        OutputStream bos = new FileOutputStream(uploadDir + fileFileName);
+        int bytesRead = 0;
+        byte[] buffer = new byte[BYTE_LENGTH];
+
+        while ((bytesRead = stream.read(buffer, 0, BYTE_LENGTH)) != -1) {
+            bos.write(buffer, 0, bytesRead);
+        }
+
+        fileEntries.add(new FileEntry(getDelegate().getProjectManagementService().addFile(getProject(), dirPath)));
+
+        bos.close();
+        stream.close();
 
         return SUCCESS;
     }
 
-    public String importFile() throws Exception {
-
-        return SUCCESS;
-    }
-
-
-    public String validateFile() throws Exception {
-
-        return SUCCESS;
+    /**
+     * @return the project
+     */
+    public Project getProject() {
+        return project;
     }
 
     /**
@@ -136,51 +185,11 @@ public class FileUploadAction extends BaseAction implements ValidationAware {
     }
 
     /**
-     * set file.
-     * @param file File
-     */
-    public void setFile(File file) {
-        this.file = file;
-    }
-
-    /**
      * set file content type.
      * @param fileContentType String
      */
     public void setFileContentType(String fileContentType) {
         this.fileContentType = fileContentType;
-    }
-
-    /**
-     *  set files file name.
-     * @param fileFileName String
-     */
-    public void setFileFileName(String fileFileName) {
-        this.fileFileName = fileFileName;
-    }
-
-    /**
-     * set name.
-     * @param name String
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * get name.
-     * @return name String
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * get file.
-     * @return file File
-     */
-    public File getFile() {
-        return file;
     }
 
     /**
@@ -192,11 +201,60 @@ public class FileUploadAction extends BaseAction implements ValidationAware {
     }
 
     /**
-     * get files file name.
+     * get file.
+     * @return file File
+     */
+    public File getFile() {
+        return file;
+    }
+
+    /**
+     * set file.
+     * @param file File
+     */
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    /**
+     * set file.
+     * @param name String
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * getName.
+     * @return String
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * set file.
+     * @param fileFileName String
+     */
+    public void setFileFileName(String fileFileName) {
+        this.fileFileName = fileFileName;
+    }
+
+    /**
+     * getFileFileName.
      * @return String
      */
     public String getFileFileName() {
         return fileFileName;
+    }
+
+    /**
+     * gets the delegate from factory.
+     * @return Delegate ProjectDelegate
+     * @throws CaArrayException
+     */
+    private ManageFilesDelegate getDelegate() throws CaArrayException {
+        return (ManageFilesDelegate) DelegateFactory.getDelegate(DelegateFactory.MANAGE_FILES);
     }
 }
 

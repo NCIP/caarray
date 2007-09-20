@@ -10,13 +10,13 @@
             <table>
                 <tr>
                     <td>
-                        <s:submit method="importFile" key="button.import" name="importFile" />
+                        <s:submit method="importFile" key="button.import" id="import" name="import" />
                     </td>
                      <td>
-                        <s:submit method="validateFile" key="button.validate" name="validateFile" />
+                        <s:submit method="validate" key="button.validate" id="validate" name="validate" />
                     </td>
                     <td>
-                        <s:submit method="uploadFile" key="button.upload" name="uploadFile" />
+                        <s:submit method="upload" key="button.upload" id="upload" name="upload" />
                     </td>
                 </tr>
             </table>

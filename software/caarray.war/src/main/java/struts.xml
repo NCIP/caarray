@@ -84,21 +84,11 @@
             <result name="success">/pages/projectFiles.jsp</result>
         </action>
         
-        <action name="uploadFile" class="fileUploadAction" method="importFile">
+        <action name="uploadFile" class="fileUploadAction">
             <interceptor-ref name="fileUploadStack"/>
             <result name="success" type="chain">manageFiles</result>
         </action>
-        
-        <action name="uploadFile" class="fileUploadAction" method="validateFile">
-            <interceptor-ref name="fileUploadStack"/>
-            <result name="success" type="chain">manageFiles</result>
-        </action>
-        
-        <action name="uploadFile" class="fileUploadAction" method="uploadFile">
-            <interceptor-ref name="fileUploadStack"/>
-            <result name="success" type="chain">manageFiles</result>
-        </action>
-        
+                
     </package>
 
 </struts>
