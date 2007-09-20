@@ -7,11 +7,6 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.cagrid.caarray.encoding.Utils;
-import gov.nih.nci.cagrid.cqlquery.CQLQuery;
-import gov.nih.nci.cagrid.cqlquery.Object;
-import gov.nih.nci.cagrid.cqlquery.QueryModifier;
-import gov.nih.nci.cagrid.cqlresultset.CQLObjectResult;
-import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -20,7 +15,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Date;
 
 import junit.framework.TestCase;
@@ -33,9 +27,9 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
 @SuppressWarnings("deprecation")
-public class LoadCastorMappingTest extends TestCase {
+public class CastorMappingTest extends TestCase {
 
-    protected static Log LOG = LogFactory.getLog(LoadCastorMappingTest.class.getName());
+    protected static Log LOG = LogFactory.getLog(CastorMappingTest.class.getName());
 
     public static final String CASTOR_MAPPING_DTD = "mapping.dtd";
     public static final String CASTOR_MAPPING_DTD_ENTITY = "-//EXOLAB/Castor Object Mapping DTD Version 1.0//EN";
@@ -87,80 +81,8 @@ public class LoadCastorMappingTest extends TestCase {
         assertEquals(p, f2.getProject()); // Check the back pointer
     }
 
-    public void testProcessor() throws Exception {
-        StubProcessor processor = new StubProcessor(); // extends CaArrayCQLQueryProcessor
-
-        // This is the stubbed out 'result' of calling the remote EJB for the processor
-        // empty list to start with
-        ArrayList<AbstractCaArrayObject> resultList = new ArrayList<AbstractCaArrayObject>();
-        processor.setResults(resultList);
-
-        // basic query for project, get back the 0 rows
-        CQLQuery query = new CQLQuery();
-        Object target = new Object();
-        target.setName("gov.nih.nci.caarray.domain.project.Project");
-        query.setTarget(target);
-
-        CQLQueryResults results = processor.processQuery(query);
-        assertNotNull(results);
-        assertNotNull(results.getObjectResult());
-        assertEquals(0, results.getObjectResult().length);
-
-        // add a project, verify it comes over
-        resultList.add(getProject());
-        results = processor.processQuery(query);
-        assertNotNull(results);
-        assertNotNull(results.getObjectResult());
-        assertEquals(1, results.getObjectResult().length);
-
-        CQLObjectResult objResult = results.getObjectResult(0);
-        assertEquals("Project", objResult.get_any()[0].getName());
-
-        // test count queries
-        QueryModifier queryModifier = new QueryModifier();
-        queryModifier.setCountOnly(true);
-        query.setQueryModifier(queryModifier);
-
-        results = processor.processQuery(query);
-        assertNotNull(results.getCountResult());
-        assertEquals(1, results.getCountResult().getCount());
-
-        resultList.add(getExperiment());
-        results = processor.processQuery(query);
-        assertEquals(2, results.getCountResult().getCount());
-
-        // attribute queries (non-distict and distinct)
-        queryModifier.setCountOnly(false);
-        queryModifier.setAttributeNames(new String[] {"id", "gridIdentifier"});
-        results = processor.processQuery(query);
-        assertNotNull(results.getAttributeResult());
-        assertEquals(2, results.getAttributeResult().length);
-        assertEquals(2, results.getAttributeResult()[0].getAttribute().length);
-        assertEquals("id", results.getAttributeResult()[0].getAttribute()[0].getName());
-        assertEquals("1", results.getAttributeResult()[0].getAttribute()[0].getValue());
-        assertEquals("projectgridid", results.getAttributeResult()[0].getAttribute()[1].getValue());
-
-        queryModifier.setAttributeNames(null);
-        queryModifier.setDistinctAttribute("id");
-        results = processor.processQuery(query);
-        assertNotNull(results.getAttributeResult());
-        assertEquals(1, results.getAttributeResult().length);
-        assertEquals(1, results.getAttributeResult()[0].getAttribute().length);
-        assertEquals("id", results.getAttributeResult()[0].getAttribute()[0].getName());
-        assertEquals("1", results.getAttributeResult()[0].getAttribute()[0].getValue());
-
-        resultList.get(1).setId(2L);
-        results = processor.processQuery(query);
-        assertEquals(2, results.getAttributeResult().length);
-        assertEquals(1, results.getAttributeResult()[0].getAttribute().length);
-        assertEquals("id", results.getAttributeResult()[0].getAttribute()[0].getName());
-        assertEquals("1", results.getAttributeResult()[0].getAttribute()[0].getValue());
-        assertEquals("2", results.getAttributeResult()[1].getAttribute()[0].getValue());
-
-    }
-
     @SuppressWarnings("unchecked")
-    private <T extends AbstractCaArrayObject> T roundTrip(T obj) throws Exception {
+    private static <T extends AbstractCaArrayObject> T roundTrip(T obj) throws Exception {
         byte[] bytes = marshall(obj);
 
         final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
@@ -173,7 +95,7 @@ public class LoadCastorMappingTest extends TestCase {
         return unmarshalled;
     }
 
-    private byte[] marshall(AbstractCaArrayObject obj) throws Exception {
+    private static byte[] marshall(AbstractCaArrayObject obj) throws Exception {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final Writer w = new OutputStreamWriter(baos);
         final Marshaller m = new Marshaller(w);
@@ -186,21 +108,21 @@ public class LoadCastorMappingTest extends TestCase {
         return bytes;
     }
 
-    private Project getProject() {
+    static Project getProject() {
         Project p = new Project();
         p.setId(1L);
         p.setGridIdentifier("projectgridid");
         return p;
     }
 
-    private void validate(Project p) {
+    private static void validate(Project p) {
         Project orig = getProject();
         assertNotNull(p);
         assertEquals(orig.getGridIdentifier(), p.getGridIdentifier());
         assertEquals(orig.getId(), p.getId());
     }
 
-    private Experiment getExperiment() {
+    static Experiment getExperiment() {
         Experiment e = new Experiment();
         e.setId(1L);
         e.setTitle("experimentTitle");
@@ -211,7 +133,7 @@ public class LoadCastorMappingTest extends TestCase {
         return e;
     }
 
-    private void validate(Experiment e) {
+    private static void validate(Experiment e) {
         Experiment orig = getExperiment();
         assertNotNull(e);
         assertEquals(orig.getId(), e.getId());

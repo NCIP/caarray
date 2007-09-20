@@ -30,9 +30,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * The actual CaArray CQL processing implementation.  Handles remote EJB integration and
+ * converting the remote EJB API to the api expected by grid clients.
+ */
 public class CaArrayCQLQueryProcessor extends CQLQueryProcessor {
     protected static Log LOG = LogFactory.getLog(CaArrayCQLQueryProcessor.class.getName());
-    static final CaArraySearchService searchService;
+    private static final CaArraySearchService searchService;
 
     static {
         CaArraySearchService svc = null;
@@ -138,11 +142,21 @@ public class CaArrayCQLQueryProcessor extends CQLQueryProcessor {
         return result;
     }
 
+    /**
+     * Call out to the remote EJB that actually processes the query.
+     * @param cqlQuery query to run
+     * @return list of domain objects that match the query criteria
+     */
     protected List<AbstractCaArrayObject> queryCaArrayService(final CQLQuery cqlQuery) {
         LOG.debug("querying ....");
         return searchService.search(CQL2CQL.convert(cqlQuery));
     }
 
+    /**
+     * Get xml mappings.
+     * @return xml mappings
+     * @throws Exception on error
+     */
     protected Mappings getClassToQnameMappings() throws Exception {
         // get the mapping file name
         String filename = ServiceConfigUtil.getClassToQnameMappingsFile();
