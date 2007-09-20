@@ -39,25 +39,25 @@
 		</not>
 	</condition>
 
-	<condition property="build.no.label">
+	<condition property="no.tag">
 		<and>
 			<not>
-				<isset property="create.label"/>
+				<isset property="create.tag"/>
 			</not>
 			<not>
-				<isset property="use.label"/>
+				<isset property="use.tag"/>
 			</not>
 		</and>
 	</condition>
 
-    <condition property="label.error">
+    <condition property="tag.error">
 		<and>
 			<isset property="svn.tag"/>
 			<not>
-				<isset property="use.label"/>
+				<isset property="use.tag"/>
 			</not>
 			<not>
-				<isset property="create.label"/>
+				<isset property="create.tag"/>
 			</not>
 		</and>
 	</condition>
@@ -69,14 +69,14 @@
 		<delete dir="${svn.local.trunk}" />
 	</target>
 	
-	<target name="svn:checkout-caarray" unless="use.label">
-		<echo message="Checking out latest caarray version from ${svn.caarray.url}...(no label)" />
+	<target name="svn:checkout-caarray" unless="use.tag">
+		<echo message="Checking out latest caarray version from ${svn.caarray.url}...(no tag)" />
 		<svn username="anonymous" password="">
 			<checkout url="${svn.caarray.url}/${svn.trunk.folder}/software" revision="HEAD" destPath="${svn.local.trunk}" />
 		</svn>
 	</target>
 	
-	<target name="svn:checkout-caarray-label" if="use.label">
+	<target name="svn:checkout-caarray-tag" if="use.tag">
 		<echo message="Checking out caarray from ${svn.caarray.url} using SVN tag ${svn.tag}..." />
 		<svn username="anonymous" password="">
 			<checkout url="${svn.caarray.url}${svn.tags.folder}/${svn.tag}/software" revision="HEAD" destPath="${svn.local.trunk}" />
@@ -92,13 +92,13 @@
    <target name="remote-deployment">
 		<antcall target="svn:scorch" />
 		<antcall target="svn:checkout-caarray" />
-		<antcall target="svn:checkout-caarray-label" />
+		<antcall target="svn:checkout-caarray-tag" />
 		<antcall target="prepare-remote-properties" />
 	    <ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml" target="remote-deploy"/>
 	</target>
 
 	<tstamp prefix="caarray" />
-	<target name="remote-deployment-createlabel" if="create.label">
+	<target name="remote-deployment-createtag" if="create.tag">
 	    <echo message="Deploying to ${ssh.server.hostname} and adding SVN tag ${svn.tag}..." />
 	    <antcall target="remote-deployment" />
 	    <ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml" target="remote-deploy"/>
@@ -113,22 +113,23 @@
 	<target name="help">
 	  <echo>
         Example usage: ant -f remote-build.xml -Dbuild.envpropertyfile=C:/dev/caarray2/software/build/DEV.properties -Dnotest=true -Dnoglobus=true
-        notest - Disables the execution of all automated tests
-        envpropertyfile - Fully-qualified path of property file (e.g. DEV.properties)
-        nodbintegration - Disable database execution (useful for Staging/Production)
-        nodeploy - Disable deployment
-        use.tag - Subversion tag name to be used in building
-        create.tag - Name of Subvesion tag to create to label trunk
-        noglobus - Temporary property to turn off use of Globus
-   	  </echo>
+        envpropertyfile (required) – sets the environment property file. Has to be a fully qualified file name, e.g. c:\temp\nci\DEV.properties
+        notest – when present, all tests will be skipped (required, temporary)
+        nodbintegration – when present,  skips database integration
+        nodeploy – when present, skips JBoss deployment
+        noglobus – when present,  skips Globus deployment and tests (temporary)
+        use.tag – use the provided tag to build. Mostly needed by QA to deploy a specific tag. Needs svn.tag to work properly
+        create.tag – tells the script that a new SVN tag will be created. Needs svn.tag to work properly
+        svn.tag – specifies the tag to be used or created
+      </echo>
 	</target>
 
 	<target name="diagnostics" depends="fail-if-no-antunit, fail-if-no-jsch">
 	  <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/test-build.xml" />
 	</target>
 
-	<target name="fail-if-no-label" if="label.error">
-      <fail>ERROR: When svn.tag property is passed, there must be either a use.label or create.label System property</fail>
+	<target name="fail-if-no-tag" if="tag.error">
+      <fail>ERROR: When svn.tag property is passed, there must be either a use.tag or create.tag System property</fail>
 	</target>
 
 	 <target name="fail-if-no-jsch" if="no.jsch">
@@ -145,6 +146,6 @@
 		<fail>${antunit.jar} must be in your ${ant.home}/lib directory. This file (${antunit.jar}) has been copied to your ${ant.home}/lib directory. IMPORTANT: You must rerun your build script again.</fail>
 	</target>
 	
-	<target name="all" depends="diagnostics, fail-if-no-label, remote-deployment-createlabel, remote-deployment" />	   
+	<target name="all" depends="diagnostics, fail-if-no-tag, remote-deployment-createtag, remote-deployment" />	   
 
 </project> 
