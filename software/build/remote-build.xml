@@ -5,7 +5,7 @@
 <project name="caarray-remote-deploy" default="all" basedir=".">	
 	
 	<!-- PROPERTIES -->
-	<property file="${build.envpropertyfile}" />
+	<property file="${envpropertyfile}" />
 	<property file="local.properties" />
 	<property name="lib.dir" value="../lib" />
 	<property name="svn.tags.folder" value="tags" />
