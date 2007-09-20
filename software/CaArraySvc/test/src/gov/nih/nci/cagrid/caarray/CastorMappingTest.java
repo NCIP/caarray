@@ -43,6 +43,7 @@ public class CastorMappingTest extends TestCase {
     public void testBasic() throws Exception {
         Project p = getProject();
         Project p2 = roundTrip(p);
+
         validate(p2);
     }
 
@@ -73,12 +74,13 @@ public class CastorMappingTest extends TestCase {
         Experiment e2 = p2.getExperiment();
         validate(e2);
 
-        assertEquals(publication, e.getPublications().iterator().next());
+        assertEquals(publication, e2.getPublications().iterator().next());
 
-        CaArrayFile f2 = p.getFiles().iterator().next();
+        CaArrayFile f2 = p2.getFiles().iterator().next();
         assertEquals(f, f2);
         assertEquals(FileStatus.IMPORTED, f2.getFileStatus());
-        assertEquals(p, f2.getProject()); // Check the back pointer
+        // commenting this out for now, since we're eliminating backpointer references.
+        // assertEquals(p, f2.getProject()); // Check the back pointer
     }
 
     @SuppressWarnings("unchecked")
