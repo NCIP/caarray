@@ -9,10 +9,10 @@ Prereqs: It is assumed you have Ant 1.7 and a JDK installed and in your System's
    4. For the DEV environment and from the command line in your [caarray2]/software/build directory, type: 
 
    (Without Tag)
-   ant -f remote-build.xml -Dbuild.envpropertyfile=C:\dev\caarray2\software\build\DEV.properties
+   ant -f remote-build.xml -Denvpropertyfile=C:\dev\caarray2\software\build\DEV.properties
     
    (With Tag)
-   ant -f remote-build.xml -Dbuild.envpropertyfile=C:\dev\caarray2\software\build\DEV.properties -Dlabel.ear=CAARRAY_R2_0_0_QA2
+   ant -f remote-build.xml -Dnotest=true -Denvpropertyfile=C:\dev\caarray2\software\build\DEV.properties -Dcreate.tag=true -Dsvn.tag=CAARRAY_R2_0_0_QA2
 
    5. Once deployment is complete, verify a successful remote deployment by going to http://cbvapp-d1002.nci.nih.gov:19280/caarray/ 
 
@@ -21,8 +21,8 @@ For QA, use the same procedures with the following exceptions:
 
    4. For the QA environment and from the command line in your [caarray2]/software/build directory, type: 
 
-   ant -f remote-build.xml -Dbuild.envpropertyfile=C:\dev\caarray2\software\build\QA.properties -Dlabel.ear=CAARRAY_R2_0_0_QA2
-   5. Once deployment is complete, verify a successful remote deployment by going to    http://cbvapp-q1001.nci.nih.gov:19280/caarray/
+   ant -f remote-build.xml -Dnotest=true -Denvpropertyfile=C:\dev\caarray2\software\build\QA.properties -Duse.tag=true -Dsvn.tag=CAARRAY_R2_0_0_QA2
+   5. Once deployment is complete, verify a successful remote deployment by going to http://cbvapp-q1001.nci.nih.gov:19280/caarray/
 
 For additonal detail on this process, see https://gforge.nci.nih.gov/svnroot/caarray2/trunk/docs/deployment/auto-remote-deploy/
 

@@ -113,14 +113,15 @@
 	<target name="help">
 	  <echo>
         Example usage: ant -f remote-build.xml -Denvpropertyfile=C:/dev/caarray2/software/build/DEV.properties -Dnotest=true -Dnoglobus=true
-        envpropertyfile Required sets the environment property file. Has to be a fully qualified file
-        notest  When present, all tests will be skipped (required, temporary)
-        nodbintegration when present,  skips database integration
-        nodeploy when present, skips JBoss deployment
+        envpropertyfile: Required sets the environment property file. Has to be a fully qualified file
+        notest:  When present, all tests will be skipped (required, temporary)
+        nodbintegration: When present,  skips database integration
+        nodeploy: When present, skips JBoss deployment
+		nocheck: When present skips static analysis checks
         noglobus When present,  skips Globus deployment and tests (temporary)
-        use.tag Use the provided tag to build. Mostly needed by QA to deploy a specific tag. Needs svn.tag to work properly
-        create.tag  A new SVN tag will be created. Needs svn.tag to work properly
-        svn.tag  Specifies the tag to be used or created
+        use.tag: Use the provided tag to build. Mostly needed by QA to deploy a specific tag. Needs svn.tag to work properly
+        create.tag: A new SVN tag will be created. Needs svn.tag to work properly
+        svn.tag: Specifies the tag to be used or created
       </echo>
 	</target>
 

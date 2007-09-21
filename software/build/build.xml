@@ -864,7 +864,9 @@
     <!-- ** CHECK TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
 
-    <target name="check" depends="check:checkstyle,check:pmd">
+    <target name="check" unless="nocheck">
+		<antcall target="check:checkstyle" />
+		<antcall target="check:pmd" />
         <fail if="checkstyle.failure" message="There were Checkstyle failures." />
         <fail if="pmd.failure" message="There were PMD failures." />
     </target>
