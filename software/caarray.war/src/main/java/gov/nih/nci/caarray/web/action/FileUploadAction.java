@@ -92,14 +92,10 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
-
-import org.apache.commons.io.FileUtils;
 
 import com.opensymphony.xwork2.validator.annotations.Validation;
 
