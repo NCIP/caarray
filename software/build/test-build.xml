@@ -10,6 +10,15 @@
   </classpath>
 </taskdef>
 
+  <condition property="isWindows">
+    <and>
+        <os family="windows"/>
+		<not>
+   		  <os family="win9x"/>
+		</not>
+    </and>
+  </condition>
+
   <target name="setUp">
   </target>
 
@@ -26,7 +35,7 @@
   </target>
 
   <target name="testSuite" depends="testEnvPropertyFile,testJavaSecureChannelFileExists, 
-  testPropertiesFileExists,testSshKeyFileExists,testSvnLocalTrunk,testBuildNoTest" />
+  testPropertiesFileExists,testSshKeyFileExists,testSvnLocalTrunk,testIsWindows,testBuildNoTest" />
 
   <target name="testEnvPropertyFile">
 	<au:assertPropertySet name="envpropertyfile" message="Target environment file not found. 
@@ -39,6 +48,10 @@
 
   <target name="testSvnLocalTrunk">
 	<au:assertPropertySet name="svn.local.trunk" message="svn.local.trunk property not set."/>  
+  </target>
+
+  <target name="testIsWindows">
+	<au:assertPropertySet name="isWindows" message="Currently, remote-build.xml only runs on Windows."/>  
   </target>
 
   <target name="testPropertiesFileExists">
