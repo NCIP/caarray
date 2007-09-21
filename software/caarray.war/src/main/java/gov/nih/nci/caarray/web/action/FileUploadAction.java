@@ -88,42 +88,39 @@ import gov.nih.nci.caarray.web.delegate.ManageFilesDelegate;
 import gov.nih.nci.caarray.web.exception.CaArrayException;
 import gov.nih.nci.caarray.web.helper.FileEntry;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-import com.opensymphony.xwork2.ValidationAware;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.io.FileUtils;
+
+import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
  * @author John Hedden
  *
  */
-public class FileUploadAction extends BaseAction implements ValidationAware {
+@Validation
+public class FileUploadAction extends BaseAction {
 
     private static final long serialVersionUID = 1L;
+
     private File file;
+    private String contentType;
+    private String filename;
+
     private Project project;
-    private String fileContentType;
-    private String fileFileName;
-    private String name;
     private List<FileEntry> fileEntries;
 
     static final int FILE_LENGTH = 2097152;
     static final int BYTE_LENGTH = 8192;
-
-    /**
-     * default execute method.
-     * @return String
-     * @throws Exception Exception
-     */
-    @SuppressWarnings("PMD")
-    public String execute() throws Exception {
-
-        return SUCCESS;
-    }
 
 
     /**
@@ -132,41 +129,93 @@ public class FileUploadAction extends BaseAction implements ValidationAware {
      * @throws Exception Exception
      */
     @SuppressWarnings("PMD")
-    public String upload() throws Exception {
+    public String execute() throws Exception {
+        OutputStream os = null;
+        try {
+            File uploadedFile = getFile();
+            LOG.info("Writing uploaded file to " + uploadedFile.getAbsolutePath());
+            os = new BufferedOutputStream(new FileOutputStream(uploadedFile));
+            os.write(getRawBytes(getUpload()));
 
-        if (file == null || file.length() > FILE_LENGTH) {
-            addActionError(getText("maxLengthExceeded"));
+            HttpSession session = getSession();
+            fileEntries = (List<FileEntry>) session.getAttribute("fileEntries");
+            fileEntries.add(new FileEntry(
+                    getDelegate().getProjectManagementService().addFile(getProject(), uploadedFile)));
+
+        } catch (Exception e) {
+            String msg = "Unable to upload file: " + e.getMessage();
+            LOG.error(msg, e);
+            addActionError(getText("errorUploading"));
             return INPUT;
+        } finally {
+            os.close();
         }
-
-        // the directory to upload to
-        String uploadDir = System.getProperty("java.io.tmpdir");
-
-        // write the file to the file specified
-        File dirPath = new File(uploadDir, getProject().getId().toString());
-
-        if (!dirPath.exists()) {
-            dirPath.mkdirs();
-        }
-
-        //retrieve the file data
-        InputStream stream = new FileInputStream(file);
-
-        //write the file to the file specified
-        OutputStream bos = new FileOutputStream(uploadDir + fileFileName);
-        int bytesRead = 0;
-        byte[] buffer = new byte[BYTE_LENGTH];
-
-        while ((bytesRead = stream.read(buffer, 0, BYTE_LENGTH)) != -1) {
-            bos.write(buffer, 0, bytesRead);
-        }
-
-        fileEntries.add(new FileEntry(getDelegate().getProjectManagementService().addFile(getProject(), dirPath)));
-
-        bos.close();
-        stream.close();
-
         return SUCCESS;
+    }
+
+    /**
+     * @return file based upon the uploaded file name
+     * (currently will create additional CaArrayFiles)
+     */
+    @SuppressWarnings("unchecked")
+    private File getFile() {
+
+        HttpSession session = getSession();
+        List<Project> projects = (List<Project>) session.getAttribute("projects");
+        String myProject = (String) session.getAttribute("projectName");
+
+        for (Project projectList : projects) {
+            if (projectList.getExperiment().getTitle().equalsIgnoreCase(myProject))
+            {
+                project = projectList;
+            }
+        }
+
+        File projectDirectory = new File(System.getProperty("java.io.tmpdir"), project.getId().toString());
+        projectDirectory.mkdirs();
+        return new File(projectDirectory, getUploadFileName());
+    }
+
+    /**
+     * Turn file into bytes.
+     * @param f
+     * @return
+     */
+    private static byte[] getRawBytes(File f) {
+        try {
+            if (!f.exists()) {
+                return null;
+            }
+            FileInputStream fin = new FileInputStream(f);
+            byte[] buffer = new byte[(int) f.length()];
+            fin.read(buffer);
+            fin.close();
+            return buffer;
+        } catch (Exception e) {
+            LOG.error(e);
+            return null;
+        }
+    }
+
+    /**
+     * @return the fileEntries
+     */
+    public List<FileEntry> getFileEntries() {
+        return fileEntries;
+    }
+
+    /**
+     * @param fileEntries the fileEntries to set
+     */
+    public void setFileEntries(List<FileEntry> fileEntries) {
+        this.fileEntries = fileEntries;
+    }
+
+    /**
+     * @param project the project to set
+     */
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     /**
@@ -185,67 +234,51 @@ public class FileUploadAction extends BaseAction implements ValidationAware {
     }
 
     /**
-     * set file content type.
-     * @param fileContentType String
+     *
+     * @param file
      */
-    public void setFileContentType(String fileContentType) {
-        this.fileContentType = fileContentType;
-    }
-
-    /**
-     * get file content type.
-     * @return String
-     */
-    public String getFileContentType() {
-        return fileContentType;
-    }
-
-    /**
-     * get file.
-     * @return file File
-     */
-    public File getFile() {
-        return file;
-    }
-
-    /**
-     * set file.
-     * @param file File
-     */
-    public void setFile(File file) {
+    public void setUpload(File file) {
         this.file = file;
+     }
+
+    /**
+    *
+    * @param file
+    */
+   public File getUpload() {
+       return file;
     }
 
     /**
-     * set file.
-     * @param name String
+     *
+     * @param contentType
      */
-    public void setName(String name) {
-        this.name = name;
-    }
+     public void setUploadContentType(String contentType) {
+        this.contentType = contentType;
+     }
 
-    /**
-     * getName.
-     * @return String
+     /**
+     *
+     * @param contentType
      */
-    public String getName() {
-        return name;
-    }
+     public String getUploadContentType() {
+        return contentType;
+     }
 
-    /**
-     * set file.
-     * @param fileFileName String
-     */
-    public void setFileFileName(String fileFileName) {
-        this.fileFileName = fileFileName;
-    }
+     /**
+      *
+      * @param filename
+      */
+     public void setUploadFileName(String filename) {
+        this.filename = filename;
+     }
 
-    /**
-     * getFileFileName.
-     * @return String
+     /**
+     *
+     * @param filename
      */
-    public String getFileFileName() {
-        return fileFileName;
+    public String getUploadFileName() {
+       return filename;
     }
 
     /**
@@ -256,5 +289,6 @@ public class FileUploadAction extends BaseAction implements ValidationAware {
     private ManageFilesDelegate getDelegate() throws CaArrayException {
         return (ManageFilesDelegate) DelegateFactory.getDelegate(DelegateFactory.MANAGE_FILES);
     }
+
 }
 

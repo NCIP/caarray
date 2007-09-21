@@ -1,14 +1,24 @@
 package gov.nih.nci.caarray.web.action;
 
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.web.delegate.DelegateFactory;
+import gov.nih.nci.caarray.web.delegate.ProjectDelegate;
+import gov.nih.nci.caarray.web.exception.CaArrayException;
 import gov.nih.nci.caarray.web.helper.FileEntry;
 import gov.nih.nci.caarray.web.util.LabelValue;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.beanutils.PropertyUtils;
 
 /**
  * ManageFilesAction.
@@ -23,19 +33,8 @@ public class ManageFilesAction extends BaseAction {
     private static final long serialVersionUID = 1L;
     private Project project;
     private List<FileEntry> fileEntries;
-
-    /**
-     * Struts execute method.
-     * @return success or failure.
-     */
-    public String execute() {
-
-        HttpServletRequest request = getRequest();
-        LabelValue labelValue = new LabelValue("Return to Workspace", "listProjects.action");
-        request.setAttribute("workspace", labelValue);
-
-        return SUCCESS;
-    }
+    private FileEntry fileEntry;
+    private CaArrayFile caArrayFile;
 
     /**
      * edit a project.
@@ -44,14 +43,135 @@ public class ManageFilesAction extends BaseAction {
      */
     @SuppressWarnings("PMD")
     public String manageFiles() throws Exception {
-
-        loadFileEntries();
-
         HttpServletRequest request = getRequest();
+        HttpSession session = getSession();
         LabelValue labelValue = new LabelValue("Return to Workspace", "listProjects.action");
         request.setAttribute("workspace", labelValue);
 
+        project = (Project) session.getAttribute("project");
+        loadFileEntries();
+        loadFileTypes();
+
         return SUCCESS;
+    }
+
+    /**
+     * uploads file.
+     * @return String
+     * @throws Exception Exception
+     */
+    @SuppressWarnings("PMD")
+    public String viewMessages() throws Exception {
+
+        HttpSession session = getSession();
+        HttpServletRequest request = getRequest();
+        String projectFile = (String) request.getParameter("projectFile");
+        int projectInt;
+        if (projectFile == null) {
+            projectInt = 0;
+        } else {
+            projectInt = new Integer(projectFile).intValue();
+        }
+
+
+        List<FileEntry> fileEntries = (List<FileEntry>) session.getAttribute("fileEntries");
+
+        for (int i = 0; i < fileEntries.size(); i++) {
+            if (i == projectInt) {
+                fileEntry = fileEntries.get(i);
+            }
+        }
+        request.setAttribute("fileEntry", fileEntry);
+
+        LabelValue labelValue = new LabelValue("Return to Workspace", "listProjects.action");
+        request.setAttribute("workspace", labelValue);
+        LabelValue manageFiles = new LabelValue("Manage Files", "manageFiles.action");
+        request.setAttribute("manageFiles", manageFiles);
+        return SUCCESS;
+    }
+
+    /**
+     * uploads file.
+     * @return String
+     * @throws Exception Exception
+     */
+    @SuppressWarnings("PMD")
+    public String validateFile() throws Exception {
+        HttpSession session = getSession();
+        HttpServletRequest request = getRequest();
+
+        Enumeration myenum = request.getParameterNames();
+
+        while (myenum.hasMoreElements()) {
+          String name = (String) myenum.nextElement();
+          String values = request.getParameter(name);
+
+          String REGEX = ":";
+          Pattern p = Pattern.compile(REGEX);
+          String[] items = p.split(name);
+
+          if (items[2].equalsIgnoreCase("selected")){
+              String file = items[1];
+              Project project = (Project) session.getAttribute("project");
+              List<FileEntry> files = (List<FileEntry>) session.getAttribute("fileEntries");
+              CaArrayFileSet fileSet = new CaArrayFileSet(project);
+              for (int j = 0; j < files.size(); j++) {
+                  if (String.valueOf(j).equalsIgnoreCase(file)) {
+                      fileEntry = files.get(j);
+                      fileSet.add(fileEntry.getCaArrayFile());
+                      getDelegate().getFileManagementService().validateFiles(fileSet);
+                  }
+              }
+
+          }
+
+        }
+        return SUCCESS;
+    }
+
+    /*
+    private boolean typesSetForSelectedFiles() {
+        for (CaArrayFile selectedCaArrayFile : getSelectedFiles().getFiles()) {
+            if (selectedCaArrayFile.getType() == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void handleUnsetFileTypes() {
+        StringBuffer messageBuffer = new StringBuffer();
+        messageBuffer.append("Type needs to be selected for the following files: ");
+        for (CaArrayFile selectedCaArrayFile : getSelectedFiles().getFiles()) {
+            if (selectedCaArrayFile.getType() == null) {
+                messageBuffer.append(selectedCaArrayFile.getName());
+                messageBuffer.append(' ');
+            }
+        }
+        FacesContext.getCurrentInstance().addMessage(
+                null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBuffer.toString(), ""));
+    }
+
+    private CaArrayFileSet getSelectedFiles() {
+        CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
+        for (FileEntry fileEntry : fileEntries) {
+            if (fileEntry.isSelected()) {
+                fileSet.add(fileEntry.getCaArrayFile());
+            }
+        }
+        return fileSet;
+    }
+    */
+
+    /**
+     * uploads file.
+     * @return String
+     * @throws Exception Exception
+     */
+    @SuppressWarnings("PMD")
+    public String importFile() throws Exception {
+        addActionError(getText("maxLengthExceeded"));
+        return INPUT;
     }
 
     private void loadFileEntries() {
@@ -59,5 +179,25 @@ public class ManageFilesAction extends BaseAction {
         for (CaArrayFile nextCaArrayFile : project.getFilesList()) {
             fileEntries.add(new FileEntry(nextCaArrayFile));
         }
+        HttpSession session = getSession();
+        session.setAttribute("fileEntries", fileEntries);
+    }
+
+    public void loadFileTypes() {
+        List<LabelValue> items = new ArrayList<LabelValue>();
+        items.add(new LabelValue("", "UNKNOWN"));
+        for (FileType fileType : FileType.getTypes()) {
+            items.add(new LabelValue(fileType.getName(), fileType.getName()));
+        }
+        HttpSession session = getSession();
+        session.setAttribute("fileTypes", items);
+    }
+    /**
+     * gets the delegate from factory.
+     * @return Delegate ProjectDelegate
+     * @throws CaArrayException
+     */
+    private ProjectDelegate getDelegate() throws CaArrayException {
+        return (ProjectDelegate) DelegateFactory.getDelegate(DelegateFactory.PROJECT);
     }
 }

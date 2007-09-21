@@ -19,43 +19,8 @@
 
     <!-- Configuration for the default package. -->
     <package name="default" extends="struts-default">
-        <interceptors>
-            <!-- Copied from struts-default.xml and changed validation exclude methods -->
-            <interceptor-stack name="defaultStack">
-                <interceptor-ref name="exception"/>
-                <interceptor-ref name="alias"/>
-                <interceptor-ref name="servlet-config"/>
-                <interceptor-ref name="prepare"/>
-                <interceptor-ref name="i18n"/>
-                <interceptor-ref name="chain"/>
-                <interceptor-ref name="debugging"/>
-                <interceptor-ref name="profiling"/>
-                <interceptor-ref name="scoped-model-driven"/>
-                <interceptor-ref name="model-driven"/>
-                <interceptor-ref name="fileUpload"/>
-                <interceptor-ref name="checkbox"/>
-                <interceptor-ref name="static-params"/>
-                <interceptor-ref name="params">
-                    <param name="excludeParams">dojo\..*</param>
-                </interceptor-ref>
-                <interceptor-ref name="conversionError"/>
-                <interceptor-ref name="validation">
-                    <param name="excludeMethods">cancel,execute,delete,edit,list,start</param>
-                </interceptor-ref>
-                <interceptor-ref name="workflow">
-                    <param name="excludeMethods">input,back,cancel,browse</param>
-                </interceptor-ref>
-            </interceptor-stack>
-            <interceptor-stack name="fileUploadStack">
-                <interceptor-ref name="fileUpload"/>
-                <interceptor-ref name="defaultStack"/>
-            </interceptor-stack>
-            <interceptor-stack name="adminCheck">
-                <interceptor-ref name="defaultStack"/>
-            </interceptor-stack>
-        </interceptors>
 
-         <global-results>
+        <global-results>
             <result name="error">/error.jsp</result>
             <result name="home" type="redirect-action">listProjects</result>
         </global-results>
@@ -80,13 +45,25 @@
             <result name="success">/pages/projectDetails.jsp</result>
         </action>        
         
-        <action name="manageFiles" class="manageFilesAction"> 
+        <action name="manageFiles" class="manageFilesAction" method="manageFiles"> 
             <result name="success">/pages/projectFiles.jsp</result>
         </action>
         
-        <action name="uploadFile" class="fileUploadAction">
-            <interceptor-ref name="fileUploadStack"/>
+        <action name="doUpload" class="fileUploadAction">
+            <interceptor-ref name="fileUpload"/>
+            <interceptor-ref name="basicStack"/>
+            <result name="input">/pages/projectFiles.jsp</result>
             <result name="success" type="chain">manageFiles</result>
+        </action>
+        
+        <action name="doImport" class="manageFilesAction">
+            <result name="input">/pages/projectFiles.jsp</result>
+            <result name="success" type="chain">manageFiles</result>
+        </action>
+        
+        <action name="viewMessages" class="manageFilesAction" method="viewMessages">
+            <result name="input">/pages/projectFiles.jsp</result>
+            <result name="success">/pages/validationMessages.jsp</result>
         </action>
                 
     </package>
