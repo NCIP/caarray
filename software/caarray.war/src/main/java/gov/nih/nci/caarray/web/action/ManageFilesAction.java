@@ -18,8 +18,6 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.beanutils.PropertyUtils;
-
 /**
  * ManageFilesAction.
  * @author John Hedden
@@ -100,7 +98,7 @@ public class ManageFilesAction extends BaseAction {
         HttpSession session = getSession();
         HttpServletRequest request = getRequest();
 
-        Enumeration myenum = request.getParameterNames();
+        Enumeration<String> myenum = request.getParameterNames();
 
         while (myenum.hasMoreElements()) {
           String name = (String) myenum.nextElement();
@@ -117,61 +115,70 @@ public class ManageFilesAction extends BaseAction {
               CaArrayFileSet fileSet = new CaArrayFileSet(project);
               for (int j = 0; j < files.size(); j++) {
                   if (String.valueOf(j).equalsIgnoreCase(file)) {
-                      fileEntry = files.get(j);
-                      fileSet.add(fileEntry.getCaArrayFile());
-                      getDelegate().getFileManagementService().validateFiles(fileSet);
+
+                      try {
+                          fileEntry = files.get(j);
+                          fileSet.add(fileEntry.getCaArrayFile());
+                          getDelegate().getFileManagementService().validateFiles(fileSet);
+                          return SUCCESS;
+                      } catch (Exception e)
+                      {
+                          //e.printStackTrace();
+                      }
+                      finally {
+                         //do nothing
+                      }
                   }
               }
-
           }
-
         }
         return SUCCESS;
     }
 
-    /*
-    private boolean typesSetForSelectedFiles() {
-        for (CaArrayFile selectedCaArrayFile : getSelectedFiles().getFiles()) {
-            if (selectedCaArrayFile.getType() == null) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private void handleUnsetFileTypes() {
-        StringBuffer messageBuffer = new StringBuffer();
-        messageBuffer.append("Type needs to be selected for the following files: ");
-        for (CaArrayFile selectedCaArrayFile : getSelectedFiles().getFiles()) {
-            if (selectedCaArrayFile.getType() == null) {
-                messageBuffer.append(selectedCaArrayFile.getName());
-                messageBuffer.append(' ');
-            }
-        }
-        FacesContext.getCurrentInstance().addMessage(
-                null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBuffer.toString(), ""));
-    }
-
-    private CaArrayFileSet getSelectedFiles() {
-        CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
-        for (FileEntry fileEntry : fileEntries) {
-            if (fileEntry.isSelected()) {
-                fileSet.add(fileEntry.getCaArrayFile());
-            }
-        }
-        return fileSet;
-    }
-    */
-
     /**
-     * uploads file.
-     * @return String
+     * import the file.
+     * @return string String
      * @throws Exception Exception
      */
-    @SuppressWarnings("PMD")
     public String importFile() throws Exception {
-        addActionError(getText("maxLengthExceeded"));
-        return INPUT;
+        HttpSession session = getSession();
+        HttpServletRequest request = getRequest();
+
+        Enumeration<String> myenum = request.getParameterNames();
+
+        while (myenum.hasMoreElements()) {
+          String name = (String) myenum.nextElement();
+          String values = request.getParameter(name);
+
+          String REGEX = ":";
+          Pattern p = Pattern.compile(REGEX);
+          String[] items = p.split(name);
+
+          if (items[2].equalsIgnoreCase("selected")){
+              String file = items[1];
+              Project project = (Project) session.getAttribute("project");
+              List<FileEntry> files = (List<FileEntry>) session.getAttribute("fileEntries");
+              CaArrayFileSet fileSet = new CaArrayFileSet(project);
+              for (int j = 0; j < files.size(); j++) {
+                  if (String.valueOf(j).equalsIgnoreCase(file)) {
+
+                      try {
+                          fileEntry = files.get(j);
+                          fileSet.add(fileEntry.getCaArrayFile());
+                          getDelegate().getFileManagementService().importFiles(project, fileSet);;
+                          return SUCCESS;
+                      } catch (Exception e)
+                      {
+                          //e.printStackTrace();
+                      }
+                      finally {
+                         //do nothing
+                      }
+                  }
+              }
+          }
+        }
+        return SUCCESS;
     }
 
     private void loadFileEntries() {
