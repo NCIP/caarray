@@ -140,7 +140,9 @@ public class ManageFilesAction extends BaseAction {
      * @return string String
      * @throws Exception Exception
      */
+    @SuppressWarnings("PMD")
     public String importFile() throws Exception {
+        /*
         HttpSession session = getSession();
         HttpServletRequest request = getRequest();
 
@@ -179,6 +181,9 @@ public class ManageFilesAction extends BaseAction {
           }
         }
         return SUCCESS;
+        */
+        addActionError(getText("maxLengthExceeded"));
+        return INPUT;
     }
 
     private void loadFileEntries() {
