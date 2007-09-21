@@ -182,7 +182,7 @@ public class ManageFilesAction extends BaseAction {
         }
         return SUCCESS;
         */
-        addActionError(getText("maxLengthExceeded"));
+        addActionError(getText("errorImport"));
         return INPUT;
     }
 
