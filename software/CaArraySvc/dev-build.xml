@@ -200,4 +200,8 @@
        <echo message="TCPTCP"/>
     </target>
 
+	<target name="unpackLibDocs" description="Unpack the libDoc directory .zip files to read them">
+		<unzip src="${basedir}/libDoc/castor-0.9.9-doc.zip" dest="${basedir}/libDoc/castor-0.9.9-doc" overwrite="false"/>
+	</target>
+	
 </project>
