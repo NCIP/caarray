@@ -95,20 +95,20 @@ public class SubmitProjectProposalBasicTest extends AbstractSeleniumTest {
         loginAsPrincipalInvestigator();
 
         // - Choose the menu item "Propose Project"
-        clickAndWait("proposeProject.action");
+        clickAndWait("Propose Project");
 
         // - Provide a unique project title
         String title = "test" + System.currentTimeMillis();
-        selenium.type("projectForm:title", title);
+        selenium.type("title", title);
 
         // - Submit the proposal
-        clickAndWait("projectForm:submit");
+        clickAndWait("submit");
 
         // - The system returns to the workspace page (verify)
         assertEquals("Experiment Workspace", selenium.getText("//h1"));
 
         // - Verify that the new project is listed in the workspace
-        assertTrue(selenium.isTextPresent("Proposal with title '" + title + "' has been created successfully."));
+        assertTrue(selenium.isTextPresent("created successfully."));
         assertTrue(selenium.isTextPresent(title));
     }
 
