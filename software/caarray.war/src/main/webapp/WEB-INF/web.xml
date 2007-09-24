@@ -113,17 +113,17 @@
   <listener-class>gov.nih.nci.caarray.web.listener.StartupListener</listener-class>
  </listener>
  <servlet>
-  <servlet-name>dwr-invoker</servlet-name>
-  <servlet-class>org.directwebremoting.servlet.DwrServlet</servlet-class>
-  <init-param>
-   <param-name>debug</param-name>
-   <param-value>true</param-value>
-  </init-param>
- </servlet>
- <servlet-mapping>
-  <servlet-name>dwr-invoker</servlet-name>
-  <url-pattern>/dwr/*</url-pattern>
- </servlet-mapping>
+ <servlet-name>dwr</servlet-name>
+ <servlet-class>uk.ltd.getahead.dwr.DWRServlet</servlet-class>
+ <init-param>
+  <param-name>debug</param-name>
+  <param-value>true</param-value>
+ </init-param>
+</servlet>
+<servlet-mapping>
+ <servlet-name>dwr</servlet-name>
+ <url-pattern>/dwr/*</url-pattern>
+</servlet-mapping>
  <welcome-file-list>
   <welcome-file>index.jsp</welcome-file>
  </welcome-file-list>

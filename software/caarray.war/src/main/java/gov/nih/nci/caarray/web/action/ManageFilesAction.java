@@ -5,7 +5,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.web.delegate.DelegateFactory;
-import gov.nih.nci.caarray.web.delegate.ProjectDelegate;
+import gov.nih.nci.caarray.web.delegate.ManageFilesDelegate;
 import gov.nih.nci.caarray.web.exception.CaArrayException;
 import gov.nih.nci.caarray.web.helper.FileEntry;
 import gov.nih.nci.caarray.web.util.LabelValue;
@@ -18,35 +18,63 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.opensymphony.xwork2.validator.annotations.Validation;
+
 /**
- * ManageFilesAction.
+ * Manages Files for a particular project.
  * @author John Hedden
  *
  */
+@Validation
 public class ManageFilesAction extends BaseAction {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
+
     private Project project;
     private List<FileEntry> fileEntries;
+    private List<LabelValue> fileTypes;
     private FileEntry fileEntry;
     private CaArrayFile caArrayFile;
+    private Long id;
+    private List<LabelValue> navigationList;
 
     /**
-     * edit a project.
+     * edit files associated with a project.
+     * @return path String
+     * @throws Exception Exception
+     */
+    @SuppressWarnings("PMD")
+    public String edit() throws Exception {
+        //Action menu: to be removed at some point when have better idea.
+        navigationList = new ArrayList<LabelValue>();
+        LabelValue manageFiles = new LabelValue("Manage Files", "manageFiles.action");
+        LabelValue labelValue = new LabelValue("Return to Workspace", "listProjects.action");
+        navigationList.add(manageFiles);
+        navigationList.add(labelValue);
+
+        HttpSession session = getSession();
+        setProject(getDelegate().getProjectManagementService().getProject(id));
+        session.setAttribute("myProject", getProject());
+
+        return SUCCESS;
+    }
+
+    /**
+     * manage files for a project.
      * @return path String
      * @throws Exception Exception
      */
     @SuppressWarnings("PMD")
     public String manageFiles() throws Exception {
-        HttpServletRequest request = getRequest();
-        HttpSession session = getSession();
+        //Action menu: to be removed at some point when have better idea.
+        navigationList = new ArrayList<LabelValue>();
         LabelValue labelValue = new LabelValue("Return to Workspace", "listProjects.action");
-        request.setAttribute("workspace", labelValue);
+        navigationList.add(labelValue);
 
-        project = (Project) session.getAttribute("project");
+        HttpSession session = getSession();
+        Project myProject = (Project) session.getAttribute("myProject");
+        setProject(myProject);
+
         loadFileEntries();
         loadFileTypes();
 
@@ -54,46 +82,45 @@ public class ManageFilesAction extends BaseAction {
     }
 
     /**
-     * uploads file.
+     * view messages for file.
      * @return String
      * @throws Exception Exception
      */
     @SuppressWarnings("PMD")
     public String viewMessages() throws Exception {
+        //Action menu: to be removed at some point when have better idea.
+        navigationList = new ArrayList<LabelValue>();
+        LabelValue manageFiles = new LabelValue("Manage Files", "manageFiles.action");
+        LabelValue labelValue = new LabelValue("Return to Workspace", "listProjects.action");
+        navigationList.add(manageFiles);
+        navigationList.add(labelValue);
 
         HttpSession session = getSession();
         HttpServletRequest request = getRequest();
-        String projectFile = (String) request.getParameter("projectFile");
-        int projectInt;
-        if (projectFile == null) {
-            projectInt = 0;
-        } else {
-            projectInt = new Integer(projectFile).intValue();
-        }
 
+        Project myProject = (Project) session.getAttribute("myProject");
+        setProject(myProject);
 
-        List<FileEntry> fileEntries = (List<FileEntry>) session.getAttribute("fileEntries");
+        loadFileEntries();
 
-        for (int i = 0; i < fileEntries.size(); i++) {
-            if (i == projectInt) {
-                fileEntry = fileEntries.get(i);
+        String fileId = (String) request.getParameter("fileId");
+        for (FileEntry myFileEntry : getFileEntries()) {
+            if (myFileEntry.getCaArrayFile().getId() == Long.parseLong(fileId)) {
+                setFileEntry(myFileEntry);
             }
         }
-        request.setAttribute("fileEntry", fileEntry);
-
-        LabelValue labelValue = new LabelValue("Return to Workspace", "listProjects.action");
-        request.setAttribute("workspace", labelValue);
-        LabelValue manageFiles = new LabelValue("Manage Files", "manageFiles.action");
-        request.setAttribute("manageFiles", manageFiles);
         return SUCCESS;
     }
 
     /**
-     * uploads file.
+     * This method needs to be re-worked at some pt. I need to get a handle on
+     * Struts2 indexed properties first.  For now just go through request.getParamenterNames().
+     *
+     * validates file.
      * @return String
      * @throws Exception Exception
      */
-    @SuppressWarnings("PMD")
+    @SuppressWarnings({ "PMD", "unchecked" })
     public String validateFile() throws Exception {
         HttpSession session = getSession();
         HttpServletRequest request = getRequest();
@@ -102,32 +129,27 @@ public class ManageFilesAction extends BaseAction {
 
         while (myenum.hasMoreElements()) {
           String name = (String) myenum.nextElement();
-          String values = request.getParameter(name);
 
-          String REGEX = ":";
-          Pattern p = Pattern.compile(REGEX);
+          String myREGEX = ":";
+          Pattern p = Pattern.compile(myREGEX);
           String[] items = p.split(name);
 
-          if (items[2].equalsIgnoreCase("selected")){
-              String file = items[1];
-              Project project = (Project) session.getAttribute("project");
-              List<FileEntry> files = (List<FileEntry>) session.getAttribute("fileEntries");
-              CaArrayFileSet fileSet = new CaArrayFileSet(project);
-              for (int j = 0; j < files.size(); j++) {
-                  if (String.valueOf(j).equalsIgnoreCase(file)) {
+          //if pattern is like fileEntries:0:selected we know a checkbox has been selected
+          if (items[0].equalsIgnoreCase("fileEntries") && items[2].equalsIgnoreCase("selected")) {
+              String fileIndex = items[1];
 
-                      try {
-                          fileEntry = files.get(j);
-                          fileSet.add(fileEntry.getCaArrayFile());
-                          getDelegate().getFileManagementService().validateFiles(fileSet);
-                          return SUCCESS;
-                      } catch (Exception e)
-                      {
-                          //e.printStackTrace();
-                      }
-                      finally {
-                         //do nothing
-                      }
+              Project myProject = (Project) session.getAttribute("myProject");
+              setProject(myProject);
+
+              loadFileEntries();
+              CaArrayFileSet fileSet = new CaArrayFileSet(myProject);
+
+              for (int i = 0; i < getFileEntries().size(); i++) {
+                  if (String.valueOf(i).equalsIgnoreCase(fileIndex)) {
+                      fileEntry = getFileEntries(i);
+                      fileSet.add(fileEntry.getCaArrayFile());
+                      getDelegate().getFileManagementService().validateFiles(fileSet);
+                      return SUCCESS;
                   }
               }
           }
@@ -136,13 +158,15 @@ public class ManageFilesAction extends BaseAction {
     }
 
     /**
-     * import the file.
-     * @return string String
+     * This method needs to be re-worked at some pt. I need to get a handle on
+     * Struts2 indexed properties first.  For now just go through request.getParamenterNames().
+     *
+     * validates file.
+     * @return String
      * @throws Exception Exception
      */
-    @SuppressWarnings("PMD")
+    @SuppressWarnings({ "PMD", "unchecked" })
     public String importFile() throws Exception {
-        /*
         HttpSession session = getSession();
         HttpServletRequest request = getRequest();
 
@@ -150,66 +174,171 @@ public class ManageFilesAction extends BaseAction {
 
         while (myenum.hasMoreElements()) {
           String name = (String) myenum.nextElement();
-          String values = request.getParameter(name);
 
-          String REGEX = ":";
-          Pattern p = Pattern.compile(REGEX);
+          String myREGEX = ":";
+          Pattern p = Pattern.compile(myREGEX);
           String[] items = p.split(name);
 
-          if (items[2].equalsIgnoreCase("selected")){
-              String file = items[1];
-              Project project = (Project) session.getAttribute("project");
-              List<FileEntry> files = (List<FileEntry>) session.getAttribute("fileEntries");
-              CaArrayFileSet fileSet = new CaArrayFileSet(project);
-              for (int j = 0; j < files.size(); j++) {
-                  if (String.valueOf(j).equalsIgnoreCase(file)) {
+          //if pattern is like fileEntries:0:selected we know a checkbox has been selected
+          if (items[0].equalsIgnoreCase("fileEntries") && items[2].equalsIgnoreCase("selected")) {
+              String fileIndex = items[1];
 
-                      try {
-                          fileEntry = files.get(j);
-                          fileSet.add(fileEntry.getCaArrayFile());
-                          getDelegate().getFileManagementService().importFiles(project, fileSet);;
-                          return SUCCESS;
-                      } catch (Exception e)
-                      {
-                          //e.printStackTrace();
-                      }
-                      finally {
-                         //do nothing
-                      }
+              Project myProject = (Project) session.getAttribute("myProject");
+              setProject(myProject);
+
+              loadFileEntries();
+              CaArrayFileSet fileSet = new CaArrayFileSet(myProject);
+
+              for (int i = 0; i < getFileEntries().size(); i++) {
+                  if (String.valueOf(i).equalsIgnoreCase(fileIndex)) {
+                      fileEntry = getFileEntries(i);
+                      fileSet.add(fileEntry.getCaArrayFile());
+                      getDelegate().getFileManagementService().importFiles(getProject(), fileSet);
+                      return SUCCESS;
                   }
               }
           }
         }
         return SUCCESS;
-        */
-        addActionError(getText("errorImport"));
-        return INPUT;
     }
 
+
+    /**
+     * loads the file entries.
+     */
     private void loadFileEntries() {
-        fileEntries = new ArrayList<FileEntry>(project.getFiles().size());
-        for (CaArrayFile nextCaArrayFile : project.getFilesList()) {
+        setFileEntries(new ArrayList<FileEntry>(getProject().getFiles().size()));
+        for (CaArrayFile nextCaArrayFile : getProject().getFilesList()) {
             fileEntries.add(new FileEntry(nextCaArrayFile));
         }
-        HttpSession session = getSession();
-        session.setAttribute("fileEntries", fileEntries);
     }
 
+    /**
+     * Returns all <code>FileTypes</code> as <code>SelectItem</code>.
+     * Put these in application scope at some pt.
+     */
     public void loadFileTypes() {
         List<LabelValue> items = new ArrayList<LabelValue>();
         items.add(new LabelValue("", "UNKNOWN"));
         for (FileType fileType : FileType.getTypes()) {
             items.add(new LabelValue(fileType.getName(), fileType.getName()));
         }
-        HttpSession session = getSession();
-        session.setAttribute("fileTypes", items);
+        setFileTypes(items);
     }
+
+    /**
+     * @return the project
+     */
+    public Project getProject() {
+        return project;
+    }
+
+    /**
+     * @param project the project to set
+     */
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    /**
+     * @return the fileEntries
+     */
+    public List<FileEntry> getFileEntries() {
+        return fileEntries;
+    }
+
+    /**
+     * @param fileEntries the fileEntries to set
+     */
+    public void setFileEntries(List<FileEntry> fileEntries) {
+        this.fileEntries = fileEntries;
+    }
+
+    /**
+     * overloaded method to go file entry at index.
+     * @param index int
+     * @return fileEntry FileEntry
+     */
+    public FileEntry getFileEntries(int index) {
+        return (FileEntry) getFileEntries().get(index);
+    }
+
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the caArrayFile
+     */
+    public CaArrayFile getCaArrayFile() {
+        return caArrayFile;
+    }
+
+    /**
+     * @param caArrayFile the caArrayFile to set
+     */
+    public void setCaArrayFile(CaArrayFile caArrayFile) {
+        this.caArrayFile = caArrayFile;
+    }
+
+    /**
+     * @return the navigationList
+     */
+    public List<LabelValue> getNavigationList() {
+        return navigationList;
+    }
+
+    /**
+     * @param navigationList the navigationList to set
+     */
+    public void setNavigationList(List<LabelValue> navigationList) {
+        this.navigationList = navigationList;
+    }
+
+    /**
+     * @return the fileEntry
+     */
+    public FileEntry getFileEntry() {
+        return fileEntry;
+    }
+
+    /**
+     * @param fileEntry the fileEntry to set
+     */
+    public void setFileEntry(FileEntry fileEntry) {
+        this.fileEntry = fileEntry;
+    }
+
+    /**
+     * @return the fileTypes
+     */
+    public List<LabelValue> getFileTypes() {
+        return fileTypes;
+    }
+
+    /**
+     * @param fileTypes the fileTypes to set
+     */
+    public void setFileTypes(List<LabelValue> fileTypes) {
+        this.fileTypes = fileTypes;
+    }
+
     /**
      * gets the delegate from factory.
      * @return Delegate ProjectDelegate
      * @throws CaArrayException
      */
-    private ProjectDelegate getDelegate() throws CaArrayException {
-        return (ProjectDelegate) DelegateFactory.getDelegate(DelegateFactory.PROJECT);
+    private ManageFilesDelegate getDelegate() throws CaArrayException {
+        return (ManageFilesDelegate) DelegateFactory.getDelegate(DelegateFactory.MANAGE_FILES);
     }
 }

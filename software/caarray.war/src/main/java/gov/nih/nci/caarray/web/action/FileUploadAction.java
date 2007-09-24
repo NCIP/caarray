@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.web.action;
 
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.web.delegate.DelegateFactory;
 import gov.nih.nci.caarray.web.delegate.ManageFilesDelegate;
@@ -93,6 +94,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -106,6 +108,7 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 @Validation
 public class FileUploadAction extends BaseAction {
 
+
     private static final long serialVersionUID = 1L;
 
     private File file;
@@ -114,10 +117,6 @@ public class FileUploadAction extends BaseAction {
 
     private Project project;
     private List<FileEntry> fileEntries;
-
-    static final int FILE_LENGTH = 2097152;
-    static final int BYTE_LENGTH = 8192;
-
 
     /**
      * uploads file.
@@ -128,13 +127,17 @@ public class FileUploadAction extends BaseAction {
     public String execute() throws Exception {
         OutputStream os = null;
         try {
+
+            HttpSession session = getSession();
+            Project myProject = (Project) session.getAttribute("myProject");
+            setProject(myProject);
+
             File uploadedFile = getFile();
             LOG.info("Writing uploaded file to " + uploadedFile.getAbsolutePath());
             os = new BufferedOutputStream(new FileOutputStream(uploadedFile));
             os.write(getRawBytes(getUpload()));
 
-            HttpSession session = getSession();
-            fileEntries = (List<FileEntry>) session.getAttribute("fileEntries");
+            loadFileEntries();
             fileEntries.add(new FileEntry(
                     getDelegate().getProjectManagementService().addFile(getProject(), uploadedFile)));
 
@@ -150,24 +153,21 @@ public class FileUploadAction extends BaseAction {
     }
 
     /**
+     * loads the file entries.
+     */
+    private void loadFileEntries() {
+        setFileEntries(new ArrayList<FileEntry>(getProject().getFiles().size()));
+        for (CaArrayFile nextCaArrayFile : getProject().getFilesList()) {
+            fileEntries.add(new FileEntry(nextCaArrayFile));
+        }
+    }
+
+    /**
      * @return file based upon the uploaded file name
      * (currently will create additional CaArrayFiles)
      */
-    @SuppressWarnings("unchecked")
     private File getFile() {
-
-        HttpSession session = getSession();
-        List<Project> projects = (List<Project>) session.getAttribute("projects");
-        String myProject = (String) session.getAttribute("projectName");
-
-        for (Project projectList : projects) {
-            if (projectList.getExperiment().getTitle().equalsIgnoreCase(myProject))
-            {
-                project = projectList;
-            }
-        }
-
-        File projectDirectory = new File(System.getProperty("java.io.tmpdir"), project.getId().toString());
+        File projectDirectory = new File(System.getProperty("java.io.tmpdir"), getProject().getId().toString());
         projectDirectory.mkdirs();
         return new File(projectDirectory, getUploadFileName());
     }
@@ -231,15 +231,15 @@ public class FileUploadAction extends BaseAction {
 
     /**
      *
-     * @param file
+     * @param inFile File
      */
-    public void setUpload(File file) {
-        this.file = file;
+    public void setUpload(File inFile) {
+        this.file = inFile;
      }
 
     /**
     *
-    * @param file
+    * @return file
     */
    public File getUpload() {
        return file;
@@ -247,15 +247,15 @@ public class FileUploadAction extends BaseAction {
 
     /**
      *
-     * @param contentType
+     * @param inContentType String
      */
-     public void setUploadContentType(String contentType) {
-        this.contentType = contentType;
+     public void setUploadContentType(String inContentType) {
+        this.contentType = inContentType;
      }
 
      /**
      *
-     * @param contentType
+     * @return contentType
      */
      public String getUploadContentType() {
         return contentType;
@@ -263,15 +263,15 @@ public class FileUploadAction extends BaseAction {
 
      /**
       *
-      * @param filename
+      * @param inFileName String
       */
-     public void setUploadFileName(String filename) {
-        this.filename = filename;
+     public void setUploadFileName(String inFileName) {
+        this.filename = inFileName;
      }
 
      /**
      *
-     * @param filename
+     * @return filename
      */
     public String getUploadFileName() {
        return filename;

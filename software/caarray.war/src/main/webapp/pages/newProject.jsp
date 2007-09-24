@@ -4,19 +4,19 @@
 </head>
 <body>
     <div id="content" class="homepage">
-        <h1><c:out value="${requestScope.contentLabel}" /></h1>
+        <h1>Propose Experiment</h1>
         <%@ include file="/common/messages.jsp" %>
-        <s:form action="saveProject" method="post" validate="false">
+        <s:form id="projectForm" action="saveProject" method="post">
             <table>
                 <tr>
                     <th>Title for new project:</th>
                     <td>
-                        <s:textfield id="projectName" name="projectName" required="true"/>
+                        <s:textfield id="title" name="proposal.project.experiment.title"/>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <s:submit id="submit" key="button.save" />
+                        <s:submit id="submit" key="button.save"/>
                     </td>
                 </tr>
             </table>

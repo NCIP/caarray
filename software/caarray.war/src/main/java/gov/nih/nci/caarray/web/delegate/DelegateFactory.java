@@ -87,7 +87,8 @@ import gov.nih.nci.caarray.web.exception.CaArrayException;
 import java.util.HashMap;
 
 /**
- * Delegate Factory.
+ * Singleton Factory for Delegates which creates singletons.
+ * Could have used Spring.
  * @author John Hedden
  *
  */

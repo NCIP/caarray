@@ -7,7 +7,7 @@
 
      <!-- Constants -->
     <constant name="struts.enable.DynamicMethodInvocation" value="false" />
-    <constant name="struts.devMode" value="true" />
+    <constant name="struts.devMode" value="false" />
     <constant name="struts.i18n.encoding" value="UTF-8"/>
     <constant name="struts.objectFactory" value="spring"/>
     <constant name="struts.custom.i18n.resources" value="ApplicationResources,errors"/>
@@ -37,11 +37,12 @@
             <result name="success">/pages/newProject.jsp</result> 
         </action>
         
-        <action name="saveProject" class="projectAction" method="save"> 
+        <action name="saveProject" class="projectAction" method="save">
+            <result name="input">/pages/newProject.jsp</result> 
             <result name="success" type="chain">listProjects</result>
         </action>
         
-        <action name="editProject" class="projectAction" method="edit"> 
+        <action name="editProject" class="manageFilesAction" method="edit"> 
             <result name="success">/pages/projectDetails.jsp</result>
         </action>        
         

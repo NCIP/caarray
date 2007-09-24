@@ -1,32 +1,32 @@
 package gov.nih.nci.caarray.web.action;
 
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.Proposal;
 import gov.nih.nci.caarray.web.delegate.DelegateFactory;
 import gov.nih.nci.caarray.web.delegate.ProjectDelegate;
 import gov.nih.nci.caarray.web.exception.CaArrayException;
-import gov.nih.nci.caarray.web.helper.FileEntry;
 import gov.nih.nci.caarray.web.util.LabelValue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
  * ProjectAction.
  * @author John Hedden
  *
  */
+@Validation
 public class ProjectAction extends BaseAction {
 
     private static final long serialVersionUID = 1L;
+
+    private List<Project> projects;
     private Proposal proposal;
-    private Project project;
-    private List<FileEntry> fileEntries;
-    private String projectName = null;
+    private List<LabelValue> navigationList;
 
     /**
      * list all projects.
@@ -35,16 +35,14 @@ public class ProjectAction extends BaseAction {
      */
     @SuppressWarnings("PMD")
     public String list() throws Exception {
-        HttpServletRequest request = getRequest();
-        request.setAttribute("contentLabel", "Experiment Workspace");
-
+        //Action menu: to be removed at some point when have better idea.
+        navigationList = new ArrayList<LabelValue>();
         LabelValue labelValue = new LabelValue("Propose Project", "createProject.action");
-        request.setAttribute("proproseProject", labelValue);
+        navigationList.add(labelValue);
 
-        List<Project> projects = getDelegate().getProjectManagementService().getWorkspaceProjects();
-        //did this b/c using projects throughout.
         HttpSession session = getSession();
-        session.setAttribute("projects", projects);
+        setProjects(getDelegate().getProjectManagementService().getWorkspaceProjects());
+        session.setAttribute("myProjects", getProjects());
 
         return SUCCESS;
     }
@@ -56,11 +54,12 @@ public class ProjectAction extends BaseAction {
      */
     @SuppressWarnings("PMD")
     public String create() throws Exception {
-        HttpServletRequest request = getRequest();
-        request.setAttribute("contentLabel", "Propose Experiment");
-
+        //Action menu: to be removed at some point when have better idea.
+        navigationList = new ArrayList<LabelValue>();
         LabelValue labelValue = new LabelValue("Return to Workspace", "listProjects.action");
-        request.setAttribute("workspace", labelValue);
+        navigationList.add(labelValue);
+
+        setProposal(Proposal.createNew());
 
         return SUCCESS;
     }
@@ -72,76 +71,64 @@ public class ProjectAction extends BaseAction {
      */
     @SuppressWarnings("PMD")
     public String save() throws Exception {
-        proposal = Proposal.createNew();
-        proposal.getProject().getExperiment().setTitle(getProjectName());
-        getDelegate().getProjectManagementService().submitProposal(proposal);
-        List<String> args = new ArrayList<String>();
-        args.add(getProjectName());
-        saveMessage(getText("project.created", args));
-
-        HttpSession session = getSession();
-        session.setAttribute("projectName", getProjectName());
-
-        return SUCCESS;
-    }
-
-    /**
-     * edit a project.
-     * @return path String
-     * @throws Exception Exception
-     */
-    @SuppressWarnings("PMD")
-    public String edit() throws Exception {
-        HttpSession session = getSession();
-        HttpServletRequest request = getRequest();
-
-        String myProjectName = (String) request.getAttribute("projectName");
-        session.setAttribute("projectName", myProjectName);
-
-        List<Project> projects = (List<Project>) session.getAttribute("projects");
-        String myProject = (String) session.getAttribute("projectName");
-
-        for (Project projectList : projects) {
-            if (projectList.getExperiment().getTitle().equalsIgnoreCase(myProject))
-            {
-                project = projectList;
-            }
-        }
-
-        session.setAttribute("project", project);
-
+        //Action menu: to be removed at some point when have better idea.
+        navigationList = new ArrayList<LabelValue>();
         LabelValue labelValue = new LabelValue("Return to Workspace", "listProjects.action");
-        request.setAttribute("workspace", labelValue);
+        navigationList.add(labelValue);
 
-        LabelValue manageFiles = new LabelValue("Manage Files", "manageFiles.action");
-        request.setAttribute("manageFiles", manageFiles);
-
-        loadFileEntries();
-
+        if (getProposal().getProject().getExperiment().getTitle().length() > 0
+                && getProposal().getProject().getExperiment().getTitle() != null) {
+            getDelegate().getProjectManagementService().submitProposal(getProposal());
+            List<String> args = new ArrayList<String>();
+            args.add(getProposal().getProject().getExperiment().getTitle());
+            saveMessage(getText("project.created", args));
+        } else {
+            addActionError(getText("projectNameRequired"));
+            return INPUT;
+        }
         return SUCCESS;
     }
 
-    private void loadFileEntries() {
-        fileEntries = new ArrayList<FileEntry>(project.getFiles().size());
-        for (CaArrayFile nextCaArrayFile : project.getFilesList()) {
-            fileEntries.add(new FileEntry(nextCaArrayFile));
-        }
-        HttpSession session = getSession();
-        session.setAttribute("fileEntries", fileEntries);
+    /**
+     * @return the projects
+     */
+    public List<Project> getProjects() {
+        return projects;
     }
 
     /**
-     * @return the projectName
+     * @param projects the projects to set
      */
-    public String getProjectName() {
-        return projectName;
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
     }
 
     /**
-     * @param projectName the projectName to set
+     * @return the proposal
      */
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public Proposal getProposal() {
+        return proposal;
+    }
+
+    /**
+     * @param proposal the proposal to set
+     */
+    public void setProposal(Proposal proposal) {
+        this.proposal = proposal;
+    }
+
+    /**
+     * @return the navigationList
+     */
+    public List<LabelValue> getNavigationList() {
+        return navigationList;
+    }
+
+    /**
+     * @param navigationList the navigationList to set
+     */
+    public void setNavigationList(List<LabelValue> navigationList) {
+        this.navigationList = navigationList;
     }
 
     /**
@@ -152,5 +139,4 @@ public class ProjectAction extends BaseAction {
     private ProjectDelegate getDelegate() throws CaArrayException {
         return (ProjectDelegate) DelegateFactory.getDelegate(DelegateFactory.PROJECT);
     }
-
 }

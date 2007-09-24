@@ -3,27 +3,15 @@
 <div id="sidebar" class="homepage">
     <h1>Actions</h1>
     <table>
-        <tr>
-            <td>
-                <a id="manageFiles" href='<c:out value="${requestScope.manageFiles.value}" />'>
-                    <c:out value="${requestScope.manageFiles.label}" />
-                </a>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <a id="workspace" href='<c:out value="${requestScope.workspace.value}" />'>
-                    <c:out value="${requestScope.workspace.label}" />
-                </a>
-            </td>
-        </tr>
-         <tr>
-            <td>
-                <a id="proposeProject" href='<c:out value="${requestScope.proproseProject.value}" />'>
-                    <c:out value="${requestScope.proproseProject.label}" />
-                </a>
-            </td>
-        </tr>
+        <s:iterator value="navigationList">
+            <tr>
+                <td>
+                    <a id='navigation:<s:property value="label" />' href='<s:property value="value" />'>
+                        <s:property value="label" />
+                    </a>
+                </td>
+            </tr>
+        </s:iterator>
     </table>
     <h1 style="border-top:1px solid #fff;">What's New</h1>
     <p class="small">

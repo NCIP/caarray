@@ -6,20 +6,20 @@
     <div id="content" class="homepage">
         <h1>Experiment Workspace</h1>
         <%@ include file="/common/messages.jsp" %>
-        <p>Validation Messages for <c:out value="${requestScope.fileEntry.caArrayFile.name}"/></p>
+        <p>Validation Messages for <s:property value="fileEntry.caArrayFile.name"/></p>
         <table>
         <tr>
             <td>Messages</td>
             <td>Types</td>
         </tr>
-        <c:forEach items="${requestScope.fileEntry.caArrayFile.validationResult.messages}" var="message" varStatus="status">
+        <s:iterator value="fileEntry.caArrayFile.validationResult.messages">
         <tr>
-            <td><c:out value="${message.type}"/></td>
-            <td><c:out value="${message.line}"/></td>
-            <td><c:out value="${message.column}"/></td>
-            <td><c:out value="${message.message}"/></td>
+            <td><s:property value="type"/></td>
+            <td><s:property value="line"/></td>
+            <td><s:property value="column"/></td>
+            <td><s:property value="message"/></td>
         </tr>
-        </c:forEach>
+        </s:iterator>
         </table>
     </div>
  </body>

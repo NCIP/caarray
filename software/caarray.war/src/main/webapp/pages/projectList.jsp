@@ -4,10 +4,14 @@
 </head>
 <body>
     <div id="content" class="homepage">
-        <h1><c:out value="${requestScope.contentLabel}" /></h1>
+        <h1>Experiment Workspace</h1>
         <%@ include file="/common/messages.jsp" %>
-        <display:table name="sessionScope.projects" id="project">
-            <display:column property="experiment.title" title="Experiment Title" escapeXml="true" href="editProject.action" paramId="projectName" paramProperty="experiment.title"/>
+        <s:set name="projects" value="projects" scope="request"/>
+        <display:table name="projects" class="table" requestURI="" id="projectList">
+            <display:column property="experiment.title" title="Experiment Title" escapeXml="true" href="editProject.action" paramId="id" paramProperty="id" titleKey="project.id"/>
         </display:table>
     </div>
+    <script type="text/javascript">
+        highlightTableRows("projectList");
+    </script>
 </body>
