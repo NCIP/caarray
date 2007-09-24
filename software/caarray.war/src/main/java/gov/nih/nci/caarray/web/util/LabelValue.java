@@ -122,6 +122,7 @@ public class LabelValue implements Comparable, Serializable {
      * Return a string representation of this object.
      * @return sb StringBuffer
      */
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer("LabelValue[");
         sb.append(this.label);
@@ -137,6 +138,7 @@ public class LabelValue implements Comparable, Serializable {
      *
      * @see java.lang.Object#hashCode()
      */
+    @Override
     public int hashCode() {
         return (this.getValue() == null) ? HASH_CODE : this.getValue().hashCode();
     }

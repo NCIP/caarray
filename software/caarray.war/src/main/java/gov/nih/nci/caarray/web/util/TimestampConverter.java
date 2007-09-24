@@ -53,6 +53,7 @@ public class TimestampConverter extends DateConverter {
      * @return date Object
      */
     @SuppressWarnings("unchecked")
+    @Override
     protected Object convertToString(Class type, Object value) {
         Locale locale = Locale.US;
         DateFormat df = new SimpleDateFormat(TS_FORMAT, locale);

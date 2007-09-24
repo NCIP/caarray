@@ -129,7 +129,7 @@ public final class DelegateFactory {
      */
     public static BaseDelegate getDelegate(String type) throws CaArrayException
     {
-        BaseDelegate del = (BaseDelegate) delegates.get(type);
+        BaseDelegate del = delegates.get(type);
         if (null == del) {
             throw new CaArrayException("InvalidDelegateType");
         }

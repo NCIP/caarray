@@ -103,7 +103,7 @@ public class ManageFilesAction extends BaseAction {
 
         loadFileEntries();
 
-        String fileId = (String) request.getParameter("fileId");
+        String fileId = request.getParameter("fileId");
         for (FileEntry myFileEntry : getFileEntries()) {
             if (myFileEntry.getCaArrayFile().getId() == Long.parseLong(fileId)) {
                 setFileEntry(myFileEntry);
@@ -128,7 +128,7 @@ public class ManageFilesAction extends BaseAction {
         Enumeration<String> myenum = request.getParameterNames();
 
         while (myenum.hasMoreElements()) {
-          String name = (String) myenum.nextElement();
+          String name = myenum.nextElement();
 
           String myREGEX = ":";
           Pattern p = Pattern.compile(myREGEX);
@@ -173,7 +173,7 @@ public class ManageFilesAction extends BaseAction {
         Enumeration<String> myenum = request.getParameterNames();
 
         while (myenum.hasMoreElements()) {
-          String name = (String) myenum.nextElement();
+          String name = myenum.nextElement();
 
           String myREGEX = ":";
           Pattern p = Pattern.compile(myREGEX);
@@ -260,7 +260,7 @@ public class ManageFilesAction extends BaseAction {
      * @return fileEntry FileEntry
      */
     public FileEntry getFileEntries(int index) {
-        return (FileEntry) getFileEntries().get(index);
+        return getFileEntries().get(index);
     }
 
     /**
