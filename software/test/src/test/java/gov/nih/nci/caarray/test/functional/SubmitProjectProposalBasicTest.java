@@ -95,14 +95,14 @@ public class SubmitProjectProposalBasicTest extends AbstractSeleniumTest {
         loginAsPrincipalInvestigator();
 
         // - Choose the menu item "Propose Project"
-        clickAndWait("mainMenu:proposeProject");
+        clickAndWait("proposeProject.action");
 
         // - Provide a unique project title
         String title = "test" + System.currentTimeMillis();
-        selenium.type("projectProposalForm:title", title);
+        selenium.type("projectForm:title", title);
 
         // - Submit the proposal
-        clickAndWait("projectProposalForm:submit");
+        clickAndWait("projectForm:submit");
 
         // - The system returns to the workspace page (verify)
         assertEquals("Experiment Workspace", selenium.getText("//h1"));
