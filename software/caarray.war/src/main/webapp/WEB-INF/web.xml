@@ -19,12 +19,13 @@
   <param-name>javax.servlet.jsp.jstl.fmt.fallbackLocale</param-name>
   <param-value>en</param-value>
  </context-param>
- <!-- Context Configuration locations for Spring XML files -->
+ <!-- Context Configuration locations for Spring XML files 
  <context-param>
   <param-name>contextConfigLocation</param-name>
   <param-value>classpath*:/applicationContext.xml
             /WEB-INF/applicationContext*.xml</param-value>
  </context-param>
+ -->
  <filter>
   <filter-name>cacheFilter</filter-name>
   <filter-class>com.opensymphony.oscache.web.filter.CacheFilter</filter-class>
@@ -103,9 +104,11 @@
  <listener>
   <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
  </listener>
+ <!-- Spring 2.x listener.  Rollback to 1.2.x   
  <listener>
   <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
  </listener>
+ -->
  <listener>
   <listener-class>net.sf.navigator.menu.MenuContextListener</listener-class>
  </listener>
@@ -113,17 +116,17 @@
   <listener-class>gov.nih.nci.caarray.web.listener.StartupListener</listener-class>
  </listener>
  <servlet>
- <servlet-name>dwr</servlet-name>
- <servlet-class>uk.ltd.getahead.dwr.DWRServlet</servlet-class>
- <init-param>
-  <param-name>debug</param-name>
-  <param-value>true</param-value>
- </init-param>
-</servlet>
-<servlet-mapping>
- <servlet-name>dwr</servlet-name>
- <url-pattern>/dwr/*</url-pattern>
-</servlet-mapping>
+  <servlet-name>dwr</servlet-name>
+  <servlet-class>uk.ltd.getahead.dwr.DWRServlet</servlet-class>
+  <init-param>
+   <param-name>debug</param-name>
+   <param-value>true</param-value>
+  </init-param>
+ </servlet>
+ <servlet-mapping>
+  <servlet-name>dwr</servlet-name>
+  <url-pattern>/dwr/*</url-pattern>
+ </servlet-mapping>
  <welcome-file-list>
   <welcome-file>index.jsp</welcome-file>
  </welcome-file-list>
