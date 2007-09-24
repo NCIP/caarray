@@ -19,13 +19,12 @@
   <param-name>javax.servlet.jsp.jstl.fmt.fallbackLocale</param-name>
   <param-value>en</param-value>
  </context-param>
- <!-- Context Configuration locations for Spring XML files 
+ <!-- Context Configuration locations for Spring XML files -->
  <context-param>
   <param-name>contextConfigLocation</param-name>
   <param-value>classpath*:/applicationContext.xml
             /WEB-INF/applicationContext*.xml</param-value>
  </context-param>
- -->
  <filter>
   <filter-name>cacheFilter</filter-name>
   <filter-class>com.opensymphony.oscache.web.filter.CacheFilter</filter-class>
@@ -104,7 +103,7 @@
  <listener>
   <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
  </listener>
- <!-- Spring 2.x listener.  Rollback to 1.2.x   
+ <!-- Spring 2.x listener.  Remove Spring dependency on 2.x  
  <listener>
   <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
  </listener>
