@@ -1,1 +1,1 @@
-<% response.sendRedirect("listProjects.action"); %>
+<% response.sendRedirect("Project_list.action"); %>

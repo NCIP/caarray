@@ -99,13 +99,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
-import com.opensymphony.xwork2.validator.annotations.Validation;
-
 /**
  * @author John Hedden
  *
  */
-@Validation
 public class FileUploadAction extends BaseAction {
 
 
@@ -124,8 +121,7 @@ public class FileUploadAction extends BaseAction {
      * @throws Exception Exception
      */
     @SuppressWarnings("PMD")
-    @Override
-    public String execute() throws Exception {
+    public String upload() throws Exception {
         OutputStream os = null;
         try {
 
@@ -286,6 +282,5 @@ public class FileUploadAction extends BaseAction {
     private ManageFilesDelegate getDelegate() throws CaArrayException {
         return (ManageFilesDelegate) DelegateFactory.getDelegate(DelegateFactory.MANAGE_FILES);
     }
-
 }
 

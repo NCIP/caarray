@@ -16,7 +16,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/lib/ant-contrib-1.0b3.jar"/>
-	
 	<classpathentry kind="lib" path="/lib/asm-2.2.1.jar"/>
 	<classpathentry kind="lib" path="/lib/asm-3.0.jar"/>
 	<classpathentry kind="lib" path="/lib/asm-attrs.jar"/>
@@ -83,8 +82,6 @@
 	<classpathentry kind="lib" path="/lib/selenium-server.jar"/>
 	<classpathentry kind="lib" path="/lib/sitemesh-2.3.jar"/>
 	<classpathentry kind="lib" path="/lib/spring.jar"/>
-	<classpathentry kind="lib" path="/lib/spring-aspects.jar"/>
-	<classpathentry kind="lib" path="/lib/spring-mock.jar"/>
 	<classpathentry kind="lib" path="/lib/spring-richclient-full-0.1.0.jar"/>
 	<classpathentry kind="lib" path="/lib/standard.jar"/>
 	<classpathentry kind="lib" path="/lib/struts2-codebehind-plugin-2.0.9.jar"/>

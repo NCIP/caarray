@@ -12,14 +12,11 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
-import com.opensymphony.xwork2.validator.annotations.Validation;
-
 /**
  * ProjectAction.
  * @author John Hedden
  *
  */
-@Validation
 public class ProjectAction extends BaseAction {
 
     private static final long serialVersionUID = 1L;
@@ -29,7 +26,7 @@ public class ProjectAction extends BaseAction {
     private List<LabelValue> navigationList;
 
     /**
-     * list all projects.
+     * create new project.
      * @return path String
      * @throws Exception Exception
      */
@@ -37,7 +34,7 @@ public class ProjectAction extends BaseAction {
     public String list() throws Exception {
         //Action menu: to be removed at some point when have better idea.
         navigationList = new ArrayList<LabelValue>();
-        LabelValue labelValue = new LabelValue("Propose Project", "createProject.action");
+        LabelValue labelValue = new LabelValue("Propose Project", "Project_create.action");
         navigationList.add(labelValue);
 
         HttpSession session = getSession();
@@ -56,7 +53,7 @@ public class ProjectAction extends BaseAction {
     public String create() throws Exception {
         //Action menu: to be removed at some point when have better idea.
         navigationList = new ArrayList<LabelValue>();
-        LabelValue labelValue = new LabelValue("Return to Workspace", "listProjects.action");
+        LabelValue labelValue = new LabelValue("Return to Workspace", "Project_list.action");
         navigationList.add(labelValue);
 
         setProposal(Proposal.createNew());
@@ -73,19 +70,14 @@ public class ProjectAction extends BaseAction {
     public String save() throws Exception {
         //Action menu: to be removed at some point when have better idea.
         navigationList = new ArrayList<LabelValue>();
-        LabelValue labelValue = new LabelValue("Return to Workspace", "listProjects.action");
+        LabelValue labelValue = new LabelValue("Return to Workspace", "Project_list.action");
         navigationList.add(labelValue);
 
-        if (getProposal().getProject().getExperiment().getTitle().length() > 0
-                && getProposal().getProject().getExperiment().getTitle() != null) {
-            getDelegate().getProjectManagementService().submitProposal(getProposal());
-            List<String> args = new ArrayList<String>();
-            args.add(getProposal().getProject().getExperiment().getTitle());
-            saveMessage(getText("project.created", args));
-        } else {
-            addActionError(getText("projectNameRequired"));
-            return INPUT;
-        }
+        getDelegate().getProjectManagementService().submitProposal(getProposal());
+        List<String> args = new ArrayList<String>();
+        args.add(getProposal().getProject().getExperiment().getTitle());
+        saveMessage(getText("project.created", args));
+
         return SUCCESS;
     }
 

@@ -22,47 +22,45 @@
 
         <global-results>
             <result name="error">/error.jsp</result>
-            <result name="home" type="redirect-action">listProjects</result>
+            <result name="home" type="redirect-action">Project_list</result>
         </global-results>
 
         <global-exception-mappings>
             <exception-mapping result="error" exception="java.lang.Throwable"/>
         </global-exception-mappings>
          
-        <action name="listProjects" class="projectAction" method="list"> 
+        <action name="Project_list" class="projectAction" method="list"> 
             <result name="success">/pages/projectList.jsp</result> 
         </action>
         
-        <action name="createProject" class="projectAction" method="create"> 
+        <action name="Project_create" class="projectAction" method="create"> 
             <result name="success">/pages/newProject.jsp</result> 
         </action>
         
-        <action name="saveProject" class="projectAction" method="save">
+        <action name="Project_save" class="projectAction" method="save">
             <result name="input">/pages/newProject.jsp</result> 
-            <result name="success" type="chain">listProjects</result>
+            <result name="success" type="chain">Project_list</result>
         </action>
         
-        <action name="editProject" class="manageFilesAction" method="edit"> 
+        <action name="Project_edit" class="manageFilesAction" method="edit"> 
             <result name="success">/pages/projectDetails.jsp</result>
         </action>        
         
-        <action name="manageFiles" class="manageFilesAction" method="manageFiles"> 
+        <action name="File_manage" class="manageFilesAction" method="manage"> 
             <result name="success">/pages/projectFiles.jsp</result>
         </action>
         
-        <action name="doUpload" class="fileUploadAction">
-            <interceptor-ref name="fileUpload"/>
-            <interceptor-ref name="basicStack"/>
+        <action name="File_upload" class="fileUploadAction" method="upload">
             <result name="input">/pages/projectFiles.jsp</result>
-            <result name="success" type="chain">manageFiles</result>
+            <result name="success" type="chain">File_manage</result>
         </action>
         
-        <action name="doImport" class="manageFilesAction">
+        <action name="File_import" class="manageFilesAction">
             <result name="input">/pages/projectFiles.jsp</result>
-            <result name="success" type="chain">manageFiles</result>
+            <result name="success" type="chain">File_manage</result>
         </action>
         
-        <action name="viewMessages" class="manageFilesAction" method="viewMessages">
+        <action name="File_messages" class="manageFilesAction" method="messages">
             <result name="input">/pages/projectFiles.jsp</result>
             <result name="success">/pages/validationMessages.jsp</result>
         </action>

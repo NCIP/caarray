@@ -6,12 +6,12 @@
     <div id="content" class="homepage">
         <h1>Propose Experiment</h1>
         <%@ include file="/common/messages.jsp" %>
-        <s:form id="projectForm" action="saveProject" method="post">
+        <s:form action="Project_save" method="post" validate="true">
             <table>
                 <tr>
                     <th>Title for new project:</th>
                     <td>
-                        <s:textfield id="title" name="proposal.project.experiment.title"/>
+                        <s:textfield id="title" name="proposal.project.experiment.title" required="true"/>
                     </td>
                 </tr>
                 <tr>

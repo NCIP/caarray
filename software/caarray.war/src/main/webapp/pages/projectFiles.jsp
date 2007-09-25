@@ -9,7 +9,7 @@
         <p>You are managing files for <s:property value="project.experiment.title" />.</p>
 
         <s:if test='fileEntries != null && !fileEntries.isEmpty()'>
-            <s:form id="filesForm" action="doImport" method="post">
+            <s:form action="File_import" method="post">
                 <table>
                     <tr>
                         <td>Current Files</td>
@@ -35,10 +35,10 @@
                                       list="fileTypes"
                                       value="typeName"/></td>
                         <td>
-                            <s:url id="url" action="viewMessages" >
+                            <s:url id="url" action="File_messages" >
                                 <s:param name="fileId" value="caArrayFile.id" />
                             </s:url>
-                            <s:a href="%{url}"><s:property value="caArrayFile.status"/></s:a>
+                            <s:a id="fileEntries:%{#status.index}:status" name="fileEntries:%{#status.index}:status" href="%{url}"><s:property value="caArrayFile.status"/></s:a>
                         </td>
                     </tr>
                     </s:iterator>
@@ -54,8 +54,8 @@
             </s:form>
         </s:if>
 
-        <s:form id="uploadForm" action="doUpload" method="post" enctype="multipart/form-data" onsubmit="return validateForm(this)">
-            <s:file id="upload" name="upload" label="File"/>
+        <s:form action="File_upload" enctype="multipart/form-data" method="post" validate="true">
+            <s:file id="upload" name="upload" label="File" required="true"/>
             <table>
                 <tr>
                     <td>
@@ -64,10 +64,6 @@
                 </tr>
             </table>
         </s:form>
-        <%@ include file="/scripts/upload.js"%>
     </div>
-    <script type="text/javascript">
-        Form.focusFirstElement($('uploadForm'));
-    </script>
 </body>
 

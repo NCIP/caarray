@@ -6,7 +6,7 @@
         <s:iterator value="navigationList">
             <tr>
                 <td>
-                    <a id='navigation:<s:property value="label" />' href='<s:property value="value" />'>
+                    <a id='<s:property value="label" />' href='<s:property value="value" />'>
                         <s:property value="label" />
                     </a>
                 </td>

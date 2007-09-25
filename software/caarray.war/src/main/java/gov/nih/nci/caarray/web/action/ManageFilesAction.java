@@ -47,8 +47,8 @@ public class ManageFilesAction extends BaseAction {
     public String edit() throws Exception {
         //Action menu: to be removed at some point when have better idea.
         navigationList = new ArrayList<LabelValue>();
-        LabelValue manageFiles = new LabelValue("Manage Files", "manageFiles.action");
-        LabelValue labelValue = new LabelValue("Return to Workspace", "listProjects.action");
+        LabelValue manageFiles = new LabelValue("Manage Files", "File_manage.action");
+        LabelValue labelValue = new LabelValue("Return to Workspace", "Project_list.action");
         navigationList.add(manageFiles);
         navigationList.add(labelValue);
 
@@ -65,10 +65,10 @@ public class ManageFilesAction extends BaseAction {
      * @throws Exception Exception
      */
     @SuppressWarnings("PMD")
-    public String manageFiles() throws Exception {
+    public String manage() throws Exception {
         //Action menu: to be removed at some point when have better idea.
         navigationList = new ArrayList<LabelValue>();
-        LabelValue labelValue = new LabelValue("Return to Workspace", "listProjects.action");
+        LabelValue labelValue = new LabelValue("Return to Workspace", "Project_list.action");
         navigationList.add(labelValue);
 
         HttpSession session = getSession();
@@ -87,11 +87,11 @@ public class ManageFilesAction extends BaseAction {
      * @throws Exception Exception
      */
     @SuppressWarnings("PMD")
-    public String viewMessages() throws Exception {
+    public String messages() throws Exception {
         //Action menu: to be removed at some point when have better idea.
         navigationList = new ArrayList<LabelValue>();
-        LabelValue manageFiles = new LabelValue("Manage Files", "manageFiles.action");
-        LabelValue labelValue = new LabelValue("Return to Workspace", "listProjects.action");
+        LabelValue manageFiles = new LabelValue("Manage Files", "File_manage.action");
+        LabelValue labelValue = new LabelValue("Return to Workspace", "Project_list.action");
         navigationList.add(manageFiles);
         navigationList.add(labelValue);
 
