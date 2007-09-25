@@ -487,7 +487,7 @@
         </jar>
     </target>
 
-    <target name="build:caarray.war" depends="compile:caarray.war">
+    <target name="build:caarray.war" depends="compile:caarray.war, svn:getinfo">
         <mkdir dir="${caarray-war.target.dir}" />
         <copy todir="${caarray-war.target.dir}/xml" file="${caarray-war.webapp.dir}/WEB-INF/web.xml" overwrite="true">
           <filterset>
