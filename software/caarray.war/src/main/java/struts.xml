@@ -19,12 +19,22 @@
 
     <!-- Configuration for the default package. -->
     <package name="default" extends="struts-default">
-
+    
+        <interceptors>
+            <interceptor-stack name="caFileUploadStack">
+                <interceptor-ref name="fileUpload">
+                    <param name="allowedTypes">*.data</param>
+                    <param name="maximumSize">2024000000</param>
+                </interceptor-ref>
+                <interceptor-ref name="basicStack"/>
+            </interceptor-stack>
+        </interceptors> 
+        
         <global-results>
             <result name="error">/error.jsp</result>
             <result name="home" type="redirect-action">Project_list</result>
         </global-results>
-
+        
         <global-exception-mappings>
             <exception-mapping result="error" exception="java.lang.Throwable"/>
         </global-exception-mappings>
@@ -51,6 +61,10 @@
         </action>
         
         <action name="File_upload" class="fileUploadAction" method="upload">
+            <!-- disabled interceptor b/c not concerned about file type or size. 
+            so just added struts.multipart.maxSize to struts.properties to get 
+            around apache default size of 2M.
+            <interceptor-ref name="caFileUploadStack"/> -->
             <result name="input">/pages/projectFiles.jsp</result>
             <result name="success" type="chain">File_manage</result>
         </action>
