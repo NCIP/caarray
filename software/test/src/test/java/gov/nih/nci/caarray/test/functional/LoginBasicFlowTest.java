@@ -120,20 +120,18 @@ public class LoginBasicFlowTest extends AbstractSeleniumTest {
     public void testEmptyUpload() throws Exception {
         String title = "empty Upload" + System.currentTimeMillis();
         loginAsPrincipalInvestigator();
+
         selenium.waitForPageToLoad("30000");
-        selenium.click("proposeProject.action");
-        selenium.waitForPageToLoad("30000");
+        clickAndWait("Propose Project");
         assertTrue(selenium.isTextPresent(PROPOSE_EXPERIMENT));
-        selenium.type("projectForm:title", title);
-        selenium.click("projectForm:submit");
-        selenium.waitForPageToLoad("30000");
+        selenium.type("title", title);
+        clickAndWait("submit");
         assertTrue(selenium.isTextPresent(EXPERIMENT_WORKSPACE));
         clickAndWait("link=" + title);
-        selenium.click("manageFiles.action");
+        selenium.click("Manage Files");
         selenium.waitForPageToLoad("30000");
-        selenium.click("uploadForm:uploadFile");
-        selenium.waitForPageToLoad("30000");
-        assertTrue(selenium.isTextPresent(VALIDATION_ERROR));
+        selenium.click("uploadFile");
+        assertTrue(selenium.isTextPresent("required field."));
     }
     /*
      * login, create a project, import a file with validation errors, validate the error page
@@ -143,29 +141,28 @@ public class LoginBasicFlowTest extends AbstractSeleniumTest {
         String title = "validation errors" + System.currentTimeMillis();
         loginAsPrincipalInvestigator();
         selenium.waitForPageToLoad("30000");
-        selenium.click("proposeProject.action");
-        selenium.waitForPageToLoad("30000");
-        selenium.type("projectForm:title", title);
-        selenium.click("projectForm:submit");
-        selenium.waitForPageToLoad("30000");
+        clickAndWait("Propose Project");
+        assertTrue(selenium.isTextPresent(PROPOSE_EXPERIMENT));
+        selenium.type("title", title);
+        clickAndWait("submit");
+        assertTrue(selenium.isTextPresent(EXPERIMENT_WORKSPACE));
         clickAndWait("link=" + title);
-        selenium.click("manageFiles.action");
+        selenium.click("Manage Files");
         selenium.waitForPageToLoad("30000");
         upload(MageTabDataFiles.TCGA_BROAD_IDF);
-        selenium.click("filesForm:fileEntries:0:selected");
-        selenium.click("filesForm:validateFile");
+        selenium.click("fileEntries:0:selected");
+        selenium.click("validateFile");
         selenium.waitForPageToLoad("30000");
         assertTrue(selenium.isTextPresent("VALIDATION_ERRORS"));
         // click to show the validation errors
-        selenium.click("filesForm:fileEntries:0:status");
+        selenium.click("fileEntries:0:status");
         selenium.waitForPageToLoad("30000");
         assertTrue(selenium.isTextPresent("Publication Title value is missing"));
-
     }
     private void upload(File file) throws IOException {
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
-        selenium.type("uploadForm:upload", filePath);
-        clickAndWait("uploadForm:uploadFile");
+        selenium.type("upload", filePath);
+        clickAndWait("uploadFile");
         assertTrue(selenium.isTextPresent(file.getName()));
     }
 
