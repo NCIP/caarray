@@ -125,8 +125,12 @@ public class ManageFilesAction extends BaseAction {
         HttpSession session = getSession();
         HttpServletRequest request = getRequest();
 
-        Enumeration<String> myenum = request.getParameterNames();
+        Project myProject = (Project) session.getAttribute("myProject");
+        setProject(myProject);
 
+        loadFileEntries();
+
+        Enumeration<String> myenum = request.getParameterNames();
         while (myenum.hasMoreElements()) {
           String name = myenum.nextElement();
 
@@ -136,22 +140,9 @@ public class ManageFilesAction extends BaseAction {
 
           //if pattern is like fileEntries:0:selected we know a checkbox has been selected
           if (items[0].equalsIgnoreCase("fileEntries") && items[2].equalsIgnoreCase("selected")) {
-              String fileIndex = items[1];
-
-              Project myProject = (Project) session.getAttribute("myProject");
-              setProject(myProject);
-
-              loadFileEntries();
-              CaArrayFileSet fileSet = new CaArrayFileSet(myProject);
-
-              for (int i = 0; i < getFileEntries().size(); i++) {
-                  if (String.valueOf(i).equalsIgnoreCase(fileIndex)) {
-                      fileEntry = getFileEntries(i);
-                      fileSet.add(fileEntry.getCaArrayFile());
-                      getDelegate().getFileManagementService().validateFiles(fileSet);
-                      return SUCCESS;
-                  }
-              }
+              String fileId = items[1];
+              CaArrayFileSet fileSet = getSelectedFiles(fileId);
+              getDelegate().getFileManagementService().validateFiles(fileSet);
           }
         }
         return SUCCESS;
@@ -170,8 +161,12 @@ public class ManageFilesAction extends BaseAction {
         HttpSession session = getSession();
         HttpServletRequest request = getRequest();
 
-        Enumeration<String> myenum = request.getParameterNames();
+        Project myProject = (Project) session.getAttribute("myProject");
+        setProject(myProject);
 
+        loadFileEntries();
+
+        Enumeration<String> myenum = request.getParameterNames();
         while (myenum.hasMoreElements()) {
           String name = myenum.nextElement();
 
@@ -181,27 +176,28 @@ public class ManageFilesAction extends BaseAction {
 
           //if pattern is like fileEntries:0:selected we know a checkbox has been selected
           if (items[0].equalsIgnoreCase("fileEntries") && items[2].equalsIgnoreCase("selected")) {
-              String fileIndex = items[1];
-
-              Project myProject = (Project) session.getAttribute("myProject");
-              setProject(myProject);
-
-              loadFileEntries();
-              CaArrayFileSet fileSet = new CaArrayFileSet(myProject);
-
-              for (int i = 0; i < getFileEntries().size(); i++) {
-                  if (String.valueOf(i).equalsIgnoreCase(fileIndex)) {
-                      fileEntry = getFileEntries(i);
-                      fileSet.add(fileEntry.getCaArrayFile());
-                      getDelegate().getFileManagementService().importFiles(getProject(), fileSet);
-                      return SUCCESS;
-                  }
-              }
+              String fileId = items[1];
+              CaArrayFileSet fileSet = getSelectedFiles(fileId);
+              getDelegate().getFileManagementService().importFiles(getProject(), fileSet);
           }
         }
         return SUCCESS;
     }
 
+    /**
+     * get selected fileset.
+     * @param fileId String
+     * @return CaArrayFileSet CaArrayFileSet
+     */
+    public CaArrayFileSet getSelectedFiles(String fileId) {
+        CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
+        for (FileEntry myFileEntry : getFileEntries()) {
+            if (String.valueOf(myFileEntry.getCaArrayFile().getId()).equalsIgnoreCase(fileId)) {
+                fileSet.add(myFileEntry.getCaArrayFile());
+            }
+        }
+        return fileSet;
+    }
 
     /**
      * loads the file entries.
