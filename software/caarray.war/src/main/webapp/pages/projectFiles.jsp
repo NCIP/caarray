@@ -26,19 +26,18 @@
                     </tr>
                     <s:iterator value="fileEntries" status="status">
                     <tr>
-                        <td><s:checkbox id="selected" name="fileEntries:%{#status.index}:selected" /></td>
+                        <td><s:checkbox id="selected" name="fileEntries:%{caArrayFile.id}:selected" /></td>
                         <td><s:property value="caArrayFile.name"/></td>
                         <td><s:select id="fileType"
-                                      name="fileEntries:%{#status.index}:fileType"
+                                      name="fileEntries:%{caArrayFile.id}:fileType"
                                       listKey="label"
                                       listValue="value"
                                       list="fileTypes"
                                       value="typeName"/></td>
                         <td>
-                            <s:url id="url" action="File_messages" >
-                                <s:param name="fileId" value="caArrayFile.id" />
-                            </s:url>
-                            <s:a id="fileEntries:%{#status.index}:status" name="fileEntries:%{#status.index}:status" href="%{url}"><s:property value="caArrayFile.status"/></s:a>
+                            <a id="fileEntries:<s:property value='caArrayFile.id'/>:status" name="fileEntries:<s:property value='caArrayFile.id'/>:status" href="File_messages.action?fileId=<s:property value='caArrayFile.id'/>">
+                                <s:property value="caArrayFile.status"/>
+                            </a>
                         </td>
                     </tr>
                     </s:iterator>
