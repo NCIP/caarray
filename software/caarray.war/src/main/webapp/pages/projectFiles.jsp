@@ -35,7 +35,7 @@
                                       list="fileTypes"
                                       value="typeName"/></td>
                         <td>
-                            <a id="fileEntries:<s:property value='caArrayFile.id'/>:status" name="fileEntries:<s:property value='caArrayFile.id'/>:status" href="File_messages.action?fileId=<s:property value='caArrayFile.id'/>">
+                            <a name="fileEntries:%{#status.index}:status" href="File_messages.action?fileId=<s:property value='caArrayFile.id'/>">
                                 <s:property value="caArrayFile.status"/>
                             </a>
                         </td>
