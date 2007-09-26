@@ -122,10 +122,10 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
         String title = "test" + System.currentTimeMillis();
         // Create project
-        clickAndWait("proposeProject.action");
-        selenium.type("projectForm:title", title);
-        clickAndWait("projectForm:submit");
-        assertTrue(selenium.isTextPresent("Proposal with title '" + title + "' has been created successfully"));
+        clickAndWait("Propose Project");
+        selenium.type("title", title);
+        clickAndWait("submit");
+        assertTrue(selenium.isTextPresent("created successfully."));
 
         // Upload the following files:
         // - MAGE-TAB IDF
@@ -133,8 +133,8 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         // - MAGE-TAB Derived Data Matrix
         // - CEL files referenced in SDRF
         clickAndWait("link=" + title);
-        clickAndWait("manageFiles.action");
-
+        selenium.click("Manage Files");
+        selenium.waitForPageToLoad("30000");
         upload(MageTabDataFiles.TCGA_BROAD_IDF);
         upload(MageTabDataFiles.TCGA_BROAD_SDRF);
         upload(MageTabDataFiles.TCGA_BROAD_DATA_MATRIX);
@@ -151,7 +151,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
         // Import the files.
         selectAllFiles();
-        clickAndWait("filesForm:importFile");
+        clickAndWait("importFile");
 
         checkFileStatus("IMPORTED");
 
@@ -165,20 +165,20 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
     private void selectAllFiles() {
         for (int i = 0; i < NUMBER_OF_FILES; i++) {
-            selenium.click("filesForm:fileEntries:" + i + ":selected");
+            selenium.click("fileEntries:" + i + ":selected");
         }
     }
 
     private void checkFileStatus(String status) {
         for (int i = 0; i < NUMBER_OF_FILES; i++) {
-            assertEquals(status, selenium.getText("filesForm:fileEntries:" + i + ":status"));
+            assertEquals(status, selenium.getText("fileEntries:" + i + ":status"));
         }
     }
 
     private void upload(File file) throws IOException {
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
-        selenium.type("uploadForm:upload", filePath);
-        clickAndWait("uploadForm:uploadFile");
+        selenium.type("upload", filePath);
+        clickAndWait("uploadFile");
         assertTrue(selenium.isTextPresent(file.getName()));
     }
 
