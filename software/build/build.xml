@@ -178,6 +178,10 @@
         <filtersfile file="${build.dir}/local.properties" />
     </filterset>
 
+	<!-- Tag property to display on front page -->
+	<property name="caarray.version" value="${build.tag_built}" />
+	
+	
     <!-- ******************************************************************* -->
     <!-- ** IMPORTS                                                       ** -->
     <!-- ******************************************************************* -->
