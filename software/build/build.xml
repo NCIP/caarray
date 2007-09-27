@@ -207,12 +207,12 @@
     <!-- ** MAIN TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
 
-  <target name="continuous-integration" unless="notest">
+  <target name="continuous-integration">
     <antcall target="clean"/>
     <antcall target="database:reinitialize"/>
     <antcall target="build"/>
     <antcall target="check"/>
-    <antcall target="test:unit"/>
+    <antcall target="test"/>
   </target>
 
     <target name="nightly-build" depends="continuous-integration,
@@ -446,12 +446,6 @@
         build:caarray.ear,
         build:caarray-svc" />
 
-    <target name="build-noglobus" depends="build:caarray-client.jar,
-      build:caarray-common.jar,
-      build:caarray-ejb.jar,
-        build:caarray.war,
-        build:caarray.ear" />
-
     <target name="build:caarray-client.jar" depends="compile:caarray-client.jar,compile:caarray-common.jar">
         <mkdir dir="${caarray-client.target.dir}" />
         <jar destfile="${caarray-client.jar}">
@@ -604,13 +598,17 @@
         </ear>
     </target>
 
-    <target name="build:caarray-svc" depends="compile:caarray-svc"/>
+    <target name="build:caarray-svc" unless="noglobus">
+		<antcall target="compile:caarray-svc" />
+	</target>
 
     <!-- ******************************************************************* -->
     <!-- ** TEST TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
 
-    <target name="test" depends="test:unit" />
+    <target name="test" unless="notest">
+		<antcall target="test:unit" />
+	</target>
 
     <!-- Test Data Targets -->
 
@@ -1081,13 +1079,6 @@
     <!-- BEGIN STELLIGENT ADD -->
     <property name="keyfile.file" value="caarray2-key.properties" />
 
-  <target name="continuous-integration-notest" if="notest">
-    <antcall target="clean"/>
-    <antcall target="database:reinitialize"/>
-	<antcall target="build-noglobus"/>
-    <antcall target="check"/>
-  </target>
-
     <target name="validate-properties">
 		<echo>lib.dir is ${lib.dir} </echo>
 		<echo>properties.dir is ${build.dir} </echo>
@@ -1157,7 +1148,6 @@
     <target name="remote-deploy">
         <antcall target="validate-properties" />
 		<antcall target="continuous-integration" />
-        <antcall target="continuous-integration-notest" />
         <antcall target="remote-jboss:deploy" />
     </target>
 
