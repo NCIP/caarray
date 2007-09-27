@@ -1099,13 +1099,13 @@
 
     <target name="remote-jboss:stop">
         <echo message="Stopping jboss server at ${ssh.server.hostname}..." />
-        <sshexec host="${ssh.server.hostname}" trust="true" keyfile="${ssh.key.file}" passphrase="" username="${ssh.server.username}" verbose="true" command="${remote.jboss.home}/bin/stop_jboss" />
+        <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" keyfile="${ssh.key.file}" passphrase="" username="${ssh.server.username}" verbose="true" command="${remote.jboss.home}/bin/stop_jboss" />
 		<sleep seconds="60" />
     </target>
 
     <target name="remote-jboss:start">
         <echo message="Starting jboss server at ${ssh.server.hostname}..." />
-        <sshexec host="${ssh.server.hostname}" trust="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" verbose="true" command="${remote.jboss.home}/bin/start_jboss" />
+        <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" verbose="true" command="${remote.jboss.home}/bin/start_jboss" />
 		<sleep seconds="120" />
     </target>
 
@@ -1131,13 +1131,13 @@
 
     <target name="remote-jboss:deploy-caarray" depends="remote-jboss:deploy-caarray-temp">
         <echo message="Deploying caarray EAR to jboss server at ${ssh.server.hostname}..." />
-        <sshexec host="${ssh.server.hostname}" trust="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" verbose="true" command="mv ${remote.jboss.temp.dir}/caarray.ear ${remote.jboss.home}/deploy/" />
+        <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" verbose="true" command="mv ${remote.jboss.temp.dir}/caarray.ear ${remote.jboss.home}/deploy/" />
         <echo message="Caarray EAR successfully deployed to http://${remote.jboss.server.hostname}:${remote.jboss.server.port}/caarray" />
     </target>
 
     <target name="remote-jboss:undeploy-caarray">
         <echo message="Undeploying caarray EAR to jboss server at ${ssh.server.hostname}..." />
-        <sshexec host="${ssh.server.hostname}" trust="true" verbose="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" command="rm -rf ${remote.jboss.home}/deploy/caarray.ear ${remote.jboss.home}/deploy/caarray-mysql-ds.xml" />
+        <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" verbose="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" command="rm -rf ${remote.jboss.home}/deploy/caarray.ear ${remote.jboss.home}/deploy/caarray-mysql-ds.xml" />
     </target>
 
   <target name="remote-jboss:deploy" unless="nodeploy">
