@@ -104,9 +104,11 @@ public class ManageFilesAction extends BaseAction {
         loadFileEntries();
 
         String fileId = request.getParameter("fileId");
-        for (FileEntry myFileEntry : getFileEntries()) {
-            if (myFileEntry.getCaArrayFile().getId() == Long.parseLong(fileId)) {
-                setFileEntry(myFileEntry);
+        if (fileId != null) {
+            for (FileEntry myFileEntry : getFileEntries()) {
+                if (myFileEntry.getCaArrayFile().getId() == Long.parseLong(fileId)) {
+                    setFileEntry(myFileEntry);
+                }
             }
         }
         return SUCCESS;
@@ -332,9 +334,9 @@ public class ManageFilesAction extends BaseAction {
     /**
      * gets the delegate from factory.
      * @return Delegate ProjectDelegate
-     * @throws CaArrayException
+     * @throws CaArrayException CaArrayException
      */
-    private ManageFilesDelegate getDelegate() throws CaArrayException {
+    public ManageFilesDelegate getDelegate() throws CaArrayException {
         return (ManageFilesDelegate) DelegateFactory.getDelegate(DelegateFactory.MANAGE_FILES);
     }
 }
