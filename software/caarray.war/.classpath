@@ -104,5 +104,6 @@
 	<classpathentry kind="lib" path="/lib/xml-apis.jar"/>
 	<classpathentry kind="lib" path="/lib/xmlconfig.jar"/>
 	<classpathentry kind="lib" path="/lib/xwork-2.0.4.jar"/>
+	<classpathentry kind="lib" path="/lib/spring-mock.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
