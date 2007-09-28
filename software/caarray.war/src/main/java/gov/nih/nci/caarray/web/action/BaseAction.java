@@ -90,7 +90,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.struts2.ServletActionContext;
@@ -150,14 +149,6 @@ public class BaseAction extends ActionSupport {
      */
     protected HttpServletRequest getRequest() {
         return ServletActionContext.getRequest();
-    }
-
-    /**
-     * Convenience method to get the response.
-     * @return current response
-     */
-    protected HttpServletResponse getResponse() {
-        return ServletActionContext.getResponse();
     }
 
     /**

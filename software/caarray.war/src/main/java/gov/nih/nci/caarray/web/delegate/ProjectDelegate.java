@@ -1,6 +1,5 @@
 package gov.nih.nci.caarray.web.delegate;
 
-import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 
@@ -13,18 +12,6 @@ public class ProjectDelegate extends BaseDelegate {
 
     private ServiceLocator locator = ServiceLocator.INSTANCE;
     private ProjectManagementService projectManagementService;
-    private FileManagementService fileManagementService;
-
-    /**
-     * Get FileManagementService.
-     * @return fileManagementService
-     */
-    public FileManagementService getFileManagementService() {
-        if (fileManagementService == null) {
-            fileManagementService = (FileManagementService) locator.lookup(FileManagementService.JNDI_NAME);
-        }
-        return fileManagementService;
-    }
 
     /**
      * Get ProjectManagementService.
