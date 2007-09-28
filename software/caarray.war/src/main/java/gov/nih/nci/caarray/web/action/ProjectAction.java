@@ -126,9 +126,9 @@ public class ProjectAction extends BaseAction {
     /**
      * gets the delegate from factory.
      * @return Delegate ProjectDelegate
-     * @throws CaArrayException
+     * @throws CaArrayException CaArrayException
      */
-    private ProjectDelegate getDelegate() throws CaArrayException {
+    public ProjectDelegate getDelegate() throws CaArrayException {
         return (ProjectDelegate) DelegateFactory.getDelegate(DelegateFactory.PROJECT);
     }
 }
