@@ -86,7 +86,6 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.web.delegate.DelegateFactory;
 import gov.nih.nci.caarray.web.delegate.ManageFilesDelegate;
-import gov.nih.nci.caarray.web.exception.CaArrayException;
 import gov.nih.nci.caarray.web.helper.FileEntry;
 
 import java.io.BufferedOutputStream;
@@ -279,7 +278,7 @@ public class FileUploadAction extends BaseAction {
      * @return Delegate ProjectDelegate
      * @throws CaArrayException
      */
-    private ManageFilesDelegate getDelegate() throws CaArrayException {
+    private ManageFilesDelegate getDelegate() {
         return (ManageFilesDelegate) DelegateFactory.getDelegate(DelegateFactory.MANAGE_FILES);
     }
 }

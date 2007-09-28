@@ -4,7 +4,6 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.Proposal;
 import gov.nih.nci.caarray.web.delegate.DelegateFactory;
 import gov.nih.nci.caarray.web.delegate.ProjectDelegate;
-import gov.nih.nci.caarray.web.exception.CaArrayException;
 import gov.nih.nci.caarray.web.util.LabelValue;
 
 import java.util.ArrayList;
@@ -126,9 +125,8 @@ public class ProjectAction extends BaseAction {
     /**
      * gets the delegate from factory.
      * @return Delegate ProjectDelegate
-     * @throws CaArrayException CaArrayException
      */
-    public ProjectDelegate getDelegate() throws CaArrayException {
+    public ProjectDelegate getDelegate() {
         return (ProjectDelegate) DelegateFactory.getDelegate(DelegateFactory.PROJECT);
     }
 }

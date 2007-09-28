@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.web.delegate;
 
-import gov.nih.nci.caarray.web.exception.CaArrayException;
-
 import java.util.HashMap;
 
 /**
@@ -125,14 +123,8 @@ public final class DelegateFactory {
      * returns the delegate.
      * @param type String
      * @return delegate
-     * @throws CaArrayException CaArrayException
      */
-    public static BaseDelegate getDelegate(String type) throws CaArrayException
-    {
-        BaseDelegate del = delegates.get(type);
-        if (null == del) {
-            throw new CaArrayException("InvalidDelegateType");
-        }
-        return del;
+    public static BaseDelegate getDelegate(String type) {
+        return delegates.get(type);
     }
 }

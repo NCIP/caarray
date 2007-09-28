@@ -6,7 +6,6 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.web.delegate.DelegateFactory;
 import gov.nih.nci.caarray.web.delegate.ManageFilesDelegate;
-import gov.nih.nci.caarray.web.exception.CaArrayException;
 import gov.nih.nci.caarray.web.helper.FileEntry;
 import gov.nih.nci.caarray.web.util.LabelValue;
 
@@ -334,9 +333,8 @@ public class ManageFilesAction extends BaseAction {
     /**
      * gets the delegate from factory.
      * @return Delegate ProjectDelegate
-     * @throws CaArrayException CaArrayException
      */
-    public ManageFilesDelegate getDelegate() throws CaArrayException {
+    public ManageFilesDelegate getDelegate() {
         return (ManageFilesDelegate) DelegateFactory.getDelegate(DelegateFactory.MANAGE_FILES);
     }
 }
