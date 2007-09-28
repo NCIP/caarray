@@ -39,28 +39,28 @@
             <exception-mapping result="error" exception="java.lang.Throwable"/>
         </global-exception-mappings>
          
-        <action name="Project_list" class="projectAction" method="list"> 
+        <action name="Project_list" class="gov.nih.nci.caarray.web.action.ProjectAction" method="list"> 
             <result name="success">/pages/projectList.jsp</result> 
         </action>
         
-        <action name="Project_create" class="projectAction" method="create"> 
+        <action name="Project_create" class="gov.nih.nci.caarray.web.action.ProjectAction" method="create"> 
             <result name="success">/pages/newProject.jsp</result> 
         </action>
         
-        <action name="Project_save" class="projectAction" method="save">
+        <action name="Project_save" class="gov.nih.nci.caarray.web.action.ProjectAction" method="save">
             <result name="input">/pages/newProject.jsp</result> 
             <result name="success" type="chain">Project_list</result>
         </action>
         
-        <action name="Project_edit" class="manageFilesAction" method="edit"> 
+        <action name="Project_edit" class="gov.nih.nci.caarray.web.action.ManageFilesAction" method="edit"> 
             <result name="success">/pages/projectDetails.jsp</result>
         </action>        
         
-        <action name="File_manage" class="manageFilesAction" method="manage"> 
+        <action name="File_manage" class="gov.nih.nci.caarray.web.action.ManageFilesAction" method="manage"> 
             <result name="success">/pages/projectFiles.jsp</result>
         </action>
         
-        <action name="File_upload" class="fileUploadAction" method="upload">
+        <action name="File_upload" class="gov.nih.nci.caarray.web.action.FileUploadAction" method="upload">
             <!-- disabled interceptor b/c not concerned about file type or size. 
             so just added struts.multipart.maxSize to struts.properties to get 
             around apache default size of 2M.
@@ -69,12 +69,12 @@
             <result name="success" type="chain">File_manage</result>
         </action>
         
-        <action name="File_import" class="manageFilesAction">
+        <action name="File_import" class="gov.nih.nci.caarray.web.action.ManageFilesAction">
             <result name="input">/pages/projectFiles.jsp</result>
             <result name="success" type="chain">File_manage</result>
         </action>
         
-        <action name="File_messages" class="manageFilesAction" method="messages">
+        <action name="File_messages" class="gov.nih.nci.caarray.web.action.ManageFilesAction" method="messages">
             <result name="input">/pages/projectFiles.jsp</result>
             <result name="success">/pages/validationMessages.jsp</result>
         </action>
