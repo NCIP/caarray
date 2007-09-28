@@ -94,7 +94,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.struts2.ServletActionContext;
-import org.springframework.mail.SimpleMailMessage;
 
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -114,49 +113,6 @@ public class BaseAction extends ActionSupport {
      *
      */
     private static final long serialVersionUID = 1L;
-
-    /**
-     * Constant for cancel result String.
-     */
-    public static final String CANCEL = "cancel";
-
-    /**
-     * Indicator if the user clicked cancel.
-     */
-    private String cancel;
-
-    /**
-     * Indicator for the page the user came from.
-     */
-    private String from;
-
-    /**
-     * Set to "delete" when a "delete" request parameter is passed in.
-     */
-    private String delete;
-
-    /**
-     * Set to "save" when a "save" request parameter is passed in.
-     */
-    private String save;
-
-    /**
-     * A message pre-populated with default data.
-     */
-    private SimpleMailMessage mailMessage;
-
-    /**
-     * Velocity template to use for e-mailing.
-     */
-    private String templateName;
-
-    /**
-     * Simple method that returns "cancel" result.
-     * @return "cancel"
-     */
-    public String cancel() {
-        return CANCEL;
-    }
 
     /**
      * Save the message in the session, appending if messages already exist.
@@ -210,37 +166,5 @@ public class BaseAction extends ActionSupport {
      */
     protected HttpSession getSession() {
         return getRequest().getSession();
-    }
-
-    /**
-     * set template name.
-     * @param templateName String
-     */
-    public void setTemplateName(String templateName) {
-        this.templateName = templateName;
-    }
-
-    /**
-     * Convenience method for setting a "from" parameter to indicate the previous page.
-     * @param from indicator for the originating page
-     */
-    public void setFrom(String from) {
-        this.from = from;
-    }
-
-    /**
-     * set delete.
-     * @param delete String
-     */
-    public void setDelete(String delete) {
-        this.delete = delete;
-    }
-
-    /**
-     * set save.
-     * @param save String
-     */
-    public void setSave(String save) {
-        this.save = save;
     }
  }
