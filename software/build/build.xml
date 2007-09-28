@@ -817,8 +817,7 @@
     </target>
 
     <target name="test:cobertura-check">
-        <!-- TODO: should be 58 branch, 67 line, but I'm tired of CI failures -->
-        <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="54" totallinerate="63" />
+        <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="58" totallinerate="67" />
     </target>
 
     <!-- Functional (Selenium) Test Targets -->
