@@ -181,6 +181,42 @@ public class ValidateTest {
     }
 
     /**
+     * test messages.
+     * @throws Exception Exception
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testEdit() throws Exception {
+
+        Project project = new Project();
+        CaArrayFile file1 = new CaArrayFile();
+        file1.setProject(project);
+        file1.setFileStatus(FileStatus.UPLOADED);
+        file1.setPath("path/file1.ext");
+        file1.setType(FileType.AFFYMETRIX_CEL);
+        file1.setId(Long.valueOf(1));
+        CaArrayFile file2 = new CaArrayFile();
+        file2.setFileStatus(FileStatus.UPLOADED);
+        file2.setPath("path/file2.ext");
+        file2.setType(FileType.AFFYMETRIX_CEL);
+        file2.setProject(project);
+        CaArrayFile file3 = new CaArrayFile();
+        file3.setFileStatus(FileStatus.UPLOADED);
+        file3.setPath("path/file3.ext");
+        file3.setType(FileType.AFFYMETRIX_CEL);
+        file3.setProject(project);
+        project.getFiles().add(file1);
+        project.getFiles().add(file2);
+        project.getFiles().add(file3);
+        project.setId(Long.valueOf(1));
+
+        action.setId(Long.valueOf(1));
+        action.setProject(project);
+
+        assertEquals("success", action.edit());
+    }
+
+    /**
      * test validation.
      * @throws Exception
      */
