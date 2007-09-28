@@ -131,15 +131,4 @@ public class LabelValue implements Comparable, Serializable {
         sb.append("]end");
         return (sb.toString());
     }
-
-    /**
-     * The hash code is based on the object's value.
-     *@return int int
-     *
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        return (this.getValue() == null) ? HASH_CODE : this.getValue().hashCode();
-    }
 }
