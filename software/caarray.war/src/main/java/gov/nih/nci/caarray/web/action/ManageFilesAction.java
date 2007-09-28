@@ -102,14 +102,12 @@ public class ManageFilesAction extends BaseAction {
 
         loadFileEntries();
 
-        String fileId = request.getParameter("fileId");
-        if (fileId != null) {
+        String fileId = (String) request.getAttribute("fileId");
             for (FileEntry myFileEntry : getFileEntries()) {
                 if (myFileEntry.getCaArrayFile().getId() == Long.parseLong(fileId)) {
                     setFileEntry(myFileEntry);
                 }
             }
-        }
         return SUCCESS;
     }
 

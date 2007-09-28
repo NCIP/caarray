@@ -162,13 +162,26 @@ public class ProjectActionTest {
         assertNotNull(action.getNavigationList());
     }
 
+    @Test
+    public void testBase() throws Exception {
+        MockHttpSession session = new MockHttpSession ();
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        assertNotNull(action.getConfiguration());
+        action.saveMessage("myMessage");
+        assertNotNull(request.getSession().getAttribute("messages"));
+        request.setSession(session);
+        ServletActionContext.setRequest(request);
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void testList() throws Exception {
         MockHttpSession session = new MockHttpSession ();
         MockHttpServletRequest request = new MockHttpServletRequest();
+        session.setAttribute("messages", null);
         request.setSession(session);
         ServletActionContext.setRequest(request);
+        assertNotNull(action.getDelegate().getLocator());
         assertNotNull(action.getProjects());
         String result = action.list();
         assertEquals(result, "success");

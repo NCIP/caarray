@@ -173,6 +173,8 @@ public class ImportTest {
 
         request.setSession(session);
         request.setParameter("fileEntries:1:selected", "fileEntries:1:selected");
+        request.setParameter("fileEntries:1:notselected", "fileEntries:1:notselected");
+        request.setParameter("notfileEntries:1:selected", "notfileEntries:1:selected");
         ServletActionContext.setRequest(request);
 
         action.importFile();

@@ -82,8 +82,14 @@
  */
 package gov.nih.nci.caarray.web;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
+
+import javax.servlet.http.HttpServletRequest;
+
 import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.file.FileManagementServiceStub;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
@@ -95,6 +101,7 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.action.ManageFilesAction;
+import gov.nih.nci.caarray.web.util.LabelValue;
 
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
@@ -123,6 +130,7 @@ public class ValidateTest {
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, projectServiceStub);
         locatorStub.addLookup(FileManagementService.JNDI_NAME, fileManagementStub);
         loadTestProject();
+        loadNavigation();
     }
 
     @SuppressWarnings({ "PMD", "unchecked", "deprecation" })
@@ -139,11 +147,13 @@ public class ValidateTest {
         file2.setPath("path/file2.ext");
         file2.setType(FileType.AFFYMETRIX_CEL);
         file2.setProject(project);
+        file2.setId(Long.valueOf(2));
         CaArrayFile file3 = new CaArrayFile();
         file3.setFileStatus(FileStatus.UPLOADED);
         file3.setPath("path/file3.ext");
         file3.setType(FileType.AFFYMETRIX_CEL);
         file3.setProject(project);
+        file3.setId(Long.valueOf(3));
         project.getFiles().add(file1);
         project.getFiles().add(file2);
         project.getFiles().add(file3);
@@ -158,6 +168,13 @@ public class ValidateTest {
 
     }
 
+    private void loadNavigation() {
+        final ArrayList<LabelValue> navigationList = new ArrayList<LabelValue>();
+        LabelValue labelValue = new LabelValue("Return to Workspace", "Project_list.action");
+        navigationList.add(labelValue);
+        action.setNavigationList(navigationList);
+    }
+
     /**
      * test messages.
      * @throws Exception Exception
@@ -165,19 +182,43 @@ public class ValidateTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testMessages() throws Exception {
+        assertNotNull(action.getDelegate().getProjectManagementService());
+
         Project myProject = action.getProject();
         assertNotNull(myProject);
 
-        MockHttpSession session = new MockHttpSession ();
+        MockHttpSession session = new MockHttpSession();
         session.setAttribute("myProject", myProject);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
+
         request.setAttribute("fileId", "1");
 
         request.setSession(session);
         ServletActionContext.setRequest(request);
 
         assertEquals("success", action.messages());
+    }
+
+    /**
+     * test messages.
+     * @throws Exception Exception
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testManage() throws Exception {
+        Project myProject = action.getProject();
+        assertNotNull(myProject);
+
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("myProject", myProject);
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setSession(session);
+        ServletActionContext.setRequest(request);
+
+        assertNotNull(action.getProject());
+        assertEquals("success", action.manage());
     }
 
     /**
@@ -212,8 +253,14 @@ public class ValidateTest {
 
         action.setId(Long.valueOf(1));
         action.setProject(project);
+        assertNotNull(action.getId());
 
         assertEquals("success", action.edit());
+    }
+
+    @Test
+    public void testGetNavigationList() {
+        assertNotNull(action.getNavigationList());
     }
 
     /**
@@ -233,10 +280,11 @@ public class ValidateTest {
 
         request.setSession(session);
         request.setParameter("fileEntries:1:selected", "fileEntries:1:selected");
+        request.setParameter("fileEntries:1:notselected", "fileEntries:1:notselected");
+        request.setParameter("notfileEntries:1:selected", "notfileEntries:1:selected");
         ServletActionContext.setRequest(request);
 
         action.validateFile();
-        //assertTrue(fileManagementStub.calledValidateFiles);
     }
 
     /**

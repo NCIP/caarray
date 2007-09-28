@@ -118,7 +118,7 @@ public class BaseAction extends ActionSupport {
      * @param msg the message to put in the session.
      */
     @SuppressWarnings("unchecked")
-    protected void saveMessage(String msg) {
+    public void saveMessage(String msg) {
         List messages = (List) getRequest().getSession().getAttribute("messages");
         if (messages == null) {
             messages = new ArrayList();
@@ -134,13 +134,8 @@ public class BaseAction extends ActionSupport {
      * @return the user's populated form from the session
      */
     @SuppressWarnings("unchecked")
-    protected Map getConfiguration() {
-        Map config = (HashMap) getSession().getServletContext().getAttribute(Constants.CONFIG);
-        // so unit tests don't puke when nothing's been set
-        if (config == null) {
-            return new HashMap();
-        }
-        return config;
+    public Map getConfiguration() {
+        return (HashMap) getSession().getServletContext().getAttribute(Constants.CONFIG);
     }
 
     /**
