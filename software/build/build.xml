@@ -507,6 +507,7 @@
             <classes dir="${caarray-war.classes.dir}" />
             	<lib dir="${lib.dir}">
             		<include name="spring.jar" />
+            		<include name="spring-mock.jar" />
 	        		<include name="acegi-security-1.0.5.jar" />
 	        		<include name="acegi-security-jboss-1.0.5.jar" />
 	        		<include name="commons-beanutils-1.7.0.jar" />
