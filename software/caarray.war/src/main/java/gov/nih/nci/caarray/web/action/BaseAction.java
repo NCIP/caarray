@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.web.action;
 
 import gov.nih.nci.caarray.web.util.Constants;
-import gov.nih.nci.caarray.web.util.MailEngine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -140,11 +139,6 @@ public class BaseAction extends ActionSupport {
      * Set to "save" when a "save" request parameter is passed in.
      */
     private String save;
-
-    /**
-     * MailEngine for sending e-mail.
-     */
-    private MailEngine mailEngine;
 
     /**
      * A message pre-populated with default data.
@@ -216,45 +210,6 @@ public class BaseAction extends ActionSupport {
      */
     protected HttpSession getSession() {
         return getRequest().getSession();
-    }
-
-    /**
-     * Convenience method to send e-mail to users
-     * @param user the user to send to
-     * @param msg the message to send
-     * @param url the URL to the application (or where ever you'd like to send them)
-     */
-    /*  Wait til we have user/person object.
-    protected void sendUserMessage(User user, String msg, String url) {
-        if (log.isDebugEnabled()) {
-            log.debug("sending e-mail to user [" + user.getEmail() + "]...");
-        }
-
-        mailMessage.setTo(user.getFullName() + "<" + user.getEmail() + ">");
-
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put("user", user);
-        // model.put("bundle", getTexts());
-        model.put("message", msg);
-        model.put("applicationURL", url);
-        mailEngine.sendMessage(mailMessage, templateName, model);
-    }
-    */
-
-    /**
-     * set mail engine.
-     * @param mailEngine MailEngine
-     */
-    public void setMailEngine(MailEngine mailEngine) {
-        this.mailEngine = mailEngine;
-    }
-
-    /**
-     * set mail message.
-     * @param mailMessage SimpleMailMessage
-     */
-    public void setMailMessage(SimpleMailMessage mailMessage) {
-        this.mailMessage = mailMessage;
     }
 
     /**
