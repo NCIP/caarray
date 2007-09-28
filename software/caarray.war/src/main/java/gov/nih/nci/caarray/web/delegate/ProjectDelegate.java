@@ -11,7 +11,7 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
  */
 public class ProjectDelegate extends BaseDelegate {
 
-    private final ServiceLocator locator = ServiceLocator.INSTANCE;
+    private ServiceLocator locator = ServiceLocator.INSTANCE;
     private ProjectManagementService projectManagementService;
     private FileManagementService fileManagementService;
 
@@ -36,6 +36,22 @@ public class ProjectDelegate extends BaseDelegate {
             fileManagementService = (FileManagementService) locator.lookup(FileManagementService.JNDI_NAME);
         }
         return fileManagementService;
+    }
+
+    /**
+     * get locator for junit.
+     * @return ServiceLocator ServiceLocator
+     */
+    public ServiceLocator getLocator() {
+        return locator;
+    }
+
+    /**
+     * For use by unit tests.
+     * @param locator locator
+     */
+    public void setLocator(ServiceLocator locator) {
+        this.locator = locator;
     }
 
 }
