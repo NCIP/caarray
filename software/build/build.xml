@@ -119,6 +119,7 @@
     <property name="selenium-java-client-driver.jar" value="${lib.dir}/selenium-java-client-driver.jar" />
     <property name="selenium-java-client-driver-tests.jar" value="${lib.dir}/selenium-java-client-driver-tests.jar" />
     <property name="spring.jar" value="${lib.dir}/spring.jar" />
+	<property name="spring-mock.jar" value="${lib.dir}/spring-mock.jar" />
     <property name="netcdf.jar" value="${lib.dir}/nc2.2.jar" />
     <property name="javacsv.jar" value="${lib.dir}/javacsv.jar" />
     <property name="tomahawk.jar" value="${lib.dir}/tomahawk-1.1.6.jar" />
@@ -126,6 +127,8 @@
     <property name="svnant.jar" value="${lib.dir}/svnant.jar" />
     <property name="svnClientAdapter.jar" value="${lib.dir}/svnClientAdapter.jar" />
     <property name="svnjavahl.jar" value="${lib.dir}/svnjavahl.jar" />
+	<property name="struts2-core-2.0.9.jar" value="${lib.dir}/struts2-core-2.0.9.jar" />
+	<property name="xwork-2.0.4.jar" value="${lib.dir}/xwork-2.0.4.jar" />
 
     <!-- Test-related properties -->
     <property name="test.dir" value="${basedir}/test" />
@@ -769,12 +772,16 @@
                 <pathelement location="${hibernate-annotations.jar}" />
                 <pathelement location="${hibernate-commons-annotations.jar}" />
                 <pathelement location="${javaee.jar}" />
+            	<pathelement location="${spring.jar}" />
+            	<pathelement location="${spring-mock.jar}" />
+            	<pathelement location="${struts2-core-2.0.9.jar}" />
+            	<pathelement location="${xwork-2.0.4.jar}" />
             </classpath>
         </javac>
     </target>
 
     <target name="test:junit-caarray.war" depends="test:compile:caarray-war.test.classes,test:instrument:caarray.war,compile:caarray-ejb.jar,compile:caarray-common.jar,test:compile:caarray-ejb.test.classes,test:unpack-test-data">
-        <run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-logging.jar};${caarray-common.test.classes.dir};${caarray-ejb.test.classes.dir};${myfaces-api.jar};${junit.jar}" />
+        <run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-logging.jar};${caarray-common.test.classes.dir};${caarray-ejb.test.classes.dir};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar}" />
     </target>
 
     <target name="test:junit-report">
