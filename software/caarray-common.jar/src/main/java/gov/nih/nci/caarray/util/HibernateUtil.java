@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.util;
 
+import gov.nih.nci.security.authorization.instancelevel.InstanceLevelSecurityHelper;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
@@ -105,8 +107,7 @@ public final class HibernateUtil {
 
     static {
         try {
-            HIBERNATE_CONFIG = new AnnotationConfiguration().setNamingStrategy(new NamingStrategy());
-            SESSION_FACTORY = HIBERNATE_CONFIG.configure()
+            Configuration tmpConfig = new AnnotationConfiguration().setNamingStrategy(new NamingStrategy())
               .addClass(gov.nih.nci.security.authorization.domainobjects.Application.class)
               .addClass(gov.nih.nci.security.authorization.domainobjects.Group.class)
               .addClass(gov.nih.nci.security.authorization.domainobjects.Privilege.class)
@@ -116,8 +117,10 @@ public final class HibernateUtil {
               .addClass(gov.nih.nci.security.authorization.domainobjects.User.class)
               .addClass(gov.nih.nci.security.authorization.domainobjects.UserGroupRoleProtectionGroup.class)
               .addClass(gov.nih.nci.security.authorization.domainobjects.UserProtectionElement.class)
-              //.setInterceptor(new SecurityInterceptor()) // TODO need to figure out why unit tests fail
-              .buildSessionFactory();
+              .setInterceptor(new SecurityInterceptor());
+            InstanceLevelSecurityHelper.addFilters(SecurityInterceptor.getAuthorizationManager(), tmpConfig);
+            HIBERNATE_CONFIG = tmpConfig.configure();
+            SESSION_FACTORY = HIBERNATE_CONFIG.buildSessionFactory();
         } catch (HibernateException e) {
             LOG.error(e.getMessage(), e);
             throw new ExceptionInInitializerError(e);
@@ -148,7 +151,9 @@ public final class HibernateUtil {
      * @return a Hibernate session.
      */
     public static Session getCurrentSession() {
-        return SESSION_FACTORY.getCurrentSession();
+        Session result = SESSION_FACTORY.getCurrentSession();
+        InstanceLevelSecurityHelper.initializeFilters(UsernameHolder.getUser(), result);
+        return result;
     }
 
     /**

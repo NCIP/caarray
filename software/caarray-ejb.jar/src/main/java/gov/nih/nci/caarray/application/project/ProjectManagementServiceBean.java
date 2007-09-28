@@ -181,7 +181,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         getProjectDao().save(proposal);
         LogUtil.logSubsystemExit(LOG);
     }
-
     /**
      * {@inheritDoc}
      */

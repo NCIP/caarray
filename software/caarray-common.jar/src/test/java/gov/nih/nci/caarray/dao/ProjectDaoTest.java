@@ -107,8 +107,11 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
+import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.io.File;
 import java.util.Collection;
@@ -118,6 +121,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
@@ -474,7 +478,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             LOG.error(e.getMessage(), e);
         }
     }
-    
+
     @Test
     public void testValidationMessages() {
         Transaction tx = null;
@@ -507,5 +511,29 @@ public class ProjectDaoTest extends AbstractDaoTest {
             LOG.error(e.getMessage(), e);
         }
     }
-    
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testProtectionElements() {
+        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+        HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+        tx.commit();
+
+        tx = HibernateUtil.getCurrentSession().beginTransaction();
+        String str = "FROM " + ProtectionElement.class.getName() + " pe "
+                     + "WHERE pe.objectId = :objId "
+                     + "  AND pe.attribute = :attr "
+                     + "  AND pe.value = :value";
+        Query q = HibernateUtil.getCurrentSession().createQuery(str);
+        q.setParameter("objId", Project.class.getName());
+        q.setParameter("attr", "id");
+        q.setParameter("value", DUMMY_PROJECT_1.getId().toString());
+
+        ProtectionElement pe = (ProtectionElement) q.uniqueResult();
+        assertNotNull(pe);
+        assertEquals("id", pe.getAttribute());
+        assertEquals(DUMMY_PROJECT_1.getId().toString(), pe.getValue());
+        assertEquals(((User) pe.getOwners().iterator().next()).getLoginName(), UsernameHolder.getUser());
+        tx.commit();
+    }
 }

@@ -82,13 +82,22 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.util.UsernameHolder;
+
 import org.junit.After;
+import org.junit.Before;
 
 /**
  * Helper methods for the dao classes
  */
 @SuppressWarnings("PMD")
 public class AbstractDaoTest {
+
+    @Before
+    public void abstractSetup() {
+        UsernameHolder.setUser("caarrayadmin");
+    }
+
 
     @After
     public void tearDown() {

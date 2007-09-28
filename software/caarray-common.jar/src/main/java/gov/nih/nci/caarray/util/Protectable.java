@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,140 +80,16 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package gov.nih.nci.caarray.util;
 
-package gov.nih.nci.caarray.domain.project;
-
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.util.Protectable;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Transient;
-
-import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
-
- /**
-  * A microarray project.
-  */
-@Entity
-public class Project extends AbstractCaArrayEntity implements Comparable<Project>, Protectable {
+/**
+ * Marker interface to indicate objects that should have CSM protection elements
+ * created upon save to the db.
+ */
+public interface Protectable {
 
     /**
-     * The serial version UID for serialization.
+     * @return identifier
      */
-    private static final long serialVersionUID = 1234567890L;
-
-    /**
-     * Initializes a new, empty project.
-     *
-     * @return the new Project.
-     */
-    public static Project createNew() {
-        Project project = new Project();
-        project.setExperiment(Experiment.createNew());
-        return project;
-    }
-
-    private Experiment experiment;
-
-    /**
-     * Gets the experiment.
-     *
-     * @return the experiment
-     */
-    @ManyToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "PROJECT_EXPERIMENT_FK")
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    /**
-     * Sets the experiment.
-     *
-     * @param experimentVal the experiment
-     */
-    public void setExperiment(final Experiment experimentVal) {
-        this.experiment = experimentVal;
-    }
-
-    /**
-     * The files set.
-     */
-    private SortedSet<CaArrayFile> files = new TreeSet<CaArrayFile>();
-
-    /**
-     * Gets the files.
-     *
-     * @return the files
-     */
-    @OneToMany(mappedBy = "project", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @Sort(type = SortType.NATURAL)
-    public SortedSet<CaArrayFile> getFiles() {
-        return files;
-    }
-
-    /**
-     * Helper method to get files as list for JSF controls.
-     *
-     * @return files, as list
-     */
-    @Transient
-    public List<CaArrayFile> getFilesList() {
-        List<CaArrayFile> result = new ArrayList<CaArrayFile>(getFiles().size());
-        result.addAll(getFiles());
-        return result;
-    }
-
-    /**
-     * Sets the files.
-     *
-     * @param filesVal the files
-     */
-    @SuppressWarnings("unused")
-    private void setFiles(final SortedSet<CaArrayFile> filesVal) { // NOPMD
-        this.files = filesVal;
-    }
-
-    /**
-     * @return the files contained in the project as a set.
-     */
-    @Transient
-    public CaArrayFileSet getFileSet() {
-        CaArrayFileSet fileSet = new CaArrayFileSet(this);
-        fileSet.addAll(files);
-        return fileSet;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public int compareTo(Project o) {
-        return new CompareToBuilder()
-            .append(getId(), o.getId())
-            .toComparison();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
+    Long getId();
 }

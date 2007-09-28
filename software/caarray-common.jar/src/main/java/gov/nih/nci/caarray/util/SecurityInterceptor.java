@@ -82,13 +82,20 @@
  */
 package gov.nih.nci.caarray.util;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.SecurityServiceProvider;
+import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
+import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSConfigurationException;
 import gov.nih.nci.security.exceptions.CSException;
+import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
+import gov.nih.nci.security.exceptions.CSTransactionException;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -109,6 +116,8 @@ public class SecurityInterceptor extends EmptyInterceptor {
     private static final Log LOG = LogFactory.getLog(SecurityInterceptor.class);
     private static final long serialVersionUID = -2071964672876972370L;
     private static final AuthorizationManager AUTH_MGR;
+    private static final String APPLICATION_NAME = "caarray";
+    private static final ThreadLocal<Collection<Protectable>> PROTECTABLES = new ThreadLocal<Collection<Protectable>>();
 
     static {
         AuthorizationManager am = null;
@@ -125,20 +134,63 @@ public class SecurityInterceptor extends EmptyInterceptor {
     }
 
     /**
-     * Adds security records to the db for saved entities.
+     * @return the configured authorization manager
+     */
+    public static AuthorizationManager getAuthorizationManager() {
+        return AUTH_MGR;
+    }
+
+    /**
+     * Finds protectables and queues them to have protection elements assigned.
      *
      * {@inheritDoc}
      */
     @Override
     public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 
-
-        if (entity instanceof AbstractCaArrayObject) {
-            // TODO create the CSM records here
-            LOG.debug("Creating access record for obj of type: " + entity.getClass().getName() + " for user "
-                      + UsernameHolder.getUser());
+        if (entity instanceof Protectable) {
+            if (PROTECTABLES.get() == null) {
+                PROTECTABLES.set(new ArrayList<Protectable>());
+            }
+            PROTECTABLES.get().add((Protectable) entity);
         }
 
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void postFlush(Iterator entities) {
+        if (PROTECTABLES.get() == null) {
+            return;
+        }
+
+        String user = UsernameHolder.getUser();
+        User csmUser = AUTH_MGR.getUser(user);
+        for (Protectable p : PROTECTABLES.get()) {
+            LOG.debug("Creating access record for obj of type: " + p.getClass().getName() + " for user "
+                    + user);
+
+            try {
+                ProtectionElement pe = new ProtectionElement();
+                pe.setApplication(AUTH_MGR.getApplication(APPLICATION_NAME));
+                pe.setObjectId(p.getClass().getName());
+                pe.setAttribute("id");
+                pe.setValue(p.getId().toString());
+                pe.setUpdateDate(new Date());
+                AUTH_MGR.createProtectionElement(pe);
+                AUTH_MGR.assignOwners(pe.getProtectionElementId().toString(),
+                                      new String[] {csmUser.getUserId().toString()});
+            } catch (CSObjectNotFoundException e) {
+                LOG.warn("Could not find the " + APPLICATION_NAME + " application: " + e.getMessage(), e);
+            } catch (CSTransactionException e) {
+                LOG.warn("Could not save new protection element: " + e.getMessage(), e);
+            }
+        }
+
+        PROTECTABLES.set(null);
     }
 }
