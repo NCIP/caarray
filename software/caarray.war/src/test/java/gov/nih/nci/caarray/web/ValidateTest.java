@@ -84,20 +84,18 @@ package gov.nih.nci.caarray.web;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.file.FileManagementServiceStub;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.Proposal;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
-import gov.nih.nci.caarray.web.action.ProjectAction;
-import gov.nih.nci.caarray.web.util.LabelValue;
-
-import java.util.ArrayList;
+import gov.nih.nci.caarray.web.action.ManageFilesAction;
 
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
@@ -109,30 +107,34 @@ import org.springframework.mock.web.MockHttpSession;
  * @author John Hedden
  *
  */
-public class TestProjectAction {
+public class ValidateTest {
 
-    private final ProjectAction action = new ProjectAction();
+    private final ManageFilesAction action = new ManageFilesAction();
     private final ServiceLocatorStub locatorStub = new ServiceLocatorStub();
     private final LocalProjectManagementServiceStub projectServiceStub = new LocalProjectManagementServiceStub();
     private final LocalFileManagementServiceStub fileManagementStub = new LocalFileManagementServiceStub();
 
+
+    /**
+     * setup.
+     */
     @Before
     public void setUp() throws Exception {
         action.getDelegate().setLocator(locatorStub);
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, projectServiceStub);
         locatorStub.addLookup(FileManagementService.JNDI_NAME, fileManagementStub);
         loadTestProject();
-        loadNavigation();
     }
 
+    @SuppressWarnings({ "PMD", "unchecked", "deprecation" })
     private void loadTestProject() {
-        final ArrayList<Project> projects = new ArrayList<Project>();
         final Project project = new Project();
         CaArrayFile file1 = new CaArrayFile();
         file1.setProject(project);
         file1.setFileStatus(FileStatus.UPLOADED);
         file1.setPath("path/file1.ext");
         file1.setType(FileType.AFFYMETRIX_CEL);
+        file1.setId(Long.valueOf(1));
         CaArrayFile file2 = new CaArrayFile();
         file2.setFileStatus(FileStatus.UPLOADED);
         file2.setPath("path/file2.ext");
@@ -146,50 +148,78 @@ public class TestProjectAction {
         project.getFiles().add(file1);
         project.getFiles().add(file2);
         project.getFiles().add(file3);
-        projects.add(project);
-        action.setProjects(projects);
-    }
 
-    private void loadNavigation() {
-        final ArrayList<LabelValue> navigationList = new ArrayList<LabelValue>();
-        LabelValue labelValue = new LabelValue("Return to Workspace", "Project_list.action");
-        navigationList.add(labelValue);
-        action.setNavigationList(navigationList);
-    }
+        action.setProject(project);
 
-    @Test
-    public void testGetNavigationList() {
-        assertNotNull(action.getNavigationList());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testList() throws Exception {
         MockHttpSession session = new MockHttpSession ();
+        session.setAttribute("myProject", project);
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setSession(session);
         ServletActionContext.setRequest(request);
-        assertNotNull(action.getProjects());
-        String result = action.list();
-        assertEquals(result, "success");
+
     }
 
+    /**
+     * test messages.
+     * @throws Exception Exception
+     */
     @SuppressWarnings("unchecked")
     @Test
-    public void testSave() throws Exception {
+    public void testMessages() throws Exception {
+        Project myProject = action.getProject();
+        assertNotNull(myProject);
+
         MockHttpSession session = new MockHttpSession ();
+        session.setAttribute("myProject", myProject);
+
         MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setAttribute("fileId", "1");
+
         request.setSession(session);
         ServletActionContext.setRequest(request);
-        Proposal proposal = Proposal.createNew();
-        action.setProposal(proposal);
-        String result = action.save();
-        assertEquals(result, "success");
+
+        assertEquals("success", action.messages());
     }
 
+    /**
+     * test validation.
+     * @throws Exception
+     */
+    @SuppressWarnings({ "PMD", "unchecked" })
+    @Test
+    public void testValidateFile() throws Exception {
+        MockHttpSession session = new MockHttpSession ();
+        MockHttpServletRequest request = new MockHttpServletRequest();
+
+        Project myProject = action.getProject();
+        assertNotNull(myProject);
+
+        session.setAttribute("myProject", myProject);
+
+        request.setSession(session);
+        request.setParameter("fileEntries:1:selected", "fileEntries:1:selected");
+        ServletActionContext.setRequest(request);
+
+        action.validateFile();
+        assertTrue(fileManagementStub.calledValidateFiles);
+    }
+
+    /**
+     * local stub
+     */
     private static class LocalProjectManagementServiceStub extends ProjectManagementServiceStub {
     }
 
+    /**
+     * local stub.
+     */
     private static class LocalFileManagementServiceStub extends FileManagementServiceStub {
+        boolean calledValidateFiles;
+
+        @Override
+        public void validateFiles(CaArrayFileSet fileSet) {
+            super.validateFiles(fileSet);
+            calledValidateFiles = true;
+        }
     }
 }

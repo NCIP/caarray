@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.web;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.file.FileManagementService;
@@ -107,13 +106,12 @@ import org.springframework.mock.web.MockHttpSession;
  * @author John Hedden
  *
  */
-public class TestValidate {
+public class ImportTest {
 
     private final ManageFilesAction action = new ManageFilesAction();
     private final ServiceLocatorStub locatorStub = new ServiceLocatorStub();
     private final LocalProjectManagementServiceStub projectServiceStub = new LocalProjectManagementServiceStub();
     private final LocalFileManagementServiceStub fileManagementStub = new LocalFileManagementServiceStub();
-
 
     /**
      * setup.
@@ -160,34 +158,11 @@ public class TestValidate {
     }
 
     /**
-     * test messages.
+     * test import file.
      * @throws Exception Exception
      */
-    @SuppressWarnings("unchecked")
     @Test
-    public void testMessages() throws Exception {
-        Project myProject = action.getProject();
-        assertNotNull(myProject);
-
-        MockHttpSession session = new MockHttpSession ();
-        session.setAttribute("myProject", myProject);
-
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setAttribute("fileId", "1");
-
-        request.setSession(session);
-        ServletActionContext.setRequest(request);
-
-        assertEquals("success", action.messages());
-    }
-
-    /**
-     * test validation.
-     * @throws Exception
-     */
-    @SuppressWarnings({ "PMD", "unchecked" })
-    @Test
-    public void testValidateFile() throws Exception {
+    public void testImportFile() throws Exception {
         MockHttpSession session = new MockHttpSession ();
         MockHttpServletRequest request = new MockHttpServletRequest();
 
@@ -200,8 +175,8 @@ public class TestValidate {
         request.setParameter("fileEntries:1:selected", "fileEntries:1:selected");
         ServletActionContext.setRequest(request);
 
-        action.validateFile();
-        assertTrue(fileManagementStub.calledValidateFiles);
+        action.importFile();
+        assertTrue(fileManagementStub.calledImportFiles);
     }
 
     /**
@@ -214,12 +189,13 @@ public class TestValidate {
      * local stub.
      */
     private static class LocalFileManagementServiceStub extends FileManagementServiceStub {
-        boolean calledValidateFiles;
+        boolean calledImportFiles;
 
         @Override
-        public void validateFiles(CaArrayFileSet fileSet) {
-            super.validateFiles(fileSet);
-            calledValidateFiles = true;
+        public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
+            super.importFiles(targetProject, fileSet);
+            calledImportFiles = true;
         }
     }
+
 }
