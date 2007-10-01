@@ -10,6 +10,10 @@
 	<property name="lib.dir" value="../lib" />
 	<property name="svn.tags.folder" value="tags" />
 	<property name="svn.trunk.folder" value="trunk" />
+	<property name="mail.host" value="mailfwd.nih.gov" />
+	<property name="mail.port" value="25" />
+	<property name="from.address" value="paul.duvall@stelligent.com" />
+	<property name="to.address" value="paul.duvall@stelligent.com" />
 
 	<!-- PATHS -->
     <path id="project.classpath">
@@ -148,6 +152,15 @@
 			<fileset dir="${lib.dir}" includes="${antunit.jar}" />
 		</copy>
 		<fail>${antunit.jar} must be in your ${ant.home}/lib directory. This file (${antunit.jar}) has been copied to your ${ant.home}/lib directory. IMPORTANT: You must rerun your build script again.</fail>
+	</target>
+
+	<target name="notify-user" >
+	  <!-- TODO Add activation.jar and mail.jar to Ant classpath -->
+	  <mail mailhost="${mail.host}" mailport="${mail.port}" subject="Test build">
+	    <from address="${from.address}"/>
+	    <to address="${to.address}"/>
+	    <message>Test message</message>
+	  </mail>
 	</target>
 	
 	<target name="all" depends="diagnostics, fail-if-no-tag, remote-deployment-createtag, remote-deployment" />	   
