@@ -20,7 +20,7 @@
 
 	<taskdef name="svn" classpathref="project.classpath" classname="org.tigris.subversion.svnant.SvnTask"/>
 	
-   <property name="jsch.jar" value="jsch-0.1.33.jar"/>
+   <property name="jsch.jar" value="jsch-0.1.34.jar"/>
    <property name="antunit.jar" value="ant-antunit-1.0.jar"/>
    <property name="jsch.jar.location" value="${ant.home}/lib/${jsch.jar}"/>
    <property name="antunit.jar.location" value="${ant.home}/lib/${antunit.jar}"/>
