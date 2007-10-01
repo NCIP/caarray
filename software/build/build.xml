@@ -119,7 +119,7 @@
     <property name="selenium-java-client-driver.jar" value="${lib.dir}/selenium-java-client-driver.jar" />
     <property name="selenium-java-client-driver-tests.jar" value="${lib.dir}/selenium-java-client-driver-tests.jar" />
     <property name="spring.jar" value="${lib.dir}/spring.jar" />
-  <property name="spring-mock.jar" value="${lib.dir}/spring-mock.jar" />
+	<property name="spring-mock.jar" value="${lib.dir}/spring-mock.jar" />
     <property name="netcdf.jar" value="${lib.dir}/nc2.2.jar" />
     <property name="javacsv.jar" value="${lib.dir}/javacsv.jar" />
     <property name="tomahawk.jar" value="${lib.dir}/tomahawk-1.1.6.jar" />
@@ -128,10 +128,12 @@
     <property name="svnClientAdapter.jar" value="${lib.dir}/svnClientAdapter.jar" />
     <property name="svnjavahl.jar" value="${lib.dir}/svnjavahl.jar" />
     <property name="clm.jar" value="${lib.dir}/clm.jar"/>
-  <property name="struts2-core-2.0.9.jar" value="${lib.dir}/struts2-core-2.0.9.jar" />
-  <property name="xwork-2.0.4.jar" value="${lib.dir}/xwork-2.0.4.jar" />
-  <property name="ognl-2.6.11.jar" value="${lib.dir}/ognl-2.6.11.jar" />
-
+	<property name="struts2-core-2.0.9.jar" value="${lib.dir}/struts2-core-2.0.9.jar" />
+	<property name="xwork-2.0.4.jar" value="${lib.dir}/xwork-2.0.4.jar" />
+	<property name="ognl-2.6.11.jar" value="${lib.dir}/ognl-2.6.11.jar" />
+	<property name="velocity-1.5.jar" value="${lib.dir}/velocity-1.5.jar" />
+	<property name="velocity-tools-1.3.jar" value="${lib.dir}/velocity-tools-1.3.jar" />
+	
     <!-- Test-related properties -->
     <property name="test.dir" value="${basedir}/test" />
     <property name="test.target.dir" value="${test.dir}/target" />
@@ -513,34 +515,35 @@
               <lib dir="${lib.dir}">
                 <include name="spring.jar" />
                 <include name="spring-mock.jar" />
-              <include name="acegi-security-1.0.5.jar" />
-              <include name="acegi-security-jboss-1.0.5.jar" />
-              <include name="commons-beanutils-1.7.0.jar" />
-              <include name="commons-codec-1.3.jar" />
-              <include name="commons-collections-3.2.jar" />
-              <include name="commons-digester-1.6.jar" />
-              <include name="commons-discovery-0.2.jar" />
-             <include name="commons-el-1.0.jar" />
-             <include name="commons-fileupload-1.2.jar" />
-            <include name="commons-io-1.3.2.jar" />
-             <include name="commons-lang-2.1.jar" />
-              <include name="commons-logging-1.1.jar" />
-            <include name="displaytag-1.1.1.jar" />
-             <include name="freemarker-2.3.8.jar" />
-               <include name="jstl.jar" />
-            <include name="standard.jar" />
-            <include name="log4j-1.2.13.jar" />
-            <include name="junit-4.3.1.jar" />
-             <include name="oscache-2.4.1.jar" />
-            <include name="sitemesh-2.3.jar" />
-             <include name="struts2-codebehind-plugin-2.0.9.jar" />
-             <include name="struts2-core-2.0.9.jar" />
-            <include name="struts2-sitemesh-plugin-2.0.9.jar" />
-            <include name="struts2-spring-plugin-2.0.9.jar" />
-            <include name="struts-menu-2.4.3.jar" />
-             <include name="urlrewrite-2.6.0.jar" />
-              <include name="velocity-1.5.jar" />
-           <include name="xwork-2.0.4.jar" />
+                <include name="acegi-security-1.0.5.jar" />
+                <include name="acegi-security-jboss-1.0.5.jar" />
+                <include name="commons-beanutils-1.7.0.jar" />
+                <include name="commons-codec-1.3.jar" />
+                <include name="commons-collections-3.2.jar" />
+                <include name="commons-digester-1.6.jar" />
+                <include name="commons-discovery-0.2.jar" />
+                <include name="commons-el-1.0.jar" />
+                <include name="commons-fileupload-1.2.jar" />
+                <include name="commons-io-1.3.2.jar" />
+                <include name="commons-lang-2.1.jar" />
+                <include name="commons-logging-1.1.jar" />
+                <include name="displaytag-1.1.1.jar" />
+                <include name="freemarker-2.3.8.jar" />
+                <include name="jstl.jar" />
+                <include name="standard.jar" />
+                <include name="log4j-1.2.13.jar" />
+                <include name="junit-4.3.1.jar" />
+                <include name="oscache-2.4.1.jar" />
+                <include name="sitemesh-2.3.jar" />
+                <include name="struts2-codebehind-plugin-2.0.9.jar" />
+                <include name="struts2-core-2.0.9.jar" />
+                <include name="struts2-sitemesh-plugin-2.0.9.jar" />
+                <include name="struts2-spring-plugin-2.0.9.jar" />
+                <include name="struts-menu-2.4.3.jar" />
+                <include name="urlrewrite-2.6.0.jar" />
+                <include name="velocity-1.5.jar" />
+              	<include name="velocity-tools-1.3.jar" />
+                <include name="xwork-2.0.4.jar" />
                 <include name="ognl-2.6.11.jar" />
               </lib>
         </war>
