@@ -172,7 +172,6 @@ public class ValidateTest {
         final ArrayList<LabelValue> navigationList = new ArrayList<LabelValue>();
         LabelValue labelValue = new LabelValue("Return to Workspace", "Project_list.action");
         navigationList.add(labelValue);
-        action.setNavigationList(navigationList);
     }
 
     /**
@@ -256,11 +255,6 @@ public class ValidateTest {
         assertNotNull(action.getId());
 
         assertEquals("success", action.edit());
-    }
-
-    @Test
-    public void testGetNavigationList() {
-        assertNotNull(action.getNavigationList());
     }
 
     /**

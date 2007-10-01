@@ -35,7 +35,7 @@ public class ManageFilesAction extends BaseAction {
     private FileEntry fileEntry;
     private CaArrayFile caArrayFile;
     private Long id;
-    private List<LabelValue> navigationList;
+    private String menu;
 
     /**
      * edit files associated with a project.
@@ -44,13 +44,7 @@ public class ManageFilesAction extends BaseAction {
      */
     @SuppressWarnings("PMD")
     public String edit() throws Exception {
-        //Action menu: to be removed at some point when have better idea.
-        navigationList = new ArrayList<LabelValue>();
-        LabelValue manageFiles = new LabelValue("Manage Files", "File_manage.action");
-        LabelValue labelValue = new LabelValue("Return to Workspace", "Project_list.action");
-        navigationList.add(manageFiles);
-        navigationList.add(labelValue);
-
+        setMenu("FileEditLinks");
         HttpSession session = getSession();
         setProject(getDelegate().getProjectManagementService().getProject(id));
         session.setAttribute("myProject", getProject());
@@ -65,15 +59,10 @@ public class ManageFilesAction extends BaseAction {
      */
     @SuppressWarnings("PMD")
     public String manage() throws Exception {
-        //Action menu: to be removed at some point when have better idea.
-        navigationList = new ArrayList<LabelValue>();
-        LabelValue labelValue = new LabelValue("Return to Workspace", "Project_list.action");
-        navigationList.add(labelValue);
-
+        setMenu("FileManageLinks");
         HttpSession session = getSession();
         Project myProject = (Project) session.getAttribute("myProject");
         setProject(myProject);
-
         loadFileEntries();
         loadFileTypes();
 
@@ -87,19 +76,11 @@ public class ManageFilesAction extends BaseAction {
      */
     @SuppressWarnings("PMD")
     public String messages() throws Exception {
-        //Action menu: to be removed at some point when have better idea.
-        navigationList = new ArrayList<LabelValue>();
-        LabelValue manageFiles = new LabelValue("Manage Files", "File_manage.action");
-        LabelValue labelValue = new LabelValue("Return to Workspace", "Project_list.action");
-        navigationList.add(manageFiles);
-        navigationList.add(labelValue);
-
+        setMenu("FileMessagesLinks");
         HttpSession session = getSession();
         HttpServletRequest request = getRequest();
-
         Project myProject = (Project) session.getAttribute("myProject");
         setProject(myProject);
-
         loadFileEntries();
 
         String fileId = (String) request.getAttribute("fileId");
@@ -108,6 +89,7 @@ public class ManageFilesAction extends BaseAction {
                     setFileEntry(myFileEntry);
                 }
             }
+
         return SUCCESS;
     }
 
@@ -121,6 +103,7 @@ public class ManageFilesAction extends BaseAction {
      */
     @SuppressWarnings({ "PMD", "unchecked" })
     public String validateFile() throws Exception {
+        setMenu("FileManageLinks");
         HttpSession session = getSession();
         HttpServletRequest request = getRequest();
 
@@ -157,6 +140,7 @@ public class ManageFilesAction extends BaseAction {
      */
     @SuppressWarnings({ "PMD", "unchecked" })
     public String importFile() throws Exception {
+        setMenu("FileManageLinks");
         HttpSession session = getSession();
         HttpServletRequest request = getRequest();
 
@@ -287,20 +271,6 @@ public class ManageFilesAction extends BaseAction {
     }
 
     /**
-     * @return the navigationList
-     */
-    public List<LabelValue> getNavigationList() {
-        return navigationList;
-    }
-
-    /**
-     * @param navigationList the navigationList to set
-     */
-    public void setNavigationList(List<LabelValue> navigationList) {
-        this.navigationList = navigationList;
-    }
-
-    /**
      * @return the fileEntry
      */
     public FileEntry getFileEntry() {
@@ -326,6 +296,20 @@ public class ManageFilesAction extends BaseAction {
      */
     public void setFileTypes(List<LabelValue> fileTypes) {
         this.fileTypes = fileTypes;
+    }
+
+    /**
+     * @return the menu
+     */
+    public String getMenu() {
+        return menu;
+    }
+
+    /**
+     * @param menu the menu to set
+     */
+    public void setMenu(String menu) {
+        this.menu = menu;
     }
 
     /**

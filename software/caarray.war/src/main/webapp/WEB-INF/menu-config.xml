@@ -1,21 +1,37 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <MenuConfig>
-<!--  
     <Displayers>
+        <Displayer name="DropDown" type="net.sf.navigator.displayer.DropDownMenuDisplayer"/>
+        <Displayer name="Simple" type="net.sf.navigator.displayer.SimpleMenuDisplayer"/>
+        <Displayer name="CoolMenu" type="net.sf.navigator.displayer.CoolMenuDisplayer"/>
+        <Displayer name="CoolMenu4" type="net.sf.navigator.displayer.CoolMenuDisplayer4"/>
+        <Displayer name="MenuForm" type="net.sf.navigator.example.PermissionsFormMenuDisplayer"/>
+        <Displayer name="ListMenu" type="net.sf.navigator.displayer.ListMenuDisplayer"/>
+        <Displayer name="TabbedMenu" type="net.sf.navigator.displayer.TabbedMenuDisplayer"/>
         <Displayer name="Velocity" type="net.sf.navigator.displayer.VelocityMenuDisplayer"/>
+        <Displayer name="XtreeMenu" type="net.sf.navigator.displayer.XtreeMenuDisplayer"/>
+        <Displayer name="CSSListMenu" type="net.sf.navigator.displayer.CSSListMenuDisplayer"/>
     </Displayers>
     <Menus>
-        <Menu name="MainMenu" title="mainMenu.title" page="/mainMenu.html" roles="ROLE_ADMIN,ROLE_USER"/>
-        <Menu name="UserMenu" title="menu.user" description="User Menu" page="/editProfile.html" roles="ROLE_ADMIN,ROLE_USER"/>
-        <Menu name="AdminMenu" title="menu.admin" description="Admin Menu" roles="ROLE_ADMIN" width="120" page="/users.html">
-            <Item name="ViewUsers" title="menu.admin.users" page="/users.html"/>
-            <Item name="ActiveUsers" title="mainMenu.activeUsers" page="/activeUsers.html"/>
-            <Item name="ReloadContext" title="menu.admin.reload" page="/reload.html"/>
-            <Item name="FileUpload" title="menu.selectFile" page="/uploadFile!start.html"/>
-            <Item name="FlushCache" title="menu.flushCache" page="/flushCache.html"/>
-            <Item name="Clickstream" title="menu.clickstream" page="/clickstreams.jsp"/>
+        <Menu name="ProjectListLinks" title="project.listLinks">
+            <Item name="ProposeProject" title="project.proprose" url="Project_create.action" />
         </Menu>
-        <Menu name="Logout" title="user.logout" page="/logout.jsp" roles="ROLE_ADMIN,ROLE_USER"/>
+        <Menu name="ProjectCreateLinks" title="project.createLinks">
+            <Item name="ProjectList" title="project.list" url="Project_list.action" />
+        </Menu>
+        <Menu name="ProjectSaveLinks" title="project.saveLinks">
+            <Item name="ProjectList" title="project.list" url="Project_list.action" />
+        </Menu>
+        <Menu name="FileEditLinks" title="file.editLinks">
+            <Item name="ManageFiles" title="file.manage" url="File_manage.action" />
+            <Item name="ProjectList" title="project.list" url="Project_list.action" />
+        </Menu>
+        <Menu name="FileManageLinks" title="file.manageLinks">
+            <Item name="ProjectList" title="project.list" url="Project_list.action" />
+        </Menu>
+        <Menu name="FileMessagesLinks" title="file.messagesLinks">
+            <Item name="ManageFiles" title="file.manage" url="File_manage.action" />
+            <Item name="ProjectList" title="project.list" url="Project_list.action" />
+        </Menu>
     </Menus>
-   -->
 </MenuConfig>

@@ -1,0 +1,9 @@
+#macro( displayCssMenu $menu )
+    <ul>
+        #foreach ($menuItem in $menu.components)
+            <li><a href="$menuItem.url" title="$displayer.getMessage($menuItem.title)">$displayer.getMessage($menuItem.title)</a></li>
+        #end
+    </ul>
+#end
+
+#displayCssMenu($menu)

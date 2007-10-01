@@ -122,7 +122,6 @@ public class ProjectActionTest {
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, projectServiceStub);
         locatorStub.addLookup(FileManagementService.JNDI_NAME, fileManagementStub);
         loadTestProject();
-        loadNavigation();
     }
 
     private void loadTestProject() {
@@ -148,18 +147,6 @@ public class ProjectActionTest {
         project.getFiles().add(file3);
         projects.add(project);
         action.setProjects(projects);
-    }
-
-    private void loadNavigation() {
-        final ArrayList<LabelValue> navigationList = new ArrayList<LabelValue>();
-        LabelValue labelValue = new LabelValue("Return to Workspace", "Project_list.action");
-        navigationList.add(labelValue);
-        action.setNavigationList(navigationList);
-    }
-
-    @Test
-    public void testGetNavigationList() {
-        assertNotNull(action.getNavigationList());
     }
 
     @SuppressWarnings("unchecked")

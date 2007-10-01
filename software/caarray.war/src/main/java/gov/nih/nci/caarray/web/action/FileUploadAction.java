@@ -113,6 +113,7 @@ public class FileUploadAction extends BaseAction {
 
     private Project project;
     private List<FileEntry> fileEntries;
+    private String menu;
 
     /**
      * uploads file.
@@ -124,6 +125,7 @@ public class FileUploadAction extends BaseAction {
         OutputStream os = null;
         try {
 
+            setMenu("FileManageLinks");
             HttpSession session = getSession();
             Project myProject = (Project) session.getAttribute("myProject");
             setProject(myProject);
@@ -271,6 +273,20 @@ public class FileUploadAction extends BaseAction {
      */
     public String getUploadFileName() {
        return filename;
+    }
+
+    /**
+     * @return the menu
+     */
+    public String getMenu() {
+        return menu;
+    }
+
+    /**
+     * @param menu the menu to set
+     */
+    public void setMenu(String menu) {
+        this.menu = menu;
     }
 
     /**

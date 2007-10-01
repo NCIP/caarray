@@ -2,17 +2,26 @@
 
 <div id="sidebar" class="homepage">
     <h1>Actions</h1>
-    <table>
-        <s:iterator value="navigationList">
-            <tr>
-                <td>
-                    <a id='<s:property value="label" />' href='<s:property value="value" />'>
-                        <s:property value="label" />
-                    </a>
-                </td>
-            </tr>
-        </s:iterator>
-    </table>
+    <menu:useMenuDisplayer name="Velocity" config="/template/velocity/rightbarMenu.vm">
+        <s:if test="menu == 'ProjectListLinks'">
+            <menu:displayMenu name="ProjectListLinks" />
+        </s:if>
+        <s:elseif test="menu == 'ProjectCreateLinks'">
+            <menu:displayMenu name="ProjectCreateLinks" />
+        </s:elseif>
+        <s:elseif test="menu == 'ProjectSaveLinks'">
+            <menu:displayMenu name="ProjectSaveLinks" />
+        </s:elseif>
+        <s:elseif test="menu == 'FileEditLinks'">
+            <menu:displayMenu name="FileEditLinks" />
+        </s:elseif>
+        <s:elseif test="menu == 'FileManageLinks'">
+            <menu:displayMenu name="FileManageLinks" />
+        </s:elseif>
+        <s:elseif test="menu == 'FileMessagesLinks'">
+            <menu:displayMenu name="FileMessagesLinks" />
+        </s:elseif>
+    </menu:useMenuDisplayer>
     <h1 style="border-top:1px solid #fff;">What's New</h1>
     <p class="small">
         caArray 2.0 software is available for download now. This installation features a new interface and increased functionality.<br />
