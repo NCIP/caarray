@@ -179,6 +179,7 @@
     <property file="${build.dir}/local.properties" />
     <property file="${build.dir}/default.properties" />
     <property name="jboss.deploy.dir" value="${jboss.home}/server/${jboss.server.name}/deploy" />
+	<property name="jboss.lib.dir" value="${jboss.home}/server/${jboss.server.name}/lib" />
 
     <filterset id="caarray.filterset" onmissingfiltersfile="warn">
         <filtersfile file="${build.dir}/default.properties" />
@@ -607,7 +608,6 @@
                 <include name="xml-apis.jar" />
                 <include name="netcdf.jar" />
                 <include name="csmapi.jar" />
-                <include name="clm.jar" />
             </fileset>
         </ear>
     </target>
@@ -826,7 +826,8 @@
 
     <!-- Functional (Selenium) Test Targets -->
 
-    <target name="test:functional" depends="test:functional:run-tests">
+    <target name="test:functional" unless="notest">
+		<antcall target="test:functional:run-tests"/>
         <fail if="junit.failure" message="There were Selenium test failures." />
     </target>
 
@@ -1043,6 +1044,7 @@
         <copy file="${resource.dir}/deploy/caarray-mysql-ds.xml" todir="${jboss.deploy.dir}" overwrite="true">
             <filterset refid="caarray.filterset" />
         </copy>
+		<copy file="${clm.jar}" todir="${jboss.lib.dir}" overwrite="true" />
         <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
     </target>
 
@@ -1143,6 +1145,11 @@
         <echo message="Copying caarray-mysql configuration to jboss server at ${ssh.server.hostname}..." />
         <scp file="${resource.dir}/deploy/caarray-mysql-ds.xml" keyfile="${ssh.key.file}" passphrase="" trust="true" verbose="true" todir="${ssh.server.username}@${ssh.server.hostname}:${remote.jboss.home}/deploy" />
     </target>
+	
+	 <target name="remote-jboss:copy-clm-jar">
+        <echo message="Copying clm.jar to jboss lib folder at ${ssh.server.hostname}..." />
+        <scp file="${clm.jar}" keyfile="${ssh.key.file}" passphrase="" trust="true" verbose="true" todir="${ssh.server.username}@${ssh.server.hostname}:${remote.jboss.home}/lib" />
+    </target>
 
     <target name="remote-jboss:deploy-caarray-temp">
         <echo message="Copying caarray EAR to jboss temp folder ${remote.jboss.temp.dir} at ${ssh.server.hostname}..." />
@@ -1166,6 +1173,7 @@
         <antcall target="remote-jboss:configure-jboss-ds" />
         <antcall target="remote-jboss:deploy-caarray" />
         <antcall target="remote-jboss:copy-jboss-config" />
+		<antcall target="remote-jboss:copy-clm-jar" />
         <antcall target="remote-jboss:start" />
     </target>
 
