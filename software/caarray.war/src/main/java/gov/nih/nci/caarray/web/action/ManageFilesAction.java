@@ -110,6 +110,11 @@ public class ManageFilesAction extends BaseAction {
 
         loadFileEntries();
 
+        /**
+         * Could have gone through getFiles() get files in list but
+         * CaArrayFile class does NOT have "selected" attribute. Thus
+         * Enumeration made sense.
+         **/
         Enumeration<String> myenum = request.getParameterNames();
         while (myenum.hasMoreElements()) {
           String name = myenum.nextElement();
@@ -119,7 +124,7 @@ public class ManageFilesAction extends BaseAction {
           String[] items = p.split(name);
 
           //if pattern is like fileEntries:0:selected we know a checkbox has been selected
-          if (items[0].equalsIgnoreCase("file") && items[2].equalsIgnoreCase("selected")) {
+          if (items[0].equalsIgnoreCase("files") && items[2].equalsIgnoreCase("selected")) {
               String fileIndex = items[1];
               CaArrayFileSet fileSet = getSelectedFiles(fileIndex);
               getDelegate().getFileManagementService().validateFiles(fileSet);
@@ -147,6 +152,11 @@ public class ManageFilesAction extends BaseAction {
 
         loadFileEntries();
 
+        /**
+         * Could have gone through getFiles() get files in list but
+         * CaArrayFile class does NOT have "selected" attribute. Thus
+         * Enumeration made sense.
+         **/
         Enumeration<String> myenum = request.getParameterNames();
         while (myenum.hasMoreElements()) {
           String name = myenum.nextElement();
@@ -156,7 +166,7 @@ public class ManageFilesAction extends BaseAction {
           String[] items = p.split(name);
 
           //if pattern is like fileEntries:0:selected we know a checkbox has been selected
-          if (items[0].equalsIgnoreCase("file") && items[2].equalsIgnoreCase("selected")) {
+          if (items[0].equalsIgnoreCase("files") && items[2].equalsIgnoreCase("selected")) {
               String fileIndex = items[1];
               CaArrayFileSet fileSet = getSelectedFiles(fileIndex);
               getDelegate().getFileManagementService().importFiles(getProject(), fileSet);

@@ -175,6 +175,14 @@ public class ProjectActionTest {
         assertEquals(result, "success");
     }
 
+    @Test
+    public void testFileUtility() throws Exception {
+        MockHttpSession session = new MockHttpSession ();
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setSession(session);
+        ServletActionContext.setRequest(request);
+    }
+
     private static class LocalProjectManagementServiceStub extends ProjectManagementServiceStub {
     }
 

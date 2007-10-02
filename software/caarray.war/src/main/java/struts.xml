@@ -59,7 +59,7 @@
             <result name="success">/pages/projectFiles.jsp</result>
         </action>
         
-        <action name="File_upload" class="gov.nih.nci.caarray.web.action.FileUploadAction" method="upload">
+        <action name="File_upload" class="gov.nih.nci.caarray.web.action.MultipleFileUploadAction" method="upload">
             <!-- disabled interceptor b/c not concerned about file type or size. 
             so just added struts.multipart.maxSize to struts.properties to get 
             around apache default size of 2M.

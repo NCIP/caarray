@@ -26,16 +26,16 @@
                     </tr>
                     <s:iterator value="files" status="status">
                     <tr>
-                        <td><s:checkbox name="file:%{#status.index}:selected" /></td>
+                        <td><s:checkbox name="files:%{#status.index}:selected" /></td>
                         <td><s:property value="name"/></td>
-                        <td><s:select name="file:%{#status.index}:fileType"
+                        <td><s:select name="files:%{#status.index}:fileType"
                                       listKey="label"
                                       listValue="value"
                                       list="fileTypes"
                                       value="type" />
                         </td>
                         <td>
-                            <a name="file:<s:property value='%{#status.index}'/>:status" href="File_messages.action?fileId=<s:property value='id'/>">
+                            <a name="files:<s:property value='%{#status.index}'/>:status" href="File_messages.action?fileId=<s:property value='id'/>">
                                 <s:property value="status"/>
                             </a>
                         </td>
@@ -53,8 +53,8 @@
             </s:form>
         </s:if>
 
-        <s:form action="File_upload" enctype="multipart/form-data" method="post" validate="true">
-            <s:file id="upload" name="upload" label="File" required="true"/>
+        <s:form action="File_upload" enctype="multipart/form-data" method="post">
+            <s:file id="upload" name="upload" label="File" />
             <table>
                 <tr>
                     <td>

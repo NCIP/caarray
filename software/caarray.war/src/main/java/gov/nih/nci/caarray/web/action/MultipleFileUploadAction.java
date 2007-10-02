@@ -93,26 +93,25 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
 /**
+ * Handles multiple file uploading.
  * @author John Hedden
  *
  */
-public class FileUploadAction extends BaseAction {
-
+public class MultipleFileUploadAction extends BaseAction {
 
     private static final long serialVersionUID = 1L;
+    private List<File> uploads = new ArrayList<File>();
+    private List<String> uploadFileNames = new ArrayList<String>();
+    private List<String> uploadContentTypes = new ArrayList<String>();
 
-    private File file;
-    private String contentType;
-    private String filename;
-
-    private Project project;
     private List<CaArrayFile> files;
-
+    private Project project;
     private String menu;
 
     /**
@@ -122,54 +121,41 @@ public class FileUploadAction extends BaseAction {
      */
     @SuppressWarnings("PMD")
     public String upload() throws Exception {
-        OutputStream os = null;
-        try {
 
-            setMenu("FileManageLinks");
-            HttpSession session = getSession();
-            Project myProject = (Project) session.getAttribute("myProject");
-            setProject(myProject);
+        setMenu("FileManageLinks");
+        HttpSession session = getSession();
+        Project myProject = (Project) session.getAttribute("myProject");
+        setProject(myProject);
+        loadFileEntries();
 
-            File uploadedFile = getFile();
-            LOG.info("Writing uploaded file to " + uploadedFile.getAbsolutePath());
-            os = new BufferedOutputStream(new FileOutputStream(uploadedFile));
-            os.write(getRawBytes(getUpload()));
+        int index = 0;
+        for (Iterator<File> iter = getUpload().iterator(); iter.hasNext();) {
+            File uploadedFile = iter.next();
+            OutputStream os = null;
+            try {
 
-            loadFileEntries();
+                String fileName = getUploadFileName(index);
+                uploadedFile = getFile(fileName);
+                LOG.info("Writing uploaded file to " + uploadedFile.getAbsolutePath());
+                os = new BufferedOutputStream(new FileOutputStream(uploadedFile));
+                os.write(getRawBytes(uploadedFile));
 
-            CaArrayFile caArrayFile = new CaArrayFile();
-            caArrayFile = getDelegate().getProjectManagementService().addFile(getProject(), uploadedFile);
-            files.add(caArrayFile);
+                CaArrayFile caArrayFile = new CaArrayFile();
+                caArrayFile = getDelegate().getProjectManagementService().addFile(getProject(), uploadedFile);
+                files.add(caArrayFile);
 
-        } catch (Exception e) {
-            String msg = "Unable to upload file: " + e.getMessage();
-            LOG.error(msg, e);
-            addActionError(getText("errorUploading"));
-            return INPUT;
-        } finally {
-            os.close();
-        }
+            } catch (Exception e) {
+                String msg = "Unable to upload file: " + e.getMessage();
+                LOG.error(msg, e);
+                addActionError(getText("errorUploading"));
+                return INPUT;
+            } finally {
+                os.close();
+            }
+            index++;
+        } //end for
+
         return SUCCESS;
-    }
-
-    /**
-     * loads the file entries.
-     */
-    private void loadFileEntries() {
-        setFiles(new ArrayList<CaArrayFile>(getProject().getFiles().size()));
-        for (CaArrayFile caArrayFile : getProject().getFilesList()) {
-            files.add(caArrayFile);
-        }
-    }
-
-    /**
-     * @return file based upon the uploaded file name
-     * (currently will create additional CaArrayFiles)
-     */
-    private File getFile() {
-        File projectDirectory = new File(System.getProperty("java.io.tmpdir"), getProject().getId().toString());
-        projectDirectory.mkdirs();
-        return new File(projectDirectory, getUploadFileName());
     }
 
     /**
@@ -191,12 +177,98 @@ public class FileUploadAction extends BaseAction {
     }
 
     /**
+     * loads the file entries.
+     */
+    private void loadFileEntries() {
+        setFiles(new ArrayList<CaArrayFile>(getProject().getFiles().size()));
+        for (CaArrayFile caArrayFile : getProject().getFilesList()) {
+            files.add(caArrayFile);
+        }
+    }
+
+    /**
+     * @return file based upon the uploaded file name
+     * (currently will create additional CaArrayFiles)
+     */
+    private File getFile(String inFileName) {
+        File projectDirectory = new File(System.getProperty("java.io.tmpdir"), getProject().getId().toString());
+        projectDirectory.mkdirs();
+        return new File(projectDirectory, inFileName);
+    }
+
+    /**
      * gets the delegate from factory.
      * @return Delegate ProjectDelegate
      * @throws CaArrayException
      */
-    private ManageFilesDelegate getDelegate() {
+    public ManageFilesDelegate getDelegate() {
         return (ManageFilesDelegate) DelegateFactory.getDelegate(DelegateFactory.MANAGE_FILES);
+    }
+
+    /**
+     * method to get file name by index.
+     * @param index int
+     * @return String file name.
+     */
+    public String getUploadFileName(int index) {
+        return getUploadFileName().get(index);
+    }
+
+    /**
+     * overloaded method to go file entry at index.
+     * @param index int
+     * @return String content type.
+     */
+    public String getUploadContentType(int index) {
+        return getUploadContentType().get(index);
+    }
+
+    /**
+     * uploaded file.
+     * @return uploads uploaded files
+     */
+    public List<File> getUpload() {
+        return this.uploads;
+    }
+
+    /**
+     * sets file uploads.
+     * @param inUploads List
+     */
+    public void setUpload(List<File> inUploads) {
+        this.uploads = inUploads;
+    }
+
+    /**
+     * returns uploaded file name.
+     * @return uploadFileNames
+     */
+    public List<String> getUploadFileName() {
+        return this.uploadFileNames;
+    }
+
+    /**
+     * sets uploaded file names.
+     * @param inUploadFileNames List
+     */
+    public void setUploadFileName(List<String> inUploadFileNames) {
+        this.uploadFileNames = inUploadFileNames;
+    }
+
+    /**
+     * returns uploaded content type.
+     * @return uploadContentTypes
+     */
+    public List<String> getUploadContentType() {
+        return this.uploadContentTypes;
+    }
+
+    /**
+     * sets upload content type.
+     * @param inContentTypes List
+     */
+    public void setUploadContentType(List<String> inContentTypes) {
+        this.uploadContentTypes = inContentTypes;
     }
 
     /**
@@ -211,62 +283,6 @@ public class FileUploadAction extends BaseAction {
      */
     public Project getProject() {
         return project;
-    }
-
-    /**
-     * get start string.
-     * @return String
-     */
-    public String start() {
-        return INPUT;
-    }
-
-    /**
-     *
-     * @param inFile File
-     */
-    public void setUpload(File inFile) {
-        this.file = inFile;
-     }
-
-    /**
-    *
-    * @return file
-    */
-   public File getUpload() {
-       return file;
-    }
-
-    /**
-     *
-     * @param inContentType String
-     */
-     public void setUploadContentType(String inContentType) {
-        this.contentType = inContentType;
-     }
-
-     /**
-     *
-     * @return contentType
-     */
-     public String getUploadContentType() {
-        return contentType;
-     }
-
-     /**
-      *
-      * @param inFileName String
-      */
-     public void setUploadFileName(String inFileName) {
-        this.filename = inFileName;
-     }
-
-     /**
-     *
-     * @return filename
-     */
-    public String getUploadFileName() {
-       return filename;
     }
 
     /**
@@ -297,4 +313,3 @@ public class FileUploadAction extends BaseAction {
         this.files = files;
     }
 }
-

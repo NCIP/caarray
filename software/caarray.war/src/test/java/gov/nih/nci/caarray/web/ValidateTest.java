@@ -249,9 +249,9 @@ public class ValidateTest {
         session.setAttribute("myProject", myProject);
 
         request.setSession(session);
-        request.setParameter("file:1:selected", "file:1:selected");
-        request.setParameter("file:1:notselected", "file:1:notselected");
-        request.setParameter("notfile:1:selected", "notfile:1:selected");
+        request.setParameter("files:1:selected", "files:1:selected");
+        request.setParameter("files:1:notselected", "files:1:notselected");
+        request.setParameter("notfiles:1:selected", "notfiles:1:selected");
         ServletActionContext.setRequest(request);
 
         action.validateFile();
