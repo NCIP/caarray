@@ -122,7 +122,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
         String title = "test" + System.currentTimeMillis();
         // Create project
-        clickAndWait("Propose Project");
+        clickAndWait("link=Propose Project");
         selenium.type("title", title);
         clickAndWait("submit");
         assertTrue(selenium.isTextPresent("created successfully."));
@@ -133,7 +133,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         // - MAGE-TAB Derived Data Matrix
         // - CEL files referenced in SDRF
         clickAndWait("link=" + title);
-        selenium.click("Manage Files");
+        selenium.click("link=Manage Files");
         selenium.waitForPageToLoad("30000");
         upload(MageTabDataFiles.TCGA_BROAD_IDF);
         upload(MageTabDataFiles.TCGA_BROAD_SDRF);
@@ -177,7 +177,8 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
     private void upload(File file) throws IOException {
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
-        selenium.type("upload", filePath);
+        filePath = filePath.replaceAll("%20", " ");
+       selenium.type("upload", filePath);
         clickAndWait("uploadFile");
         assertTrue(selenium.isTextPresent(file.getName()));
     }
