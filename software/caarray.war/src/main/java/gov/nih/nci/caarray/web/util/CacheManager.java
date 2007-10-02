@@ -80,28 +80,93 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web;
+package gov.nih.nci.caarray.web.util;
 
-import static org.junit.Assert.*;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.web.helper.FileEntry;
 
-import org.junit.Test;
+import java.util.ArrayList;
+import java.util.List;
 
-public class FileEntryTest {
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-    @Test
-    public void testSetTypeName() {
-        CaArrayFile caArrayFile = new CaArrayFile();
-        FileEntry fileEntry = new FileEntry(caArrayFile);
-        assertEquals("", fileEntry.getTypeName());
-        fileEntry.setTypeName(FileType.AFFYMETRIX_CDF.toString());
-        assertEquals(FileType.AFFYMETRIX_CDF, caArrayFile.getType());
-        assertEquals(FileType.AFFYMETRIX_CDF.toString(), fileEntry.getTypeName());
-        fileEntry.setTypeName("");
-        assertEquals(null, caArrayFile.getType());
-        assertEquals("", fileEntry.getTypeName());
+/**
+ * @author John Hedden
+ * This class manages cached information. It implements singleton pattern.
+ */
+public final class CacheManager {
+
+    // The singleton static variable
+    private static CacheManager instance = null;
+
+    private static final Log LOG = LogFactory.getLog(CacheManager.class);
+
+    // instance variables that serve as cache
+    private List<LabelValue> fileTypes = new ArrayList<LabelValue>();
+
+    /**
+     * Default constructor made private so that no other object can instantiate
+     * it.
+     */
+    private CacheManager() {
+        loadCache();
     }
 
+    /**
+     * The singleton instance getter method.
+     *
+     * @return CacheManager
+     */
+    @SuppressWarnings("PMD")
+    public static CacheManager getInstance() {
+        if (instance == null) {
+            instance = new CacheManager();
+        }
+        return instance;
+    }
+
+    /**
+     * This method caches the various constant lists in variables.
+     */
+    @SuppressWarnings("static-access")
+    public void loadCache() {
+        try {
+            cacheFileTypes();
+        } catch (Exception e) {
+            this.LOG.error(e);
+        }
+    }
+
+    /**
+     * This method clears the cache variables effectively flushes the cache.
+     */
+    public void flushCache() {
+        this.fileTypes = null;
+    }
+
+    /**
+     * This method reloads the cache by first flushing the cache and then
+     * loading the cache.
+     */
+    public void reloadCache() {
+        flushCache();
+        loadCache();
+    }
+
+    /**
+     * Cache file types.
+     */
+    protected void cacheFileTypes() {
+        fileTypes.add(new LabelValue("", "UNKNOWN"));
+        for (FileType fileType : FileType.getTypes()) {
+            fileTypes.add(new LabelValue(fileType.getName(), fileType.getName()));
+        }
+    }
+
+    /**
+     * @return the fileTypes
+     */
+    public List<LabelValue> getFileTypes() {
+        return fileTypes;
+    }
 }

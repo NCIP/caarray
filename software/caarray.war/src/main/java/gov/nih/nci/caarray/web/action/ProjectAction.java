@@ -64,6 +64,14 @@ public class ProjectAction extends BaseAction {
     }
 
     /**
+     * gets the delegate from factory.
+     * @return Delegate ProjectDelegate
+     */
+    public ProjectDelegate getDelegate() {
+        return (ProjectDelegate) DelegateFactory.getDelegate(DelegateFactory.PROJECT);
+    }
+
+    /**
      * @return the projects
      */
     public List<Project> getProjects() {
@@ -103,13 +111,5 @@ public class ProjectAction extends BaseAction {
      */
     public void setMenu(String menu) {
         this.menu = menu;
-    }
-
-    /**
-     * gets the delegate from factory.
-     * @return Delegate ProjectDelegate
-     */
-    public ProjectDelegate getDelegate() {
-        return (ProjectDelegate) DelegateFactory.getDelegate(DelegateFactory.PROJECT);
     }
 }

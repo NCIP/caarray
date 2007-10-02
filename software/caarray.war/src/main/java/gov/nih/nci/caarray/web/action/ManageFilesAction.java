@@ -2,11 +2,10 @@ package gov.nih.nci.caarray.web.action;
 
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.web.delegate.DelegateFactory;
 import gov.nih.nci.caarray.web.delegate.ManageFilesDelegate;
-import gov.nih.nci.caarray.web.helper.FileEntry;
+import gov.nih.nci.caarray.web.util.CacheManager;
 import gov.nih.nci.caarray.web.util.LabelValue;
 
 import java.util.ArrayList;
@@ -29,12 +28,15 @@ public class ManageFilesAction extends BaseAction {
 
     private static final long serialVersionUID = 1L;
 
-    private Project project;
-    private List<FileEntry> fileEntries;
+    @SuppressWarnings("unused")
     private List<LabelValue> fileTypes;
-    private FileEntry fileEntry;
-    private CaArrayFile caArrayFile;
-    private Long id;
+    private List<CaArrayFile> files;
+    private CaArrayFile file;
+    private Long fileId;
+
+    private Project project;
+    private Long projectId;
+
     private String menu;
 
     /**
@@ -46,7 +48,7 @@ public class ManageFilesAction extends BaseAction {
     public String edit() throws Exception {
         setMenu("FileEditLinks");
         HttpSession session = getSession();
-        setProject(getDelegate().getProjectManagementService().getProject(id));
+        setProject(getDelegate().getProjectManagementService().getProject(projectId));
         session.setAttribute("myProject", getProject());
 
         return SUCCESS;
@@ -64,7 +66,6 @@ public class ManageFilesAction extends BaseAction {
         Project myProject = (Project) session.getAttribute("myProject");
         setProject(myProject);
         loadFileEntries();
-        loadFileTypes();
 
         return SUCCESS;
     }
@@ -78,18 +79,15 @@ public class ManageFilesAction extends BaseAction {
     public String messages() throws Exception {
         setMenu("FileMessagesLinks");
         HttpSession session = getSession();
-        HttpServletRequest request = getRequest();
         Project myProject = (Project) session.getAttribute("myProject");
         setProject(myProject);
         loadFileEntries();
 
-        String fileId = (String) request.getAttribute("fileId");
-            for (FileEntry myFileEntry : getFileEntries()) {
-                if (myFileEntry.getCaArrayFile().getId() == Long.parseLong(fileId)) {
-                    setFileEntry(myFileEntry);
-                }
+        for (CaArrayFile caArrayFile : getFiles()) {
+            if (caArrayFile.getId().compareTo(fileId) == 0) {
+                setFile(caArrayFile);
             }
-
+        }
         return SUCCESS;
     }
 
@@ -121,9 +119,9 @@ public class ManageFilesAction extends BaseAction {
           String[] items = p.split(name);
 
           //if pattern is like fileEntries:0:selected we know a checkbox has been selected
-          if (items[0].equalsIgnoreCase("fileEntries") && items[2].equalsIgnoreCase("selected")) {
-              String fileId = items[1];
-              CaArrayFileSet fileSet = getSelectedFiles(fileId);
+          if (items[0].equalsIgnoreCase("file") && items[2].equalsIgnoreCase("selected")) {
+              String fileIndex = items[1];
+              CaArrayFileSet fileSet = getSelectedFiles(fileIndex);
               getDelegate().getFileManagementService().validateFiles(fileSet);
           }
         }
@@ -158,9 +156,9 @@ public class ManageFilesAction extends BaseAction {
           String[] items = p.split(name);
 
           //if pattern is like fileEntries:0:selected we know a checkbox has been selected
-          if (items[0].equalsIgnoreCase("fileEntries") && items[2].equalsIgnoreCase("selected")) {
-              String fileId = items[1];
-              CaArrayFileSet fileSet = getSelectedFiles(fileId);
+          if (items[0].equalsIgnoreCase("file") && items[2].equalsIgnoreCase("selected")) {
+              String fileIndex = items[1];
+              CaArrayFileSet fileSet = getSelectedFiles(fileIndex);
               getDelegate().getFileManagementService().importFiles(getProject(), fileSet);
           }
         }
@@ -169,16 +167,14 @@ public class ManageFilesAction extends BaseAction {
 
     /**
      * get selected fileset.
-     * @param fileId String
+     * @param fileIndex String
      * @return CaArrayFileSet CaArrayFileSet
      */
-    public CaArrayFileSet getSelectedFiles(String fileId) {
+    public CaArrayFileSet getSelectedFiles(String fileIndex) {
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
-        for (FileEntry myFileEntry : getFileEntries()) {
-            if (String.valueOf(myFileEntry.getCaArrayFile().getId()).equalsIgnoreCase(fileId)) {
-                fileSet.add(myFileEntry.getCaArrayFile());
-            }
-        }
+        CaArrayFile caArrayFile = getFile(Integer.parseInt(fileIndex));
+        fileSet.add(caArrayFile);
+
         return fileSet;
     }
 
@@ -186,23 +182,25 @@ public class ManageFilesAction extends BaseAction {
      * loads the file entries.
      */
     private void loadFileEntries() {
-        setFileEntries(new ArrayList<FileEntry>(getProject().getFiles().size()));
-        for (CaArrayFile nextCaArrayFile : getProject().getFilesList()) {
-            fileEntries.add(new FileEntry(nextCaArrayFile));
+        setFiles(new ArrayList<CaArrayFile>(getProject().getFiles().size()));
+        for (CaArrayFile caArrayFile : getProject().getFilesList()) {
+            files.add(caArrayFile);
         }
     }
 
     /**
-     * Returns all <code>FileTypes</code> as <code>SelectItem</code>.
-     * Put these in application scope at some pt.
+     * @return the fileTypes
      */
-    public void loadFileTypes() {
-        List<LabelValue> items = new ArrayList<LabelValue>();
-        items.add(new LabelValue("", "UNKNOWN"));
-        for (FileType fileType : FileType.getTypes()) {
-            items.add(new LabelValue(fileType.getName(), fileType.getName()));
-        }
-        setFileTypes(items);
+    public List<LabelValue> getFileTypes() {
+        return CacheManager.getInstance().getFileTypes();
+    }
+
+    /**
+     * gets the delegate from factory.
+     * @return Delegate ProjectDelegate
+     */
+    public ManageFilesDelegate getDelegate() {
+        return (ManageFilesDelegate) DelegateFactory.getDelegate(DelegateFactory.MANAGE_FILES);
     }
 
     /**
@@ -220,82 +218,31 @@ public class ManageFilesAction extends BaseAction {
     }
 
     /**
-     * @return the fileEntries
+     * @return the id
      */
-    public List<FileEntry> getFileEntries() {
-        return fileEntries;
+    public Long getProjectId() {
+        return projectId;
     }
 
     /**
-     * @param fileEntries the fileEntries to set
+     * @param projectId the projectId to set
      */
-    public void setFileEntries(List<FileEntry> fileEntries) {
-        this.fileEntries = fileEntries;
-    }
-
-    /**
-     * overloaded method to go file entry at index.
-     * @param index int
-     * @return fileEntry FileEntry
-     */
-    public FileEntry getFileEntries(int index) {
-        return getFileEntries().get(index);
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 
     /**
      * @return the id
      */
-    public Long getId() {
-        return id;
+    public Long getFileId() {
+        return fileId;
     }
 
     /**
-     * @param id the id to set
+     * @param fileId the fileId to set
      */
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    /**
-     * @return the caArrayFile
-     */
-    public CaArrayFile getCaArrayFile() {
-        return caArrayFile;
-    }
-
-    /**
-     * @param caArrayFile the caArrayFile to set
-     */
-    public void setCaArrayFile(CaArrayFile caArrayFile) {
-        this.caArrayFile = caArrayFile;
-    }
-
-    /**
-     * @return the fileEntry
-     */
-    public FileEntry getFileEntry() {
-        return fileEntry;
-    }
-
-    /**
-     * @param fileEntry the fileEntry to set
-     */
-    public void setFileEntry(FileEntry fileEntry) {
-        this.fileEntry = fileEntry;
-    }
-
-    /**
-     * @return the fileTypes
-     */
-    public List<LabelValue> getFileTypes() {
-        return fileTypes;
-    }
-
-    /**
-     * @param fileTypes the fileTypes to set
-     */
-    public void setFileTypes(List<LabelValue> fileTypes) {
-        this.fileTypes = fileTypes;
+    public void setFileId(Long fileId) {
+        this.fileId = fileId;
     }
 
     /**
@@ -313,10 +260,39 @@ public class ManageFilesAction extends BaseAction {
     }
 
     /**
-     * gets the delegate from factory.
-     * @return Delegate ProjectDelegate
+     * @return the files
      */
-    public ManageFilesDelegate getDelegate() {
-        return (ManageFilesDelegate) DelegateFactory.getDelegate(DelegateFactory.MANAGE_FILES);
+    public List<CaArrayFile> getFiles() {
+        return files;
+    }
+
+    /**
+     * @param files the files to set
+     */
+    public void setFiles(List<CaArrayFile> files) {
+        this.files = files;
+    }
+
+    /**
+     * overloaded method to go file entry at index.
+     * @param index int
+     * @return fileEntry FileEntry
+     */
+    public CaArrayFile getFile(int index) {
+        return getFiles().get(index);
+    }
+
+    /**
+     * @return the file
+     */
+    public CaArrayFile getFile() {
+        return file;
+    }
+
+    /**
+     * @param file the file to set
+     */
+    public void setFile(CaArrayFile file) {
+        this.file = file;
     }
 }

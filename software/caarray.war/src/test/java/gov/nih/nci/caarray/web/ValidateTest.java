@@ -82,14 +82,8 @@
  */
 package gov.nih.nci.caarray.web;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
-import java.util.ArrayList;
-
-import javax.servlet.http.HttpServletRequest;
-
 import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.file.FileManagementServiceStub;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
@@ -101,7 +95,6 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.action.ManageFilesAction;
-import gov.nih.nci.caarray.web.util.LabelValue;
 
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
@@ -130,7 +123,6 @@ public class ValidateTest {
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, projectServiceStub);
         locatorStub.addLookup(FileManagementService.JNDI_NAME, fileManagementStub);
         loadTestProject();
-        loadNavigation();
     }
 
     @SuppressWarnings({ "PMD", "unchecked", "deprecation" })
@@ -168,12 +160,6 @@ public class ValidateTest {
 
     }
 
-    private void loadNavigation() {
-        final ArrayList<LabelValue> navigationList = new ArrayList<LabelValue>();
-        LabelValue labelValue = new LabelValue("Return to Workspace", "Project_list.action");
-        navigationList.add(labelValue);
-    }
-
     /**
      * test messages.
      * @throws Exception Exception
@@ -186,13 +172,12 @@ public class ValidateTest {
         Project myProject = action.getProject();
         assertNotNull(myProject);
 
+        action.setFileId(Long.valueOf(1));
+
         MockHttpSession session = new MockHttpSession();
         session.setAttribute("myProject", myProject);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
-
-        request.setAttribute("fileId", "1");
-
         request.setSession(session);
         ServletActionContext.setRequest(request);
 
@@ -208,15 +193,6 @@ public class ValidateTest {
     public void testManage() throws Exception {
         Project myProject = action.getProject();
         assertNotNull(myProject);
-
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("myProject", myProject);
-
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setSession(session);
-        ServletActionContext.setRequest(request);
-
-        assertNotNull(action.getProject());
         assertEquals("success", action.manage());
     }
 
@@ -250,9 +226,9 @@ public class ValidateTest {
         project.getFiles().add(file3);
         project.setId(Long.valueOf(1));
 
-        action.setId(Long.valueOf(1));
+        action.setProjectId(Long.valueOf(1));
         action.setProject(project);
-        assertNotNull(action.getId());
+        assertNotNull(action.getProjectId());
 
         assertEquals("success", action.edit());
     }
@@ -273,9 +249,9 @@ public class ValidateTest {
         session.setAttribute("myProject", myProject);
 
         request.setSession(session);
-        request.setParameter("fileEntries:1:selected", "fileEntries:1:selected");
-        request.setParameter("fileEntries:1:notselected", "fileEntries:1:notselected");
-        request.setParameter("notfileEntries:1:selected", "notfileEntries:1:selected");
+        request.setParameter("file:1:selected", "file:1:selected");
+        request.setParameter("file:1:notselected", "file:1:notselected");
+        request.setParameter("notfile:1:selected", "notfile:1:selected");
         ServletActionContext.setRequest(request);
 
         action.validateFile();

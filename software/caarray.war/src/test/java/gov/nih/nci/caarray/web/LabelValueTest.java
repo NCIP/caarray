@@ -82,11 +82,7 @@
  */
 package gov.nih.nci.caarray.web;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.web.helper.FileEntry;
 import gov.nih.nci.caarray.web.util.LabelValue;
 
 import org.junit.Test;

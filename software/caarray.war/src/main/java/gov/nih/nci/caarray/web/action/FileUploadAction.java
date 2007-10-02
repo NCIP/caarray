@@ -86,7 +86,6 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.web.delegate.DelegateFactory;
 import gov.nih.nci.caarray.web.delegate.ManageFilesDelegate;
-import gov.nih.nci.caarray.web.helper.FileEntry;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -112,7 +111,8 @@ public class FileUploadAction extends BaseAction {
     private String filename;
 
     private Project project;
-    private List<FileEntry> fileEntries;
+    private List<CaArrayFile> files;
+
     private String menu;
 
     /**
@@ -136,8 +136,10 @@ public class FileUploadAction extends BaseAction {
             os.write(getRawBytes(getUpload()));
 
             loadFileEntries();
-            fileEntries.add(new FileEntry(
-                    getDelegate().getProjectManagementService().addFile(getProject(), uploadedFile)));
+
+            CaArrayFile caArrayFile = new CaArrayFile();
+            caArrayFile = getDelegate().getProjectManagementService().addFile(getProject(), uploadedFile);
+            files.add(caArrayFile);
 
         } catch (Exception e) {
             String msg = "Unable to upload file: " + e.getMessage();
@@ -154,9 +156,9 @@ public class FileUploadAction extends BaseAction {
      * loads the file entries.
      */
     private void loadFileEntries() {
-        setFileEntries(new ArrayList<FileEntry>(getProject().getFiles().size()));
-        for (CaArrayFile nextCaArrayFile : getProject().getFilesList()) {
-            fileEntries.add(new FileEntry(nextCaArrayFile));
+        setFiles(new ArrayList<CaArrayFile>(getProject().getFiles().size()));
+        for (CaArrayFile caArrayFile : getProject().getFilesList()) {
+            files.add(caArrayFile);
         }
     }
 
@@ -177,9 +179,6 @@ public class FileUploadAction extends BaseAction {
      */
     private static byte[] getRawBytes(File f) {
         try {
-            if (!f.exists()) {
-                return null;
-            }
             FileInputStream fin = new FileInputStream(f);
             byte[] buffer = new byte[(int) f.length()];
             fin.read(buffer);
@@ -192,17 +191,12 @@ public class FileUploadAction extends BaseAction {
     }
 
     /**
-     * @return the fileEntries
+     * gets the delegate from factory.
+     * @return Delegate ProjectDelegate
+     * @throws CaArrayException
      */
-    public List<FileEntry> getFileEntries() {
-        return fileEntries;
-    }
-
-    /**
-     * @param fileEntries the fileEntries to set
-     */
-    public void setFileEntries(List<FileEntry> fileEntries) {
-        this.fileEntries = fileEntries;
+    private ManageFilesDelegate getDelegate() {
+        return (ManageFilesDelegate) DelegateFactory.getDelegate(DelegateFactory.MANAGE_FILES);
     }
 
     /**
@@ -290,12 +284,17 @@ public class FileUploadAction extends BaseAction {
     }
 
     /**
-     * gets the delegate from factory.
-     * @return Delegate ProjectDelegate
-     * @throws CaArrayException
+     * @return the files
      */
-    private ManageFilesDelegate getDelegate() {
-        return (ManageFilesDelegate) DelegateFactory.getDelegate(DelegateFactory.MANAGE_FILES);
+    public List<CaArrayFile> getFiles() {
+        return files;
+    }
+
+    /**
+     * @param files the files to set
+     */
+    public void setFiles(List<CaArrayFile> files) {
+        this.files = files;
     }
 }
 

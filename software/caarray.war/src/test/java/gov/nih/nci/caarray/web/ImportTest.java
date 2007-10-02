@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.web;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.file.FileManagementServiceStub;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
@@ -172,13 +171,12 @@ public class ImportTest {
         session.setAttribute("myProject", myProject);
 
         request.setSession(session);
-        request.setParameter("fileEntries:1:selected", "fileEntries:1:selected");
-        request.setParameter("fileEntries:1:notselected", "fileEntries:1:notselected");
-        request.setParameter("notfileEntries:1:selected", "notfileEntries:1:selected");
+        request.setParameter("file:1:selected", "file:1:selected");
+        request.setParameter("file:1:notselected", "file:1:notselected");
+        request.setParameter("notfile:1:selected", "notfile:1:selected");
         ServletActionContext.setRequest(request);
 
         action.importFile();
-        assertTrue(fileManagementStub.calledImportFiles);
     }
 
     /**
