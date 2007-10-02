@@ -49,9 +49,6 @@
         <java>cglib-2.1.3.jar</java>
     </module>    
     <module>
-        <java>clm.jar</java>
-    </module>
-    <module>
         <java>commons-discovery-0.2.jar</java>
     </module>
     <module>
