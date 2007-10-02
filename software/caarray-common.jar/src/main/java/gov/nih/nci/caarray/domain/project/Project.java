@@ -86,16 +86,25 @@ package gov.nih.nci.caarray.domain.project;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.permissions.AccessProfile;
+import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.caarray.domain.permissions.ProfileEntity;
 import gov.nih.nci.caarray.util.Protectable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
@@ -103,9 +112,12 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.MapKeyManyToMany;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
+import org.hibernate.annotations.Type;
 
  /**
   * A microarray project.
@@ -113,9 +125,6 @@ import org.hibernate.annotations.SortType;
 @Entity
 public class Project extends AbstractCaArrayEntity implements Comparable<Project>, Protectable {
 
-    /**
-     * The serial version UID for serialization.
-     */
     private static final long serialVersionUID = 1234567890L;
 
     /**
@@ -130,6 +139,10 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     }
 
     private Experiment experiment;
+    private SortedSet<CaArrayFile> files = new TreeSet<CaArrayFile>();
+    private AccessProfile publicProfile = new AccessProfile();
+    private AccessProfile hostProfile = new AccessProfile();
+    private Map<CollaboratorGroup, ProfileEntity> groupProfiles = new HashMap<CollaboratorGroup, ProfileEntity>();
 
     /**
      * Gets the experiment.
@@ -151,11 +164,6 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     public void setExperiment(final Experiment experimentVal) {
         this.experiment = experimentVal;
     }
-
-    /**
-     * The files set.
-     */
-    private SortedSet<CaArrayFile> files = new TreeSet<CaArrayFile>();
 
     /**
      * Gets the files.
@@ -180,11 +188,6 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         return result;
     }
 
-    /**
-     * Sets the files.
-     *
-     * @param filesVal the files
-     */
     @SuppressWarnings("unused")
     private void setFiles(final SortedSet<CaArrayFile> filesVal) { // NOPMD
         this.files = filesVal;
@@ -198,6 +201,59 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         CaArrayFileSet fileSet = new CaArrayFileSet(this);
         fileSet.addAll(files);
         return fileSet;
+    }
+
+    /**
+     * @return public access profile
+     */
+    @Type(type = "gov.nih.nci.caarray.util.AccessProfileUserType")
+    @Columns(columns = {
+            @Column(name = "PUBLIC_DEFAULT_READ"),
+            @Column(name = "PUBLIC_DEFAULT_WRITE")
+    })
+    public AccessProfile getPublicProfile() {
+        return publicProfile;
+    }
+
+    @SuppressWarnings("unused")
+    private void setPublicProfile(AccessProfile profile) { // NOPMD
+        this.publicProfile = profile;
+    }
+
+    /**
+     * @return host institution access profile
+     */
+    @Type(type = "gov.nih.nci.caarray.util.AccessProfileUserType")
+    @Columns(columns = {
+            @Column(name = "HOST_DEFAULT_READ"),
+            @Column(name = "HOST_DEFAULT_WRITE")
+    })
+    public AccessProfile getHostProfile() {
+        return hostProfile;
+    }
+
+    @SuppressWarnings("unused")
+    private void setHostProfile(AccessProfile profile) { // NOPMD
+        this.hostProfile = profile;
+    }
+
+    /**
+     * @return collaborator access profiles
+     */
+    @ManyToMany
+    @MapKeyManyToMany(joinColumns = @JoinColumn(name = "GROUP_ID"))
+    @JoinTable(
+            name = "PROJECT_GROUPS",
+            joinColumns = @JoinColumn(name = "PROJECT_ID"),
+            inverseJoinColumns = @JoinColumn(name = "PROFILE_ID")
+    )
+    public Map<CollaboratorGroup, ProfileEntity> getGroupProfiles() {
+        return groupProfiles;
+    }
+
+    @SuppressWarnings("unused")
+    private void setGroupProfiles(Map<CollaboratorGroup, ProfileEntity> profiles) { // NOPMD
+        groupProfiles = profiles;
     }
 
     /**

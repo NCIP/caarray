@@ -40,6 +40,8 @@
         <mapping class="gov.nih.nci.caarray.domain.data.RawArrayData"/>
         <mapping class="gov.nih.nci.caarray.domain.file.CaArrayFile"/>
         <mapping class="gov.nih.nci.caarray.domain.hybridization.Hybridization"/>
+        <mapping class="gov.nih.nci.caarray.domain.permissions.CollaboratorGroup"/>
+        <mapping class="gov.nih.nci.caarray.domain.permissions.ProfileEntity"/>
         <mapping class="gov.nih.nci.caarray.domain.project.Factor"/>
         <mapping class="gov.nih.nci.caarray.domain.project.FactorValue"/>
         <mapping class="gov.nih.nci.caarray.domain.project.Experiment"/>

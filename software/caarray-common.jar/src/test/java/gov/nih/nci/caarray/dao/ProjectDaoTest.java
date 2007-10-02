@@ -536,4 +536,30 @@ public class ProjectDaoTest extends AbstractDaoTest {
         assertEquals(((User) pe.getOwners().iterator().next()).getLoginName(), UsernameHolder.getUser());
         tx.commit();
     }
+
+    @Test
+    public void testAccessProfiles() {
+        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+        HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+        tx.commit();
+
+        tx = HibernateUtil.getCurrentSession().beginTransaction();
+        Project p = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        assertNotNull(p.getPublicProfile());
+        assertTrue(!p.getPublicProfile().isDefaultRead());
+        assertTrue(!p.getPublicProfile().isDefaultWrite());
+        p.getPublicProfile().setDefaultRead(true);
+        p.getPublicProfile().setDefaultWrite(true);
+        p.getHostProfile().setDefaultRead(true);
+        tx.commit();
+
+        tx = HibernateUtil.getCurrentSession().beginTransaction();
+        p = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        assertNotNull(p.getPublicProfile());
+        assertTrue(p.getPublicProfile().isDefaultRead());
+        assertTrue(p.getPublicProfile().isDefaultWrite());
+        assertTrue(p.getHostProfile().isDefaultRead());
+        assertTrue(!p.getHostProfile().isDefaultWrite());
+        tx.commit();
+    }
 }
