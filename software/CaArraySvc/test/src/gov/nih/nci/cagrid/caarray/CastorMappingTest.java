@@ -111,7 +111,7 @@ public class CastorMappingTest extends TestCase {
     }
 
     static Project getProject() {
-        Project p = new Project();
+        Project p = Project.createNew();
         p.setId(1L);
         p.setGridIdentifier("projectgridid");
         return p;
