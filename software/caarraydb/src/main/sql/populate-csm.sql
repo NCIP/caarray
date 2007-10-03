@@ -1,45 +1,13 @@
--- This script is is a slightly modified version of the DataPrimingMySQL.sql
--- file from the CSM 3.2 distribution.  It has been modified with users
--- and passwords for caarray.
+-- Sets up the CSM tables with initial development values
 
-#
-# The following entries creates a super admin application incase you decide
-# to use this database to run UPT also. In that case you need to provide
-# the project login id and name for the super admin.
-# However in incase you are using this database just to host the application's
-# authorization schema, these enteries are not used and hence they can be left as
-# it is.
-#
-
+-- Create the application objects and associated protection elements
 INSERT INTO csm_application(APPLICATION_NAME,APPLICATION_DESCRIPTION,DECLARATIVE_FLAG,ACTIVE_FLAG,UPDATE_DATE,
 DATABASE_URL, DATABASE_USER_NAME, DATABASE_PASSWORD, DATABASE_DIALECT, DATABASE_DRIVER)
 values ("csmupt","CSM UPT Super Admin Application",0,0,sysdate(),
 'jdbc:mysql://localhost:3306/caarray2', 'caarray2op', 'qN+MnXquuqO8j2uyHEABIQ==', 'org.hibernate.dialect.MySQLDialect', 'com.mysql.jdbc.Driver');
 
- -- f1rebird05 is password
-insert into csm_user (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("caarrayadmin","caArray","Administrator","gJ5bRQxV/Qnei3BvqISY2Q==",sysdate());
-
 insert into csm_protection_element(PROTECTION_ELEMENT_NAME,PROTECTION_ELEMENT_DESCRIPTION,OBJECT_ID,APPLICATION_ID,UPDATE_DATE)
 values("csmupt","CSM UPT Super Admin Application Protection Element","csmupt",1,sysdate());
-
-insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
-values(1,1,sysdate());
-
-insert into csm_group (group_name, update_date, application_id)
-values('PrincipalInvestigator', sysdate(), 1);
-
-insert into csm_user_group (user_id, group_id)
-values(1, 1);
-
-insert into csm_user (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("fb_admin","caArray","ldapuser","ldap_only_no_pass",sysdate());
-insert into csm_user_group (user_id, group_id)
-values(2, 1);
-
-#
-# The following entry is for your application.
-#
 
 INSERT INTO csm_application(APPLICATION_NAME,APPLICATION_DESCRIPTION,DECLARATIVE_FLAG,ACTIVE_FLAG,UPDATE_DATE,
 DATABASE_URL, DATABASE_USER_NAME, DATABASE_PASSWORD, DATABASE_DIALECT, DATABASE_DRIVER)
@@ -49,8 +17,55 @@ VALUES ("caarray","description of caarray",0,0,sysdate(),
 insert into csm_protection_element(PROTECTION_ELEMENT_NAME,PROTECTION_ELEMENT_DESCRIPTION,OBJECT_ID,APPLICATION_ID,UPDATE_DATE)
 values("caarray","caarray Admin Application Protection Element","caarray",1,sysdate());
 
+-- Create some users and their protection elements
+ -- f1rebird05 is password
+insert into csm_user (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
+values ("caarrayadmin","caArray","Administrator","gJ5bRQxV/Qnei3BvqISY2Q==",sysdate());
+insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
+values(1,1,sysdate());
 insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(2,1,sysdate());
+
+insert into csm_user (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
+values ("fb_admin","caArray","ldapuser","ldap_only_no_pass",sysdate());
+insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
+values(1,2,sysdate());
+insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
+values(2,2,sysdate());
+
+-- 2nd db-backed user to test permissions
+-- f1rebird05 is password
+insert into csm_user (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
+values ("caarrayuser","caArray","User","gJ5bRQxV/Qnei3BvqISY2Q==",sysdate());
+insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
+values(1,3,sysdate());
+insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
+values(2,3,sysdate());
+
+-- Groups
+-- This group corresponds to a security group
+insert into csm_group (group_name, update_date, application_id)
+values('PrincipalInvestigator', sysdate(), 1);
+
+-- The Public group corresponds to public access profiles - everyone should be in this group
+insert into csm_group (group_name, update_date, application_id)
+values('Public', sysdate(), 2);
+
+-- all three users belong to both groups
+insert into csm_user_group (user_id, group_id)
+values(1, 1);
+insert into csm_user_group (user_id, group_id)
+values(1, 2);
+
+insert into csm_user_group (user_id, group_id)
+values(2, 1);
+insert into csm_user_group (user_id, group_id)
+values(2, 2);
+
+insert into csm_user_group (user_id, group_id)
+values(3, 1);
+insert into csm_user_group (user_id, group_id)
+values(3, 2);
 
 #
 # The following entries are Common Set of Privileges

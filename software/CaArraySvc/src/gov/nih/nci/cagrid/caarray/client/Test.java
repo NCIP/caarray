@@ -125,7 +125,7 @@ public class Test {
         e.getPublications().add(publication);
         publication.setExperiment(e);
 
-        Project p = new Project();
+        Project p =Project.createNew();
         p.setExperiment(e);
         p.setGridIdentifier("projectgridid");
 

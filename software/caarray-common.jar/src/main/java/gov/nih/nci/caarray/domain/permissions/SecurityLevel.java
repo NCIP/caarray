@@ -82,68 +82,30 @@
  */
 package gov.nih.nci.caarray.domain.permissions;
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-import org.hibernate.annotations.Columns;
-import org.hibernate.annotations.Type;
-
 /**
- * Wrapper entity class for AccessProfile.
+ * For access profiles, what type of access is permitted.
  */
-@Entity
-public class ProfileEntity implements Serializable {
-    private static final long serialVersionUID = -129933783267622324L;
+public enum SecurityLevel {
+    /** No access to project or any samples. */
+    NONE(false),
+    /** Read access to project and all samples. */
+    READ(true),
+    /** Read access to project and specified samples. */
+    READ_SELECTIVE(true),
+    /** Read access to project.  Read access and/or write access to specificed samples. */
+    READ_WRITE_SELECTIVE(true);
 
-    private Long id;
-    private AccessProfile accessProfile = new AccessProfile();
+    private final boolean projectVisible;
 
-    /**
-     * @param ap wrapped profile
-     */
-    public ProfileEntity(AccessProfile ap) {
-        if (ap == null) {
-            throw new IllegalArgumentException("AccessProfile cannot be null");
-        }
-        setProfile(ap);
-    }
-
-    @Deprecated
-    ProfileEntity() {
-        // hibernate only
-    }
-
-    @SuppressWarnings("unused")
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long getId() { // NOPMD
-        return id;
-    }
-
-    @SuppressWarnings("unused")
-    private void setId(Long id) { // NOPMD
-        this.id = id;
+    SecurityLevel(boolean projectVisible) {
+        this.projectVisible = projectVisible;
     }
 
     /**
-     * @return the profile
+     * @return whether or not this security level makes a project visible
+     *         (distict from access to individual samples)
      */
-    @Type(type = "gov.nih.nci.caarray.util.AccessProfileUserType")
-    @Columns(columns = {
-            @Column(name = "DEFAULT_READ"),
-            @Column(name = "DEFAULT_WRITE")
-    })
-    public AccessProfile getProfile() {
-        return accessProfile;
+    public boolean isProjectVisible() {
+        return projectVisible;
     }
-
-    private void setProfile(AccessProfile ap) {
-        accessProfile = ap;
-    }
-
 }

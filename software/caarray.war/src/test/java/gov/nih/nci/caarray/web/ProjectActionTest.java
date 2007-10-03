@@ -125,7 +125,7 @@ public class ProjectActionTest {
 
     private void loadTestProject() {
         final ArrayList<Project> projects = new ArrayList<Project>();
-        final Project project = new Project();
+        final Project project = Project.createNew();;
         CaArrayFile file1 = new CaArrayFile();
         file1.setProject(project);
         file1.setFileStatus(FileStatus.UPLOADED);

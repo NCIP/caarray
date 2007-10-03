@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.util;
 
+import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.SecurityServiceProvider;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
@@ -184,6 +185,12 @@ public class SecurityInterceptor extends EmptyInterceptor {
                 AUTH_MGR.createProtectionElement(pe);
                 AUTH_MGR.assignOwners(pe.getProtectionElementId().toString(),
                                       new String[] {csmUser.getUserId().toString()});
+
+                if (p instanceof Sample) {
+                    Sample s = (Sample) p;
+                    s.toString();  // TODO: transparently add perm to various groups
+                }
+
             } catch (CSObjectNotFoundException e) {
                 LOG.warn("Could not find the " + APPLICATION_NAME + " application: " + e.getMessage(), e);
             } catch (CSTransactionException e) {

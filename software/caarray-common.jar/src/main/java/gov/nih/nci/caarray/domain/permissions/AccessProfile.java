@@ -82,51 +82,111 @@
  */
 package gov.nih.nci.caarray.domain.permissions;
 
+import gov.nih.nci.caarray.domain.sample.Sample;
+
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+
+import org.hibernate.annotations.ForeignKey;
 
 /**
  * Container class that models the read and write permissions to samples.
  */
+@Entity
 public class AccessProfile implements Serializable {
 
     private static final long serialVersionUID = -7994016784349522735L;
 
-    private boolean defaultRead = false;
-    private boolean defaultWrite = false;
+    private Long id;
+    private SecurityLevel securityLevel = SecurityLevel.NONE;
+    private Set<Sample> selectiveReadSamples = new HashSet<Sample>();
+    private Set<Sample> selectiveWriteSamples = new HashSet<Sample>();
 
     /**
-     * @return whether newly-added samples to the project should get a read
-     *         permission in this access profile.
+     * @return database identifier
      */
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public Long getId() {
+        return id;
+    }
+
+    @SuppressWarnings("unused")
+    private void setId(Long id) { // NOPMD
+        this.id = id;
+    }
+
+    /**
+     * @return the securityLevel
+     */
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    public boolean isDefaultRead() {
-        return defaultRead;
+    public SecurityLevel getSecurityLevel() {
+        return securityLevel;
     }
 
     /**
-     * @param defaultRead whether newly-added samples to the project should get
-     *                    a read permission in this access profile.
+     * @param securityLevel the securityLevel to set
      */
-    public void setDefaultRead(boolean defaultRead) {
-        this.defaultRead = defaultRead;
+    public void setSecurityLevel(SecurityLevel securityLevel) {
+        this.securityLevel = securityLevel;
+        if (securityLevel == SecurityLevel.NONE
+                || securityLevel == SecurityLevel.READ) {
+            selectiveReadSamples.clear();
+            selectiveWriteSamples.clear();
+        } else if (securityLevel == SecurityLevel.READ_SELECTIVE) {
+            selectiveWriteSamples.clear();
+        }
     }
 
     /**
-     * @return whether newly-added samples to the project should get a write
-     *         permission in this access profile.
+     * @return the selectiveReadSamples
      */
-    @Column(nullable = false)
-    public boolean isDefaultWrite() {
-        return defaultWrite;
+    @ManyToMany
+    @JoinTable(
+            name = "PROFILE_READ_SAMPLES",
+            joinColumns = { @JoinColumn(name = "ACCESS_PROFILE_ID") },
+            inverseJoinColumns = { @JoinColumn(name = "SAMPLE_ID") }
+    )
+    @ForeignKey(name = "PROFILEREAD_PROFILE_FK", inverseName = "PROFILEREAD_READ_FK")
+    public Set<Sample> getSelectiveReadSamples() {
+        return selectiveReadSamples;
+    }
+
+    @SuppressWarnings("unused")
+    private void setSelectiveReadSamples(Set<Sample> selectiveReadSamples) { // NOPMD
+        this.selectiveReadSamples = selectiveReadSamples;
     }
 
     /**
-     * @param defaultWrite whether newly-added samples to the project should get
-     *                    a wrie permission in this access profile.
+     * @return the selectiveWriteSamples
      */
-    public void setDefaultWrite(boolean defaultWrite) {
-        this.defaultWrite = defaultWrite;
+    @ManyToMany
+    @JoinTable(
+            name = "PROFILE_WRITE_SAMPLES",
+            joinColumns = { @JoinColumn(name = "ACCESS_PROFILE_ID") },
+            inverseJoinColumns = { @JoinColumn(name = "SAMPLE_ID") }
+    )
+    @ForeignKey(name = "PROFILEWRITE_PROFILE_FK", inverseName = "PROFILEWRITE_WRITE_FK")
+    public Set<Sample> getSelectiveWriteSamples() {
+        return selectiveWriteSamples;
     }
+
+    @SuppressWarnings("unused")
+    private void setSelectiveWriteSamples(Set<Sample> selectiveWriteSamples) { // NOPMD
+        this.selectiveWriteSamples = selectiveWriteSamples;
+    }
+
 }

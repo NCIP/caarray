@@ -88,7 +88,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
-import gov.nih.nci.caarray.domain.permissions.ProfileEntity;
+import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.util.Protectable;
 
 import java.util.ArrayList;
@@ -99,7 +99,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -112,12 +111,10 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.MapKeyManyToMany;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
-import org.hibernate.annotations.Type;
 
  /**
   * A microarray project.
@@ -135,6 +132,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     public static Project createNew() {
         Project project = new Project();
         project.setExperiment(Experiment.createNew());
+        project.hostProfile.setSecurityLevel(SecurityLevel.READ_WRITE_SELECTIVE);
         return project;
     }
 
@@ -142,7 +140,12 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private SortedSet<CaArrayFile> files = new TreeSet<CaArrayFile>();
     private AccessProfile publicProfile = new AccessProfile();
     private AccessProfile hostProfile = new AccessProfile();
-    private Map<CollaboratorGroup, ProfileEntity> groupProfiles = new HashMap<CollaboratorGroup, ProfileEntity>();
+    private Map<CollaboratorGroup, AccessProfile> groupProfiles = new HashMap<CollaboratorGroup, AccessProfile>();
+
+    @Deprecated
+    Project() {
+        // hibernate-only constructor
+    }
 
     /**
      * Gets the experiment.
@@ -206,11 +209,8 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     /**
      * @return public access profile
      */
-    @Type(type = "gov.nih.nci.caarray.util.AccessProfileUserType")
-    @Columns(columns = {
-            @Column(name = "PUBLIC_DEFAULT_READ"),
-            @Column(name = "PUBLIC_DEFAULT_WRITE")
-    })
+    @ManyToOne(cascade = { CascadeType.ALL })
+    @ForeignKey(name = "PROJECT_PUBLICACCESS_FK")
     public AccessProfile getPublicProfile() {
         return publicProfile;
     }
@@ -223,11 +223,8 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     /**
      * @return host institution access profile
      */
-    @Type(type = "gov.nih.nci.caarray.util.AccessProfileUserType")
-    @Columns(columns = {
-            @Column(name = "HOST_DEFAULT_READ"),
-            @Column(name = "HOST_DEFAULT_WRITE")
-    })
+    @ManyToOne(cascade = { CascadeType.ALL })
+    @ForeignKey(name = "PROJECT_HOSTACCESS_FK")
     public AccessProfile getHostProfile() {
         return hostProfile;
     }
@@ -247,12 +244,12 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
             joinColumns = @JoinColumn(name = "PROJECT_ID"),
             inverseJoinColumns = @JoinColumn(name = "PROFILE_ID")
     )
-    public Map<CollaboratorGroup, ProfileEntity> getGroupProfiles() {
+    public Map<CollaboratorGroup, AccessProfile> getGroupProfiles() {
         return groupProfiles;
     }
 
     @SuppressWarnings("unused")
-    private void setGroupProfiles(Map<CollaboratorGroup, ProfileEntity> profiles) { // NOPMD
+    private void setGroupProfiles(Map<CollaboratorGroup, AccessProfile> profiles) { // NOPMD
         groupProfiles = profiles;
     }
 

@@ -82,18 +82,9 @@
  */
 package gov.nih.nci.caarray.application.project;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.SessionContextStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
@@ -105,6 +96,16 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.Proposal;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -225,7 +226,7 @@ public class ProjectManagementServiceTest {
             if (savedObjects.containsKey(id)) {
                 return (Project) savedObjects.get(id);
             }
-            Project project = new Project();
+            Project project = Project.createNew();;
             // Perform voodoo magic
             try {
                 Method m = project.getClass().getSuperclass().getSuperclass().getDeclaredMethod("setId", Long.class);

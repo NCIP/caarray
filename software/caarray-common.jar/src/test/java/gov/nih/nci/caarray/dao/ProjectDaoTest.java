@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.Factor;
@@ -137,7 +138,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
     // Experiment
     private static final String UNCHECKED = "unchecked";
-    private static Project DUMMY_PROJECT_1 = new Project();
+    private static Project DUMMY_PROJECT_1 = Project.createNew();
     private static Experiment DUMMY_EXPERIMENT_1 = new Experiment();
     private static TermSource DUMMY_TERM_SOURCE = new TermSource();
     private static Category DUMMY_CATEGORY = new Category();
@@ -183,7 +184,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
     @Before
     public void setup() {
         // Experiment
-        DUMMY_PROJECT_1 = new Project();
+        DUMMY_PROJECT_1 = Project.createNew();
         DUMMY_EXPERIMENT_1 = new Experiment();
         DUMMY_TERM_SOURCE = new TermSource();
         DUMMY_CATEGORY = new Category();
@@ -546,20 +547,16 @@ public class ProjectDaoTest extends AbstractDaoTest {
         tx = HibernateUtil.getCurrentSession().beginTransaction();
         Project p = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
         assertNotNull(p.getPublicProfile());
-        assertTrue(!p.getPublicProfile().isDefaultRead());
-        assertTrue(!p.getPublicProfile().isDefaultWrite());
-        p.getPublicProfile().setDefaultRead(true);
-        p.getPublicProfile().setDefaultWrite(true);
-        p.getHostProfile().setDefaultRead(true);
+        assertEquals(p.getPublicProfile().getSecurityLevel(), SecurityLevel.NONE);
+        assertEquals(p.getHostProfile().getSecurityLevel(), SecurityLevel.READ_WRITE_SELECTIVE);
+        p.getPublicProfile().setSecurityLevel(SecurityLevel.READ);
+        p.getHostProfile().setSecurityLevel(SecurityLevel.NONE);
         tx.commit();
 
         tx = HibernateUtil.getCurrentSession().beginTransaction();
         p = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
-        assertNotNull(p.getPublicProfile());
-        assertTrue(p.getPublicProfile().isDefaultRead());
-        assertTrue(p.getPublicProfile().isDefaultWrite());
-        assertTrue(p.getHostProfile().isDefaultRead());
-        assertTrue(!p.getHostProfile().isDefaultWrite());
+        assertEquals(p.getPublicProfile().getSecurityLevel(), SecurityLevel.READ);
+        assertEquals(p.getHostProfile().getSecurityLevel(), SecurityLevel.NONE);
         tx.commit();
     }
 }

@@ -82,13 +82,13 @@
  */
 package gov.nih.nci.caarray.test.functional;
 
+import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+
 import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
-
-import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 public class LoginBasicFlowTest extends AbstractSeleniumTest {
 
@@ -96,7 +96,6 @@ public class LoginBasicFlowTest extends AbstractSeleniumTest {
      *
      */
     private static final String PROPOSE_PROJECT = "Propose Project";
-    private static final String VALIDATION_ERROR = "Validation Error";
     private static final String EXPERIMENT_WORKSPACE = "Experiment Workspace";
     private static final String PROPOSE_EXPERIMENT = "Propose Experiment";
 

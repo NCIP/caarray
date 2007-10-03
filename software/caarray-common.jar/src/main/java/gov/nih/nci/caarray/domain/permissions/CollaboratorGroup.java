@@ -95,7 +95,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -104,6 +106,7 @@ import org.apache.commons.logging.LogFactory;
  * CollaboratorGroups bridge CSM groups with owners.
  */
 @Entity
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "CSM_GROUP", "CSM_USER" }) })
 public class CollaboratorGroup implements Serializable, Protectable {
     //
     // DEVELOPER NOTE: This class has-a Group, rather than is-a Group,

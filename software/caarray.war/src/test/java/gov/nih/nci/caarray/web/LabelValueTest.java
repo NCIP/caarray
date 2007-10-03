@@ -106,7 +106,7 @@ public class LabelValueTest {
         assertNotNull(label2.getValue());
         assertNotNull(label2.toString());
         label1.compareTo(label2);
-        label1.CASE_INSENSITIVE_ORDER.compare(label1, label2);
+        LabelValue.CASE_INSENSITIVE_ORDER.compare(label1, label2);
     }
 
 }

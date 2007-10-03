@@ -70,7 +70,7 @@ import org.junit.Test;
 public class FileManagementServiceTest {
 
     private FileManagementService fileManagementService;
-    
+
     @Before
     public void setUp() {
         FileManagementServiceBean fileManagementServiceBean = new FileManagementServiceBean();
@@ -100,7 +100,7 @@ public class FileManagementServiceTest {
     }
 
     private Project getTgaBroadTestProject() {
-        Project project = new Project();
+        Project project = Project.createNew();
         project.getFiles().addAll(TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_SET).getFiles());
         assertEquals(29, project.getFiles().size());
         return project;
@@ -122,7 +122,7 @@ public class FileManagementServiceTest {
             designFile.setFileStatus(FileStatus.VALIDATED);
             return new FileValidationResult(new File(designFile.getName()));
         }
-        
+
     }
 
 }

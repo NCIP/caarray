@@ -127,7 +127,7 @@ public class ValidateTest {
 
     @SuppressWarnings({ "PMD", "unchecked", "deprecation" })
     private void loadTestProject() {
-        final Project project = new Project();
+        final Project project = Project.createNew();;
         CaArrayFile file1 = new CaArrayFile();
         file1.setProject(project);
         file1.setFileStatus(FileStatus.UPLOADED);
@@ -200,11 +200,11 @@ public class ValidateTest {
      * test messages.
      * @throws Exception Exception
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "deprecation" })
     @Test
     public void testEdit() throws Exception {
 
-        Project project = new Project();
+        Project project = Project.createNew();;
         CaArrayFile file1 = new CaArrayFile();
         file1.setProject(project);
         file1.setFileStatus(FileStatus.UPLOADED);
