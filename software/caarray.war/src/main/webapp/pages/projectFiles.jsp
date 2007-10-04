@@ -49,6 +49,9 @@
                         <td>
                             <s:submit name="validateFile" value="Validate" method="validateFile" id="validateFile" />
                         </td>
+                       <td>
+                            <s:submit name="removeFile" value="Delete" method="removeFile" id="removeFile"/>
+                        </td>
                     </tr>
                 </table>
             </s:form>
