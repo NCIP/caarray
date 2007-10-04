@@ -82,11 +82,17 @@
  */
 package gov.nih.nci.caarray.util;
 
-import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.SecurityServiceProvider;
+import gov.nih.nci.security.authorization.domainobjects.Application;
+import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
+import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
+import gov.nih.nci.security.authorization.domainobjects.Role;
 import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.dao.GroupSearchCriteria;
+import gov.nih.nci.security.dao.RoleSearchCriteria;
 import gov.nih.nci.security.exceptions.CSConfigurationException;
 import gov.nih.nci.security.exceptions.CSException;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
@@ -95,8 +101,10 @@ import gov.nih.nci.security.exceptions.CSTransactionException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -116,9 +124,19 @@ public class SecurityInterceptor extends EmptyInterceptor {
 
     private static final Log LOG = LogFactory.getLog(SecurityInterceptor.class);
     private static final long serialVersionUID = -2071964672876972370L;
+    private static final String ANONYMOUS_USER = "__anonymous__";
+    /** The synthenic group for anonymous access permissions */
+    public static final String ANONYMOUS_GROUP = "__anonymous__";
+    private static final String READ_ROLE = "Read";
+
     private static final AuthorizationManager AUTH_MGR;
     private static final String APPLICATION_NAME = "caarray";
-    private static final ThreadLocal<Collection<Protectable>> PROTECTABLES = new ThreadLocal<Collection<Protectable>>();
+    // Indicates that some activity of interest occurred
+    private static final ThreadLocal<Object> MARKER = new ThreadLocal<Object>();
+    // New objects being saved
+    private static final ThreadLocal<Collection<Protectable>> NEWOBJS = new ThreadLocal<Collection<Protectable>>();
+    // Objects being deleted
+    private static final ThreadLocal<Collection<Protectable>> DELETEDOBJS = new ThreadLocal<Collection<Protectable>>();
 
     static {
         AuthorizationManager am = null;
@@ -150,13 +168,31 @@ public class SecurityInterceptor extends EmptyInterceptor {
     public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 
         if (entity instanceof Protectable) {
-            if (PROTECTABLES.get() == null) {
-                PROTECTABLES.set(new ArrayList<Protectable>());
+            if (NEWOBJS.get() == null) {
+                NEWOBJS.set(new ArrayList<Protectable>());
+                MARKER.set(new Object());
             }
-            PROTECTABLES.get().add((Protectable) entity);
+            NEWOBJS.get().add((Protectable) entity);
         }
 
         return false;
+    }
+
+    /**
+     * Finds deleted protectables and queues them to have associated protection elements removed.
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public void onDelete(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
+
+        if (entity instanceof Protectable) {
+            if (DELETEDOBJS.get() == null) {
+                DELETEDOBJS.set(new ArrayList<Protectable>());
+                MARKER.set(new Object());
+            }
+            DELETEDOBJS.get().add((Protectable) entity);
+        }
     }
 
     /**
@@ -165,30 +201,49 @@ public class SecurityInterceptor extends EmptyInterceptor {
     @SuppressWarnings("unchecked")
     @Override
     public void postFlush(Iterator entities) {
-        if (PROTECTABLES.get() == null) {
+        if (MARKER.get() == null) {
+            MARKER.set(null);
             return;
         }
 
         String user = UsernameHolder.getUser();
         User csmUser = AUTH_MGR.getUser(user);
-        for (Protectable p : PROTECTABLES.get()) {
+        handleNew(user, csmUser);
+        handleDeleted(user, csmUser);
+    }
+
+    private void handleDeleted(String user, User csmUser) {
+        if (DELETEDOBJS.get() == null) {
+            return;
+        }
+
+        for (Protectable p : DELETEDOBJS.get()) {
+            LOG.debug("Deleting records for obj of type: " + p.getClass().getName() + " for user "
+                      + user);
+            // TODO do we need to handle deletion?
+        }
+
+        DELETEDOBJS.set(null);
+    }
+
+    /**
+     * @param user
+     * @param csmUser
+     */
+    private void handleNew(String user, User csmUser) {
+        if (NEWOBJS.get() == null) {
+            return;
+        }
+
+        for (Protectable p : NEWOBJS.get()) {
             LOG.debug("Creating access record for obj of type: " + p.getClass().getName() + " for user "
                     + user);
 
             try {
-                ProtectionElement pe = new ProtectionElement();
-                pe.setApplication(AUTH_MGR.getApplication(APPLICATION_NAME));
-                pe.setObjectId(p.getClass().getName());
-                pe.setAttribute("id");
-                pe.setValue(p.getId().toString());
-                pe.setUpdateDate(new Date());
-                AUTH_MGR.createProtectionElement(pe);
-                AUTH_MGR.assignOwners(pe.getProtectionElementId().toString(),
-                                      new String[] {csmUser.getUserId().toString()});
+                ProtectionGroup pg = createProtectionGroup(p, csmUser);
 
-                if (p instanceof Sample) {
-                    Sample s = (Sample) p;
-                    s.toString();  // TODO: transparently add perm to various groups
+                if (p instanceof Project) {
+                    handleNewProject((Project) p, pg);
                 }
 
             } catch (CSObjectNotFoundException e) {
@@ -198,6 +253,68 @@ public class SecurityInterceptor extends EmptyInterceptor {
             }
         }
 
-        PROTECTABLES.set(null);
+        NEWOBJS.set(null);
     }
+
+    private ProtectionGroup createProtectionGroup(Protectable p, User csmUser)
+        throws CSObjectNotFoundException, CSTransactionException {
+
+        ProtectionElement pe = new ProtectionElement();
+        Application application = AUTH_MGR.getApplication(APPLICATION_NAME);
+        pe.setApplication(application);
+        pe.setObjectId(p.getClass().getName());
+        pe.setAttribute("id");
+        pe.setValue(p.getId().toString());
+        pe.setUpdateDate(new Date());
+        AUTH_MGR.createProtectionElement(pe);
+        AUTH_MGR.assignOwners(pe.getProtectionElementId().toString(),
+                              new String[] {csmUser.getUserId().toString()});
+
+        ProtectionGroup pg = new ProtectionGroup();
+        pg.setApplication(application);
+        pg.setProtectionElements(Collections.singleton(pe));
+        pg.setProtectionGroupName("PE(" + pe.getProtectionElementId() + ") group");
+        pg.setUpdateDate(new Date());
+        AUTH_MGR.createProtectionGroup(pg);
+
+        return pg;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void handleNewProject(Project p, ProtectionGroup pg) throws CSTransactionException {
+        if (p.isBrowsable()) {
+            // We could cache the ids for the group and role
+            Group group = new Group();
+            group.setGroupName(ANONYMOUS_GROUP);
+            GroupSearchCriteria gsc = new GroupSearchCriteria(group);
+            List<Group> groupList = AUTH_MGR.getObjects(gsc);
+            group = groupList.get(0);
+
+            Role role = new Role();
+            role.setName(READ_ROLE);
+            RoleSearchCriteria rsc = new RoleSearchCriteria(role);
+            List<Role> roleList = AUTH_MGR.getObjects(rsc);
+            role = roleList.get(0);
+
+            AUTH_MGR.assignGroupRoleToProtectionGroup(
+                    pg.getProtectionGroupId().toString(),
+                    group.getGroupId().toString(),
+                    new String[] {role.getId().toString() });
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

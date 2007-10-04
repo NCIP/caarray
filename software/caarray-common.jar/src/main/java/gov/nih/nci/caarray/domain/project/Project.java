@@ -99,6 +99,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -141,6 +142,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private AccessProfile publicProfile = new AccessProfile();
     private AccessProfile hostProfile = new AccessProfile();
     private Map<CollaboratorGroup, AccessProfile> groupProfiles = new HashMap<CollaboratorGroup, AccessProfile>();
+    private boolean browsable = true;
 
     @Deprecated
     Project() {
@@ -251,6 +253,21 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @SuppressWarnings("unused")
     private void setGroupProfiles(Map<CollaboratorGroup, AccessProfile> profiles) { // NOPMD
         groupProfiles = profiles;
+    }
+
+    /**
+     * @return whether this project is browsable to any user in the system, including anonymous users
+     */
+    @Column(nullable = false)
+    public boolean isBrowsable() {
+        return browsable;
+    }
+
+    /**
+     * @param browsable whether this project is browsable to any user in the sytem, including anonymous users
+     */
+    public void setBrowsable(boolean browsable) {
+        this.browsable = browsable;
     }
 
     /**

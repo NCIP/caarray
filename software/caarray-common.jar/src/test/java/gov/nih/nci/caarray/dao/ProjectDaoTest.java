@@ -108,11 +108,14 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.SecurityInterceptor;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
+import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.authorization.domainobjects.UserGroupRoleProtectionGroup;
 
 import java.io.File;
 import java.util.Collection;
@@ -535,11 +538,21 @@ public class ProjectDaoTest extends AbstractDaoTest {
         assertEquals("id", pe.getAttribute());
         assertEquals(DUMMY_PROJECT_1.getId().toString(), pe.getValue());
         assertEquals(((User) pe.getOwners().iterator().next()).getLoginName(), UsernameHolder.getUser());
+
+        str = "FROM " + ProtectionGroup.class.getName() + " pg "
+              + "WHERE :pe in elements(pg.protectionElements)";
+        q = HibernateUtil.getCurrentSession().createQuery(str);
+        q.setParameter("pe", pe);
+
+        ProtectionGroup pg = (ProtectionGroup) q.uniqueResult();
+        assertNotNull(pg);
+        assertEquals(pe, pg.getProtectionElements().iterator().next());
         tx.commit();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
-    public void testAccessProfiles() {
+    public void testProjectPermissions() {
         Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
         HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
         tx.commit();
@@ -549,14 +562,38 @@ public class ProjectDaoTest extends AbstractDaoTest {
         assertNotNull(p.getPublicProfile());
         assertEquals(p.getPublicProfile().getSecurityLevel(), SecurityLevel.NONE);
         assertEquals(p.getHostProfile().getSecurityLevel(), SecurityLevel.READ_WRITE_SELECTIVE);
+        assertTrue(p.isBrowsable());
         p.getPublicProfile().setSecurityLevel(SecurityLevel.READ);
         p.getHostProfile().setSecurityLevel(SecurityLevel.NONE);
+        p.setBrowsable(false);
+
+        // Unfortunately, CSM doesn't provide a way to find out if the UserGroupRoleProtectionGroup
+        // has been created (down to attribute level).  So we need to query for it,
+        // using the known values for various ids from the csm script
+        String queryString = "SELECT ugrpg FROM " + UserGroupRoleProtectionGroup.class.getName() + " ugrpg, "
+                             + ProtectionElement.class.getName() + " pe "
+                             + "WHERE ugrpg.group.groupName = :groupName "
+                             + "  AND ugrpg.user IS NULL "
+                             + "  AND pe in elements(ugrpg.protectionGroup.protectionElements) "
+                             + "  AND pe.attribute = 'id' "
+                             + "  AND pe.objectId = :objectId "
+                             + "  AND pe.value = :value "
+                             + "  AND ugrpg.role.name = :roleName";
+        Query q = HibernateUtil.getCurrentSession().createQuery(queryString);
+        q.setString("groupName", SecurityInterceptor.ANONYMOUS_GROUP);
+        q.setString("roleName", "Read");
+        q.setString("objectId", Project.class.getName());
+        q.setString("value", p.getId().toString());
+        List<UserGroupRoleProtectionGroup> list = q.list();
+        assertEquals(1, list.size());
+
         tx.commit();
 
         tx = HibernateUtil.getCurrentSession().beginTransaction();
         p = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
         assertEquals(p.getPublicProfile().getSecurityLevel(), SecurityLevel.READ);
         assertEquals(p.getHostProfile().getSecurityLevel(), SecurityLevel.NONE);
+        assertTrue(!p.isBrowsable());
         tx.commit();
     }
 }
