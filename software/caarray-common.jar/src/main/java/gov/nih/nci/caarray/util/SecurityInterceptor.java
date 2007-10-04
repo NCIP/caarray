@@ -91,6 +91,7 @@ import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.domainobjects.Role;
 import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.authorization.domainobjects.UserGroupRoleProtectionGroup;
 import gov.nih.nci.security.dao.GroupSearchCriteria;
 import gov.nih.nci.security.dao.RoleSearchCriteria;
 import gov.nih.nci.security.exceptions.CSConfigurationException;
@@ -106,9 +107,11 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.EmptyInterceptor;
+import org.hibernate.Query;
 import org.hibernate.type.Type;
 
 /**
@@ -137,6 +140,8 @@ public class SecurityInterceptor extends EmptyInterceptor {
     private static final ThreadLocal<Collection<Protectable>> NEWOBJS = new ThreadLocal<Collection<Protectable>>();
     // Objects being deleted
     private static final ThreadLocal<Collection<Protectable>> DELETEDOBJS = new ThreadLocal<Collection<Protectable>>();
+    // Projects whose browsable status changed
+    private static final ThreadLocal<Collection<Project>> BROWSABLE_CHANGES = new ThreadLocal<Collection<Project>>();
 
     static {
         AuthorizationManager am = null;
@@ -196,6 +201,32 @@ public class SecurityInterceptor extends EmptyInterceptor {
     }
 
     /**
+     * Finds modified protectables and queues them for sync with CSM.
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
+            String[] propertyNames, Type[] types) {
+        if (entity instanceof Project) {
+            // figure out if browsable changed
+            for (int i = 0; i < propertyNames.length; ++i) {
+                if (propertyNames[i].equals("browsable")
+                        && !currentState[i].equals(previousState[i])) {
+                    Project p = (Project) entity;
+                    if (BROWSABLE_CHANGES.get() == null) {
+                        BROWSABLE_CHANGES.set(new ArrayList<Project>());
+                        MARKER.set(new Object());
+                    }
+                    BROWSABLE_CHANGES.get().add(p);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
@@ -209,18 +240,62 @@ public class SecurityInterceptor extends EmptyInterceptor {
         String user = UsernameHolder.getUser();
         User csmUser = AUTH_MGR.getUser(user);
         handleNew(user, csmUser);
-        handleDeleted(user, csmUser);
+        handleBrowsableChanges();
+        handleDeleted(user);
     }
 
-    private void handleDeleted(String user, User csmUser) {
-        if (DELETEDOBJS.get() == null) {
+    private void handleBrowsableChanges() {
+        if (BROWSABLE_CHANGES.get() == null) {
             return;
         }
 
+        for (Project p : BROWSABLE_CHANGES.get()) {
+            LOG.debug("Modifying browsable status for project: " + p.getId());
+            try {
+                if (p.isBrowsable()) {
+                    assignAnonymousAccess(p, getProtectionGroup(p));
+                } else {
+                    List<UserGroupRoleProtectionGroup> l = getUserGroupRoleProtectionGroups(p);
+                    if (CollectionUtils.isNotEmpty(l)) {
+                        UserGroupRoleProtectionGroup ugrp = l.get(0);
+                        AUTH_MGR.removeGroupRoleFromProtectionGroup(
+                                ugrp.getProtectionGroup().getProtectionGroupId().toString(),
+                                ugrp.getGroup().getGroupId().toString(),
+                                new String[] {ugrp.getRole().getId().toString() });
+                    }
+                }
+            } catch (CSTransactionException e) {
+                LOG.warn("Unable to change browsable status: " + e.getMessage(), e);
+            }
+        }
+
+        BROWSABLE_CHANGES.set(null);
+    }
+
+    private void handleDeleted(String user) {
+        if (DELETEDOBJS.get() == null) {
+            return;
+        }
         for (Protectable p : DELETEDOBJS.get()) {
             LOG.debug("Deleting records for obj of type: " + p.getClass().getName() + " for user "
                       + user);
-            // TODO do we need to handle deletion?
+            try {
+                List<UserGroupRoleProtectionGroup> l = getUserGroupRoleProtectionGroups(p);
+                if (CollectionUtils.isNotEmpty(l)) {
+                    UserGroupRoleProtectionGroup ugrpg = l.get(0);
+                    AUTH_MGR.removeGroupRoleFromProtectionGroup(
+                            ugrpg.getProtectionGroup().getProtectionGroupId().toString(),
+                            ugrpg.getGroup().getGroupId().toString(),
+                            new String[] {ugrpg.getRole().getId().toString() });
+                }
+                ProtectionGroup pg = getProtectionGroup(p);
+                ProtectionElement pe = (ProtectionElement) pg.getProtectionElements().iterator().next();
+                AUTH_MGR.removeProtectionGroup(pg.getProtectionGroupId().toString());
+                AUTH_MGR.removeProtectionElement(pe.getProtectionElementId().toString());
+
+            } catch (CSTransactionException e) {
+                LOG.warn("Unable to remove CSM elements from deleted object: " + e.getMessage(), e);
+            }
         }
 
         DELETEDOBJS.set(null);
@@ -280,41 +355,79 @@ public class SecurityInterceptor extends EmptyInterceptor {
         return pg;
     }
 
-    @SuppressWarnings("unchecked")
     private void handleNewProject(Project p, ProtectionGroup pg) throws CSTransactionException {
         if (p.isBrowsable()) {
-            // We could cache the ids for the group and role
-            Group group = new Group();
-            group.setGroupName(ANONYMOUS_GROUP);
-            GroupSearchCriteria gsc = new GroupSearchCriteria(group);
-            List<Group> groupList = AUTH_MGR.getObjects(gsc);
-            group = groupList.get(0);
-
-            Role role = new Role();
-            role.setName(READ_ROLE);
-            RoleSearchCriteria rsc = new RoleSearchCriteria(role);
-            List<Role> roleList = AUTH_MGR.getObjects(rsc);
-            role = roleList.get(0);
-
-            AUTH_MGR.assignGroupRoleToProtectionGroup(
-                    pg.getProtectionGroupId().toString(),
-                    group.getGroupId().toString(),
-                    new String[] {role.getId().toString() });
+            assignAnonymousAccess(p, pg);
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private static void assignAnonymousAccess(Project p, ProtectionGroup pg) throws CSTransactionException {
+        // We could cache the ids for the group and role
+        Group group = new Group();
+        group.setGroupName(ANONYMOUS_GROUP);
+        GroupSearchCriteria gsc = new GroupSearchCriteria(group);
+        List<Group> groupList = AUTH_MGR.getObjects(gsc);
+        group = groupList.get(0);
 
+        Role role = new Role();
+        role.setName(READ_ROLE);
+        RoleSearchCriteria rsc = new RoleSearchCriteria(role);
+        List<Role> roleList = AUTH_MGR.getObjects(rsc);
+        role = roleList.get(0);
 
+        AUTH_MGR.assignGroupRoleToProtectionGroup(
+                pg.getProtectionGroupId().toString(),
+                group.getGroupId().toString(),
+                new String[] {role.getId().toString() });
+    }
 
+    /**
+     * @param p the protectable to get the protection group for
+     * @return the UserGroupRoleProtectionGroup.  <b>This object is NOT associated with the current
+     *         hibernate session.</b>
+     */
+    @SuppressWarnings("unchecked")
+    public static List<UserGroupRoleProtectionGroup> getUserGroupRoleProtectionGroups(Protectable p) {
+        // Unfortunately, CSM doesn't provide a way to find out if the UserGroupRoleProtectionGroup
+        // has been created (down to attribute level).  So we need to query for it,
+        // using the known values for various ids from the csm script
+        String queryString = "SELECT ugrpg FROM " + UserGroupRoleProtectionGroup.class.getName() + " ugrpg, "
+                             + ProtectionElement.class.getName() + " pe "
+                             + "WHERE ugrpg.group.groupName = :groupName "
+                             + "  AND ugrpg.user IS NULL "
+                             + "  AND pe in elements(ugrpg.protectionGroup.protectionElements) "
+                             + "  AND pe.attribute = 'id' "
+                             + "  AND pe.objectId = :objectId "
+                             + "  AND pe.value = :value "
+                             + "  AND ugrpg.role.name = :roleName";
+        Query q = HibernateUtil.getCurrentSession().createQuery(queryString);
+        q.setString("groupName", SecurityInterceptor.ANONYMOUS_GROUP);
+        q.setString("roleName", "Read");
+        q.setString("objectId", getNonGLIBClass(p).getName());
+        q.setString("value", p.getId().toString());
+        return q.list();
+    }
 
+    private static ProtectionGroup getProtectionGroup(Protectable p) {
+        String queryString = "SELECT pg FROM " + ProtectionGroup.class.getName() + " pg, "
+                             + ProtectionElement.class.getName() + " pe "
+                             + "WHERE pe in elements(pg.protectionElements) "
+                             + "  AND pe.objectId = :objectId "
+                             + "  AND pe.attribute = 'id' "
+                             + "  AND pe.value = :value "
+                             + "  AND pg.protectionGroupName LIKE 'PE(%) group'";
+        Query q = HibernateUtil.getCurrentSession().createQuery(queryString);
+        q.setString("objectId", getNonGLIBClass(p).getName());
+        q.setString("value", p.getId().toString());
+        return (ProtectionGroup) q.uniqueResult();
+    }
 
-
-
-
-
-
-
-
-
-
+    private static Class<?> getNonGLIBClass(Object o) {
+        Class<?> result = o.getClass();
+        if (result.getName().contains("$$EnhancerByCGLIB$$")) {
+            result = result.getSuperclass();
+        }
+        return result;
+    }
 }

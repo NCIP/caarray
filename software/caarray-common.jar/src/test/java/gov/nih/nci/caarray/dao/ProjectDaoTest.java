@@ -550,7 +550,6 @@ public class ProjectDaoTest extends AbstractDaoTest {
         tx.commit();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testProjectPermissions() {
         Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
@@ -567,24 +566,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         p.getHostProfile().setSecurityLevel(SecurityLevel.NONE);
         p.setBrowsable(false);
 
-        // Unfortunately, CSM doesn't provide a way to find out if the UserGroupRoleProtectionGroup
-        // has been created (down to attribute level).  So we need to query for it,
-        // using the known values for various ids from the csm script
-        String queryString = "SELECT ugrpg FROM " + UserGroupRoleProtectionGroup.class.getName() + " ugrpg, "
-                             + ProtectionElement.class.getName() + " pe "
-                             + "WHERE ugrpg.group.groupName = :groupName "
-                             + "  AND ugrpg.user IS NULL "
-                             + "  AND pe in elements(ugrpg.protectionGroup.protectionElements) "
-                             + "  AND pe.attribute = 'id' "
-                             + "  AND pe.objectId = :objectId "
-                             + "  AND pe.value = :value "
-                             + "  AND ugrpg.role.name = :roleName";
-        Query q = HibernateUtil.getCurrentSession().createQuery(queryString);
-        q.setString("groupName", SecurityInterceptor.ANONYMOUS_GROUP);
-        q.setString("roleName", "Read");
-        q.setString("objectId", Project.class.getName());
-        q.setString("value", p.getId().toString());
-        List<UserGroupRoleProtectionGroup> list = q.list();
+        List<UserGroupRoleProtectionGroup> list = SecurityInterceptor.getUserGroupRoleProtectionGroups(p);
         assertEquals(1, list.size());
 
         tx.commit();
@@ -594,6 +576,31 @@ public class ProjectDaoTest extends AbstractDaoTest {
         assertEquals(p.getPublicProfile().getSecurityLevel(), SecurityLevel.READ);
         assertEquals(p.getHostProfile().getSecurityLevel(), SecurityLevel.NONE);
         assertTrue(!p.isBrowsable());
+        list = SecurityInterceptor.getUserGroupRoleProtectionGroups(p);
+        assertEquals(0, list.size());
         tx.commit();
     }
+
+    @Test
+    public void testNonBrowsableProject() {
+        DUMMY_PROJECT_1.setBrowsable(false);
+        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+        HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+        tx.commit();
+
+        tx = HibernateUtil.getCurrentSession().beginTransaction();
+        Project p = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        List<UserGroupRoleProtectionGroup> list = SecurityInterceptor.getUserGroupRoleProtectionGroups(p);
+        assertEquals(0, list.size());
+        p.setBrowsable(true);
+
+        tx.commit();
+        tx = HibernateUtil.getCurrentSession().beginTransaction();
+
+        list = SecurityInterceptor.getUserGroupRoleProtectionGroups(p);
+        assertEquals(1, list.size());
+
+        tx.commit();
+    }
+
 }
