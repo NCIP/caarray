@@ -87,16 +87,13 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.web.delegate.DelegateFactory;
 import gov.nih.nci.caarray.web.delegate.ManageFilesDelegate;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.http.HttpSession;
+import org.apache.commons.io.FileUtils;
 
 /**
  * Handles multiple file uploading.
@@ -114,6 +111,8 @@ public class MultipleFileUploadAction extends BaseAction {
     private Project project;
     private String menu;
 
+    private Long projectId;
+
     /**
      * uploads file.
      * @return String
@@ -121,11 +120,10 @@ public class MultipleFileUploadAction extends BaseAction {
      */
     @SuppressWarnings("PMD")
     public String upload() throws Exception {
-
         setMenu("FileManageLinks");
-        HttpSession session = getSession();
-        Project myProject = (Project) session.getAttribute("myProject");
-        setProject(myProject);
+
+        //remove and put in prepare()
+        setProject(getDelegate().getProjectManagementService().getProject(projectId));
         loadFileEntries();
 
         int index = 0;
@@ -133,15 +131,12 @@ public class MultipleFileUploadAction extends BaseAction {
             File uploadedFile = iter.next();
             OutputStream os = null;
             try {
-
                 String fileName = getUploadFileName(index);
-                uploadedFile = getFile(fileName);
-                LOG.info("Writing uploaded file to " + uploadedFile.getAbsolutePath());
-                os = new BufferedOutputStream(new FileOutputStream(uploadedFile));
-                os.write(getRawBytes(uploadedFile));
+                File destinationFile = getFile(fileName);
+                FileUtils.copyFile(uploadedFile, destinationFile);
 
                 CaArrayFile caArrayFile = new CaArrayFile();
-                caArrayFile = getDelegate().getProjectManagementService().addFile(getProject(), uploadedFile);
+                caArrayFile = getDelegate().getProjectManagementService().addFile(getProject(), destinationFile);
                 files.add(caArrayFile);
 
             } catch (Exception e) {
@@ -149,31 +144,11 @@ public class MultipleFileUploadAction extends BaseAction {
                 LOG.error(msg, e);
                 addActionError(getText("errorUploading"));
                 return INPUT;
-            } finally {
-                os.close();
             }
             index++;
         } //end for
 
         return SUCCESS;
-    }
-
-    /**
-     * Turn file into bytes.
-     * @param f
-     * @return
-     */
-    private static byte[] getRawBytes(File f) {
-        try {
-            FileInputStream fin = new FileInputStream(f);
-            byte[] buffer = new byte[(int) f.length()];
-            fin.read(buffer);
-            fin.close();
-            return buffer;
-        } catch (Exception e) {
-            LOG.error(e);
-            return null;
-        }
     }
 
     /**
@@ -311,5 +286,19 @@ public class MultipleFileUploadAction extends BaseAction {
      */
     public void setFiles(List<CaArrayFile> files) {
         this.files = files;
+    }
+
+    /**
+     * @return the id
+     */
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    /**
+     * @param projectId the projectId to set
+     */
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 }

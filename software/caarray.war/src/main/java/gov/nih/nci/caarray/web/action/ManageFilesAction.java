@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import com.opensymphony.xwork2.validator.annotations.Validation;
 
@@ -39,6 +38,8 @@ public class ManageFilesAction extends BaseAction {
 
     private String menu;
 
+    private List<LabelValue> navigationList;
+
     /**
      * edit files associated with a project.
      * @return path String
@@ -47,9 +48,13 @@ public class ManageFilesAction extends BaseAction {
     @SuppressWarnings("PMD")
     public String edit() throws Exception {
         setMenu("FileEditLinks");
-        HttpSession session = getSession();
+
+        //remove and put in prepare
         setProject(getDelegate().getProjectManagementService().getProject(projectId));
-        session.setAttribute("myProject", getProject());
+
+        navigationList = new ArrayList<LabelValue>();
+        LabelValue manageFiles = new LabelValue("Manage Files", "File_manage.action?projectId=" + projectId);
+        navigationList.add(manageFiles);
 
         return SUCCESS;
     }
@@ -62,9 +67,9 @@ public class ManageFilesAction extends BaseAction {
     @SuppressWarnings("PMD")
     public String manage() throws Exception {
         setMenu("FileManageLinks");
-        HttpSession session = getSession();
-        Project myProject = (Project) session.getAttribute("myProject");
-        setProject(myProject);
+
+        //remove and put in prepare()
+        setProject(getDelegate().getProjectManagementService().getProject(projectId));
         loadFileEntries();
 
         return SUCCESS;
@@ -78,9 +83,14 @@ public class ManageFilesAction extends BaseAction {
     @SuppressWarnings("PMD")
     public String messages() throws Exception {
         setMenu("FileMessagesLinks");
-        HttpSession session = getSession();
-        Project myProject = (Project) session.getAttribute("myProject");
-        setProject(myProject);
+
+        //remove this too!
+        navigationList = new ArrayList<LabelValue>();
+        LabelValue manageFiles = new LabelValue("Manage Files", "File_manage.action?projectId=" + projectId);
+        navigationList.add(manageFiles);
+
+        //remove and put in prepare()
+        setProject(getDelegate().getProjectManagementService().getProject(projectId));
         loadFileEntries();
 
         for (CaArrayFile caArrayFile : getFiles()) {
@@ -102,14 +112,12 @@ public class ManageFilesAction extends BaseAction {
     @SuppressWarnings({ "PMD", "unchecked" })
     public String validateFile() throws Exception {
         setMenu("FileManageLinks");
-        HttpSession session = getSession();
-        HttpServletRequest request = getRequest();
 
-        Project myProject = (Project) session.getAttribute("myProject");
-        setProject(myProject);
-
+        //remove and put in prepare()
+        setProject(getDelegate().getProjectManagementService().getProject(projectId));
         loadFileEntries();
 
+        HttpServletRequest request = getRequest();
         /**
          * Could have gone through getFiles() get files in list but
          * CaArrayFile class does NOT have "selected" attribute. Thus
@@ -144,14 +152,12 @@ public class ManageFilesAction extends BaseAction {
     @SuppressWarnings({ "PMD", "unchecked" })
     public String importFile() throws Exception {
         setMenu("FileManageLinks");
-        HttpSession session = getSession();
-        HttpServletRequest request = getRequest();
 
-        Project myProject = (Project) session.getAttribute("myProject");
-        setProject(myProject);
-
+        //remove and put in prepare()
+        setProject(getDelegate().getProjectManagementService().getProject(projectId));
         loadFileEntries();
 
+        HttpServletRequest request = getRequest();
         /**
          * Could have gone through getFiles() get files in list but
          * CaArrayFile class does NOT have "selected" attribute. Thus
@@ -304,5 +310,19 @@ public class ManageFilesAction extends BaseAction {
      */
     public void setFile(CaArrayFile file) {
         this.file = file;
+    }
+
+    /**
+     * @return the navigationList
+     */
+    public List<LabelValue> getNavigationList() {
+        return navigationList;
+    }
+
+    /**
+     * @param navigationList the navigationList to set
+     */
+    public void setNavigationList(List<LabelValue> navigationList) {
+        this.navigationList = navigationList;
     }
 }

@@ -10,6 +10,7 @@
 
         <s:if test='files != null && !files.isEmpty()'>
             <s:form action="File_import" method="post">
+                <input type=hidden name="projectId" value="<s:property value='%{project.id}'/>"/>
                 <table>
                     <tr>
                         <td>Current Files</td>
@@ -35,7 +36,7 @@
                                       value="type" />
                         </td>
                         <td>
-                            <a name="files:<s:property value='%{#status.index}'/>:status" href="File_messages.action?fileId=<s:property value='id'/>">
+                            <a name="files:<s:property value='%{#status.index}'/>:status" href="File_messages.action?fileId=<s:property value='id'/>&projectId=<s:property value='project.id'/>">
                                 <s:property value="status"/>
                             </a>
                         </td>
@@ -54,6 +55,7 @@
         </s:if>
 
         <s:form action="File_upload" enctype="multipart/form-data" method="post">
+            <input type=hidden name="projectId" value="<s:property value='%{project.id}'/>"/>
             <s:file id="upload" name="upload" label="File" />
             <table>
                 <tr>

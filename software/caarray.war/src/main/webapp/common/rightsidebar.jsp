@@ -2,6 +2,17 @@
 
 <div id="sidebar" class="homepage">
     <h1>Actions</h1>
+    <table>
+        <s:iterator value="navigationList">
+            <ul>
+                <li>
+                    <a id='navigation:<s:property value="label" />' href='<s:property value="value" />'>
+                        <s:property value="label" />
+                    </a>
+                </li>
+            </ul>
+        </s:iterator>
+    </table>
     <menu:useMenuDisplayer name="Velocity" config="/template/velocity/rightbarMenu.vm">
         <s:if test="menu == 'ProjectListLinks'">
             <menu:displayMenu name="ProjectListLinks" />

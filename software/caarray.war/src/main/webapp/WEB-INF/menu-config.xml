@@ -23,14 +23,12 @@
             <Item name="ProjectList" title="project.list" url="Project_list.action" />
         </Menu>
         <Menu name="FileEditLinks" title="file.editLinks">
-            <Item name="ManageFiles" title="file.manage" url="File_manage.action" />
             <Item name="ProjectList" title="project.list" url="Project_list.action" />
         </Menu>
         <Menu name="FileManageLinks" title="file.manageLinks">
             <Item name="ProjectList" title="project.list" url="Project_list.action" />
         </Menu>
         <Menu name="FileMessagesLinks" title="file.messagesLinks">
-            <Item name="ManageFiles" title="file.manage" url="File_manage.action" />
             <Item name="ProjectList" title="project.list" url="Project_list.action" />
         </Menu>
     </Menus>
