@@ -125,7 +125,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
     private static final Log LOG = LogFactory.getLog(SecurityInterceptor.class);
     private static final long serialVersionUID = -2071964672876972370L;
     private static final String ANONYMOUS_USER = "__anonymous__";
-    /** The synthenic group for anonymous access permissions */
+    /** The synthenic group for anonymous access permissions. */
     public static final String ANONYMOUS_GROUP = "__anonymous__";
     private static final String READ_ROLE = "Read";
 
