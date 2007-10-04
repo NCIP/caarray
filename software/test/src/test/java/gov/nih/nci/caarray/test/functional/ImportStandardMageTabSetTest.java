@@ -165,13 +165,13 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
     private void selectAllFiles() {
         for (int i = 0; i < NUMBER_OF_FILES; i++) {
-            selenium.click("fileEntries:" + i + ":selected");
+            selenium.click("files:" + i + ":selected");
         }
     }
 
     private void checkFileStatus(String status) {
         for (int i = 0; i < NUMBER_OF_FILES; i++) {
-            assertEquals(status, selenium.getText("fileEntries:" + i + ":status"));
+            assertEquals(status, selenium.getText("files:" + i + ":status"));
         }
     }
 
