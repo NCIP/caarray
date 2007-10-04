@@ -90,7 +90,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Stub implementation for testing.
+ * Stub implementation for testing. 
  */
 public class FileAccessServiceStub implements FileAccessService {
 
@@ -110,6 +110,14 @@ public class FileAccessServiceStub implements FileAccessService {
             files.add(getFile(caArrayFile));
         }
         return files;
+    }
+
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.application.fileaccess.FileAccessService#remove(gov.nih.nci.caarray.domain.file.CaArrayFile)
+     */
+    public void remove(CaArrayFile caArrayFile) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

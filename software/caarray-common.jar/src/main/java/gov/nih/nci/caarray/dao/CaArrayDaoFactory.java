@@ -135,4 +135,11 @@ public interface CaArrayDaoFactory {
      * @return a <code>SearchDao</code>.
      */
     SearchDao getSearchDao();
+    
+    /**
+     * Returns a <code>FileDao</code>.
+     *
+     * @return a <code>FileDao</code>.
+     */
+    FileDao getFileDao();
 }

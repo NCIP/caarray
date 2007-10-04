@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.fileaccess;
 
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
@@ -103,8 +104,9 @@ import org.apache.commons.logging.LogFactory;
 @Local
 @Stateless
 public class FileAccessServiceBean implements FileAccessService {
-    
+
     private static final Log LOG = LogFactory.getLog(FileAccessServiceBean.class);
+    private final CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
     /**
      * Adds a new file to caArray file storage.
@@ -120,6 +122,17 @@ public class FileAccessServiceBean implements FileAccessService {
         // TODO -- add call to FileDao.save when implemented
         LogUtil.logSubsystemExit(LOG);
         return caArrayFile;
+    }
+
+    /**
+     * Removes a file from caArray storage.
+     * 
+     * @param caArrayFile the caArrayFile to remove
+     */
+    public void remove(CaArrayFile caArrayFile) {
+        LogUtil.logSubsystemEntry(LOG, caArrayFile);
+        daoFactory.getFileDao().remove(caArrayFile);
+        LogUtil.logSubsystemExit(LOG);
     }
 
     private void setTypeFromExtension(CaArrayFile caArrayFile, File file) {
@@ -141,10 +154,10 @@ public class FileAccessServiceBean implements FileAccessService {
         LogUtil.logSubsystemExit(LOG);
         return new File(caArrayFile.getPath());
     }
-    
+
     /**
      * Returns the underlying <code>java.io.Files</code> for the <code>CaArrayFiles</code> in the set provided.
-     *
+     * 
      * @param fileSet get files from this set.
      * @return the files.
      */

@@ -80,73 +80,15 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.dao;
+package gov.nih.nci.caarray.dao.stub;
+
+import gov.nih.nci.caarray.dao.FileDao;
+
 
 /**
- * Factory used to retrieve DAO instances.
  *
- * @author ETavela
  */
-class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
+public class FileDaoStub extends AbstractDaoStub implements FileDao {
 
-    /**
-     * Returns a <code>ProtocolDao</code>.
-     *
-     * @return a <code>ProtocolDao</code>.
-     */
-    public ProtocolDao getProtocolDao() {
-        return new ProtocolDaoImpl();
-    }
-
-    /**
-     * Returns a <code>VocabularyDao</code>.
-     *
-     * @return a <code>VocabularyDao</code>.
-     */
-    public VocabularyDao getVocabularyDao() {
-        return new VocabularyDaoImpl();
-    }
-
-    /**
-     * Returns an <code>ArrayDao</code>.
-     *
-     * @return an <code>ArrayDao</code>.
-     */
-    public ArrayDao getArrayDao() {
-        return new ArrayDaoImpl();
-    }
-
-    /**
-     * Returns a <code>SampleDao</code>.
-     *
-     * @return a <code>SampleDao</code>.
-     */
-    public SampleDao getSampleDao() {
-        return new SampleDaoImpl(); 
-    }
-
-    /**
-     * Returns a <code>ProjectDao</code>.
-     *
-     * @return a <code>ProjectDao</code>.
-     */
-    public ProjectDao getProjectDao() {
-        return new ProjectDaoImpl();
-    }
-
-    /**
-     * Returns a <code>SearchDao</code>.
-     *
-     * @return a <code>SearchDao</code>.
-     */
-    public SearchDao getSearchDao() { 
-        return new SearchDaoImpl();
-    }
-
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.CaArrayDaoFactory#getFileDao()
-     */
-    public FileDao getFileDao() {
-        return new FileDaoImpl();    }
+ 
 }
-

@@ -122,4 +122,11 @@ public interface FileAccessService {
      */
     Set<File> getFiles(CaArrayFileSet fileSet);
     
+    /**
+     * Removes a file from caArray file storage.
+     * 
+     * @param caArrayFile the caArrayFile to remove
+     */
+    void remove(CaArrayFile caArrayFile);
+
 }

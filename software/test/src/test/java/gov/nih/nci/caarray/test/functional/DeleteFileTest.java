@@ -80,73 +80,78 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.dao;
+package gov.nih.nci.caarray.test.functional;
+
+import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.services.CaArrayServer;
+import gov.nih.nci.caarray.services.ServerConnectionException;
+import gov.nih.nci.caarray.services.search.CaArraySearchService;
+import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
+import gov.nih.nci.caarray.test.base.TestProperties;
+import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.junit.Test;
 
 /**
- * Factory used to retrieve DAO instances.
+ * Test case #7959.
  *
- * @author ETavela
+ * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
  */
-class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
+public class DeleteFileTest extends AbstractSeleniumTest {
 
-    /**
-     * Returns a <code>ProtocolDao</code>.
-     *
-     * @return a <code>ProtocolDao</code>.
-     */
-    public ProtocolDao getProtocolDao() {
-        return new ProtocolDaoImpl();
+    private static final int NUMBER_OF_FILES = 30;
+    private static final String TITLE =
+        "TCGA Analysis of Gene Expression for Glioblastoma Multiforme Using Affymetrix HT_HG-U133A";
+
+    @Test
+    public void testNew() throws Exception {
+
+        loginAsPrincipalInvestigator();
+
+        String title = "test" + System.currentTimeMillis();
+        // Create project
+        clickAndWait("link=Propose Project");
+        selenium.type("title", title);
+        clickAndWait("submit");
+        assertTrue(selenium.isTextPresent("created successfully."));
+
+        // Upload the following files:
+        // - MAGE-TAB IDF
+        // - MAGE-TAB SDRF (with references to included native CEL files and corresponding Affymetrix array design)
+        // - MAGE-TAB Derived Data Matrix
+        // - CEL files referenced in SDRF
+        clickAndWait("link=" + title);
+        selenium.click("link=Manage Files");
+        selenium.waitForPageToLoad("30000");
+        upload(MageTabDataFiles.TCGA_BROAD_IDF);
+        upload(MageTabDataFiles.TCGA_BROAD_SDRF);
+        selenium.click("selected");
+        selenium.click("removeFile");
+        selenium.waitForPageToLoad("30000");        
+      //assertFalse(selenium.isTextPresent(file.getName()));
     }
 
-    /**
-     * Returns a <code>VocabularyDao</code>.
-     *
-     * @return a <code>VocabularyDao</code>.
-     */
-    public VocabularyDao getVocabularyDao() {
-        return new VocabularyDaoImpl();
+
+    private void upload(File file) throws IOException {
+        String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
+        filePath = filePath.replaceAll("%20", " ");
+        selenium.type("upload", filePath);
+        clickAndWait("uploadFile");
+       // assertTrue(selenium.isTextPresent(file.getName()));
     }
 
-    /**
-     * Returns an <code>ArrayDao</code>.
-     *
-     * @return an <code>ArrayDao</code>.
-     */
-    public ArrayDao getArrayDao() {
-        return new ArrayDaoImpl();
-    }
 
-    /**
-     * Returns a <code>SampleDao</code>.
-     *
-     * @return a <code>SampleDao</code>.
-     */
-    public SampleDao getSampleDao() {
-        return new SampleDaoImpl(); 
-    }
 
-    /**
-     * Returns a <code>ProjectDao</code>.
-     *
-     * @return a <code>ProjectDao</code>.
-     */
-    public ProjectDao getProjectDao() {
-        return new ProjectDaoImpl();
-    }
-
-    /**
-     * Returns a <code>SearchDao</code>.
-     *
-     * @return a <code>SearchDao</code>.
-     */
-    public SearchDao getSearchDao() { 
-        return new SearchDaoImpl();
-    }
-
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.CaArrayDaoFactory#getFileDao()
-     */
-    public FileDao getFileDao() {
-        return new FileDaoImpl();    }
 }
-
