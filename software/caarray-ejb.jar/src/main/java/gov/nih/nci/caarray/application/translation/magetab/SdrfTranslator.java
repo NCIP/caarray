@@ -163,13 +163,20 @@ final class SdrfTranslator extends AbstractTranslator {
     private void translateSdrf(SdrfDocument document) {
         translateNodesToEntities(document);
         linkNodes(document);
-        String investigationTitle = document.getIdfDocument().getInvestigation().getTitle();
-        for (Experiment investigation : getTranslationResult().getInvestigations()) {
-            if (investigationTitle.equals(investigation.getTitle())) {
-                investigation.getSources().addAll(allSources);
-                investigation.getSamples().addAll(allSamples);
-                investigation.getExtracts().addAll(allExtracts);
-                investigation.getLabeledExtracts().addAll(allLabeledExtracts);
+        /**
+         * added following if statement b/c sdrf doesnt have idf document.  i could be wrong.
+         * this was causing error on imports of sdrf.  JH 10/4/07
+         *
+         */
+        if (document.getIdfDocument() != null) {
+            String investigationTitle = document.getIdfDocument().getInvestigation().getTitle();
+            for (Experiment investigation : getTranslationResult().getInvestigations()) {
+                if (investigationTitle.equals(investigation.getTitle())) {
+                    investigation.getSources().addAll(allSources);
+                    investigation.getSamples().addAll(allSamples);
+                    investigation.getExtracts().addAll(allExtracts);
+                    investigation.getLabeledExtracts().addAll(allLabeledExtracts);
+                }
             }
         }
     }
@@ -471,7 +478,7 @@ final class SdrfTranslator extends AbstractTranslator {
 
     private void linkHybridizationToArrays(gov.nih.nci.caarray.magetab.sdrf.Hybridization sdrfHybridization,
             Hybridization hybridization) {
-            
+
             Array array = (Array) nodeTranslations.get(sdrfHybridization.getArrayDesign());
             hybridization.setArray(array);
     }
