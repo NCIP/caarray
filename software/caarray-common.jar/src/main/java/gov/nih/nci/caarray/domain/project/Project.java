@@ -239,7 +239,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     /**
      * @return collaborator access profiles
      */
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @MapKeyManyToMany(joinColumns = @JoinColumn(name = "GROUP_ID"))
     @JoinTable(
             name = "PROJECT_GROUPS",
