@@ -28,7 +28,6 @@ public class ManageFilesAction extends BaseAction {
     private static final long serialVersionUID = 1L;
 
     @SuppressWarnings("unused")
-    private List<LabelValue> fileTypes;
     private List<CaArrayFile> files;
     private CaArrayFile file;
     private Long fileId;
@@ -118,25 +117,10 @@ public class ManageFilesAction extends BaseAction {
         loadFileEntries();
 
         HttpServletRequest request = getRequest();
-        /**
-         * Could have gone through getFiles() get files in list but
-         * CaArrayFile class does NOT have "selected" attribute. Thus
-         * Enumeration made sense.
-         **/
-        Enumeration<String> myenum = request.getParameterNames();
-        while (myenum.hasMoreElements()) {
-          String name = myenum.nextElement();
-
-          String myREGEX = ":";
-          Pattern p = Pattern.compile(myREGEX);
-          String[] items = p.split(name);
-
-          //if pattern is like fileEntries:0:selected we know a checkbox has been selected
-          if (items[0].equalsIgnoreCase("files") && items[2].equalsIgnoreCase("selected")) {
-              String fileIndex = items[1];
-              CaArrayFileSet fileSet = getSelectedFiles(fileIndex);
-              getDelegate().getFileManagementService().validateFiles(fileSet);
-          }
+        CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
+        addSelectedFiles(fileSet, request);
+        if (!fileSet.getFiles().isEmpty()) {
+            getDelegate().getFileManagementService().validateFiles(fileSet);
         }
         return SUCCESS;
     }
@@ -158,40 +142,27 @@ public class ManageFilesAction extends BaseAction {
         loadFileEntries();
 
         HttpServletRequest request = getRequest();
-        /**
-         * Could have gone through getFiles() get files in list but
-         * CaArrayFile class does NOT have "selected" attribute. Thus
-         * Enumeration made sense.
-         **/
-        Enumeration<String> myenum = request.getParameterNames();
-        while (myenum.hasMoreElements()) {
-          String name = myenum.nextElement();
-
-          String myREGEX = ":";
-          Pattern p = Pattern.compile(myREGEX);
-          String[] items = p.split(name);
-
-          //if pattern is like fileEntries:0:selected we know a checkbox has been selected
-          if (items[0].equalsIgnoreCase("files") && items[2].equalsIgnoreCase("selected")) {
-              String fileIndex = items[1];
-              CaArrayFileSet fileSet = getSelectedFiles(fileIndex);
-              getDelegate().getFileManagementService().importFiles(getProject(), fileSet);
-          }
+        CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
+        addSelectedFiles(fileSet, request);
+        if (!fileSet.getFiles().isEmpty()) {
+            getDelegate().getFileManagementService().importFiles(getProject(), fileSet);
         }
         return SUCCESS;
     }
 
-    /**
-     * get selected fileset.
-     * @param fileIndex String
-     * @return CaArrayFileSet CaArrayFileSet
-     */
-    public CaArrayFileSet getSelectedFiles(String fileIndex) {
-        CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
-        CaArrayFile caArrayFile = getFile(Integer.parseInt(fileIndex));
-        fileSet.add(caArrayFile);
-
-        return fileSet;
+    private void addSelectedFiles(CaArrayFileSet fileSet, HttpServletRequest request) {
+        Enumeration<String> myenum = request.getParameterNames();
+        while (myenum.hasMoreElements()) {
+          String name = myenum.nextElement();
+          String myREGEX = ":";
+          Pattern p = Pattern.compile(myREGEX);
+          String[] items = p.split(name);
+          //if pattern is like fileEntries:0:selected we know a checkbox has been selected
+          if (items[0].equalsIgnoreCase("files") && items[2].equalsIgnoreCase("selected")) {
+              String fileIndex = items[1];
+              fileSet.add(getFile(fileIndex));
+          }
+        }
     }
 
     /**
@@ -289,13 +260,12 @@ public class ManageFilesAction extends BaseAction {
         this.files = files;
     }
 
-    /**
-     * overloaded method to go file entry at index.
-     * @param index int
-     * @return fileEntry FileEntry
-     */
-    public CaArrayFile getFile(int index) {
+    private CaArrayFile getFile(int index) {
         return getFiles().get(index);
+    }
+
+    private CaArrayFile getFile(String indexValue) {
+        return getFile(Integer.parseInt(indexValue));
     }
 
     /**
