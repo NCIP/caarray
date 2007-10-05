@@ -93,15 +93,7 @@ public class LogoutAction extends BaseAction {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("PMD")
     public String execute() throws Exception {
-
-        //issues came about using following so just invalidating session
-        //to get build out.
-        //CaArrayLoginModule loginModule = new CaArrayLoginModule();
-        //loginModule.logout();
-
-        //added as precaution for now.
         HttpSession session = getSession();
         session.invalidate();
 
