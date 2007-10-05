@@ -570,7 +570,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         p.setBrowsable(false);
 
         List<UserGroupRoleProtectionGroup> list = SecurityInterceptor.getUserGroupRoleProtectionGroups(p);
-        assertEquals(1, list.size());
+        assertEquals(2, list.size()); // expect the user-only one and the anonymous access one
 
         tx.commit();
 
@@ -580,7 +580,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         assertEquals(p.getHostProfile().getSecurityLevel(), SecurityLevel.NONE);
         assertTrue(!p.isBrowsable());
         list = SecurityInterceptor.getUserGroupRoleProtectionGroups(p);
-        assertEquals(0, list.size());
+        assertEquals(1, list.size()); // expect the user-only one, but not the anonymous access one
         tx.commit();
     }
 
@@ -594,14 +594,14 @@ public class ProjectDaoTest extends AbstractDaoTest {
         tx = HibernateUtil.getCurrentSession().beginTransaction();
         Project p = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
         List<UserGroupRoleProtectionGroup> list = SecurityInterceptor.getUserGroupRoleProtectionGroups(p);
-        assertEquals(0, list.size());
+        assertEquals(1, list.size()); // expect the user-only one, not the anonymous access one
         p.setBrowsable(true);
 
         tx.commit();
         tx = HibernateUtil.getCurrentSession().beginTransaction();
 
         list = SecurityInterceptor.getUserGroupRoleProtectionGroups(p);
-        assertEquals(1, list.size());
+        assertEquals(2, list.size()); // expect the user-only one and the anonymous access one
 
         tx.commit();
     }

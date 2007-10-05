@@ -291,4 +291,18 @@ public class ManageFilesAction extends BaseAction implements Preparable {
     public void setNavigationList(List<LabelValue> navigationList) {
         this.navigationList = navigationList;
     }
+
+    /**
+     * @return the projectId
+     */
+    public long getProjectId() {
+        return projectId;
+    }
+
+    /**
+     * @param projectId the projectId to set
+     */
+    public void setProjectId(long projectId) {
+        this.projectId = projectId;
+    }
 }

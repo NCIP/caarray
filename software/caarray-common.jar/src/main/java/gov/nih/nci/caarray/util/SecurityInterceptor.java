@@ -107,7 +107,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.EmptyInterceptor;
@@ -257,12 +256,13 @@ public class SecurityInterceptor extends EmptyInterceptor {
                     assignAnonymousAccess(p, getProtectionGroup(p));
                 } else {
                     List<UserGroupRoleProtectionGroup> l = getUserGroupRoleProtectionGroups(p);
-                    if (!l.isEmpty()) {
-                        UserGroupRoleProtectionGroup ugrp = l.get(0);
-                        AUTH_MGR.removeGroupRoleFromProtectionGroup(
-                                ugrp.getProtectionGroup().getProtectionGroupId().toString(),
-                                ugrp.getGroup().getGroupId().toString(),
-                                new String[] {ugrp.getRole().getId().toString() });
+                    for (UserGroupRoleProtectionGroup ugrp : l) {
+                        if (ugrp.getGroup() != null) {
+                            AUTH_MGR.removeGroupRoleFromProtectionGroup(
+                                    ugrp.getProtectionGroup().getProtectionGroupId().toString(),
+                                    ugrp.getGroup().getGroupId().toString(),
+                                    new String[] {ugrp.getRole().getId().toString() });
+                        }
                     }
                 }
             } catch (CSTransactionException e) {
@@ -282,12 +282,18 @@ public class SecurityInterceptor extends EmptyInterceptor {
                       + user);
             try {
                 List<UserGroupRoleProtectionGroup> l = getUserGroupRoleProtectionGroups(p);
-                if (CollectionUtils.isNotEmpty(l)) {
-                    UserGroupRoleProtectionGroup ugrpg = l.get(0);
-                    AUTH_MGR.removeGroupRoleFromProtectionGroup(
-                            ugrpg.getProtectionGroup().getProtectionGroupId().toString(),
-                            ugrpg.getGroup().getGroupId().toString(),
-                            new String[] {ugrpg.getRole().getId().toString() });
+                for (UserGroupRoleProtectionGroup ugrpg : l) {
+                    if (ugrpg.getGroup() != null) {
+                        AUTH_MGR.removeGroupRoleFromProtectionGroup(
+                                ugrpg.getProtectionGroup().getProtectionGroupId().toString(),
+                                ugrpg.getGroup().getGroupId().toString(),
+                                new String[] {ugrpg.getRole().getId().toString() });
+                    } else {
+                        AUTH_MGR.removeUserRoleFromProtectionGroup(
+                                ugrpg.getProtectionGroup().getProtectionGroupId().toString(),
+                                ugrpg.getUser().getUserId().toString(),
+                                new String[] {ugrpg.getRole().getId().toString() });
+                    }
                 }
                 ProtectionGroup pg = getProtectionGroup(p);
                 ProtectionElement pe = (ProtectionElement) pg.getProtectionElements().iterator().next();
@@ -353,6 +359,16 @@ public class SecurityInterceptor extends EmptyInterceptor {
         pg.setUpdateDate(new Date());
         AUTH_MGR.createProtectionGroup(pg);
 
+        // This shouldn't be necessary, because the filter should take into account
+        // the ownership status (set above.)  However, such a filter uses a UNION
+        // mechanism and this runs into a hibernate bug:
+        // http://opensource.atlassian.com/projects/hibernate/browse/HHH-2593
+        // Thus, we do an extra association here.  Yuck!
+        AUTH_MGR.assignUserRoleToProtectionGroup(
+                csmUser.getUserId().toString(),
+                new String[] {getReadRole().getId().toString() },
+                pg.getProtectionGroupId().toString());
+
         return pg;
     }
 
@@ -371,16 +387,19 @@ public class SecurityInterceptor extends EmptyInterceptor {
         List<Group> groupList = AUTH_MGR.getObjects(gsc);
         group = groupList.get(0);
 
+        AUTH_MGR.assignGroupRoleToProtectionGroup(
+                pg.getProtectionGroupId().toString(),
+                group.getGroupId().toString(),
+                new String[] {getReadRole().getId().toString() });
+    }
+
+    private static Role getReadRole() {
         Role role = new Role();
         role.setName(READ_ROLE);
         RoleSearchCriteria rsc = new RoleSearchCriteria(role);
         List<Role> roleList = AUTH_MGR.getObjects(rsc);
         role = roleList.get(0);
-
-        AUTH_MGR.assignGroupRoleToProtectionGroup(
-                pg.getProtectionGroupId().toString(),
-                group.getGroupId().toString(),
-                new String[] {role.getId().toString() });
+        return role;
     }
 
     /**
@@ -395,15 +414,13 @@ public class SecurityInterceptor extends EmptyInterceptor {
         // using the known values for various ids from the csm script
         String queryString = "SELECT ugrpg FROM " + UserGroupRoleProtectionGroup.class.getName() + " ugrpg, "
                              + ProtectionElement.class.getName() + " pe "
-                             + "WHERE ugrpg.group.groupName = :groupName "
-                             + "  AND ugrpg.user IS NULL "
-                             + "  AND pe in elements(ugrpg.protectionGroup.protectionElements) "
+                             + "WHERE pe in elements(ugrpg.protectionGroup.protectionElements) "
+                             + "  AND size(ugrpg.protectionGroup.protectionElements) = 1"
                              + "  AND pe.attribute = 'id' "
                              + "  AND pe.objectId = :objectId "
                              + "  AND pe.value = :value "
                              + "  AND ugrpg.role.name = :roleName";
         Query q = HibernateUtil.getCurrentSession().createQuery(queryString);
-        q.setString("groupName", SecurityInterceptor.ANONYMOUS_GROUP);
         q.setString("roleName", "Read");
         q.setString("objectId", getNonGLIBClass(p).getName());
         q.setString("value", p.getId().toString());
