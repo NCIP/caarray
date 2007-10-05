@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
@@ -23,21 +24,30 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
  *
  */
 @Validation
-public class ManageFilesAction extends BaseAction {
+public class ManageFilesAction extends BaseAction implements Preparable {
 
     private static final long serialVersionUID = 1L;
 
     @SuppressWarnings("unused")
     private List<CaArrayFile> files;
     private CaArrayFile file;
-    private Long fileId;
-
     private Project project;
-    private Long projectId;
-
     private String menu;
 
+    private Long fileId;
     private List<LabelValue> navigationList;
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("PMD")
+    public void prepare() throws Exception {
+        if (getProject() != null && getProject().getId() != null) {
+            setProject(getDelegate().getProjectManagementService().getProject(getProject().getId()));
+            loadFileEntries();
+        }
+    }
 
     /**
      * edit files associated with a project.
@@ -48,11 +58,9 @@ public class ManageFilesAction extends BaseAction {
     public String edit() throws Exception {
         setMenu("FileEditLinks");
 
-        //remove and put in prepare
-        setProject(getDelegate().getProjectManagementService().getProject(projectId));
-
         navigationList = new ArrayList<LabelValue>();
-        LabelValue manageFiles = new LabelValue("Manage Files", "File_manage.action?projectId=" + projectId);
+        LabelValue manageFiles = new LabelValue("Manage Files",
+                "File_manage.action?project.id=" + getProject().getId());
         navigationList.add(manageFiles);
 
         return SUCCESS;
@@ -66,11 +74,6 @@ public class ManageFilesAction extends BaseAction {
     @SuppressWarnings("PMD")
     public String manage() throws Exception {
         setMenu("FileManageLinks");
-
-        //remove and put in prepare()
-        setProject(getDelegate().getProjectManagementService().getProject(projectId));
-        loadFileEntries();
-
         return SUCCESS;
     }
 
@@ -85,12 +88,9 @@ public class ManageFilesAction extends BaseAction {
 
         //remove this too!
         navigationList = new ArrayList<LabelValue>();
-        LabelValue manageFiles = new LabelValue("Manage Files", "File_manage.action?projectId=" + projectId);
+        LabelValue manageFiles = new LabelValue("Manage Files",
+                "File_manage.action?project.id=" + getProject().getId());
         navigationList.add(manageFiles);
-
-        //remove and put in prepare()
-        setProject(getDelegate().getProjectManagementService().getProject(projectId));
-        loadFileEntries();
 
         for (CaArrayFile caArrayFile : getFiles()) {
             if (caArrayFile.getId().compareTo(fileId) == 0) {
@@ -112,16 +112,13 @@ public class ManageFilesAction extends BaseAction {
     public String validateFile() throws Exception {
         setMenu("FileManageLinks");
 
-        //remove and put in prepare()
-        setProject(getDelegate().getProjectManagementService().getProject(projectId));
-        loadFileEntries();
-
         HttpServletRequest request = getRequest();
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
         addSelectedFiles(fileSet, request);
         if (!fileSet.getFiles().isEmpty()) {
             getDelegate().getFileManagementService().validateFiles(fileSet);
         }
+
         return SUCCESS;
     }
 
@@ -137,16 +134,13 @@ public class ManageFilesAction extends BaseAction {
     public String importFile() throws Exception {
         setMenu("FileManageLinks");
 
-        //remove and put in prepare()
-        setProject(getDelegate().getProjectManagementService().getProject(projectId));
-        loadFileEntries();
-
         HttpServletRequest request = getRequest();
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
         addSelectedFiles(fileSet, request);
         if (!fileSet.getFiles().isEmpty()) {
             getDelegate().getFileManagementService().importFiles(getProject(), fileSet);
         }
+
         return SUCCESS;
     }
 
@@ -202,20 +196,6 @@ public class ManageFilesAction extends BaseAction {
      */
     public void setProject(Project project) {
         this.project = project;
-    }
-
-    /**
-     * @return the id
-     */
-    public Long getProjectId() {
-        return projectId;
-    }
-
-    /**
-     * @param projectId the projectId to set
-     */
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
     }
 
     /**

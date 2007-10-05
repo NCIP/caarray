@@ -88,19 +88,20 @@ import gov.nih.nci.caarray.web.delegate.DelegateFactory;
 import gov.nih.nci.caarray.web.delegate.ManageFilesDelegate;
 
 import java.io.File;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
+import com.opensymphony.xwork2.Preparable;
+
 /**
  * Handles multiple file uploading.
  * @author John Hedden
  *
  */
-public class MultipleFileUploadAction extends BaseAction {
+public class MultipleFileUploadAction extends BaseAction implements Preparable {
 
     private static final long serialVersionUID = 1L;
     private List<File> uploads = new ArrayList<File>();
@@ -111,7 +112,16 @@ public class MultipleFileUploadAction extends BaseAction {
     private Project project;
     private String menu;
 
-    private Long projectId;
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("PMD")
+    public void prepare() throws Exception {
+        if (getProject() != null && getProject().getId() != null) {
+            setProject(getDelegate().getProjectManagementService().getProject(getProject().getId()));
+            loadFileEntries();
+        }
+    }
 
     /**
      * uploads file.
@@ -122,19 +132,13 @@ public class MultipleFileUploadAction extends BaseAction {
     public String upload() throws Exception {
         setMenu("FileManageLinks");
 
-        //remove and put in prepare()
-        setProject(getDelegate().getProjectManagementService().getProject(projectId));
-        loadFileEntries();
-
         int index = 0;
         for (Iterator<File> iter = getUpload().iterator(); iter.hasNext();) {
             File uploadedFile = iter.next();
-            OutputStream os = null;
             try {
                 String fileName = getUploadFileName(index);
                 File destinationFile = getFile(fileName);
                 FileUtils.copyFile(uploadedFile, destinationFile);
-
                 CaArrayFile caArrayFile = new CaArrayFile();
                 caArrayFile = getDelegate().getProjectManagementService().addFile(getProject(), destinationFile);
                 files.add(caArrayFile);
@@ -147,7 +151,6 @@ public class MultipleFileUploadAction extends BaseAction {
             }
             index++;
         } //end for
-
         return SUCCESS;
     }
 
@@ -286,19 +289,5 @@ public class MultipleFileUploadAction extends BaseAction {
      */
     public void setFiles(List<CaArrayFile> files) {
         this.files = files;
-    }
-
-    /**
-     * @return the id
-     */
-    public Long getProjectId() {
-        return projectId;
-    }
-
-    /**
-     * @param projectId the projectId to set
-     */
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
     }
 }

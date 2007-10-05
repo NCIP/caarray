@@ -7,7 +7,7 @@
 
      <!-- Constants -->
     <constant name="struts.enable.DynamicMethodInvocation" value="false" />
-    <constant name="struts.devMode" value="false" />
+    <constant name="struts.devMode" value="true" />
     <constant name="struts.i18n.encoding" value="UTF-8"/>
     <constant name="struts.custom.i18n.resources" value="ApplicationResources,errors"/>
     <constant name="struts.ui.theme" value="css_xhtml"/>
@@ -20,14 +20,56 @@
     <package name="default" extends="struts-default">
     
         <interceptors>
-            <interceptor-stack name="caFileUploadStack">
-                <interceptor-ref name="fileUpload">
-                    <param name="allowedTypes">*.data</param>
-                    <param name="maximumSize">2024000000</param>
+            <interceptor-stack name="caArrayParamsPrepareParamsStack">
+                <interceptor-ref name="exception"/>
+                <interceptor-ref name="alias"/>
+                <interceptor-ref name="params"/>
+                <interceptor-ref name="servletConfig"/>
+                <interceptor-ref name="prepare"/>
+                <interceptor-ref name="i18n"/>
+                <interceptor-ref name="chain"/>
+                <interceptor-ref name="modelDriven"/>
+                <interceptor-ref name="fileUpload"/>
+                <interceptor-ref name="checkbox"/>
+                <interceptor-ref name="staticParams"/>
+                <interceptor-ref name="params"/>
+                <interceptor-ref name="conversionError"/>
+                <interceptor-ref name="validation">
+                    <param name="excludeMethods">input,back,cancel</param>
                 </interceptor-ref>
-                <interceptor-ref name="basicStack"/>
+                <interceptor-ref name="workflow">
+                    <param name="excludeMethods">input,back,cancel</param>
+                </interceptor-ref>
             </interceptor-stack>
-        </interceptors> 
+          
+            <interceptor-stack name="caArrayDefaultStack">
+                <interceptor-ref name="exception"/>
+                <interceptor-ref name="alias"/>
+                <interceptor-ref name="servletConfig"/>
+                <interceptor-ref name="prepare"/>
+                <interceptor-ref name="i18n"/>
+                <interceptor-ref name="chain"/>
+                <interceptor-ref name="debugging"/>
+                <interceptor-ref name="profiling"/>
+                <interceptor-ref name="scopedModelDriven"/>
+                <interceptor-ref name="modelDriven"/>
+                <interceptor-ref name="fileUpload"/>
+                <interceptor-ref name="checkbox"/>
+                <interceptor-ref name="staticParams"/>
+                <interceptor-ref name="params">
+                  <param name="excludeParams">dojo\..*</param>
+                </interceptor-ref>
+                <interceptor-ref name="conversionError"/>
+                <interceptor-ref name="validation">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+                <interceptor-ref name="workflow">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+            </interceptor-stack> 
+        </interceptors>   
+
+        <default-interceptor-ref name="caArrayDefaultStack" />
         
         <global-results>
             <result name="error">/error.jsp</result>
@@ -51,11 +93,13 @@
             <result name="success" type="chain">Project_list</result>
         </action>
         
-        <action name="Project_edit" class="gov.nih.nci.caarray.web.action.ManageFilesAction" method="edit"> 
+        <action name="Project_edit" class="gov.nih.nci.caarray.web.action.ManageFilesAction" method="edit">
+            <interceptor-ref name="caArrayParamsPrepareParamsStack" /> 
             <result name="success">/pages/projectDetails.jsp</result>
         </action>        
         
-        <action name="File_manage" class="gov.nih.nci.caarray.web.action.ManageFilesAction" method="manage"> 
+        <action name="File_manage" class="gov.nih.nci.caarray.web.action.ManageFilesAction" method="manage">
+            <interceptor-ref name="caArrayParamsPrepareParamsStack" /> 
             <result name="success">/pages/projectFiles.jsp</result>
         </action>
         
@@ -64,16 +108,19 @@
             so just added struts.multipart.maxSize to struts.properties to get 
             around apache default size of 2M.
             <interceptor-ref name="caFileUploadStack"/> -->
+            <interceptor-ref name="caArrayParamsPrepareParamsStack" />
             <result name="input">/pages/projectFiles.jsp</result>
             <result name="success" type="chain">File_manage</result>
         </action>
         
         <action name="File_import" class="gov.nih.nci.caarray.web.action.ManageFilesAction">
+            <interceptor-ref name="caArrayParamsPrepareParamsStack" />
             <result name="input">/pages/projectFiles.jsp</result>
             <result name="success" type="chain">File_manage</result>
         </action>
         
         <action name="File_messages" class="gov.nih.nci.caarray.web.action.ManageFilesAction" method="messages">
+            <interceptor-ref name="caArrayParamsPrepareParamsStack" />
             <result name="input">/pages/projectFiles.jsp</result>
             <result name="success">/pages/validationMessages.jsp</result>
         </action>
