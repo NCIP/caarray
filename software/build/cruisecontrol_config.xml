@@ -38,6 +38,8 @@
 
         <log dir="logs\caarray2">
             <merge dir="projects\caarray2\software\build\site\junit" />
+            <gzip every="1" unit="MONTH"/>
+            <delete every="3" unit="MONTH" ignoreSuffix="true"/>
         </log>
 
         <publishers>
