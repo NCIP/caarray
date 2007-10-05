@@ -103,7 +103,6 @@ import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -141,24 +140,6 @@ public class ProjectManagementServiceTest {
         assertEquals(123L, project.getId());
     }
 
-    /**
-     * Test method for {@link gov.nih.nci.caarray.application.project.ProjectManagementService#addFiles(gov.nih.nci.caarray.domain.project.Project, java.util.Set)}.
-     */
-    @Test
-    public void testAddFiles() {
-        Project project = projectManagementService.getProject(123L);
-        Set<File> files = new HashSet<File>();
-        files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-        files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
-        Set<CaArrayFile> caArrayFiles = projectManagementService.addFiles(project, files);
-        assertEquals(2, caArrayFiles.size());
-        assertNotNull(project.getFiles().iterator().next().getProject());
-        project = projectManagementService.getProject(123L);
-        assertEquals(2, project.getFiles().size());
-        assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-        assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
-    }
-
     @Test
     public void testAddFile() {
         Project project = projectManagementService.getProject(123L);
@@ -171,7 +152,7 @@ public class ProjectManagementServiceTest {
 
     private void assertContains(Set<CaArrayFile> caArrayFiles, File file) {
         for (CaArrayFile caArrayFile : caArrayFiles) {
-            if (file.getAbsolutePath().equals(caArrayFile.getPath())) {
+            if (file.getName().equals(caArrayFile.getName())) {
                 return;
             }
         }

@@ -91,9 +91,7 @@ import gov.nih.nci.caarray.domain.project.Proposal;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -120,10 +118,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     @EJB private FileAccessService fileAccessService;
 
     /**
-     * Returns the project corresponding to the id given.
-     *
-     * @param id the project id
-     * @return the corresponding project.
+     * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Project getProject(long id) {
@@ -143,33 +138,29 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public CaArrayFile addFile(Project project, File file) {
         LogUtil.logSubsystemEntry(LOG, project, file);
-        CaArrayFile caArrayFile = doAddFile(project, file);
-        getProjectDao().save(project);
+        CaArrayFile caArrayFile = doAddFile(project, file, file.getName());
         LogUtil.logSubsystemExit(LOG);
         return caArrayFile;
     }
-
-    private CaArrayFile doAddFile(Project project, File file) {
-        CaArrayFile caArrayFile = fileAccessService.add(file);
-        project.getFiles().add(caArrayFile);
-        caArrayFile.setProject(project);
-        return caArrayFile;
-    }
-
+    
     /**
      * {@inheritDoc}
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Set<CaArrayFile> addFiles(Project project, Set<File> files) {
-        LogUtil.logSubsystemEntry(LOG, project, files);
-        Set<CaArrayFile> caArrayFiles = new HashSet<CaArrayFile>();
-        for (File file : files) {
-            CaArrayFile caArrayFile = doAddFile(project, file);
-            caArrayFiles.add(caArrayFile);
-        }
-        getProjectDao().save(project);
+    public CaArrayFile addFile(Project project, File file, String filename) {
+        LogUtil.logSubsystemEntry(LOG, project, file);
+        CaArrayFile caArrayFile = doAddFile(project, file, filename);
         LogUtil.logSubsystemExit(LOG);
-        return caArrayFiles;
+        return caArrayFile;
+    }
+
+    private CaArrayFile doAddFile(Project project, File file, String filename) {
+        CaArrayFile caArrayFile = null;
+        caArrayFile = fileAccessService.add(file, filename);
+        project.getFiles().add(caArrayFile);
+        caArrayFile.setProject(project);
+        getProjectDao().save(caArrayFile);
+        getProjectDao().save(project);
+        return caArrayFile;
     }
 
     /**
@@ -181,6 +172,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         getProjectDao().save(proposal);
         LogUtil.logSubsystemExit(LOG);
     }
+
     /**
      * {@inheritDoc}
      */
@@ -223,4 +215,5 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     void setSessionContext(SessionContext sessionContext) {
         this.sessionContext = sessionContext;
     }
+
 }

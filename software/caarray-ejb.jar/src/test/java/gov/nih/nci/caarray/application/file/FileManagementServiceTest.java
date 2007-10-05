@@ -60,6 +60,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.File;
@@ -78,7 +79,7 @@ public class FileManagementServiceTest {
         fileManagementServiceBean.setArrayDesignService(new LocalArrayDesignServiceStub());
         fileManagementServiceBean.setMageTabTranslator(new MageTabTranslatorStub());
         fileManagementServiceBean.setDaoFactory(new DaoFactoryStub());
-        fileManagementServiceBean.setFileAccessService(new FileAccessServiceStub());
+        fileManagementServiceBean.setFileAccessService(new LocalFileAccessServiceStub());
         fileManagementService = fileManagementServiceBean;
     }
 
@@ -123,6 +124,17 @@ public class FileManagementServiceTest {
             return new FileValidationResult(new File(designFile.getName()));
         }
 
+    }
+
+    private static class LocalFileAccessServiceStub extends FileAccessServiceStub {
+        @Override
+        public File getFile(CaArrayFile caArrayFile) {
+            if (new File(MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY, caArrayFile.getName()).exists()) {
+                return new File(MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY, caArrayFile.getName());
+            } else {
+                throw new IllegalArgumentException("Don't know location of " + caArrayFile.getName());
+            }
+        }
     }
 
 }

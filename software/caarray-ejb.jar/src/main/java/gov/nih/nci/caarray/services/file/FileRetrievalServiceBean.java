@@ -82,9 +82,11 @@
  */
 package gov.nih.nci.caarray.services.file;
 
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -106,22 +108,23 @@ public class FileRetrievalServiceBean implements FileRetrievalService {
     private static final Log LOG = LogFactory.getLog(FileRetrievalServiceBean.class);
     private static final int CHUNK_SIZE = 4096;
 
-    @EJB private FileRetrievalService fileRetrievalService;
+    @EJB private FileAccessService fileAccessService;
 
-    final FileRetrievalService getFileRetrievalService() {
-        return fileRetrievalService;
+    final FileAccessService getFileAccessService() {
+        return fileAccessService;
     }
 
-    final void setFileRetrievalService(final FileRetrievalService fileRetreivalService) {
-        this.fileRetrievalService = fileRetreivalService;
+    final void setFileAccessService(final FileAccessService fileRetreivalService) {
+        this.fileAccessService = fileRetreivalService;
     }
 
     /**
      * {@inheritDoc}
      */
-    public byte[] readFile(final CaArrayFile file) {
+    public byte[] readFile(final CaArrayFile caArrayFile) {
         InputStream is = null;
         try {
+            File file = getFile(caArrayFile);
             is = new FileInputStream(file.getPath());
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             final byte[] bytes = new byte[CHUNK_SIZE];
@@ -131,7 +134,7 @@ public class FileRetrievalServiceBean implements FileRetrievalService {
             }
             return baos.toByteArray();
         } catch (final IOException e) {
-            LOG.error("IOException: " + file, e);
+            LOG.error("IOException: " + caArrayFile, e);
             return null;
         } finally {
             try {
@@ -142,6 +145,10 @@ public class FileRetrievalServiceBean implements FileRetrievalService {
                 LOG.warn("IOException closing inputstream.", ioe);
             }
         }
+    }
+
+    private File getFile(CaArrayFile caArrayFile) {
+        return fileAccessService.getFile(caArrayFile);
     }
 
 }

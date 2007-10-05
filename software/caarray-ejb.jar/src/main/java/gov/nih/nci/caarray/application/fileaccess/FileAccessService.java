@@ -105,6 +105,15 @@ public interface FileAccessService {
      * @return the caArray file object.
      */
     CaArrayFile add(File file);
+    
+    /**
+     * Adds a new file to caArray file storage.
+     * 
+     * @param file the file to store
+     * @param filename the filename for the new CaArrayFile -- may be different from file.getName()
+     * @return the caArray file object.
+     */
+    CaArrayFile add(File file, String filename);
 
     /**
      * Returns the underlying <code>java.io.File</code> for the <code>CaArrayFile</code> object provided.

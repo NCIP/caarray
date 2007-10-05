@@ -133,8 +133,9 @@ import affymetrix.fusion.cel.FusionCELFileEntryType;
 @SuppressWarnings("PMD")
 public class ArrayDataServiceTest {
 
+
     private ArrayDataService arrayDataService;
-    FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
+    FileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
     LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     ArrayDesignService arrayDesignService =
         ArrayDesignServiceTest.createArrayDesignService(daoFactoryStub, fileAccessServiceStub, new VocabularyServiceStub());
@@ -279,4 +280,18 @@ public class ArrayDataServiceTest {
 
     }
 
+    private static class LocalFileAccessServiceStub extends FileAccessServiceStub {
+        @Override
+        public File getFile(CaArrayFile caArrayFile) {
+            if (caArrayFile.getName().equals(AffymetrixArrayDesignFiles.TEST3_CDF.getName())) {
+                return AffymetrixArrayDesignFiles.TEST3_CDF;
+            } else if (caArrayFile.getName().equals(AffymetrixArrayDataFiles.TEST3_CEL.getName())) {
+                return AffymetrixArrayDataFiles.TEST3_CEL;
+            } else if (caArrayFile.getName().equals(AffymetrixArrayDataFiles.TEST3_CALVIN_CEL.getName())) {
+                return AffymetrixArrayDataFiles.TEST3_CALVIN_CEL;
+            } else {
+                throw new IllegalArgumentException("Don't know location of " + caArrayFile.getName());
+            }
+        }
+    }
 }

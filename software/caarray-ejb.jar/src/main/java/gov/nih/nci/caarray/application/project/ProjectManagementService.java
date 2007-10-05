@@ -88,7 +88,6 @@ import gov.nih.nci.caarray.domain.project.Proposal;
 
 import java.io.File;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Provides project access and management functionality to the application. Interface to the
@@ -120,14 +119,17 @@ public interface ProjectManagementService {
     CaArrayFile addFile(Project project, File file);
 
     /**
-     * Associates files with a project. After calling this method, clients can expect a new
-     * <code>CaArrayFile</code> to be associated with the project for each file added.
+     * Associates a single file with a project. After calling this method, clients can expect a new
+     * <code>CaArrayFile</code> to be associated with the project.
      *
-     * @param project project to add files to
-     * @param files the files to add to the project
-     * @return the new <code>CaArrayFiles</code>.
+     * @param project project to add the file to
+     * @param file the file to add to the project
+     * @param filename the filename to use for the file. Allows the created CaArrayFile to have a different name
+     * from the file containing the content. This is useful for adding uploaded temporary files that don't use the 
+     * original file name.
+     * @return the new <code>CaArrayFile</code>.
      */
-    Set<CaArrayFile> addFiles(Project project, Set<File> files);
+    CaArrayFile addFile(Project project, File file, String filename);
 
     /**
      * Persists a new proposal.

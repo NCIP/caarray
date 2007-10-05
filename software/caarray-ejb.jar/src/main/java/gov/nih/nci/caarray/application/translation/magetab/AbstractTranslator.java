@@ -92,7 +92,6 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.OntologyTerm;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -147,8 +146,7 @@ abstract class AbstractTranslator {
         Iterator<CaArrayFile> i = files.iterator();
         while (i.hasNext()) {
             CaArrayFile caArrayFile = i.next();
-            String fileName = (new File(caArrayFile.getPath())).getName();
-            if (name.equals(fileName)) {
+            if (name.equals(caArrayFile.getName())) {
                 return caArrayFile;
             }
         }

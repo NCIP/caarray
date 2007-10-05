@@ -102,15 +102,13 @@ import org.junit.Test;
 
 /**
  * Test class for ArrayDesignService subsystem.
- *
- * TODO Add complete details to tests
  */
 @SuppressWarnings("PMD")
 public class ArrayDesignServiceTest {
 
     private ArrayDesignService arrayDesignService;
     private final DaoFactoryStub caArrayDaoFactoryStub = new DaoFactoryStub();
-    private final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
+    private final FileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
     private final VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
 
     @Before
@@ -167,4 +165,16 @@ public class ArrayDesignServiceTest {
         return caArrayFile;
     }
 
+    private static class LocalFileAccessServiceStub extends FileAccessServiceStub {
+        @Override
+        public File getFile(CaArrayFile caArrayFile) {
+            if (caArrayFile.getName().equals(AffymetrixArrayDesignFiles.TEST3_CDF.getName())) {
+                return AffymetrixArrayDesignFiles.TEST3_CDF;
+            } else if (caArrayFile.getName().equals(AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF.getName())) {
+                return AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF;
+            } else {
+                throw new IllegalArgumentException("Don't know location of " + caArrayFile.getName());
+            }
+        }
+    }
 }
