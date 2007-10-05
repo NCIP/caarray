@@ -82,130 +82,28 @@
  */
 package gov.nih.nci.caarray.domain.array;
 
-import gov.nih.nci.caarray.domain.vocabulary.Term;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-
-import org.hibernate.annotations.ForeignKey;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 
 /**
- * Represents a phsyical probe on a microarray.
+ * Reports on the presence or intensity of a given target probe.
  */
 @Entity
-public class PhysicalReporter extends AbstractReporter {
+@org.hibernate.annotations.Entity(mutable = false)
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class AbstractProbe extends AbstractDesignElement {
 
-    private static final long serialVersionUID = -7343503650075935784L;
-
-    private ReporterGroup reporterGroup;
-    private Set<Feature> features = new HashSet<Feature>();
-    private Set<CompositeReporter> compositeReporters = new HashSet<CompositeReporter>();
-    private ArrayDesignDetails arrayDesignDetails;
-    private Term controlType;
-
-    /**
-     * Creates a new <code>PhysicalReporter</code> with its LSID initialized.
-     *
-     * @param lsidAuthority the LSID authority
-     * @param lsidNamespace the LSID namespace
-     * @param lsidObjectId the LSID object ID
-     * @param details the array design details
-     * @param reporterGroup reporter group
-     */
-    public PhysicalReporter(String lsidAuthority, String lsidNamespace, String lsidObjectId,
-                            ArrayDesignDetails details, ReporterGroup reporterGroup) {
+    AbstractProbe(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
         super(lsidAuthority, lsidNamespace, lsidObjectId);
-        setReporterGroup(reporterGroup);
-        setArrayDesignDetails(details);
     }
 
     /**
      * @deprecated hibernate & castor only
      */
     @Deprecated
-    public PhysicalReporter() {
-        // hibernate constructor
+    public AbstractProbe() {
+        // hibernate-only constructor
     }
 
-    /**
-     * @return the reporterGroup
-     */
-    @ManyToOne
-    @JoinColumn(updatable = false, nullable = false)
-    @ForeignKey(name = "REPORTER_GROUP_FK")
-    public ReporterGroup getReporterGroup() {
-        return reporterGroup;
-    }
-
-    private void setReporterGroup(ReporterGroup reporterGroup) {
-        this.reporterGroup = reporterGroup;
-    }
-
-    /**
-     * @return the features
-     */
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "REPORTERFEATURE",
-            joinColumns = { @JoinColumn(name = "REPORTER_ID") },
-            inverseJoinColumns = { @JoinColumn(name = "FEATURE_ID") }
-    )
-    public Set<Feature> getFeatures() {
-        return features;
-    }
-
-    @SuppressWarnings("unused")
-    private void setFeatures(Set<Feature> features) { // NOPMD
-        this.features = features;
-    }
-
-    /**
-     * @return the compositeReporters
-     */
-    @ManyToMany(mappedBy = "reporters")
-    public Set<CompositeReporter> getCompositeReporters() {
-        return compositeReporters;
-    }
-
-    @SuppressWarnings("unused")
-    private void setCompositeReporters(Set<CompositeReporter> compositeReporters) { // NOPMD
-        this.compositeReporters = compositeReporters;
-    }
-
-    /**
-     * @return the design details
-     */
-    @ManyToOne
-    @JoinColumn(updatable = false, nullable = false)
-    @ForeignKey(name = "PHYREPORTER_DETAILS_FK")
-    public ArrayDesignDetails getArrayDesignDetails() {
-        return arrayDesignDetails;
-    }
-
-    private void setArrayDesignDetails(ArrayDesignDetails arrayDesignDetails) {
-        this.arrayDesignDetails = arrayDesignDetails;
-    }
-
-    /**
-     * @return the controlType
-     */
-    @ManyToOne
-    @ForeignKey(name = "PHYREPORTER_CONTROLTYPE_FK")
-    public Term getControlType() {
-        return controlType;
-    }
-
-    /**
-     * @param controlType the controlType to set
-     */
-    public void setControlType(Term controlType) {
-        this.controlType = controlType;
-    }
 }

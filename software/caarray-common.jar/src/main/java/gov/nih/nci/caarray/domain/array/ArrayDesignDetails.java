@@ -93,7 +93,7 @@ import javax.persistence.OneToMany;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * Contains the low-level array design details (Features, Reporters, and CompositeElements) for a
+ * Contains the low-level array design details (Features, PhysicalProbes, and LogicalProbes) for a
  * microarray design.
  */
 @Entity
@@ -105,9 +105,9 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
     private static final String MAPPED_BY = "arrayDesignDetails";
 
     private Set<Feature> features = new HashSet<Feature>();
-    private Set<ReporterGroup> reporterGroups = new HashSet<ReporterGroup>();
-    private Set<PhysicalReporter> reporters = new HashSet<PhysicalReporter>();
-    private Set<CompositeReporter> compositeReporters = new HashSet<CompositeReporter>();
+    private Set<ProbeGroup> probeGroups = new HashSet<ProbeGroup>();
+    private Set<PhysicalProbe> pysicalProbes = new HashSet<PhysicalProbe>();
+    private Set<LogicalProbe> logicalProbes = new HashSet<LogicalProbe>();
 
     /**
      * @return the features
@@ -123,42 +123,42 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
     }
 
     /**
-     * @return the reporters
+     * @return the pysicalProbes
      */
     @OneToMany(mappedBy = MAPPED_BY)
-    public Set<PhysicalReporter> getReporters() {
-        return reporters;
+    public Set<PhysicalProbe> getPysicalProbes() {
+        return pysicalProbes;
     }
 
     @SuppressWarnings(UNUSED)
-    private void setReporters(Set<PhysicalReporter> reporters) { // NOPMD
-        this.reporters = reporters;
+    private void setPysicalProbes(Set<PhysicalProbe> pysicalProbes) { // NOPMD
+        this.pysicalProbes = pysicalProbes;
     }
 
     /**
-     * @return the compositeReporters
+     * @return the logicalProbes
      */
    @OneToMany(mappedBy = MAPPED_BY)
-   public Set<CompositeReporter> getCompositeReporters() {
-        return compositeReporters;
+   public Set<LogicalProbe> getLogicalProbes() {
+        return logicalProbes;
     }
 
     @SuppressWarnings(UNUSED)
-    private void setCompositeReporters(Set<CompositeReporter> compositeElements) { // NOPMD
-        this.compositeReporters = compositeElements;
+    private void setLogicalProbes(Set<LogicalProbe> logicalProbes) { // NOPMD
+        this.logicalProbes = logicalProbes;
     }
 
     /**
-     * @return the reporterGroups
+     * @return the probeGroups
      */
     @OneToMany(mappedBy = MAPPED_BY)
-    public Set<ReporterGroup> getReporterGroups() {
-        return reporterGroups;
+    public Set<ProbeGroup> getProbeGroups() {
+        return probeGroups;
     }
 
     @SuppressWarnings(UNUSED)
-    private void setReporterGroups(Set<ReporterGroup> reporterGroups) { // NOPMD
-        this.reporterGroups = reporterGroups;
+    private void setProbeGroups(Set<ProbeGroup> probeGroups) { // NOPMD
+        this.probeGroups = probeGroups;
     }
 
     /**

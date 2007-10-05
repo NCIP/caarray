@@ -1,13 +1,14 @@
 package gov.nih.nci.caarray.domain.vocabulary;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.array.AbstractReporter;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -105,7 +106,6 @@ public class Accession extends AbstractCaArrayEntity {
     private String url;
     private String value;
     private TermSource source;
-    private AbstractReporter reporter;
 
     /**
      * Gets the url.
@@ -164,21 +164,6 @@ public class Accession extends AbstractCaArrayEntity {
      */
     public void setSource(final TermSource sourceVal) {
         this.source = sourceVal;
-    }
-
-    /**
-     * @return the reporter
-     */
-    @ManyToOne
-    public AbstractReporter getReporter() {
-        return reporter;
-    }
-
-    /**
-     * @param reporter new reporter
-     */
-    public void setReporter(AbstractReporter reporter) {
-        this.reporter = reporter;
     }
 
     /**

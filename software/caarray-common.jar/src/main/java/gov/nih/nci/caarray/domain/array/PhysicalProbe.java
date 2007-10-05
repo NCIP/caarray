@@ -82,71 +82,130 @@
  */
 package gov.nih.nci.caarray.domain.array;
 
-import gov.nih.nci.caarray.domain.sequence.Sequence;
-import gov.nih.nci.caarray.domain.vocabulary.Accession;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.ForeignKey;
 
 /**
- * Reports on the presence or intensity of a given target probe.
+ * Represents a phsyical probe on a microarray.
  */
 @Entity
-@org.hibernate.annotations.Entity(mutable = false)
-@Inheritance(strategy = InheritanceType.JOINED)
-public abstract class AbstractReporter extends AbstractDesignElement {
+public class PhysicalProbe extends AbstractProbe {
 
-    private Sequence probeSequence;
-    private Set<Accession> probeAccessions = new HashSet<Accession>();
-    AbstractReporter(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
+    private static final long serialVersionUID = -7343503650075935784L;
+
+    private ProbeGroup probeGroup;
+    private Set<Feature> features = new HashSet<Feature>();
+    private Set<LogicalProbe> logicalProbes = new HashSet<LogicalProbe>();
+    private ArrayDesignDetails arrayDesignDetails;
+    private Term controlType;
+
+    /**
+     * Creates a new <code>PhysicalProbe</code> with its LSID initialized.
+     *
+     * @param lsidAuthority the LSID authority
+     * @param lsidNamespace the LSID namespace
+     * @param lsidObjectId the LSID object ID
+     * @param details the array design details
+     * @param probeGroup probe group
+     */
+    public PhysicalProbe(String lsidAuthority, String lsidNamespace, String lsidObjectId,
+                            ArrayDesignDetails details, ProbeGroup probeGroup) {
         super(lsidAuthority, lsidNamespace, lsidObjectId);
+        setProbeGroup(probeGroup);
+        setArrayDesignDetails(details);
     }
 
     /**
      * @deprecated hibernate & castor only
      */
     @Deprecated
-    public AbstractReporter() {
-        // hibernate-only constructor
+    public PhysicalProbe() {
+        // hibernate constructor
     }
 
     /**
-     * @return the probeSequence
+     * @return the probeGroup
      */
     @ManyToOne
-    @ForeignKey(name = "PROBE_SEQUENCE_FK")
-    public Sequence getProbeSequence() {
-        return probeSequence;
+    @JoinColumn(updatable = false, nullable = false)
+    @ForeignKey(name = "PROBE_GROUP_FK")
+    public ProbeGroup getProbeGroup() {
+        return probeGroup;
+    }
+
+    private void setProbeGroup(ProbeGroup probeGroup) {
+        this.probeGroup = probeGroup;
     }
 
     /**
-     * @param probeSequence the probeSequence to set
+     * @return the features
      */
-    public void setProbeSequence(Sequence probeSequence) {
-        this.probeSequence = probeSequence;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "PROBEFEATURE",
+            joinColumns = { @JoinColumn(name = "PHYSICAL_PROBE_ID") },
+            inverseJoinColumns = { @JoinColumn(name = "FEATURE_ID") }
+    )
+    public Set<Feature> getFeatures() {
+        return features;
     }
 
-    /**
-     * @return the probeAccessions
-     */
-    @OneToMany(mappedBy = "reporter")
-    public Set<Accession> getProbeAccession() {
-        return probeAccessions;
-    }
-
-    /**
-     * @param probeAccession the probeAccessions to set
-     */
     @SuppressWarnings("unused")
-    private void setProbeAccession(Set<Accession> probeAccession) { // NOPMD
-        this.probeAccessions = probeAccession;
+    private void setFeatures(Set<Feature> features) { // NOPMD
+        this.features = features;
+    }
+
+    /**
+     * @return the logicalProbes
+     */
+    @ManyToMany(mappedBy = "physicalProbes")
+    public Set<LogicalProbe> getLogicalProbes() {
+        return logicalProbes;
+    }
+
+    @SuppressWarnings("unused")
+    private void setLogicalProbes(Set<LogicalProbe> logicalProbes) { // NOPMD
+        this.logicalProbes = logicalProbes;
+    }
+
+    /**
+     * @return the design details
+     */
+    @ManyToOne
+    @JoinColumn(updatable = false, nullable = false)
+    @ForeignKey(name = "PHYSICALPROBE_DETAILS_FK")
+    public ArrayDesignDetails getArrayDesignDetails() {
+        return arrayDesignDetails;
+    }
+
+    private void setArrayDesignDetails(ArrayDesignDetails arrayDesignDetails) {
+        this.arrayDesignDetails = arrayDesignDetails;
+    }
+
+    /**
+     * @return the controlType
+     */
+    @ManyToOne
+    @ForeignKey(name = "PHYSICALPROBE_CONTROLTYPE_FK")
+    public Term getControlType() {
+        return controlType;
+    }
+
+    /**
+     * @param controlType the controlType to set
+     */
+    public void setControlType(Term controlType) {
+        this.controlType = controlType;
     }
 }

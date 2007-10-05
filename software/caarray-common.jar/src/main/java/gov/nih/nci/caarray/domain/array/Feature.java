@@ -107,7 +107,7 @@ public class Feature extends AbstractDesignElement {
     private int column;
     private int row;
 
-    private Set<PhysicalReporter> reporters = new HashSet<PhysicalReporter>();
+    private Set<PhysicalProbe> probes = new HashSet<PhysicalProbe>();
     private ArrayDesignDetails arrayDesignDetails;
 
     /**
@@ -190,16 +190,16 @@ public class Feature extends AbstractDesignElement {
     }
 
     /**
-     * @return the reporters
+     * @return the probes
      */
     @ManyToMany(mappedBy = "features")
-    public Set<PhysicalReporter> getReporters() {
-        return reporters;
+    public Set<PhysicalProbe> getProbes() {
+        return probes;
     }
 
     @SuppressWarnings("unused")
-    private void setReporters(Set<PhysicalReporter> reporters) { // NOPMD
-        this.reporters = reporters;
+    private void setProbes(Set<PhysicalProbe> probes) { // NOPMD
+        this.probes = probes;
     }
 
     /**

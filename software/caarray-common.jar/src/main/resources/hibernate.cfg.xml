@@ -21,15 +21,15 @@
         @HIBERNATE_CONFIG_END@ -->
 
         <!-- mapping files -->
-        <mapping class="gov.nih.nci.caarray.domain.array.AbstractReporter"/>
+        <mapping class="gov.nih.nci.caarray.domain.array.AbstractProbe"/>
         <mapping class="gov.nih.nci.caarray.domain.array.Array"/>
         <mapping class="gov.nih.nci.caarray.domain.array.ArrayGroup"/>
         <mapping class="gov.nih.nci.caarray.domain.array.ArrayDesign"/>
         <mapping class="gov.nih.nci.caarray.domain.array.ArrayDesignDetails"/>
-        <mapping class="gov.nih.nci.caarray.domain.array.CompositeReporter"/>
         <mapping class="gov.nih.nci.caarray.domain.array.Feature"/>
-        <mapping class="gov.nih.nci.caarray.domain.array.PhysicalReporter"/>
-        <mapping class="gov.nih.nci.caarray.domain.array.ReporterGroup"/>
+        <mapping class="gov.nih.nci.caarray.domain.array.LogicalProbe"/>
+        <mapping class="gov.nih.nci.caarray.domain.array.PhysicalProbe"/>
+        <mapping class="gov.nih.nci.caarray.domain.array.ProbeGroup"/>
         <mapping class="gov.nih.nci.caarray.domain.contact.Address"/>
         <mapping class="gov.nih.nci.caarray.domain.contact.Organization"/>
         <mapping class="gov.nih.nci.caarray.domain.contact.Person"/>

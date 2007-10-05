@@ -93,22 +93,22 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 /**
- * A logical grouping of like reporters, allowing the specification of a type.
+ * A logical grouping of like probes, allowing the specification of a type.
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable = false)
-public class ReporterGroup extends AbstractCaArrayEntity {
+public class ProbeGroup extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = -7001732731586530134L;
 
-    private Set<PhysicalReporter> reporters = new HashSet<PhysicalReporter>();
+    private Set<PhysicalProbe> probes = new HashSet<PhysicalProbe>();
     private String name;
     private ArrayDesignDetails arrayDesignDetails;
 
     /**
      * @param arrayDesignDetails array design arrayDesignDetails
      */
-    public ReporterGroup(ArrayDesignDetails arrayDesignDetails) {
+    public ProbeGroup(ArrayDesignDetails arrayDesignDetails) {
         setArrayDesignDetails(arrayDesignDetails);
     }
 
@@ -116,7 +116,7 @@ public class ReporterGroup extends AbstractCaArrayEntity {
      * @deprecated for castor & hibernate use only
      */
     @Deprecated
-    public ReporterGroup() {
+    public ProbeGroup() {
         // hibernate constructor
     }
 
@@ -135,16 +135,16 @@ public class ReporterGroup extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the reporters
+     * @return the probes
      */
-    @OneToMany(mappedBy = "reporterGroup")
-    public Set<PhysicalReporter> getReporters() {
-        return reporters;
+    @OneToMany(mappedBy = "probeGroup")
+    public Set<PhysicalProbe> getProbes() {
+        return probes;
     }
 
     @SuppressWarnings("unused")
-    private void setReporters(Set<PhysicalReporter> reporters) { // NOPMD
-        this.reporters = reporters;
+    private void setProbes(Set<PhysicalProbe> probes) { // NOPMD
+        this.probes = probes;
     }
 
     /**

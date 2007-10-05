@@ -97,23 +97,23 @@ import org.hibernate.annotations.ForeignKey;
  * A logical probe corresponding to a sequence that is composed of multiple physical probes.
  */
 @Entity
-public class CompositeReporter extends AbstractReporter {
+public class LogicalProbe extends AbstractProbe {
 
     private static final long serialVersionUID = 4406463229622624441L;
 
-    private Set<PhysicalReporter> reporters = new HashSet<PhysicalReporter>();
+    private Set<PhysicalProbe> physicalProbes = new HashSet<PhysicalProbe>();
 
     private ArrayDesignDetails arrayDesignDetails;
 
     /**
-     * Creates a new <code>CompositeReporter</code> with its LSID initialized.
+     * Creates a new <code>LogicalProbe</code> with its LSID initialized.
      *
      * @param lsidAuthority the LSID authority
      * @param lsidNamespace the LSID namespace
      * @param lsidObjectId the LSID object ID
      * @param details the array design details
      */
-    public CompositeReporter(String lsidAuthority, String lsidNamespace, String lsidObjectId,
+    public LogicalProbe(String lsidAuthority, String lsidNamespace, String lsidObjectId,
                              ArrayDesignDetails details) {
         super(lsidAuthority, lsidNamespace, lsidObjectId);
         setArrayDesignDetails(details);
@@ -123,26 +123,26 @@ public class CompositeReporter extends AbstractReporter {
      * @deprecated hibernate & castor only
      */
     @Deprecated
-    public CompositeReporter() {
+    public LogicalProbe() {
         // Hibernate-only constructor
     }
 
     /**
-     * @return the reporters
+     * @return the physicalProbes
      */
     @ManyToMany
     @JoinTable(
-            name = "COMPOSREPORTER_REPORTER",
-            joinColumns = { @JoinColumn(name = "COMPOSITE_REPORTER_ID") },
-            inverseJoinColumns = { @JoinColumn(name = "REPORTER_ID") }
+            name = "LOGICALPROBE_PHYSICALPROBE",
+            joinColumns = { @JoinColumn(name = "LOGICAL_PROBE_ID") },
+            inverseJoinColumns = { @JoinColumn(name = "PHYSICAL_PROBE_ID") }
     )
-    public Set<PhysicalReporter> getReporters() {
-        return reporters;
+    public Set<PhysicalProbe> getPhysicalProbes() {
+        return physicalProbes;
     }
 
     @SuppressWarnings("unused")
-    private void setReporters(Set<PhysicalReporter> reporters) { // NOPMD
-        this.reporters = reporters;
+    private void setPhysicalProbes(Set<PhysicalProbe> physicalProbes) { // NOPMD
+        this.physicalProbes = physicalProbes;
     }
 
     /**
@@ -150,7 +150,7 @@ public class CompositeReporter extends AbstractReporter {
      */
     @ManyToOne
     @JoinColumn(updatable = false, nullable = false)
-    @ForeignKey(name = "COMREPORTER_DETAILS_FK")
+    @ForeignKey(name = "LOGICALPROBE_DETAILS_FK")
     public ArrayDesignDetails getArrayDesignDetails() {
         return arrayDesignDetails;
     }
