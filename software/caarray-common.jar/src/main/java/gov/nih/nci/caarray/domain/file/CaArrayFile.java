@@ -87,17 +87,23 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.ForeignKey;
@@ -111,39 +117,30 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
 
     private static final long serialVersionUID = 1234567890L;
 
-    private String path;
+    private String name;
     private FileType type;
     private String status = FileStatus.UPLOADED.name();
     private Project project;
     private FileValidationResult validationResult;
+    private byte[] contents;
 
     /**
-     * Gets the path.
+     * Gets the name.
      *
-     * @return the path
+     * @return the name
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public String getPath() {
-        return path;
-    }
-
-    /**
-     * Sets the path.
-     *
-     * @param pathVal the path
-     */
-    public void setPath(final String pathVal) {
-        this.path = pathVal;
-    }
-
-    /**
-     * Returns the name of the file.
-     *
-     * @return the file name.
-     */
-    @Transient
     public String getName() {
-        return new File(getPath()).getName();
+        return name;
+    }
+
+    /**
+     * Sets the name.
+     *
+     * @param name the name
+     */
+    public void setName(final String name) {
+        this.name = name;
     }
 
     /**
@@ -209,7 +206,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
             .append(getProject(), o.getProject())
             .append(getFileStatus(), o.getFileStatus())
             .append(getType(), o.getType())
-            .append(getPath(), o.getPath())
+            .append(getName(), o.getName())
             .append(getId(), o.getId())
             .toComparison();
     }
@@ -221,7 +218,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     public String toString() {
         return new ToStringBuilder(this)
             .appendSuper(super.toString())
-            .append("path", path)
+            .append("name", name)
             .append("fileStatus", status)
             .append("type", type)
             .toString();
@@ -272,8 +269,45 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      * @param file check if this is the wrapped file
      * @return true if this is the wrapped file.
      */
-    public boolean isMatch(File file) {
-        return file != null && getPath() != null && file.equals(new File(getPath()));
+    boolean isMatch(File file) {
+        return file != null && getName() != null && getName().equals(file.getName());
+    }
+
+    /**
+     * Writes the contents of a stream to the storage for this file's contents.
+     *
+     * @param inputStream read the file contents from this input stream.
+     * @throws IOException if there is a problem writing the contents.
+     */
+    public void writeContents(InputStream inputStream) throws IOException {
+        setContents(IOUtils.toByteArray(inputStream));
+    }
+
+    /**
+     * Returns an input stream to access the contents of the file.
+     *
+     * @return the input stream to read.
+     * @throws IOException if the contents couldn't be accessed.
+     */
+    public InputStream readContents() throws IOException {
+        return new ByteArrayInputStream(getContents());
+    }
+
+    /**
+     * @return the contents
+     */
+    @Basic(fetch = FetchType.LAZY)
+    @Column(columnDefinition = "LONGBLOB")
+    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
+    public byte[] getContents() {
+        return contents;
+    }
+
+    /**
+     * @param contents the contents to set
+     */
+    public void setContents(byte[] contents) {
+        this.contents = contents;
     }
 
 }

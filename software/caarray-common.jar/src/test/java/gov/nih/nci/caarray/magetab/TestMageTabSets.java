@@ -182,7 +182,7 @@ public final class TestMageTabSets {
             public boolean accept(File dir, String name) {
                 return name.toLowerCase(Locale.getDefault()).endsWith("." + extension.toLowerCase(Locale.getDefault()));
             }
-        };    
+        };
     }
 
     public static CaArrayFileSet getFileSet(MageTabDocumentSet documentSet) {
@@ -203,7 +203,7 @@ public final class TestMageTabSets {
 
     private static void addFile(CaArrayFileSet fileSet, AbstractMageTabDocument mageTabDocument) {
         CaArrayFile caArrayFile = new CaArrayFile();
-        caArrayFile.setPath(mageTabDocument.getFile().getAbsolutePath());
+        caArrayFile.setName(mageTabDocument.getFile().getName());
         if (mageTabDocument instanceof IdfDocument) {
             caArrayFile.setType(FileType.MAGE_TAB_IDF);
         } else if (mageTabDocument instanceof SdrfDocument) {

@@ -121,7 +121,7 @@ public class CaArrayFileTest {
     @Test
     public void testIsMatch() {
         CaArrayFile caArrayFile = new CaArrayFile();
-        caArrayFile.setPath(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getAbsolutePath());
+        caArrayFile.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
         assertTrue(caArrayFile.isMatch(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF));
         assertFalse(caArrayFile.isMatch(MageTabDataFiles.SPECIFICATION_ERROR_EXAMPLE_IDF));
     }

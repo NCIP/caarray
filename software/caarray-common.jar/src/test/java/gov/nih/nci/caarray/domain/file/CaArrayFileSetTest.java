@@ -10,9 +10,9 @@ public class CaArrayFileSetTest {
     @Test
     public void testGetFile() {
         CaArrayFile caArrayFile = new CaArrayFile();
-        caArrayFile.setPath(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getAbsolutePath());
+        caArrayFile.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
         CaArrayFile caArrayFile2 = new CaArrayFile();
-        caArrayFile2.setPath(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF.getAbsolutePath());
+        caArrayFile2.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF.getName());
         CaArrayFileSet fileSet = new CaArrayFileSet();
         fileSet.add(caArrayFile);
         fileSet.add(caArrayFile2);

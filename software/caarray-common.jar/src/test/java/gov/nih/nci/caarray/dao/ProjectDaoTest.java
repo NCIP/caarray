@@ -317,9 +317,9 @@ public class ProjectDaoTest extends AbstractDaoTest {
     }
 
     private static void setFiles() {
-        DUMMY_FILE_1.setPath(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getAbsolutePath());
+        DUMMY_FILE_1.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
         DUMMY_FILE_1.setType(FileType.MAGE_TAB_IDF);
-        DUMMY_FILE_2.setPath(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF.getAbsolutePath());
+        DUMMY_FILE_2.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF.getName());
         DUMMY_FILE_1.setType(FileType.MAGE_TAB_SDRF);
         DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_1);
         DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_2);
@@ -492,7 +492,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             File file = new File("test/path/file.txt");
-            DUMMY_FILE_1.setPath(file.getPath());
+            DUMMY_FILE_1.setName(file.getName());
             FileValidationResult result = new FileValidationResult(file);
             ValidationMessage message1 = result.addMessage(ValidationMessage.Type.INFO, "info message");
             ValidationMessage message2 = result.addMessage(ValidationMessage.Type.ERROR, "error message");
@@ -551,7 +551,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         assertNotNull(pg);
         assertEquals(pe, pg.getProtectionElements().iterator().next());
         tx.commit();
-    }
+}
 
     @Test
     public void testProjectPermissions() {
@@ -582,7 +582,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         list = SecurityInterceptor.getUserGroupRoleProtectionGroups(p);
         assertEquals(1, list.size()); // expect the user-only one, but not the anonymous access one
         tx.commit();
-    }
+}
 
     @Test
     public void testNonBrowsableProject() {
@@ -604,8 +604,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
         assertEquals(2, list.size()); // expect the user-only one and the anonymous access one
 
         tx.commit();
-    }
-
+	}
+	
     @Test
     public void testFilters() {
         Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();

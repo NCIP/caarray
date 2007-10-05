@@ -107,7 +107,6 @@ public class CaArrayFile_HibernateIntegrationTest extends AbstractCaArrayEntity_
         CaArrayFile retrieved = (CaArrayFile) retrievedCaArrayObject;
         assertEquals(original.getFileStatus(), retrieved.getFileStatus());
         assertEquals(original.getName(), retrieved.getName());
-        assertEquals(original.getPath(), retrieved.getPath());
         assertEquals(original.getProject(), retrieved.getProject());
         assertEquals(original.getStatus(), retrieved.getStatus());
         assertEquals(original.getType(), retrieved.getType());
@@ -118,10 +117,10 @@ public class CaArrayFile_HibernateIntegrationTest extends AbstractCaArrayEntity_
     protected void setValues(AbstractCaArrayObject caArrayObject) {
         CaArrayFile caArrayFile = (CaArrayFile) caArrayObject;
         caArrayFile.setStatus(getNextValue(FileStatus.values(), caArrayFile.getFileStatus()).name());
-        caArrayFile.setPath(getUniqueStringValue() + File.pathSeparator + getUniqueStringValue());
+        caArrayFile.setName(getUniqueStringValue());
         caArrayFile.setProject(Project.createNew());
         caArrayFile.setType(FileType.AFFYMETRIX_CDF);
-        caArrayFile.setValidationResult(new FileValidationResult(new File(caArrayFile.getPath())));
+        caArrayFile.setValidationResult(new FileValidationResult(new File(caArrayFile.getName())));
     }
 
     @Override

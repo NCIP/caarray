@@ -25,7 +25,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/test-data"/>
 	<classpathentry kind="lib" path="/lib/csmapi.jar" sourcepath="/CSM-4.0-API/src"/>
 	<classpathentry kind="lib" path="/lib/cacore32-client.jar"/>
-	<classpathentry kind="lib" path="/lib/log4j-1.2.13.jar"/>
+	<classpathentry kind="lib" path="/lib/log4j-1.2.13.jar" sourcepath="/lib/src/log4j-1.2.13-src.jar"/>
 	<classpathentry kind="lib" path="/lib/clm.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
