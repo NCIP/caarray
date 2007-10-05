@@ -86,10 +86,10 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.array.CompositeReporter;
+import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.array.Feature;
-import gov.nih.nci.caarray.domain.array.PhysicalReporter;
-import gov.nih.nci.caarray.domain.array.ReporterGroup;
+import gov.nih.nci.caarray.domain.array.PhysicalProbe;
+import gov.nih.nci.caarray.domain.array.ProbeGroup;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
@@ -114,7 +114,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
 
     private FusionCDFData fusionCDFData;
 
-    private ReporterGroup reporterGroup;
+    private ProbeGroup probeGroup;
 
     AffymetrixCdfHandler(CaArrayFile designFile, VocabularyService vocabularyService,
             FileAccessService fileAccessService) {
@@ -144,8 +144,8 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     @Override
     ArrayDesignDetails getDesignDetails() {
         ArrayDesignDetails designDetails = new ArrayDesignDetails();
-        reporterGroup = new ReporterGroup(designDetails);
-        reporterGroup.setName(LSID_AUTHORITY + ":" + reporterGroup.getClass().getSimpleName() + ":All."
+        probeGroup = new ProbeGroup(designDetails);
+        probeGroup.setName(LSID_AUTHORITY + ":" + probeGroup.getClass().getSimpleName() + ":All."
                 + this.getFusionCDFData().getChipType());
         initializeFeaturesCreated(getFusionCDFHeader());
         handleProbeSets(designDetails);
@@ -169,15 +169,15 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
 
     private void handleProbeSet(FusionCDFProbeSetInformation probeSetInformation, String probeSetName,
             ArrayDesignDetails designDetails) {
-        CompositeReporter compositeReporter = new CompositeReporter(LSID_AUTHORITY, LSID_NAMESPACE, getFusionCDFData()
+        LogicalProbe logicalProbe = new LogicalProbe(LSID_AUTHORITY, LSID_NAMESPACE, getFusionCDFData()
                 .getChipType()
                 + "." + probeSetName, designDetails);
-        designDetails.getCompositeReporters().add(compositeReporter);
+        designDetails.getLogicalProbes().add(logicalProbe);
         int numLists = probeSetInformation.getNumLists();
         for (int listIndex = 0; listIndex < numLists; listIndex++) {
-            PhysicalReporter reporter = new PhysicalReporter(LSID_AUTHORITY, LSID_NAMESPACE, probeSetName
-                    + ".ProbePair" + listIndex, designDetails, reporterGroup);
-            designDetails.getReporters().add(reporter);
+            PhysicalProbe probe = new PhysicalProbe(LSID_AUTHORITY, LSID_NAMESPACE, probeSetName
+                    + ".ProbePair" + listIndex, designDetails, probeGroup);
+            designDetails.getPysicalProbes().add(probe);
         }
         int numGroups = probeSetInformation.getNumGroups();
         FusionCDFProbeGroupInformation probeGroupInformation = new FusionCDFProbeGroupInformation();

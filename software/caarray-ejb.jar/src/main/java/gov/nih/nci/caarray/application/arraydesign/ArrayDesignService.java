@@ -110,7 +110,7 @@ public interface ArrayDesignService {
     ArrayDesign importDesign(CaArrayFile designFile);
     
     /**
-     * Returns the element-level details (features, reporters, and composite elements) for
+     * Returns the element-level details (features, probes, and logical probes) for
      * an array design.
      * 
      * @param arrayDesign retrieve details for this array design
