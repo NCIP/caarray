@@ -92,8 +92,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-
 import com.opensymphony.xwork2.Preparable;
 
 /**
@@ -130,17 +128,18 @@ public class MultipleFileUploadAction extends BaseAction implements Preparable {
      */
     @SuppressWarnings("PMD")
     public String upload() throws Exception {
+
         setMenu("FileManageLinks");
 
         int index = 0;
         for (Iterator<File> iter = getUpload().iterator(); iter.hasNext();) {
             File uploadedFile = iter.next();
             try {
+
                 String fileName = getUploadFileName(index);
-                File destinationFile = getFile(fileName);
-                FileUtils.copyFile(uploadedFile, destinationFile);
-                CaArrayFile caArrayFile = new CaArrayFile();
-                caArrayFile = getDelegate().getProjectManagementService().addFile(getProject(), destinationFile);
+                
+                CaArrayFile caArrayFile 
+                    = getDelegate().getProjectManagementService().addFile(getProject(), uploadedFile, fileName);
                 files.add(caArrayFile);
 
             } catch (Exception e) {
@@ -151,6 +150,7 @@ public class MultipleFileUploadAction extends BaseAction implements Preparable {
             }
             index++;
         } //end for
+
         return SUCCESS;
     }
 
@@ -162,16 +162,6 @@ public class MultipleFileUploadAction extends BaseAction implements Preparable {
         for (CaArrayFile caArrayFile : getProject().getFilesList()) {
             files.add(caArrayFile);
         }
-    }
-
-    /**
-     * @return file based upon the uploaded file name
-     * (currently will create additional CaArrayFiles)
-     */
-    private File getFile(String inFileName) {
-        File projectDirectory = new File(System.getProperty("java.io.tmpdir"), getProject().getId().toString());
-        projectDirectory.mkdirs();
-        return new File(projectDirectory, inFileName);
     }
 
     /**
