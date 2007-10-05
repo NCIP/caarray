@@ -159,6 +159,29 @@ public class ManageFilesAction extends BaseAction implements Preparable {
 
         return SUCCESS;
     }
+    /**
+     * This method needs to be re-worked at some pt. I need to get a handle on
+     * Struts2 indexed properties first.  For now just go through request.getParamenterNames().
+     *
+     * validates file.
+     * @return String
+     * @throws Exception Exception
+     */
+    @SuppressWarnings({ "PMD", "unchecked" })
+    public String removeFile() throws Exception {
+        setMenu("FileManageLinks");
+
+        HttpServletRequest request = getRequest();
+        CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
+        addSelectedFiles(fileSet, request);
+        if (!fileSet.getFiles().isEmpty()) {
+            for (CaArrayFile caArrayFile : fileSet.getFiles()) {
+                getDelegate().getFileAccessService().remove(caArrayFile);
+            }
+       }
+
+        return SUCCESS;
+    }
 
     private void addSelectedFiles(CaArrayFileSet fileSet, HttpServletRequest request) {
         Enumeration<String> myenum = request.getParameterNames();
