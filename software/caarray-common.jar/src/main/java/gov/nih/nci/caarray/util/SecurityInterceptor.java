@@ -107,6 +107,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.EmptyInterceptor;
@@ -208,11 +209,11 @@ public class SecurityInterceptor extends EmptyInterceptor {
     @Override
     public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
             String[] propertyNames, Type[] types) {
-        if (entity instanceof Project) {
+        if (entity instanceof Project && previousState != null) {
             // figure out if browsable changed
             for (int i = 0; i < propertyNames.length; ++i) {
                 if (propertyNames[i].equals("browsable")
-                        && !currentState[i].equals(previousState[i])) {
+                        && !ObjectUtils.equals(currentState[i], previousState[i])) {
                     Project p = (Project) entity;
                     if (BROWSABLE_CHANGES.get() == null) {
                         BROWSABLE_CHANGES.set(new ArrayList<Project>());
@@ -258,12 +259,12 @@ public class SecurityInterceptor extends EmptyInterceptor {
                     List<UserGroupRoleProtectionGroup> l = getUserGroupRoleProtectionGroups(p);
                     for (UserGroupRoleProtectionGroup ugrp : l) {
                         if (ugrp.getGroup() != null) {
-                            AUTH_MGR.removeGroupRoleFromProtectionGroup(
-                                    ugrp.getProtectionGroup().getProtectionGroupId().toString(),
-                                    ugrp.getGroup().getGroupId().toString(),
-                                    new String[] {ugrp.getRole().getId().toString() });
-                        }
+                        AUTH_MGR.removeGroupRoleFromProtectionGroup(
+                                ugrp.getProtectionGroup().getProtectionGroupId().toString(),
+                                ugrp.getGroup().getGroupId().toString(),
+                                new String[] {ugrp.getRole().getId().toString() });
                     }
+                }
                 }
             } catch (CSTransactionException e) {
                 LOG.warn("Unable to change browsable status: " + e.getMessage(), e);
@@ -284,16 +285,16 @@ public class SecurityInterceptor extends EmptyInterceptor {
                 List<UserGroupRoleProtectionGroup> l = getUserGroupRoleProtectionGroups(p);
                 for (UserGroupRoleProtectionGroup ugrpg : l) {
                     if (ugrpg.getGroup() != null) {
-                        AUTH_MGR.removeGroupRoleFromProtectionGroup(
-                                ugrpg.getProtectionGroup().getProtectionGroupId().toString(),
-                                ugrpg.getGroup().getGroupId().toString(),
-                                new String[] {ugrpg.getRole().getId().toString() });
+                    AUTH_MGR.removeGroupRoleFromProtectionGroup(
+                            ugrpg.getProtectionGroup().getProtectionGroupId().toString(),
+                            ugrpg.getGroup().getGroupId().toString(),
+                            new String[] {ugrpg.getRole().getId().toString() });
                     } else {
                         AUTH_MGR.removeUserRoleFromProtectionGroup(
                                 ugrpg.getProtectionGroup().getProtectionGroupId().toString(),
                                 ugrpg.getUser().getUserId().toString(),
                                 new String[] {ugrpg.getRole().getId().toString() });
-                    }
+                }
                 }
                 ProtectionGroup pg = getProtectionGroup(p);
                 ProtectionElement pe = (ProtectionElement) pg.getProtectionElements().iterator().next();
