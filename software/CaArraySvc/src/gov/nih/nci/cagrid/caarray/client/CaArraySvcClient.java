@@ -128,7 +128,7 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
                     }
 
                     CaArrayFile caArrayFile = new CaArrayFile();
-                    caArrayFile.setPath("C:\\temp\\3_fb_extras.sql");
+                    caArrayFile.setName("C:\\temp\\3_fb_extras.sql");
 
                     byte[] bytes = client.readFile(caArrayFile);
                     System.out.println("TCPTCP: " + new String(bytes));

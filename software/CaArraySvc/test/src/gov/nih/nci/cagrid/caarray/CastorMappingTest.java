@@ -63,7 +63,7 @@ public class CastorMappingTest extends TestCase {
         f.setId(1L);
         f.setFileStatus(FileStatus.IMPORTED);
         f.setGridIdentifier("filegridid");
-        f.setPath("zpath");
+        f.setName("zpath");
         f.setType(FileType.AFFYMETRIX_CDF);
         f.setProject(p);
         p.getFiles().add(f);
