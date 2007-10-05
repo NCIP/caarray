@@ -127,8 +127,9 @@ public class SecurityInterceptor extends EmptyInterceptor {
 
     private static final Log LOG = LogFactory.getLog(SecurityInterceptor.class);
     private static final long serialVersionUID = -2071964672876972370L;
-    private static final String ANONYMOUS_USER = "__anonymous__";
-    /** The synthenic group for anonymous access permissions. */
+    /** The synthetic user for anonymous access permissions. */
+    public static final String ANONYMOUS_USER = "__anonymous__";
+    /** The synthetic group for anonymous access permissions. */
     public static final String ANONYMOUS_GROUP = "__anonymous__";
     private static final String READ_ROLE = "Read";
 
@@ -256,7 +257,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
                     assignAnonymousAccess(p, getProtectionGroup(p));
                 } else {
                     List<UserGroupRoleProtectionGroup> l = getUserGroupRoleProtectionGroups(p);
-                    if (CollectionUtils.isNotEmpty(l)) {
+                    if (!l.isEmpty()) {
                         UserGroupRoleProtectionGroup ugrp = l.get(0);
                         AUTH_MGR.removeGroupRoleFromProtectionGroup(
                                 ugrp.getProtectionGroup().getProtectionGroupId().toString(),

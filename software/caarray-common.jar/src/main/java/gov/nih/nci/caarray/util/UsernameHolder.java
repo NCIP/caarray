@@ -82,8 +82,14 @@
  */
 package gov.nih.nci.caarray.util;
 
+import org.apache.commons.lang.StringUtils;
+
+
 /**
- * Holds the name of the currently-logged in user in a ThreadLocal.
+ * Holds the name of the currently-logged in user in a ThreadLocal.  If the
+ * value is unset, return the username for the 'anonymous' user.
+ *
+ * @see SecurityInterceptor#ANONYMOUS_USER
  */
 public final class UsernameHolder {
 
@@ -101,10 +107,15 @@ public final class UsernameHolder {
     }
 
     /**
-     * @return the currently logged in user for this thread
+     * @return the currently logged in user for this thread, or the anonymous user
+     *         if no user is logged in
      */
     public static String getUser() {
-        return tlocal.get();
+        String val = tlocal.get();
+        if (StringUtils.isBlank(val)) {
+            return SecurityInterceptor.ANONYMOUS_USER;
+        }
+        return val;
     }
 
 }

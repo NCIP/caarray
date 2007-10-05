@@ -86,12 +86,12 @@ import gov.nih.nci.security.authorization.instancelevel.InstanceLevelSecurityHel
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.SessionFactory;
-import org.hibernate.Session;
-import org.hibernate.HibernateException;
-import org.hibernate.Transaction;
 
 /**
  * Utility class to create and retrieve Hibernate sessions.
@@ -105,6 +105,8 @@ public final class HibernateUtil {
     private static final Configuration HIBERNATE_CONFIG;
     private static final SessionFactory SESSION_FACTORY;
 
+    private static boolean filtersEnabled = true;
+
     static {
         try {
             Configuration tmpConfig = new AnnotationConfiguration().setNamingStrategy(new NamingStrategy())
@@ -117,9 +119,15 @@ public final class HibernateUtil {
               .addClass(gov.nih.nci.security.authorization.domainobjects.User.class)
               .addClass(gov.nih.nci.security.authorization.domainobjects.UserGroupRoleProtectionGroup.class)
               .addClass(gov.nih.nci.security.authorization.domainobjects.UserProtectionElement.class)
+              .addClass(gov.nih.nci.security.authorization.domainobjects.FilterClause.class)
               .setInterceptor(new SecurityInterceptor());
-            InstanceLevelSecurityHelper.addFilters(SecurityInterceptor.getAuthorizationManager(), tmpConfig);
             HIBERNATE_CONFIG = tmpConfig.configure();
+            // We call buildSessionFactory twice, because it appears that the annotated classes are
+            // not 'activated' in the config until we build.  The filters required the classes to
+            // be present, so we throw away the first factory and use the second.  If this is
+            // removed, you'll likely see a NoClassDefFoundError in the unit tests
+            HIBERNATE_CONFIG.buildSessionFactory();
+            InstanceLevelSecurityHelper.addFilters(SecurityInterceptor.getAuthorizationManager(), tmpConfig);
             SESSION_FACTORY = HIBERNATE_CONFIG.buildSessionFactory();
         } catch (HibernateException e) {
             LOG.error(e.getMessage(), e);
@@ -152,7 +160,10 @@ public final class HibernateUtil {
      */
     public static Session getCurrentSession() {
         Session result = SESSION_FACTORY.getCurrentSession();
-        InstanceLevelSecurityHelper.initializeFilters(UsernameHolder.getUser(), result);
+        if (filtersEnabled) {
+            InstanceLevelSecurityHelper.initializeFilters(UsernameHolder.getUser(), result,
+                    SecurityInterceptor.getAuthorizationManager());
+        }
         return result;
     }
 
@@ -165,5 +176,12 @@ public final class HibernateUtil {
         if ((tx != null) && (tx.isActive())) {
             tx.rollback();
         }
+    }
+
+    /**
+     * @param enable enabled.  This should generally only be called via test code.
+     */
+    public static void enableFilters(boolean enable) {
+        filtersEnabled = enable;
     }
 }

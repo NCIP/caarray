@@ -37,6 +37,8 @@ public class ManageFilesAction extends BaseAction implements Preparable {
     private Long fileId;
     private List<LabelValue> navigationList;
 
+    private long projectId;
+
 
     /**
      * {@inheritDoc}
@@ -62,6 +64,20 @@ public class ManageFilesAction extends BaseAction implements Preparable {
         LabelValue manageFiles = new LabelValue("Manage Files",
                 "File_manage.action?project.id=" + getProject().getId());
         navigationList.add(manageFiles);
+
+        return SUCCESS;
+    }
+
+    /**
+     * Toggles the browsability status.
+     * @return success
+     * @exception Exception on error
+     */
+    public String toggle() throws Exception {
+        setMenu("FileEditLinks");
+
+        getDelegate().getProjectManagementService().toggleBrowsableStatus(projectId);
+        setProject(getDelegate().getProjectManagementService().getProject(projectId));
 
         return SUCCESS;
     }

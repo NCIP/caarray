@@ -112,10 +112,13 @@ import gov.nih.nci.caarray.util.SecurityInterceptor;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
+import gov.nih.nci.security.authorization.domainobjects.FilterClause;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.authorization.domainobjects.UserGroupRoleProtectionGroup;
+import gov.nih.nci.security.dao.FilterClauseSearchCriteria;
+import gov.nih.nci.security.dao.SearchCriteria;
 
 import java.io.File;
 import java.util.Collection;
@@ -603,4 +606,15 @@ public class ProjectDaoTest extends AbstractDaoTest {
         tx.commit();
     }
 
+    @Test
+    public void testFilters() {
+        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+
+        FilterClause searchFilterClause = new FilterClause();
+        searchFilterClause.setClassName("*");
+        SearchCriteria searchCriteria = new FilterClauseSearchCriteria(searchFilterClause);
+        List<?> list = SecurityInterceptor.getAuthorizationManager().getObjects(searchCriteria);
+        assertTrue(list.size() > 0);
+        tx.commit();
+    }
 }

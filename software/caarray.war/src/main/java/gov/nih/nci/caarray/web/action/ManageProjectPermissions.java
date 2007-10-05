@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-war
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-war Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-war Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-war Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-war Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,147 +80,28 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.project;
+package gov.nih.nci.caarray.web.action;
 
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.ProjectDao;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.Proposal;
-import gov.nih.nci.caarray.util.io.logging.LogUtil;
-
-import java.io.File;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Resource;
-import javax.ejb.EJB;
-import javax.ejb.Local;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import gov.nih.nci.caarray.application.project.ProjectManagementService;
+import gov.nih.nci.caarray.web.delegate.DelegateFactory;
+import gov.nih.nci.caarray.web.delegate.ProjectDelegate;
 
 /**
- * Implementation entry point for the ProjectManagement subsystem.
+ * Handles toggling browsablity status.
  */
-@Local
-@Stateless
-public class ProjectManagementServiceBean implements ProjectManagementService {
+public class ManageProjectPermissions extends BaseAction {
 
-    private static final Log LOG = LogFactory.getLog(ProjectManagementServiceBean.class);
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-
-    @Resource private SessionContext sessionContext;
-    @EJB private FileAccessService fileAccessService;
+    private static final long serialVersionUID = 1L;
+    private Long projectId;
 
     /**
-     * Returns the project corresponding to the id given.
-     *
-     * @param id the project id
-     * @return the corresponding project.
+     * Toggles the browsability status.
+     * @return success
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Project getProject(long id) {
-        LogUtil.logSubsystemEntry(LOG, id);
-        Project project = getProjectDao().getProject(id);
-        LogUtil.logSubsystemExit(LOG);
-        return project;
-    }
-
-    private ProjectDao getProjectDao() {
-        return daoFactory.getProjectDao();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public CaArrayFile addFile(Project project, File file) {
-        LogUtil.logSubsystemEntry(LOG, project, file);
-        CaArrayFile caArrayFile = doAddFile(project, file);
-        getProjectDao().save(project);
-        LogUtil.logSubsystemExit(LOG);
-        return caArrayFile;
-    }
-
-    private CaArrayFile doAddFile(Project project, File file) {
-        CaArrayFile caArrayFile = fileAccessService.add(file);
-        project.getFiles().add(caArrayFile);
-        caArrayFile.setProject(project);
-        return caArrayFile;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Set<CaArrayFile> addFiles(Project project, Set<File> files) {
-        LogUtil.logSubsystemEntry(LOG, project, files);
-        Set<CaArrayFile> caArrayFiles = new HashSet<CaArrayFile>();
-        for (File file : files) {
-            CaArrayFile caArrayFile = doAddFile(project, file);
-            caArrayFiles.add(caArrayFile);
-        }
-        getProjectDao().save(project);
-        LogUtil.logSubsystemExit(LOG);
-        return caArrayFiles;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void submitProposal(Proposal proposal) {
-        LogUtil.logSubsystemEntry(LOG, proposal);
-        getProjectDao().save(proposal);
-        LogUtil.logSubsystemExit(LOG);
-    }
-    /**
-     * {@inheritDoc}
-     */
-    public List<Project> getWorkspaceProjects() {
-        String username = getSessionContext().getCallerPrincipal().getName();
-        return getProjectDao().getProjectsForUser(username);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Project toggleBrowsableStatus(long projectId) {
-        LogUtil.logSubsystemEntry(LOG, projectId);
-        Project p = getProject(projectId);
-        p.setBrowsable(!p.isBrowsable());
-        getProjectDao().save(p);
-        LogUtil.logSubsystemExit(LOG);
-        return p;
-    }
-
-    FileAccessService getFileAccessService() {
-        return fileAccessService;
-    }
-
-    void setFileAccessService(FileAccessService fileAccessService) {
-        this.fileAccessService = fileAccessService;
-    }
-
-    CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
-    }
-
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
-    }
-    SessionContext getSessionContext() {
-        return sessionContext;
-    }
-
-    void setSessionContext(SessionContext sessionContext) {
-        this.sessionContext = sessionContext;
+    public String toggle() {
+        ProjectManagementService svc = ((ProjectDelegate) DelegateFactory.getDelegate(DelegateFactory.PROJECT))
+                        .getProjectManagementService();
+        svc.toggleBrowsableStatus(projectId);
+        return SUCCESS;
     }
 }

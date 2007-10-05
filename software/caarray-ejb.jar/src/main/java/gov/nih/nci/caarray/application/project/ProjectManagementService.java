@@ -82,13 +82,13 @@
  */
 package gov.nih.nci.caarray.application.project;
 
-import java.io.File;
-import java.util.List;
-import java.util.Set;
-
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.Proposal;
+
+import java.io.File;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Provides project access and management functionality to the application. Interface to the
@@ -142,4 +142,12 @@ public interface ProjectManagementService {
      * @return all projects belonging to the user.
      */
     List<Project> getWorkspaceProjects();
+
+    /**
+     * Toggles the browsable status for the given project.
+     *
+     * @param projectId the id of the project
+     * @return the modified project
+     */
+    Project toggleBrowsableStatus(long projectId);
 }

@@ -7,5 +7,10 @@
         <h1>Experiment Workspace</h1>
         <%@ include file="/common/messages.jsp" %>
         <p>You have selected <s:property value="project.experiment.title" />.
+        <p>This project's browsability status: <s:property value="project.browsable"/>.
+        <s:form action="Project_toggle" method="post">
+          <s:hidden name="projectId" value="%{project.id}"/>
+          <s:submit key="button.save"/>
+        </s:form>
     </div>
 </body>

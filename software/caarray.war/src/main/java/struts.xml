@@ -98,6 +98,10 @@
             <result name="success">/pages/projectDetails.jsp</result>
         </action>        
         
+        <action name="Project_toggle" class="gov.nih.nci.caarray.web.action.ManageFilesAction" method="toggle">
+            <result name="success" type="chain">Project_list</result>
+        </action>        
+        
         <action name="File_manage" class="gov.nih.nci.caarray.web.action.ManageFilesAction" method="manage">
             <interceptor-ref name="caArrayParamsPrepareParamsStack" /> 
             <result name="success">/pages/projectFiles.jsp</result>

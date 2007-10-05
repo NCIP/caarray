@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 
 import org.junit.After;
@@ -96,6 +97,7 @@ public class AbstractDaoTest {
     @Before
     public void abstractSetup() {
         UsernameHolder.setUser("caarrayadmin");
+        HibernateUtil.enableFilters(false);
     }
 
 
