@@ -9,5 +9,5 @@
     <div id="caarraylogo"><a href="./"><img src="<%= request.getContextPath() %>/images/logo_caarray.gif" width="172" height="46" alt="Logo: caArray - Array Data Management System" /></a></div>
 </div>
 <div id="infobar">
-    <div id="rightinfo"> <span title="Subsersion URL: <c:out value='${initParam["svnUrl"]}'/>, revision: <c:out value='${initParam["svnRevision"]}'/>">caArray <c:out value='${initParam["caarrayVersion"]}'/></span> |  Node: <span>NCICB</span></div>
+    <div id="rightinfo"> <span title="Subsersion URL: <c:out value='${initParam["svnUrl"]}'/>, revision: <c:out value='${initParam["svnRevision"]}'/>">caArray <c:out value='${initParam["caarrayVersion"]}'/></span> |  Node: <span>NCICB</span> | <a href="Logout.action"><span>Logout</span></a></div>
 </div>

@@ -79,6 +79,10 @@
         <global-exception-mappings>
             <exception-mapping result="error" exception="java.lang.Throwable"/>
         </global-exception-mappings>
+        
+        <action name="Logout" class="gov.nih.nci.caarray.web.action.LogoutAction"> 
+            <result name="success">/index.jsp</result> 
+        </action>
          
         <action name="Project_list" class="gov.nih.nci.caarray.web.action.ProjectAction" method="list"> 
             <result name="success">/pages/projectList.jsp</result> 
