@@ -88,9 +88,14 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Blob;
+import java.sql.SQLException;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -106,6 +111,7 @@ import javax.persistence.Transient;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 
@@ -122,7 +128,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     private String status = FileStatus.UPLOADED.name();
     private Project project;
     private FileValidationResult validationResult;
-    private byte[] contents;
+    private Blob contents;
 
     /**
      * Gets the name.
@@ -274,13 +280,26 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     }
 
     /**
-     * Writes the contents of a stream to the storage for this file's contents.
+     * Writes the contents of a stream to the storage for this file's contents. Note that the
+     * contents may only be set once (i.e. no overwrites are allowed).
      *
      * @param inputStream read the file contents from this input stream.
      * @throws IOException if there is a problem writing the contents.
      */
     public void writeContents(InputStream inputStream) throws IOException {
-        setContents(IOUtils.toByteArray(inputStream));
+        byte[] fileBytes = IOUtils.toByteArray(inputStream);
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(fileBytes);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+        IOUtils.copy(byteArrayInputStream, gzipOutputStream);
+        IOUtils.closeQuietly(gzipOutputStream);
+        IOUtils.closeQuietly(byteArrayOutputStream);
+        byte[] compressedBytes = byteArrayOutputStream.toByteArray();
+        if (contents == null) {
+            setContents(Hibernate.createBlob(compressedBytes));
+        } else {
+            throw new IllegalStateException("Can't reset the contents of an existing CaArrayFile");
+        }
     }
 
     /**
@@ -290,7 +309,11 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      * @throws IOException if the contents couldn't be accessed.
      */
     public InputStream readContents() throws IOException {
-        return new ByteArrayInputStream(getContents());
+        try {
+            return new GZIPInputStream(getContents().getBinaryStream());
+        } catch (SQLException e) {
+            throw new IllegalStateException("Couldn't access file conteents", e);
+        }
     }
 
     /**
@@ -299,14 +322,14 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     @Basic(fetch = FetchType.LAZY)
     @Column(columnDefinition = "LONGBLOB")
     @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
-    public byte[] getContents() {
+    private Blob getContents() {
         return contents;
     }
 
     /**
      * @param contents the contents to set
      */
-    public void setContents(byte[] contents) {
+    private void setContents(Blob contents) {
         this.contents = contents;
     }
 
