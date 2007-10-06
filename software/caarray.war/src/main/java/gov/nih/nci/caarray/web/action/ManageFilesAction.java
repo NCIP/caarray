@@ -35,15 +35,12 @@ public class ManageFilesAction extends BaseAction implements Preparable {
     private String menu;
 
     private Long fileId;
-    private List<LabelValue> navigationList;
-
     private long projectId;
 
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("PMD")
     public void prepare() throws Exception {
         if (getProject() != null && getProject().getId() != null) {
             setProject(getDelegate().getProjectManagementService().getProject(getProject().getId()));
@@ -56,15 +53,8 @@ public class ManageFilesAction extends BaseAction implements Preparable {
      * @return path String
      * @throws Exception Exception
      */
-    @SuppressWarnings("PMD")
     public String edit() throws Exception {
         setMenu("FileEditLinks");
-
-        navigationList = new ArrayList<LabelValue>();
-        LabelValue manageFiles = new LabelValue("Manage Files",
-                "File_manage.action?project.id=" + getProject().getId());
-        navigationList.add(manageFiles);
-
         return SUCCESS;
     }
 
@@ -87,7 +77,6 @@ public class ManageFilesAction extends BaseAction implements Preparable {
      * @return path String
      * @throws Exception Exception
      */
-    @SuppressWarnings("PMD")
     public String manage() throws Exception {
         setMenu("FileManageLinks");
         return SUCCESS;
@@ -98,15 +87,8 @@ public class ManageFilesAction extends BaseAction implements Preparable {
      * @return String
      * @throws Exception Exception
      */
-    @SuppressWarnings("PMD")
     public String messages() throws Exception {
         setMenu("FileMessagesLinks");
-
-        //remove this too!
-        navigationList = new ArrayList<LabelValue>();
-        LabelValue manageFiles = new LabelValue("Manage Files",
-                "File_manage.action?project.id=" + getProject().getId());
-        navigationList.add(manageFiles);
 
         for (CaArrayFile caArrayFile : getFiles()) {
             if (caArrayFile.getId().compareTo(fileId) == 0) {
@@ -124,7 +106,6 @@ public class ManageFilesAction extends BaseAction implements Preparable {
      * @return String
      * @throws Exception Exception
      */
-    @SuppressWarnings({ "PMD", "unchecked" })
     public String validateFile() throws Exception {
         setMenu("FileManageLinks");
 
@@ -134,7 +115,6 @@ public class ManageFilesAction extends BaseAction implements Preparable {
         if (!fileSet.getFiles().isEmpty()) {
             getDelegate().getFileManagementService().validateFiles(fileSet);
         }
-
         return SUCCESS;
     }
 
@@ -146,7 +126,6 @@ public class ManageFilesAction extends BaseAction implements Preparable {
      * @return String
      * @throws Exception Exception
      */
-    @SuppressWarnings({ "PMD", "unchecked" })
     public String importFile() throws Exception {
         setMenu("FileManageLinks");
 
@@ -156,7 +135,6 @@ public class ManageFilesAction extends BaseAction implements Preparable {
         if (!fileSet.getFiles().isEmpty()) {
             getDelegate().getFileManagementService().importFiles(getProject(), fileSet);
         }
-
         return SUCCESS;
     }
     /**
@@ -167,7 +145,6 @@ public class ManageFilesAction extends BaseAction implements Preparable {
      * @return String
      * @throws Exception Exception
      */
-    @SuppressWarnings({ "PMD", "unchecked" })
     public String removeFile() throws Exception {
         setMenu("FileManageLinks");
 
@@ -179,8 +156,7 @@ public class ManageFilesAction extends BaseAction implements Preparable {
                 getDelegate().getFileAccessService().remove(caArrayFile);
             }
        }
-
-        return SUCCESS;
+       return SUCCESS;
     }
 
     private void addSelectedFiles(CaArrayFileSet fileSet, HttpServletRequest request) {
@@ -299,20 +275,6 @@ public class ManageFilesAction extends BaseAction implements Preparable {
      */
     public void setFile(CaArrayFile file) {
         this.file = file;
-    }
-
-    /**
-     * @return the navigationList
-     */
-    public List<LabelValue> getNavigationList() {
-        return navigationList;
-    }
-
-    /**
-     * @param navigationList the navigationList to set
-     */
-    public void setNavigationList(List<LabelValue> navigationList) {
-        this.navigationList = navigationList;
     }
 
     /**

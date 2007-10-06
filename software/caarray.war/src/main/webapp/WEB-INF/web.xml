@@ -141,6 +141,14 @@
       gov.nih.nci.caarray.web.listener.StartupListener</listener-class>
   </listener>
   <servlet>
+    <servlet-name>velocity</servlet-name>
+    <servlet-class>org.apache.velocity.tools.view.servlet.VelocityViewServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>velocity</servlet-name>
+    <url-pattern>*.vm</url-pattern>
+  </servlet-mapping>
+  <servlet>
     <servlet-name>dwr</servlet-name>
     <servlet-class>uk.ltd.getahead.dwr.DWRServlet</servlet-class>
     <init-param>
