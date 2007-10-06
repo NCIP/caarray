@@ -83,13 +83,14 @@
 package gov.nih.nci.caarray.application.fileaccess;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.domain.SerializationHelperUtility;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -98,6 +99,7 @@ import javax.ejb.Stateless;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -134,7 +136,9 @@ public class FileAccessServiceBean implements FileAccessService {
     private CaArrayFile doAddFile(File file, String filename) {
         CaArrayFile caArrayFile = createCaArrayFile(filename);
         try {
-            caArrayFile.setContents(SerializationHelperUtility.serialize(FileUtils.readFileToByteArray(file)));
+            InputStream inputStream = FileUtils.openInputStream(file);
+            caArrayFile.writeContents(inputStream);
+            IOUtils.closeQuietly(inputStream);
         } catch (IOException e) {
             throw new FileAccessException("File " + file.getAbsolutePath() + " couldn't be written", e);
         }
@@ -173,8 +177,11 @@ public class FileAccessServiceBean implements FileAccessService {
         File tempDir = new File(System.getProperty("java.io.tmpdir"));
         File file = new File(tempDir, caArrayFile.getName());
         try {
-            byte[] contents = (byte[]) SerializationHelperUtility.deserialize(caArrayFile.getContents());
-            FileUtils.writeByteArrayToFile(file, contents);
+            InputStream inputStream = caArrayFile.readContents();
+            OutputStream outputStream = FileUtils.openOutputStream(file);
+            IOUtils.copy(inputStream, outputStream);
+            IOUtils.closeQuietly(inputStream);
+            IOUtils.closeQuietly(outputStream);
         } catch (IOException e) {
             throw new FileAccessException("Couldn't access file contents " + caArrayFile.getName(), e);
         }
