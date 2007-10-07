@@ -36,7 +36,7 @@
                                       value="type" />
                         </td>
                         <td>
-                            <a name="files:<s:property value='%{#status.index}'/>:status" href="File_messages.action?fileId=<s:property value='id'/>&project.id=<s:property value='project.id'/>">
+                            <a name="files:<s:property value='%{#status.index}'/>:status" href="File_messages.action?file.id=<s:property value='id'/>&project.id=<s:property value='project.id'/>">
                                 <s:property value="status"/>
                             </a>
                         </td>

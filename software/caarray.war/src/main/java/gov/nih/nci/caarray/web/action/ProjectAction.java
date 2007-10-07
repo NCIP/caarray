@@ -17,9 +17,9 @@ public class ProjectAction extends BaseAction {
 
     private static final long serialVersionUID = 1L;
 
-    private List<Project> projects;
-    private Proposal proposal;
-    private String menu;
+    private List<Project> projects = new ArrayList<Project>();
+    private Proposal proposal = Proposal.createNew();
+    private String menu = null;
 
     /**
      * create new project.

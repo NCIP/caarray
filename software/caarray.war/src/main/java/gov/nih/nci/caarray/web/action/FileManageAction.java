@@ -37,8 +37,6 @@ public class FileManageAction extends BaseAction implements Preparable {
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<String> uploadContentTypes = new ArrayList<String>();
 
-    private Long fileId;
-
     /**
      * {@inheritDoc}
      */
@@ -89,7 +87,7 @@ public class FileManageAction extends BaseAction implements Preparable {
         setMenu("FileMessagesLinks");
 
         for (CaArrayFile caArrayFile : getFiles()) {
-            if (caArrayFile.getId().compareTo(fileId) == 0) {
+            if (caArrayFile.getId().compareTo(getFile().getId()) == 0) {
                 setFile(caArrayFile);
             }
         }
@@ -242,20 +240,6 @@ public class FileManageAction extends BaseAction implements Preparable {
      */
     public void setProject(Project project) {
         this.project = project;
-    }
-
-    /**
-     * @return the id
-     */
-    public Long getFileId() {
-        return fileId;
-    }
-
-    /**
-     * @param fileId the fileId to set
-     */
-    public void setFileId(Long fileId) {
-        this.fileId = fileId;
     }
 
     /**
