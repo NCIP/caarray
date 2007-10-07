@@ -8,8 +8,10 @@ import gov.nih.nci.caarray.web.delegate.ManageFilesDelegate;
 import gov.nih.nci.caarray.web.util.CacheManager;
 import gov.nih.nci.caarray.web.util.LabelValue;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -24,19 +26,18 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
  *
  */
 @Validation
-public class ManageFilesAction extends BaseAction implements Preparable {
+public class FileManageAction extends BaseAction implements Preparable {
 
     private static final long serialVersionUID = 1L;
-
-    @SuppressWarnings("unused")
-    private List<CaArrayFile> files;
-    private CaArrayFile file;
-    private Project project;
-    private String menu;
+    private String menu = null;
+    private CaArrayFile file = new CaArrayFile();
+    private Project project = Project.createNew();
+    private List<CaArrayFile> files = new ArrayList<CaArrayFile>();
+    private List<File> uploads = new ArrayList<File>();
+    private List<String> uploadFileNames = new ArrayList<String>();
+    private List<String> uploadContentTypes = new ArrayList<String>();
 
     private Long fileId;
-    private long projectId;
-
 
     /**
      * {@inheritDoc}
@@ -65,10 +66,7 @@ public class ManageFilesAction extends BaseAction implements Preparable {
      */
     public String toggle() throws Exception {
         setMenu("FileEditLinks");
-
-        getDelegate().getProjectManagementService().toggleBrowsableStatus(projectId);
-        setProject(getDelegate().getProjectManagementService().getProject(projectId));
-
+        getDelegate().getProjectManagementService().toggleBrowsableStatus(getProject().getId());
         return SUCCESS;
     }
 
@@ -157,6 +155,39 @@ public class ManageFilesAction extends BaseAction implements Preparable {
             }
        }
        return SUCCESS;
+    }
+
+
+    /**
+     * uploads file.
+     * @return String
+     * @throws Exception Exception
+     */
+    public String upload() throws Exception {
+
+        setMenu("FileManageLinks");
+
+        int index = 0;
+        for (Iterator<File> iter = getUpload().iterator(); iter.hasNext();) {
+            File uploadedFile = iter.next();
+            try {
+
+                String fileName = getUploadFileName(index);
+
+                CaArrayFile caArrayFile
+                    = getDelegate().getProjectManagementService().addFile(getProject(), uploadedFile, fileName);
+                files.add(caArrayFile);
+
+            } catch (Exception e) {
+                String msg = "Unable to upload file: " + e.getMessage();
+                LOG.error(msg, e);
+                addActionError(getText("errorUploading"));
+                return INPUT;
+            }
+            index++;
+        } //end for
+
+        return SUCCESS;
     }
 
     private void addSelectedFiles(CaArrayFileSet fileSet, HttpServletRequest request) {
@@ -255,10 +286,18 @@ public class ManageFilesAction extends BaseAction implements Preparable {
         this.files = files;
     }
 
+    /**
+     * @param index
+     * @return CaArrayFile
+     */
     private CaArrayFile getFile(int index) {
         return getFiles().get(index);
     }
 
+    /**
+     * @param indexValue
+     * @return CaArrayFile
+     */
     private CaArrayFile getFile(String indexValue) {
         return getFile(Integer.parseInt(indexValue));
     }
@@ -278,16 +317,69 @@ public class ManageFilesAction extends BaseAction implements Preparable {
     }
 
     /**
-     * @return the projectId
+     * method to get file name by index.
+     * @param index int
+     * @return String file name.
      */
-    public long getProjectId() {
-        return projectId;
+    public String getUploadFileName(int index) {
+        return getUploadFileName().get(index);
     }
 
     /**
-     * @param projectId the projectId to set
+     * overloaded method to go file entry at index.
+     * @param index int
+     * @return String content type.
      */
-    public void setProjectId(long projectId) {
-        this.projectId = projectId;
+    public String getUploadContentType(int index) {
+        return getUploadContentType().get(index);
+    }
+
+    /**
+     * uploaded file.
+     * @return uploads uploaded files
+     */
+    public List<File> getUpload() {
+        return this.uploads;
+    }
+
+    /**
+     * sets file uploads.
+     * @param inUploads List
+     */
+    public void setUpload(List<File> inUploads) {
+        this.uploads = inUploads;
+    }
+
+    /**
+     * returns uploaded file name.
+     * @return uploadFileNames
+     */
+    public List<String> getUploadFileName() {
+        return this.uploadFileNames;
+    }
+
+    /**
+     * sets uploaded file names.
+     * @param inUploadFileNames List
+     */
+    public void setUploadFileName(List<String> inUploadFileNames) {
+        this.uploadFileNames = inUploadFileNames;
+    }
+
+    /**
+     * returns uploaded content type.
+     * @return uploadContentTypes
+     */
+    public List<String> getUploadContentType() {
+        return this.uploadContentTypes;
+    }
+
+    /**
+     * sets upload content type.
+     * @param inContentTypes List
+     */
+    public void setUploadContentType(List<String> inContentTypes) {
+        this.uploadContentTypes = inContentTypes;
     }
 }
+

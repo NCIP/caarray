@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.web;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.file.FileManagementServiceStub;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
@@ -94,7 +92,7 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
-import gov.nih.nci.caarray.web.action.ManageFilesAction;
+import gov.nih.nci.caarray.web.action.FileManageAction;
 
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
@@ -108,7 +106,7 @@ import org.springframework.mock.web.MockHttpSession;
  */
 public class ValidateTest {
 
-    private final ManageFilesAction action = new ManageFilesAction();
+    private final FileManageAction action = new FileManageAction();
     private final ServiceLocatorStub locatorStub = new ServiceLocatorStub();
     private final LocalProjectManagementServiceStub projectServiceStub = new LocalProjectManagementServiceStub();
     private final LocalFileManagementServiceStub fileManagementStub = new LocalFileManagementServiceStub();

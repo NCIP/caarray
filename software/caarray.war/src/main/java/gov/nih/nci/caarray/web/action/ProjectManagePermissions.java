@@ -83,16 +83,17 @@
 package gov.nih.nci.caarray.web.action;
 
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
+import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.web.delegate.DelegateFactory;
 import gov.nih.nci.caarray.web.delegate.ProjectDelegate;
 
 /**
  * Handles toggling browsablity status.
  */
-public class ManageProjectPermissions extends BaseAction {
+public class ProjectManagePermissions extends BaseAction {
 
     private static final long serialVersionUID = 1L;
-    private Long projectId;
+    private Project project = Project.createNew();
 
     /**
      * Toggles the browsability status.
@@ -101,7 +102,21 @@ public class ManageProjectPermissions extends BaseAction {
     public String toggle() {
         ProjectManagementService svc = ((ProjectDelegate) DelegateFactory.getDelegate(DelegateFactory.PROJECT))
                         .getProjectManagementService();
-        svc.toggleBrowsableStatus(projectId);
+        svc.toggleBrowsableStatus(getProject().getId());
         return SUCCESS;
+    }
+
+    /**
+     * @return the project
+     */
+    public Project getProject() {
+        return project;
+    }
+
+    /**
+     * @param project the project to set
+     */
+    public void setProject(Project project) {
+        this.project = project;
     }
 }

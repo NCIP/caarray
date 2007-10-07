@@ -97,21 +97,21 @@
             <result name="success" type="chain">Project_list</result>
         </action>
         
-        <action name="Project_edit" class="gov.nih.nci.caarray.web.action.ManageFilesAction" method="edit">
+        <action name="Project_edit" class="gov.nih.nci.caarray.web.action.FileManageAction" method="edit">
             <interceptor-ref name="caArrayParamsPrepareParamsStack" /> 
             <result name="success">/pages/projectDetails.jsp</result>
         </action>        
         
-        <action name="Project_toggle" class="gov.nih.nci.caarray.web.action.ManageFilesAction" method="toggle">
+        <action name="Project_toggle" class="gov.nih.nci.caarray.web.action.FileManageAction" method="toggle">
             <result name="success" type="chain">Project_list</result>
         </action>        
         
-        <action name="File_manage" class="gov.nih.nci.caarray.web.action.ManageFilesAction" method="manage">
+        <action name="File_manage" class="gov.nih.nci.caarray.web.action.FileManageAction" method="manage">
             <interceptor-ref name="caArrayParamsPrepareParamsStack" /> 
             <result name="success">/pages/projectFiles.jsp</result>
         </action>
         
-        <action name="File_upload" class="gov.nih.nci.caarray.web.action.MultipleFileUploadAction" method="upload">
+        <action name="File_upload" class="gov.nih.nci.caarray.web.action.FileManageAction" method="upload">
             <!-- disabled interceptor b/c not concerned about file type or size. 
             so just added struts.multipart.maxSize to struts.properties to get 
             around apache default size of 2M.
@@ -121,18 +121,18 @@
             <result name="success" type="chain">File_manage</result>
         </action>
         
-        <action name="File_import" class="gov.nih.nci.caarray.web.action.ManageFilesAction">
+        <action name="File_messages" class="gov.nih.nci.caarray.web.action.FileManageAction" method="messages">
+            <interceptor-ref name="caArrayParamsPrepareParamsStack" />
+            <result name="input">/pages/projectFiles.jsp</result>
+            <result name="success">/pages/validationMessages.jsp</result>
+        </action>
+        
+        <action name="File_import" class="gov.nih.nci.caarray.web.action.FileManageAction">
             <interceptor-ref name="caArrayParamsPrepareParamsStack" />
             <result name="input">/pages/projectFiles.jsp</result>
             <result name="success" type="chain">File_manage</result>
         </action>
         
-        <action name="File_messages" class="gov.nih.nci.caarray.web.action.ManageFilesAction" method="messages">
-            <interceptor-ref name="caArrayParamsPrepareParamsStack" />
-            <result name="input">/pages/projectFiles.jsp</result>
-            <result name="success">/pages/validationMessages.jsp</result>
-        </action>
-                
     </package>
 
 </struts>
