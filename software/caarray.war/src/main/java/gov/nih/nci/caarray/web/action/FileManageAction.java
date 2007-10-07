@@ -48,27 +48,6 @@ public class FileManageAction extends BaseAction implements Preparable {
     }
 
     /**
-     * edit files associated with a project.
-     * @return path String
-     * @throws Exception Exception
-     */
-    public String edit() throws Exception {
-        setMenu("FileEditLinks");
-        return SUCCESS;
-    }
-
-    /**
-     * Toggles the browsability status.
-     * @return success
-     * @exception Exception on error
-     */
-    public String toggle() throws Exception {
-        setMenu("FileEditLinks");
-        getDelegate().getProjectManagementService().toggleBrowsableStatus(getProject().getId());
-        return SUCCESS;
-    }
-
-    /**
      * manage files for a project.
      * @return path String
      * @throws Exception Exception
@@ -154,7 +133,6 @@ public class FileManageAction extends BaseAction implements Preparable {
        }
        return SUCCESS;
     }
-
 
     /**
      * uploads file.

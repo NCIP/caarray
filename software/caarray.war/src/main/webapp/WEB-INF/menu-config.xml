@@ -22,7 +22,7 @@
         <Menu name="ProjectSaveLinks" title="project.saveLinks">
             <Item name="ProjectList" title="project.list" url="Project_list.action" />
         </Menu>
-        <Menu name="FileEditLinks" title="file.editLinks">
+        <Menu name="ProjectEditLinks" title="project.editLinks">
             <Item name="ManageFiles" title="file.manage" url="File_manage.action" />
             <Item name="ProjectList" title="project.list" url="Project_list.action" />
         </Menu>

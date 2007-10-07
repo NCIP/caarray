@@ -14,8 +14,8 @@
         <s:elseif test="menu == 'ProjectSaveLinks'">
             <menu:displayMenu name="ProjectSaveLinks" />
         </s:elseif>
-        <s:elseif test="menu == 'FileEditLinks'">
-            <menu:displayMenu name="FileEditLinks" />
+        <s:elseif test="menu == 'ProjectEditLinks'">
+            <menu:displayMenu name="ProjectEditLinks" />
         </s:elseif>
         <s:elseif test="menu == 'FileManageLinks'">
             <menu:displayMenu name="FileManageLinks" />

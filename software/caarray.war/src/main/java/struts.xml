@@ -97,12 +97,12 @@
             <result name="success" type="chain">Project_list</result>
         </action>
         
-        <action name="Project_edit" class="gov.nih.nci.caarray.web.action.FileManageAction" method="edit">
+        <action name="Project_edit" class="gov.nih.nci.caarray.web.action.ProjectAction" method="edit">
             <interceptor-ref name="caArrayParamsPrepareParamsStack" /> 
             <result name="success">/pages/projectDetails.jsp</result>
         </action>        
         
-        <action name="Project_toggle" class="gov.nih.nci.caarray.web.action.FileManageAction" method="toggle">
+        <action name="Project_toggle" class="gov.nih.nci.caarray.web.action.ProjectAction" method="toggle">
             <result name="success" type="chain">Project_list</result>
         </action>        
         
