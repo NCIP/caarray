@@ -96,6 +96,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
+import edu.wustl.catissuecore.domain.Specimen;
+
   /**
 
    */
@@ -107,6 +109,8 @@ public class Sample extends AbstractBioMaterial {
      */
     private static final long serialVersionUID = 1234567890L;
 
+    private Specimen specimen;
+    
 
     /**
      * The sources set.
@@ -171,5 +175,19 @@ public class Sample extends AbstractBioMaterial {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * @return the specimen
+     */
+    public Specimen getSpecimen() {
+        return specimen;
+    }
+
+    /**
+     * @param specimen the specimen to set
+     */
+    public void setSpecimen(Specimen specimen) {
+        this.specimen = specimen;
     }
 }

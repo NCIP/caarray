@@ -96,6 +96,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
+import edu.wustl.catissuecore.domain.MolecularSpecimen;
+
   /**
 
    */
@@ -112,6 +114,7 @@ public class Extract extends AbstractBioMaterial {
      * The samples set.
      */
     private Set<Sample> samples = new HashSet<Sample>();
+    private MolecularSpecimen molecularSpecimen;
 
     /**
      * Gets the samples.
@@ -173,5 +176,19 @@ public class Extract extends AbstractBioMaterial {
         return new ToStringBuilder(this)
             .append("labeledExtracts", labeledExtracts)
             .toString();
+    }
+
+    /**
+     * @return the molecularSpecimen
+     */
+    public MolecularSpecimen getMolecularSpecimen() {
+        return molecularSpecimen;
+    }
+
+    /**
+     * @param molecularSpecimen the molecularSpecimen to set
+     */
+    public void setMolecularSpecimen(MolecularSpecimen molecularSpecimen) {
+        this.molecularSpecimen = molecularSpecimen;
     }
 }
