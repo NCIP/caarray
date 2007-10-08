@@ -95,8 +95,7 @@ import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Example;
 
 import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.PersistentObject;
 
 /**
  * Base DAO implementation for all caArray domain DAOs.
@@ -123,11 +122,11 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * Saves the entity to persistent storage, updating or inserting
      * as necessary.
      *
-     * @param caArrayEntity the entity to save
+     * @param persistentObject the entity to save
      */
-    public void save(AbstractCaArrayObject caArrayEntity) {
+    public void save(PersistentObject persistentObject) {
         try {
-            getCurrentSession().saveOrUpdate(caArrayEntity);
+            getCurrentSession().saveOrUpdate(persistentObject);
         } catch (HibernateException e) {
             getLog().error("Unable to save entity", e);
            throw new DAOException("Unable to save entity", e);
@@ -138,13 +137,13 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * Saves the collection of entities to persistent storage, updating or inserting
      * as necessary.
      *
-     * @param caArrayEntities the entity collection to save
+     * @param persistentObjects the entity collection to save
      */
-    public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) {
+    public void save(Collection<? extends PersistentObject> persistentObjects) {
         try {
-            Iterator<? extends AbstractCaArrayEntity> iterator = caArrayEntities.iterator();
+            Iterator<? extends PersistentObject> iterator = persistentObjects.iterator();
             while (iterator.hasNext()) {
-                AbstractCaArrayObject entity = iterator.next();
+                PersistentObject entity = iterator.next();
                 getCurrentSession().saveOrUpdate(entity);
             }
         } catch (HibernateException he) {
@@ -156,12 +155,12 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     /**
      * Deletes the entity from persistent storage.
      *
-     * @param caArrayEntity the entity to be deleted.
+     * @param persistentObject the entity to be deleted.
      * @if unable to delete the entity.
      */
-    public void remove(AbstractCaArrayObject caArrayEntity) {
+    public void remove(PersistentObject persistentObject) {
         try {
-            getCurrentSession().delete(caArrayEntity);
+            getCurrentSession().delete(persistentObject);
         } catch (HibernateException he) {
             getLog().error("Unable to remove entity", he);
             throw new DAOException("Unable to remove entity", he);
@@ -172,7 +171,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public <T extends AbstractCaArrayObject> List<T> queryEntityByExample(T entityToMatch) {
+    public <T extends PersistentObject> List<T> queryEntityByExample(T entityToMatch) {
         List<T> resultList = new ArrayList<T>();
         List hibernateReturnedEntities = null;
         if (entityToMatch == null) {
@@ -202,7 +201,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public <T extends AbstractCaArrayObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch) {
+    public <T extends PersistentObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch) {
         List<T> resultList = new ArrayList<T>();
         List hibernateReturnedEntities = null;
         if (entityToMatch == null) {

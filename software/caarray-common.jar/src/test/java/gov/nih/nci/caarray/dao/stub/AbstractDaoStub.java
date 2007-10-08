@@ -82,13 +82,13 @@
  */
 package gov.nih.nci.caarray.dao.stub;
 
+import gov.nih.nci.caarray.dao.CaArrayDao;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.PersistentObject;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import gov.nih.nci.caarray.dao.CaArrayDao;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
 /**
  * Base class for all dao stubs.
@@ -98,42 +98,42 @@ public class AbstractDaoStub implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
-    public <T extends AbstractCaArrayObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch) {
+    public <T extends PersistentObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch) {
         return new ArrayList<T>();
     }
 
     /**
      * {@inheritDoc}
      */
-    public <T extends AbstractCaArrayObject> List<T> queryEntityByExample(T entityToMatch) {
+    public <T extends PersistentObject> List<T> queryEntityByExample(T entityToMatch) {
         return new ArrayList<T>();
     }
 
     /**
      * {@inheritDoc}
      */
-    public <T extends AbstractCaArrayObject> AbstractCaArrayObject queryEntityById(AbstractCaArrayObject entityToMatch) {
+    public <T extends PersistentObject> AbstractCaArrayObject queryEntityById(AbstractCaArrayObject entityToMatch) {
         return null;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void remove(AbstractCaArrayObject caArrayEntity) {
+    public void remove(PersistentObject caArrayEntity) {
         // no-op
     }
 
     /**
      * {@inheritDoc}
      */
-    public void save(AbstractCaArrayObject caArrayEntity) {
+    public void save(PersistentObject caArrayEntity) {
         // no-op
     }
 
     /**
      * {@inheritDoc}
      */
-    public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) {
+    public void save(Collection<? extends PersistentObject> caArrayEntities) {
         // no-op
     }
 

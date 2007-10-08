@@ -82,11 +82,10 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.PersistentObject;
+
 import java.util.Collection;
 import java.util.List;
-
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
 /**
  * Base interface for all caArray domain DAOs.
@@ -100,24 +99,24 @@ public interface CaArrayDao {
      * Saves the entity to persistent storage, updating or inserting
      * as necessary.
      *
-     * @param caArrayObject the entity to save
+     * @param persistentObject the entity to save
      */
-    void save(AbstractCaArrayObject caArrayObject);
+    void save(PersistentObject persistentObject);
 
     /**
      * Saves the collection of entities to persistent storage, updating or inserting
      * as necessary.
      *
-     * @param caArrayEntities the entity collection to save
+     * @param persistentObjects the entity collection to save
      */
-    void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities);
+    void save(Collection<? extends PersistentObject> persistentObjects);
 
     /**
      * Deletes the entity from persistent storage.
      *
-     * @param caArrayEntity the entity to be deleted.
+     * @param persistentObject the entity to be deleted.
      */
-    void remove(AbstractCaArrayObject caArrayEntity);
+    void remove(PersistentObject persistentObject);
 
     /**
      * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity,
@@ -127,7 +126,7 @@ public interface CaArrayDao {
      * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
      */
-    <T extends AbstractCaArrayObject> List<T> queryEntityByExample(T entityToMatch);
+    <T extends PersistentObject> List<T> queryEntityByExample(T entityToMatch);
 
     /**
      * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity
@@ -137,5 +136,5 @@ public interface CaArrayDao {
      * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
      */
-    <T extends AbstractCaArrayObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch);
+    <T extends PersistentObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch);
 }

@@ -21,7 +21,9 @@
         @HIBERNATE_CONFIG_END@ -->
 
         <!-- mapping files -->        
-		<mapping class="gov.nih.nci.caarray.domain.array.AbstractProbe"/>
+		<mapping class="edu.georgetown.pir.AdditionalOrganismName" />
+        <mapping class="edu.georgetown.pir.Organism" />
+        <mapping class="gov.nih.nci.caarray.domain.array.AbstractProbe"/>
         <mapping class="gov.nih.nci.caarray.domain.array.Array"/>
         <mapping class="gov.nih.nci.caarray.domain.array.ArrayGroup"/>
         <mapping class="gov.nih.nci.caarray.domain.array.ArrayDesign"/>

@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.domain;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -94,7 +92,7 @@ import javax.persistence.MappedSuperclass;
  * Base class for all persistent caArray domain objects.
  */
 @MappedSuperclass
-public abstract class AbstractCaArrayObject implements Serializable {
+public abstract class AbstractCaArrayObject implements PersistentObject {
 
     private static final long serialVersionUID = 2732929116326299995L;
     /**
