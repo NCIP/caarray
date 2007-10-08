@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.domain.data;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.SerializationHelperUtility;
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +95,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -113,7 +112,7 @@ public final class DataSet extends AbstractCaArrayObject {
 
     private List<HybridizationData> hybridizationDatas = new ArrayList<HybridizationData>();
     private List<QuantitationType> quantitationTypes = new ArrayList<QuantitationType>();
-    private String[] designElementLsids;
+    private List<AbstractDesignElement> designElements = new ArrayList<AbstractDesignElement>();
     private byte[] serializedDesignElementLsids;
 
     /**
@@ -158,35 +157,6 @@ public final class DataSet extends AbstractCaArrayObject {
         this.quantitationTypes = quantitationTypes;
     }
 
-    /**
-     * @return the designElementLsids
-     */
-    @Transient
-    @SuppressWarnings("PMD.MethodReturnsInternalArray")
-    public String[] getDesignElementLsids() {
-        if (designElementLsids == null) {
-            deserializeDesignElementLsids();
-        }
-        return designElementLsids;
-    }
-
-    private void deserializeDesignElementLsids() {
-        designElementLsids = (String[]) SerializationHelperUtility.deserialize(getSerializedDesignElementLsids());
-    }
-
-    /**
-     * @param designElementLsids the designElementLsids to set
-     */
-    @SuppressWarnings("PMD.ArrayIsStoredDirectly")
-    public void setDesignElementLsids(String[] designElementLsids) {
-        this.designElementLsids = designElementLsids;
-        serializeDesignElementLsids();
-    }
-
-    private void serializeDesignElementLsids() {
-        serializedDesignElementLsids = SerializationHelperUtility.serialize(designElementLsids);
-    }
-
     @Lob
     @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod", "PMD.MethodReturnsInternalArray" })
     private byte[] getSerializedDesignElementLsids() {
@@ -209,6 +179,30 @@ public final class DataSet extends AbstractCaArrayObject {
         for (HybridizationData hybridizationData : hybridizationDatas) {
             hybridizationData.addColumn(type);
         }
+    }
+
+    /**
+     * @return the designElements
+     */
+    @ManyToMany(fetch = FetchType.EAGER)
+    @IndexColumn(name = "DESIGNELEMENT_INDEX")
+    @JoinTable(
+            name = "DATASET_DESIGNELEMENT",
+            joinColumns = { @JoinColumn(name = "DATASET_ID") },
+            inverseJoinColumns = { @JoinColumn(name = "DESIGNELEMENT_ID") }
+    )
+    @ForeignKey(name = "DSDEDATASET_FK", inverseName = "DSDEDESIGNELEMENT_FK")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    public List<AbstractDesignElement> getDesignElements() {
+        return designElements;
+    }
+
+    /**
+     * @param designElements the designElements to set
+     */
+    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
+    private void setDesignElements(List<AbstractDesignElement> designElements) {
+        this.designElements = designElements;
     }
 
 }

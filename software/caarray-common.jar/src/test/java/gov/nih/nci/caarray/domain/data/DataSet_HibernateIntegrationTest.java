@@ -82,14 +82,24 @@
  */
 package gov.nih.nci.caarray.domain.data;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject_HibernateIntegrationTest;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_HibernateIntegrationTest {
+    
+    private QuantitationType quantitationType;
 
+    @Before
+    public void setUp() {
+        quantitationType = new QuantitationType();
+        quantitationType.setName("name");
+        quantitationType.setTypeClass(String.class);
+    }
+    
     @Test
     @Override
     @SuppressWarnings("PMD")
@@ -100,26 +110,25 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
     @Override
     protected void setValues(AbstractCaArrayObject caArrayObject) {
         DataSet dataSet = (DataSet) caArrayObject;
-        String[] designElementLsids = new String[] {"lsid1", "lsid2", "lsid3"};
-        dataSet.setDesignElementLsids(designElementLsids);
+        dataSet.getQuantitationTypes().add(quantitationType);
     }
 
     @Override
     protected void compareValues(AbstractCaArrayObject caArrayObject, AbstractCaArrayObject retrievedCaArrayObject) {
         DataSet original = (DataSet) caArrayObject;
         DataSet retrieved = (DataSet) retrievedCaArrayObject;
-        assertArrayEquals(original.getDesignElementLsids(), retrieved.getDesignElementLsids());
+        assertEquals(original.getQuantitationTypes().get(0).getName(), retrieved.getQuantitationTypes().get(0).getName());
     }
 
-    @Override
-    protected void setNullableValuesToNull(AbstractCaArrayObject caArrayObject) {
-        DataSet dataSet = (DataSet) caArrayObject;
-        dataSet.setDesignElementLsids(null);
-    }
 
     @Override
     protected AbstractCaArrayObject createTestObject() {
         return new DataSet();
+    }
+
+    @Override
+    protected void setNullableValuesToNull(AbstractCaArrayObject caArrayObject) {
+        // none
     }
 
 }

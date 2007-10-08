@@ -100,6 +100,7 @@ import gov.nih.nci.caarray.domain.file.ArrayType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.cabio.domain.Microarray;
 
 /**
  * The design details for a type of microarray.
@@ -121,6 +122,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     private String version;
     private CaArrayFile designFile;
     private Organization provider;
+    private Microarray microarray;
 
     /**
      * Gets the name.
@@ -379,6 +381,20 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     public void setOrganism(Organism organism) {
         this.organism = organism;
+    }
+
+    /**
+     * @return the microarray
+     */
+    public Microarray getMicroarray() {
+        return microarray;
+    }
+
+    /**
+     * @param microarray the microarray to set
+     */
+    public void setMicroarray(Microarray microarray) {
+        this.microarray = microarray;
     }
 
 }

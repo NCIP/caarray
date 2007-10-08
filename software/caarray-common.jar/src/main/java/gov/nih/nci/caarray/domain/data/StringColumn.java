@@ -80,53 +80,35 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain.array;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+package gov.nih.nci.caarray.domain.data;
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 
 /**
- * Base class for all array design elements.
+ * Contains a column of <code>String</code> values.
  */
 @Entity
-@MappedSuperclass
-public abstract class AbstractDesignElement extends AbstractCaArrayEntity {
+@DiscriminatorValue("STRING")
+public class StringColumn extends AbstractDataColumn {
 
-    private String name;
+    private static final long serialVersionUID = 1L;
 
     /**
-     * @param lsidAuthority lsidAuthority
-     * @param lsidNamespace namespace
-     * @param lsidObjectId object id
+     * @return the values
      */
-    protected AbstractDesignElement(final String lsidAuthority, final String lsidNamespace, final String lsidObjectId) {
-        super(lsidAuthority, lsidNamespace, lsidObjectId);
-        if (lsidAuthority == null || lsidNamespace == null || lsidObjectId == null) {
-            throw new IllegalArgumentException("LSID component was null");
-        }
+    @Transient
+    public String[] getValues() {
+        return (String[]) getValuesAsSerializable();
     }
 
     /**
-     * @deprecated for castor & hibernate use only
+     * @param values the values to set
      */
-    @Deprecated
-    public AbstractDesignElement() {
-        // hibernate constructor
+    public void setValues(String[] values) {
+        setSerializableValues(values);
     }
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
 }
