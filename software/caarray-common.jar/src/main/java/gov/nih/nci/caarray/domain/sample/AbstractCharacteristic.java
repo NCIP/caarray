@@ -83,88 +83,35 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
-import javax.persistence.Column;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
+
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
-
-  /**
-
-   */
+/**
+ * 
+ */
 @Entity
-public class Characteristic extends AbstractCaArrayEntity {
-    private static final long serialVersionUID = 1234567890L;
+@Table(name = "CHARACTERISTIC")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(
+        name = "DISCRIMINATOR",
+        discriminatorType = DiscriminatorType.STRING
+)
+public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
+    private static final long serialVersionUID = 1L;
 
-    private Term term;
-    private String value;
-    private Term unit;
+    private Category category;
     private AbstractBioMaterial bioMaterial;
-
-    /**
-     * Gets the term.
-     *
-     * @return the term
-     */
-    @ManyToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "CHARACTERISTIC_TERM_FK")
-    public Term getTerm() {
-        return term;
-    }
-
-    /**
-     * Sets the term.
-     *
-     * @param termVal the term
-     */
-    public void setTerm(final Term termVal) {
-        this.term = termVal;
-    }
-
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public String getValue() {
-        return value;
-    }
-
-    /**
-     * Sets the value.
-     *
-     * @param valueVal the value
-     */
-    public void setValue(final String valueVal) {
-        this.value = valueVal;
-    }
-
-    /**
-     * Gets the unit.
-     *
-     * @return the unit
-     */
-    @ManyToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "CHARACTERISTIC_UNIT_FK")
-    public Term getUnit() {
-        return unit;
-    }
-
-    /**
-     * Sets the unit.
-     *
-     * @param unitVal the unit
-     */
-    public void setUnit(final Term unitVal) {
-        this.unit = unitVal;
-    }
 
     /**
      * @return the abstractBioMaterial
@@ -188,6 +135,20 @@ public class Characteristic extends AbstractCaArrayEntity {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * @return the category
+     */
+    public Category getCategory() {
+        return category;
+    }
+
+    /**
+     * @param category the category to set
+     */
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }
 

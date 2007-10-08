@@ -121,7 +121,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
     private Term materialType;
     private String name;
     private String description;
-    private Set<Characteristic> characteristics = new HashSet<Characteristic>();
+    private Set<AbstractCharacteristic> characteristics = new HashSet<AbstractCharacteristic>();
     private Set<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
 
     /**
@@ -188,7 +188,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      */
     @OneToMany(mappedBy = "bioMaterial", fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    public Set<Characteristic> getCharacteristics() {
+    public Set<AbstractCharacteristic> getCharacteristics() {
         return characteristics;
     }
 
@@ -198,7 +198,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      * @param characteristicsVal the characteristics
      */
     @SuppressWarnings("unused")
-    private void setCharacteristics(final Set<Characteristic> characteristicsVal) { // NOPMD
+    private void setCharacteristics(final Set<AbstractCharacteristic> characteristicsVal) { // NOPMD
         this.characteristics = characteristicsVal;
     }
 

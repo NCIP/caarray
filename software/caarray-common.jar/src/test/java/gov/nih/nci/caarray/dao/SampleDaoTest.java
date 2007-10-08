@@ -84,11 +84,12 @@ package gov.nih.nci.caarray.dao;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import gov.nih.nci.caarray.domain.sample.Characteristic;
+import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.ValueBasedCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.Collection;
@@ -114,9 +115,7 @@ public class SampleDaoTest  extends AbstractDaoTest {
     private static final Category DUMMY_CATEGORY = new Category();
     private static final Term DUMMY_MATERIAL_TYPE = new Term();
 
-    private static final Term DUMMY_TERM = new Term();
-    private static final Term DUMMY_UNIT = new Term();
-    private static final Characteristic DUMMY_CHARACTERISTIC = new Characteristic();
+    private static final ValueBasedCharacteristic DUMMY_CHARACTERISTIC = new ValueBasedCharacteristic();
 
     // private static final gov.nih.nci.caarray.domain.sample.Source DUMMY_BIOSOURCE_1 = new
     //     gov.nih.nci.caarray.domain.sample.Source();
@@ -143,14 +142,6 @@ public class SampleDaoTest  extends AbstractDaoTest {
         DUMMY_SAMPLE_1.setMaterialType(DUMMY_MATERIAL_TYPE);
 
         DUMMY_CHARACTERISTIC.setValue("Dummy Characteristic");
-        DUMMY_TERM.setValue("Dummy Term");
-        DUMMY_TERM.setSource(DUMMY_SOURCE);
-        DUMMY_TERM.setCategory(DUMMY_CATEGORY);
-        DUMMY_CHARACTERISTIC.setTerm(DUMMY_TERM);
-        DUMMY_UNIT.setValue("Dummy Unit");
-        DUMMY_UNIT.setSource(DUMMY_SOURCE);
-        DUMMY_UNIT.setCategory(DUMMY_CATEGORY);
-        DUMMY_CHARACTERISTIC.setUnit(DUMMY_UNIT);
     }
 
     /**
@@ -195,12 +186,12 @@ public class SampleDaoTest  extends AbstractDaoTest {
         if (!DUMMY_MATERIAL_TYPE.getValue().equals(retrievedMaterialType.getValue())) {
             return false;
         }
-        Collection<Characteristic> characteristics = retrievedSample.getCharacteristics();
+        Collection<AbstractCharacteristic> characteristics = retrievedSample.getCharacteristics();
         if (characteristics.isEmpty() || characteristics.size() != 1) {
             return false;
         }
-        Iterator<Characteristic> i = characteristics.iterator();
-        Characteristic retrievedCharacteristic = i.next();
+        Iterator<AbstractCharacteristic> i = characteristics.iterator();
+        ValueBasedCharacteristic retrievedCharacteristic = (ValueBasedCharacteristic) i.next();
         if (!DUMMY_CHARACTERISTIC.getValue().equals(retrievedCharacteristic.getValue())) {
             return false;
         }
@@ -217,8 +208,6 @@ public class SampleDaoTest  extends AbstractDaoTest {
             DAO_OBJECT.remove(DUMMY_SAMPLE_1);
             DAO_OBJECT.remove(DUMMY_MATERIAL_TYPE);
             DAO_OBJECT.remove(DUMMY_CHARACTERISTIC);
-            DAO_OBJECT.remove(DUMMY_TERM);
-            DAO_OBJECT.remove(DUMMY_UNIT);
             DAO_OBJECT.remove(DUMMY_SOURCE);
             DAO_OBJECT.remove(DUMMY_CATEGORY);
             tx.commit();
