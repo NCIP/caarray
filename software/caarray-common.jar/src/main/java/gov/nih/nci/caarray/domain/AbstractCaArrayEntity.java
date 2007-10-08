@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.domain;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 
 /**
  * Base class for all caArray domain entities.
@@ -203,5 +204,15 @@ public abstract class AbstractCaArrayEntity extends AbstractCaArrayObject {
                 setLsidAuthority(lsidPortions[lsidIndex]);
             }
         }
+    }
+
+    /**
+     * Returns the concatenated the LSID for this entity.
+     *
+     * @return the LSID.
+     */
+    @Transient
+    public String getLsid() {
+        return "URN:LSID:" + getLsidAuthority() + ":" + getLsidNamespace() + ":" + getLsidObjectId();
     }
 }

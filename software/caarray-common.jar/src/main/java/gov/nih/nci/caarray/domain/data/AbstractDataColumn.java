@@ -80,110 +80,89 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+package gov.nih.nci.caarray.domain.data;
+
 import java.io.Serializable;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
 /**
- * Helper utility for reading and writing serialized objects to zipped byte arrays.
+ * Subclasses of <code>AbstractDataColumn</code> contain the actual array data corresponding
+ * to a single <code>QuantitationType</code>.
  */
-public final class SerializationHelperUtility {
+@Entity
+@Table(name = "DATACOLUMN")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(
+        name = "DISCRIMINATOR",
+        discriminatorType = DiscriminatorType.STRING)
+public abstract class AbstractDataColumn extends AbstractCaArrayObject {
 
-    private static final Log LOG = LogFactory.getLog(SerializationHelperUtility.class);
+    private static final long serialVersionUID = 1L;
 
-    private SerializationHelperUtility() {
-        super();
+    private QuantitationType quantitationType;
+    private final Serializer valuesSerializer = new Serializer();
+
+    static AbstractDataColumn create(QuantitationType type) {
+        AbstractDataColumn column = null;
+        if (type.getTypeClass().equals(Boolean.class)) {
+            column = new BooleanColumn();
+        } else if (type.getTypeClass().equals(Float.class)) {
+                column = new FloatColumn();
+        } else if (type.getTypeClass().equals(Integer.class)) {
+            column = new IntegerColumn();
+        } else if (type.getTypeClass().equals(Short.class)) {
+            column = new ShortColumn();
+        } else {
+            throw new IllegalArgumentException("Unsupported data type: " + type.getType());
+        }
+        column.setQuantitationType(type);
+        return column;
     }
 
     /**
-     * Serializes the given object (zipped) to a byte array.
-     *
-     * @param serializable object to serialize
-     * @return the serialized object as a byte array.
+     * @return the quantitationType
      */
-    public static byte[] serialize(Serializable serializable) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        GZIPOutputStream gZipOutputStream = null;
-        ObjectOutputStream objectOutputStream = null;
-        try {
-            gZipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
-            objectOutputStream = new ObjectOutputStream(gZipOutputStream);
-            objectOutputStream.writeObject(serializable);
-            objectOutputStream.flush();
-            gZipOutputStream.flush();
-            byteArrayOutputStream.flush();
-        } catch (IOException e) {
-            LOG.error("Couldn't write object", e);
-            throw new IllegalStateException("Couldn't serialize object", e);
-        } finally {
-            close(objectOutputStream);
-            close(gZipOutputStream);
-            close(byteArrayOutputStream);
-        }
-        return byteArrayOutputStream.toByteArray();
+    public QuantitationType getQuantitationType() {
+        return quantitationType;
     }
 
     /**
-     * Deserializes an object from a zipped serialized representation in a byte array.
-     *
-     * @param bytes the byte array
-     * @return the deserialized object.
+     * @param quantitationType the quantitationType to set
      */
-    public static Serializable deserialize(byte[] bytes) {
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-        GZIPInputStream gzipInputStream = null;
-        ObjectInputStream objectInputStream = null;
-        Serializable object = null;
-        try {
-            gzipInputStream = new GZIPInputStream(byteArrayInputStream);
-            objectInputStream = new ObjectInputStream(gzipInputStream);
-            object = (Serializable) objectInputStream.readObject();
-        } catch (IOException e) {
-            String message = "Couldn't read object";
-            LOG.error(message, e);
-            throw new IllegalStateException(message, e);
-        } catch (ClassNotFoundException e) {
-            String message = "Couldn't read object";
-            LOG.error(message, e);
-            throw new IllegalStateException(message, e);
-        } finally {
-            close(objectInputStream);
-            close(gzipInputStream);
-            close(byteArrayInputStream);
-        }
-        return object;
+    public void setQuantitationType(QuantitationType quantitationType) {
+        this.quantitationType = quantitationType;
     }
-
-    private static void close(InputStream inputStream) {
-        if (inputStream != null) {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                 LOG.error("Couldn't close stream", e);
-            }
-        }
+    
+    @Basic(fetch = FetchType.LAZY)
+    @Column(columnDefinition = "LONGBLOB")
+    byte[] getSerializedValues() {
+        return valuesSerializer.getSerializedValues();
     }
-
-    private static void close(OutputStream outputStream) {
-        if (outputStream != null) {
-            try {
-                outputStream.close();
-            } catch (IOException e) {
-                 LOG.error("Couldn't close stream", e);
-            }
-        }
+    
+    void setSerializedValues(byte[] serializedValues) {
+        valuesSerializer.setSerializedValue(serializedValues);
+    }
+    
+    @Transient
+    Serializable getValuesAsSerializable() {
+        return valuesSerializer.getValue();
+    }
+    
+    void setSerializableValues(Serializable values) {
+        valuesSerializer.setValue(values);
     }
 
 }

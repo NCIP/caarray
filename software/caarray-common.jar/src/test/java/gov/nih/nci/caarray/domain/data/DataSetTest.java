@@ -82,15 +82,12 @@
  */
 package gov.nih.nci.caarray.domain.data;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -114,6 +111,7 @@ public class DataSetTest {
     private Hybridization createHybridization(String name) {
         Hybridization hybridization = new Hybridization();
         hybridization.setName(name);
+        hybridization.setLsidForEntity("authority:namespace:" + name);
         return hybridization;
     }
 
@@ -123,60 +121,11 @@ public class DataSetTest {
         quantitationType.setTypeClass(type);
         return quantitationType;
     }
-
-    @Test
-    public void testGetHybridizations() {
-        DataSet dataSet = new DataSet(hybridizations, quantitationTypes);
-        assertEquals(hybridizations.size(), dataSet.getHybridizations().size());
-        assertEquals(hybridizations.get(0), dataSet.getHybridizations().get(0));
-        assertEquals(hybridizations.get(1), dataSet.getHybridizations().get(1));
-        assertEquals(hybridizations.get(2), dataSet.getHybridizations().get(2));
-        try {
-            dataSet.getHybridizations().add(new Hybridization());
-            fail("List should be unmodifiable");
-        } catch (UnsupportedOperationException e) {
-            // expected
-        }
-    }
-
+    
     @Test
     public void testGetQuantitationTypes() {
-        DataSet dataSet = new DataSet(hybridizations, quantitationTypes);
-        assertEquals(quantitationTypes.size(), dataSet.getQuantitationTypes().size());
-        assertEquals(quantitationTypes.get(0), dataSet.getQuantitationTypes().get(0));
-        assertEquals(quantitationTypes.get(1), dataSet.getQuantitationTypes().get(1));
-        assertEquals(quantitationTypes.get(2), dataSet.getQuantitationTypes().get(2));
-        try {
-            dataSet.getQuantitationTypes().add(new QuantitationType());
-            fail("List should be unmodifiable");
-        } catch (UnsupportedOperationException e) {
-            // expected
-        }
-    }
-
-    @Test
-    public void testAddRow() {
-        DataSet dataSet = new DataSet(hybridizations, quantitationTypes);
-        Feature feature = new Feature("test", "test", "test", new ArrayDesignDetails());
-        DataRow row = dataSet.addRow(feature);
-        assertEquals(feature, row.getDesignElement());
-        assertEquals(hybridizations.size(), row.getHybridizationValues().size());
-        row.setValue(hybridizations.get(0), quantitationTypes.get(0), 12.3);
-        assertEquals(12.3, row.getHybridizationValues().get(0).getValues().get(0).getValue());
-        for (int i = 0; i < hybridizations.size(); i++) {
-            assertEquals(hybridizations.get(i), row.getHybridizationValues().get(i).getHybridization());
-            assertEquals(quantitationTypes.size(), row.getHybridizationValues().get(i).getValues().size());
-            for (int j = 0; j < quantitationTypes.size(); j++) {
-                assertEquals(quantitationTypes.get(j), row.getHybridizationValues().get(i).getValues().get(j).getQuantitationType());
-            }
-        }
-        assertEquals(1, dataSet.getRows().size());
-        try {
-            dataSet.getRows().add(dataSet.getRows().get(0));
-            fail("List should be unmodifiable");
-        } catch (UnsupportedOperationException e) {
-            // expected
-        }
+        DataSet dataSet = new DataSet();
+        assertNotNull(dataSet.getQuantitationTypes());
     }
 
 }

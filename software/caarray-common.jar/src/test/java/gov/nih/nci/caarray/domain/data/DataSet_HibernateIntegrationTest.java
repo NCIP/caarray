@@ -80,110 +80,46 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain;
+package gov.nih.nci.caarray.domain.data;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
+import static org.junit.Assert.assertArrayEquals;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject_HibernateIntegrationTest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
 
-/**
- * Helper utility for reading and writing serialized objects to zipped byte arrays.
- */
-public final class SerializationHelperUtility {
+public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_HibernateIntegrationTest {
 
-    private static final Log LOG = LogFactory.getLog(SerializationHelperUtility.class);
-
-    private SerializationHelperUtility() {
-        super();
+    @Test
+    @Override
+    @SuppressWarnings("PMD")
+    public void testSave() {
+        super.testSave();
     }
 
-    /**
-     * Serializes the given object (zipped) to a byte array.
-     *
-     * @param serializable object to serialize
-     * @return the serialized object as a byte array.
-     */
-    public static byte[] serialize(Serializable serializable) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        GZIPOutputStream gZipOutputStream = null;
-        ObjectOutputStream objectOutputStream = null;
-        try {
-            gZipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
-            objectOutputStream = new ObjectOutputStream(gZipOutputStream);
-            objectOutputStream.writeObject(serializable);
-            objectOutputStream.flush();
-            gZipOutputStream.flush();
-            byteArrayOutputStream.flush();
-        } catch (IOException e) {
-            LOG.error("Couldn't write object", e);
-            throw new IllegalStateException("Couldn't serialize object", e);
-        } finally {
-            close(objectOutputStream);
-            close(gZipOutputStream);
-            close(byteArrayOutputStream);
-        }
-        return byteArrayOutputStream.toByteArray();
+    @Override
+    protected void setValues(AbstractCaArrayObject caArrayObject) {
+        DataSet dataSet = (DataSet) caArrayObject;
+        String[] designElementLsids = new String[] {"lsid1", "lsid2", "lsid3"};
+        dataSet.setDesignElementLsids(designElementLsids);
     }
 
-    /**
-     * Deserializes an object from a zipped serialized representation in a byte array.
-     *
-     * @param bytes the byte array
-     * @return the deserialized object.
-     */
-    public static Serializable deserialize(byte[] bytes) {
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-        GZIPInputStream gzipInputStream = null;
-        ObjectInputStream objectInputStream = null;
-        Serializable object = null;
-        try {
-            gzipInputStream = new GZIPInputStream(byteArrayInputStream);
-            objectInputStream = new ObjectInputStream(gzipInputStream);
-            object = (Serializable) objectInputStream.readObject();
-        } catch (IOException e) {
-            String message = "Couldn't read object";
-            LOG.error(message, e);
-            throw new IllegalStateException(message, e);
-        } catch (ClassNotFoundException e) {
-            String message = "Couldn't read object";
-            LOG.error(message, e);
-            throw new IllegalStateException(message, e);
-        } finally {
-            close(objectInputStream);
-            close(gzipInputStream);
-            close(byteArrayInputStream);
-        }
-        return object;
+    @Override
+    protected void compareValues(AbstractCaArrayObject caArrayObject, AbstractCaArrayObject retrievedCaArrayObject) {
+        DataSet original = (DataSet) caArrayObject;
+        DataSet retrieved = (DataSet) retrievedCaArrayObject;
+        assertArrayEquals(original.getDesignElementLsids(), retrieved.getDesignElementLsids());
     }
 
-    private static void close(InputStream inputStream) {
-        if (inputStream != null) {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                 LOG.error("Couldn't close stream", e);
-            }
-        }
+    @Override
+    protected void setNullableValuesToNull(AbstractCaArrayObject caArrayObject) {
+        DataSet dataSet = (DataSet) caArrayObject;
+        dataSet.setDesignElementLsids(null);
     }
 
-    private static void close(OutputStream outputStream) {
-        if (outputStream != null) {
-            try {
-                outputStream.close();
-            } catch (IOException e) {
-                 LOG.error("Couldn't close stream", e);
-            }
-        }
+    @Override
+    protected AbstractCaArrayObject createTestObject() {
+        return new DataSet();
     }
 
 }

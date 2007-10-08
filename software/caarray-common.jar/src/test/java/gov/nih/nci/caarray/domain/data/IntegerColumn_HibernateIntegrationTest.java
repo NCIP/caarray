@@ -82,84 +82,44 @@
  */
 package gov.nih.nci.caarray.domain.data;
 
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import static org.junit.Assert.assertArrayEquals;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject_HibernateIntegrationTest;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import org.junit.Test;
 
-/**
- * Value holder for all the data values associated with a specific hybridization and design element.
- */
-public final class HybridizationDataValues implements Serializable {
+public class IntegerColumn_HibernateIntegrationTest extends AbstractCaArrayObject_HibernateIntegrationTest {
 
-    private static final long serialVersionUID = 8804648118447372387L;
-    private List<DataValue> values;
-    private DataRow dataRow;
-    private Hybridization hybridization;
-
-    private HybridizationDataValues(DataRow dataRow, Hybridization hybridization) {
-        super();
-        this.dataRow = dataRow;
-        this.hybridization = hybridization;
-        values = initializeValues();
+    @Test
+    @Override
+    @SuppressWarnings("PMD")
+    public void testSave() {
+        super.testSave();
     }
 
-    /**
-     * @deprecated For castor only - do no user otherwise
-     */
-    @Deprecated
-    public HybridizationDataValues() {
-        // do nothing
+    @Override
+    protected void setValues(AbstractCaArrayObject caArrayObject) {
+        IntegerColumn integerColumn = (IntegerColumn) caArrayObject;
+        int[] values = new int[] {1, 2, 3};
+        integerColumn.setValues(values);
     }
 
-    private List<DataValue> initializeValues() {
-        List<DataValue> dataValues = new ArrayList<DataValue>(dataRow.getDataSet().getQuantitationTypes().size());
-        for (int i = 0; i < dataRow.getDataSet().getQuantitationTypes().size(); i++) {
-            QuantitationType quantitationType = dataRow.getDataSet().getQuantitationTypes().get(i);
-            dataValues.add(new DataValue(quantitationType));
-        }
-        return dataValues;
+    @Override
+    protected void compareValues(AbstractCaArrayObject caArrayObject, AbstractCaArrayObject retrievedCaArrayObject) {
+        IntegerColumn original = (IntegerColumn) caArrayObject;
+        IntegerColumn retrieved = (IntegerColumn) retrievedCaArrayObject;
+        assertArrayEquals(original.getValues(), retrieved.getValues());
     }
 
-    static HybridizationDataValues create(DataRow dataRow,
-            Hybridization hybridization) {
-        return new HybridizationDataValues(dataRow, hybridization);
+    @Override
+    protected void setNullableValuesToNull(AbstractCaArrayObject caArrayObject) {
+        IntegerColumn integerColumn = (IntegerColumn) caArrayObject;
+        integerColumn.setValues(null);
     }
 
-    /**
-     * @return the dataRow
-     */
-    public DataRow getRow() {
-        return dataRow;
-    }
-
-    /**
-     * @return the values
-     */
-    public List<DataValue> getValues() {
-        return values;
-    }
-
-    /**
-     * @return the hybridization
-     */
-    public Hybridization getHybridization() {
-        return hybridization;
-    }
-
-    void setValue(QuantitationType type, Object value) {
-        values.get(getRow().getDataSet().indexOf(type)).setValue(value);
-    }
-
-    /**
-     * This operation implemented solely for caDSR compatibility. Clients should not expect this
-     * field to contain a valid, unique ID.
-     *
-     * @return the spurious placeholder value.
-     */
-    public Long getId() {
-        return 0L;
+    @Override
+    protected AbstractCaArrayObject createTestObject() {
+        return new IntegerColumn();
     }
 
 }

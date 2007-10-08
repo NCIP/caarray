@@ -80,62 +80,35 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package gov.nih.nci.caarray.domain.data;
 
-import java.io.Serializable;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 /**
- * Contains a single value from a <code>DataSet</code>.
+ * Contains a column of <code>boolean</code> values.
  */
-public class DataValue implements Serializable {
+@Entity
+@DiscriminatorValue("BOOLEAN")
+public class BooleanColumn extends AbstractDataColumn {
 
-    private static final long serialVersionUID = -8419797315981442733L;
+    private static final long serialVersionUID = 1L;
 
-    private Object value;
-    private QuantitationType type;
-
-    DataValue(QuantitationType type) {
-        super();
-        this.type = type;
+    /**
+     * @return the values
+     */
+    @Transient
+    public boolean[] getValues() {
+        return (boolean[]) getValuesAsSerializable();
     }
 
     /**
-     * @deprecated For castor only - do no user otherwise
+     * @param values the values to set
      */
-    @Deprecated
-    public DataValue() {
-        // do nothing
-    }
-
-    /**
-     * @return the value
-     */
-    public Object getValue() {
-        return value;
-    }
-
-    /**
-     * @param value the value to set
-     */
-    public void setValue(Object value) {
-        this.value = value;
-    }
-
-    /**
-     * @return the type
-     */
-    public QuantitationType getQuantitationType() {
-        return type;
-    }
-
-    /**
-     * This operation implemented solely for caDSR compatibility. Clients should not expect this
-     * field to contain a valid, unique ID.
-     *
-     * @return the spurious placeholder value.
-     */
-    public Long getId() {
-        return 0L;
+    public void setValues(boolean[] values) {
+        setSerializableValues(values);
     }
 
 }

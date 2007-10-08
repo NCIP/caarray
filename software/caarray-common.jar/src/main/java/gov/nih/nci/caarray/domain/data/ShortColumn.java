@@ -80,92 +80,35 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package gov.nih.nci.caarray.domain.data;
 
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 /**
- * Contains the hybridization values associated with a specific design element.
+ * Contains a column of <code>short</code> values.
  */
-public final class DataRow implements Serializable {
+@Entity
+@DiscriminatorValue("SHORT")
+public class ShortColumn extends AbstractDataColumn {
 
-    private static final long serialVersionUID = -3145799076687084262L;
+    private static final long serialVersionUID = 1L;
 
-    private AbstractDesignElement designElement;
-    private DataSet dataSet;
-    private List<HybridizationDataValues> hybridizationValues;
-
-    DataRow(DataSet dataSet, AbstractDesignElement designElement) {
-        super();
-        this.dataSet = dataSet;
-        this.designElement = designElement;
-        hybridizationValues = initializeHybridizationValues();
+    /**
+     * @return the values
+     */
+    @Transient
+    public short[] getValues() {
+        return (short[]) getValuesAsSerializable();
     }
 
     /**
-     * @deprecated For castor only - do no user otherwise
+     * @param values the values to set
      */
-    @Deprecated
-    public DataRow() {
-        // do nothing
-    }
-
-    private List<HybridizationDataValues> initializeHybridizationValues() {
-        List<HybridizationDataValues> values =
-            new ArrayList<HybridizationDataValues>(dataSet.getHybridizations().size());
-        for (Hybridization hybridization : dataSet.getHybridizations()) {
-            values.add(HybridizationDataValues.create(this, hybridization));
-        }
-        return values;
-    }
-
-    /**
-     * @return the designElement
-     */
-    public AbstractDesignElement getDesignElement() {
-        return designElement;
-    }
-
-    /**
-     * @return the dataSet
-     */
-    public DataSet getDataSet() {
-        return dataSet;
-    }
-
-    /**
-     * Set the value for the hybridization and type provided.
-     *
-     * @param hybridization value is associated with this hybridization
-     * @param type value is associate with this type
-     * @param value the value to set.
-     */
-    public void setValue(Hybridization hybridization, QuantitationType type, Object value) {
-        dataSet.checkHybridization(hybridization);
-        dataSet.checkQuantitationType(type);
-        hybridizationValues.get(getDataSet().indexOf(hybridization)).setValue(type, value);
-    }
-
-    /**
-     * @return the hybridizationValues
-     */
-    public List<HybridizationDataValues> getHybridizationValues() {
-        return hybridizationValues;
-    }
-
-    /**
-     * This operation implemented solely for caDSR compatibility. Clients should not expect this
-     * field to contain a valid, unique ID.
-     *
-     * @return the spurious placeholder value.
-     */
-    public Long getId() {
-        return 0L;
+    public void setValues(short[] values) {
+        setSerializableValues(values);
     }
 
 }

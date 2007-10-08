@@ -99,6 +99,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
@@ -121,6 +122,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
     private CaArrayFile dataFile;
     private ArrayDataType type;
     private Set<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
+    private DataSet dataSet;
 
     /**
      * Gets the dataFile.
@@ -197,6 +199,21 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      */
     public void setType(ArrayDataType type) {
         this.type = type;
+    }
+
+    /**
+     * @return the dataSet
+     */
+    @OneToOne
+    public DataSet getDataSet() {
+        return dataSet;
+    }
+
+    /**
+     * @param dataSet the dataSet to set
+     */
+    public void setDataSet(DataSet dataSet) {
+        this.dataSet = dataSet;
     }
 
 }

@@ -82,133 +82,133 @@
  */
 package gov.nih.nci.caarray.domain.data;
 
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.SerializationHelperUtility;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.IndexColumn;
 
 /**
- * Contains hybridization data requested by a client.
+ * Contains hybridization data reprsented by an <code>AbstractArrayData</code> or as requested by a client.
  */
-public final class DataSet implements Serializable {
+@Entity
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
+public final class DataSet extends AbstractCaArrayObject {
 
     private static final long serialVersionUID = 4430513886275629776L;
 
-    private List<Hybridization> hybridizations;
-    private final Map<Hybridization, Integer> hybridizationIndexes = new HashMap<Hybridization, Integer>();
-    private List<QuantitationType> quantitationTypes;
-    private final Map<QuantitationType, Integer> quantitationTypeIndexes = new HashMap<QuantitationType, Integer>();
-    private final List<DataRow> rows = new ArrayList<DataRow>();
+    private List<HybridizationData> hybridizationDatas = new ArrayList<HybridizationData>();
+    private List<QuantitationType> quantitationTypes = new ArrayList<QuantitationType>();
+    private String[] designElementLsids;
+    private byte[] serializedDesignElementLsids;
 
     /**
-     * Instantiates a new <code>DataSet</code> that will contain hybridization data for each
-     * of the quantitation types given.
-     *
-     * @param hybridizations data associated with these specific hybridizations.
-     * @param quantitationTypes data will be provided for each of these quantitationTypes.
+     * @return the hybridizationDatas
      */
-    public DataSet(List<Hybridization> hybridizations, List<QuantitationType> quantitationTypes) {
-        super();
-        this.hybridizations = Collections.unmodifiableList(hybridizations);
-        this.quantitationTypes = Collections.unmodifiableList(quantitationTypes);
-        recordIndexes();
+    @OneToMany(mappedBy = "dataSet", fetch = FetchType.EAGER)
+    @IndexColumn(name = "HYBRIDIZATION_INDEX")
+    @Cascade(CascadeType.SAVE_UPDATE)
+    public List<HybridizationData> getHybridizationDatas() {
+        return hybridizationDatas;
     }
 
     /**
-     * Instantiates a new <code>DataSet</code> that will contain hybridization data for each
-     * of the quantitation types given for a single hybridization.
-     *
-     * @param hybridization data associated with this specific hybridization.
-     * @param quantitationTypes data will be provided for each of these quantitationTypes.
+     * @param hybridizationDatas the hybridizationDatas to set
      */
-    public DataSet(Hybridization hybridization, List<QuantitationType> quantitationTypes) {
-        this(Arrays.asList(new Hybridization[] {hybridization}), quantitationTypes);
-    }
-
-    /**
-     * @deprecated For castor only - do no user otherwise
-     */
-    @Deprecated
-    public DataSet() {
-        // do nothing
-    }
-
-    private void recordIndexes() {
-        for (int index = 0; index < hybridizations.size(); index++) {
-            hybridizationIndexes.put(hybridizations.get(index), index);
-        }
-        for (int index = 0; index < quantitationTypes.size(); index++) {
-            quantitationTypeIndexes.put(quantitationTypes.get(index), index);
-        }
-    }
-
-    /**
-     * @return the rows
-     */
-    public List<DataRow> getRows() {
-        return Collections.unmodifiableList(rows);
-    }
-
-    /**
-     * @return the hybridizations
-     */
-    public List<Hybridization> getHybridizations() {
-        return hybridizations;
+    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
+    private void setHybridizationDatas(List<HybridizationData> hybridizationDatas) {
+        this.hybridizationDatas = hybridizationDatas;
     }
 
     /**
      * @return the quantitationTypes
      */
+    @ManyToMany(fetch = FetchType.EAGER)
+    @IndexColumn(name = "QUANTITATIONTYPE_INDEX")
+    @JoinTable(
+            name = "DATASETQUANTITATIONTYPE",
+            joinColumns = { @JoinColumn(name = "DATASET_ID") },
+            inverseJoinColumns = { @JoinColumn(name = "QUANTITATIONTYPE_ID") }
+    )
+    @ForeignKey(name = "DATASET_FK", inverseName = "QUANTITATIONTYPE_FK")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public List<QuantitationType> getQuantitationTypes() {
         return quantitationTypes;
     }
 
     /**
-     * Creates a new row at the end of the row list.
-     *
-     * @param designElement the design element associated with the row
-     * @return the new row.
+     * @param quantitationTypes the quantitationTypes to set
      */
-    public DataRow addRow(AbstractDesignElement designElement) {
-        DataRow row = new DataRow(this, designElement);
-        rows.add(row);
-        return row;
-    }
-
-    void checkHybridization(Hybridization hybridization) {
-        if (!hybridizationIndexes.containsKey(hybridization)) {
-            throw new IllegalArgumentException("Illegal Hybridization for this DataSet: " + hybridization);
-        }
-    }
-
-    void checkQuantitationType(QuantitationType type) {
-        if (!quantitationTypeIndexes.containsKey(type)) {
-            throw new IllegalArgumentException("Illegal QuantitationType for this DataSet: " + type);
-        }
-    }
-
-    int indexOf(Hybridization hybridization) {
-        return hybridizationIndexes.get(hybridization);
-    }
-
-    int indexOf(QuantitationType type) {
-        return quantitationTypeIndexes.get(type);
+    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
+    private void setQuantitationTypes(List<QuantitationType> quantitationTypes) {
+        this.quantitationTypes = quantitationTypes;
     }
 
     /**
-     * This operation implemented solely for caDSR compatibility. Clients should not expect this
-     * field to contain a valid, unique ID.
-     *
-     * @return the spurious placeholder value.
+     * @return the designElementLsids
      */
-    public Long getId() {
-        return 0L;
+    @Transient
+    @SuppressWarnings("PMD.MethodReturnsInternalArray")
+    public String[] getDesignElementLsids() {
+        if (designElementLsids == null) {
+            deserializeDesignElementLsids();
+        }
+        return designElementLsids;
+    }
+
+    private void deserializeDesignElementLsids() {
+        designElementLsids = (String[]) SerializationHelperUtility.deserialize(getSerializedDesignElementLsids());
+    }
+
+    /**
+     * @param designElementLsids the designElementLsids to set
+     */
+    @SuppressWarnings("PMD.ArrayIsStoredDirectly")
+    public void setDesignElementLsids(String[] designElementLsids) {
+        this.designElementLsids = designElementLsids;
+        serializeDesignElementLsids();
+    }
+
+    private void serializeDesignElementLsids() {
+        serializedDesignElementLsids = SerializationHelperUtility.serialize(designElementLsids);
+    }
+
+    @Lob
+    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod", "PMD.MethodReturnsInternalArray" })
+    private byte[] getSerializedDesignElementLsids() {
+        return serializedDesignElementLsids;
+    }
+
+    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod", "PMD.ArrayIsStoredDirectly" })
+    private void setSerializedDesignElementLsids(byte[] serializedDesignElementLsids) {
+        this.serializedDesignElementLsids = serializedDesignElementLsids;
+    }
+
+    /**
+     * Adds a new type to this <code>DataSet</code>, creating the appropriate columns for all
+     * <code>HybridizationDatas</code>.
+     * 
+     * @param type the type to add.
+     */
+    public void addQuantitationType(QuantitationType type) {
+        quantitationTypes.add(type);
+        for (HybridizationData hybridizationData : hybridizationDatas) {
+            hybridizationData.addColumn(type);
+        }
     }
 
 }

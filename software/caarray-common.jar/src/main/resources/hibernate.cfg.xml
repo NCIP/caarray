@@ -20,8 +20,8 @@
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
         @HIBERNATE_CONFIG_END@ -->
 
-        <!-- mapping files -->
-        <mapping class="gov.nih.nci.caarray.domain.array.AbstractProbe"/>
+        <!-- mapping files -->        
+		<mapping class="gov.nih.nci.caarray.domain.array.AbstractProbe"/>
         <mapping class="gov.nih.nci.caarray.domain.array.Array"/>
         <mapping class="gov.nih.nci.caarray.domain.array.ArrayGroup"/>
         <mapping class="gov.nih.nci.caarray.domain.array.ArrayDesign"/>
@@ -35,8 +35,11 @@
         <mapping class="gov.nih.nci.caarray.domain.contact.Person"/>
         <mapping class="gov.nih.nci.caarray.domain.data.ArrayDataType"/>
         <mapping class="gov.nih.nci.caarray.domain.data.QuantitationType"/>
+        <mapping class="gov.nih.nci.caarray.domain.data.DataSet"/>
         <mapping class="gov.nih.nci.caarray.domain.data.DerivedArrayData"/>
+        <mapping class="gov.nih.nci.caarray.domain.data.HybridizationData"/>
         <mapping class="gov.nih.nci.caarray.domain.data.Image"/>
+        <mapping class="gov.nih.nci.caarray.domain.data.IntegerColumn"/>
         <mapping class="gov.nih.nci.caarray.domain.data.RawArrayData"/>
         <mapping class="gov.nih.nci.caarray.domain.file.CaArrayFile"/>
         <mapping class="gov.nih.nci.caarray.domain.hybridization.Hybridization"/>
