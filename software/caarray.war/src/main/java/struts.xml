@@ -19,57 +19,7 @@
     <!-- Configuration for the default package. -->
     <package name="default" extends="struts-default">
     
-        <interceptors>
-            <interceptor-stack name="caArrayParamsPrepareParamsStack">
-                <interceptor-ref name="exception"/>
-                <interceptor-ref name="alias"/>
-                <interceptor-ref name="params"/>
-                <interceptor-ref name="servletConfig"/>
-                <interceptor-ref name="prepare"/>
-                <interceptor-ref name="i18n"/>
-                <interceptor-ref name="chain"/>
-                <interceptor-ref name="modelDriven"/>
-                <interceptor-ref name="fileUpload"/>
-                <interceptor-ref name="checkbox"/>
-                <interceptor-ref name="staticParams"/>
-                <interceptor-ref name="params"/>
-                <interceptor-ref name="conversionError"/>
-                <interceptor-ref name="validation">
-                    <param name="excludeMethods">input,back,cancel</param>
-                </interceptor-ref>
-                <interceptor-ref name="workflow">
-                    <param name="excludeMethods">input,back,cancel</param>
-                </interceptor-ref>
-            </interceptor-stack>
-          
-            <interceptor-stack name="caArrayDefaultStack">
-                <interceptor-ref name="exception"/>
-                <interceptor-ref name="alias"/>
-                <interceptor-ref name="servletConfig"/>
-                <interceptor-ref name="prepare"/>
-                <interceptor-ref name="i18n"/>
-                <interceptor-ref name="chain"/>
-                <interceptor-ref name="debugging"/>
-                <interceptor-ref name="profiling"/>
-                <interceptor-ref name="scopedModelDriven"/>
-                <interceptor-ref name="modelDriven"/>
-                <interceptor-ref name="fileUpload"/>
-                <interceptor-ref name="checkbox"/>
-                <interceptor-ref name="staticParams"/>
-                <interceptor-ref name="params">
-                  <param name="excludeParams">dojo\..*</param>
-                </interceptor-ref>
-                <interceptor-ref name="conversionError"/>
-                <interceptor-ref name="validation">
-                    <param name="excludeMethods">input,back,cancel,browse</param>
-                </interceptor-ref>
-                <interceptor-ref name="workflow">
-                    <param name="excludeMethods">input,back,cancel,browse</param>
-                </interceptor-ref>
-            </interceptor-stack> 
-        </interceptors>   
-
-        <default-interceptor-ref name="caArrayDefaultStack" />
+        <default-interceptor-ref name="paramsPrepareParamsStack" />
         
         <global-results>
             <result name="error">/error.jsp</result>
@@ -85,6 +35,7 @@
         </action>
          
         <action name="Project_list" class="gov.nih.nci.caarray.web.action.ProjectAction" method="list"> 
+            <interceptor-ref name="basicStack"/>
             <result name="success">/pages/projectList.jsp</result> 
         </action>
         
@@ -94,43 +45,40 @@
         
         <action name="Project_save" class="gov.nih.nci.caarray.web.action.ProjectAction" method="save">
             <result name="input">/pages/newProject.jsp</result> 
-            <result name="success" type="chain">Project_list</result>
+            <result name="success" type="redirect-action">Project_list</result>
         </action>
         
         <action name="Project_edit" class="gov.nih.nci.caarray.web.action.ProjectAction" method="edit">
-            <interceptor-ref name="caArrayParamsPrepareParamsStack" /> 
             <result name="success">/pages/projectDetails.jsp</result>
         </action>        
         
         <action name="Project_toggle" class="gov.nih.nci.caarray.web.action.ProjectAction" method="toggle">
-            <result name="success" type="chain">Project_list</result>
+            <result name="success" type="redirect-action">Project_list</result>
         </action>        
         
         <action name="File_manage" class="gov.nih.nci.caarray.web.action.FileManageAction" method="manage">
-            <interceptor-ref name="caArrayParamsPrepareParamsStack" /> 
             <result name="success">/pages/projectFiles.jsp</result>
         </action>
         
-        <action name="File_upload" class="gov.nih.nci.caarray.web.action.FileManageAction" method="upload">
-            <!-- disabled interceptor b/c not concerned about file type or size. 
-            so just added struts.multipart.maxSize to struts.properties to get 
-            around apache default size of 2M.
-            <interceptor-ref name="caFileUploadStack"/> -->
-            <interceptor-ref name="caArrayParamsPrepareParamsStack" />
-            <result name="input">/pages/projectFiles.jsp</result>
-            <result name="success" type="chain">File_manage</result>
-        </action>
-        
-        <action name="File_messages" class="gov.nih.nci.caarray.web.action.FileManageAction" method="messages">
-            <interceptor-ref name="caArrayParamsPrepareParamsStack" />
+         <action name="File_messages" class="gov.nih.nci.caarray.web.action.FileManageAction" method="messages">
             <result name="input">/pages/projectFiles.jsp</result>
             <result name="success">/pages/validationMessages.jsp</result>
         </action>
         
-        <action name="File_import" class="gov.nih.nci.caarray.web.action.FileManageAction">
-            <interceptor-ref name="caArrayParamsPrepareParamsStack" />
+        <action name="File_upload" class="gov.nih.nci.caarray.web.action.FileManageAction" method="upload">
             <result name="input">/pages/projectFiles.jsp</result>
-            <result name="success" type="chain">File_manage</result>
+            <result name="success" type="redirect-action">
+                <param name="actionName">File_manage</param>
+                <param name="project.id">${project.id}</param>
+            </result>
+        </action>
+         
+        <action name="File_import" class="gov.nih.nci.caarray.web.action.FileManageAction">
+            <result name="input">/pages/projectFiles.jsp</result>
+            <result name="success" type="redirect-action">
+                <param name="actionName">File_manage</param>
+                <param name="project.id">${project.id}</param>
+            </result>
         </action>
         
     </package>
