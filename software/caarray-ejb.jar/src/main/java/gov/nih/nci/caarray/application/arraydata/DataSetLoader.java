@@ -80,70 +80,36 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.fileaccess;
+package gov.nih.nci.caarray.application.arraydata;
 
-import java.io.File;
-import java.util.Set;
-
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.data.DataSet;
 
 /**
- * Provides file storage and retrieval services to the system.
+ * Responsible for ensuring that data columns for a <code>DataSet</code> are loaded. This enables
+ * loading of data on demand.
  */
-public interface FileAccessService {
+final class DataSetLoader {
 
-    /**
-     * The default JNDI name to use to lookup <code>FileAccessService</code>.
-     */
-    String JNDI_NAME = "caarray/FileAccessServiceBean/local";
+    private final DataSet dataSet;
+    private final CaArrayDaoFactory daoFactory;
+    private final ArrayDesignService arrayDesignService;
+    private final FileAccessService fileAccessService;
 
-    /**
-     * Adds a new file to caArray file storage.
-     * 
-     * @param file the file to store
-     * @return the caArray file object.
-     */
-    CaArrayFile add(File file);
+    DataSetLoader(DataSet dataSet, CaArrayDaoFactory daoFactory, ArrayDesignService arrayDesignService, 
+            FileAccessService fileAccessService) {
+        this.dataSet = dataSet;
+        this.daoFactory = daoFactory;
+        this.arrayDesignService = arrayDesignService;
+        this.fileAccessService = fileAccessService;
+    }
+
+    void load() {
+        // implement
+    }
+
     
-    /**
-     * Adds a new file to caArray file storage.
-     * 
-     * @param file the file to store
-     * @param filename the filename for the new CaArrayFile -- may be different from file.getName()
-     * @return the caArray file object.
-     */
-    CaArrayFile add(File file, String filename);
-
-    /**
-     * Returns the underlying <code>java.io.File</code> for the <code>CaArrayFile</code> object provided.
-     * 
-     * @param caArrayFile retrieve contents of this file
-     * @return the file
-     */
-    File getFile(CaArrayFile caArrayFile);
-
-    /**
-     * Clients should call this method to inform the subsystem that this file is no longer needed for reading
-     * after having acquired the file by a call to <code>getFile()</code>.
-     * 
-     * @param file the file to close
-     */
-    void close(File file);
-
-    /**
-     * Returns the underlying <code>java.io.Files</code> for the <code>CaArrayFiles</code> in the set provided.
-     *
-     * @param fileSet get files from this set.
-     * @return the files.
-     */
-    Set<File> getFiles(CaArrayFileSet fileSet);
     
-    /**
-     * Removes a file from caArray file storage.
-     * 
-     * @param caArrayFile the caArrayFile to remove
-     */
-    void remove(CaArrayFile caArrayFile);
-
 }

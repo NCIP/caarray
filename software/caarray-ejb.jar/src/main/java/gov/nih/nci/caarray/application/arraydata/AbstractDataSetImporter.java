@@ -80,70 +80,99 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.fileaccess;
+package gov.nih.nci.caarray.application.arraydata;
 
-import java.io.File;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
+import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 
 /**
- * Provides file storage and retrieval services to the system.
+ * Handles import of array data by creating the associated <code>DataSet</code> and 
+ * <code>AbstractDataColumn</code> instances.
  */
-public interface FileAccessService {
+abstract class AbstractDataSetImporter {
 
-    /**
-     * The default JNDI name to use to lookup <code>FileAccessService</code>.
-     */
-    String JNDI_NAME = "caarray/FileAccessServiceBean/local";
+    private final CaArrayDaoFactory daoFactory;
+    private AbstractDataFileHandler dataFileHandler;
 
-    /**
-     * Adds a new file to caArray file storage.
-     * 
-     * @param file the file to store
-     * @return the caArray file object.
-     */
-    CaArrayFile add(File file);
+    AbstractDataSetImporter(CaArrayDaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
+    }
+
+    void importData() {
+        getArrayData().setDataSet(new DataSet());
+        addHybridizationDatas();
+        addColumns();
+        getArrayData().getDataFile().setFileStatus(FileStatus.IMPORTED);
+    }
+
+    abstract void addHybridizationDatas();
+
+    private void addColumns() {
+        List<QuantitationType> quantitationTypes = getQuantitationTypes();
+        for (QuantitationType type : quantitationTypes) {
+            getDataSet().addQuantitationType(type);
+        }
+    }
+
+    DataSet getDataSet() {
+        return getArrayData().getDataSet();
+    }
     
-    /**
-     * Adds a new file to caArray file storage.
-     * 
-     * @param file the file to store
-     * @param filename the filename for the new CaArrayFile -- may be different from file.getName()
-     * @return the caArray file object.
-     */
-    CaArrayFile add(File file, String filename);
+    QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor) {
+        return getArrayDao().getQuantitationType(descriptor);
+    }
 
-    /**
-     * Returns the underlying <code>java.io.File</code> for the <code>CaArrayFile</code> object provided.
-     * 
-     * @param caArrayFile retrieve contents of this file
-     * @return the file
-     */
-    File getFile(CaArrayFile caArrayFile);
+    private List<QuantitationType> getQuantitationTypes() {
+        List<QuantitationType> quantitationTypes = 
+            new ArrayList<QuantitationType>(AffymetrixCelQuantitationType.values().length);
+        for (QuantitationTypeDescriptor descriptor : getDataFileHandler().getQuantitationTypeDescriptors()) {
+            quantitationTypes.add(getQuantitationType(descriptor));
+        }
+        return quantitationTypes;
+    }
 
-    /**
-     * Clients should call this method to inform the subsystem that this file is no longer needed for reading
-     * after having acquired the file by a call to <code>getFile()</code>.
-     * 
-     * @param file the file to close
-     */
-    void close(File file);
-
-    /**
-     * Returns the underlying <code>java.io.Files</code> for the <code>CaArrayFiles</code> in the set provided.
-     *
-     * @param fileSet get files from this set.
-     * @return the files.
-     */
-    Set<File> getFiles(CaArrayFileSet fileSet);
+    abstract AbstractArrayData getArrayData();
     
-    /**
-     * Removes a file from caArray file storage.
-     * 
-     * @param caArrayFile the caArrayFile to remove
-     */
-    void remove(CaArrayFile caArrayFile);
+    CaArrayFile getDataFile() {
+        return getArrayData().getDataFile();
+    }
+
+    private CaArrayDaoFactory getDaoFactory() {
+        return daoFactory;
+    }
+
+    private ArrayDao getArrayDao() {
+        return getDaoFactory().getArrayDao();
+    }
+
+    static AbstractDataSetImporter create(AbstractArrayData arrayData, CaArrayDaoFactory daoFactory) {
+        if (arrayData == null) {
+            throw new IllegalArgumentException("arrayData was null");
+        }
+        if (arrayData instanceof RawArrayData) {
+            return new RawArrayDataImporter((RawArrayData) arrayData, daoFactory);
+        } else {
+            throw new IllegalArgumentException("Unsupported array data type " 
+                    + arrayData.getClass().getCanonicalName());
+        }
+    }
+
+    AbstractDataFileHandler getDataFileHandler() {
+        if (dataFileHandler == null) {
+            dataFileHandler = ArrayDataHandlerFactory.getInstance().getHandler(getDataFile().getType());
+        }
+        return dataFileHandler;
+    }
 
 }

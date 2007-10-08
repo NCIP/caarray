@@ -82,18 +82,13 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
-import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelHandler;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
@@ -134,25 +129,16 @@ public class ArrayDataServiceBean implements ArrayDataService {
      */
     public DataSet getData(AbstractArrayData arrayData) {
         LogUtil.logSubsystemEntry(LOG, arrayData);
-        DataSet dataSet = getHandler(arrayData.getType()).getData(arrayData);
+        DataSet dataSet = arrayData.getDataSet();
+        loadDataSet(dataSet);
         LogUtil.logSubsystemExit(LOG);
         return dataSet;
     }
-    
-    private ArrayDataHandler getHandler(ArrayDataType arrayDataType) {
-        if (AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL.isEquivalent(arrayDataType)) {
-            return new AffymetrixCelHandler(fileAccessService, arrayDesignService);
-        } else {
-            throw new IllegalArgumentException("Unsupported ArrayDataType: " + arrayDataType);
-        }
-    }
-    
-    private ArrayDataHandler getHandler(FileType type) {
-        if (FileType.AFFYMETRIX_CEL.equals(type)) {
-            return new AffymetrixCelHandler(fileAccessService, arrayDesignService);
-        } else {
-            throw new IllegalArgumentException("Unsupported FileType: " + type);
-        }
+
+    private void loadDataSet(DataSet dataSet) {
+        DataSetLoader loader = 
+            new DataSetLoader(dataSet, getDaoFactory(), getArrayDesignService(), getFileAccessService());
+        loader.load();
     }
 
     /**
@@ -160,7 +146,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
      */
     public DataSet getData(AbstractArrayData arrayData, List<QuantitationType> types) {
         LogUtil.logSubsystemEntry(LOG, arrayData);
-        DataSet dataSet = getHandler(arrayData.getType()).getData(arrayData, types);
+        DataSet dataSet = null;
         LogUtil.logSubsystemExit(LOG);
         return dataSet;
     }
@@ -171,7 +157,8 @@ public class ArrayDataServiceBean implements ArrayDataService {
     public void importData(AbstractArrayData arrayData) throws InvalidDataFileException {
         LogUtil.logSubsystemEntry(LOG, arrayData);
         checkArguments(arrayData);
-        getHandler(arrayData.getType()).importData(arrayData);
+        AbstractDataSetImporter abstractDataSetImporter = AbstractDataSetImporter.create(arrayData, getDaoFactory());
+        abstractDataSetImporter.importData();
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -187,15 +174,10 @@ public class ArrayDataServiceBean implements ArrayDataService {
      * {@inheritDoc}
      */
     public FileValidationResult validate(CaArrayFile arrayDataFile) {
-        FileValidationResult result = getHandler(arrayDataFile.getType()).validate(arrayDataFile);
-        arrayDataFile.setValidationResult(result);
-        if (result.isValid()) {
-            arrayDataFile.setFileStatus(FileStatus.VALIDATED);
-        } else {
-            arrayDataFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
-        }
-        getDaoFactory().getArrayDao().save(arrayDataFile);
-        return result;
+        DataFileValidator dataFileValidator = 
+            new DataFileValidator(arrayDataFile, getDaoFactory(), getFileAccessService());
+        dataFileValidator.validate();
+        return arrayDataFile.getValidationResult();
     }
 
     ArrayDesignService getArrayDesignService() {

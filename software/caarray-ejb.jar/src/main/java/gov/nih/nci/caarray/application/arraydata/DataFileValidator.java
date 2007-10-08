@@ -82,29 +82,54 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import java.io.File;
+
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.validation.FileValidationResult;
 
 /**
- * 
+ * Responsible for validation of arbitrary array data files.
  */
-public abstract class AbstractRawArrayDataHandler extends AbstractArrayDataHandler {
+final class DataFileValidator {
 
-    /**
-     * Base class constructor.
-     * @param fileAccessService used by handler to get file contents
-     * @param arrayDesignService used by handler to get array design details
-     */
-    protected AbstractRawArrayDataHandler(FileAccessService fileAccessService, ArrayDesignService arrayDesignService) {
-        super(fileAccessService, arrayDesignService);
+    private final CaArrayFile arrayDataFile;
+    private final CaArrayDaoFactory daoFactory;
+    private final FileAccessService fileAccessService;
+
+    DataFileValidator(CaArrayFile arrayDataFile, CaArrayDaoFactory daoFactory, FileAccessService fileAccessService) {
+        this.arrayDataFile = arrayDataFile;
+        this.daoFactory = daoFactory;
+        this.fileAccessService = fileAccessService;
     }
 
-    /**
-     * @return the rawArrayData
-     */
-    protected final RawArrayData getRawArrayData() {
-        return (RawArrayData) getArrayData();
+    void validate() {
+        AbstractDataFileHandler handler = 
+            ArrayDataHandlerFactory.getInstance().getHandler(getArrayDataFile().getType());
+        File file = getFileAccessService().getFile(arrayDataFile);
+        FileValidationResult result = handler.validate(arrayDataFile, file);
+        getFileAccessService().close(file);
+        getArrayDataFile().setValidationResult(result);
+        if (result.isValid()) {
+            getArrayDataFile().setFileStatus(FileStatus.VALIDATED);
+        } else {
+            getArrayDataFile().setFileStatus(FileStatus.VALIDATION_ERRORS);
+        }
+        getDaoFactory().getArrayDao().save(arrayDataFile);
+    }
+
+    private CaArrayFile getArrayDataFile() {
+        return arrayDataFile;
+    }
+
+    private CaArrayDaoFactory getDaoFactory() {
+        return daoFactory;
+    }
+
+    private FileAccessService getFileAccessService() {
+        return fileAccessService;
     }
 
 }

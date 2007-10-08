@@ -82,31 +82,20 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.domain.data.DerivedArrayData;
+import java.io.File;
+
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+
 
 /**
- * Common handler base for derived data.
+ * Base class for array data file handlers.
  */
-public abstract class AbstractDerivedArrayDataHandler extends AbstractArrayDataHandler {
+abstract class AbstractDataFileHandler {
 
+    abstract QuantitationTypeDescriptor[] getQuantitationTypeDescriptors();
 
-    /**
-     * Base class constructor.
-     * @param fileAccessService used by handler to get file contents
-     * @param arrayDesignService used by handler to get array design details
-     */
-    protected AbstractDerivedArrayDataHandler(FileAccessService fileAccessService, 
-            ArrayDesignService arrayDesignService) {
-        super(fileAccessService, arrayDesignService);
-    }
-
-    /**
-     * @return the derivedArrayData
-     */
-    protected DerivedArrayData getDerivedArrayData() {
-        return (DerivedArrayData) getArrayData();
-    }
-
+    abstract FileValidationResult validate(CaArrayFile caArrayFile, File file);
+    
 }

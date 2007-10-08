@@ -82,9 +82,7 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
@@ -97,13 +95,13 @@ import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
-import gov.nih.nci.caarray.domain.data.DataRow;
 import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.HybridizationDataValues;
+import gov.nih.nci.caarray.domain.data.FloatColumn;
+import gov.nih.nci.caarray.domain.data.HybridizationData;
+import gov.nih.nci.caarray.domain.data.IntegerColumn;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
@@ -133,7 +131,6 @@ import affymetrix.fusion.cel.FusionCELFileEntryType;
 @SuppressWarnings("PMD")
 public class ArrayDataServiceTest {
 
-
     private ArrayDataService arrayDataService;
     FileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
     LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
@@ -155,30 +152,70 @@ public class ArrayDataServiceTest {
         assertTrue(daoFactoryStub.dataTypeMap.containsKey(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL));
         assertTrue(daoFactoryStub.quantitationTypeMap.keySet().containsAll(Arrays.asList(AffymetrixCelQuantitationType.values())));
     }
-
+    
     @Test
-    public void testAffymetrixCelData() throws InvalidDataFileException {
+    public void testImport() throws InvalidDataFileException {
         RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
-
-        FileValidationResult result = arrayDataService.validate(celData.getDataFile());
-        assertTrue(result.isValid());
-        assertEquals(FileStatus.VALIDATED, celData.getDataFile().getFileStatus());
-
+        assertEquals(FileStatus.UPLOADED, celData.getDataFile().getFileStatus());
+        assertNull(celData.getDataSet());
         arrayDataService.importData(celData);
-        DataSet dataSet = arrayDataService.getData(celData);
-        checkCelValues(celData, dataSet, AffymetrixArrayDataFiles.TEST3_CEL);
-
-        celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CALVIN_CEL);
-        arrayDataService.importData(celData);
-        dataSet = arrayDataService.getData(celData);
-        checkCelValues(celData, dataSet, AffymetrixArrayDataFiles.TEST3_CALVIN_CEL);
+        assertEquals(FileStatus.IMPORTED, celData.getDataFile().getFileStatus());
+        assertNotNull(celData.getDataSet());
+        DataSet dataSet = celData.getDataSet();
+        assertNotNull(dataSet.getHybridizationDatas());
+        assertEquals(1, dataSet.getHybridizationDatas().size());
+        HybridizationData hybridizationData = dataSet.getHybridizationDatas().get(0);
+        assertEquals(celData.getHybridization(), hybridizationData.getHybridization());
+        assertEquals(7, hybridizationData.getColumns().size());
+        assertEquals(7, dataSet.getQuantitationTypes().size());
+        checkCelColumnTypes(dataSet);
+    }
+    
+    @Test
+    public void testValidate() {
+        CaArrayFile celFile = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL);
+        assertEquals(FileStatus.UPLOADED, celFile.getFileStatus());
+        arrayDataService.validate(celFile);
+        assertEquals(FileStatus.VALIDATED, celFile.getFileStatus());
+        CaArrayFile badCelFile = getCelCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF);
+        assertEquals(FileStatus.UPLOADED, badCelFile.getFileStatus());
+        arrayDataService.validate(badCelFile);
+        assertEquals(FileStatus.VALIDATION_ERRORS, badCelFile.getFileStatus());
     }
 
-    private void checkCelValues(RawArrayData celData, DataSet dataSet, File file) {
-        FusionCELData fusionCelData = new FusionCELData();
-        fusionCelData.setFileName(file.getAbsolutePath());
-        fusionCelData.read();
-        ArrayDesignDetails designDetails = getArrayDesignDetails(celData);
+    @Test
+    public void testGetData() throws InvalidDataFileException {
+        RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
+        arrayDataService.importData(celData);
+        DataSet dataSet = arrayDataService.getData(celData);
+        checkCelData(AffymetrixArrayDataFiles.TEST3_CEL, dataSet);
+    }
+
+    private void checkCelData(File celFile, DataSet dataSet) {
+        assertNotNull(dataSet.getHybridizationDatas());
+        assertEquals(1, dataSet.getHybridizationDatas().size());
+        HybridizationData hybridizationData = dataSet.getHybridizationDatas().get(0);
+        assertEquals(7, hybridizationData.getColumns().size());
+        assertEquals(7, dataSet.getQuantitationTypes().size());
+        checkCelColumnTypes(dataSet);
+//        FusionCELData fusionCelData = new FusionCELData();
+//        fusionCelData.setFileName(celFile.getAbsolutePath());
+//        fusionCelData.read();
+//        FusionCELFileEntryType fusionCelEntry = new FusionCELFileEntryType();
+//        for (int rowIndex = 0; rowIndex < fusionCelData.getCells(); rowIndex++) {
+//            fusionCelData.getEntry(rowIndex, fusionCelEntry);
+//            FloatColumn intensityColumn = (FloatColumn) hybridizationData.getColumns().get(2);
+//            assertEquals(fusionCelData.indexToX(rowIndex), dataValues.getValues().get(0).getValue());
+//            assertEquals(fusionCelData.indexToY(rowIndex), dataValues.getValues().get(1).getValue());
+//            assertEquals(fusionCelEntry.getIntensity(), intensityColumn.getValues()[rowIndex]);
+//            assertEquals(fusionCelEntry.getStdv(), dataValues.getValues().get(3).getValue());
+//            assertEquals(fusionCelData.isMasked(rowIndex), dataValues.getValues().get(4).getValue());
+//            assertEquals(fusionCelData.isOutlier(rowIndex), dataValues.getValues().get(5).getValue());
+//            assertEquals(fusionCelEntry.getPixels(), dataValues.getValues().get(6).getValue());
+//        }
+    }
+    
+    private void checkCelColumnTypes(DataSet dataSet) {
         assertTrue(AffymetrixCelQuantitationType.CEL_X.isEquivalent(dataSet.getQuantitationTypes().get(0)));
         assertTrue(AffymetrixCelQuantitationType.CEL_Y.isEquivalent(dataSet.getQuantitationTypes().get(1)));
         assertTrue(AffymetrixCelQuantitationType.CEL_INTENSITY.isEquivalent(dataSet.getQuantitationTypes().get(2)));
@@ -186,27 +223,15 @@ public class ArrayDataServiceTest {
         assertTrue(AffymetrixCelQuantitationType.CEL_MASK.isEquivalent(dataSet.getQuantitationTypes().get(4)));
         assertTrue(AffymetrixCelQuantitationType.CEL_OUTLIER.isEquivalent(dataSet.getQuantitationTypes().get(5)));
         assertTrue(AffymetrixCelQuantitationType.CEL_PIXELS.isEquivalent(dataSet.getQuantitationTypes().get(6)));
-        assertEquals(designDetails.getFeatures().size(), dataSet.getRows().size());
-        FusionCELFileEntryType fusionCelEntry = new FusionCELFileEntryType();
-        for (int rowIndex = 0; rowIndex < designDetails.getFeatures().size(); rowIndex++) {
-            fusionCelData.getEntry(rowIndex, fusionCelEntry);
-            DataRow dataRow = dataSet.getRows().get(rowIndex);
-            Feature feature = (Feature) dataRow.getDesignElement();
-            assertNotNull(feature);
-            assertEquals(fusionCelData.indexToX(rowIndex), feature.getColumn());
-            assertEquals(fusionCelData.indexToY(rowIndex), feature.getRow());
-            assertEquals(1, dataRow.getHybridizationValues().size());
-            HybridizationDataValues dataValues = dataRow.getHybridizationValues().get(0);
-            assertEquals(7, dataValues.getValues().size());
-            assertEquals(fusionCelData.indexToX(rowIndex), dataValues.getValues().get(0).getValue());
-            assertEquals(fusionCelData.indexToY(rowIndex), dataValues.getValues().get(1).getValue());
-            assertEquals(fusionCelEntry.getIntensity(), dataValues.getValues().get(2).getValue());
-            assertEquals(fusionCelEntry.getStdv(), dataValues.getValues().get(3).getValue());
-            assertEquals(fusionCelData.isMasked(rowIndex), dataValues.getValues().get(4).getValue());
-            assertEquals(fusionCelData.isOutlier(rowIndex), dataValues.getValues().get(5).getValue());
-            assertEquals(fusionCelEntry.getPixels(), dataValues.getValues().get(6).getValue());
-        }
-    }
+
+        assertTrue(AffymetrixCelQuantitationType.CEL_X.isEquivalent(dataSet.getHybridizationDatas().get(0).getColumns().get(0).getQuantitationType()));
+        assertTrue(AffymetrixCelQuantitationType.CEL_Y.isEquivalent(dataSet.getHybridizationDatas().get(0).getColumns().get(1).getQuantitationType()));
+        assertTrue(AffymetrixCelQuantitationType.CEL_INTENSITY.isEquivalent(dataSet.getHybridizationDatas().get(0).getColumns().get(2).getQuantitationType()));
+        assertTrue(AffymetrixCelQuantitationType.CEL_INTENSITY_STD_DEV.isEquivalent(dataSet.getHybridizationDatas().get(0).getColumns().get(3).getQuantitationType()));
+        assertTrue(AffymetrixCelQuantitationType.CEL_MASK.isEquivalent(dataSet.getHybridizationDatas().get(0).getColumns().get(4).getQuantitationType()));
+        assertTrue(AffymetrixCelQuantitationType.CEL_OUTLIER.isEquivalent(dataSet.getHybridizationDatas().get(0).getColumns().get(5).getQuantitationType()));
+        assertTrue(AffymetrixCelQuantitationType.CEL_PIXELS.isEquivalent(dataSet.getHybridizationDatas().get(0).getColumns().get(6).getQuantitationType()));
+}
 
     private ArrayDesignDetails getArrayDesignDetails(AbstractArrayData arrayData) {
         ArrayDesign design = ((RawArrayData) arrayData).getHybridization().getArray().getDesign();
@@ -223,13 +248,17 @@ public class ArrayDataServiceTest {
         Hybridization hybridization = new Hybridization();
         hybridization.setArray(array);
         RawArrayData celData = new RawArrayData();
-        CaArrayFile celDataFile = fileAccessServiceStub.add(cel);
-        celDataFile.setType(FileType.AFFYMETRIX_CEL);
-        celData.setDataFile(celDataFile);
+        celData.setDataFile(getCelCaArrayFile(cel));
         celData.setHybridization(hybridization);
         celData.setType(daoFactoryStub.getArrayDao().getArrayDataType(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL));
         hybridization.setArrayData(celData);
         return celData;
+    }
+    
+    private CaArrayFile getCelCaArrayFile(File cel) {
+        CaArrayFile celDataFile = fileAccessServiceStub.add(cel);
+        celDataFile.setType(FileType.AFFYMETRIX_CEL);
+        return celDataFile;
     }
 
     private static final class LocalDaoFactoryStub extends DaoFactoryStub {
@@ -291,7 +320,7 @@ public class ArrayDataServiceTest {
                 return AffymetrixArrayDataFiles.TEST3_CALVIN_CEL;
             } else {
                 throw new IllegalArgumentException("Don't know location of " + caArrayFile.getName());
-            }
+}
         }
     }
 }

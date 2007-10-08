@@ -210,5 +210,12 @@ public class FileAccessServiceBean implements FileAccessService {
         this.daoFactory = daoFactory;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void close(File file) {
+        file.delete();
+    }
+
 
 }

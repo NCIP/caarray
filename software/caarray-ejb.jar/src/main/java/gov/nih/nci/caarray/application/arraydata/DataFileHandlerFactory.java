@@ -80,70 +80,28 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.fileaccess;
+package gov.nih.nci.caarray.application.arraydata;
 
-import java.io.File;
-import java.util.Set;
-
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileType;
 
 /**
- * Provides file storage and retrieval services to the system.
+ * Provides access to an appropriate <code>AbstractDataHandler</code> for a given <code>AbstractArrayData</code> 
+ * instance.
  */
-public interface FileAccessService {
-
-    /**
-     * The default JNDI name to use to lookup <code>FileAccessService</code>.
-     */
-    String JNDI_NAME = "caarray/FileAccessServiceBean/local";
-
-    /**
-     * Adds a new file to caArray file storage.
-     * 
-     * @param file the file to store
-     * @return the caArray file object.
-     */
-    CaArrayFile add(File file);
+final class DataFileHandlerFactory {
     
-    /**
-     * Adds a new file to caArray file storage.
-     * 
-     * @param file the file to store
-     * @param filename the filename for the new CaArrayFile -- may be different from file.getName()
-     * @return the caArray file object.
-     */
-    CaArrayFile add(File file, String filename);
+    private static final DataFileHandlerFactory INSTANCE = new DataFileHandlerFactory();
 
-    /**
-     * Returns the underlying <code>java.io.File</code> for the <code>CaArrayFile</code> object provided.
-     * 
-     * @param caArrayFile retrieve contents of this file
-     * @return the file
-     */
-    File getFile(CaArrayFile caArrayFile);
+    static DataFileHandlerFactory getInstance() {
+        return INSTANCE;
+    }
 
-    /**
-     * Clients should call this method to inform the subsystem that this file is no longer needed for reading
-     * after having acquired the file by a call to <code>getFile()</code>.
-     * 
-     * @param file the file to close
-     */
-    void close(File file);
-
-    /**
-     * Returns the underlying <code>java.io.Files</code> for the <code>CaArrayFiles</code> in the set provided.
-     *
-     * @param fileSet get files from this set.
-     * @return the files.
-     */
-    Set<File> getFiles(CaArrayFileSet fileSet);
-    
-    /**
-     * Removes a file from caArray file storage.
-     * 
-     * @param caArrayFile the caArrayFile to remove
-     */
-    void remove(CaArrayFile caArrayFile);
+    AbstractDataFileHandler getHandler(FileType type) {
+        if (FileType.AFFYMETRIX_CEL.equals(type)) {
+            return new AffymetrixCelHandler();
+        } else {
+            throw new IllegalArgumentException("Unsupported type " + type);
+        }
+    }
 
 }

@@ -80,70 +80,45 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.fileaccess;
+package gov.nih.nci.caarray.application.arraydata;
 
 import java.io.File;
-import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
+import affymetrix.fusion.cel.FusionCELData;
+
+import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage;
+
 
 /**
- * Provides file storage and retrieval services to the system.
+ * Array data handler for all versions of the Affymetrix CEL file format.
  */
-public interface FileAccessService {
+class AffymetrixCelHandler extends AbstractDataFileHandler {
 
-    /**
-     * The default JNDI name to use to lookup <code>FileAccessService</code>.
-     */
-    String JNDI_NAME = "caarray/FileAccessServiceBean/local";
-
-    /**
-     * Adds a new file to caArray file storage.
-     * 
-     * @param file the file to store
-     * @return the caArray file object.
-     */
-    CaArrayFile add(File file);
+    @Override
+    QuantitationTypeDescriptor[] getQuantitationTypeDescriptors() {
+        return AffymetrixCelQuantitationType.values();
+    }
     
-    /**
-     * Adds a new file to caArray file storage.
-     * 
-     * @param file the file to store
-     * @param filename the filename for the new CaArrayFile -- may be different from file.getName()
-     * @return the caArray file object.
-     */
-    CaArrayFile add(File file, String filename);
+    @Override
+    FileValidationResult validate(CaArrayFile caArrayFile, File file) {
+        FusionCELData celData = new FusionCELData();
+        String celDataFileName;
+        FileValidationResult result = new FileValidationResult(file);
 
-    /**
-     * Returns the underlying <code>java.io.File</code> for the <code>CaArrayFile</code> object provided.
-     * 
-     * @param caArrayFile retrieve contents of this file
-     * @return the file
-     */
-    File getFile(CaArrayFile caArrayFile);
+        celData.setFileName(file.getAbsolutePath());
+        celDataFileName = StringUtils.defaultIfEmpty(celData.getFileName(), "<MISSING FILE NAME>");
 
-    /**
-     * Clients should call this method to inform the subsystem that this file is no longer needed for reading
-     * after having acquired the file by a call to <code>getFile()</code>.
-     * 
-     * @param file the file to close
-     */
-    void close(File file);
-
-    /**
-     * Returns the underlying <code>java.io.Files</code> for the <code>CaArrayFiles</code> in the set provided.
-     *
-     * @param fileSet get files from this set.
-     * @return the files.
-     */
-    Set<File> getFiles(CaArrayFileSet fileSet);
-    
-    /**
-     * Removes a file from caArray file storage.
-     * 
-     * @param caArrayFile the caArrayFile to remove
-     */
-    void remove(CaArrayFile caArrayFile);
+        if (!celData.read()) {
+            result.addMessage(ValidationMessage.Type.ERROR, "Unable to read the CEL file : "
+                    + celDataFileName);
+        }
+        return result;
+    }
 
 }

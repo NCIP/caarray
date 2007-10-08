@@ -118,11 +118,11 @@ public class FileAccessServiceStub implements FileAccessService {
         return caArrayFile;
     }
     
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.application.fileaccess.FileAccessService#remove(gov.nih.nci.caarray.domain.file.CaArrayFile)
-     */
     public void remove(CaArrayFile caArrayFile) {
-        // TODO Auto-generated method stub
-        
+        // do nothing
+    }
+    
+    public void close(File file) {
+        // do nothing
     }
 }
