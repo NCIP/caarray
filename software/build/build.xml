@@ -187,7 +187,7 @@
     </filterset>
 
 	<!-- Tag property to display on front page -->
-	<property name="caarray.version" value="${anthill.build.tag_built}" />
+	<property name="caarray.version" value="${build.tag_built}" />
 	
 	
     <!-- ******************************************************************* -->
