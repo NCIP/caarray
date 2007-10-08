@@ -107,6 +107,7 @@ import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode;
@@ -268,19 +269,17 @@ final class SdrfTranslator extends AbstractTranslator {
         bioMaterial.setDescription(sdrfBiomaterial.getDescription());
         bioMaterial.setMaterialType(getTerm(sdrfBiomaterial.getMaterialType()));
         for (Characteristic sdrfCharacteristic : sdrfBiomaterial.getCharacteristics()) {
-            gov.nih.nci.caarray.domain.sample.Characteristic characteristic =
+            TermBasedCharacteristic characteristic =
                 translateCharacteristic(sdrfCharacteristic);
             bioMaterial.getCharacteristics().add(characteristic);
         }
     }
 
-    private gov.nih.nci.caarray.domain.sample.Characteristic translateCharacteristic(
+    private TermBasedCharacteristic translateCharacteristic(
             Characteristic sdrfCharacteristic) {
-        gov.nih.nci.caarray.domain.sample.Characteristic characteristic =
-            new gov.nih.nci.caarray.domain.sample.Characteristic();
-        characteristic.setValue(sdrfCharacteristic.getValue());
+        TermBasedCharacteristic characteristic =
+            new TermBasedCharacteristic();
         characteristic.setTerm(getTerm(sdrfCharacteristic.getTerm()));
-        characteristic.setUnit(getTerm(sdrfCharacteristic.getUnit()));
         return null;
     }
 
