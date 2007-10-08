@@ -50,17 +50,16 @@
  */
 package gov.nih.nci.caarray.business.vocabulary;
 
+import gov.nih.nci.caarray.dao.DAOException;
+import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
-import gov.nih.nci.caarray.dao.DAOException;
-import gov.nih.nci.caarray.dao.VocabularyDao;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.domain.vocabulary.Category;
 
 /**
  * @author John Pike
@@ -90,14 +89,14 @@ public class VocabularyDaoTestStub implements VocabularyDao {
     /* (non-Javadoc)
      * @see gov.nih.nci.caarray.dao.CaArrayDao#save(gov.nih.nci.caarray.domain.AbstractCaArrayEntity)
      */
-    public void save(AbstractCaArrayObject caArrayEntity) throws DAOException {
+    public void save(PersistentObject caArrayEntity) throws DAOException {
         // no-op
     }
 
     /* (non-Javadoc)
      * @see gov.nih.nci.caarray.dao.CaArrayDao#save(java.util.Collection)
      */
-    public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) throws DAOException {
+    public void save(Collection<? extends PersistentObject> caArrayEntities) throws DAOException {
         // no-op
     }
 
@@ -109,12 +108,12 @@ public class VocabularyDaoTestStub implements VocabularyDao {
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
      * @throws DAOException if the list of matching entities could not be retrieved.
      */
-    public List<AbstractCaArrayObject> queryEntityByExample(AbstractCaArrayObject entityToMatch) throws DAOException {
-        return new ArrayList<AbstractCaArrayObject>();
+    public List<PersistentObject> queryEntityByExample(PersistentObject entityToMatch) throws DAOException {
+        return new ArrayList<PersistentObject>();
     }
 
-    public List<AbstractCaArrayObject> queryEntityAndAssociationsByExample(AbstractCaArrayObject entityToMatch) throws DAOException {
-        return new ArrayList<AbstractCaArrayObject>();
+    public List<PersistentObject> queryEntityAndAssociationsByExample(PersistentObject entityToMatch) throws DAOException {
+        return new ArrayList<PersistentObject>();
     }
 
     /**
@@ -123,7 +122,7 @@ public class VocabularyDaoTestStub implements VocabularyDao {
      * @param caArrayEntity the entity to be deleted.
      * @throws DAOException if unable to delete the entity.
      */
-    public void remove(AbstractCaArrayObject caArrayEntity) throws DAOException {
+    public void remove(PersistentObject caArrayEntity) throws DAOException {
         // no-op
     }
 
@@ -135,7 +134,7 @@ public class VocabularyDaoTestStub implements VocabularyDao {
      * @return the retrieved <code>AbstractCaArrayEntity</code> or null.
      * @throws DAOException if matching entities could not be retrieved.
      */
-    public AbstractCaArrayObject queryEntityById(AbstractCaArrayObject entityToMatch) throws DAOException {
+    public PersistentObject queryEntityById(PersistentObject entityToMatch) throws DAOException {
         return null;
     }
 

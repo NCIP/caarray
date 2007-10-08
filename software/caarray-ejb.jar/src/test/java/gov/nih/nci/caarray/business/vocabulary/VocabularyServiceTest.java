@@ -50,21 +50,19 @@
  */
 package gov.nih.nci.caarray.business.vocabulary;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.dao.stub.AbstractDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.system.applicationservice.ApplicationService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -194,15 +192,15 @@ public class VocabularyServiceTest {
         }
 
         @Override
-        public List<AbstractCaArrayObject> queryEntityByExample(AbstractCaArrayObject entityToMatch) throws DAOException {
-            return new ArrayList<AbstractCaArrayObject>();
+        public List<PersistentObject> queryEntityByExample(PersistentObject entityToMatch) throws DAOException {
+            return new ArrayList<PersistentObject>();
         }
         @Override
-        public List<AbstractCaArrayObject> queryEntityAndAssociationsByExample(AbstractCaArrayObject entityToMatch) throws DAOException {
-            return new ArrayList<AbstractCaArrayObject>();
+        public List<PersistentObject> queryEntityAndAssociationsByExample(PersistentObject entityToMatch) throws DAOException {
+            return new ArrayList<PersistentObject>();
         }
      }
-    public class MockVocabularyDaoForException implements VocabularyDao {
+    public class MockVocabularyDaoForException extends AbstractDaoStub implements VocabularyDao {
 
         public List<Term> getTerms(String categoryName) throws DAOException {
             throw new DAOException("This is a test exception");
@@ -213,22 +211,8 @@ public class VocabularyServiceTest {
         public Category getCategory(String name) throws DAOException {
             throw new DAOException("This is a test exception");
         }
-        public void save(AbstractCaArrayObject caArrayEntity) throws DAOException {
-        }
-        public void save(Collection<? extends AbstractCaArrayEntity> caArrayEntities) throws DAOException {
-        }
-        public <T extends AbstractCaArrayObject> List<T> queryEntityByExample(T entityToMatch) throws DAOException {
-            return new ArrayList<T>();
-        }
-        public <T extends AbstractCaArrayObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch) throws DAOException {
-            return new ArrayList<T>();
-        }
-        public <T extends AbstractCaArrayObject> AbstractCaArrayObject queryEntityById(AbstractCaArrayObject entityToMatch) throws DAOException {
-            return null;
-        }
-        public void remove(AbstractCaArrayObject caArrayEntity) throws DAOException {
-        }
-        public void removeTerms(List<Term> entityList) throws DAOException {
+
+        public void removeTerms(List<Term> termList) {
         }
 
     }

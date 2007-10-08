@@ -91,7 +91,7 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.ProjectDaoStub;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.Proposal;
@@ -185,12 +185,12 @@ public class ProjectManagementServiceTest {
 
     private static class LocalProjectDaoStub extends ProjectDaoStub {
 
-        private final HashMap<Long, AbstractCaArrayObject> savedObjects = new HashMap<Long, AbstractCaArrayObject>();
-        private AbstractCaArrayObject lastSaved;
+        private final HashMap<Long, PersistentObject> savedObjects = new HashMap<Long, PersistentObject>();
+        private PersistentObject lastSaved;
         private String username;
 
         @Override
-        public void save(AbstractCaArrayObject caArrayObject) {
+        public void save(PersistentObject caArrayObject) {
             lastSaved = caArrayObject;
             savedObjects.put(caArrayObject.getId(), caArrayObject);
         }

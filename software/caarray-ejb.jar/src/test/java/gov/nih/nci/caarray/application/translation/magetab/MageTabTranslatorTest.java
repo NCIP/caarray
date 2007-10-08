@@ -91,7 +91,7 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -199,8 +199,8 @@ public class MageTabTranslatorTest {
     private static class LocalVocabularyDaoStub extends VocabularyDaoStub {
 
         @Override
-        public List<AbstractCaArrayObject> queryEntityByExample(AbstractCaArrayObject entityToMatch) {
-            return new ArrayList<AbstractCaArrayObject>();
+        public List<PersistentObject> queryEntityByExample(PersistentObject entityToMatch) {
+            return new ArrayList<PersistentObject>();
         }
 
     }

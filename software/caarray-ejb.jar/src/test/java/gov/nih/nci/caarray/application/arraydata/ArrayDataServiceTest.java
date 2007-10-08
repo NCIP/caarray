@@ -82,7 +82,10 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
@@ -99,9 +102,7 @@ import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.FloatColumn;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
-import gov.nih.nci.caarray.domain.data.IntegerColumn;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
@@ -111,7 +112,6 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
-import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
@@ -121,9 +121,6 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import affymetrix.fusion.cel.FusionCELData;
-import affymetrix.fusion.cel.FusionCELFileEntryType;
 
 /**
  * Tests the ArrayDataService subsystem
