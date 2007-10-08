@@ -76,7 +76,6 @@
         <mapping class="gov.nih.nci.caarray.domain.sample.LabeledExtract"/>
         <mapping class="gov.nih.nci.caarray.domain.sample.Sample"/>
         <mapping class="gov.nih.nci.caarray.domain.sample.Source"/>
-        <mapping class="gov.nih.nci.caarray.domain.sequence.Sequence"/>
         <mapping class="gov.nih.nci.caarray.domain.data.Image"/>
         <mapping class="gov.nih.nci.caarray.domain.data.RawArrayData"/>
         <mapping class="gov.nih.nci.caarray.domain.data.DerivedArrayData"/>
