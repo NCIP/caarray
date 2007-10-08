@@ -31,6 +31,12 @@
    <available file="${jsch.jar.location}" property="jsch.jar.present"/>
    <available file="${antunit.jar.location}" property="antunit.jar.present"/>
 
+    <condition property="correct.ant.version">
+	  <and>
+	    <equals arg1="${ant.version}" arg2="Apache Ant version 1.7.0 compiled on December 13 2006" casesensitive="false"/>
+	  </and>
+	</condition>
+
    	<condition property="no.jsch">
 		<not>
 			<isset property="jsch.jar.present"/>
