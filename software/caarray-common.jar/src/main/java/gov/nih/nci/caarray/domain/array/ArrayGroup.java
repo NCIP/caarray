@@ -83,16 +83,12 @@
 package gov.nih.nci.caarray.domain.array;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.project.Experiment;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-
-import org.hibernate.annotations.ForeignKey;
 
 /**
  * Groupping mechanism for Arrays.
@@ -104,7 +100,6 @@ public class ArrayGroup extends AbstractCaArrayObject {
 
     private String name;
     private Set<Array> arrays = new HashSet<Array>();
-    private Experiment experiment;
 
     /**
      * @return the name of the group
@@ -133,19 +128,4 @@ public class ArrayGroup extends AbstractCaArrayObject {
         this.arrays = arrays;
     }
 
-    /**
-     * @return the associated experiment
-     */
-    @ManyToOne
-    @ForeignKey(name = "ARRAY_GROUP_EXPERIMENT_IDK")
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    /**
-     * @param experiment associated experiment
-     */
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-    }
 }

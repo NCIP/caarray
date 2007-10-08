@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.domain.array;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.OneToOne;
 
 /**
  * Reports on the presence or intensity of a given target probe.
@@ -94,6 +95,8 @@ import javax.persistence.InheritanceType;
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class AbstractProbe extends AbstractDesignElement {
 
+    private AbstractProbeAnnotation annotation;
+    
     AbstractProbe(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
         super(lsidAuthority, lsidNamespace, lsidObjectId);
     }
@@ -104,6 +107,21 @@ public abstract class AbstractProbe extends AbstractDesignElement {
     @Deprecated
     public AbstractProbe() {
         // hibernate-only constructor
+    }
+
+    /**
+     * @return the annotation
+     */
+    @OneToOne
+    public AbstractProbeAnnotation getAnnotation() {
+        return annotation;
+    }
+
+    /**
+     * @param annotation the annotation to set
+     */
+    public void setAnnotation(AbstractProbeAnnotation annotation) {
+        this.annotation = annotation;
     }
 
 }

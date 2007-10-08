@@ -92,6 +92,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
+
+import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.ArrayType;
@@ -115,6 +117,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     private Term substrateType;
     private Term surfaceType;
     private Term technologyType;
+    private Organism organism;
     private String version;
     private CaArrayFile designFile;
     private Organization provider;
@@ -362,6 +365,20 @@ public class ArrayDesign extends AbstractCaArrayEntity {
         } else {
             setType(arrayType.name());
         }
+    }
+
+    /**
+     * @return the organism
+     */
+    public Organism getOrganism() {
+        return organism;
+    }
+
+    /**
+     * @param organism the organism to set
+     */
+    public void setOrganism(Organism organism) {
+        this.organism = organism;
     }
 
 }

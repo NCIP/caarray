@@ -86,7 +86,6 @@ package gov.nih.nci.caarray.domain.project;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.ArrayGroup;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.sample.Extract;
@@ -143,7 +142,6 @@ public class Experiment extends AbstractCaArrayEntity {
     private Set<Sample> samples = new HashSet<Sample>();
     private Set<Extract> extracts = new HashSet<Extract>();
     private Set<LabeledExtract> labeledExtracts = new HashSet<LabeledExtract>();
-    private Set<ArrayGroup> arrayGroups = new HashSet<ArrayGroup>();
     private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
 
     /**
@@ -531,19 +529,6 @@ public class Experiment extends AbstractCaArrayEntity {
     @SuppressWarnings(UNUSED)
     private void setArrays(final Set<Array> arraysVal) {  // NOPMD
         this.arrays = arraysVal;
-    }
-
-    /**
-     * @return array groups
-     */
-    @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.EAGER)
-    public Set<ArrayGroup> getArrayGroups() {
-        return arrayGroups;
-    }
-
-    @SuppressWarnings("unused")
-    private void setArrayGroups(final Set<ArrayGroup> arrayGroups) { // NOPMD
-        this.arrayGroups = arrayGroups;
     }
 
     /**
