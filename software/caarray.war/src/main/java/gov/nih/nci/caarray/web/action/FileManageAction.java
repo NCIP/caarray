@@ -32,7 +32,6 @@ public class FileManageAction extends BaseAction implements Preparable {
     private String menu = null;
     private CaArrayFile file = new CaArrayFile();
     private Project project = Project.createNew();
-    private List<CaArrayFile> files = new ArrayList<CaArrayFile>();
     private List<File> uploads = new ArrayList<File>();
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<String> uploadContentTypes = new ArrayList<String>();
@@ -43,7 +42,6 @@ public class FileManageAction extends BaseAction implements Preparable {
     public void prepare() throws Exception {
         if (getProject() != null && getProject().getId() != null) {
             setProject(getDelegate().getProjectManagementService().getProject(getProject().getId()));
-            loadFileEntries();
         }
     }
 
@@ -65,7 +63,7 @@ public class FileManageAction extends BaseAction implements Preparable {
     public String messages() throws Exception {
         setMenu("FileMessagesLinks");
 
-        for (CaArrayFile caArrayFile : getFiles()) {
+        for (CaArrayFile caArrayFile : getProject().getFilesList()) {
             if (caArrayFile.getId().compareTo(getFile().getId()) == 0) {
                 setFile(caArrayFile);
             }
@@ -149,10 +147,8 @@ public class FileManageAction extends BaseAction implements Preparable {
             try {
 
                 String fileName = getUploadFileName(index);
-
                 CaArrayFile caArrayFile
                     = getDelegate().getProjectManagementService().addFile(getProject(), uploadedFile, fileName);
-                files.add(caArrayFile);
 
             } catch (Exception e) {
                 String msg = "Unable to upload file: " + e.getMessage();
@@ -174,20 +170,10 @@ public class FileManageAction extends BaseAction implements Preparable {
           Pattern p = Pattern.compile(myREGEX);
           String[] items = p.split(name);
           //if pattern is like fileEntries:0:selected we know a checkbox has been selected
-          if (items[0].equalsIgnoreCase("files") && items[2].equalsIgnoreCase("selected")) {
+          if (items[0].equalsIgnoreCase("file") && items[2].equalsIgnoreCase("selected")) {
               String fileIndex = items[1];
               fileSet.add(getFile(fileIndex));
           }
-        }
-    }
-
-    /**
-     * loads the file entries.
-     */
-    private void loadFileEntries() {
-        setFiles(new ArrayList<CaArrayFile>(getProject().getFiles().size()));
-        for (CaArrayFile caArrayFile : getProject().getFilesList()) {
-            files.add(caArrayFile);
         }
     }
 
@@ -235,25 +221,11 @@ public class FileManageAction extends BaseAction implements Preparable {
     }
 
     /**
-     * @return the files
-     */
-    public List<CaArrayFile> getFiles() {
-        return files;
-    }
-
-    /**
-     * @param files the files to set
-     */
-    public void setFiles(List<CaArrayFile> files) {
-        this.files = files;
-    }
-
-    /**
      * @param index
      * @return CaArrayFile
      */
     private CaArrayFile getFile(int index) {
-        return getFiles().get(index);
+        return getProject().getFilesList().get(index);
     }
 
     /**

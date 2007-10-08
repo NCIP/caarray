@@ -8,7 +8,7 @@
         <%@ include file="/common/messages.jsp" %>
         <p>You are managing files for <s:property value="project.experiment.title" />.</p>
 
-        <s:if test='files != null && !files.isEmpty()'>
+        <s:if test='project.files != null && !project.files.isEmpty()'>
             <s:form action="File_import" method="post">
                 <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
                 <table>
@@ -25,18 +25,18 @@
                         <td>File Type</td>
                         <td>Status</td>
                     </tr>
-                    <s:iterator value="files" status="status">
+                    <s:iterator value="project.files" status="status">
                     <tr>
-                        <td><s:checkbox name="files:%{#status.index}:selected" /></td>
+                        <td><s:checkbox name="file:%{#status.index}:selected" /></td>
                         <td><s:property value="name"/></td>
-                        <td><s:select name="files:%{#status.index}:fileType"
+                        <td><s:select name="file:%{#status.index}:fileType"
                                       listKey="label"
                                       listValue="value"
                                       list="fileTypes"
                                       value="type" />
                         </td>
                         <td>
-                            <a name="files:<s:property value='%{#status.index}'/>:status" href="File_messages.action?file.id=<s:property value='id'/>&project.id=<s:property value='project.id'/>">
+                            <a name="file:<s:property value='%{#status.index}'/>:status" href="File_messages.action?file.id=<s:property value='id'/>&project.id=<s:property value='project.id'/>">
                                 <s:property value="status"/>
                             </a>
                         </td>

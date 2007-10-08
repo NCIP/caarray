@@ -16,11 +16,10 @@ import java.util.List;
 public class ProjectAction extends BaseAction {
 
     private static final long serialVersionUID = 1L;
-
+    private String menu = null;
     private Project project = Project.createNew();
     private List<Project> projects = new ArrayList<Project>();
     private Proposal proposal = Proposal.createNew();
-    private String menu = null;
 
     /**
      * create new project.
