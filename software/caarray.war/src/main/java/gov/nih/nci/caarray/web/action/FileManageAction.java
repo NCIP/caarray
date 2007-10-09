@@ -145,11 +145,9 @@ public class FileManageAction extends BaseAction implements Preparable {
         for (Iterator<File> iter = getUpload().iterator(); iter.hasNext();) {
             File uploadedFile = iter.next();
             try {
-
                 String fileName = getUploadFileName(index);
                 CaArrayFile caArrayFile
                     = getDelegate().getProjectManagementService().addFile(getProject(), uploadedFile, fileName);
-
             } catch (Exception e) {
                 String msg = "Unable to upload file: " + e.getMessage();
                 LOG.error(msg, e);
@@ -158,7 +156,6 @@ public class FileManageAction extends BaseAction implements Preparable {
             }
             index++;
         } //end for
-
         return SUCCESS;
     }
 
