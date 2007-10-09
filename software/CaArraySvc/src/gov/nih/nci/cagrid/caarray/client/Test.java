@@ -118,7 +118,7 @@ public class Test {
         e.setDescription("mydescription");
         e.setDateOfExperiment(new Date());
         e.setPublicReleaseDate(new Date());
-        e.setGridIdentifier("mygridid");
+        e.setBigid("mygridid");
 
         Publication publication = new Publication();
         publication.setTitle("title");
@@ -127,11 +127,11 @@ public class Test {
 
         Project p =Project.createNew();
         p.setExperiment(e);
-        p.setGridIdentifier("projectgridid");
+        p.setBigid("projectgridid");
 
         CaArrayFile f = new CaArrayFile();
         f.setFileStatus(FileStatus.IMPORTED);
-        f.setGridIdentifier("filegridid");
+        f.setBigid("filegridid");
         f.setName("zpath");
         f.setType(FileType.AFFYMETRIX_CDF);
         f.setProject(p);
