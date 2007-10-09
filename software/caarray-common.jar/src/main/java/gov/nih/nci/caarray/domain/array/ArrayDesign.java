@@ -123,6 +123,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     private CaArrayFile designFile;
     private Organization provider;
     private Microarray microarray;
+    private ArrayDesignDetails designDetails;
 
     /**
      * Gets the name.
@@ -395,6 +396,20 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     public void setMicroarray(Microarray microarray) {
         this.microarray = microarray;
+    }
+
+    /**
+     * @return the designDetails
+     */
+    public ArrayDesignDetails getDesignDetails() {
+        return designDetails;
+    }
+
+    /**
+     * @param designDetails the designDetails to set
+     */
+    public void setDesignDetails(ArrayDesignDetails designDetails) {
+        this.designDetails = designDetails;
     }
 
 }
