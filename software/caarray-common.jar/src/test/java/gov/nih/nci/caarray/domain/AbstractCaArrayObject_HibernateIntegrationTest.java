@@ -131,13 +131,13 @@ public abstract class AbstractCaArrayObject_HibernateIntegrationTest {
     abstract protected void compareValues(AbstractCaArrayObject caArrayObject, AbstractCaArrayObject retrievedCaArrayObject);
 
     void setCaArrayObjectValues(AbstractCaArrayObject caArrayObject) {
-        caArrayObject.setGridIdentifier(getUniqueStringValue());
+        caArrayObject.setBigid(getUniqueStringValue());
         setValues(caArrayObject);
     }
     void compareCaArrayObjectValues(AbstractCaArrayObject caArrayObject,
             AbstractCaArrayObject retrievedCaArrayObject) {
         assertEquals(caArrayObject.getId(), retrievedCaArrayObject.getId());
-        assertEquals(caArrayObject.getGridIdentifier(), retrievedCaArrayObject.getGridIdentifier());
+        assertEquals(caArrayObject.getBigid(), retrievedCaArrayObject.getBigid());
         compareValues(caArrayObject, retrievedCaArrayObject);
     }
 

@@ -101,7 +101,7 @@ public abstract class AbstractCaArrayObject implements PersistentObject {
     public static final int DEFAULT_STRING_COLUMN_SIZE = 254;
 
     private Long id;
-    private String gridIdentifier;
+    private String bigid;
 
     /**
      * Returns the id.
@@ -183,15 +183,15 @@ public abstract class AbstractCaArrayObject implements PersistentObject {
      * @return the gridIdentifier
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public String getGridIdentifier() {
-        return gridIdentifier;
+    public String getBigid() {
+        return bigid;
     }
 
     /**
      * @param gridIdentifier the gridIdentifier to set
      */
-    public void setGridIdentifier(String gridIdentifier) {
-        this.gridIdentifier = gridIdentifier;
+    public void setBigid(String gridIdentifier) {
+        this.bigid = gridIdentifier;
     }
 
 }
