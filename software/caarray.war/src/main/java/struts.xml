@@ -39,23 +39,19 @@
             <result name="success">/pages/projectList.jsp</result> 
         </action>
         
-        <action name="Project_create" class="gov.nih.nci.caarray.web.action.ProjectAction" method="create"> 
-            <result name="success">/pages/newProject.jsp</result> 
+        <action name="Project_*" class="gov.nih.nci.caarray.web.action.ProjectAction" method="{1}"> 
+            <result name="input">/pages/projectForm.jsp</result>
+            <result name="success" type="redirect-action">Project_list</result> 
         </action>
         
-        <action name="Project_save" class="gov.nih.nci.caarray.web.action.ProjectAction" method="save">
-            <result name="input">/pages/newProject.jsp</result> 
-            <result name="success" type="redirect-action">Project_list</result>
-        </action>
-        
-        <action name="Project_edit" class="gov.nih.nci.caarray.web.action.ProjectAction" method="edit">
+        <action name="Project_details" class="gov.nih.nci.caarray.web.action.ProjectAction" method="details">
             <result name="success">/pages/projectDetails.jsp</result>
         </action>        
         
         <action name="Project_toggle" class="gov.nih.nci.caarray.web.action.ProjectAction" method="toggle">
             <result name="success" type="redirect-action">Project_list</result>
-        </action>        
-        
+        </action>
+                
         <action name="File_manage" class="gov.nih.nci.caarray.web.action.FileManageAction" method="manage">
             <result name="success">/pages/projectFiles.jsp</result>
         </action>
@@ -67,18 +63,12 @@
         
         <action name="File_upload" class="gov.nih.nci.caarray.web.action.FileManageAction" method="upload">
             <result name="input">/pages/projectFiles.jsp</result>
-            <result name="success" type="redirect-action">
-                <param name="actionName">File_manage</param>
-                <param name="project.id">${project.id}</param>
-            </result>
+            <result name="success" type="redirect-action">File_manage?project.id=${project.id}</result>
         </action>
          
         <action name="File_import" class="gov.nih.nci.caarray.web.action.FileManageAction">
             <result name="input">/pages/projectFiles.jsp</result>
-            <result name="success" type="redirect-action">
-                <param name="actionName">File_manage</param>
-                <param name="project.id">${project.id}</param>
-            </result>
+            <result name="success" type="redirect-action">File_manage?project.id=${project.id}</result>
         </action>
         
     </package>

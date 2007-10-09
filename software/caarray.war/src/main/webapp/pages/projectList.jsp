@@ -8,7 +8,7 @@
         <%@ include file="/common/messages.jsp" %>
         <s:set name="projects" value="projects" scope="request"/>
         <display:table name="projects" class="table" requestURI="" id="projectList">
-            <display:column property="experiment.title" title="Experiment Title" escapeXml="true" href="Project_edit.action" paramId="project.id" paramProperty="id" titleKey="project.id"/>
+            <display:column property="experiment.title" title="Experiment Title" escapeXml="true" href="Project_details.action" paramId="project.id" paramProperty="id" titleKey="project.id"/>
         </display:table>
     </div>
     <script type="text/javascript">
