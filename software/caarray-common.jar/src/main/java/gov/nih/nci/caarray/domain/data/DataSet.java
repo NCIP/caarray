@@ -110,7 +110,7 @@ public final class DataSet extends AbstractCaArrayObject {
 
     private static final long serialVersionUID = 4430513886275629776L;
 
-    private List<HybridizationData> hybridizationDatas = new ArrayList<HybridizationData>();
+    private List<HybridizationData> hybridizationDataList = new ArrayList<HybridizationData>();
     private List<QuantitationType> quantitationTypes = new ArrayList<QuantitationType>();
     private List<AbstractDesignElement> designElements = new ArrayList<AbstractDesignElement>();
     private byte[] serializedDesignElementLsids;
@@ -121,16 +121,16 @@ public final class DataSet extends AbstractCaArrayObject {
     @OneToMany(mappedBy = "dataSet", fetch = FetchType.EAGER)
     @IndexColumn(name = "HYBRIDIZATION_INDEX")
     @Cascade(CascadeType.SAVE_UPDATE)
-    public List<HybridizationData> getHybridizationDatas() {
-        return hybridizationDatas;
+    public List<HybridizationData> getHybridizationDataList() {
+        return hybridizationDataList;
     }
 
     /**
      * @param hybridizationDatas the hybridizationDatas to set
      */
     @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
-    private void setHybridizationDatas(List<HybridizationData> hybridizationDatas) {
-        this.hybridizationDatas = hybridizationDatas;
+    private void setHybridizationDataList(List<HybridizationData> hybridizationDatas) {
+        this.hybridizationDataList = hybridizationDatas;
     }
 
     /**
@@ -176,7 +176,7 @@ public final class DataSet extends AbstractCaArrayObject {
      */
     public void addQuantitationType(QuantitationType type) {
         quantitationTypes.add(type);
-        for (HybridizationData hybridizationData : hybridizationDatas) {
+        for (HybridizationData hybridizationData : hybridizationDataList) {
             hybridizationData.addColumn(type);
         }
     }

@@ -126,7 +126,7 @@ public class Hybridization extends AbstractCaArrayEntity {
     private RawArrayData arrayData;
     private Array array;
     private Set<Image> images = new HashSet<Image>();
-    private Set<DerivedArrayData> derivedDatas = new HashSet<DerivedArrayData>();
+    private Set<DerivedArrayData> derivedDataCollection = new HashSet<DerivedArrayData>();
     private ProtocolApplication protocolApplication;
     private Set<LabeledExtract> labeledExtract = new HashSet<LabeledExtract>();
     private Set<FactorValue> factorValues = new HashSet<FactorValue>();
@@ -180,8 +180,8 @@ public class Hybridization extends AbstractCaArrayEntity {
      * @return the derivedDatas
      */
     @ManyToMany(mappedBy = "hybridizations", fetch = FetchType.EAGER)
-    public Set<DerivedArrayData> getDerivedDatas() {
-        return derivedDatas;
+    public Set<DerivedArrayData> getDerivedDataCollection() {
+        return derivedDataCollection;
     }
 
     /**
@@ -191,8 +191,8 @@ public class Hybridization extends AbstractCaArrayEntity {
      *            the derivedDatasVal
      */
     @SuppressWarnings(UNUSED)
-    private void setDerivedDatas(final Set<DerivedArrayData> derivedDatasVal) { // NOPMD
-        this.derivedDatas = derivedDatasVal;
+    private void setDerivedDataCollection(final Set<DerivedArrayData> derivedDatasVal) { // NOPMD
+        this.derivedDataCollection = derivedDatasVal;
     }
 
     /**

@@ -107,7 +107,7 @@ public class DerivedArrayData extends AbstractArrayData {
 
     private static final long serialVersionUID = 1234567890L;
     private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
-    private Set<DerivedArrayData> derivedFromDatas = new HashSet<DerivedArrayData>();
+    private Set<AbstractArrayData> derivedFromArrayDataCollection = new HashSet<AbstractArrayData>();
 
     /**
      * @return the hybridizations
@@ -118,7 +118,7 @@ public class DerivedArrayData extends AbstractArrayData {
             joinColumns = { @javax.persistence.JoinColumn(name = "HYBRIDIZATION_ID") },
             inverseJoinColumns = { @javax.persistence.JoinColumn(name = "DERIVEDARRAYDATA_ID") }
     )
-    @ForeignKey(name = "DERIVEDARRAYDATA_HYBRIDIZATIONS_HYBRIDIZATION_FK", 
+    @ForeignKey(name = "DERIVEDARRAYDATA_HYBRIDIZATIONS_HYBRIDIZATION_FK",
             inverseName = "DERIVEDARRAYDATA_HYBRIDIZATIONS_DERIVEDARRAYDATA_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Hybridization> getHybridizations() {
@@ -145,8 +145,8 @@ public class DerivedArrayData extends AbstractArrayData {
     )
     @ForeignKey(name = "DERIVEDFROM_ARRAYDATA_FK", inverseName = "DERIVEDFROM_DERIVEDARRAYDATA_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    public Set<DerivedArrayData> getDerivedFromArrayDatas() {
-        return derivedFromDatas;
+    public Set<AbstractArrayData> getDerivedFromArrayDataCollection() {
+        return derivedFromArrayDataCollection;
     }
 
     /**
@@ -154,9 +154,9 @@ public class DerivedArrayData extends AbstractArrayData {
      *
      * @param derivedFromDatasVal the derivedFromDatas
      */
-    @SuppressWarnings("unused")
-    private void setDerivedFromArrayDatas(final Set<DerivedArrayData> derivedFromDatasVal) { // NOPMD
-        this.derivedFromDatas = derivedFromDatasVal;
+    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
+    private void setDerivedFromArrayDataCollection(final Set<AbstractArrayData> derivedFromArrayDataCollection) {
+        this.derivedFromArrayDataCollection = derivedFromArrayDataCollection;
     }
 
     /**
