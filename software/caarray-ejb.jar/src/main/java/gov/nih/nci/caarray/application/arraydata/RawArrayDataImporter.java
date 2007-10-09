@@ -108,7 +108,7 @@ class RawArrayDataImporter extends AbstractDataSetImporter {
     void addHybridizationDatas() {
         HybridizationData hybridizationData = new HybridizationData();
         hybridizationData.setHybridization(getRawArrayData().getHybridization());
-        getDataSet().getHybridizationDatas().add(hybridizationData);
+        getDataSet().getHybridizationDataList().add(hybridizationData);
     }
 
     private RawArrayData getRawArrayData() {

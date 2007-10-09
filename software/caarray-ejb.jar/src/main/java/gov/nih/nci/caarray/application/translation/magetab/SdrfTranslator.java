@@ -510,13 +510,13 @@ final class SdrfTranslator extends AbstractTranslator {
                 : sdrfHybridization.getSuccessorDerivedArrayDataFiles()) {
             DerivedArrayData arrayData = (DerivedArrayData) nodeTranslations.get(sdrfArrayData);
             arrayData.getHybridizations().add(hybridization);
-            hybridization.getDerivedDatas().add(arrayData);
+            hybridization.getDerivedDataCollection().add(arrayData);
         }
         for (gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataMatrixFile sdrfArrayData
                 : sdrfHybridization.getSuccessorDerivedArrayDataMatrixFiles()) {
             DerivedArrayData arrayData = (DerivedArrayData) nodeTranslations.get(sdrfArrayData);
             arrayData.getHybridizations().add(hybridization);
-            hybridization.getDerivedDatas().add(arrayData);
+            hybridization.getDerivedDataCollection().add(arrayData);
         }
     }
 

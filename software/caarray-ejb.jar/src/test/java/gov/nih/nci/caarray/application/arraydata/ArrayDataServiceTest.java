@@ -159,9 +159,9 @@ public class ArrayDataServiceTest {
         assertEquals(FileStatus.IMPORTED, celData.getDataFile().getFileStatus());
         assertNotNull(celData.getDataSet());
         DataSet dataSet = celData.getDataSet();
-        assertNotNull(dataSet.getHybridizationDatas());
-        assertEquals(1, dataSet.getHybridizationDatas().size());
-        HybridizationData hybridizationData = dataSet.getHybridizationDatas().get(0);
+        assertNotNull(dataSet.getHybridizationDataList());
+        assertEquals(1, dataSet.getHybridizationDataList().size());
+        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
         assertEquals(celData.getHybridization(), hybridizationData.getHybridization());
         assertEquals(7, hybridizationData.getColumns().size());
         assertEquals(7, dataSet.getQuantitationTypes().size());
@@ -189,9 +189,9 @@ public class ArrayDataServiceTest {
     }
 
     private void checkCelData(File celFile, DataSet dataSet) {
-        assertNotNull(dataSet.getHybridizationDatas());
-        assertEquals(1, dataSet.getHybridizationDatas().size());
-        HybridizationData hybridizationData = dataSet.getHybridizationDatas().get(0);
+        assertNotNull(dataSet.getHybridizationDataList());
+        assertEquals(1, dataSet.getHybridizationDataList().size());
+        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
         assertEquals(7, hybridizationData.getColumns().size());
         assertEquals(7, dataSet.getQuantitationTypes().size());
         checkCelColumnTypes(dataSet);
@@ -221,13 +221,13 @@ public class ArrayDataServiceTest {
         assertTrue(AffymetrixCelQuantitationType.CEL_OUTLIER.isEquivalent(dataSet.getQuantitationTypes().get(5)));
         assertTrue(AffymetrixCelQuantitationType.CEL_PIXELS.isEquivalent(dataSet.getQuantitationTypes().get(6)));
 
-        assertTrue(AffymetrixCelQuantitationType.CEL_X.isEquivalent(dataSet.getHybridizationDatas().get(0).getColumns().get(0).getQuantitationType()));
-        assertTrue(AffymetrixCelQuantitationType.CEL_Y.isEquivalent(dataSet.getHybridizationDatas().get(0).getColumns().get(1).getQuantitationType()));
-        assertTrue(AffymetrixCelQuantitationType.CEL_INTENSITY.isEquivalent(dataSet.getHybridizationDatas().get(0).getColumns().get(2).getQuantitationType()));
-        assertTrue(AffymetrixCelQuantitationType.CEL_INTENSITY_STD_DEV.isEquivalent(dataSet.getHybridizationDatas().get(0).getColumns().get(3).getQuantitationType()));
-        assertTrue(AffymetrixCelQuantitationType.CEL_MASK.isEquivalent(dataSet.getHybridizationDatas().get(0).getColumns().get(4).getQuantitationType()));
-        assertTrue(AffymetrixCelQuantitationType.CEL_OUTLIER.isEquivalent(dataSet.getHybridizationDatas().get(0).getColumns().get(5).getQuantitationType()));
-        assertTrue(AffymetrixCelQuantitationType.CEL_PIXELS.isEquivalent(dataSet.getHybridizationDatas().get(0).getColumns().get(6).getQuantitationType()));
+        assertTrue(AffymetrixCelQuantitationType.CEL_X.isEquivalent(dataSet.getHybridizationDataList().get(0).getColumns().get(0).getQuantitationType()));
+        assertTrue(AffymetrixCelQuantitationType.CEL_Y.isEquivalent(dataSet.getHybridizationDataList().get(0).getColumns().get(1).getQuantitationType()));
+        assertTrue(AffymetrixCelQuantitationType.CEL_INTENSITY.isEquivalent(dataSet.getHybridizationDataList().get(0).getColumns().get(2).getQuantitationType()));
+        assertTrue(AffymetrixCelQuantitationType.CEL_INTENSITY_STD_DEV.isEquivalent(dataSet.getHybridizationDataList().get(0).getColumns().get(3).getQuantitationType()));
+        assertTrue(AffymetrixCelQuantitationType.CEL_MASK.isEquivalent(dataSet.getHybridizationDataList().get(0).getColumns().get(4).getQuantitationType()));
+        assertTrue(AffymetrixCelQuantitationType.CEL_OUTLIER.isEquivalent(dataSet.getHybridizationDataList().get(0).getColumns().get(5).getQuantitationType()));
+        assertTrue(AffymetrixCelQuantitationType.CEL_PIXELS.isEquivalent(dataSet.getHybridizationDataList().get(0).getColumns().get(6).getQuantitationType()));
 }
 
     private ArrayDesignDetails getArrayDesignDetails(AbstractArrayData arrayData) {
