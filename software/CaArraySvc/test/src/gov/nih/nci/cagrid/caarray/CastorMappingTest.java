@@ -62,7 +62,7 @@ public class CastorMappingTest extends TestCase {
         CaArrayFile f = new CaArrayFile();
         f.setId(1L);
         f.setFileStatus(FileStatus.IMPORTED);
-        f.setGridIdentifier("filegridid");
+        f.setBigid("filegridid");
         f.setName("zpath");
         f.setType(FileType.AFFYMETRIX_CDF);
         f.setProject(p);
@@ -113,14 +113,14 @@ public class CastorMappingTest extends TestCase {
     static Project getProject() {
         Project p = Project.createNew();
         p.setId(1L);
-        p.setGridIdentifier("projectgridid");
+        p.setBigid("projectgridid");
         return p;
     }
 
     private static void validate(Project p) {
         Project orig = getProject();
         assertNotNull(p);
-        assertEquals(orig.getGridIdentifier(), p.getGridIdentifier());
+        assertEquals(orig.getBigid(), p.getBigid());
         assertEquals(orig.getId(), p.getId());
     }
 
@@ -131,7 +131,7 @@ public class CastorMappingTest extends TestCase {
         e.setDescription("mydescription");
         e.setDateOfExperiment(new Date(54321L));
         e.setPublicReleaseDate(new Date(65432L));
-        e.setGridIdentifier("mygridid");
+        e.setBigid("mygridid");
         return e;
     }
 
@@ -143,6 +143,6 @@ public class CastorMappingTest extends TestCase {
         assertEquals(orig.getDescription(), e.getDescription());
         assertEquals(orig.getDateOfExperiment(), e.getDateOfExperiment());
         assertEquals(orig.getPublicReleaseDate(), e.getPublicReleaseDate());
-        assertEquals(orig.getGridIdentifier(), e.getGridIdentifier());
+        assertEquals(orig.getBigid(), e.getBigid());
     }
 }
