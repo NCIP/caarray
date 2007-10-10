@@ -165,4 +165,21 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
         valuesSerializer.setValue(values);
     }
 
+    /**
+     * Initializes this column to hold the number of values given.
+     * 
+     * @param numberOfValues number of values
+     */
+    public abstract void initializeArray(int numberOfValues);
+
+    /**
+     * Indicates whether this column is already loaded.
+     * 
+     * @return true if data has been loaded.
+     */
+    @Transient
+    public boolean isLoaded() {
+        return valuesSerializer.getValue() != null;
+    }
+
 }

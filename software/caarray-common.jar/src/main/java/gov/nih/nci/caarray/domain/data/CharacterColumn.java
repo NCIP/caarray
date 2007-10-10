@@ -107,8 +107,16 @@ public class CharacterColumn extends AbstractDataColumn {
     /**
      * @param values the values to set
      */
-    public void setValues(char[] values) {
+    private void setValues(char[] values) {
         setSerializableValues(values);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initializeArray(int numberOfValues) {
+        setValues(new char[numberOfValues]);
     }
 
 }

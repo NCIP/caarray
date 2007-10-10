@@ -100,8 +100,10 @@ public class IntegerColumn_HibernateIntegrationTest extends AbstractCaArrayObjec
     @Override
     protected void setValues(AbstractCaArrayObject caArrayObject) {
         IntegerColumn integerColumn = (IntegerColumn) caArrayObject;
-        int[] values = new int[] {1, 2, 3};
-        integerColumn.setValues(values);
+        integerColumn.initializeArray(10000);
+        for (int i = 0; i < 10000; i++) {
+            integerColumn.getValues()[i] = i;
+        }
     }
 
     @Override
@@ -113,8 +115,7 @@ public class IntegerColumn_HibernateIntegrationTest extends AbstractCaArrayObjec
 
     @Override
     protected void setNullableValuesToNull(AbstractCaArrayObject caArrayObject) {
-        IntegerColumn integerColumn = (IntegerColumn) caArrayObject;
-        integerColumn.setValues(null);
+        // none
     }
 
     @Override

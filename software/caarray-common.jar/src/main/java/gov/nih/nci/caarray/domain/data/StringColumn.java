@@ -107,8 +107,16 @@ public class StringColumn extends AbstractDataColumn {
     /**
      * @param values the values to set
      */
-    public void setValues(String[] values) {
+    private void setValues(String[] values) {
         setSerializableValues(values);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initializeArray(int numberOfValues) {
+        setValues(new String[numberOfValues]);
     }
 
 }

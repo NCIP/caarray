@@ -107,8 +107,16 @@ public class LongColumn extends AbstractDataColumn {
     /**
      * @param values the values to set
      */
-    public void setValues(long[] values) {
+    private void setValues(long[] values) {
         setSerializableValues(values);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initializeArray(int numberOfValues) {
+        setValues(new long[numberOfValues]);
     }
 
 }

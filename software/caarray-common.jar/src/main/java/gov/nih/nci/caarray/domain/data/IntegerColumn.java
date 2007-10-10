@@ -107,8 +107,16 @@ public class IntegerColumn extends AbstractDataColumn {
     /**
      * @param values the values to set
      */
-    public void setValues(int[] values) {
+    private void setValues(int[] values) {
         setSerializableValues(values);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initializeArray(int numberOfValues) {
+        setValues(new int[numberOfValues]);
     }
 
 }

@@ -107,8 +107,16 @@ public class DoubleColumn extends AbstractDataColumn {
     /**
      * @param values the values to set
      */
-    public void setValues(double[] values) {
+    private void setValues(double[] values) {
         setSerializableValues(values);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initializeArray(int numberOfValues) {
+        setValues(new double[numberOfValues]);
     }
 
 }

@@ -111,4 +111,12 @@ public class BooleanColumn extends AbstractDataColumn {
         setSerializableValues(values);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initializeArray(int numberOfValues) {
+        setValues(new boolean[numberOfValues]);
+    }
+
 }
