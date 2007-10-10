@@ -145,5 +145,11 @@ public interface FileAccessService {
      * @param caArrayFile the caArrayFile to remove
      */
     void remove(CaArrayFile caArrayFile);
+    /**
+     * Saves a file to the caArray file storage.
+     * 
+     * @param caArrayFile the caArrayFile to store
+     */
+    void save(CaArrayFile caArrayFile);
 
 }

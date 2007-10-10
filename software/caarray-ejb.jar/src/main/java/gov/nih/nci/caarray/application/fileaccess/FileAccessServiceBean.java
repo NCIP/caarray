@@ -161,6 +161,15 @@ public class FileAccessServiceBean implements FileAccessService {
         LogUtil.logSubsystemExit(LOG);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void save(CaArrayFile caArrayFile) {
+        LogUtil.logSubsystemEntry(LOG, caArrayFile);
+        daoFactory.getFileDao().save(caArrayFile);
+        LogUtil.logSubsystemExit(LOG);
+    }
+
     private void setTypeFromExtension(CaArrayFile caArrayFile, String filename) {
         String extension = FilenameUtils.getExtension(filename);
         FileExtension fileExtension = FileExtension.getByExtension(extension);

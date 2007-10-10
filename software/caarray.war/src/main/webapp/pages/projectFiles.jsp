@@ -76,6 +76,9 @@
                        <td>
                             <s:submit name="removeFile" value="Delete" method="removeFile" id="removeFile"/>
                         </td>
+                       <td>
+                            <s:submit name="saveExtension" value="Save Changes" method="saveExtension" id="saveExtension"/>
+                        </td>
                     </tr>
                 </table>
             </s:form>

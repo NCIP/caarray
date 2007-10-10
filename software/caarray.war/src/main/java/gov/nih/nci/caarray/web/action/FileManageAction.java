@@ -2,6 +2,7 @@ package gov.nih.nci.caarray.web.action;
 
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.web.delegate.DelegateFactory;
 import gov.nih.nci.caarray.web.delegate.ManageFilesDelegate;
@@ -22,8 +23,9 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
  * Manages Files for a particular project.
+ * 
  * @author John Hedden
- *
+ * 
  */
 @Validation
 public class FileManageAction extends BaseAction implements Preparable {
@@ -47,6 +49,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * manage files for a project.
+     * 
      * @return path String
      * @throws Exception Exception
      */
@@ -57,6 +60,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * view messages for file.
+     * 
      * @return String
      * @throws Exception Exception
      */
@@ -72,10 +76,11 @@ public class FileManageAction extends BaseAction implements Preparable {
     }
 
     /**
-     * This method needs to be re-worked at some pt. I need to get a handle on
-     * Struts2 indexed properties first.  For now just go through request.getParamenterNames().
-     *
+     * This method needs to be re-worked at some pt. I need to get a handle on Struts2 indexed properties first. For now
+     * just go through request.getParamenterNames().
+     * 
      * validates file.
+     * 
      * @return String
      * @throws Exception Exception
      */
@@ -92,10 +97,11 @@ public class FileManageAction extends BaseAction implements Preparable {
     }
 
     /**
-     * This method needs to be re-worked at some pt. I need to get a handle on
-     * Struts2 indexed properties first.  For now just go through request.getParamenterNames().
-     *
+     * This method needs to be re-worked at some pt. I need to get a handle on Struts2 indexed properties first. For now
+     * just go through request.getParamenterNames().
+     * 
      * validates file.
+     * 
      * @return String
      * @throws Exception Exception
      */
@@ -110,11 +116,13 @@ public class FileManageAction extends BaseAction implements Preparable {
         }
         return SUCCESS;
     }
+
     /**
-     * This method needs to be re-worked at some pt. I need to get a handle on
-     * Struts2 indexed properties first.  For now just go through request.getParamenterNames().
-     *
+     * This method needs to be re-worked at some pt. I need to get a handle on Struts2 indexed properties first. For now
+     * just go through request.getParamenterNames().
+     * 
      * validates file.
+     * 
      * @return String
      * @throws Exception Exception
      */
@@ -128,12 +136,36 @@ public class FileManageAction extends BaseAction implements Preparable {
             for (CaArrayFile caArrayFile : fileSet.getFiles()) {
                 getDelegate().getFileAccessService().remove(caArrayFile);
             }
-       }
-       return SUCCESS;
+        }
+        return SUCCESS;
+    }
+
+    /**
+     * This method needs to be re-worked at some pt. I need to get a handle on Struts2 indexed properties first. For now
+     * just go through request.getParamenterNames().
+     * 
+     * validates file.
+     * 
+     * @return String
+     * @throws Exception Exception
+     */
+    public String saveExtension() throws Exception {
+        setMenu("FileManageLinks");
+
+        HttpServletRequest request = getRequest();
+        CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
+        addSelectedFiles(fileSet, request);
+        if (!fileSet.getFiles().isEmpty()) {
+            for (CaArrayFile caArrayFile : fileSet.getFiles()) {
+                getDelegate().getFileAccessService().save(caArrayFile);
+            }
+        }
+        return SUCCESS;
     }
 
     /**
      * uploads file.
+     * 
      * @return String
      * @throws Exception Exception
      */
@@ -146,8 +178,8 @@ public class FileManageAction extends BaseAction implements Preparable {
             File uploadedFile = iter.next();
             try {
                 String fileName = getUploadFileName(index);
-                CaArrayFile caArrayFile
-                    = getDelegate().getProjectManagementService().addFile(getProject(), uploadedFile, fileName);
+                CaArrayFile caArrayFile = getDelegate().getProjectManagementService().addFile(getProject(),
+                        uploadedFile, fileName);
             } catch (Exception e) {
                 String msg = "Unable to upload file: " + e.getMessage();
                 LOG.error(msg, e);
@@ -155,22 +187,27 @@ public class FileManageAction extends BaseAction implements Preparable {
                 return INPUT;
             }
             index++;
-        } //end for
+        } // end for
         return SUCCESS;
     }
 
     private void addSelectedFiles(CaArrayFileSet fileSet, HttpServletRequest request) {
         Enumeration<String> myenum = request.getParameterNames();
         while (myenum.hasMoreElements()) {
-          String name = myenum.nextElement();
-          String myREGEX = ":";
-          Pattern p = Pattern.compile(myREGEX);
-          String[] items = p.split(name);
-          //if pattern is like fileEntries:0:selected we know a checkbox has been selected
-          if (items[0].equalsIgnoreCase("file") && items[2].equalsIgnoreCase("selected")) {
-              String fileIndex = items[1];
-              fileSet.add(getFile(fileIndex));
-          }
+            String name = myenum.nextElement();
+            String myREGEX = ":";
+            Pattern p = Pattern.compile(myREGEX);
+            String[] items = p.split(name);
+            // if pattern is like fileEntries:0:selected we know a checkbox has been selected
+            if (items[0].equalsIgnoreCase("file") && items[2].equalsIgnoreCase("selected")) {
+                String fileIndex = items[1];
+                // set the file type
+                String value = request.getParameter("file:" + fileIndex + ":fileType");
+                CaArrayFile caArrayFile = getFile(fileIndex);
+
+                caArrayFile.setType(FileType.getInstance(value));
+                fileSet.add(getFile(fileIndex));
+            }
         }
     }
 
@@ -183,6 +220,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * gets the delegate from factory.
+     * 
      * @return Delegate ProjectDelegate
      */
     public ManageFilesDelegate getDelegate() {
@@ -249,6 +287,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * method to get file name by index.
+     * 
      * @param index int
      * @return String file name.
      */
@@ -258,6 +297,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * overloaded method to go file entry at index.
+     * 
      * @param index int
      * @return String content type.
      */
@@ -267,6 +307,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * uploaded file.
+     * 
      * @return uploads uploaded files
      */
     public List<File> getUpload() {
@@ -275,6 +316,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * sets file uploads.
+     * 
      * @param inUploads List
      */
     public void setUpload(List<File> inUploads) {
@@ -283,6 +325,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * returns uploaded file name.
+     * 
      * @return uploadFileNames
      */
     public List<String> getUploadFileName() {
@@ -291,6 +334,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * sets uploaded file names.
+     * 
      * @param inUploadFileNames List
      */
     public void setUploadFileName(List<String> inUploadFileNames) {
@@ -299,6 +343,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * returns uploaded content type.
+     * 
      * @return uploadContentTypes
      */
     public List<String> getUploadContentType() {
@@ -307,10 +352,10 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * sets upload content type.
+     * 
      * @param inContentTypes List
      */
     public void setUploadContentType(List<String> inContentTypes) {
         this.uploadContentTypes = inContentTypes;
     }
 }
-
