@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 
 /**
@@ -106,9 +105,7 @@ class RawArrayDataImporter extends AbstractDataSetImporter {
 
     @Override
     void addHybridizationDatas() {
-        HybridizationData hybridizationData = new HybridizationData();
-        hybridizationData.setHybridization(getRawArrayData().getHybridization());
-        getDataSet().getHybridizationDataList().add(hybridizationData);
+        getDataSet().addHybridizationData(getRawArrayData().getHybridization());
     }
 
     private RawArrayData getRawArrayData() {

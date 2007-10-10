@@ -109,6 +109,7 @@ import gov.nih.nci.caarray.validation.ValidationMessage;
 /**
  * Array data handler for all versions of the Affymetrix CEL file format.
  */
+@SuppressWarnings("PMD.CyclomaticComplexity") // Switch-like statement setValue()
 class AffymetrixCelHandler extends AbstractDataFileHandler {
 
     private final FusionCELData celData = new FusionCELData();

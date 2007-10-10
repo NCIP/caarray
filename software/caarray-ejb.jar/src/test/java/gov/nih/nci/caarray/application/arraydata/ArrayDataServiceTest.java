@@ -194,14 +194,6 @@ public class ArrayDataServiceTest {
         checkCelData(AffymetrixArrayDataFiles.TEST3_CEL, dataSet);
     }
 
-    @Test
-    public void testGetDataLarge() throws InvalidDataFileException {
-        RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF, AffymetrixArrayDataFiles.TEST_HG_U133_PLUS_2_CEL);
-        arrayDataService.importData(celData);
-        DataSet dataSet = arrayDataService.getData(celData);
-        checkCelData(AffymetrixArrayDataFiles.TEST_HG_U133_PLUS_2_CEL, dataSet);
-    }
-
     private void checkCelData(File celFile, DataSet dataSet) {
         assertNotNull(dataSet.getHybridizationDataList());
         assertEquals(1, dataSet.getHybridizationDataList().size());
