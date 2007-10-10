@@ -180,6 +180,7 @@
     <property file="${build.dir}/default.properties" />
     <property name="jboss.deploy.dir" value="${jboss.home}/server/${jboss.server.name}/deploy" />
 	<property name="jboss.lib.dir" value="${jboss.home}/server/${jboss.server.name}/lib" />
+	<property name="mysql.datasource.file" value="caarray-mysql-ds.xml" />
 
     <filterset id="caarray.filterset" onmissingfiltersfile="warn">
         <filtersfile file="${build.dir}/default.properties" />
@@ -1041,7 +1042,7 @@
     <target name="deploy" depends="deploy:caarray.ear,deploy:caarray-svc" />
     
     <target name="deploy:caarray.ear" depends="build:caarray.ear,prepare:create-local.properties">
-        <copy file="${resource.dir}/deploy/caarray-mysql-ds.xml" todir="${jboss.deploy.dir}" overwrite="true">
+        <copy file="${resource.dir}/deploy/${mysql.datasource.file}" todir="${jboss.deploy.dir}" overwrite="true">
             <filterset refid="caarray.filterset" />
         </copy>
 		<copy file="${clm.jar}" todir="${jboss.lib.dir}" overwrite="true" />
@@ -1053,7 +1054,7 @@
     </target>
 
     <target name="undeploy">
-        <delete file="${jboss.deploy.dir}/caarray-mysql-ds.xml" />
+        <delete file="${jboss.deploy.dir}/${mysql.datasource.file}" />
         <delete file="${jboss.deploy.dir}/caarray.ear" />
     </target>
 
@@ -1134,7 +1135,7 @@
     <target name="remote-jboss:configure-jboss-ds">
         <echo message="Configuring caarray-mysql database..." />
         <taskdef name="xmlconfig" classname="com.xmlconfig.anttask.XmlConfig" classpathref="project.classpath" />
-        <xmlconfig in="${resource.dir}/deploy/caarray-mysql-ds.xml" verbose="false">
+        <xmlconfig in="${resource.dir}/deploy/${mysql.datasource.file}" verbose="false">
             <update path="//datasources/local-tx-datasource/connection-url" value="jdbc:mysql://${database.server}:${database.port}/${database.name}" />
             <update path="//datasources/local-tx-datasource/user-name" value="${database.user}" />
             <update path="//datasources/local-tx-datasource/password" value="${database.password}" />
@@ -1143,7 +1144,7 @@
 
     <target name="remote-jboss:copy-jboss-config">
         <echo message="Copying caarray-mysql configuration to jboss server at ${ssh.server.hostname}..." />
-        <scp file="${resource.dir}/deploy/caarray-mysql-ds.xml" keyfile="${ssh.key.file}" passphrase="" trust="true" verbose="true" todir="${ssh.server.username}@${ssh.server.hostname}:${remote.jboss.home}/deploy" />
+        <scp file="${resource.dir}/deploy/${mysql.datasource.file}" keyfile="${ssh.key.file}" passphrase="" trust="true" verbose="true" todir="${ssh.server.username}@${ssh.server.hostname}:${remote.jboss.home}/deploy" />
     </target>
 	
 	 <target name="remote-jboss:copy-clm-jar">
@@ -1164,7 +1165,7 @@
 
     <target name="remote-jboss:undeploy-caarray">
         <echo message="Undeploying caarray EAR to jboss server at ${ssh.server.hostname}..." />
-        <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" verbose="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" command="rm -rf ${remote.jboss.home}/deploy/caarray.ear ${remote.jboss.home}/deploy/caarray-mysql-ds.xml" />
+        <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" verbose="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" command="rm -rf ${remote.jboss.home}/deploy/caarray.ear ${remote.jboss.home}/deploy/${mysql.datasource.file}" />
     </target>
 
   <target name="remote-jboss:deploy" unless="nodeploy">
