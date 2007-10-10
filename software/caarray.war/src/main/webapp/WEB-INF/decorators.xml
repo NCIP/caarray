@@ -10,7 +10,7 @@
         </excludes>
         <pattern>/*</pattern>
     </decorator>
-    <decorator name="loginDefault" page="loginDefault.jsp">
+    <decorator name="login" page="login.jsp">
         <pattern>/login.jsp</pattern>
     </decorator>
 </decorators>

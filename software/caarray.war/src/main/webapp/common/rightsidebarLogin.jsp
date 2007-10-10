@@ -4,6 +4,14 @@
         <h1>caArray Login</h1>
         <form method="post" id="loginForm" action="<c:url value='/j_security_check'/>" onsubmit="saveUsername(this);return validateForm(this)">
         	<table class="login">
+        	    <s:if test="${param.error != null}">
+        	    <tr>
+        	        <td colspan="2">
+                        <img src="${ctx}/images/iconWarning.gif" alt="<fmt:message key='icon.warning'/>" class="icon"/>
+                        <fmt:message key="errors.password.mismatch"/>
+                    </td>
+                </tr>
+                </s:if>
         		<tr>
             		<td colspan="2" class="space">&nbsp;</td>
         		</tr>

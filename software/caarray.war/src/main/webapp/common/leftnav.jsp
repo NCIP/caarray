@@ -2,14 +2,14 @@
     <ul class="caarraymenu">
         <li class="liheader">Public Pages</li>
         <li><a href="./" class="selected">Home</a></li>
-        <li><a href="register.htm">Register</a></li>
-        <li><a href="login.htm">Login</a></li>
+        <li><a href="#">Register</a></li>
+        <li><a href="#">Login</a></li>
         <li class="liheader">caArray Software</li>
-        <li><a href="about.htm">What is caArray?</a></li>
-        <li><a href="install.htm">Install caArray</a></li>
-        <li><a href="userguide.htm">User Guide</a></li>
-        <li><a href="releasenotes.htm">Release Notes</a></li>
-        <li><a href="techdocs.htm">Technical Documentation</a></li>
+        <li><a href="#">What is caArray?</a></li>
+        <li><a href="#">Install caArray</a></li>
+        <li><a href="#">User Guide</a></li>
+        <li><a href="#">Release Notes</a></li>
+        <li><a href="#">Technical Documentation</a></li>
     </ul>
     <ul class="quicklinks">
         <li class="liheader">Global Quick Links</li>
