@@ -22,7 +22,6 @@
         var insertHere = document.getElementById('writeUploadDiv');
         insertHere.parentNode.insertBefore(newFields,insertHere);
     }
-    window.onload = moreUploads;
 </script>
 
 <head>
@@ -89,9 +88,8 @@
 
         <s:form action="File_upload" enctype="multipart/form-data" method="post">
             <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
-
+            <s:file id="upload" name="upload" label="File" />
             <span id="writeUploadDiv"></span>
-
             <table>
                 <tr>
                     <td>
