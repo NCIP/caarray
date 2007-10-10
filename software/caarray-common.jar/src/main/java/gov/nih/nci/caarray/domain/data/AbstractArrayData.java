@@ -205,6 +205,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      * @return the dataSet
      */
     @OneToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public DataSet getDataSet() {
         return dataSet;
     }

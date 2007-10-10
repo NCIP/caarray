@@ -89,12 +89,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
+import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.IndexColumn;
 
 /**
  * Value holder for all the data values associated with a specific hybridization and design element.
@@ -111,7 +114,9 @@ public final class HybridizationData extends AbstractCaArrayObject {
     /**
      * @return the columns
      */
-    @Transient
+    @OneToMany(mappedBy = "hybridizationData", fetch = FetchType.EAGER)
+    @IndexColumn(name = "COLUMN_INDEX")
+    @Cascade(CascadeType.SAVE_UPDATE)
     public List<AbstractDataColumn> getColumns() {
         return columns;
     }
@@ -159,7 +164,9 @@ public final class HybridizationData extends AbstractCaArrayObject {
     }
 
     void addColumn(QuantitationType type) {
-        columns.add(AbstractDataColumn.create(type));
+        AbstractDataColumn column = AbstractDataColumn.create(type);
+        column.setHybridizationData(this);
+        columns.add(column);
     }
 
 }

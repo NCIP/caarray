@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.domain.data;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,7 +93,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
@@ -113,7 +113,6 @@ public final class DataSet extends AbstractCaArrayObject {
     private List<HybridizationData> hybridizationDataList = new ArrayList<HybridizationData>();
     private List<QuantitationType> quantitationTypes = new ArrayList<QuantitationType>();
     private List<AbstractDesignElement> designElements = new ArrayList<AbstractDesignElement>();
-    private byte[] serializedDesignElementLsids;
 
     /**
      * @return the hybridizationDatas
@@ -124,7 +123,21 @@ public final class DataSet extends AbstractCaArrayObject {
     public List<HybridizationData> getHybridizationDataList() {
         return hybridizationDataList;
     }
-
+    
+    /**
+     * Creates a new <code>HybridizationData</code> for this <code>DataSet</code>.
+     * @param hybridization <code>Hybridization</code> associated with the data
+     * 
+     * @return the new HybridizationData.
+     */
+    public HybridizationData addHybridizationData(Hybridization hybridization) {
+        HybridizationData hybridizationData = new HybridizationData();
+        hybridizationData.setHybridization(hybridization);
+        getHybridizationDataList().add(hybridizationData);
+        hybridizationData.setDataSet(this);
+        return hybridizationData;
+    }
+    
     /**
      * @param hybridizationDatas the hybridizationDatas to set
      */
@@ -155,17 +168,6 @@ public final class DataSet extends AbstractCaArrayObject {
     @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
     private void setQuantitationTypes(List<QuantitationType> quantitationTypes) {
         this.quantitationTypes = quantitationTypes;
-    }
-
-    @Lob
-    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod", "PMD.MethodReturnsInternalArray" })
-    private byte[] getSerializedDesignElementLsids() {
-        return serializedDesignElementLsids;
-    }
-
-    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod", "PMD.ArrayIsStoredDirectly" })
-    private void setSerializedDesignElementLsids(byte[] serializedDesignElementLsids) {
-        this.serializedDesignElementLsids = serializedDesignElementLsids;
     }
 
     /**

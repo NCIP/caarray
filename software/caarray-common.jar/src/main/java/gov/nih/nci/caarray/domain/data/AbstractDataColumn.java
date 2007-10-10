@@ -93,8 +93,12 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.ForeignKey;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
@@ -108,23 +112,32 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 @DiscriminatorColumn(
         name = "DISCRIMINATOR",
         discriminatorType = DiscriminatorType.STRING)
+@SuppressWarnings("PMD.CyclomaticComplexity") // switch-like statement
 public abstract class AbstractDataColumn extends AbstractCaArrayObject {
 
     private static final long serialVersionUID = 1L;
 
+    private HybridizationData hybridizationData;
     private QuantitationType quantitationType;
     private final Serializer valuesSerializer = new Serializer();
 
+    @SuppressWarnings("PMD.CyclomaticComplexity") // switch-like statement
     static AbstractDataColumn create(QuantitationType type) {
         AbstractDataColumn column = null;
         if (type.getTypeClass().equals(Boolean.class)) {
             column = new BooleanColumn();
+        } else if (type.getTypeClass().equals(Double.class)) {
+            column = new DoubleColumn();
         } else if (type.getTypeClass().equals(Float.class)) {
-                column = new FloatColumn();
+            column = new FloatColumn();
         } else if (type.getTypeClass().equals(Integer.class)) {
             column = new IntegerColumn();
+        } else if (type.getTypeClass().equals(Long.class)) {
+            column = new LongColumn();
         } else if (type.getTypeClass().equals(Short.class)) {
             column = new ShortColumn();
+        } else if (type.getTypeClass().equals(String.class)) {
+            column = new StringColumn();
         } else {
             throw new IllegalArgumentException("Unsupported data type: " + type.getType());
         }
@@ -135,6 +148,8 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
     /**
      * @return the quantitationType
      */
+    @ManyToOne
+    @ForeignKey(name = "COLUMN_QUANTITATIONTYPE_FK")
     public QuantitationType getQuantitationType() {
         return quantitationType;
     }
@@ -180,6 +195,23 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
     @Transient
     public boolean isLoaded() {
         return valuesSerializer.getValue() != null;
+    }
+
+    /**
+     * @return the hybridizationData
+     */
+    @ManyToOne
+    @JoinColumn(updatable = false, nullable = false)
+    @ForeignKey(name = "COLUMN_HYBRIDIZATIONDATA_FK")
+    public HybridizationData getHybridizationData() {
+        return hybridizationData;
+    }
+
+    /**
+     * @param hybridizationData the hybridizationData to set
+     */
+    public void setHybridizationData(HybridizationData hybridizationData) {
+        this.hybridizationData = hybridizationData;
     }
 
 }

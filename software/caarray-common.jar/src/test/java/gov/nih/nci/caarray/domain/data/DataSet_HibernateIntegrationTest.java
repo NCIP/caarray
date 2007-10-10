@@ -83,8 +83,10 @@
 package gov.nih.nci.caarray.domain.data;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject_HibernateIntegrationTest;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -110,7 +112,11 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
     @Override
     protected void setValues(AbstractCaArrayObject caArrayObject) {
         DataSet dataSet = (DataSet) caArrayObject;
-        dataSet.getQuantitationTypes().add(quantitationType);
+        StringColumn column = (StringColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(0);
+        column.initializeArray(3);
+        column.getValues()[0] = "test1";
+        column.getValues()[1] = "test2";
+        column.getValues()[2] = "test3";
     }
 
     @Override
@@ -118,12 +124,19 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
         DataSet original = (DataSet) caArrayObject;
         DataSet retrieved = (DataSet) retrievedCaArrayObject;
         assertEquals(original.getQuantitationTypes().get(0).getName(), retrieved.getQuantitationTypes().get(0).getName());
+        StringColumn originalColumn = (StringColumn) original.getHybridizationDataList().get(0).getColumns().get(0);
+        StringColumn retrievedColumn = (StringColumn) retrieved.getHybridizationDataList().get(0).getColumns().get(0);
+        assertArrayEquals(originalColumn.getValues(), retrievedColumn.getValues());
     }
 
 
     @Override
     protected AbstractCaArrayObject createTestObject() {
-        return new DataSet();
+        Hybridization hybridization = new Hybridization();
+        DataSet dataSet = new DataSet();
+        dataSet.addHybridizationData(hybridization);
+        dataSet.addQuantitationType(quantitationType);
+        return dataSet;
     }
 
     @Override

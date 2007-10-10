@@ -108,7 +108,6 @@ public final class QuantitationType extends AbstractCaArrayObject {
         SUPPORTED_TYPES.add(Long.class);
         SUPPORTED_TYPES.add(Float.class);
         SUPPORTED_TYPES.add(Double.class);
-        SUPPORTED_TYPES.add(Character.class);
         SUPPORTED_TYPES.add(String.class);
     }
 
