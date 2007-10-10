@@ -1,6 +1,6 @@
 Steps for remote Build and Deployment for caArray 2
 
-Prereqs: It is assumed you have Ant 1.7 and a JDK installed and in your System's PATH. It is also assumed that you are operating in the NCI LAN. Remember, you are emulating what will be a centralized build environment, so these steps will only need to be performed when setting up a new build machine. Right now, it assumes you are running on a Windows OS.
+Prereqs: It is assumed you have Ant 1.7.0 and a JDK installed and in your System's PATH. It is also assumed that you are operating in the NCI LAN. Remember, you are emulating what will be a centralized build environment, so these steps will only need to be performed when setting up a new build machine. Right now, it assumes you are running on a Windows OS.
 
    1. Perform a clean checkout from a different directory than your current caArray 2 development directory (if this exists)
          a) https://gforge.nci.nih.gov/svnroot/caarray2/trunk/ 
