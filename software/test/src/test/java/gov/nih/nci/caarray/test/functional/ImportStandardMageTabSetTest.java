@@ -115,6 +115,11 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
     private static final String TITLE =
         "TCGA Analysis of Gene Expression for Glioblastoma Multiforme Using Affymetrix HT_HG-U133A";
     
+    @Override
+    public void tearDown() throws Exception {
+        // don't tearDown
+    }
+    
     @Test
     public void testNew() throws Exception {
 
@@ -165,20 +170,20 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
     private void selectAllFiles() {
         for (int i = 0; i < NUMBER_OF_FILES; i++) {
-            selenium.click("files:" + i + ":selected");
+            selenium.click("file:" + i + ":selected");
         }
     }
 
     private void checkFileStatus(String status) {
         for (int i = 0; i < NUMBER_OF_FILES; i++) {
-            assertEquals(status, selenium.getText("files:" + i + ":status"));
+            assertEquals(status, selenium.getText("file:" + i + ":status"));
         }
     }
 
     private void upload(File file) throws IOException {
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
         filePath = filePath.replaceAll("%20", " ");
-       selenium.type("upload", filePath);
+        selenium.type("upload", filePath);
         clickAndWait("uploadFile");
         assertTrue(selenium.isTextPresent(file.getName()));
     }
