@@ -82,10 +82,19 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 
 /**
  * Responsible for ensuring that data columns for a <code>DataSet</code> are loaded. This enables
@@ -93,23 +102,74 @@ import gov.nih.nci.caarray.domain.data.DataSet;
  */
 final class DataSetLoader {
 
-    private final DataSet dataSet;
     private final CaArrayDaoFactory daoFactory;
     private final ArrayDesignService arrayDesignService;
     private final FileAccessService fileAccessService;
+    private final AbstractArrayData arrayData;
+    private AbstractDataFileHandler dataFileHandler;
 
-    DataSetLoader(DataSet dataSet, CaArrayDaoFactory daoFactory, ArrayDesignService arrayDesignService, 
+    DataSetLoader(AbstractArrayData arrayData, CaArrayDaoFactory daoFactory, ArrayDesignService arrayDesignService, 
             FileAccessService fileAccessService) {
-        this.dataSet = dataSet;
+        this.arrayData = arrayData;
         this.daoFactory = daoFactory;
         this.arrayDesignService = arrayDesignService;
         this.fileAccessService = fileAccessService;
     }
 
     void load() {
-        // implement
+        List<QuantitationType> types = getQuantitationTypes();
+        load(types);
     }
 
-    
+    void load(List<QuantitationType> types) {
+        AbstractDataFileHandler handler = getDataFileHandler();
+        File file = getFileAccessService().getFile(getArrayData().getDataFile());
+        handler.loadData(getDataSet(), types, file);
+        getDaoFactory().getArrayDao().save(getDataSet());
+    }
+
+    private ArrayDesignService getArrayDesignService() {
+        return arrayDesignService;
+    }
+
+    private CaArrayDaoFactory getDaoFactory() {
+        return daoFactory;
+    }
+
+    private DataSet getDataSet() {
+        return getArrayData().getDataSet();
+    }
+
+    private AbstractArrayData getArrayData() {
+        return arrayData;
+    }
+
+  private FileAccessService getFileAccessService() {
+        return fileAccessService;
+    }
+
+    QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor) {
+        return getArrayDao().getQuantitationType(descriptor);
+    }
+
+    private ArrayDao getArrayDao() {
+        return getDaoFactory().getArrayDao();
+    }
+
+    private List<QuantitationType> getQuantitationTypes() {
+        List<QuantitationType> quantitationTypes = 
+            new ArrayList<QuantitationType>(AffymetrixCelQuantitationType.values().length);
+        for (QuantitationTypeDescriptor descriptor : getDataFileHandler().getQuantitationTypeDescriptors()) {
+            quantitationTypes.add(getQuantitationType(descriptor));
+        }
+        return quantitationTypes;
+    }
+
+    AbstractDataFileHandler getDataFileHandler() {
+        if (dataFileHandler == null) {
+            dataFileHandler = ArrayDataHandlerFactory.getInstance().getHandler(getArrayData().getDataFile().getType());
+        }
+        return dataFileHandler;
+    }
     
 }

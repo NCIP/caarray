@@ -83,7 +83,10 @@
 package gov.nih.nci.caarray.application.arraydata;
 
 import java.io.File;
+import java.util.List;
 
+import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -97,5 +100,7 @@ abstract class AbstractDataFileHandler {
     abstract QuantitationTypeDescriptor[] getQuantitationTypeDescriptors();
 
     abstract FileValidationResult validate(CaArrayFile caArrayFile, File file);
+
+    abstract void loadData(DataSet dataSet, List<QuantitationType> types, File file);
     
 }

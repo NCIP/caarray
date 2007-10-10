@@ -101,11 +101,14 @@ import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.BooleanColumn;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.FloatColumn;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.data.ShortColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
@@ -121,6 +124,9 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import affymetrix.fusion.cel.FusionCELData;
+import affymetrix.fusion.cel.FusionCELFileEntryType;
 
 /**
  * Tests the ArrayDataService subsystem
@@ -188,6 +194,14 @@ public class ArrayDataServiceTest {
         checkCelData(AffymetrixArrayDataFiles.TEST3_CEL, dataSet);
     }
 
+    @Test
+    public void testGetDataLarge() throws InvalidDataFileException {
+        RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF, AffymetrixArrayDataFiles.TEST_HG_U133_PLUS_2_CEL);
+        arrayDataService.importData(celData);
+        DataSet dataSet = arrayDataService.getData(celData);
+        checkCelData(AffymetrixArrayDataFiles.TEST_HG_U133_PLUS_2_CEL, dataSet);
+    }
+
     private void checkCelData(File celFile, DataSet dataSet) {
         assertNotNull(dataSet.getHybridizationDataList());
         assertEquals(1, dataSet.getHybridizationDataList().size());
@@ -195,21 +209,27 @@ public class ArrayDataServiceTest {
         assertEquals(7, hybridizationData.getColumns().size());
         assertEquals(7, dataSet.getQuantitationTypes().size());
         checkCelColumnTypes(dataSet);
-//        FusionCELData fusionCelData = new FusionCELData();
-//        fusionCelData.setFileName(celFile.getAbsolutePath());
-//        fusionCelData.read();
-//        FusionCELFileEntryType fusionCelEntry = new FusionCELFileEntryType();
-//        for (int rowIndex = 0; rowIndex < fusionCelData.getCells(); rowIndex++) {
-//            fusionCelData.getEntry(rowIndex, fusionCelEntry);
-//            FloatColumn intensityColumn = (FloatColumn) hybridizationData.getColumns().get(2);
-//            assertEquals(fusionCelData.indexToX(rowIndex), dataValues.getValues().get(0).getValue());
-//            assertEquals(fusionCelData.indexToY(rowIndex), dataValues.getValues().get(1).getValue());
-//            assertEquals(fusionCelEntry.getIntensity(), intensityColumn.getValues()[rowIndex]);
-//            assertEquals(fusionCelEntry.getStdv(), dataValues.getValues().get(3).getValue());
-//            assertEquals(fusionCelData.isMasked(rowIndex), dataValues.getValues().get(4).getValue());
-//            assertEquals(fusionCelData.isOutlier(rowIndex), dataValues.getValues().get(5).getValue());
-//            assertEquals(fusionCelEntry.getPixels(), dataValues.getValues().get(6).getValue());
-//        }
+        FusionCELData fusionCelData = new FusionCELData();
+        fusionCelData.setFileName(celFile.getAbsolutePath());
+        fusionCelData.read();
+        FusionCELFileEntryType fusionCelEntry = new FusionCELFileEntryType();
+        ShortColumn xColumn = (ShortColumn) hybridizationData.getColumns().get(0);
+        ShortColumn yColumn = (ShortColumn) hybridizationData.getColumns().get(1);
+        FloatColumn intensityColumn = (FloatColumn) hybridizationData.getColumns().get(2);
+        FloatColumn stdDevColumn = (FloatColumn) hybridizationData.getColumns().get(3);
+        BooleanColumn isMaskedColumn = (BooleanColumn) hybridizationData.getColumns().get(4);
+        BooleanColumn isOutlierColumn = (BooleanColumn) hybridizationData.getColumns().get(5);
+        ShortColumn numPixelsColumn = (ShortColumn) hybridizationData.getColumns().get(6);
+        for (int rowIndex = 0; rowIndex < fusionCelData.getCells(); rowIndex++) {
+            fusionCelData.getEntry(rowIndex, fusionCelEntry);
+            assertEquals(fusionCelData.indexToX(rowIndex), xColumn.getValues()[rowIndex]);
+            assertEquals(fusionCelData.indexToY(rowIndex), yColumn.getValues()[rowIndex]);
+            assertEquals(fusionCelEntry.getIntensity(), intensityColumn.getValues()[rowIndex]);
+            assertEquals(fusionCelEntry.getStdv(), stdDevColumn.getValues()[rowIndex]);
+            assertEquals(fusionCelData.isMasked(rowIndex), isMaskedColumn.getValues()[rowIndex]);
+            assertEquals(fusionCelData.isOutlier(rowIndex), isOutlierColumn.getValues()[rowIndex]);
+            assertEquals(fusionCelEntry.getPixels(), numPixelsColumn.getValues()[rowIndex]);
+        }
     }
     
     private void checkCelColumnTypes(DataSet dataSet) {
@@ -303,7 +323,6 @@ public class ArrayDataServiceTest {
 
             };
         }
-
     }
 
     private static class LocalFileAccessServiceStub extends FileAccessServiceStub {
@@ -311,6 +330,8 @@ public class ArrayDataServiceTest {
         public File getFile(CaArrayFile caArrayFile) {
             if (caArrayFile.getName().equals(AffymetrixArrayDesignFiles.TEST3_CDF.getName())) {
                 return AffymetrixArrayDesignFiles.TEST3_CDF;
+            } else if (caArrayFile.getName().equals(AffymetrixArrayDataFiles.TEST_HG_U133_PLUS_2_CEL.getName())) {
+                return AffymetrixArrayDataFiles.TEST_HG_U133_PLUS_2_CEL;
             } else if (caArrayFile.getName().equals(AffymetrixArrayDataFiles.TEST3_CEL.getName())) {
                 return AffymetrixArrayDataFiles.TEST3_CEL;
             } else if (caArrayFile.getName().equals(AffymetrixArrayDataFiles.TEST3_CALVIN_CEL.getName())) {

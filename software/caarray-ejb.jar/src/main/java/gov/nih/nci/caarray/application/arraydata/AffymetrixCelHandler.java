@@ -83,13 +83,24 @@
 package gov.nih.nci.caarray.application.arraydata;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
 import affymetrix.fusion.cel.FusionCELData;
+import affymetrix.fusion.cel.FusionCELFileEntryType;
 
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
+import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
+import gov.nih.nci.caarray.domain.data.BooleanColumn;
+import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.FloatColumn;
+import gov.nih.nci.caarray.domain.data.HybridizationData;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.ShortColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
@@ -100,6 +111,8 @@ import gov.nih.nci.caarray.validation.ValidationMessage;
  */
 class AffymetrixCelHandler extends AbstractDataFileHandler {
 
+    private final FusionCELData celData = new FusionCELData();
+
     @Override
     QuantitationTypeDescriptor[] getQuantitationTypeDescriptors() {
         return AffymetrixCelQuantitationType.values();
@@ -107,7 +120,6 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
     
     @Override
     FileValidationResult validate(CaArrayFile caArrayFile, File file) {
-        FusionCELData celData = new FusionCELData();
         String celDataFileName;
         FileValidationResult result = new FileValidationResult(file);
 
@@ -121,4 +133,69 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
         return result;
     }
 
+    private void readCelData(File celFile) {
+        celData.setFileName(celFile.getAbsolutePath());
+        celData.read();
+    }
+
+    @Override
+    void loadData(DataSet dataSet, List<QuantitationType> types, File celFile) {
+        readCelData(celFile);
+        prepareColumns(dataSet, types);
+        loadDataIntoColumns(dataSet.getHybridizationDataList().get(0), types);
+    }
+
+    private void prepareColumns(DataSet dataSet, List<QuantitationType> types) {
+        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
+        for (AbstractDataColumn column : hybridizationData.getColumns()) {
+            if (!column.isLoaded() && types.contains(column.getQuantitationType())) {
+                column.initializeArray(celData.getCells());
+            }
+        }
+    }
+
+    private void loadDataIntoColumns(HybridizationData hybridizationData, List<QuantitationType> types) {
+        Set<QuantitationType> typeSet = new HashSet<QuantitationType>();
+        typeSet.addAll(types);
+        FusionCELFileEntryType entry = new FusionCELFileEntryType();
+        int numberOfCells = celData.getCells();
+        for (int cellIndex = 0; cellIndex < numberOfCells; cellIndex++) {
+            celData.getEntry(cellIndex, entry);
+            handleEntry(hybridizationData, entry, cellIndex, typeSet);
+        }
+    }
+
+    private void handleEntry(HybridizationData hybridizationData, FusionCELFileEntryType entry, 
+            int cellIndex, Set<QuantitationType> typeSet) {
+        for (AbstractDataColumn column : hybridizationData.getColumns()) {
+            if (typeSet.contains(column.getQuantitationType())) {
+                setValue(column, cellIndex, entry);
+            }
+        }   
+    }
+
+    @SuppressWarnings("PMD.CyclomaticComplexity") // Switch-like statement
+    private void setValue(AbstractDataColumn column, int cellIndex, FusionCELFileEntryType entry) {
+        QuantitationType quantitationType = column.getQuantitationType();
+        if (AffymetrixCelQuantitationType.CEL_X.isEquivalent(quantitationType)) {
+            ((ShortColumn) column).getValues()[cellIndex] = (short) celData.indexToX(cellIndex);
+        } else if (AffymetrixCelQuantitationType.CEL_Y.isEquivalent(quantitationType)) {
+            ((ShortColumn) column).getValues()[cellIndex] = (short) celData.indexToY(cellIndex);
+        } else if (AffymetrixCelQuantitationType.CEL_INTENSITY.isEquivalent(quantitationType)) {
+            ((FloatColumn) column).getValues()[cellIndex] = entry.getIntensity();
+        } else if (AffymetrixCelQuantitationType.CEL_INTENSITY_STD_DEV.isEquivalent(quantitationType)) {
+            ((FloatColumn) column).getValues()[cellIndex] = entry.getStdv();
+        } else if (AffymetrixCelQuantitationType.CEL_MASK.isEquivalent(quantitationType)) {
+            ((BooleanColumn) column).getValues()[cellIndex] = celData.isMasked(cellIndex);
+        } else if (AffymetrixCelQuantitationType.CEL_OUTLIER.isEquivalent(quantitationType)) {
+            ((BooleanColumn) column).getValues()[cellIndex] = celData.isOutlier(cellIndex);
+        } else if (AffymetrixCelQuantitationType.CEL_PIXELS.isEquivalent(quantitationType)) {
+            ((ShortColumn) column).getValues()[cellIndex] = (short) entry.getPixels();
+        } else {
+            throw new IllegalArgumentException("Unsupported QuantitationType for CEL data: " + quantitationType);
+        }
+    }
+
 }
+
+

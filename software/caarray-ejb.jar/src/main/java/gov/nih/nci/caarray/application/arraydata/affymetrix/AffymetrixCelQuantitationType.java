@@ -96,12 +96,12 @@ public enum AffymetrixCelQuantitationType implements QuantitationTypeDescriptor 
     /**
      * CELX quantitation type.
      */
-    CEL_X("CELX", DataType.INTEGER),
+    CEL_X("CELX", DataType.SHORT),
     
     /**
      * CELY quantitation type.
      */
-    CEL_Y("CELY", DataType.INTEGER),
+    CEL_Y("CELY", DataType.SHORT),
     
     /**
      * CELIntensity quantitation type.

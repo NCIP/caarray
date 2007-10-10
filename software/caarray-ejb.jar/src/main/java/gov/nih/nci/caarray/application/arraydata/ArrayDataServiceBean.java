@@ -129,15 +129,15 @@ public class ArrayDataServiceBean implements ArrayDataService {
      */
     public DataSet getData(AbstractArrayData arrayData) {
         LogUtil.logSubsystemEntry(LOG, arrayData);
-        DataSet dataSet = arrayData.getDataSet();
-        loadDataSet(dataSet);
+        checkArguments(arrayData);
+        loadDataSet(arrayData);
         LogUtil.logSubsystemExit(LOG);
-        return dataSet;
+        return arrayData.getDataSet();
     }
 
-    private void loadDataSet(DataSet dataSet) {
+    private void loadDataSet(AbstractArrayData arrayData) {
         DataSetLoader loader = 
-            new DataSetLoader(dataSet, getDaoFactory(), getArrayDesignService(), getFileAccessService());
+            new DataSetLoader(arrayData, getDaoFactory(), getArrayDesignService(), getFileAccessService());
         loader.load();
     }
 
@@ -146,9 +146,16 @@ public class ArrayDataServiceBean implements ArrayDataService {
      */
     public DataSet getData(AbstractArrayData arrayData, List<QuantitationType> types) {
         LogUtil.logSubsystemEntry(LOG, arrayData);
-        DataSet dataSet = null;
+        checkArguments(arrayData);
+        loadDataSet(arrayData, types);
         LogUtil.logSubsystemExit(LOG);
-        return dataSet;
+        return arrayData.getDataSet();
+    }
+
+    private void loadDataSet(AbstractArrayData arrayData, List<QuantitationType> types) {
+        DataSetLoader loader = 
+            new DataSetLoader(arrayData, getDaoFactory(), getArrayDesignService(), getFileAccessService());
+        loader.load(types);
     }
 
     /**
