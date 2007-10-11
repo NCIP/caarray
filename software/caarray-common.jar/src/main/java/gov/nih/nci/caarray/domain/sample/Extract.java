@@ -91,6 +91,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
@@ -181,6 +182,8 @@ public class Extract extends AbstractBioMaterial {
     /**
      * @return the molecularSpecimen
      */
+    @OneToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public MolecularSpecimen getMolecularSpecimen() {
         return molecularSpecimen;
     }

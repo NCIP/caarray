@@ -86,6 +86,9 @@ import gov.nih.nci.cabio.domain.ExonArrayReporter;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.Cascade;
 
 /**
  *
@@ -107,6 +110,8 @@ public class ExonProbeAnnotation extends AbstractProbeAnnotation {
     /**
      * @return the exonArrayReporter
      */
+    @OneToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public ExonArrayReporter getExonArrayReporter() {
         return exonArrayReporter;
     }

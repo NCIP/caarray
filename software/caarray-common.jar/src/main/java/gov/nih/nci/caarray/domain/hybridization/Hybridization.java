@@ -327,6 +327,9 @@ public class Hybridization extends AbstractCaArrayEntity {
     /**
      * @return the amountOfMaterialUnit
      */
+    @ManyToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ForeignKey(name = "HYBRIDIZATIONAMOUNT_UNIT_FK")
     public Term getAmountOfMaterialUnit() {
         return amountOfMaterialUnit;
     }
@@ -341,6 +344,9 @@ public class Hybridization extends AbstractCaArrayEntity {
     /**
      * @return the label
      */
+    @ManyToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ForeignKey(name = "HYBRIDIZATION_LABEL_FK")
     public Term getLabel() {
         return label;
     }

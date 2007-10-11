@@ -86,6 +86,9 @@ import gov.nih.nci.cabio.domain.SNPArrayReporter;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.Cascade;
 
 /**
  *
@@ -180,6 +183,8 @@ public class SNPProbeAnnotation extends AbstractProbeAnnotation {
     /**
      * @return the snpArrayReporter
      */
+    @OneToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public SNPArrayReporter getSnpArrayReporter() {
         return snpArrayReporter;
     }

@@ -91,6 +91,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
@@ -110,7 +111,7 @@ public class Sample extends AbstractBioMaterial {
     private static final long serialVersionUID = 1234567890L;
 
     private Specimen specimen;
-    
+
 
     /**
      * The sources set.
@@ -180,6 +181,8 @@ public class Sample extends AbstractBioMaterial {
     /**
      * @return the specimen
      */
+    @OneToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Specimen getSpecimen() {
         return specimen;
     }

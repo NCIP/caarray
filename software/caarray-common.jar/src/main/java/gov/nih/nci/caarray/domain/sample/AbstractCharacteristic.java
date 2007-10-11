@@ -95,10 +95,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
 /**
- * 
+ *
  */
 @Entity
 @Table(name = "CHARACTERISTIC")
@@ -140,6 +141,9 @@ public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
     /**
      * @return the category
      */
+    @ManyToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ForeignKey(name = "CHARACTERISTIC_CATEGORY_FK")
     public Category getCategory() {
         return category;
     }
