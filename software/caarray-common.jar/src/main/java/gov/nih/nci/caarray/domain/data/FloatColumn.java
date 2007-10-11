@@ -107,7 +107,7 @@ public class FloatColumn extends AbstractDataColumn {
     /**
      * @param values the values to set
      */
-    private void setValues(float[] values) {
+    public void setValues(float[] values) {
         setSerializableValues(values);
     }
 

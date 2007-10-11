@@ -99,23 +99,23 @@ public class ExpressionProbeAnnotation extends AbstractProbeAnnotation {
 
     private static final long serialVersionUID = 1L;
 
-    private String ensmblId;
+    private String ensemblId;
     private String unigeneId;
     private String geneTitle;
     private String geneSymbol;
     private ExpressionArrayReporter expressionArrayReporter;
 
     /**
-     * @return the ensmblId
+     * @return the ensemblId
      */
-    public String getEnsmblId() {
-        return ensmblId;
+    public String getEnsemblId() {
+        return ensemblId;
     }
     /**
-     * @param ensmblId the ensmblId to set
+     * @param ensemblId the ensemblId to set
      */
-    public void setEnsmblId(String ensmblId) {
-        this.ensmblId = ensmblId;
+    public void setEnsemblId(String ensemblId) {
+        this.ensemblId = ensemblId;
     }
     /**
      * @return the expressionArrayReporter

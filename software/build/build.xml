@@ -476,6 +476,7 @@
               <include name="**/query/**" />
               <include name="**/util/**" />
               <include name="**/validation/**" />
+              <include name="**/georgetown/**"/>
             </fileset>
         </jar>
     </target>

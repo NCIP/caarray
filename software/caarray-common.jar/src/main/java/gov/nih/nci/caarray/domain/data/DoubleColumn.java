@@ -107,7 +107,7 @@ public class DoubleColumn extends AbstractDataColumn {
     /**
      * @param values the values to set
      */
-    private void setValues(double[] values) {
+    public void setValues(double[] values) {
         setSerializableValues(values);
     }
 

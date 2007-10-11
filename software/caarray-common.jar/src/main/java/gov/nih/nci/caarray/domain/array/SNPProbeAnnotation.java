@@ -100,7 +100,7 @@ public class SNPProbeAnnotation extends AbstractProbeAnnotation {
     private static final long serialVersionUID = 1L;
 
     private String dbSNPId;
-    private String dbSNPVersion;
+    private Integer dbSNPVersion;
     private String alleleA;
     private String alleleB;
     private Integer chromosome;
@@ -197,13 +197,13 @@ public class SNPProbeAnnotation extends AbstractProbeAnnotation {
     /**
      * @return the dbSNPVersion
      */
-    public String getDbSNPVersion() {
+    public Integer getDbSNPVersion() {
         return dbSNPVersion;
     }
     /**
      * @param dbSNPVersion the dbSNPVersion to set
      */
-    public void setDbSNPVersion(String dbSNPVersion) {
+    public void setDbSNPVersion(Integer dbSNPVersion) {
         this.dbSNPVersion = dbSNPVersion;
     }
 

@@ -145,8 +145,8 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private boolean browsable = true;
 
     @Deprecated
-    Project() {
-        // hibernate-only constructor
+    public Project() {
+        // hibernate & castor-only constructor
     }
 
     /**

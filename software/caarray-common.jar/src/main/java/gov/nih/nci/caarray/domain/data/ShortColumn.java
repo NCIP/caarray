@@ -107,7 +107,7 @@ public class ShortColumn extends AbstractDataColumn {
     /**
      * @param values the values to set
      */
-    private void setValues(short[] values) {
+    public void setValues(short[] values) {
         setSerializableValues(values);
     }
 

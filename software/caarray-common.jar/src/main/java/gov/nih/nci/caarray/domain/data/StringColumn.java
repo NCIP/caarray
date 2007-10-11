@@ -107,7 +107,7 @@ public class StringColumn extends AbstractDataColumn {
     /**
      * @param values the values to set
      */
-    private void setValues(String[] values) {
+    public void setValues(String[] values) {
         setSerializableValues(values);
     }
 
