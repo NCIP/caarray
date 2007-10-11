@@ -86,6 +86,7 @@ package gov.nih.nci.caarray.domain.array;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -373,6 +374,9 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     /**
      * @return the organism
      */
+    @ManyToOne
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @ForeignKey(name = "ARRAYDESIGN_ORGANISM_FK")
     public Organism getOrganism() {
         return organism;
     }
@@ -387,6 +391,9 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     /**
      * @return the microarray
      */
+    @OneToOne
+    @Cascade(CascadeType.ALL)
+    @ForeignKey(name = "ARRAYDESIGN_MICROARRAY_FK")
     public Microarray getMicroarray() {
         return microarray;
     }
@@ -401,6 +408,9 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     /**
      * @return the designDetails
      */
+    @OneToOne
+    @Cascade(CascadeType.ALL)
+    @ForeignKey(name = "ARRAYDESIGN_DETAILS_FK")
     public ArrayDesignDetails getDesignDetails() {
         return designDetails;
     }
