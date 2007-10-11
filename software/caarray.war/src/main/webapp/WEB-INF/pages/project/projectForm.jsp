@@ -1,11 +1,11 @@
-<%@ include file="/common/taglibs.jsp"%>
+<%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
 <head>
 </head>
 <body>
     <div id="content" class="homepage">
         <h1>Propose Experiment</h1>
-        <%@ include file="/common/messages.jsp" %>
+        <%@ include file="/WEB-INF/pages/common/messages.jsp" %>
         <s:form action="Project_save" method="post" validate="true">
             <table>
                 <tr>

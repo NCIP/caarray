@@ -1,5 +1,6 @@
-<%@ include file="/common/taglibs.jsp"%>
+<%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
+<page:applyDecorator name="default">
 <head>
 </head>
 <body>
@@ -12,3 +13,4 @@
         <p>Sample normal paragraph.</p>
     </div>
 </body>
+</page:applyDecorator>

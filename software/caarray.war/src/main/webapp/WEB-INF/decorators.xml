@@ -4,13 +4,7 @@
         <pattern>/struts/dojo/*</pattern>
         <pattern>/resources/*</pattern>
     </excludes> 
-    <decorator name="default" page="default.jsp">
-        <excludes>
-            <pattern>/login.jsp</pattern>
-        </excludes>
-        <pattern>/*</pattern>
-    </decorator>
-    <decorator name="login" page="login.jsp">
-        <pattern>/login.jsp</pattern>
+    <decorator name="default" page="/WEB-INF/pages/decorators/default.jsp">
+         <pattern>/*</pattern>
     </decorator>
 </decorators>

@@ -1,4 +1,4 @@
-<%@ include file="/common/taglibs.jsp" %>
+<%@ include file="/WEB-INF/pages/common/taglibs.jsp" %>
 
 <s:set name="projectId" value="project.id" scope="request"/>
 

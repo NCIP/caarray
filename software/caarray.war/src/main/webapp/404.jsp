@@ -1,4 +1,4 @@
-<%@ include file="/common/taglibs.jsp"%>
+<%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
 <page:applyDecorator name="default">
 <head>

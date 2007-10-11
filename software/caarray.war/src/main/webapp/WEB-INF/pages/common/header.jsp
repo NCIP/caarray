@@ -1,4 +1,4 @@
-<%@ include file="/common/taglibs.jsp"%>
+<%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
 <a href="#content" id="navskip">Skip to Page Content</a>
 <div id="nciheader">

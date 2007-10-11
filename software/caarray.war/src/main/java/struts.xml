@@ -18,7 +18,6 @@
 
     <!-- Configuration for the default package. -->
     <package name="default" extends="struts-default">
-    
         <default-interceptor-ref name="paramsPrepareParamsStack" />
         
         <global-results>
@@ -33,44 +32,42 @@
         <action name="Logout" class="gov.nih.nci.caarray.web.action.LogoutAction"> 
             <result name="success">/index.jsp</result> 
         </action>
-         
+        
+    </package>
+    
+    <package name="protected" namespace="/protected" extends="struts-default">
+        <default-interceptor-ref name="paramsPrepareParamsStack" />
+        
         <action name="Project_list" class="gov.nih.nci.caarray.web.action.ProjectAction" method="list"> 
             <interceptor-ref name="basicStack"/>
-            <result name="success">/pages/projectList.jsp</result> 
+            <result name="success">/WEB-INF/pages/project/projectList.jsp</result> 
         </action>
-        
         <action name="Project_*" class="gov.nih.nci.caarray.web.action.ProjectAction" method="{1}"> 
-            <result name="input">/pages/projectForm.jsp</result>
+            <result name="input">/WEB-INF/pages/project/projectForm.jsp</result>
             <result name="success" type="redirect-action">Project_list</result> 
         </action>
-        
         <action name="Project_details" class="gov.nih.nci.caarray.web.action.ProjectAction" method="details">
-            <result name="success">/pages/projectDetails.jsp</result>
+            <result name="success">/WEB-INF/pages/project/projectDetails.jsp</result>
         </action>        
-        
         <action name="Project_toggle" class="gov.nih.nci.caarray.web.action.ProjectAction" method="toggle">
             <result name="success" type="redirect-action">Project_list</result>
         </action>
-                
         <action name="File_manage" class="gov.nih.nci.caarray.web.action.FileManageAction" method="manage">
-            <result name="success">/pages/projectFiles.jsp</result>
+            <result name="success">/WEB-INF/pages/project/projectFiles.jsp</result>
         </action>
-        
          <action name="File_messages" class="gov.nih.nci.caarray.web.action.FileManageAction" method="messages">
-            <result name="input">/pages/projectFiles.jsp</result>
-            <result name="success">/pages/validationMessages.jsp</result>
+            <result name="input">/WEB-INF/pages/project/projectFiles.jsp</result>
+            <result name="success">/WEB-INF/pages/project/validationMessages.jsp</result>
         </action>
-        
         <action name="File_upload" class="gov.nih.nci.caarray.web.action.FileManageAction" method="upload">
-            <result name="input">/pages/projectFiles.jsp</result>
+            <result name="input">/WEB-INF/pages/project/projectFiles.jsp</result>
             <result name="success" type="redirect-action">File_manage?project.id=${project.id}</result>
         </action>
-         
         <action name="File_import" class="gov.nih.nci.caarray.web.action.FileManageAction">
-            <result name="input">/pages/projectFiles.jsp</result>
+            <result name="input">/WEB-INF/pages/project/projectFiles.jsp</result>
             <result name="success" type="redirect-action">File_manage?project.id=${project.id}</result>
         </action>
         
-    </package>
-
+     </package>   
+    
 </struts>

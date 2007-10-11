@@ -1,4 +1,4 @@
-<%@ include file="/common/taglibs.jsp"%>
+<%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
 <script type="text/javascript">
     var counter = 0;
@@ -29,7 +29,7 @@
 <body>
     <div id="content" class="homepage">
         <h1>Experiment Files</h1>
-        <%@ include file="/common/messages.jsp" %>
+        <%@ include file="/WEB-INF/pages/common/messages.jsp" %>
         <p>You are managing files for <s:property value="project.experiment.title" />.</p>
 
         <s:if test='project.files != null && !project.files.isEmpty()'>
@@ -76,7 +76,7 @@
                        <td>
                             <s:submit name="removeFile" value="Delete" method="removeFile" id="removeFile"/>
                         </td>
-                       <td>
+                        <td>
                             <s:submit name="saveExtension" value="Save Changes" method="saveExtension" id="saveExtension"/>
                         </td>
                     </tr>

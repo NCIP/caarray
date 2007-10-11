@@ -1,1 +1,1 @@
-<% response.sendRedirect("Project_list.action"); %>
+<% response.sendRedirect("protected/Project_list.action"); %>
