@@ -82,9 +82,7 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
@@ -105,7 +103,6 @@ import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -164,20 +161,15 @@ public class MageTabTranslatorTest {
     private void checkTcgaBroadHybridizations(Experiment investigation) {
         assertEquals(1, investigation.getArrayDesigns().size());
         ArrayDesign arrayDesign = investigation.getArrayDesigns().iterator().next();
-        Set<RawArrayData> celDatas = new HashSet<RawArrayData>();
-        Set<Hybridization> hybridizations = new HashSet<Hybridization>();
         for (LabeledExtract labeledExtract : investigation.getLabeledExtracts()) {
             Hybridization hybridization = labeledExtract.getHybridizations().iterator().next();
-            hybridizations.add(hybridization);
             assertEquals(arrayDesign, hybridization.getArray().getDesign());
             RawArrayData celData = hybridization.getArrayData();
             assertEquals(celData.getDataFile().getName(), celData.getName());
-            assertNotNull(celData);
-            assertNotNull(celData.getDataFile());
-            celDatas.add(celData);
         }
+        Set<Hybridization> hybridizations = investigation.getHybridizations();
         assertEquals(26, hybridizations.size());
-        assertEquals(26, celDatas.size());
+        checkHybridizationsHaveRawDataAndFiles(hybridizations);
     }
 
     private void checkTcgaBroadBioMaterials(Experiment investigation) {
@@ -185,6 +177,23 @@ public class MageTabTranslatorTest {
         assertEquals(0, investigation.getSamples().size());
         assertEquals(26, investigation.getExtracts().size());
         assertEquals(26, investigation.getLabeledExtracts().size());
+    }
+
+    @Test
+    public void testTranslateRawArrayDataWithoutDerivedData() {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.PERFORMANCE_TEST_10_SET);
+        CaArrayTranslationResult result = translator.translate(TestMageTabSets.PERFORMANCE_TEST_10_SET, fileSet);
+        assertEquals(1, result.getInvestigations().size());
+        Experiment investigation = result.getInvestigations().iterator().next();
+        assertEquals(10, investigation.getHybridizations().size());
+        checkHybridizationsHaveRawDataAndFiles(investigation.getHybridizations());
+    }
+
+    private void checkHybridizationsHaveRawDataAndFiles(Set<Hybridization> hybridizations) {
+        for (Hybridization hybridization : hybridizations) {
+            assertNotNull(hybridization.getArrayData());
+            assertNotNull(hybridization.getArrayData().getDataFile());
+        }
     }
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
