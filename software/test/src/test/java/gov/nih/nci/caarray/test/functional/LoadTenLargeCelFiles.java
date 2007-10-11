@@ -97,14 +97,14 @@ import org.junit.Test;
  * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
  */
 public class LoadTenLargeCelFiles extends AbstractSeleniumTest {
-    
+
     @Override
     public void tearDown() throws Exception {
         // don't tearDown
     }
-    
+
     @Test
-    public void testOneFile() throws Exception {
+    public void uploadTenFiles() throws Exception {
 
         loginAsPrincipalInvestigator();
 
