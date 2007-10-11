@@ -144,6 +144,9 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private Map<CollaboratorGroup, AccessProfile> groupProfiles = new HashMap<CollaboratorGroup, AccessProfile>();
     private boolean browsable = true;
 
+    /**
+     * @deprecated
+     */
     @Deprecated
     public Project() {
         // hibernate & castor-only constructor
