@@ -11,9 +11,6 @@
     <head>
         <%@ include file="/WEB-INF/pages/common/meta.jsp" %>
         <title><decorator:title/> | <fmt:message key="webapp.name"/></title>
-        <link rel="address bar icon" href="favicon.ico" />
-        <link rel="icon" href="favicon.ico" type="image/x-icon" />
-        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/styles/${appConfig["csstheme"]}/theme.css'/>" />
         <script type="text/javascript" src="<c:url value='/scripts/prototype.js'/>"></script>
         <script type="text/javascript" src="<c:url value='/scripts/scriptaculous.js'/>"></script>
