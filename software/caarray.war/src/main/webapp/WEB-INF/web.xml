@@ -134,8 +134,42 @@
     </login-config>
  
     <security-role>
-        <description>A Principal Investigator (PI) typically owns experiments and
-        studies/projects.</description>
+        <description>A Principal Investigator (PI) typically owns experiments and studies/projects.</description>
         <role-name>PrincipalInvestigator</role-name>
+    </security-role>
+    
+    <security-role>
+        <description></description>
+        <role-name>AnonymousUser</role-name>
+    </security-role>
+    
+    <security-role>
+        <description></description>
+        <role-name>ResearchScientist</role-name>
+    </security-role>
+    
+    <security-role>
+        <description></description>
+        <role-name>LabAdministrator</role-name>
+    </security-role>
+    
+    <security-role>
+        <description></description>
+        <role-name>Biostatistician</role-name>
+    </security-role>
+    
+    <security-role>
+        <description></description>
+        <role-name>SystemAdministrator</role-name>
+    </security-role>
+    
+    <security-role>
+        <description></description>
+        <role-name>Collaborator</role-name>
+    </security-role>
+    
+    <security-role>
+        <description></description>
+        <role-name>LabScientist</role-name>
     </security-role>
 </web-app>
