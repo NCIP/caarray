@@ -89,8 +89,10 @@ import gov.nih.nci.caarray.domain.SerializationHelperUtility;
 /**
  * Manages serialization of Objects to and from a compressed byte[].
  */
-class Serializer {
+class Serializer implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+    
     private Serializable value;
     private byte[] serializedValue;
 

@@ -117,9 +117,9 @@ public final class DataSet extends AbstractCaArrayObject {
     /**
      * @return the hybridizationDatas
      */
-    @OneToMany(mappedBy = "dataSet", fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER)
     @IndexColumn(name = "HYBRIDIZATION_INDEX")
-    @Cascade(CascadeType.SAVE_UPDATE)
+    @Cascade(CascadeType.ALL)
     public List<HybridizationData> getHybridizationDataList() {
         return hybridizationDataList;
     }

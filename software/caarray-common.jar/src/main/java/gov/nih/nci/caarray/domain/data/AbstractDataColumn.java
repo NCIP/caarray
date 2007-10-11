@@ -99,6 +99,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.IndexColumn;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
@@ -203,6 +204,7 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
     @ManyToOne
     @JoinColumn(updatable = false, nullable = false)
     @ForeignKey(name = "COLUMN_HYBRIDIZATIONDATA_FK")
+    @IndexColumn(name = "COLUMN_INDEX")
     public HybridizationData getHybridizationData() {
         return hybridizationData;
     }
