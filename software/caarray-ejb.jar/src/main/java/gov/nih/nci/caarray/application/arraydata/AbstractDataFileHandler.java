@@ -102,5 +102,5 @@ abstract class AbstractDataFileHandler {
     abstract FileValidationResult validate(CaArrayFile caArrayFile, File file);
 
     abstract void loadData(DataSet dataSet, List<QuantitationType> types, File file);
-    
+
 }

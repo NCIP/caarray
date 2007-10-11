@@ -86,13 +86,18 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 
@@ -102,6 +107,8 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
  */
 final class DataSetLoader {
 
+    private static final Log LOG = LogFactory.getLog(DataSetLoader.class);
+    
     private final CaArrayDaoFactory daoFactory;
     private final ArrayDesignService arrayDesignService;
     private final FileAccessService fileAccessService;
@@ -123,9 +130,33 @@ final class DataSetLoader {
 
     void load(List<QuantitationType> types) {
         AbstractDataFileHandler handler = getDataFileHandler();
-        File file = getFileAccessService().getFile(getArrayData().getDataFile());
-        handler.loadData(getDataSet(), types, file);
-        getDaoFactory().getArrayDao().save(getDataSet());
+        if (isLoadRequired(getDataSet(), types)) {
+            LOG.debug("Parsing required for file " + getArrayData().getDataFile().getName());
+            File file = getFileAccessService().getFile(getArrayData().getDataFile());
+            handler.loadData(getDataSet(), types, file);
+            getFileAccessService().close(file);
+            getDaoFactory().getArrayDao().save(getDataSet());
+        } else {
+            LOG.debug("File " + getArrayData().getDataFile().getName() + " has already been parsed");
+        }
+    }
+
+    private boolean isLoadRequired(DataSet dataSet, List<QuantitationType> types) {
+        for (HybridizationData hybridizationData : dataSet.getHybridizationDataList()) {
+            if (isLoadRequired(hybridizationData, types)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isLoadRequired(HybridizationData hybridizationData, List<QuantitationType> types) {
+        for (AbstractDataColumn column : hybridizationData.getColumns()) {
+            if (types.contains(column.getQuantitationType()) && !column.isLoaded()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private ArrayDesignService getArrayDesignService() {

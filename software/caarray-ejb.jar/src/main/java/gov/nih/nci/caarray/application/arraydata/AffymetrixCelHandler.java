@@ -88,6 +88,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import affymetrix.fusion.cel.FusionCELData;
 import affymetrix.fusion.cel.FusionCELFileEntryType;
@@ -111,6 +113,8 @@ import gov.nih.nci.caarray.validation.ValidationMessage;
  */
 @SuppressWarnings("PMD.CyclomaticComplexity") // Switch-like statement setValue()
 class AffymetrixCelHandler extends AbstractDataFileHandler {
+    
+    private static final Log LOG = LogFactory.getLog(AffymetrixCelHandler.class);
 
     private final FusionCELData celData = new FusionCELData();
 
@@ -141,15 +145,18 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
 
     @Override
     void loadData(DataSet dataSet, List<QuantitationType> types, File celFile) {
+        LOG.debug("Started loadData for file: " + celFile.getName());
         readCelData(celFile);
         prepareColumns(dataSet, types);
         loadDataIntoColumns(dataSet.getHybridizationDataList().get(0), types);
+        LOG.debug("Completed loadData for file: " + celFile.getName());
     }
 
     private void prepareColumns(DataSet dataSet, List<QuantitationType> types) {
         HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
         for (AbstractDataColumn column : hybridizationData.getColumns()) {
             if (!column.isLoaded() && types.contains(column.getQuantitationType())) {
+                LOG.debug("Preparing unloaded data column: " + column.getQuantitationType().getName());
                 column.initializeArray(celData.getCells());
             }
         }
