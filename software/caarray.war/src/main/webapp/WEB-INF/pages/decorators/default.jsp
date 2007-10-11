@@ -35,10 +35,10 @@
                 </div>
                 <c:choose>
                     <c:when test="${param.login != null}">
-                        <jsp:include page="/WEB-INF/pages/common/rightsidebarLogin.jsp"/>
+                        <jsp:include page="/WEB-INF/pages/common/rightnavLogin.jsp"/>
                     </c:when>
                     <c:otherwise>
-                        <jsp:include page="/WEB-INF/pages/common/rightsidebar.jsp"/>
+                        <jsp:include page="/WEB-INF/pages/common/rightnav.jsp"/>
                     </c:otherwise>
                 </c:choose>
                 <div class="clear"></div>

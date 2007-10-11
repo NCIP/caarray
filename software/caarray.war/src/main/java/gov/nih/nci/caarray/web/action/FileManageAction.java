@@ -18,14 +18,16 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.struts2.interceptor.validation.SkipValidation;
+
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
  * Manages Files for a particular project.
- * 
+ *
  * @author John Hedden
- * 
+ *
  */
 @Validation
 public class FileManageAction extends BaseAction implements Preparable {
@@ -49,10 +51,11 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * manage files for a project.
-     * 
+     *
      * @return path String
      * @throws Exception Exception
      */
+    @SkipValidation
     public String manage() throws Exception {
         setMenu("FileManageLinks");
         return SUCCESS;
@@ -60,10 +63,11 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * view messages for file.
-     * 
+     *
      * @return String
      * @throws Exception Exception
      */
+    @SkipValidation
     public String messages() throws Exception {
         setMenu("FileMessagesLinks");
 
@@ -78,12 +82,13 @@ public class FileManageAction extends BaseAction implements Preparable {
     /**
      * This method needs to be re-worked at some pt. I need to get a handle on Struts2 indexed properties first. For now
      * just go through request.getParamenterNames().
-     * 
+     *
      * validates file.
-     * 
+     *
      * @return String
      * @throws Exception Exception
      */
+    @SkipValidation
     public String validateFile() throws Exception {
         setMenu("FileManageLinks");
 
@@ -99,12 +104,13 @@ public class FileManageAction extends BaseAction implements Preparable {
     /**
      * This method needs to be re-worked at some pt. I need to get a handle on Struts2 indexed properties first. For now
      * just go through request.getParamenterNames().
-     * 
+     *
      * validates file.
-     * 
+     *
      * @return String
      * @throws Exception Exception
      */
+    @SkipValidation
     public String importFile() throws Exception {
         setMenu("FileManageLinks");
 
@@ -120,12 +126,13 @@ public class FileManageAction extends BaseAction implements Preparable {
     /**
      * This method needs to be re-worked at some pt. I need to get a handle on Struts2 indexed properties first. For now
      * just go through request.getParamenterNames().
-     * 
+     *
      * validates file.
-     * 
+     *
      * @return String
      * @throws Exception Exception
      */
+    @SkipValidation
     public String removeFile() throws Exception {
         setMenu("FileManageLinks");
 
@@ -143,12 +150,13 @@ public class FileManageAction extends BaseAction implements Preparable {
     /**
      * This method needs to be re-worked at some pt. I need to get a handle on Struts2 indexed properties first. For now
      * just go through request.getParamenterNames().
-     * 
+     *
      * validates file.
-     * 
+     *
      * @return String
      * @throws Exception Exception
      */
+    @SkipValidation
     public String saveExtension() throws Exception {
         setMenu("FileManageLinks");
 
@@ -165,7 +173,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * uploads file.
-     * 
+     *
      * @return String
      * @throws Exception Exception
      */
@@ -220,7 +228,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * gets the delegate from factory.
-     * 
+     *
      * @return Delegate ProjectDelegate
      */
     public ManageFilesDelegate getDelegate() {
@@ -287,7 +295,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * method to get file name by index.
-     * 
+     *
      * @param index int
      * @return String file name.
      */
@@ -297,7 +305,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * overloaded method to go file entry at index.
-     * 
+     *
      * @param index int
      * @return String content type.
      */
@@ -307,7 +315,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * uploaded file.
-     * 
+     *
      * @return uploads uploaded files
      */
     public List<File> getUpload() {
@@ -316,7 +324,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * sets file uploads.
-     * 
+     *
      * @param inUploads List
      */
     public void setUpload(List<File> inUploads) {
@@ -325,7 +333,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * returns uploaded file name.
-     * 
+     *
      * @return uploadFileNames
      */
     public List<String> getUploadFileName() {
@@ -334,7 +342,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * sets uploaded file names.
-     * 
+     *
      * @param inUploadFileNames List
      */
     public void setUploadFileName(List<String> inUploadFileNames) {
@@ -343,7 +351,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * returns uploaded content type.
-     * 
+     *
      * @return uploadContentTypes
      */
     public List<String> getUploadContentType() {
@@ -352,7 +360,7 @@ public class FileManageAction extends BaseAction implements Preparable {
 
     /**
      * sets upload content type.
-     * 
+     *
      * @param inContentTypes List
      */
     public void setUploadContentType(List<String> inContentTypes) {

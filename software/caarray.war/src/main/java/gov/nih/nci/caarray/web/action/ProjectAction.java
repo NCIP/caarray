@@ -8,11 +8,16 @@ import gov.nih.nci.caarray.web.delegate.ProjectDelegate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.struts2.interceptor.validation.SkipValidation;
+
+import com.opensymphony.xwork2.validator.annotations.Validation;
+
 /**
  * ProjectAction.
  * @author John Hedden
  *
  */
+@Validation
 public class ProjectAction extends BaseAction {
 
     private static final long serialVersionUID = 1L;
@@ -26,7 +31,7 @@ public class ProjectAction extends BaseAction {
      * @return path String
      * @throws Exception Exception
      */
-    @SuppressWarnings("PMD")
+    @SkipValidation
     public String list() throws Exception {
         setMenu("ProjectListLinks");
         setProjects(getDelegate().getProjectManagementService().getWorkspaceProjects());
@@ -39,7 +44,7 @@ public class ProjectAction extends BaseAction {
      * @return path String
      * @throws Exception Exception
      */
-    @SuppressWarnings("PMD")
+    @SkipValidation
     public String create() throws Exception {
         setMenu("ProjectCreateLinks");
         setProposal(Proposal.createNew());
@@ -52,7 +57,6 @@ public class ProjectAction extends BaseAction {
      * @return path String
      * @throws Exception Exception
      */
-    @SuppressWarnings("PMD")
     public String save() throws Exception {
         setMenu("ProjectSaveLinks");
         getDelegate().getProjectManagementService().submitProposal(getProposal());
@@ -68,6 +72,7 @@ public class ProjectAction extends BaseAction {
      * @return path String
      * @throws Exception Exception
      */
+    @SkipValidation
     public String details() throws Exception {
         setMenu("ProjectEditLinks");
         setProject(getDelegate().getProjectManagementService().getProject(getProject().getId()));
@@ -79,6 +84,7 @@ public class ProjectAction extends BaseAction {
      * @return success
      * @exception Exception on error
      */
+    @SkipValidation
     public String toggle() throws Exception {
         setMenu("ProjectEditLinks");
         getDelegate().getProjectManagementService().toggleBrowsableStatus(getProject().getId());
