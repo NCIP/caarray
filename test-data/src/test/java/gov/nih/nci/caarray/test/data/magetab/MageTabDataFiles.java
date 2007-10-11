@@ -109,4 +109,19 @@ public class MageTabDataFiles {
 
     public static final File SPECIFICATION_ERROR_EXAMPLE_SDRF =
         new File(MageTabDataFiles.class.getResource("/magetab/baddata/error-e-mexp-428_v1.0.sdrf").getFile());
+
+    public static final File PERFORMANCE_1_IDF =
+        new File(MageTabDataFiles.class.getResource("/magetab/performance/performance_test1.idf").getFile());
+
+    public static final File PERFORMANCE_1_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/performance/performance_test1.sdrf").getFile());
+
+    public static final File PERFORMANCE_10_IDF =
+        new File(MageTabDataFiles.class.getResource("/magetab/performance/performance_test10.idf").getFile());
+
+    public static final File PERFORMANCE_10_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/performance/performance_test10.sdrf").getFile());
+
+    public static final File PERFORMANCE_DIRECTORY =
+        new File(MageTabDataFiles.class.getResource("/magetab/performance").getFile());
 }
