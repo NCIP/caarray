@@ -124,7 +124,7 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         ProbeGroup probeGroup = new ProbeGroup(designDetails);
         designDetails.getProbeGroups().add(probeGroup);
         PhysicalProbe physicalProbe = new PhysicalProbe("authority", "namespace", "physicalProbe", designDetails, probeGroup);
-        designDetails.getPysicalProbes().add(physicalProbe);
+        designDetails.getProbes().add(physicalProbe);
     }
 
     @Override

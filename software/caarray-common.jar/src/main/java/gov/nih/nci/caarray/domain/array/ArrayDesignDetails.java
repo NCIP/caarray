@@ -106,7 +106,7 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
 
     private Set<Feature> features = new HashSet<Feature>();
     private Set<ProbeGroup> probeGroups = new HashSet<ProbeGroup>();
-    private Set<PhysicalProbe> pysicalProbes = new HashSet<PhysicalProbe>();
+    private Set<PhysicalProbe> probes = new HashSet<PhysicalProbe>();
     private Set<LogicalProbe> logicalProbes = new HashSet<LogicalProbe>();
 
     /**
@@ -126,13 +126,13 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
      * @return the pysicalProbes
      */
     @OneToMany(mappedBy = MAPPED_BY)
-    public Set<PhysicalProbe> getPysicalProbes() {
-        return pysicalProbes;
+    public Set<PhysicalProbe> getProbes() {
+        return probes;
     }
 
     @SuppressWarnings(UNUSED)
-    private void setPysicalProbes(Set<PhysicalProbe> pysicalProbes) { // NOPMD
-        this.pysicalProbes = pysicalProbes;
+    private void setProbes(Set<PhysicalProbe> pysicalProbes) { // NOPMD
+        this.probes = pysicalProbes;
     }
 
     /**

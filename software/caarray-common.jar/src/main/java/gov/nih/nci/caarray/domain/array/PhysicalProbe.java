@@ -169,7 +169,7 @@ public class PhysicalProbe extends AbstractProbe {
     /**
      * @return the logicalProbes
      */
-    @ManyToMany(mappedBy = "physicalProbes")
+    @ManyToMany(mappedBy = "probes")
     public Set<LogicalProbe> getLogicalProbes() {
         return logicalProbes;
     }

@@ -101,7 +101,7 @@ public class LogicalProbe extends AbstractProbe {
 
     private static final long serialVersionUID = 4406463229622624441L;
 
-    private Set<PhysicalProbe> physicalProbes = new HashSet<PhysicalProbe>();
+    private Set<PhysicalProbe> probes = new HashSet<PhysicalProbe>();
 
     private ArrayDesignDetails arrayDesignDetails;
 
@@ -136,13 +136,13 @@ public class LogicalProbe extends AbstractProbe {
             joinColumns = { @JoinColumn(name = "LOGICAL_PROBE_ID") },
             inverseJoinColumns = { @JoinColumn(name = "PHYSICAL_PROBE_ID") }
     )
-    public Set<PhysicalProbe> getPhysicalProbes() {
-        return physicalProbes;
+    public Set<PhysicalProbe> getProbes() {
+        return probes;
     }
 
     @SuppressWarnings("unused")
-    private void setPhysicalProbes(Set<PhysicalProbe> physicalProbes) { // NOPMD
-        this.physicalProbes = physicalProbes;
+    private void setProbes(Set<PhysicalProbe> physicalProbes) { // NOPMD
+        this.probes = physicalProbes;
     }
 
     /**
