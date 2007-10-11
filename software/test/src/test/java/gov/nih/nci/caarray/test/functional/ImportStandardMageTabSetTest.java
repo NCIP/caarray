@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.test.functional;
 
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.FloatColumn;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
@@ -114,15 +115,9 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
     private static final int NUMBER_OF_FILES = 30;
     private static final String TITLE =
         "TCGA Analysis of Gene Expression for Glioblastoma Multiforme Using Affymetrix HT_HG-U133A";
-    
-    @Override
-    public void tearDown() throws Exception {
-        // don't tearDown
-    }
-    
-    @Test
-    public void testNew() throws Exception {
 
+    @Test
+    public void testImportAndRetrieval() throws Exception {
         loginAsPrincipalInvestigator();
 
         String title = "test" + System.currentTimeMillis();
@@ -204,6 +199,9 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         RawArrayData celData = celDatas.iterator().next();
         DataSet dataSet = server.getDataRetrievalService().getDataSet(celData);
         assertNotNull(dataSet);
+        FloatColumn signalColumn = (FloatColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(2);
+        assertNotNull(signalColumn.getValues());
+        assertEquals(553536, signalColumn.getValues().length);
     }
 
     private Set<RawArrayData> getAllRawArrayData(Experiment experiment) {

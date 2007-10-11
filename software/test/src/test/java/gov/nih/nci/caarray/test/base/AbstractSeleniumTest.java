@@ -92,7 +92,7 @@ import com.thoughtworks.selenium.SeleneseTestCase;
  */
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
-    private static final String PAGE_TIMEOUT = "120000";
+    private static final String PAGE_TIMEOUT = "180000";
 
     @Override
     public void setUp() throws Exception {
