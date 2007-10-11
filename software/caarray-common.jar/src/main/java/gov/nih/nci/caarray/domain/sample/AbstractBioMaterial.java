@@ -83,6 +83,7 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
+import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -105,7 +106,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
 /**
- * 
+ *
  */
 @Entity
 @Table(name = "BIOMATERIAL")
@@ -123,6 +124,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
     private String description;
     private Set<AbstractCharacteristic> characteristics = new HashSet<AbstractCharacteristic>();
     private Set<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
+    private Organism organism;
 
     /**
      * Gets the materialType.
@@ -221,5 +223,22 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
     @SuppressWarnings("unused")
     private void setProtocolApplications(final Set<ProtocolApplication> protocolApplicationsVal) { // NOPMD
         this.protocolApplications = protocolApplicationsVal;
+    }
+
+    /**
+     * @return the organism
+     */
+    @ManyToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ForeignKey(name = "BIOMATERIAL_ORGANISM_FK")
+    public Organism getOrganism() {
+        return organism;
+    }
+
+    /**
+     * @param organism the organism to set
+     */
+    public void setOrganism(Organism organism) {
+        this.organism = organism;
     }
 }
