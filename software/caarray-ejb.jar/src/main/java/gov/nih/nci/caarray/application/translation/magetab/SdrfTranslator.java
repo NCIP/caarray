@@ -146,6 +146,7 @@ final class SdrfTranslator extends AbstractTranslator {
     private final List<Sample> allSamples = new ArrayList<Sample>();
     private final List<Extract> allExtracts = new ArrayList<Extract>();
     private final List<LabeledExtract> allLabeledExtracts = new ArrayList<LabeledExtract>();
+    private final List<Hybridization> allHybridizations = new ArrayList<Hybridization>();
     private final Map<String, AbstractCaArrayEntity> generatedNodes =
         new HashMap<String, AbstractCaArrayEntity>();
 
@@ -177,6 +178,7 @@ final class SdrfTranslator extends AbstractTranslator {
                     investigation.getSamples().addAll(allSamples);
                     investigation.getExtracts().addAll(allExtracts);
                     investigation.getLabeledExtracts().addAll(allLabeledExtracts);
+                    investigation.getHybridizations().addAll(allHybridizations);
                 }
             }
         }
@@ -245,6 +247,7 @@ final class SdrfTranslator extends AbstractTranslator {
                 FactorValue factorValue = translateFactor(sdrfFactorVal);
                 hybridization.getFactorValues().add(factorValue);
             }
+            allHybridizations.add(hybridization);
             nodeTranslations.put(sdrfHybridization, hybridization);
         }
     }
