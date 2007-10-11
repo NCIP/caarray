@@ -119,6 +119,11 @@ public final class TestMageTabSets {
     public static final MageTabInputFileSet MAGE_TAB_ERROR_SPECIFICATION_INPUT_SET = getErrorSpecificationInputSet();
 
     /**
+     * Example set of MAGE-TAB data with 10 large CEL files and no derived data.
+     */
+    public static final MageTabInputFileSet PERFORMANCE_TEST_10_INPUT_SET = getPerformanceTest10InputSet();
+
+    /**
      * Error Document set parsed from the MAGE-TAB specification example files.
      */
     public static final MageTabDocumentSet MAGE_TAB_ERROR_SPECIFICATION_SET = getSet(MAGE_TAB_ERROR_SPECIFICATION_INPUT_SET);
@@ -127,6 +132,11 @@ public final class TestMageTabSets {
      * Document set parsed from the MAGE-TAB specification example files.
      */
     public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_SET = getSet(MAGE_TAB_SPECIFICATION_INPUT_SET);
+
+    /**
+     * Document set parsed from the MAGE-TAB specification example files.
+     */
+    public static final MageTabDocumentSet PERFORMANCE_TEST_10_SET = getSet(PERFORMANCE_TEST_10_INPUT_SET);
 
 
     /**
@@ -151,15 +161,29 @@ public final class TestMageTabSets {
         }
     }
 
+
     private static MageTabInputFileSet getTcgaBroadInputSet() {
         MageTabInputFileSet fileSet = new MageTabInputFileSet();
         fileSet.addIdf(MageTabDataFiles.TCGA_BROAD_IDF);
         fileSet.addSdrf(MageTabDataFiles.TCGA_BROAD_SDRF);
         fileSet.addDataMatrix(MageTabDataFiles.TCGA_BROAD_DATA_MATRIX);
-        File[] celFiles = MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY.listFiles(CEL_FILTER);
+        addCelFiles(fileSet, MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY);
+        return fileSet;
+    }
+
+
+    private static void addCelFiles(MageTabInputFileSet fileSet, File dataFileDirectory) {
+        File[] celFiles = dataFileDirectory.listFiles(CEL_FILTER);
         for (File file : celFiles) {
             fileSet.addNativeData(file);
         }
+    }
+
+    private static MageTabInputFileSet getPerformanceTest10InputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.PERFORMANCE_10_IDF);
+        fileSet.addSdrf(MageTabDataFiles.PERFORMANCE_10_SDRF);
+        addCelFiles(fileSet, MageTabDataFiles.PERFORMANCE_DIRECTORY);
         return fileSet;
     }
 
