@@ -132,10 +132,10 @@ public final class HibernateIntegrationTestCleanUpUtility {
             tx.commit();
         } catch (DAOException deleteException) {
             HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up dummy category and terms.", deleteException);
+            LOG.error("Error cleaning up test objects.", deleteException);
         } catch (HibernateException he) {
             HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up dummy category and terms.", he);
+            LOG.error("Error cleaning up test objects.", he);
         }
         return done;
     }

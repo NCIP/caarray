@@ -90,12 +90,18 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 
 import org.hibernate.Transaction;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public abstract class AbstractCaArrayObject_HibernateIntegrationTest {
 
     private static int uniqueIntValue = 0;
 
+    @Before
+    public void setUp() {
+        HibernateUtil.enableFilters(false);
+    }
+    
     @After
     public void tearDown() {
         HibernateIntegrationTestCleanUpUtility.cleanUp();

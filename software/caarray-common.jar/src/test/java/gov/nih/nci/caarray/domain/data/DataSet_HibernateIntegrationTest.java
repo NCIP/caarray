@@ -96,7 +96,9 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
     private QuantitationType quantitationType;
 
     @Before
+    @Override
     public void setUp() {
+        super.setUp();
         quantitationType = new QuantitationType();
         quantitationType.setName("name");
         quantitationType.setTypeClass(String.class);
