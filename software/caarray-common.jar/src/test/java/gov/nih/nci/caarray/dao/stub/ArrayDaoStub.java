@@ -126,5 +126,13 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.dao.ArrayDao#getArrayData(long)
+     */
+    public AbstractArrayData getArrayData(long id) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 
 }

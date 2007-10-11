@@ -105,6 +105,14 @@ public interface ArrayDao extends CaArrayDao {
     ArrayDesign getArrayDesign(long id);
 
     /**
+     * Returns the array data object for the id given.
+     *
+     * @param id get <code>AbstractArrayData</code> matching this id
+     * @return the associated data.
+     */
+    AbstractArrayData getArrayData(long id);
+
+    /**
      * Returns the array data object associated with the file provided.
      *
      * @param file find data for this file.

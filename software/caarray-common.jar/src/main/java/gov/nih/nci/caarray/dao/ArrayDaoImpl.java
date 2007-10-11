@@ -127,6 +127,13 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     /**
      * {@inheritDoc}
      */
+    public AbstractArrayData getArrayData(long id) {
+        return (AbstractArrayData) getCurrentSession().load(AbstractArrayData.class, id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public ArrayDataType getArrayDataType(ArrayDataTypeDescriptor descriptor) {
         if (descriptor == null) {
             return null;
