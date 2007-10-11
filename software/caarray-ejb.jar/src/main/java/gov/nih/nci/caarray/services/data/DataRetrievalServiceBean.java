@@ -82,13 +82,14 @@
  */
 package gov.nih.nci.caarray.services.data;
 
+import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.DataSet;
+
 import javax.ejb.EJB;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
-
-import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.DataSet;
 
 /**
  * Implementation for remote API data retrieval.
@@ -98,12 +99,14 @@ import gov.nih.nci.caarray.domain.data.DataSet;
 public class DataRetrievalServiceBean implements DataRetrievalService {
 
     @EJB private ArrayDataService arrayDataService;
+    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
     /**
      * {@inheritDoc}
      */
     public DataSet getDataSet(AbstractArrayData arrayData) {
-        return arrayDataService.getData(arrayData);
+        AbstractArrayData retrievedArrayData = getDaoFactory().getArrayDao().getArrayData(arrayData.getId());
+        return arrayDataService.getData(retrievedArrayData);
     }
 
     /**
@@ -119,6 +122,14 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
 
     final void setArrayDataService(ArrayDataService arrayDataService) {
         this.arrayDataService = arrayDataService;
+    }
+
+    CaArrayDaoFactory getDaoFactory() {
+        return daoFactory;
+    }
+
+    void setDaoFactory(CaArrayDaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
     }
 
 }
