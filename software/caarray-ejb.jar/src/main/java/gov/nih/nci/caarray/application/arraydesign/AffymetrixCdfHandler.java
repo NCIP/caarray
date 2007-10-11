@@ -177,7 +177,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
         for (int listIndex = 0; listIndex < numLists; listIndex++) {
             PhysicalProbe probe = new PhysicalProbe(LSID_AUTHORITY, LSID_NAMESPACE, probeSetName
                     + ".ProbePair" + listIndex, designDetails, probeGroup);
-            designDetails.getPysicalProbes().add(probe);
+            designDetails.getProbes().add(probe);
         }
         int numGroups = probeSetInformation.getNumGroups();
         FusionCDFProbeGroupInformation probeGroupInformation = new FusionCDFProbeGroupInformation();
