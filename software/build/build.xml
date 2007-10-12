@@ -462,7 +462,7 @@
     <target name="build:caarray-client.jar" depends="compile:caarray-client.jar,compile:caarray-common.jar">
         <mkdir dir="${caarray-client.target.dir}" />
         <jar destfile="${caarray-client.jar}">
-            <zipfileset src="${hibernate-client.jar}" />
+            <zipfileset src="${hibernate.jar}" />
             <zipfileset src="${hibernate-annotations.jar}" />
             <zipfileset src="${hibernate-commons-annotations.jar}" />
             <zipfileset src="${ejb3-persistence.jar}" />
