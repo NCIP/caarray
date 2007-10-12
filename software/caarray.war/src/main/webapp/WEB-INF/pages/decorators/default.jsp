@@ -20,32 +20,27 @@
         <script type="text/javascript" src="<c:url value='/scripts/global.js'/>"></script>
         <decorator:head/>
     </head>
-    <body>
-        <a href="#content" id="navskip">Skip to Page Content</a>
-        <!-- header -->
-        <jsp:include page="/WEB-INF/pages/common/header.jsp"/>
+    <body id="twocol">
+        <div id="wrapper">
+            <a href="#content" id="navskip">Skip to Page Content</a>
+            <!-- header -->
+            <jsp:include page="/WEB-INF/pages/common/header.jsp"/>
 
-        <div id="workarea">
-            <div id="mainwrapper">
-                <div id="main">
-                    <div id="leftnavandcontent">
-                        <jsp:include page="/WEB-INF/pages/common/leftnav.jsp"/>
-                        <decorator:body/>
+            <!-- content -->
+            <div id="workarea">
+                <div id="mainwrapper">
+                    <div id="main">
+                        <div id="leftnavandcontent">
+                            <%-- <jsp:include page="/WEB-INF/pages/common/leftnav.jsp"/> --%>
+                            <decorator:body/>
+                            <div class="clear"></div>
+                        </div>
                     </div>
                 </div>
-                <c:choose>
-                    <c:when test="${param.login != null}">
-                        <jsp:include page="/WEB-INF/pages/common/rightnavLogin.jsp"/>
-                    </c:when>
-                    <c:otherwise>
-                        <jsp:include page="/WEB-INF/pages/common/rightnav.jsp"/>
-                    </c:otherwise>
-                </c:choose>
-                <div class="clear"></div>
             </div>
-        </div>
 
-        <!-- footer -->
-        <jsp:include page="/WEB-INF/pages/common/footer.jsp"/>
+            <!-- footer -->
+            <jsp:include page="/WEB-INF/pages/common/footer.jsp"/>
+        </div>
     </body>
 </html>

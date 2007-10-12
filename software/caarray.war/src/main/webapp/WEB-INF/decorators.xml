@@ -5,6 +5,12 @@
         <pattern>/resources/*</pattern>
     </excludes> 
     <decorator name="default" page="/WEB-INF/pages/decorators/default.jsp">
-         <pattern>/*</pattern>
+        <excludes>
+            <pattern>/WEB-INF/pages/login.jsp</pattern>
+        </excludes>
+        <pattern>/*</pattern>
+    </decorator>
+    <decorator name="login" page="/WEB-INF/pages/decorators/login.jsp">
+        <pattern>/WEB-INF/pages/login.jsp</pattern>
     </decorator>
 </decorators>

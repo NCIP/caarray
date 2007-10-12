@@ -3,7 +3,7 @@
 <head>
 </head>
 <body>
-    <div id="content" class="homepage">
+    <div id="content">
         <h1>Experiment Workspace</h1>
         <%@ include file="/WEB-INF/pages/common/messages.jsp" %>
         <p>Validation Messages for <s:property value="file.name"/></p>
