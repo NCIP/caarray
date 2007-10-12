@@ -1,6 +1,6 @@
 /* Default Tags */
 
-:root 
+:root
 { overflow-y:scroll; }
 BODY, HTML
 { min-width:860px; margin:0; padding:0; font-family:arial,helvetica,sans-serif; color:#333; font-size:85%; background:#fff }
@@ -45,7 +45,7 @@ SUB
 { font-size:80%; vertical-align:-15% }
 SUP
 { font-size:80%; vertical-align:35% }
-:lang(en) SUB 
+:lang(en) SUB
 { font-size:70%; vertical-align:-20% }
 
 
@@ -71,21 +71,21 @@ SUP
 #infobar A
 { text-decoration:underline; color:#fff; font-weight:normal; }
 #infobar
-{ background:#414141 url("../images/bg_logoutbar.gif") no-repeat left 0; border-bottom:1px solid #fff; padding:3px 15px 3px 0; font-size:95%; color:#b3ae9c }  
+{ background:#414141 url("../images/bg_logoutbar.gif") no-repeat left 0; border-bottom:1px solid #fff; padding:3px 15px 3px 0; font-size:95%; color:#b3ae9c }
 #infobar SPAN
 { color:#fff }
 #rightinfo
 { text-align:right }
-#workarea 
-{	background:#fff url("../images/bg_leftbar.gif") repeat-y left; }
-#mainwrapper 
-{	background:url("../images/bg_rightbar.gif") repeat-y right; }
-#main 
-{	width:100%;	float:left;	margin-right:-175px; background:url("../images/bg_rightbar.gif") repeat-y right; }
+#workarea
+{   background:#fff url("../images/bg_leftbar.gif") repeat-y left; }
+#mainwrapper
+{   background:url("../images/bg_rightbar.gif") repeat-y right; }
+#main
+{   width:100%; float:left; margin-right:-175px; background:url("../images/bg_rightbar.gif") repeat-y right; }
 #twocol #main
 { background:0; margin:0 }
-#leftnavandcontent 
-{	margin-right:175px;	background:url("../images/bg_leftbar.gif") repeat-y left; }
+#leftnavandcontent
+{   margin-right:175px; background:url("../images/bg_leftbar.gif") repeat-y left; }
 #twocol #leftnavandcontent
 { margin:0 }
 .clear
@@ -106,7 +106,7 @@ SUP
 
 #leftnav
 { float:left; font-size:85%; width:175px; text-transform:uppercase; font-weight:bold  }
-#leftnav UL.caarraymenu 
+#leftnav UL.caarraymenu
 { min-height:.1%; width:175px; padding:0; }
 #leftnav UL A
 { color:#333; background:#e9e9e9 url("../images/bg_caarraymenu.gif") repeat-y right; border-bottom:1px solid #fff; display:block; width:149px; min-height:.1%; padding:4px 8px 3px 18px; line-height:1.2em }
@@ -116,7 +116,7 @@ SUP
 { background:#D1CEC4; text-decoration:none; }
 #leftnav UL A.selected:hover, #leftnav UL A.selected:focus
 { background:#D1CEC4 url("../images/ico_arrow.gif") no-repeat 7px 7px; text-decoration:none; }
-#leftnav UL A:focus 
+#leftnav UL A:focus
 { outline:none; background:#D1CEC4}
 #leftnav LI.liheader
 { background:#5c5c5c; color:#fff; padding:3px 8px; border-bottom:1px solid #fff; }
@@ -241,8 +241,8 @@ SUP
 
 /* Right Side Bar */
 
-#sidebar 
-{	background:#e3e3e3; width:174px; float:right; min-height:400px }
+#sidebar
+{   background:#e3e3e3; width:174px; float:right; min-height:400px }
 #sidebar H1
 { border-top:0; background:#5c5c5c; color:#e3e6ec; padding-top:5px  }
 TABLE.login
@@ -258,21 +258,21 @@ TABLE.login TD.value
 /* Tabs */
 
 UL#tabs
-{ height:28px; font-weight:bold; list-style:none; margin:0; padding-left:5px; clear:both; background:url("../images/bg_tabbar.gif") repeat-x bottom; border-bottom:1px solid #999	}
+{ height:28px; font-weight:bold; list-style:none; margin:0; padding-left:5px; clear:both; background:url("../images/bg_tabbar.gif") repeat-x bottom; border-bottom:1px solid #999   }
 :lang(en) UL#tabs
 { height:30px }
 UL#tabs LI
-{ float:left;	margin:0;	padding:0 0 0 4px; text-align:center; min-height:.1%; height:20px }
-UL#tabs LI A 
-{	display:block; margin:0; padding:5px 10px; background:#9d9a8e url("../images/bg_headerbar_tan.gif") repeat-x; color:#fff; text-decoration:none; border:1px solid #999; }
-.tabs2 LI A 
+{ float:left;   margin:0;   padding:0 0 0 4px; text-align:center; min-height:.1%; height:20px }
+UL#tabs LI A
+{   display:block; margin:0; padding:5px 10px; background:#9d9a8e url("../images/bg_headerbar_tan.gif") repeat-x; color:#fff; text-decoration:none; border:1px solid #999; }
+.tabs2 LI A
 { width:78px }
-UL#tabs LI A:hover 
-{	color:#333;	background-color:#fff; text-decoration:none; }
-UL#tabs LI A.active 
+UL#tabs LI A:hover
+{   color:#333; background-color:#fff; text-decoration:none; }
+UL#tabs LI A.active
 { outline:none; color:#333; background-color:#e0ded6; border-bottom:3px solid #e0ded6; background-image:none }
 UL#tabs LI.active
-{ color:#333;	background-color:#e0ded6; }
+{ color:#333;   background-color:#e0ded6; }
 UL#tabs LI A:focus
 { -moz-outline-style:none; }
 
@@ -308,13 +308,13 @@ TH.actions, TD.icon, TH.icon
 UL#tablevel2
 { font-size:92%; height:3em; padding:0; font-weight:bold; }
 UL#tablevel2 LI
-{ float:left;	margin:0 4px 0 0;	padding:0; text-align:center; min-height:.1%; height:20px  }
-UL#tablevel2 LI A 
-{	display:block; margin:0; padding:5px 10px; color:#333; text-decoration:none; border:1px solid #fff; background:#e5e5e5 url("../images/bg_grad3d.gif") repeat-x; }
-UL#tablevel2 LI A.selected 
-{	display:block; margin:0; padding:5px 10px; color:#333; text-decoration:none; border:1px solid #999; border-right:1px solid #fff; border-bottom:1px solid #fff; background:url("../images/bg_grad3d_reverse.gif") repeat-x; }
-UL#tablevel2 LI A:hover 
-{	display:block; margin:0; padding:5px 10px; color:#333; text-decoration:none; border:1px solid #999; background:#fff url("../images/bg_grad3d.gif") repeat-x 0 10px; }
+{ float:left;   margin:0 4px 0 0;   padding:0; text-align:center; min-height:.1%; height:20px  }
+UL#tablevel2 LI A
+{   display:block; margin:0; padding:5px 10px; color:#333; text-decoration:none; border:1px solid #fff; background:#e5e5e5 url("../images/bg_grad3d.gif") repeat-x; }
+UL#tablevel2 LI A.selected
+{   display:block; margin:0; padding:5px 10px; color:#333; text-decoration:none; border:1px solid #999; border-right:1px solid #fff; border-bottom:1px solid #fff; background:url("../images/bg_grad3d_reverse.gif") repeat-x; }
+UL#tablevel2 LI A:hover
+{   display:block; margin:0; padding:5px 10px; color:#333; text-decoration:none; border:1px solid #999; background:#fff url("../images/bg_grad3d.gif") repeat-x 0 10px; }
 
 
 /* Paging */
@@ -358,7 +358,7 @@ UL#tablevel2 LI A:hover
 .rightsidetable
 { padding-left:10px }
 .scrolltablefooter
-{ padding:5px; background:url("../images/bg_grad3d.gif") repeat-x; text-align:right; border:1px solid #999; border-top:0; font-size:92% } 
+{ padding:5px; background:url("../images/bg_grad3d.gif") repeat-x; text-align:right; border:1px solid #999; border-top:0; font-size:92% }
 TR.listhover
 { cursor:pointer; }
 TR.listhover:hover
@@ -413,9 +413,9 @@ DIV.actions A:focus, DIV.actionsthin A:focus
 { padding:2px; }
 #content UL.checklist LI INPUT
 { margin:0 !important; padding:0; }
-#content UL.checklist LI LABEL 
+#content UL.checklist LI LABEL
 { font-weight:normal !important; display:block; padding:0 0 0 22px; text-indent:-22px; cursor:pointer}
-#content UL.checklist LI LABEL:hover, #content UL.checklist LI LABEL.hover  
+#content UL.checklist LI LABEL:hover, #content UL.checklist LI LABEL.hover
 { background:#ffc }
 .alphanav
 { border:1px solid #999; border-top:1px solid #ccc; background:#e5e5e5 url("../images/bg_grad3d.gif") repeat-x 0 -5px; width:255px; }
@@ -427,7 +427,7 @@ DIV.actions A:focus, DIV.actionsthin A:focus
 { float:left; width:200px; margin-left:5px }
 .selectionside UL
 { padding:3px }
-.selectionside A 
+.selectionside A
 { text-decoration:none; color:#666; background:url("../images/ico_checklist_remove.gif") 0 1px no-repeat; padding-left:15px; }
 .selectionside A:hover
 { color:#333; background:url("../images/ico_checklist_remove.gif") 0 -23px no-repeat; }
