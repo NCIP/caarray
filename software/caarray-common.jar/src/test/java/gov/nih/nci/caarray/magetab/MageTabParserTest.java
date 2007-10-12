@@ -151,12 +151,19 @@ public class MageTabParserTest {
     public void testParse() throws MageTabParsingException, InvalidDataException {
         testSpecificationDocuments();
         testTcgaBroadDocuments();
+        //testEbiTemplateDocuments();
+    }
+
+    private void testEbiTemplateDocuments() throws InvalidDataException, MageTabParsingException {
+        MageTabDocumentSet documentSet = parser.parse(TestMageTabSets.EBI_TEMPLATE_INPUT_SET);
+        assertNotNull(documentSet);
+        assertEquals(1, documentSet.getIdfDocuments().size());
+        assertEquals(1, documentSet.getSdrfDocuments().size());
     }
 
     private void testTcgaBroadDocuments() throws MageTabParsingException, InvalidDataException {
         MageTabInputFileSet fileSet = TestMageTabSets.TCGA_BROAD_INPUT_SET;
-        MageTabDocumentSet documentSet = null;
-        documentSet = parser.parse(fileSet);
+        MageTabDocumentSet documentSet = parser.parse(fileSet);
         assertNotNull(documentSet);
         assertEquals(1, documentSet.getIdfDocuments().size());
         assertEquals(1, documentSet.getSdrfDocuments().size());

@@ -243,7 +243,9 @@ public final class IdfDocument extends AbstractMageTabDocument {
                 break;
             }
         }
-        return lineContents.isEmpty() || "".equals(lineContents.get(0));
+        return lineContents.isEmpty()
+        || "".equals(lineContents.get(0))
+        || lineContents.get(0).startsWith(COMMENT_CHARACTER);
     }
 
     @SuppressWarnings("PMD")
@@ -455,11 +457,14 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handleProtocolTermSourceRef(String value) {
-        if (!value.trim().equals("")) {
+        if (value.trim().equals("")) {
+            return;
+        } else {
             Iterator<Protocol> protocols = investigation.getProtocols().iterator();
             while (protocols.hasNext()) {
                 protocols.next().getType().setTermSource(getTermSource(value));
             }
+
         }
     }
 

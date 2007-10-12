@@ -167,7 +167,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     @Override
     protected void parse() throws MageTabParsingException {
         DelimitedFileReader tabDelimitedReader = createTabDelimitedReader();
-        handleHeaderLine(tabDelimitedReader.nextLine());
+        handleHeaderLine(getHeaderLine(tabDelimitedReader));
         if (minimumColumnCheck()) {
             while (tabDelimitedReader.hasNextLine()) {
                 handleLine(tabDelimitedReader.nextLine());
@@ -177,6 +177,18 @@ public final class SdrfDocument extends AbstractMageTabDocument {
                     + "minimum number of columns (Source, Hybridization, and a data file)");
         }
 
+    }
+
+    private List<String> getHeaderLine(DelimitedFileReader tabDelimitedReader) {
+        List<String> nextLine = tabDelimitedReader.nextLine();
+        while (isComment(nextLine)) {
+            nextLine = tabDelimitedReader.nextLine();
+        }
+        return nextLine;
+    }
+
+    private boolean isComment(List<String> values) {
+        return !values.isEmpty() && values.get(0).startsWith(COMMENT_CHARACTER);
     }
 
     private boolean minimumColumnCheck() {
@@ -219,10 +231,12 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     }
 
     private void handleLine(List<String> values) {
-        for (int i = 0; i < values.size(); i++) {
-            handleValue(columns.get(i), values.get(i));
+        if (!isComment(values)) {
+            for (int i = 0; i < values.size(); i++) {
+                handleValue(columns.get(i), values.get(i));
+            }
+            currentNode = null;
         }
-        currentNode = null;
     }
 
     @SuppressWarnings("PMD")

@@ -68,6 +68,11 @@ public abstract class AbstractMageTabDocument implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Lines starting with '#' will be ignored.
+     */
+    protected static final String COMMENT_CHARACTER = "#";
+
     private final MageTabDocumentSet documentSet;
     private final File file;
 
@@ -134,11 +139,11 @@ public abstract class AbstractMageTabDocument implements Serializable {
     protected final OntologyTerm getOntologyTerm(String category, String value) {
         return getDocumentSet().getOntologyTerm(category, value);
     }
-    
+
     /**
      * Returns a <code>ArrayDesign</code> that has the given name. Reuses an existing matching
      * <code>ArrayDesign</code> if one exists, otherwise creates one.
-     * 
+     *
      * @param value the name of the array design
      * @return ArrayDesign the new or matching array design
      */
@@ -179,7 +184,7 @@ public abstract class AbstractMageTabDocument implements Serializable {
     /**
      * Creates an entry heading from the column or row heading
      * value provided.
-     * 
+     *
      * @param headingString the heading as given in the file
      * @return the heading object.
      */
@@ -189,7 +194,7 @@ public abstract class AbstractMageTabDocument implements Serializable {
 
     /**
      * Returns a term that should originate from the MGED ontology.
-     * 
+     *
      * @param category category of the term.
      * @param value the term.
      * @return the term object.
@@ -199,37 +204,37 @@ public abstract class AbstractMageTabDocument implements Serializable {
         term.setTermSource(getTermSource("MO"));
         return term;
     }
-    
+
     /**
      * Adds a new informational validation message to the document set's validation results.
-     * 
+     *
      * @param message message content.
      * @return the message.
      */
     protected final ValidationMessage addInfoMessage(String message) {
         return addMessage(ValidationMessage.Type.INFO, message);
     }
-    
+
     /**
      * Adds a new warning validation message to the document set's validation results.
-     * 
+     *
      * @param message message content.
      * @return the message.
      */
     protected final ValidationMessage addWarningMessage(String message) {
         return addMessage(ValidationMessage.Type.WARNING, message);
     }
-    
+
     /**
      * Adds a new error validation message to the document set's validation results.
-     * 
+     *
      * @param message message content.
      * @return the message.
      */
     protected final ValidationMessage addErrorMessage(String message) {
         return addMessage(ValidationMessage.Type.ERROR, message);
     }
-    
+
     private ValidationMessage addMessage(Type type, String message) {
         return getDocumentSet().createValidationMessage(getFile(), type, message);
     }
