@@ -145,6 +145,11 @@ public final class TestMageTabSets {
     public static final MageTabInputFileSet TCGA_BROAD_INPUT_SET = getTcgaBroadInputSet();
 
     /**
+     * MAGE-TAB input set derived from EBI generated template.
+     */
+    public static final MageTabInputFileSet EBI_TEMPLATE_INPUT_SET = getEbiTemplateInputSet();
+
+    /**
      * Document set parsed from TCGA Broad data.
      */
     public static final MageTabDocumentSet TCGA_BROAD_SET = getSet(TCGA_BROAD_INPUT_SET);
@@ -159,6 +164,13 @@ public final class TestMageTabSets {
             e.printStackTrace(System.err);
             return null;
         }
+    }
+
+    private static MageTabInputFileSet getEbiTemplateInputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.EBI_TEMPLATE_IDF);
+        fileSet.addSdrf(MageTabDataFiles.EBI_TEMPLATE_SDRF);
+        return fileSet;
     }
 
 
