@@ -1,10 +1,12 @@
 <div id="leftnav">
     <ul class="caarraymenu">
-        <li class="liheader">Public Pages</li>
-        <li><a href="./" class="selected">Home</a></li>
+        <li class="liheader">caArray</li>
+        <li><a href="./" class="selected">Public Home</a></li>
         <li><a href="#">Register</a></li>
         <li><a href="#">Login</a></li>
-        <li class="liheader">caArray Software</li>
+    </ul>
+    <ul class="aboutmenu">
+        <li class="liheader">caArray 2.0 Software</li>
         <li><a href="#">What is caArray?</a></li>
         <li><a href="#">Install caArray</a></li>
         <li><a href="#">User Guide</a></li>

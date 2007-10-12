@@ -14,7 +14,7 @@
         <link rel="address bar icon" href="${ctx}/images/favicon.ico" />
         <link rel="icon" href="${ctx}/images/favicon.ico" type="image/x-icon" />
         <link rel="shortcut icon" href="${ctx}/images/favicon.ico" type="image/x-icon" />
-        <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/styles/${appConfig["csstheme"]}/theme.css'/>" />
+        <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/styles/theme.css'/>" />
         <script type="text/javascript" src="<c:url value='/scripts/prototype.js'/>"></script>
         <script type="text/javascript" src="<c:url value='/scripts/scriptaculous.js'/>"></script>
         <script type="text/javascript" src="<c:url value='/scripts/global.js'/>"></script>
