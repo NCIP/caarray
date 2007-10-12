@@ -22,22 +22,20 @@
         
         <global-results>
             <result name="error">/error.jsp</result>
-            <result name="home" type="redirect-action">Project_list</result>
         </global-results>
         
         <global-exception-mappings>
             <exception-mapping result="error" exception="java.lang.Throwable"/>
         </global-exception-mappings>
         
-        <action name="Logout" class="gov.nih.nci.caarray.web.action.LogoutAction"> 
-            <result name="success">/index.jsp</result> 
-        </action>
-        
     </package>
     
     <package name="protected" namespace="/protected" extends="struts-default">
         <default-interceptor-ref name="paramsPrepareParamsStack" />
         
+        <action name="Logout" class="gov.nih.nci.caarray.web.action.LogoutAction"> 
+            <result name="success" type="redirect-action">Project_list</result> 
+        </action>
         <action name="Project_list" class="gov.nih.nci.caarray.web.action.ProjectAction" method="list"> 
             <interceptor-ref name="basicStack"/>
             <result name="success">/WEB-INF/pages/project/projectList.jsp</result> 
