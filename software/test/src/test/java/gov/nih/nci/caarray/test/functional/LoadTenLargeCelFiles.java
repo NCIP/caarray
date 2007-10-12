@@ -104,7 +104,7 @@ public class LoadTenLargeCelFiles extends AbstractSeleniumTest {
     }
 
     @Test
-    public void uploadTenFiles() throws Exception {
+    public void testUploadTenFiles() throws Exception {
 
         loginAsPrincipalInvestigator();
 
