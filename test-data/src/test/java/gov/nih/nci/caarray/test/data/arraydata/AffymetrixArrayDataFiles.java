@@ -89,8 +89,23 @@ public class AffymetrixArrayDataFiles {
     public static final File TEST3_CEL =
         new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/Test3-1-121502.CEL").getFile());
 
+    public static final File TEST3_CHP =
+        new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/Test3-1-121502.CHP").getFile());
+
     public static final File TEST3_CALVIN_CEL =
         new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/Test3-1-121502.calvin.CEL").getFile());
+
+    public static final File HG_FOCUS_CEL =
+        new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/HG-Focus-1-121502.cel").getFile());
+
+    public static final File HG_FOCUS_CALVIN_CEL =
+        new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/HG-Focus-1-121502.calvin.cel").getFile());
+
+    public static final File HG_FOCUS_CHP =
+        new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/HG-Focus-1-121502.CHP").getFile());
+
+    public static final File HG_FOCUS_CALVIN_CHP =
+        new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/HG-Focus-1-121502.calvin.CHP").getFile());
 
     public static final File TEST_HG_U133_PLUS_2_CEL =
         new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/Test_HG-U133_Plus_2.CEL").getFile());
