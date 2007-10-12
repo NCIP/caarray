@@ -188,8 +188,8 @@
     </target>
 
     <target name="preDeployGlobus">
-        <copy todir="${ext.globus.dir}/lib" file="C:/5am/caarray/software/lib/cacore32-client.jar"/>
-        <copy todir="${ext.globus.dir}/lib" file="C:/5am/caarray/software/caarray-client.jar/target/caarray-client.jar"/>
+        <copy todir="${ext.globus.dir}/lib" file="../lib/cacore32-client.jar"/>
+        <copy todir="${ext.globus.dir}/lib" file="../caarray-client.jar/target/caarray-client.jar"/>
     </target>
 
 </project>
