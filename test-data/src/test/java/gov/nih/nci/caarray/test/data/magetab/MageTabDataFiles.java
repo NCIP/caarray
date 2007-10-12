@@ -92,6 +92,12 @@ public class MageTabDataFiles {
     public static final File SPECIFICATION_EXAMPLE_SDRF =
         new File(MageTabDataFiles.class.getResource("/magetab/specification/e-mexp-428_v1.0.sdrf").getFile());
 
+    public static final File EBI_TEMPLATE_IDF =
+        new File(MageTabDataFiles.class.getResource("/magetab/ebi_template/MAGE-TAB_GSK.idf").getFile());
+
+    public static final File EBI_TEMPLATE_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/ebi_template/MAGE-TAB_GSK.sdrf").getFile());
+
     public static final File TCGA_BROAD_DATA_DIRECTORY =
         new File(MageTabDataFiles.class.getResource("/magetab/tcga/broad").getFile());
 
