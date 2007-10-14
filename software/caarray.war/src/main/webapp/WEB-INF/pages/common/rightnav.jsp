@@ -4,7 +4,7 @@
 
 <div id="sidebar" class="homepage">
     <h1>Actions</h1>
-    <menu:useMenuDisplayer name="Velocity" config="/template/velocity/rightbarMenu.vm">
+    <menu:useMenuDisplayer permissions="rolesAdapter" name="Velocity" config="/template/velocity/rightbarMenu.vm">
         <s:if test="menu == 'ProjectListLinks'">
             <menu:displayMenu name="ProjectListLinks" />
         </s:if>

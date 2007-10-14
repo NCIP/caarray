@@ -4,10 +4,12 @@
 
     <ul>
         #foreach ($menuItem in $menu.components)
-            #if($menuItem.name == "ManageFiles")
-                <li><a href="$menuItem.url?project.id=${projectId}" title="$displayer.getMessage($menuItem.title)">$displayer.getMessage($menuItem.title)</a></li>
-            #else
-                <li><a href="$menuItem.url" title="$displayer.getMessage($menuItem.title)">$displayer.getMessage($menuItem.title)</a></li>
+            #if ($displayer.isAllowed($menuItem))
+                #if($menuItem.name == "ManageFiles")
+                    <li><a href="$menuItem.url?project.id=${projectId}" title="$displayer.getMessage($menuItem.title)">$displayer.getMessage($menuItem.title)</a></li>
+                #else
+                    <li><a href="$menuItem.url" title="$displayer.getMessage($menuItem.title)">$displayer.getMessage($menuItem.title)</a></li>
+                #end
             #end
         #end
     </ul>

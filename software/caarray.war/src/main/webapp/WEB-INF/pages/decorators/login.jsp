@@ -20,28 +20,26 @@
         <script type="text/javascript" src="<c:url value='/scripts/global.js'/>"></script>
         <decorator:head/>
     </head>
-    <body id="home">
-        <div id="wrapper">
-            <a href="#content" id="navskip">Skip to Page Content</a>
-            <!-- header -->
-            <jsp:include page="/WEB-INF/pages/common/header.jsp"/>
 
-            <!-- content -->
-            <div id="workarea">
-                <div id="mainwrapper">
-                    <div id="main">
-                        <div id="leftnavandcontent">
-                            <jsp:include page="/WEB-INF/pages/common/leftnav.jsp"/>
-                            <decorator:body/>
-                        </div>
+    <body>
+        <a href="#content" id="navskip">Skip to Page Content</a>
+        <!-- header -->
+        <jsp:include page="/WEB-INF/pages/common/header.jsp"/>
+
+        <div id="workarea">
+            <div id="mainwrapper">
+                <div id="main">
+                    <div id="leftnavandcontent">
+                        <jsp:include page="/WEB-INF/pages/common/leftnav.jsp"/>
+                        <decorator:body/>
                     </div>
-                    <jsp:include page="/WEB-INF/pages/common/rightnavLogin.jsp"/>
-                    <div class="clear"></div>
                 </div>
+                 <jsp:include page="/WEB-INF/pages/common/rightnavLogin.jsp"/>
+                <div class="clear"></div>
             </div>
-
-            <!-- footer -->
-            <jsp:include page="/WEB-INF/pages/common/footer.jsp"/>
         </div>
+
+        <!-- footer -->
+        <jsp:include page="/WEB-INF/pages/common/footer.jsp"/>
     </body>
 </html>

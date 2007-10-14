@@ -1,7 +1,7 @@
 <div id="leftnav">
     <ul class="caarraymenu">
         <li class="liheader">caArray</li>
-        <li><a href="./" class="selected">Public Home</a></li>
+        <li><a href="#">Public Home</a></li>
         <li><a href="#">Register</a></li>
         <li><a href="#">Login</a></li>
     </ul>

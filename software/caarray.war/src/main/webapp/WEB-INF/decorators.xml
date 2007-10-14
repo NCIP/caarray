@@ -1,4 +1,4 @@
-<!--  
+ 
 <decorators defaultdir="/decorators">
     <excludes>
         <pattern>/*ajax=true*</pattern>
@@ -15,15 +15,5 @@
         <pattern>/WEB-INF/pages/login.jsp</pattern>
     </decorator>
 </decorators>
--->
 
-<decorators defaultdir="/decorators">
-    <excludes>
-        <pattern>/*ajax=true*</pattern>
-        <pattern>/struts/dojo/*</pattern>
-        <pattern>/resources/*</pattern>
-    </excludes> 
-    <decorator name="default" page="/WEB-INF/pages/decorators/default.jsp">
-         <pattern>/*</pattern>
-    </decorator>
-</decorators>
+

@@ -122,13 +122,34 @@
         </web-resource-collection>
         <auth-constraint>
             <role-name>PrincipalInvestigator</role-name>
+            <role-name>ResearchScientist</role-name>
+            <role-name>LabAdministrator</role-name>
+            <role-name>Biostatistician</role-name>
+            <role-name>SystemAdministrator</role-name>
+            <role-name>Collaborator</role-name>
+            <role-name>LabScientist</role-name>
+        </auth-constraint>
+    </security-constraint>
+    
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>protected</web-resource-name>
+            <url-pattern>/protected/File_manage.action</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>PrincipalInvestigator</role-name>
+            <role-name>ResearchScientist</role-name>
+            <role-name>Biostatistician</role-name>
+            <role-name>SystemAdministrator</role-name>
+            <role-name>Collaborator</role-name>
+            <role-name>LabScientist</role-name>
         </auth-constraint>
     </security-constraint>
  
     <login-config>
         <auth-method>FORM</auth-method>
         <form-login-config>
-            <form-login-page>/WEB-INF/pages/login.jsp?login=true</form-login-page>
+            <form-login-page>/WEB-INF/pages/login.jsp</form-login-page>
             <form-error-page>/WEB-INF/pages/login.jsp?error=true</form-error-page>
         </form-login-config>
     </login-config>
@@ -140,7 +161,7 @@
     
     <security-role>
         <description></description>
-        <role-name>AnonymousUser</role-name>
+        <role-name>__anonymous__</role-name>
     </security-role>
     
     <security-role>
