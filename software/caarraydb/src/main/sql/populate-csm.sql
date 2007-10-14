@@ -49,6 +49,53 @@ values ("__anonymous__","Anonymous","User","anonymous_access_only_no_pass",sysda
 insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(2,4,sysdate());
 
+ -- f1rebird05 is password
+insert into csm_user (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
+values ("researchscientist","ResearchScientist","ResearchScientist","gJ5bRQxV/Qnei3BvqISY2Q==",sysdate());
+insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
+values(1,5,sysdate());
+insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
+values(2,5,sysdate());
+
+ -- f1rebird05 is password
+insert into csm_user (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
+values ("labadministrator","LabAdministrator","LabAdministrator","gJ5bRQxV/Qnei3BvqISY2Q==",sysdate());
+insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
+values(1,6,sysdate());
+insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
+values(2,6,sysdate());
+
+ -- f1rebird05 is password
+insert into csm_user (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
+values ("labscientist","LabScientist","LabScientist","gJ5bRQxV/Qnei3BvqISY2Q==",sysdate());
+insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
+values(1,7,sysdate());
+insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
+values(2,7,sysdate());
+
+ -- f1rebird05 is password
+insert into csm_user (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
+values ("biostatistician","Biostatistician","Biostatistician","gJ5bRQxV/Qnei3BvqISY2Q==",sysdate());
+insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
+values(1,8,sysdate());
+insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
+values(2,8,sysdate());
+
+-- f1rebird05 is password
+insert into csm_user (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
+values ("systemadministrator","SystemAdministrator","SystemAdministrator","gJ5bRQxV/Qnei3BvqISY2Q==",sysdate());
+insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
+values(1,9,sysdate());
+insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
+values(2,9,sysdate());
+
+-- f1rebird05 is password
+insert into csm_user (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
+values ("collaborator","Collaborator","Collaborator","gJ5bRQxV/Qnei3BvqISY2Q==",sysdate());
+insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
+values(1,10,sysdate());
+insert into csm_user_pe(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
+values(2,10,sysdate());
 
 -- Groups
 -- This group corresponds to a security group
@@ -64,6 +111,30 @@ values('Public', sysdate(), 2);
 -- should be in this group
 insert into csm_group (group_name, update_date, application_id)
 values('__anonymous__', sysdate(), 2);
+
+-- This group corresponds to a security group
+insert into csm_group (group_name, update_date, application_id)
+values('ResearchScientist', sysdate(), 1);
+
+-- This group corresponds to a security group
+insert into csm_group (group_name, update_date, application_id)
+values('LabAdministrator', sysdate(), 1);
+
+-- This group corresponds to a security group
+insert into csm_group (group_name, update_date, application_id)
+values('LabScientist', sysdate(), 1);
+
+-- This group corresponds to a security group
+insert into csm_group (group_name, update_date, application_id)
+values('Biostatistician', sysdate(), 1);
+
+-- This group corresponds to a security group
+insert into csm_group (group_name, update_date, application_id)
+values('SystemAdministrator', sysdate(), 1);
+
+-- This group corresponds to a security group
+insert into csm_group (group_name, update_date, application_id)
+values('Collaborator', sysdate(), 1);
 
 -- all three real users belong to all groups
 insert into csm_user_group (user_id, group_id)
@@ -90,6 +161,30 @@ values(3, 3);
 -- the anonymous user belong to just the anonymous group
 insert into csm_user_group (user_id, group_id)
 values(4, 3);
+
+-- the ResearchScientist
+insert into csm_user_group (user_id, group_id)
+values(5, 4);
+
+-- the LabAdmin
+insert into csm_user_group (user_id, group_id)
+values(6, 5);
+
+-- the LabScientist
+insert into csm_user_group (user_id, group_id)
+values(7, 6);
+
+-- the Biostatistician
+insert into csm_user_group (user_id, group_id)
+values(8, 7);
+
+-- the SysAdmin
+insert into csm_user_group (user_id, group_id)
+values(9, 8);
+
+-- the Collaborator
+insert into csm_user_group (user_id, group_id)
+values(10, 9);
 
 #
 # The following entries are Common Set of Privileges
