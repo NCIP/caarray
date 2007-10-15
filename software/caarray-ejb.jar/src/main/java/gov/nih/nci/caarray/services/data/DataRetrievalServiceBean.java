@@ -86,6 +86,13 @@ import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
+import gov.nih.nci.caarray.domain.data.HybridizationData;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Remote;
@@ -113,7 +120,95 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
      * {@inheritDoc}
      */
     public DataSet getDataSet(DataRetrievalRequest request) {
-        return null;
+        checkRequest(request);
+        List<DataSet> dataSets = getDataSets(request);
+        return createMergedDataSet(dataSets, request);
+    }
+
+    private List<DataSet> getDataSets(DataRetrievalRequest request) {
+        List<AbstractArrayData> arrayDatas = getArrayDatas(request);
+        List<DataSet> dataSets = new ArrayList<DataSet>(arrayDatas.size());
+        for (AbstractArrayData data : arrayDatas) {
+            dataSets.add(getArrayDataService().getData(data, request.getQuantitationTypes()));
+        }
+        return dataSets;
+    }
+
+    private DataSet createMergedDataSet(List<DataSet> dataSets, DataRetrievalRequest request) {
+        DataSet dataSet = new DataSet();
+        dataSet.getQuantitationTypes().addAll(request.getQuantitationTypes());
+        addHybridizationDatas(dataSet, dataSets, request);
+        return dataSet;
+    }
+
+    private void addHybridizationDatas(DataSet dataSet, List<DataSet> dataSets, DataRetrievalRequest request) {
+        for (DataSet nextDataSet : dataSets) {
+            for (HybridizationData nextHybridizationData : nextDataSet.getHybridizationDataList()) {
+                addHybridizationData(dataSet, nextHybridizationData, request);
+            }
+        }
+    }
+
+    private void addHybridizationData(DataSet dataSet, HybridizationData copyFromHybridizationData, 
+            DataRetrievalRequest request) {
+        HybridizationData hybridizationData = new HybridizationData();
+        hybridizationData.setHybridization(copyFromHybridizationData.getHybridization());
+        dataSet.getHybridizationDataList().add(hybridizationData);
+        copyColumns(hybridizationData, copyFromHybridizationData, request.getQuantitationTypes());
+        hybridizationData.setDataSet(dataSet);
+    }
+
+    private void copyColumns(HybridizationData hybridizationData, HybridizationData copyFromHybridizationData, 
+            List<QuantitationType> quantitationTypes) {
+        for (QuantitationType type : quantitationTypes) {
+            hybridizationData.getColumns().add(copyFromHybridizationData.getColumn(type));
+        }
+    }
+
+    private void checkRequest(DataRetrievalRequest request) {
+        if (request.getHybridizations().isEmpty()) {
+            throw new IllegalArgumentException("DataRetrievalRequest didn't specify Hybridizations");
+        } else if (request.getQuantitationTypes().isEmpty()) {
+            throw new IllegalArgumentException("DataRetrievalRequest didn't specify QuantitationTypes");
+        }
+    }
+
+    private List<AbstractArrayData> getArrayDatas(DataRetrievalRequest request) {
+        List<Hybridization> hybridizations = getHybridizations(request);
+        return getArrayDatas(hybridizations, request.getQuantitationTypes());
+    }
+
+    private List<AbstractArrayData> getArrayDatas(List<Hybridization> hybridizations, 
+            List<QuantitationType> quantitationTypes) {
+        List<AbstractArrayData> arrayDatas = new ArrayList<AbstractArrayData>(hybridizations.size());
+        for (Hybridization hybridization : hybridizations) {
+            addArrayDatas(arrayDatas, hybridization, quantitationTypes);
+        }
+        return arrayDatas;
+    }
+
+    private void addArrayDatas(List<AbstractArrayData> arrayDatas, Hybridization hybridization, 
+            List<QuantitationType> quantitationTypes) {
+        if (containsAllTypes(hybridization.getArrayData(), quantitationTypes)) {
+            arrayDatas.add(hybridization.getArrayData());
+        }
+        for (DerivedArrayData derivedArrayData : hybridization.getDerivedDataCollection()) {
+            if (containsAllTypes(derivedArrayData, quantitationTypes)) {
+                arrayDatas.add(derivedArrayData);
+            }
+        }
+    }
+
+    private boolean containsAllTypes(AbstractArrayData arrayData, List<QuantitationType> quantitationTypes) {
+        return arrayData.getDataSet().getQuantitationTypes().containsAll(quantitationTypes);
+    }
+
+    private List<Hybridization> getHybridizations(DataRetrievalRequest request) {
+        List<Hybridization> hybridizations = new ArrayList<Hybridization>(request.getHybridizations().size());
+        for (Hybridization hybridization : request.getHybridizations()) {
+            hybridizations.add(getDaoFactory().getArrayDao().getHybridization(hybridization.getId()));
+        }
+        return hybridizations;
     }
 
     final ArrayDataService getArrayDataService() {
