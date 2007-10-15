@@ -56,8 +56,6 @@
 
   <target name="testUpdateEnvironmentProperties">
 	<au:assertPropertySet name="svn.local.trunk" message="svn.local.trunk is a required property when calling the update-environment-properties target"/>  
-	<au:assertPropertySet name="svn.user.name" message="svn.user.name is a required property when calling the update-environment-properties target"/>  
-	<au:assertPropertySet name="svn.user.pwd" message="svn.user.pwd is a required property when calling the update-environment-properties target"/>  
 	<au:assertPropertySet name="scm.private.repo" message="scm.private.repo is a required property when calling the update-environment-properties target"/>  
   </target>
 
