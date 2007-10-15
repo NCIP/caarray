@@ -92,12 +92,15 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
 import edu.wustl.catissuecore.domain.Specimen;
+import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
   /**
 
@@ -192,5 +195,22 @@ public class Sample extends AbstractBioMaterial {
      */
     public void setSpecimen(Specimen specimen) {
         this.specimen = specimen;
+    }
+    
+    /**
+     * Retrieve the tissue site for this Sample. The tissue site is stored
+     * as a Characteristic of the Sample; this is a helper method to make
+     * it easier to retrieve
+     * @return the Term for the sample's tissue site, or null if this Sample does not have a characteristic
+     * for tissue site
+     */
+    @Transient
+    public Term getTissueSite() {
+        for (AbstractCharacteristic characteristic: getCharacteristics()) {
+            if (characteristic.getCategory().getName().equals(ExperimentOntologyCategory.ORGANISM_PART)) {
+                return ((TermBasedCharacteristic) characteristic).getTerm();
+            }
+        }
+        return null;
     }
 }

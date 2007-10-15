@@ -121,6 +121,12 @@ public class VocabularyServiceStub implements VocabularyService {
         return term;
     }
 
+    public Term getTerm(Long id) {
+        Term term = new Term();
+        term.setId(id);
+        return term;
+    }
+
     public Category createCategory(TermSource source, String categoryName) {
         Category category = new Category();
         category.setName(categoryName);

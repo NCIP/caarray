@@ -1,38 +1,38 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<MenuConfig>
-    <Displayers>
-        <Displayer name="DropDown" type="net.sf.navigator.displayer.DropDownMenuDisplayer"/>
-        <Displayer name="Simple" type="net.sf.navigator.displayer.SimpleMenuDisplayer"/>
-        <Displayer name="CoolMenu" type="net.sf.navigator.displayer.CoolMenuDisplayer"/>
-        <Displayer name="CoolMenu4" type="net.sf.navigator.displayer.CoolMenuDisplayer4"/>
-        <Displayer name="MenuForm" type="net.sf.navigator.example.PermissionsFormMenuDisplayer"/>
-        <Displayer name="ListMenu" type="net.sf.navigator.displayer.ListMenuDisplayer"/>
-        <Displayer name="TabbedMenu" type="net.sf.navigator.displayer.TabbedMenuDisplayer"/>
-        <Displayer name="Velocity" type="net.sf.navigator.displayer.VelocityMenuDisplayer"/>
-        <Displayer name="XtreeMenu" type="net.sf.navigator.displayer.XtreeMenuDisplayer"/>
-        <Displayer name="CSSListMenu" type="net.sf.navigator.displayer.CSSListMenuDisplayer"/>
-    </Displayers>
-    <Menus>
-        <Menu name="ProjectListLinks" title="project.listLinks">
-            <Item name="ProposeProject" title="project.proprose" url="Project_create.action" roles="PrincipalInvestigator,ResearchScientist,LabAdministrator,LabScientist,Biostatistician" />
-        </Menu>
-        <Menu name="ProjectCreateLinks" title="project.createLinks">
-            <Item name="ProjectList" title="project.list" url="Project_list.action" roles="PrincipalInvestigator,ResearchScientist,LabAdministrator,LabScientist,Biostatistician" />
-        </Menu>
-        <Menu name="ProjectSaveLinks" title="project.saveLinks">
-            <Item name="ProjectList" title="project.list" url="Project_list.action" roles="PrincipalInvestigator,ResearchScientist,LabAdministrator,LabScientist,Biostatistician" />
-        </Menu>
-        <Menu name="ProjectEditLinks" title="project.editLinks">
-            <Item name="ManageFiles" title="file.manage" url="File_manage.action" roles="PrincipalInvestigator,ResearchScientist,LabScientist,Biostatistician" />
-            <Item name="ProjectList" title="project.list" url="Project_list.action" roles="PrincipalInvestigator,ResearchScientist,LabAdministrator,LabScientist,Biostatistician" />
-        </Menu>
-        <Menu name="FileManageLinks" title="file.manageLinks">
-            <Item name="ProjectList" title="project.list" url="Project_list.action" roles="PrincipalInvestigator,ResearchScientist,LabAdministrator,LabScientist,Biostatistician" />
-        </Menu>
-        <Menu name="FileMessagesLinks" title="file.messagesLinks">
-            <Item name="ManageFiles" title="file.manage" url="File_manage.action" roles="PrincipalInvestigator,ResearchScientist,LabScientist,Biostatistician" />
-            <Item name="ProjectList" title="project.list" url="Project_list.action" roles="PrincipalInvestigator,ResearchScientist,LabAdministrator,LabScientist,Biostatistician" />
-        </Menu>
-    </Menus>
-</MenuConfig>
+<?xml version="1.0" encoding="UTF-8" ?>
+<MenuConfig>
+    <Displayers>
+        <Displayer name="DropDown" type="net.sf.navigator.displayer.DropDownMenuDisplayer"/>
+        <Displayer name="Simple" type="net.sf.navigator.displayer.SimpleMenuDisplayer"/>
+        <Displayer name="CoolMenu" type="net.sf.navigator.displayer.CoolMenuDisplayer"/>
+        <Displayer name="CoolMenu4" type="net.sf.navigator.displayer.CoolMenuDisplayer4"/>
+        <Displayer name="MenuForm" type="net.sf.navigator.example.PermissionsFormMenuDisplayer"/>
+        <Displayer name="ListMenu" type="net.sf.navigator.displayer.ListMenuDisplayer"/>
+        <Displayer name="TabbedMenu" type="net.sf.navigator.displayer.TabbedMenuDisplayer"/>
+        <Displayer name="Velocity" type="net.sf.navigator.displayer.VelocityMenuDisplayer"/>
+        <Displayer name="XtreeMenu" type="net.sf.navigator.displayer.XtreeMenuDisplayer"/>
+        <Displayer name="CSSListMenu" type="net.sf.navigator.displayer.CSSListMenuDisplayer"/>
+    </Displayers>
+    <Menus>
+        <Menu name="ProjectListLinks" title="project.listLinks">
+            <Item name="ProposeProject" title="project.propose" url="Project_create.action" roles="PrincipalInvestigator,ResearchScientist,LabAdministrator,LabScientist,Biostatistician" />
+        </Menu>
+        <Menu name="ProjectCreateLinks" title="project.createLinks">
+            <Item name="ProjectList" title="project.list" url="Project_list.action" roles="PrincipalInvestigator,ResearchScientist,LabAdministrator,LabScientist,Biostatistician" />
+        </Menu>
+        <Menu name="ProjectSaveLinks" title="project.saveLinks">
+            <Item name="ProjectList" title="project.list" url="Project_list.action" roles="PrincipalInvestigator,ResearchScientist,LabAdministrator,LabScientist,Biostatistician" />
+        </Menu>
+        <Menu name="ProjectEditLinks" title="project.editLinks">
+            <Item name="ManageFiles" title="file.manage" url="File_manage.action" roles="PrincipalInvestigator,ResearchScientist,LabScientist,Biostatistician" />
+            <Item name="ProjectList" title="project.list" url="Project_list.action" roles="PrincipalInvestigator,ResearchScientist,LabAdministrator,LabScientist,Biostatistician" />
+        </Menu>
+        <Menu name="FileManageLinks" title="file.manageLinks">
+            <Item name="ProjectList" title="project.list" url="Project_list.action" roles="PrincipalInvestigator,ResearchScientist,LabAdministrator,LabScientist,Biostatistician" />
+        </Menu>
+        <Menu name="FileMessagesLinks" title="file.messagesLinks">
+            <Item name="ManageFiles" title="file.manage" url="File_manage.action" roles="PrincipalInvestigator,ResearchScientist,LabScientist,Biostatistician" />
+            <Item name="ProjectList" title="project.list" url="Project_list.action" roles="PrincipalInvestigator,ResearchScientist,LabAdministrator,LabScientist,Biostatistician" />
+        </Menu>
+    </Menus>
+</MenuConfig>
 

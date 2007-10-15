@@ -2,7 +2,6 @@
 
 <head>
 </head>
-
 <body>
     <div id="content" class="homepage">
         <h1>Experiment Workspace</h1>

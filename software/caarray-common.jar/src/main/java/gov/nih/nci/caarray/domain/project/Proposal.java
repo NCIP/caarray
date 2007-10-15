@@ -82,7 +82,10 @@
  */
 package gov.nih.nci.caarray.domain.project;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
@@ -98,6 +101,7 @@ public class Proposal extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 6882932219345651741L;
 
     private Project project;
+    private ProposalStatus status;
 
     /**
      * Generates a new, empty project proposal for use at the start of the proposal process.
@@ -125,6 +129,24 @@ public class Proposal extends AbstractCaArrayEntity {
      */
     public void setProject(Project project) {
         this.project = project;
+    }
+
+    /**
+     * Gets the workflow status of this proposal
+     * @return the status
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    public ProposalStatus getStatus() {
+        return status;
+    }
+
+    /**
+     * Sets the workflow status of this proposal
+     * @param status the status to set
+     */
+    public void setStatus(ProposalStatus status) {
+        this.status = status;
     }
 
     /**

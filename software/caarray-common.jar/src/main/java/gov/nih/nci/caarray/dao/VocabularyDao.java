@@ -126,4 +126,11 @@ public interface VocabularyDao extends CaArrayDao {
      * @return the <code>Category</code> or null.
      */
     Category getCategory(String name);
+
+    /**
+     * Returns the Term with given id
+     * @param id id of Term to retrieve
+     * @return the Term with given id or null if none found
+     */
+    Term getTermById(Long id);
 }

@@ -155,6 +155,14 @@ public interface VocabularyService {
     Term getTerm(TermSource source, Category category, String value);
 
     /**
+     * Returns the term with the given id
+     *
+     * @param id the id of the desired term
+     * @return the term with given id or null if none found.
+     */
+    Term getTerm(Long id);
+
+    /**
      * Adds a new term to the vocabulary service.
      *
      * @param source the source to add the term to

@@ -63,6 +63,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.util.HibernateUtil;
@@ -229,6 +230,13 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
                 addCategoryAndChildren(categoryIdList, childCategory);
             }
         }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Term getTermById(Long id) {
+        return (Term) getCurrentSession().get(Term.class, id);
     }
 
     @Override

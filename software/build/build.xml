@@ -248,7 +248,7 @@
         clean:test.classes.dir,
         clean:target.dir,
         clean:gridsvc,
-        clean:caarraydb" />
+        clean:caarraydb" description="Deletes all of the target directories" />
 
     <target name="clean:caarray-client.jar">
         <delete dir="${caarray-client.target.dir}" />
@@ -457,7 +457,7 @@
       build:caarray-ejb.jar,
         build:caarray.war,
         build:caarray.ear,
-        build:caarray-svc" />
+        build:caarray-svc" description="Builds the application without deploying." />
 
     <target name="build:caarray-client.jar" depends="compile:caarray-client.jar,compile:caarray-common.jar">
         <mkdir dir="${caarray-client.target.dir}" />
@@ -518,36 +518,38 @@
             	<lib dir="${lib.dir}">
             		<include name="spring.jar" />
             		<include name="spring-mock.jar" />
-	        		<include name="acegi-security-1.0.5.jar" />
-	        		<include name="acegi-security-jboss-1.0.5.jar" />
-	        		<include name="commons-beanutils-1.7.0.jar" />
-	        		<include name="commons-codec-1.3.jar" />
-	      			<include name="commons-collections-3.2.jar" />
-	      			<include name="commons-digester-1.6.jar" />
-	      			<include name="commons-discovery-0.2.jar" />
-	     			<include name="commons-el-1.0.jar" />
-	   				<include name="commons-fileupload-1.2.jar" />
-	    			<include name="commons-io-1.3.2.jar" />
-	     			<include name="commons-lang-2.1.jar" />
-	      			<include name="commons-logging-1.1.jar" />
-	    			<include name="displaytag-1.1.1.jar" />
-	   				<include name="freemarker-2.3.8.jar" />
-	       			<include name="jstl.jar" />
-	    			<include name="standard.jar" />
-	  				<include name="log4j-1.2.13.jar" />
-	    			<include name="junit-4.3.1.jar" />
-	     			<include name="oscache-2.4.1.jar" />
-	    			<include name="sitemesh-2.3.jar" />
-	   				<include name="struts2-codebehind-plugin-2.0.9.jar" />
-	   				<include name="struts2-core-2.0.9.jar" />
-	    			<include name="struts2-sitemesh-plugin-2.0.9.jar" />
-	  				<include name="struts2-spring-plugin-2.0.9.jar" />
-	  				<include name="struts-menu-2.4.3.jar" />
-	     			<include name="urlrewrite-2.6.0.jar" />
-	      			<include name="velocity-1.5.jar" />
-              	<include name="velocity-tools-1.3.jar" />
-	 				<include name="xwork-2.0.4.jar" />
+	        	<include name="acegi-security-1.0.5.jar" />
+	        	<include name="acegi-security-jboss-1.0.5.jar" />
+	        	<include name="commons-beanutils-1.7.0.jar" />
+	        	<include name="commons-codec-1.3.jar" />
+	      		<include name="commons-collections-3.2.jar" />
+	      		<include name="commons-digester-1.6.jar" />
+	      		<include name="commons-discovery-0.2.jar" />
+	     		<include name="commons-el-1.0.jar" />
+	   		<include name="commons-fileupload-1.2.jar" />
+	    		<include name="commons-io-1.3.2.jar" />
+	     		<include name="commons-lang-2.1.jar" />
+	      		<include name="commons-logging-1.1.jar" />
+	    		<include name="displaytag-1.1.1.jar" />
+	   		<include name="freemarker-2.3.8.jar" />
+	       		<include name="jstl.jar" />
+	    		<include name="standard.jar" />
+	  		<include name="log4j-1.2.13.jar" />
+	    		<include name="junit-4.3.1.jar" />
+	     		<include name="oscache-2.4.1.jar" />
+	    		<include name="sitemesh-2.3.jar" />
+	   		<include name="struts2-codebehind-plugin-2.0.9.jar" />
+	   		<include name="struts2-core-2.0.9.jar" />
+	    		<include name="struts2-sitemesh-plugin-2.0.9.jar" />
+	  		<include name="struts2-spring-plugin-2.0.9.jar" />
+	  		<include name="struts-menu-2.4.3.jar" />
+	     		<include name="urlrewrite-2.6.0.jar" />
+	      		<include name="velocity-1.5.jar" />
+              		<include name="velocity-tools-1.3.jar" />
+	 		<include name="xwork-2.0.4.jar" />
             		<include name="ognl-2.6.11.jar" />
+            		<include name="ajaxtags-1.3-beta-rc7.jar" />
+            		<include name="jericho-html-2.4.jar" />
             	</lib>
         </war>
     </target>
@@ -622,7 +624,7 @@
     <!-- ** TEST TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
 
-    <target name="test" unless="notest">
+    <target name="test" unless="notest" description="Executes the unit tests" >
 		<antcall target="test:unit" />
 	</target>
 
@@ -790,7 +792,7 @@
     </target>
 
     <target name="test:junit-caarray.war" depends="test:compile:caarray-war.test.classes,test:instrument:caarray.war,compile:caarray-ejb.jar,compile:caarray-common.jar,test:compile:caarray-ejb.test.classes,test:unpack-test-data">
-        <run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-logging.jar};${caarray-common.test.classes.dir};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar}" />
+        <run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-logging.jar};${caarray-common.test.classes.dir};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}" />
     </target>
 
     <target name="test:junit-report">
@@ -823,7 +825,7 @@
     </target>
 
     <target name="test:cobertura-check">
-        <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="55" totallinerate="64" />
+        <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="54" totallinerate="63" />
     </target>
 
     <!-- Functional (Selenium) Test Targets -->
@@ -1040,7 +1042,7 @@
     <!-- ** DEPLOY TARGETS                                                ** -->
     <!-- ******************************************************************* -->
 
-    <target name="deploy" depends="deploy:caarray.ear,deploy:caarray-svc" />
+    <target name="deploy" depends="deploy:caarray.ear,deploy:caarray-svc" description="Deploy the application to JBoss" />
     
     <target name="deploy:caarray.ear" depends="build:caarray.ear,prepare:create-local.properties">
         <copy file="${resource.dir}/deploy/${mysql.datasource.file}" todir="${jboss.deploy.dir}" overwrite="true">
@@ -1054,7 +1056,7 @@
         <ant dir="${caaray-svc.dir}" target="deployGlobus" inheritall="false"/>
     </target>
 
-    <target name="undeploy">
+    <target name="undeploy" description="Undeploys the application from JBoss" >
         <delete file="${jboss.deploy.dir}/${mysql.datasource.file}" />
         <delete file="${jboss.deploy.dir}/caarray.ear" />
     </target>
@@ -1097,6 +1099,11 @@
                 <copy todir="@{toDir}">
                     <fileset dir="${caarray-war.webapp.dir}">
                         <include name="**/*.jsp" />
+                        <include name="**/*.css" />
+                        <include name="**/*.js" />
+                        <include name="**/*.jpg" />
+                        <include name="**/*.gif" />
+                        <include name="**/*.png" />
                         <include name="**/*.faces" />
                     </fileset>
                 </copy>

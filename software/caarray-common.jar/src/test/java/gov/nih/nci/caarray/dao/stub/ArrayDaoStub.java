@@ -82,6 +82,9 @@
  */
 package gov.nih.nci.caarray.dao.stub;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
@@ -102,6 +105,13 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
      */
     public ArrayDesign getArrayDesign(long id) {
         return null;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public List<ArrayDesign> getAllArrayDesigns() {
+        return new ArrayList<ArrayDesign>();
     }
 
     /**

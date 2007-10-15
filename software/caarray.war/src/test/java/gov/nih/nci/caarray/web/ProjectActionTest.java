@@ -159,7 +159,7 @@ public class ProjectActionTest {
         assertNotNull(action.getDelegate().getLocator());
         assertNotNull(action.getProjects());
         String result = action.list();
-        assertEquals(result, "success");
+        assertEquals(ProjectAction.LIST_RESULT, result);
     }
 
     @SuppressWarnings("unchecked")
@@ -172,7 +172,7 @@ public class ProjectActionTest {
         Proposal proposal = Proposal.createNew();
         action.setProposal(proposal);
         String result = action.save();
-        assertEquals(result, "success");
+        assertEquals(ProjectAction.WORKSPACE_RESULT, result);
     }
 
     @Test

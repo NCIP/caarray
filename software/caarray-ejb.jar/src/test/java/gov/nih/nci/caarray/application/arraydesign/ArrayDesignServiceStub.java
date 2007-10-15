@@ -82,8 +82,13 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
@@ -101,4 +106,11 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
         return null;
     }
 
+    public ArrayDesign getArrayDesign(Long id) {
+        return null;
+    }
+    
+    public Map<Organization, List<ArrayDesign>> getArrayDesignsByOrganization() {
+        return new HashMap<Organization, List<ArrayDesign>>();
+    }
 }

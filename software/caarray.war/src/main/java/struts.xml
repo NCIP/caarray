@@ -6,16 +6,12 @@
 <struts>
 
      <!-- Constants -->
-    <constant name="struts.enable.DynamicMethodInvocation" value="false" />
-    <constant name="struts.devMode" value="true" />
+    <constant name="struts.enable.SlashesInActionNames" value="true" />
     <constant name="struts.i18n.encoding" value="UTF-8"/>
     <constant name="struts.custom.i18n.resources" value="ApplicationResources,errors"/>
-    <constant name="struts.ui.theme" value="css_xhtml"/>
+    <constant name="struts.ui.theme" value="xhtml"/>
     <constant name="struts.codebehind.pathPrefix" value="/WEB-INF/pages/"/>    
     
-    <!-- Include Struts defaults -->
-    <include file="struts-default.xml"/>
-
     <!-- Configuration for the default package. -->
     <package name="default" extends="struts-default">
         <default-interceptor-ref name="paramsPrepareParamsStack" />
@@ -36,20 +32,32 @@
         <action name="Logout" class="gov.nih.nci.caarray.web.action.LogoutAction"> 
             <result name="success" type="redirect-action">Project_list</result> 
         </action>
-        <action name="Project_list" class="gov.nih.nci.caarray.web.action.ProjectAction" method="list"> 
-            <interceptor-ref name="basicStack"/>
-            <result name="success">/WEB-INF/pages/project/projectList.jsp</result> 
-        </action>
         <action name="Project_*" class="gov.nih.nci.caarray.web.action.ProjectAction" method="{1}"> 
-            <result name="input">/WEB-INF/pages/project/projectForm.jsp</result>
-            <result name="success" type="redirect-action">Project_list</result> 
+            <result name="workspace" type="redirect-action">Project_list</result> 
+            <result name="input">/WEB-INF/pages/project/form.jsp</result>
+            <result name="details">/WEB-INF/pages/project/details.jsp</result>
+            <result name="list">/WEB-INF/pages/project/list.jsp</result>
         </action>
-        <action name="Project_details" class="gov.nih.nci.caarray.web.action.ProjectAction" method="details">
-            <result name="success">/WEB-INF/pages/project/projectDetails.jsp</result>
-        </action>        
-        <action name="Project_toggle" class="gov.nih.nci.caarray.web.action.ProjectAction" method="toggle">
-            <result name="success" type="redirect-action">Project_list</result>
+
+        <action name="ajax_Project_loadTab_*"
+            class="gov.nih.nci.caarray.web.action.ProjectAction" method="{1}LoadTab">
+            <result name="input">/WEB-INF/pages/project/{1}.jsp</result>
         </action>
+        <action name="ajax_Project_loadGenericTab_*"
+            class="gov.nih.nci.caarray.web.action.ProjectAction" method="loadTab">
+            <result name="input">/WEB-INF/pages/project/{1}.jsp</result>
+        </action>
+
+        <action name="ajax_Project_saveTab_*"
+            class="gov.nih.nci.caarray.web.action.ProjectAction" method="{1}SaveTab">
+            <result name="success" type="chain">ajax_Project_loadTab_{1}</result>
+        </action>
+
+        <action name="ajax_Project_saveGenericTab_*"
+            class="gov.nih.nci.caarray.web.action.ProjectAction" method="saveTab">
+            <result name="success" type="chain">ajax_Project_loadGenericTab_{1}</result>
+        </action>
+                
         <action name="File_manage" class="gov.nih.nci.caarray.web.action.FileManageAction" method="manage">
             <result name="success">/WEB-INF/pages/project/projectFiles.jsp</result>
         </action>

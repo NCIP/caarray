@@ -114,7 +114,7 @@ public class StartupListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent event) {
         ArrayDataService arrayDataService =
             (ArrayDataService) ServiceLocator.INSTANCE.lookup(ArrayDataService.JNDI_NAME);
-        arrayDataService.initialize();
+        //arrayDataService.initialize();
 
         ServletContext context = event.getServletContext();
         Map<String, Object> config = (HashMap<String, Object>) context.getAttribute(Constants.CONFIG);

@@ -124,4 +124,10 @@ public class VocabularyDaoStub extends AbstractDaoStub implements VocabularyDao 
         // no-op
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public Term getTermById(Long id) {
+        return null;
+    }
 }

@@ -334,3 +334,55 @@ window.onload = function() {
 // Show the document's title on the status bar
 window.defaultStatus=document.title;
 
+var TabUtils = {
+    setSelectedTab : function() {
+        tabMenuItems = $('tabbed').getElementsByTagName('li');
+        for(var i = 0; i < tabMenuItems.length; i++) {
+            tabLink = tabMenuItems[i].getElementsByTagName('a')[0];
+            if(tabLink.className == 'current') {
+                tabMenuItems[i].className = 'active';
+            } else {
+                tabMenuItems[i].className = '';
+            }
+            tabLink.blur();
+        }
+    },
+
+    setSelectedLevel2Tab : function() {
+        tabMenuItems = $('tablevel2').getElementsByTagName('li');
+        for(var i = 0; i < tabMenuItems.length; i++) {
+            tabLink = tabMenuItems[i].getElementsByTagName('a')[0];
+            if(tabLink.className == 'current') {
+                tabMenuItems[i].className = 'active';
+            } else {
+                tabMenuItems[i].className = '';
+            }
+            tabLink.blur();
+        }
+    },
+
+    showSubmittingText : function() {
+        if ($('submittingText')) {
+            $('submittingText').show();
+            $('theForm').hide();
+        }
+    },
+
+    showLoadingText : function() {
+        if ($('loadingText')) {
+            $('loadingText').show();
+            $('theForm').hide();
+        }
+    },
+    
+    submitTabForm : function(formId, divId, saveMode) {
+        TabUtils.showSubmittingText();
+        formData = Form.serialize(formId);
+        formData = formData + '&saveMode=' + saveMode;
+        if(console) { console.log('saveMode: ' + saveMode + ', typeof ' + (typeof formData) + ', Form data: ' + formData + '\nFoo'); }
+        
+                
+        url = $(formId).action;
+        new Ajax.Updater(divId, url, {parameters: formData, evalScripts: true} );
+    }
+}

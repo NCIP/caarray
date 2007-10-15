@@ -281,6 +281,17 @@ public class VocabularyServiceBean implements VocabularyService {
         return result.isEmpty() ? null : result.iterator().next();
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public Term getTerm(Long id) {
+        LogUtil.logSubsystemEntry(LOG, id);
+        Term result = getVocabularyDao().getTermById(id);
+        LogUtil.logSubsystemExit(LOG);
+        return result;
+    }
+    
     final CaArrayDaoFactory getDaoFactory() {
         return daoFactory;
     }

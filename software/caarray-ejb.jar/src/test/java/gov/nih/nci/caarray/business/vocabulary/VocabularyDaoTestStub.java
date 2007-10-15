@@ -144,4 +144,11 @@ public class VocabularyDaoTestStub implements VocabularyDao {
     public Set<Term> getTermsRecursive(String categoryName) throws DAOException {
         return null;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Term getTermById(Long id) {
+        return null;
+    }
 }

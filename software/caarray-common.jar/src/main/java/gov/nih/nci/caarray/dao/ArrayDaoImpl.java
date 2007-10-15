@@ -112,7 +112,16 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      * {@inheritDoc}
      */
     public ArrayDesign getArrayDesign(long id) {
-        return (ArrayDesign) getCurrentSession().load(ArrayDesign.class, id);
+        return (ArrayDesign) getCurrentSession().get(ArrayDesign.class, id);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public List<ArrayDesign> getAllArrayDesigns() {
+        String query = "from " + ArrayDesign.class.getName() + " order by name asc";
+        return getCurrentSession().createQuery(query).list();
     }
 
     /**

@@ -94,10 +94,12 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
+import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.project.ServiceType;
 import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
@@ -182,7 +184,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
     private static CaArrayFile DUMMY_DATA_FILE;
 
     private static final ProjectDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getProjectDao();
-
+    private static final VocabularyDao VOCABULARY_DAO = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
 
     /**
      * Define the dummy objects that will be used by the tests.
@@ -231,7 +233,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
         // Initialize all the dummy objects needed for the tests.
         initializeProjects();
-    }
+    }    
 
     /**
      * Initialize the dummy <code>Project</code> objects.
@@ -275,6 +277,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
         Date currDate = new Date();
         DUMMY_EXPERIMENT_1.setDateOfExperiment(currDate);
         DUMMY_EXPERIMENT_1.setPublicReleaseDate(currDate);
+        DUMMY_EXPERIMENT_1.setAssayType(AssayType.ACGH);
+        DUMMY_EXPERIMENT_1.setServiceType(ServiceType.FULL);
     }
 
     private static void setExperimentContacts() {
@@ -345,6 +349,14 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DUMMY_EXPERIMENT_1.getPublications().add(DUMMY_PUBLICATION_1);
         DUMMY_EXPERIMENT_1.getPublications().add(DUMMY_PUBLICATION_2);
     }
+    
+    private static void saveSupportingObjects() {
+        VOCABULARY_DAO.save(DUMMY_REPLICATE_TYPE);
+        VOCABULARY_DAO.save(DUMMY_QUALITY_CTRL_TYPE);            
+        VOCABULARY_DAO.save(DUMMY_NORMALIZATION_TYPE);            
+        VOCABULARY_DAO.save(DUMMY_FACTOR_TYPE_1);
+        VOCABULARY_DAO.save(DUMMY_FACTOR_TYPE_2);        
+    }
 
 
     /**
@@ -357,7 +369,9 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
+            saveSupportingObjects();
             int size = DAO_OBJECT.getProjectsForUser(null).size();
+
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             Project retrievedProject = DAO_OBJECT.getProject(DUMMY_PROJECT_1.getId());
             tx.commit();
@@ -460,6 +474,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         Transaction tx = null;
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
+            saveSupportingObjects();
             DAO_OBJECT.save(DUMMY_PERSON);
             tx.commit();
             tx = HibernateUtil.getCurrentSession().beginTransaction();
@@ -523,6 +538,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
     @Test
     public void testProtectionElements() {
         Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+        saveSupportingObjects();
         HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
         tx.commit();
 
@@ -556,6 +572,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
     @Test
     public void testProjectPermissions() {
         Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+        saveSupportingObjects();
         HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
         tx.commit();
 
@@ -588,6 +605,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
     public void testNonBrowsableProject() {
         DUMMY_PROJECT_1.setBrowsable(false);
         Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+        saveSupportingObjects();
         HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
         tx.commit();
 

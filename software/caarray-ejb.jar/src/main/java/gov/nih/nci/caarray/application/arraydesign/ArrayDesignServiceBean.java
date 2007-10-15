@@ -82,12 +82,18 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
@@ -172,6 +178,30 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         } else {
             throw new IllegalArgumentException("Unsupported array design file type: " + type);
         }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Map<Organization, List<ArrayDesign>> getArrayDesignsByOrganization() {
+        List<ArrayDesign> allDesigns = getArrayDao().getAllArrayDesigns();
+        Map<Organization, List<ArrayDesign>> designsByManufacturer = new HashMap<Organization, List<ArrayDesign>>();
+        for (ArrayDesign design : allDesigns) {
+            List<ArrayDesign> manufacturerDesigns = designsByManufacturer.get(design.getProvider());
+            if (manufacturerDesigns == null) {
+                manufacturerDesigns = new ArrayList<ArrayDesign>();
+                designsByManufacturer.put(design.getProvider(), manufacturerDesigns);
+            }
+            manufacturerDesigns.add(design);
+        }
+        return designsByManufacturer;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public ArrayDesign getArrayDesign(Long id) {
+        return getArrayDao().getArrayDesign(id);
     }
 
     CaArrayDaoFactory getDaoFactory() {

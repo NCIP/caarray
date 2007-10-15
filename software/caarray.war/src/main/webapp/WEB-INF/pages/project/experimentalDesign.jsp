@@ -1,0 +1,32 @@
+<%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
+
+<s:if test="${experiment.id != null}">
+    <c:set var="formAction" value="ajax/experiment/management/save/overview"/>
+</s:if>
+<s:else>
+    <c:set var="formAction" value="experiment/management/save"/>
+</s:else>
+
+<caarray:tabPane paneTitleKey="experiment.experimentalDesign" subtab="true">
+    <div class="boxpad">
+    <p class="instructions">Required fields are highlighted and have <span class="required"><span class="asterisk">*</span>asterisks<span class="asterisk">*</span></span>.</p>
+    <s:actionerror/> <br> <s:actionmessage/>    
+    <s:form action="ajax_Project_saveTab_experimentalDesign" cssClass="form" id="projectForm" method="get">
+        <s:select required="true" name="proposal.project.experiment.experimentDesignType.id" label="Experiment Design Type" tabindex="1"
+                  list="experimentDesignTypes" listKey="id" listValue="value" 
+                  headerKey="" headerValue="--Select an Experiment Design Type--"/>
+        <s:textarea name="proposal.project.experiment.experimentDesignDescription" label="Experiment Design" cols="80" rows="8" tabindex="2"/>
+        <s:textarea name="proposal.project.experiment.qualityControlDescription" label="Experiment Quality Control Description" cols="80" rows="8" tabindex="3"/>
+        <s:select multiple="true" name="selectedQualityControlTypes" label="Quality Control Types" tabindex="4"
+                  list="qualityControlTypes" listKey="id" listValue="value"/> 
+        <s:textarea name="proposal.project.experiment.qualityControlDescription" label="Experiment Quality Control Description" cols="80" rows="8" tabindex="3"/>                  
+        <s:select multiple="true" name="selectedReplicateTypes" label="Replicate Types" tabindex="6"
+                  list="replicateTypes" listKey="id" listValue="value"/> 
+        <s:hidden name="proposalKey" />
+        <s:hidden name="proposal.id" />
+        <s:hidden name="cancelResult" />
+        <s:hidden name="ajax" value="%{'true'}"/>
+    </s:form>
+    <a href="javascript:TabUtils.submitTabForm('projectForm', 'tabboxwrapper', 'save_session');" class="save"><img src="<c:url value="/images/btn_save_draft.gif"/>" alt="Save Draft"></a>
+    </div>
+</caarray:tabPane>

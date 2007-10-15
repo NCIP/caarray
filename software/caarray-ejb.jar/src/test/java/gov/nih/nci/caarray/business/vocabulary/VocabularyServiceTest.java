@@ -201,6 +201,9 @@ public class VocabularyServiceTest {
         }
      }
     public class MockVocabularyDaoForException extends AbstractDaoStub implements VocabularyDao {
+        public Term getTermById(Long id) {
+            throw new DAOException("test exception");
+        }
 
         public List<Term> getTerms(String categoryName) throws DAOException {
             throw new DAOException("This is a test exception");
