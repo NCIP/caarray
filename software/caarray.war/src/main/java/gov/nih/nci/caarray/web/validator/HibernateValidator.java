@@ -86,6 +86,7 @@ package gov.nih.nci.caarray.web.validator;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -105,8 +106,8 @@ import com.opensymphony.xwork2.validator.validators.FieldValidatorSupport;
 public class HibernateValidator extends FieldValidatorSupport {
 
     private static final Logger LOG = Logger.getLogger(HibernateValidator.class);
-    private static final HashMap<Class, ContextualClassValidator> CLASS_VALIDATOR_MAP =
-        new HashMap<Class, ContextualClassValidator>();
+    private static final Map<Class<?>, ContextualClassValidator<?>> CLASS_VALIDATOR_MAP =
+        new HashMap<Class<?>, ContextualClassValidator<?>>();
 
     /**
      * {@inheritDoc}
@@ -117,7 +118,7 @@ public class HibernateValidator extends FieldValidatorSupport {
         ValueStack stack = ActionContext.getContext().getValueStack();
         stack.push(object);
         if (value instanceof Collection) {
-            Collection coll = (Collection) value;
+            Collection<?> coll = (Collection<?>) value;
             Object[] array = coll.toArray();
             validateArrayElements(array, fieldName);
         } else if (value instanceof Object[]) {

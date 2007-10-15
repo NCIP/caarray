@@ -97,8 +97,6 @@ import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.BooleanColumn;
@@ -155,7 +153,7 @@ public class ArrayDataServiceTest {
         assertTrue(daoFactoryStub.dataTypeMap.containsKey(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL));
         assertTrue(daoFactoryStub.quantitationTypeMap.keySet().containsAll(Arrays.asList(AffymetrixCelQuantitationType.values())));
     }
-    
+
     @Test
     public void testImport() throws InvalidDataFileException {
         RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
@@ -173,7 +171,7 @@ public class ArrayDataServiceTest {
         assertEquals(7, dataSet.getQuantitationTypes().size());
         checkCelColumnTypes(dataSet);
     }
-    
+
     @Test
     public void testValidate() {
         CaArrayFile celFile = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL);
@@ -223,7 +221,7 @@ public class ArrayDataServiceTest {
             assertEquals(fusionCelEntry.getPixels(), numPixelsColumn.getValues()[rowIndex]);
         }
     }
-    
+
     private void checkCelColumnTypes(DataSet dataSet) {
         assertTrue(AffymetrixCelQuantitationType.CEL_X.isEquivalent(dataSet.getQuantitationTypes().get(0)));
         assertTrue(AffymetrixCelQuantitationType.CEL_Y.isEquivalent(dataSet.getQuantitationTypes().get(1)));
@@ -242,11 +240,6 @@ public class ArrayDataServiceTest {
         assertTrue(AffymetrixCelQuantitationType.CEL_PIXELS.isEquivalent(dataSet.getHybridizationDataList().get(0).getColumns().get(6).getQuantitationType()));
 }
 
-    private ArrayDesignDetails getArrayDesignDetails(AbstractArrayData arrayData) {
-        ArrayDesign design = ((RawArrayData) arrayData).getHybridization().getArray().getDesign();
-        return arrayDesignService.getDesignDetails(design);
-    }
-
     private RawArrayData getCelData(File cdf, File cel) {
         ArrayDesign arrayDesign = new ArrayDesign();
         CaArrayFile designFile = fileAccessServiceStub.add(cdf);
@@ -263,7 +256,7 @@ public class ArrayDataServiceTest {
         hybridization.setArrayData(celData);
         return celData;
     }
-    
+
     private CaArrayFile getCelCaArrayFile(File cel) {
         CaArrayFile celDataFile = fileAccessServiceStub.add(cel);
         celDataFile.setType(FileType.AFFYMETRIX_CEL);
@@ -272,10 +265,10 @@ public class ArrayDataServiceTest {
 
     private static final class LocalDaoFactoryStub extends DaoFactoryStub {
 
-        private Map<ArrayDataTypeDescriptor, ArrayDataType> dataTypeMap =
+        private final Map<ArrayDataTypeDescriptor, ArrayDataType> dataTypeMap =
             new HashMap<ArrayDataTypeDescriptor, ArrayDataType>();
 
-        private Map<QuantitationTypeDescriptor, QuantitationType> quantitationTypeMap =
+        private final Map<QuantitationTypeDescriptor, QuantitationType> quantitationTypeMap =
             new HashMap<QuantitationTypeDescriptor, QuantitationType>();
 
         @Override

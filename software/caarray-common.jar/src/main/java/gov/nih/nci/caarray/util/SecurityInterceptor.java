@@ -127,6 +127,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
 
     private static final Log LOG = LogFactory.getLog(SecurityInterceptor.class);
     private static final long serialVersionUID = -2071964672876972370L;
+
     /** The synthetic user for anonymous access permissions. */
     public static final String ANONYMOUS_USER = "__anonymous__";
     /** The synthetic group for anonymous access permissions. */
@@ -254,7 +255,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
             LOG.debug("Modifying browsable status for project: " + p.getId());
             try {
                 if (p.isBrowsable()) {
-                    assignAnonymousAccess(p, getProtectionGroup(p));
+                    assignAnonymousAccess(getProtectionGroup(p));
                 } else {
                     List<UserGroupRoleProtectionGroup> l = getUserGroupRoleProtectionGroups(p);
                     for (UserGroupRoleProtectionGroup ugrp : l) {
@@ -375,12 +376,12 @@ public class SecurityInterceptor extends EmptyInterceptor {
 
     private void handleNewProject(Project p, ProtectionGroup pg) throws CSTransactionException {
         if (p.isBrowsable()) {
-            assignAnonymousAccess(p, pg);
+            assignAnonymousAccess(pg);
         }
     }
 
     @SuppressWarnings("unchecked")
-    private static void assignAnonymousAccess(Project p, ProtectionGroup pg) throws CSTransactionException {
+    private static void assignAnonymousAccess(ProtectionGroup pg) throws CSTransactionException {
         // We could cache the ids for the group and role
         Group group = new Group();
         group.setGroupName(ANONYMOUS_GROUP);
@@ -394,6 +395,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
                 new String[] {getReadRole().getId().toString() });
     }
 
+    @SuppressWarnings("unchecked")
     private static Role getReadRole() {
         Role role = new Role();
         role.setName(READ_ROLE);

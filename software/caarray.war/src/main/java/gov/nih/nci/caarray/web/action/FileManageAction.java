@@ -12,7 +12,6 @@ import gov.nih.nci.caarray.web.util.LabelValue;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -32,6 +31,7 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 @Validation
 public class FileManageAction extends BaseAction implements Preparable {
 
+    private static final String FILE_MANAGE_LINKS = "FileManageLinks";
     private static final long serialVersionUID = 1L;
     private String menu = null;
     private CaArrayFile file = new CaArrayFile();
@@ -43,7 +43,7 @@ public class FileManageAction extends BaseAction implements Preparable {
     /**
      * {@inheritDoc}
      */
-    public void prepare() throws Exception {
+    public void prepare() {
         if (getProject() != null && getProject().getId() != null) {
             setProject(getDelegate().getProjectManagementService().getProject(getProject().getId()));
         }
@@ -53,11 +53,10 @@ public class FileManageAction extends BaseAction implements Preparable {
      * manage files for a project.
      *
      * @return path String
-     * @throws Exception Exception
      */
     @SkipValidation
-    public String manage() throws Exception {
-        setMenu("FileManageLinks");
+    public String manage() {
+        setMenu(FILE_MANAGE_LINKS);
         return SUCCESS;
     }
 
@@ -65,10 +64,9 @@ public class FileManageAction extends BaseAction implements Preparable {
      * view messages for file.
      *
      * @return String
-     * @throws Exception Exception
      */
     @SkipValidation
-    public String messages() throws Exception {
+    public String messages() {
         setMenu("FileMessagesLinks");
 
         for (CaArrayFile caArrayFile : getProject().getFilesList()) {
@@ -86,11 +84,10 @@ public class FileManageAction extends BaseAction implements Preparable {
      * validates file.
      *
      * @return String
-     * @throws Exception Exception
      */
     @SkipValidation
-    public String validateFile() throws Exception {
-        setMenu("FileManageLinks");
+    public String validateFile() {
+        setMenu(FILE_MANAGE_LINKS);
 
         HttpServletRequest request = getRequest();
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
@@ -108,11 +105,10 @@ public class FileManageAction extends BaseAction implements Preparable {
      * validates file.
      *
      * @return String
-     * @throws Exception Exception
      */
     @SkipValidation
-    public String importFile() throws Exception {
-        setMenu("FileManageLinks");
+    public String importFile() {
+        setMenu(FILE_MANAGE_LINKS);
 
         HttpServletRequest request = getRequest();
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
@@ -130,11 +126,10 @@ public class FileManageAction extends BaseAction implements Preparable {
      * validates file.
      *
      * @return String
-     * @throws Exception Exception
      */
     @SkipValidation
-    public String removeFile() throws Exception {
-        setMenu("FileManageLinks");
+    public String removeFile() {
+        setMenu(FILE_MANAGE_LINKS);
 
         HttpServletRequest request = getRequest();
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
@@ -154,11 +149,10 @@ public class FileManageAction extends BaseAction implements Preparable {
      * validates file.
      *
      * @return String
-     * @throws Exception Exception
      */
     @SkipValidation
-    public String saveExtension() throws Exception {
-        setMenu("FileManageLinks");
+    public String saveExtension() {
+        setMenu(FILE_MANAGE_LINKS);
 
         HttpServletRequest request = getRequest();
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
@@ -175,19 +169,16 @@ public class FileManageAction extends BaseAction implements Preparable {
      * uploads file.
      *
      * @return String
-     * @throws Exception Exception
      */
-    public String upload() throws Exception {
+    public String upload() {
 
-        setMenu("FileManageLinks");
+        setMenu(FILE_MANAGE_LINKS);
 
         int index = 0;
-        for (Iterator<File> iter = getUpload().iterator(); iter.hasNext();) {
-            File uploadedFile = iter.next();
+        for (File uploadedFile : getUpload()) {
             try {
                 String fileName = getUploadFileName(index);
-                CaArrayFile caArrayFile = getDelegate().getProjectManagementService().addFile(getProject(),
-                        uploadedFile, fileName);
+                getDelegate().getProjectManagementService().addFile(getProject(), uploadedFile, fileName);
             } catch (Exception e) {
                 String msg = "Unable to upload file: " + e.getMessage();
                 LOG.error(msg, e);
@@ -199,6 +190,7 @@ public class FileManageAction extends BaseAction implements Preparable {
         return SUCCESS;
     }
 
+    @SuppressWarnings("unchecked")
     private void addSelectedFiles(CaArrayFileSet fileSet, HttpServletRequest request) {
         Enumeration<String> myenum = request.getParameterNames();
         while (myenum.hasMoreElements()) {

@@ -29,10 +29,9 @@ public class ProjectAction extends BaseAction {
     /**
      * create new project.
      * @return path String
-     * @throws Exception Exception
      */
     @SkipValidation
-    public String list() throws Exception {
+    public String list() {
         setMenu("ProjectListLinks");
         setProjects(getDelegate().getProjectManagementService().getWorkspaceProjects());
 
@@ -42,10 +41,9 @@ public class ProjectAction extends BaseAction {
     /**
      * create new project.
      * @return path String
-     * @throws Exception Exception
      */
     @SkipValidation
-    public String create() throws Exception {
+    public String create() {
         setMenu("ProjectCreateLinks");
         setProposal(Proposal.createNew());
 
@@ -55,9 +53,8 @@ public class ProjectAction extends BaseAction {
     /**
      * save a project.
      * @return path String
-     * @throws Exception Exception
      */
-    public String save() throws Exception {
+    public String save() {
         setMenu("ProjectSaveLinks");
         getDelegate().getProjectManagementService().submitProposal(getProposal());
         List<String> args = new ArrayList<String>();
@@ -70,10 +67,9 @@ public class ProjectAction extends BaseAction {
     /**
      * edit files associated with a project.
      * @return path String
-     * @throws Exception Exception
      */
     @SkipValidation
-    public String details() throws Exception {
+    public String details() {
         setMenu("ProjectEditLinks");
         setProject(getDelegate().getProjectManagementService().getProject(getProject().getId()));
         return SUCCESS;
@@ -82,10 +78,9 @@ public class ProjectAction extends BaseAction {
     /**
      * Toggles the browsability status.
      * @return success
-     * @exception Exception on error
      */
     @SkipValidation
-    public String toggle() throws Exception {
+    public String toggle() {
         setMenu("ProjectEditLinks");
         getDelegate().getProjectManagementService().toggleBrowsableStatus(getProject().getId());
         return SUCCESS;

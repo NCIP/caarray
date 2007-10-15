@@ -86,7 +86,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
@@ -122,11 +121,11 @@ public class TestApiPerformance {
         assertEquals(1, matches.size());
         Experiment experiment = matches.get(2);
         System.out.println(experiment.getTitle());
-        
+
         QuantitationType searchIntensity = new QuantitationType();
         searchIntensity.setName("CELIntensity");
         QuantitationType intensity = searchService.search(searchIntensity).iterator().next();
-        
+
         Set<Hybridization> hybridizations = getAllHybridizations(experiment);
         assertEquals(10, hybridizations.size());
 
@@ -141,7 +140,7 @@ public class TestApiPerformance {
         long end = System.currentTimeMillis();
         long time = end - start;
         System.out.println("Retrieval in milliseconds: " + time);
-        
+
         long totalMilliseconds = 0L;
         int index = 0;
         for (Hybridization hybridization : hybridizations) {
@@ -160,15 +159,6 @@ public class TestApiPerformance {
             index++;
         }
         System.out.println("Total time in milliseconds: " + totalMilliseconds);
-    }
-
-    private Set<RawArrayData> getAllRawArrayData(Experiment experiment) {
-        Set<RawArrayData> datas = new HashSet<RawArrayData>();
-        Set<Hybridization> hybridizations = getAllHybridizations(experiment);
-        for (Hybridization hybridization : hybridizations) {
-            datas.add(hybridization.getArrayData());
-        }
-        return datas;
     }
 
     private Set<Hybridization> getAllHybridizations(Experiment experiment) {

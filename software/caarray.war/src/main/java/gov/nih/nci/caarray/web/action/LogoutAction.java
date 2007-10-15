@@ -90,10 +90,13 @@ import javax.servlet.http.HttpSession;
  */
 public class LogoutAction extends BaseAction {
 
+    private static final long serialVersionUID = -3980503091658538677L;
+
     /**
      * {@inheritDoc}
      */
-    public String execute() throws Exception {
+    @Override
+    public String execute() {
         HttpSession session = getSession();
         session.invalidate();
 

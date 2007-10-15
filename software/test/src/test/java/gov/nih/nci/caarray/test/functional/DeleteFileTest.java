@@ -97,10 +97,6 @@ import org.junit.Test;
  */
 public class DeleteFileTest extends AbstractSeleniumTest {
 
-    private static final int NUMBER_OF_FILES = 30;
-    private static final String TITLE =
-        "TCGA Analysis of Gene Expression for Glioblastoma Multiforme Using Affymetrix HT_HG-U133A";
-
     @Test
     public void testNew() throws Exception {
 
@@ -125,7 +121,7 @@ public class DeleteFileTest extends AbstractSeleniumTest {
         upload(MageTabDataFiles.TCGA_BROAD_SDRF);
         selenium.click("selected");
         selenium.click("removeFile");
-        selenium.waitForPageToLoad("30000");        
+        selenium.waitForPageToLoad("30000");
       //assertFalse(selenium.isTextPresent(file.getName()));
     }
 

@@ -136,8 +136,8 @@ public class ArrayDataServiceBean implements ArrayDataService {
     }
 
     private void loadDataSet(AbstractArrayData arrayData) {
-        DataSetLoader loader = 
-            new DataSetLoader(arrayData, getDaoFactory(), getArrayDesignService(), getFileAccessService());
+        DataSetLoader loader =
+            new DataSetLoader(arrayData, getDaoFactory(), getFileAccessService());
         loader.load();
     }
 
@@ -153,8 +153,8 @@ public class ArrayDataServiceBean implements ArrayDataService {
     }
 
     private void loadDataSet(AbstractArrayData arrayData, List<QuantitationType> types) {
-        DataSetLoader loader = 
-            new DataSetLoader(arrayData, getDaoFactory(), getArrayDesignService(), getFileAccessService());
+        DataSetLoader loader =
+            new DataSetLoader(arrayData, getDaoFactory(), getFileAccessService());
         loader.load(types);
     }
 
@@ -181,7 +181,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
      * {@inheritDoc}
      */
     public FileValidationResult validate(CaArrayFile arrayDataFile) {
-        DataFileValidator dataFileValidator = 
+        DataFileValidator dataFileValidator =
             new DataFileValidator(arrayDataFile, getDaoFactory(), getFileAccessService());
         dataFileValidator.validate();
         return arrayDataFile.getValidationResult();
