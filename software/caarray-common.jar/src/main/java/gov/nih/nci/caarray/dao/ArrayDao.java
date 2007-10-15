@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.array</code> package.
@@ -137,5 +138,13 @@ public interface ArrayDao extends CaArrayDao {
      * @return the matching type, or null if not in the database.
      */
     QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor);
+
+    /**
+     * Returns the hybridization matching the given id.
+     * 
+     * @param id id to retrieve
+     * @return the matching hybridization.
+     */
+    Hybridization getHybridization(Long id);
 
 }

@@ -90,6 +90,7 @@ import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
 /**
  *
@@ -130,6 +131,14 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
      * @see gov.nih.nci.caarray.dao.ArrayDao#getArrayData(long)
      */
     public AbstractArrayData getArrayData(long id) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.dao.ArrayDao#getHybridization(java.lang.Long)
+     */
+    public Hybridization getHybridization(Long id) {
         // TODO Auto-generated method stub
         return null;
     }

@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import org.apache.commons.logging.Log;
@@ -129,6 +130,13 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      */
     public AbstractArrayData getArrayData(long id) {
         return (AbstractArrayData) getCurrentSession().load(AbstractArrayData.class, id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Hybridization getHybridization(Long id) {
+        return (Hybridization) getCurrentSession().load(Hybridization.class, id);
     }
 
     /**

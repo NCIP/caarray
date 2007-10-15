@@ -184,6 +184,18 @@ public final class DataSet extends AbstractCaArrayObject {
     }
 
     /**
+     * Adds a list of new types to this <code>DataSet</code>, creating the appropriate columns for all
+     * <code>HybridizationDatas</code>.
+     * 
+     * @param types the types to add.
+     */
+    public void addQuantitationTypes(List<QuantitationType> types) {
+        for (QuantitationType type : types) {
+            addQuantitationType(type);
+        }
+    }
+
+    /**
      * @return the designElements
      */
     @ManyToMany(fetch = FetchType.EAGER)
