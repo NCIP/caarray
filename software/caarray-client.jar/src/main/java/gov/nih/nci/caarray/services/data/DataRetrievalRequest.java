@@ -136,4 +136,25 @@ public class DataRetrievalRequest implements Serializable {
         quantitationTypes.add(quantitationType);
     }
 
+    /**
+     * @return the designElements
+     */
+    public List<AbstractDesignElement> getDesignElements() {
+        return designElements;
+    }
+
+    /**
+     * @return the hybridizations
+     */
+    public List<Hybridization> getHybridizations() {
+        return hybridizations;
+    }
+
+    /**
+     * @return the quantitationTypes
+     */
+    public List<QuantitationType> getQuantitationTypes() {
+        return quantitationTypes;
+    }
+
 }
