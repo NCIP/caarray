@@ -85,12 +85,14 @@ package gov.nih.nci.caarray.test.functional;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
+import gov.nih.nci.caarray.services.data.DataRetrievalRequest;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.base.TestProperties;
 
@@ -118,26 +120,47 @@ public class TestApiPerformance {
         searchExperiment.setTitle(TITLE);
         List<Experiment> matches = searchService.search(searchExperiment);
         assertEquals(1, matches.size());
-        Experiment experiment = matches.get(0);
+        Experiment experiment = matches.get(2);
+        System.out.println(experiment.getTitle());
+        
+        QuantitationType searchIntensity = new QuantitationType();
+        searchIntensity.setName("CELIntensity");
+        QuantitationType intensity = searchService.search(searchIntensity).iterator().next();
+        
+        Set<Hybridization> hybridizations = getAllHybridizations(experiment);
+        assertEquals(10, hybridizations.size());
 
-        Set<RawArrayData> celDatas = getAllRawArrayData(experiment);
-        assertEquals(10, celDatas.size());
-
+        DataRetrievalRequest request = new DataRetrievalRequest();
+        request.addQuantitationType(intensity);
+        request.getHybridizations().addAll(hybridizations);
+        long start = System.currentTimeMillis();
+        DataSet dataSet = server.getDataRetrievalService().getDataSet(request);
+        assertEquals(10, dataSet.getHybridizationDataList().size());
+        assertEquals(1, dataSet.getHybridizationDataList().get(0).getColumns().size());
+        assertNotNull(dataSet);
+        long end = System.currentTimeMillis();
+        long time = end - start;
+        System.out.println("Retrieval in milliseconds: " + time);
+        
         long totalMilliseconds = 0L;
         int index = 0;
-        for (RawArrayData celData : celDatas) {
-            long start = System.currentTimeMillis();
-            DataSet dataSet = server.getDataRetrievalService().getDataSet(celData);
+        for (Hybridization hybridization : hybridizations) {
+            request = new DataRetrievalRequest();
+            request.addQuantitationType(intensity);
+            request.addHybridization(hybridization);
+            start = System.currentTimeMillis();
+            dataSet = server.getDataRetrievalService().getDataSet(request);
+            assertEquals(1, dataSet.getHybridizationDataList().size());
+            assertEquals(1, dataSet.getHybridizationDataList().get(0).getColumns().size());
             assertNotNull(dataSet);
-            long end = System.currentTimeMillis();
-            long time = end - start;
+            end = System.currentTimeMillis();
+            time = end - start;
             totalMilliseconds += time;
             System.out.println(index + ": Retrieval in milliseconds: " + time);
             index++;
         }
         System.out.println("Total time in milliseconds: " + totalMilliseconds);
     }
-
 
     private Set<RawArrayData> getAllRawArrayData(Experiment experiment) {
         Set<RawArrayData> datas = new HashSet<RawArrayData>();
