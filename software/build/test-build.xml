@@ -54,6 +54,13 @@
 	<au:assertPropertySet name="isWindows" message="Currently, remote-build.xml only runs on Windows."/>  
   </target>
 
+  <target name="testUpdateEnvironmentProperties">
+	<au:assertPropertySet name="svn.local.trunk" message="svn.local.trunk is a required property when calling the update-environment-properties target"/>  
+	<au:assertPropertySet name="svn.user.name" message="svn.user.name is a required property when calling the update-environment-properties target"/>  
+	<au:assertPropertySet name="svn.user.pwd" message="svn.user.pwd is a required property when calling the update-environment-properties target"/>  
+	<au:assertPropertySet name="scm.private.repo" message="scm.private.repo is a required property when calling the update-environment-properties target"/>  
+  </target>
+
   <target name="testPropertiesFileExists">
 	<au:assertFileExists file="${envpropertyfile}" message="Unable to find the file: ${envpropertyfile}. The path to -Denvpropertyfile must be fully-qualified." />  
   </target>

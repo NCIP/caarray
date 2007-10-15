@@ -171,6 +171,7 @@
 
 	<target name="update-environment-properties" description="Update the DEV and QA environment properties from a private repo">
 	  <echo message="Checking out latest environment values from ${scm.private.repo}" />
+	  <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/test-build.xml" target="testUpdateEnvironmentProperties"/>
  	  <delete dir="${svn.local.trunk}/caarray2" />
 	  <svn username="${svn.user.name}" password="${svn.user.pwd}">
 	    <checkout url="${scm.private.repo}" revision="HEAD" destPath="${svn.local.trunk}" />
