@@ -196,7 +196,7 @@ public class Sample extends AbstractBioMaterial {
     public void setSpecimen(Specimen specimen) {
         this.specimen = specimen;
     }
-    
+
     /**
      * Retrieve the tissue site for this Sample. The tissue site is stored
      * as a Characteristic of the Sample; this is a helper method to make
@@ -206,7 +206,7 @@ public class Sample extends AbstractBioMaterial {
      */
     @Transient
     public Term getTissueSite() {
-        for (AbstractCharacteristic characteristic: getCharacteristics()) {
+        for (AbstractCharacteristic characteristic : getCharacteristics()) {
             if (characteristic.getCategory().getName().equals(ExperimentOntologyCategory.ORGANISM_PART)) {
                 return ((TermBasedCharacteristic) characteristic).getTerm();
             }
