@@ -95,10 +95,16 @@ import javax.persistence.MappedSuperclass;
 public abstract class AbstractCaArrayObject implements PersistentObject {
 
     private static final long serialVersionUID = 2732929116326299995L;
+    
     /**
      * The default column size for string columns in the db.
      */
     public static final int DEFAULT_STRING_COLUMN_SIZE = 254;
+
+    /**
+     * The column size for large string columns in the db.
+     */
+    protected static final int LARGE_TEXT_FIELD_LENGTH = 2000;
 
     private Long id;
     private String bigid;

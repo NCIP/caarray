@@ -141,7 +141,6 @@ public class Experiment extends AbstractCaArrayEntity {
     private static final String PI_ROLE = "investigator";
 
     private static final long serialVersionUID = 1234567890L;
-
     private String title;
     private String description;
     private Date dateOfExperiment;
@@ -771,7 +770,7 @@ public class Experiment extends AbstractCaArrayEntity {
     /**
      * @return the experimentDesignDescription
      */
-    @Column(length = 2000)
+    @Column(length = LARGE_TEXT_FIELD_LENGTH)
     public String getExperimentDesignDescription() {
         return experimentDesignDescription;
     }
@@ -786,7 +785,7 @@ public class Experiment extends AbstractCaArrayEntity {
     /**
      * @return the qualityControlDescription
      */
-    @Column(length = 2000)
+    @Column(length = LARGE_TEXT_FIELD_LENGTH)
     public String getQualityControlDescription() {
         return qualityControlDescription;
     }
@@ -801,7 +800,7 @@ public class Experiment extends AbstractCaArrayEntity {
     /**
      * @return the replicateDescription
      */
-    @Column(length = 2000)
+    @Column(length = LARGE_TEXT_FIELD_LENGTH)
     public String getReplicateDescription() {
         return replicateDescription;
     }
