@@ -122,12 +122,9 @@ public interface FileAccessService {
     File getFile(CaArrayFile caArrayFile);
 
     /**
-     * Clients should call this method to inform the subsystem that this file is no longer needed for reading
-     * after having acquired the file by a call to <code>getFile()</code>.
-     *
-     * @param file the file to close
+     * Removes all files opened in the current session.
      */
-    void close(File file);
+    void closeFiles();
 
     /**
      * Removes a file from caArray file storage.
@@ -135,6 +132,7 @@ public interface FileAccessService {
      * @param caArrayFile the caArrayFile to remove
      */
     void remove(CaArrayFile caArrayFile);
+
     /**
      * Saves a file to the caArray file storage.
      *

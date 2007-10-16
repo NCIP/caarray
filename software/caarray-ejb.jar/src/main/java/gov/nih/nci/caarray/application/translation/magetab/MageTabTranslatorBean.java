@@ -123,6 +123,7 @@ public class MageTabTranslatorBean implements MageTabTranslator {
         translateTerms(documentSet, translationResult, getVocabularyService());
         translateIdfs(documentSet, translationResult);
         translateSdrfs(documentSet, fileSet, translationResult);
+        fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
         return translationResult;
     }

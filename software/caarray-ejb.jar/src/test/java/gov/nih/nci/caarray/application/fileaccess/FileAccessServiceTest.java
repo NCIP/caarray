@@ -87,10 +87,12 @@ import static org.junit.Assert.assertNull;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -100,13 +102,17 @@ import org.junit.Test;
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class FileAccessServiceTest {
 
-    private FileAccessService fileAccessService;
+    private FileAccessServiceBean fileAccessService;
 
     @Before
     public void setUp() {
-        FileAccessServiceBean fileAccessServiceBean = new FileAccessServiceBean();
-        fileAccessServiceBean.setDaoFactory(new DaoFactoryStub());
-        fileAccessService = fileAccessServiceBean;
+        fileAccessService = new FileAccessServiceBean();
+        fileAccessService.setDaoFactory(new DaoFactoryStub());
+    }
+
+    @After
+    public void tearDown() {
+        fileAccessService.closeFiles();
     }
 
     @Test
@@ -130,11 +136,11 @@ public class FileAccessServiceTest {
      */
     @Test
     public void testGetFile() throws IOException, FileAccessException {
-        File file = File.createTempFile("pre", ".ext");
-        file.deleteOnExit();
+        File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF;
         CaArrayFile caArrayFile = fileAccessService.add(file);
         File retrievedFile = fileAccessService.getFile(caArrayFile);
-        assertEquals(file, retrievedFile);
+        assertEquals(file.getName(), retrievedFile.getName());
+        assertEquals(file.length(), retrievedFile.length());
     }
 
 }

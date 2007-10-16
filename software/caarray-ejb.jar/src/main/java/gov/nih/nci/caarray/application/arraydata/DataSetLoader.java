@@ -130,7 +130,6 @@ final class DataSetLoader {
             LOG.debug("Parsing required for file " + getArrayData().getDataFile().getName());
             File file = getFileAccessService().getFile(getArrayData().getDataFile());
             handler.loadData(getDataSet(), types, file);
-            getFileAccessService().close(file);
             getDaoFactory().getArrayDao().save(getDataSet());
         } else {
             LOG.debug("File " + getArrayData().getDataFile().getName() + " has already been parsed");

@@ -133,6 +133,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             designFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
         }
         getArrayDao().save(designFile);
+        fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -146,6 +147,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         if (validateDesign(designFile).isValid()) {
             design = doImport(designFile);
         }
+        fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
         return design;
     }
@@ -165,6 +167,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     public ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign) {
         LogUtil.logSubsystemEntry(LOG, arrayDesign);
         AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile());
+        fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
         return handler.getDesignDetails();
     }
@@ -179,7 +182,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             throw new IllegalArgumentException("Unsupported array design file type: " + type);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -196,7 +199,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         }
         return designsByManufacturer;
     }
-    
+
     /**
      * {@inheritDoc}
      */

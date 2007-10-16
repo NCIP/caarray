@@ -90,9 +90,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.rmi.server.UID;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ejb.Local;
-import javax.ejb.Stateless;
+import javax.ejb.Stateful;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -104,11 +107,15 @@ import org.apache.commons.logging.LogFactory;
  * Implementation of the FileAccess subsystem.
  */
 @Local
-@Stateless
+@Stateful
 public class FileAccessServiceBean implements FileAccessService {
 
     private static final Log LOG = LogFactory.getLog(FileAccessServiceBean.class);
+    private static final String WORKING_DIRECTORY_PROPERTY_KEY = "caarray.working.directory";
+    private static final String TEMP_DIR_PROPERTY_KEY = "java.io.tmpdir";
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+    private final Map<CaArrayFile, File> openFiles = new HashMap<CaArrayFile, File>();
+    private File sessionWorkingDirectory;
 
     /**
      * {@inheritDoc}
@@ -180,8 +187,18 @@ public class FileAccessServiceBean implements FileAccessService {
      */
     public File getFile(CaArrayFile caArrayFile) {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        File tempDir = new File(System.getProperty("java.io.tmpdir"));
-        File file = new File(tempDir, caArrayFile.getName());
+        File file;
+        if (fileAlreadyOpened(caArrayFile)) {
+            file = getOpenFile(caArrayFile);
+        } else {
+            file = openFile(caArrayFile);
+        }
+        LogUtil.logSubsystemExit(LOG);
+        return file;
+    }
+
+    private File openFile(CaArrayFile caArrayFile) {
+        File file = new File(getSessionWorkingDirectory(), caArrayFile.getName());
         try {
             InputStream inputStream = caArrayFile.readContents();
             OutputStream outputStream = FileUtils.openOutputStream(file);
@@ -191,8 +208,38 @@ public class FileAccessServiceBean implements FileAccessService {
         } catch (IOException e) {
             throw new FileAccessException("Couldn't access file contents " + caArrayFile.getName(), e);
         }
-        LogUtil.logSubsystemExit(LOG);
+        openFiles.put(caArrayFile, file);
         return file;
+    }
+
+    private File getSessionWorkingDirectory() {
+        if (sessionWorkingDirectory == null) {
+            createSessionWorkingDirectory();
+        }
+        return sessionWorkingDirectory;
+    }
+
+    private void createSessionWorkingDirectory() {
+        String sessionSubdirectoryName = new UID().toString().replace(':', '_');
+        sessionWorkingDirectory = new File(getWorkingDirectory(), sessionSubdirectoryName);
+        if (!sessionWorkingDirectory.mkdirs()) {
+            LOG.error("Couldn't create directory: " + sessionWorkingDirectory.getAbsolutePath());
+            throw new IllegalStateException("Couldn't create directory: " + sessionWorkingDirectory.getAbsolutePath());
+        }
+    }
+
+    private File getWorkingDirectory() {
+        String tempDir = System.getProperty(TEMP_DIR_PROPERTY_KEY);
+        String workingDirectoryPath = System.getProperty(WORKING_DIRECTORY_PROPERTY_KEY, tempDir);
+        return new File(workingDirectoryPath);
+    }
+
+    private boolean fileAlreadyOpened(CaArrayFile caArrayFile) {
+        return openFiles.containsKey(caArrayFile);
+    }
+
+    private File getOpenFile(CaArrayFile caArrayFile) {
+        return openFiles.get(caArrayFile);
     }
 
     CaArrayDaoFactory getDaoFactory() {
@@ -204,11 +251,28 @@ public class FileAccessServiceBean implements FileAccessService {
     }
 
     /**
-     * {@inheritDoc}
+     * Deletes any files opened during the session.
      */
-    public void close(File file) {
-        file.delete();
+    public void closeFiles() {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Removing session files in directory: " + getSessionWorkingDirectory());
+        }
+        if (sessionWorkingDirectory == null) {
+            return;
+        }
+        for (File file : openFiles.values()) {
+            delete(file);
+        }
+        delete(getSessionWorkingDirectory());
+        openFiles.clear();
     }
 
+    private void delete(File file) {
+        LOG.debug("Deleting file: " + file.getAbsolutePath());
+        if (!file.delete()) {
+            LOG.warn("Couldn't delete file: " + file.getAbsolutePath());
+            file.deleteOnExit();
+        }
+    }
 
 }

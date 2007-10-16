@@ -144,6 +144,7 @@ public class FileRetrievalServiceBean implements FileRetrievalService {
             } catch (final IOException ioe) {
                 LOG.warn("IOException closing inputstream.", ioe);
             }
+            fileAccessService.closeFiles();
         }
     }
 

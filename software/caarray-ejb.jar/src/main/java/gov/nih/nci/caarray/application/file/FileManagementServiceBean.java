@@ -127,6 +127,7 @@ public class FileManagementServiceBean implements FileManagementService {
     public void importFiles(CaArrayFileSet fileSet) {
         LogUtil.logSubsystemEntry(LOG, fileSet);
         doImport(fileSet);
+        fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -136,6 +137,7 @@ public class FileManagementServiceBean implements FileManagementService {
     public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
         LogUtil.logSubsystemEntry(LOG, fileSet);
         doImport(targetProject, fileSet);
+        fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -144,7 +146,7 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private void doImport(Project targetProject, CaArrayFileSet fileSet) {
-        validateFiles(fileSet);
+        doValidate(fileSet);
         if (fileSet.getStatus().equals(FileStatus.VALIDATED)) {
             importArrayDesigns(fileSet);
             importAnnontation(targetProject, fileSet);
@@ -188,6 +190,11 @@ public class FileManagementServiceBean implements FileManagementService {
      * {@inheritDoc}
      */
     public void validateFiles(CaArrayFileSet fileSet) {
+        doValidate(fileSet);
+        fileAccessService.closeFiles();
+    }
+
+    private void doValidate(CaArrayFileSet fileSet) {
         validateArrayDesigns(fileSet);
         validateAnnotation(fileSet);
         validateArrayData(fileSet);

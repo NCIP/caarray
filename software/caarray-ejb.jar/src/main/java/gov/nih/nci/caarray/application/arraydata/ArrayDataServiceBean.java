@@ -131,6 +131,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
         LogUtil.logSubsystemEntry(LOG, arrayData);
         checkArguments(arrayData);
         loadDataSet(arrayData);
+        fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
         return arrayData.getDataSet();
     }
@@ -148,6 +149,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
         LogUtil.logSubsystemEntry(LOG, arrayData);
         checkArguments(arrayData);
         loadDataSet(arrayData, types);
+        fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
         return arrayData.getDataSet();
     }
@@ -166,6 +168,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
         checkArguments(arrayData);
         AbstractDataSetImporter abstractDataSetImporter = AbstractDataSetImporter.create(arrayData, getDaoFactory());
         abstractDataSetImporter.importData();
+        fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -184,6 +187,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
         DataFileValidator dataFileValidator =
             new DataFileValidator(arrayDataFile, getDaoFactory(), getFileAccessService());
         dataFileValidator.validate();
+        getFileAccessService().closeFiles();
         return arrayDataFile.getValidationResult();
     }
 

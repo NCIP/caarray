@@ -122,7 +122,7 @@ public class FileAccessServiceStub implements FileAccessService {
         // do nothing
     }
 
-    public void close(File file) {
+    public void closeFiles() {
         // do nothing
     }
 

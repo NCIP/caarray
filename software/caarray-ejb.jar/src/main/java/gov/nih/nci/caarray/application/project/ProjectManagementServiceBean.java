@@ -139,16 +139,18 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     public CaArrayFile addFile(Project project, File file) {
         LogUtil.logSubsystemEntry(LOG, project, file);
         CaArrayFile caArrayFile = doAddFile(project, file, file.getName());
+        fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
         return caArrayFile;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public CaArrayFile addFile(Project project, File file, String filename) {
         LogUtil.logSubsystemEntry(LOG, project, file);
         CaArrayFile caArrayFile = doAddFile(project, file, filename);
+        fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
         return caArrayFile;
     }
