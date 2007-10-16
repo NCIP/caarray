@@ -80,70 +80,36 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydata.affymetrix;
+package gov.nih.nci.caarray.application.arraydata;
 
-import java.util.Arrays;
+import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpChpQuantitationType;
+import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+
+import java.io.File;
 import java.util.List;
 
-import gov.nih.nci.caarray.domain.data.ArrayDataType;
-import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
-import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
-
 /**
- * The array data types supported for Affymetrix.
+ * 
  */
-public enum AffymetrixArrayDataTypes implements ArrayDataTypeDescriptor {
-    
-    /**
-     * Affymetrix CHP format (Gene Expression).
-     */
-    AFFYMETRIX_EXPRESSION_CHP("Affymetrix CHP (Gene Expression)", AffymetrixExpressionChpQuantitationType.values()),
-    
-    /**
-     * Affymetrix CHP format (SNP).
-     */
-    AFFYMETRIX_SNP_CHP("Affymetrix CHP (SNP)", AffymetrixSnpChpQuantitationType.values()),
-    
-    /**
-     * Affymetrix CEL format (Gene Expression).
-     */
-    AFFYMETRIX_EXPRESSION_CEL("Affymetrix CEL", AffymetrixCelQuantitationType.values());
-    
-    private final String name;
-    private final List<QuantitationTypeDescriptor> quantitationTypes;
+final class AffymetrixChpHandler extends AbstractDataFileHandler {
 
-    AffymetrixArrayDataTypes(String name, QuantitationTypeDescriptor[] quantitationTypes) {
-        this.name = name;
-        this.quantitationTypes = Arrays.asList(quantitationTypes);   
+    @Override
+    QuantitationTypeDescriptor[] getQuantitationTypeDescriptors() {
+        return AffymetrixSnpChpQuantitationType.values();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public String getName() {
-        return name;
+    @Override
+    void loadData(DataSet dataSet, List<QuantitationType> types, File file) {
+        // implement
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public List<QuantitationTypeDescriptor> getQuantitationTypes() {
-        return quantitationTypes;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String getVersion() {
+    @Override
+    FileValidationResult validate(CaArrayFile caArrayFile, File file) {
         return null;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public boolean isEquivalent(ArrayDataType arrayDataType) {
-        return name.equals(arrayDataType.getName());
-    }
-
 
 }

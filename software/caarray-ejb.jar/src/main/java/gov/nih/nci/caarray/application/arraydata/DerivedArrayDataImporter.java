@@ -80,70 +80,36 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydata.affymetrix;
+package gov.nih.nci.caarray.application.arraydata;
 
-import java.util.Arrays;
-import java.util.List;
-
-import gov.nih.nci.caarray.domain.data.ArrayDataType;
-import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
-import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 
 /**
- * The array data types supported for Affymetrix.
+ * Provides specialized behavior for importing <code>DerivedArrayData</code>.
  */
-public enum AffymetrixArrayDataTypes implements ArrayDataTypeDescriptor {
-    
-    /**
-     * Affymetrix CHP format (Gene Expression).
-     */
-    AFFYMETRIX_EXPRESSION_CHP("Affymetrix CHP (Gene Expression)", AffymetrixExpressionChpQuantitationType.values()),
-    
-    /**
-     * Affymetrix CHP format (SNP).
-     */
-    AFFYMETRIX_SNP_CHP("Affymetrix CHP (SNP)", AffymetrixSnpChpQuantitationType.values()),
-    
-    /**
-     * Affymetrix CEL format (Gene Expression).
-     */
-    AFFYMETRIX_EXPRESSION_CEL("Affymetrix CEL", AffymetrixCelQuantitationType.values());
-    
-    private final String name;
-    private final List<QuantitationTypeDescriptor> quantitationTypes;
+final class DerivedArrayDataImporter extends AbstractDataSetImporter {
 
-    AffymetrixArrayDataTypes(String name, QuantitationTypeDescriptor[] quantitationTypes) {
-        this.name = name;
-        this.quantitationTypes = Arrays.asList(quantitationTypes);   
+    private final DerivedArrayData derivedArrayData;
+
+    DerivedArrayDataImporter(DerivedArrayData derivedArrayData, CaArrayDaoFactory daoFactory) {
+        super(daoFactory);
+        this.derivedArrayData = derivedArrayData;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public String getName() {
-        return name;
+    @Override
+    void addHybridizationDatas() {
+        getDataSet().addHybridizationData(getDerivedArrayData().getHybridizations().iterator().next());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public List<QuantitationTypeDescriptor> getQuantitationTypes() {
-        return quantitationTypes;
+    @Override
+    AbstractArrayData getArrayData() {
+        return getDerivedArrayData();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public String getVersion() {
-        return null;
+    private DerivedArrayData getDerivedArrayData() {
+        return derivedArrayData;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public boolean isEquivalent(ArrayDataType arrayDataType) {
-        return name.equals(arrayDataType.getName());
-    }
-
 
 }

@@ -82,19 +82,19 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Handles import of array data by creating the associated <code>DataSet</code> and 
@@ -134,8 +134,7 @@ abstract class AbstractDataSetImporter {
     }
 
     private List<QuantitationType> getQuantitationTypes() {
-        List<QuantitationType> quantitationTypes = 
-            new ArrayList<QuantitationType>(AffymetrixCelQuantitationType.values().length);
+        List<QuantitationType> quantitationTypes = new ArrayList<QuantitationType>();
         for (QuantitationTypeDescriptor descriptor : getDataFileHandler().getQuantitationTypeDescriptors()) {
             quantitationTypes.add(getQuantitationType(descriptor));
         }
@@ -162,6 +161,8 @@ abstract class AbstractDataSetImporter {
         }
         if (arrayData instanceof RawArrayData) {
             return new RawArrayDataImporter((RawArrayData) arrayData, daoFactory);
+        } else if (arrayData instanceof DerivedArrayData) {
+            return new DerivedArrayDataImporter((DerivedArrayData) arrayData, daoFactory);
         } else {
             throw new IllegalArgumentException("Unsupported array data type " 
                     + arrayData.getClass().getCanonicalName());
