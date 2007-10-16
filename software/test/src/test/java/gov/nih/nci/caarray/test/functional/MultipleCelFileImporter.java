@@ -92,22 +92,47 @@ import java.io.IOException;
 import org.junit.Test;
 
 /**
- * Test case #7959.
- *
- * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
+ * Imports the largest Affy CEL files (HG-U133
  */
-public class LoadTenLargeCelFiles extends AbstractSeleniumTest {
+public class MultipleCelFileImporter extends AbstractSeleniumTest {
 
+    private static final int NUM_SETS_OF_TEN = 9;
+    
     @Override
     public void tearDown() throws Exception {
         // don't tearDown
     }
-
+    
     @Test
-    public void testUploadTenFiles() throws Exception {
-
+    public void testUploadFiles() throws Exception {
         loginAsPrincipalInvestigator();
+        //importArrayDesign();
+        for (int i = 0; i < NUM_SETS_OF_TEN; i++) {
+            importTenFiles();
+        }
+    }
+ 
+    private void importArrayDesign() throws IOException {
+        // TODO Auto-generated method stub
+        String title = "HG-U133 Plus 2 Array Design";
+        // Create project
+        clickAndWait("link=Propose Project");
+        selenium.type("title", title);
+        clickAndWait("submit");
+        assertTrue(selenium.isTextPresent("created successfully."));
 
+        clickAndWait("link=" + title);
+        selenium.click("link=Manage Files");
+        selenium.waitForPageToLoad("30000");
+        upload(AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF);
+
+        // Import the files.
+        selectAllFiles(1);
+        clickAndWait("importFile");
+        clickAndWait("link=Return to Workspace");
+    }
+
+    public void importTenFiles() throws Exception {
         String title = "test" + System.currentTimeMillis();
         // Create project
         clickAndWait("link=Propose Project");
@@ -130,17 +155,11 @@ public class LoadTenLargeCelFiles extends AbstractSeleniumTest {
         upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file8.CEL"));
         upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file9.CEL"));
         upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file10.CEL"));
-        upload(AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF);
 
         // Import the files.
-        selectAllFiles(13);
+        selectAllFiles(12);
         clickAndWait("importFile");
-
-        // Using the Java remote API, verify:
-        // - Expected entities exist
-        // - Permissions are correct
-        // - Files can be downloaded through API
-        // - Raw and derived data are available and accurate
+        clickAndWait("link=Return to Workspace");
     }
 
     private void selectAllFiles(int numberOfFiles) {

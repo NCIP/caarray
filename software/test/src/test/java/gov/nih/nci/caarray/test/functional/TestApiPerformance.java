@@ -118,30 +118,26 @@ public class TestApiPerformance {
         Experiment searchExperiment = new Experiment();
         searchExperiment.setTitle(TITLE);
         List<Experiment> matches = searchService.search(searchExperiment);
-        assertEquals(1, matches.size());
-        Experiment experiment = matches.get(2);
-        System.out.println(experiment.getTitle());
-
+        
         QuantitationType searchIntensity = new QuantitationType();
         searchIntensity.setName("CELIntensity");
         QuantitationType intensity = searchService.search(searchIntensity).iterator().next();
-
-        Set<Hybridization> hybridizations = getAllHybridizations(experiment);
-        assertEquals(10, hybridizations.size());
+        
+        Set<Hybridization> hybridizations = getAllHybridizations(matches);
 
         DataRetrievalRequest request = new DataRetrievalRequest();
         request.addQuantitationType(intensity);
         request.getHybridizations().addAll(hybridizations);
         long start = System.currentTimeMillis();
         DataSet dataSet = server.getDataRetrievalService().getDataSet(request);
-        assertEquals(10, dataSet.getHybridizationDataList().size());
+        assertEquals(hybridizations.size(), dataSet.getHybridizationDataList().size());
         assertEquals(1, dataSet.getHybridizationDataList().get(0).getColumns().size());
         assertNotNull(dataSet);
         long end = System.currentTimeMillis();
         long time = end - start;
-        System.out.println("Retrieval in milliseconds: " + time);
-
+        System.out.println("Retrieval of DataSet with all hybridizations, in milliseconds: " + time);    
         long totalMilliseconds = 0L;
+        
         int index = 0;
         for (Hybridization hybridization : hybridizations) {
             request = new DataRetrievalRequest();
@@ -159,6 +155,18 @@ public class TestApiPerformance {
             index++;
         }
         System.out.println("Total time in milliseconds: " + totalMilliseconds);
+    }
+
+    /**
+     * @param matches
+     * @return
+     */
+    private Set<Hybridization> getAllHybridizations(List<Experiment> matches) {
+        Set<Hybridization> hybridizations = new HashSet<Hybridization>();
+        for (Experiment experiment : matches) {
+            hybridizations.addAll(getAllHybridizations(experiment));
+        }
+        return hybridizations;
     }
 
     private Set<Hybridization> getAllHybridizations(Experiment experiment) {
