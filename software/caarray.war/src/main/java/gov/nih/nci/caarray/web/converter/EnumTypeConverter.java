@@ -83,8 +83,6 @@
 package gov.nih.nci.caarray.web.converter;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Scott Miller
@@ -92,16 +90,11 @@ import org.apache.commons.logging.LogFactory;
  */
 public class EnumTypeConverter extends com.opensymphony.xwork2.util.EnumTypeConverter {
 
-    private static final Log LOG = LogFactory.getLog(EnumTypeConverter.class);
-
     /**
      * {@inheritDoc}
      */
     @Override
     public Enum convertFromString(String value, Class toClass) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Converting " + value + " to class " + toClass.getName());
-        }
         if (StringUtils.isBlank(value)) {
             return null;
         }

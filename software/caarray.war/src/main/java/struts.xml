@@ -10,30 +10,82 @@
     <constant name="struts.i18n.encoding" value="UTF-8"/>
     <constant name="struts.custom.i18n.resources" value="ApplicationResources,errors"/>
     <constant name="struts.ui.theme" value="xhtml"/>
-    <constant name="struts.codebehind.pathPrefix" value="/WEB-INF/pages/"/>    
-    
+    <constant name="struts.codebehind.pathPrefix" value="/WEB-INF/pages/"/>
+
+
     <!-- Configuration for the default package. -->
     <package name="default" extends="struts-default">
-        <default-interceptor-ref name="paramsPrepareParamsStack" />
-        
+        <interceptors>
+            <interceptor name="caarrayParams"
+                class="gov.nih.nci.caarray.web.interceptor.DisplayTagParametersInterceptor" />
+
+            <interceptor-stack name="caarrayParamsPrepareParamsStack">
+                <interceptor-ref name="exception" />
+                <interceptor-ref name="alias" />
+                <interceptor-ref name="caarrayParams" />
+                <interceptor-ref name="servletConfig" />
+                <interceptor-ref name="prepare" />
+                <interceptor-ref name="i18n" />
+                <interceptor-ref name="chain" />
+                <interceptor-ref name="modelDriven" />
+                <interceptor-ref name="fileUpload" />
+                <interceptor-ref name="checkbox" />
+                <interceptor-ref name="staticParams" />
+                <interceptor-ref name="caarrayParams" />
+                <interceptor-ref name="conversionError" />
+                <interceptor-ref name="validation">
+                    <param name="excludeMethods">input,back,cancel</param>
+                </interceptor-ref>
+                <interceptor-ref name="workflow">
+                    <param name="excludeMethods">input,back,cancel</param>
+                </interceptor-ref>
+            </interceptor-stack>
+
+            <interceptor-stack name="caarrayDefaultStack">
+                <interceptor-ref name="exception" />
+                <interceptor-ref name="alias" />
+                <interceptor-ref name="servletConfig" />
+                <interceptor-ref name="prepare" />
+                <interceptor-ref name="i18n" />
+                <interceptor-ref name="chain" />
+                <interceptor-ref name="debugging" />
+                <interceptor-ref name="profiling" />
+                <interceptor-ref name="scopedModelDriven" />
+                <interceptor-ref name="modelDriven" />
+                <interceptor-ref name="fileUpload" />
+                <interceptor-ref name="checkbox" />
+                <interceptor-ref name="staticParams" />
+                <interceptor-ref name="caarrayParams">
+                    <param name="excludeParams">dojo\..*</param>
+                </interceptor-ref>
+                <interceptor-ref name="conversionError" />
+                <interceptor-ref name="validation">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+                <interceptor-ref name="workflow">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+            </interceptor-stack>
+        </interceptors>
+
+        <default-interceptor-ref name="caarrayParamsPrepareParamsStack" />
+
         <global-results>
             <result name="error">/error.jsp</result>
         </global-results>
-        
+
         <global-exception-mappings>
             <exception-mapping result="error" exception="java.lang.Throwable"/>
         </global-exception-mappings>
-        
+
     </package>
-    
-    <package name="protected" namespace="/protected" extends="struts-default">
-        <default-interceptor-ref name="paramsPrepareParamsStack" />
-        
-        <action name="Logout" class="gov.nih.nci.caarray.web.action.LogoutAction"> 
-            <result name="success" type="redirect-action">Project_list</result> 
+
+    <package name="protected" namespace="/protected" extends="default">
+        <action name="Logout" class="gov.nih.nci.caarray.web.action.LogoutAction">
+            <result name="success" type="redirect-action">Project_list</result>
         </action>
-        <action name="Project_*" class="gov.nih.nci.caarray.web.action.ProjectAction" method="{1}"> 
-            <result name="workspace" type="redirect-action">Project_list</result> 
+        <action name="Project_*" class="gov.nih.nci.caarray.web.action.ProjectAction" method="{1}">
+            <result name="workspace" type="redirect-action">Project_list</result>
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
             <result name="details">/WEB-INF/pages/project/details.jsp</result>
             <result name="list">/WEB-INF/pages/project/list.jsp</result>
@@ -50,14 +102,16 @@
 
         <action name="ajax_Project_saveTab_*"
             class="gov.nih.nci.caarray.web.action.ProjectAction" method="{1}SaveTab">
+            <result name="input">/WEB-INF/pages/project/{1}.jsp</result>
             <result name="success" type="chain">ajax_Project_loadTab_{1}</result>
+            <result name="sourcesTab" type="chain">ajax_Project_loadGenericTab_sources</result>
         </action>
 
         <action name="ajax_Project_saveGenericTab_*"
             class="gov.nih.nci.caarray.web.action.ProjectAction" method="saveTab">
             <result name="success" type="chain">ajax_Project_loadGenericTab_{1}</result>
         </action>
-                
+
         <action name="File_manage" class="gov.nih.nci.caarray.web.action.FileManageAction" method="manage">
             <result name="success">/WEB-INF/pages/project/projectFiles.jsp</result>
         </action>
@@ -73,17 +127,15 @@
             <result name="input">/WEB-INF/pages/project/projectFiles.jsp</result>
             <result name="success" type="redirect-action">File_manage?project.id=${project.id}</result>
         </action>
-        
      </package>
-     
-     <package name="registration" namespace="/registration" extends="struts-default">
+
+<!--
+     <package name="registration" namespace="/registration" extends="default">
         <default-interceptor-ref name="paramsPrepareParamsStack" />
-        
-        <action name="Registration_*" class="gov.nih.nci.caarray.web.action.RegistrationAction" method="{1}"> 
+        <action name="Registration_*" class="gov.nih.nci.caarray.web.action.RegistrationAction" method="{1}">
             <result name="input">/WEB-INF/pages/registration/form.jsp</result>
-            <result name="success">/WEB-INF/pages/registration/success.jsp</result> 
-        </action> 
-     
-     </package>      
-    
+            <result name="success">/WEB-INF/pages/registration/success.jsp</result>
+        </action>
+     </package>
+-->
 </struts>

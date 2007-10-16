@@ -90,6 +90,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.validator.ClassValidator;
 import org.hibernate.validator.InvalidValue;
 
 import com.opensymphony.xwork2.ActionContext;
@@ -106,8 +107,8 @@ import com.opensymphony.xwork2.validator.validators.FieldValidatorSupport;
 public class HibernateValidator extends FieldValidatorSupport {
 
     private static final Logger LOG = Logger.getLogger(HibernateValidator.class);
-    private static final Map<Class<?>, ContextualClassValidator<?>> CLASS_VALIDATOR_MAP =
-        new HashMap<Class<?>, ContextualClassValidator<?>>();
+    private static final Map<Class<?>, ClassValidator<?>> CLASS_VALIDATOR_MAP =
+        new HashMap<Class<?>, ClassValidator<?>>();
 
     /**
      * {@inheritDoc}
@@ -145,9 +146,9 @@ public class HibernateValidator extends FieldValidatorSupport {
             return;
         }
 
-        ContextualClassValidator classValidator = CLASS_VALIDATOR_MAP.get(o.getClass());
+        ClassValidator classValidator = CLASS_VALIDATOR_MAP.get(o.getClass());
         if (classValidator == null) {
-            classValidator = new ContextualClassValidator(o.getClass());
+            classValidator = new ClassValidator(o.getClass());
             CLASS_VALIDATOR_MAP.put(o.getClass(), classValidator);
         }
         InvalidValue[] validationMessages = classValidator.getInvalidValues(o);

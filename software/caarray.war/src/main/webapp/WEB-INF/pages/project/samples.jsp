@@ -1,25 +1,17 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
-<s:if test="${experiment.id != null}">
-    <c:set var="formAction" value="ajax/experiment/management/save/overview"/>
-</s:if>
-<s:else>
-    <c:set var="formAction" value="experiment/management/save"/>
-</s:else>
-
 <caarray:tabPane subtab="true">
     <div class="boxpad2">
         <h3>Samples</h3>
         <div class="addlink">
-            <c:url value="Project_addSample.action" var="addSampleUrl">
-                <c:param name="cancelResult" value="dashboard"/>
-            </c:url>
+            <c:url value="Project_addSample.action" var="addSampleUrl" />
             <a href="${addSampleUrl}" class="add">Add a new sample</a>
         </div>
     </div>
 
     <c:url var="sortUrl" value="/ajax/experiment/search/doSearch.action" />
     <c:url var="loadUrlBase" value="/experiment/management/load.action" />
+    <div class="tableboxpad">
     <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
         <display:table class="searchresults" cellspacing="0" list="${samples}" requestURI="${sortUrl}" id="row" pagesize="20">
             <caarray:displayTagProperties/>
@@ -48,5 +40,6 @@
                 <a href="#"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.delete"/>" /></a>
             </display:column>
         </display:table>
-    </ajax:displayTag>    
+    </ajax:displayTag>
+    <div class="tableboxpad">
 </caarray:tabPane>

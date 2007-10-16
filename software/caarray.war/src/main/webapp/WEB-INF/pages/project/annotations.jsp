@@ -1,51 +1,31 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
 <c:url value="ajax_Project_loadTab_experimentalDesign.action" var="experimentalDesignUrl">
-    <c:param name="proposal.id" value="${proposal.id}" />
-    <c:param name="cancelResult" value="${cancelResult}" />
     <c:param name="proposalKey" value="${proposalKey}" />
     <c:param name="ajax" value="true" />
 </c:url>
 <c:url value="ajax_Project_loadGenericTab_experimentalFactors.action" var="experimentalFactorsUrl">
-    <c:param name="proposal.id" value="${proposal.id}" />
-    <c:param name="cancelResult" value="${cancelResult}" />
     <c:param name="proposalKey" value="${proposalKey}" />
     <c:param name="ajax" value="true" />
 </c:url>
 <c:url value="ajax_Project_loadGenericTab_sources.action" var="sourcesUrl">
-    <c:param name="proposal.id" value="${proposal.id}" />
-    <c:param name="cancelResult" value="${cancelResult}" />
-    <c:param name="proposalKey" value="${proposalKey}" />
-    <c:param name="ajax" value="true" />
-</c:url>
-<c:url value="ajax_Project_loadGenericTab_sources.action" var="sourcesUrl">
-    <c:param name="proposal.id" value="${proposal.id}" />
-    <c:param name="cancelResult" value="${cancelResult}" />
     <c:param name="proposalKey" value="${proposalKey}" />
     <c:param name="ajax" value="true" />
 </c:url>
 <c:url value="ajax_Project_loadGenericTab_samples.action" var="samplesUrl">
-    <c:param name="proposal.id" value="${proposal.id}" />
-    <c:param name="cancelResult" value="${cancelResult}" />
     <c:param name="proposalKey" value="${proposalKey}" />
     <c:param name="ajax" value="true" />
 </c:url>
 <c:url value="ajax_Project_loadGenericTab_extracts.action" var="extractsUrl">
-    <c:param name="proposal.id" value="${proposal.id}" />
-    <c:param name="cancelResult" value="${cancelResult}" />
     <c:param name="proposalKey" value="${proposalKey}" />
     <c:param name="ajax" value="true" />
 </c:url>
 <c:url value="ajax_Project_loadGenericTab_labeledExtracts.action" var="labeledExtractsUrl">
-    <c:param name="proposal.id" value="${proposal.id}" />
-    <c:param name="cancelResult" value="${cancelResult}" />
-    <c:param name="proposalKey" value="${proposalKey}" />    
+    <c:param name="proposalKey" value="${proposalKey}" />
     <c:param name="ajax" value="true" />
 </c:url>
 <c:url value="ajax_Project_loadGenericTab_hybridizations.action" var="hybridizationsUrl">
-    <c:param name="proposal.id" value="${proposal.id}" />
-    <c:param name="cancelResult" value="${cancelResult}" />
-    <c:param name="proposalKey" value="${proposalKey}" />    
+    <c:param name="proposalKey" value="${proposalKey}" />
     <c:param name="ajax" value="true" />
 </c:url>
 
@@ -66,8 +46,8 @@
     <ajax:tab caption="${hybridizationsTitle}" baseUrl="${hybridizationsUrl}" defaultTab="${param.initialTab == 'hybridizations'}" />
     <ajax:tab caption="${extractsTitle}" baseUrl="${extractsUrl}" defaultTab="${param.initialTab == 'extracts'}" />
     <ajax:tab caption="${labeledExtractsTitle}" baseUrl="${labeledExtractsUrl}" defaultTab="${param.initialTab == 'labeledExtracts'}" />
-</ajax:tabPanel>        
+</ajax:tabPanel>
 
 <script type="text/javascript">
-executeAjaxTab_tablevel2(this,'selected', '${experimentalDesignUrl}', ''); 
+executeAjaxTab_tablevel2(this,'selected', '${experimentalDesignUrl}', '');
 </script>

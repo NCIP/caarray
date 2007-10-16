@@ -1,7 +1,7 @@
-<%@ tag display-name="tabPane" 
-        description="Formats a single tab pane for experiment management" 
+<%@ tag display-name="tabPane"
+        description="Formats a single tab pane for experiment management"
         body-content="scriptless"%>
-        
+
 <%@ attribute name="paneTitleKey" required="false"%>
 <%@ attribute name="submittingPaneMessageKey" required="false"%>
 <%@ attribute name="loadingPaneMessageKey" required="false"%>
@@ -30,6 +30,17 @@
 <div id="${submittingDivId}" style="display: none;">
     <div><fmt:message key="${submittingPaneMessageKey}" /></div>
 </div>
+<%-- Success Messages --%>
+<c:if test="${not empty messages}">
+    <div class="message" id="successMessages">
+        <c:forEach var="msg" items="${messages}">
+            <img src="<c:url value="/images/iconInformation.gif"/>"
+                alt="<fmt:message key="icon.information"/>" class="icon" />
+            <c:out value="${msg}" escapeXml="false"/><br />
+        </c:forEach>
+    </div>
+    <c:remove var="messages" scope="session"/>
+</c:if>
 <c:set var="formDivId" value="theForm${subtab ? 'Subtab' : ''}"/>
 <div id="${formDivId}">
     <c:if test="${not empty successMessage && ignoreSuccessMessage != 'true'}">

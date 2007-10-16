@@ -132,9 +132,6 @@ import org.hibernate.annotations.IndexColumn;
 @SuppressWarnings("PMD.TooManyFields") // Experiment is central object -- can't reduce set of linked entities
 public class Experiment extends AbstractCaArrayEntity {
 
-    /**
-     *
-     */
     private static final int IDENTIFIER_TOKEN_LENGTH = 5;
     private static final String UNUSED = "unused";
     private static final String FK_COLUMN_NAME = "EXPERIMENT_ID";
@@ -174,7 +171,7 @@ public class Experiment extends AbstractCaArrayEntity {
     private Set<Publication> publications = new HashSet<Publication>();
     private Set<Array> arrays = new HashSet<Array>();
     private Set<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
-    private Set<Source> sources = new HashSet<Source>();
+    private List<Source> sources = new ArrayList<Source>();
     private Set<Sample> samples = new HashSet<Sample>();
     private Set<Extract> extracts = new HashSet<Extract>();
     private Set<LabeledExtract> labeledExtracts = new HashSet<LabeledExtract>();
@@ -196,7 +193,7 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @Temporal(TemporalType.TIMESTAMP)
     public Date getDateOfExperiment() {
-        return dateOfExperiment;
+        return this.dateOfExperiment;
     }
 
     /**
@@ -214,7 +211,7 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     /**
@@ -232,7 +229,7 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @Temporal(TemporalType.TIMESTAMP)
     public Date getPublicReleaseDate() {
-        return publicReleaseDate;
+        return this.publicReleaseDate;
     }
 
     /**
@@ -250,7 +247,7 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getTitle() {
-        return title;
+        return this.title;
     }
 
     /**
@@ -291,7 +288,7 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * Gets the ExperimentContact corresponding to the PI for the experiment
+     * Gets the ExperimentContact corresponding to the PI for the experiment.
      *
      * @return the PI ExperimentContact
      */
@@ -312,18 +309,18 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * Gets the payment mechanism for this experiment
+     * Gets the payment mechanism for this experiment.
      *
      * @return the payment mechanism
      */
     @ManyToOne(cascade = { CascadeType.ALL })
     @ForeignKey(name = "EXPERIMENT_PAYMENT_MECHANISM_FK")
     public PaymentMechanism getPaymentMechanism() {
-        return paymentMechanism;
+        return this.paymentMechanism;
     }
 
     /**
-     * Set the payment mechanism for this experiment
+     * Set the payment mechanism for this experiment.
      * @param paymentMechanism the payment mechanism to set
      */
     public void setPaymentMechanism(PaymentMechanism paymentMechanism) {
@@ -331,16 +328,16 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * Gets the payment number, i.e. invoice number
+     * Gets the payment number, i.e. invoice number.
      * @return the payment number
      */
     @Column(length = PAYMENT_NUMBER_FIELD_LENGTH)
     public String getPaymentNumber() {
-        return paymentNumber;
+        return this.paymentNumber;
     }
 
     /**
-     * Sets the payment number, ie invoice number
+     * Sets the payment number, ie invoice number.
      * @param paymentNumber the payment number to set
      */
     public void setPaymentNumber(String paymentNumber) {
@@ -348,16 +345,16 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * Gets the service type requested for this experiment
+     * Gets the service type requested for this experiment.
      * @return the service type
      */
     @Enumerated(EnumType.STRING)
     public ServiceType getServiceType() {
-        return serviceType;
+        return this.serviceType;
     }
 
     /**
-     * Sets the service type requested for this experiment
+     * Sets the service type requested for this experiment.
      * @param serviceType the service type to set
      */
     public void setServiceType(ServiceType serviceType) {
@@ -365,16 +362,16 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * Gets the assay type for this Experiment
+     * Gets the assay type for this Experiment.
      * @return the assay type
      */
     @Enumerated(EnumType.STRING)
     public AssayType getAssayType() {
-        return assayType;
+        return this.assayType;
     }
 
     /**
-     * Sets the assay type for this experiment
+     * Sets the assay type for this experiment.
      * @param assayType the assay type to set
      */
     public void setAssayType(AssayType assayType) {
@@ -382,18 +379,18 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * Gets the manufacturer for this Experiment
+     * Gets the manufacturer for this Experiment.
      * @return the manufacturer
      */
     @ManyToOne
     @ForeignKey(name = "EXPERIMENT_MANUFACTURER_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Organization getManufacturer() {
-        return manufacturer;
+        return this.manufacturer;
     }
 
     /**
-     * Sets the manufacturer for this Experiment
+     * Sets the manufacturer for this Experiment.
      * @param manufacturer the manufacturer to set
      */
     public void setManufacturer(Organization manufacturer) {
@@ -401,18 +398,18 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * Gets the organism for this Experiment
+     * Gets the organism for this Experiment.
      * @return the organism
      */
     @ManyToOne
     @ForeignKey(name = "EXPERIMENT_ORGANISM_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Organism getOrganism() {
-        return organism;
+        return this.organism;
     }
 
     /**
-     * Sets the organism for this Experiment
+     * Sets the organism for this Experiment.
      * @param organism the organism to set
      */
     public void setOrganism(Organism organism) {
@@ -420,7 +417,7 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * Gets the tissue sites associated with this experiment
+     * Gets the tissue sites associated with this experiment.
      * @return the tissue sites
      */
     @ManyToMany(fetch = FetchType.EAGER)
@@ -433,7 +430,7 @@ public class Experiment extends AbstractCaArrayEntity {
     )
     @ForeignKey(name = "TISSUESITE_EXP_FK", inverseName = "TISSUESITE_TERM_FK")
     public List<Term> getTissueSites() {
-        return tissueSites;
+        return this.tissueSites;
     }
 
     /**
@@ -444,7 +441,7 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * Gets the tissue types associated with this experiment
+     * Gets the tissue types associated with this experiment.
      * @return the tissue types
      */
     @ManyToMany(fetch = FetchType.EAGER)
@@ -456,7 +453,7 @@ public class Experiment extends AbstractCaArrayEntity {
     )
     @ForeignKey(name = "TISSUETYPE_EXP_FK", inverseName = "TISSUETYPE_TERM_FK")
     public List<Term> getTissueTypes() {
-        return tissueTypes;
+        return this.tissueTypes;
     }
 
     /**
@@ -467,7 +464,7 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * Gets the cell types associated with this experiment
+     * Gets the cell types associated with this experiment.
      * @return the cell types
      */
     @ManyToMany(fetch = FetchType.EAGER)
@@ -479,7 +476,7 @@ public class Experiment extends AbstractCaArrayEntity {
     )
     @ForeignKey(name = "CELLTYPE_EXP_FK", inverseName = "CELLTYPE_TERM_FK")
     public List<Term> getCellTypes() {
-        return cellTypes;
+        return this.cellTypes;
     }
 
     /**
@@ -490,7 +487,7 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * Gets the conditions associated with this experiment
+     * Gets the conditions associated with this experiment.
      * @return the conditions
      */
     @ManyToMany(fetch = FetchType.EAGER)
@@ -502,7 +499,7 @@ public class Experiment extends AbstractCaArrayEntity {
     )
     @ForeignKey(name = "CONDITION_EXP_FK", inverseName = "CONDITION_TERM_FK")
     public List<Term> getConditions() {
-        return conditions;
+        return this.conditions;
     }
 
     /**
@@ -513,15 +510,15 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * returns whether the experiment contains pooled samples
+     * returns whether the experiment contains pooled samples.
      * @return whether the experiment contains pooled samples
      */
     public boolean isPooledSamples() {
-        return pooledSamples;
+        return this.pooledSamples;
     }
 
     /**
-     * Sets whether the experiment contains pooled samples
+     * Sets whether the experiment contains pooled samples.
      * @param pooledSamples whether the experiment contains pooled samples
      */
     public void setPooledSamples(boolean pooledSamples) {
@@ -541,7 +538,7 @@ public class Experiment extends AbstractCaArrayEntity {
     )
     @ForeignKey(name = "QUALCTRLTYPE_INVEST_FK", inverseName = "QUALCTRLTYPE_TERM_FK")
     public Set<Term> getQualityControlTypes() {
-        return qualityControlTypes;
+        return this.qualityControlTypes;
     }
 
     /**
@@ -561,7 +558,7 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.EAGER)
     public Set<Publication> getPublications() {
-        return publications;
+        return this.publications;
     }
 
     /**
@@ -587,7 +584,7 @@ public class Experiment extends AbstractCaArrayEntity {
     )
     @ForeignKey(name = "REPLTYPE_INVEST_FK", inverseName = "REPLTYPE_TERM_FK")
     public Set<Term> getReplicateTypes() {
-        return replicateTypes;
+        return this.replicateTypes;
     }
 
     /**
@@ -612,9 +609,11 @@ public class Experiment extends AbstractCaArrayEntity {
             inverseJoinColumns = { @JoinColumn(name = "SOURCE_ID") }
     )
     @ForeignKey(name = "EXPERIMENTSOURCE_INVEST_FK", inverseName = "EXPERIMENTSOURCE_SOURCE_FK")
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    public Set<Source> getSources() {
-        return sources;
+    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+          org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @IndexColumn(name = "indx")
+    public List<Source> getSources() {
+        return this.sources;
     }
 
     /**
@@ -623,7 +622,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param sourcesVal the sources
      */
     @SuppressWarnings(UNUSED)
-    private void setSources(final Set<Source> sourcesVal) {  // NOPMD
+    private void setSources(final List<Source> sourcesVal) {  // NOPMD
         this.sources = sourcesVal;
     }
 
@@ -641,7 +640,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @ForeignKey(name = "EXPERIMENTSAMPLE_INVEST_FK", inverseName = "EXPERIMENTSAMPLE_SAMPLE_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Sample> getSamples() {
-        return samples;
+        return this.samples;
     }
 
     /**
@@ -668,7 +667,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @ForeignKey(name = "EXPERIMENTEXTRACT_INVEST_FK", inverseName = "EXPERIMENTEXTRACT_EXTRACT_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Extract> getExtracts() {
-        return extracts;
+        return this.extracts;
     }
 
     /**
@@ -695,7 +694,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @ForeignKey(name = "EXPERIMENTLE_INVEST_FK", inverseName = "EXPERIMENTLE_LE_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<LabeledExtract> getLabeledExtracts() {
-        return labeledExtracts;
+        return this.labeledExtracts;
     }
 
     /**
@@ -722,7 +721,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @ForeignKey(name = "INVESTARRAYDESIGN_INVEST_FK", inverseName = "INVESTARRAYDESIGN_ARRAYDESIGN_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<ArrayDesign> getArrayDesigns() {
-        return arrayDesigns;
+        return this.arrayDesigns;
     }
 
     /**
@@ -743,7 +742,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<ExperimentContact> getExperimentContacts() {
-        return experimentContacts;
+        return this.experimentContacts;
     }
 
     /**
@@ -763,7 +762,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @ForeignKey(name = "EXPERIMENT_DESIGN_TYPE_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Term getExperimentDesignType() {
-        return experimentDesignType;
+        return this.experimentDesignType;
     }
 
     /**
@@ -778,7 +777,7 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @Column(length = LARGE_TEXT_FIELD_LENGTH)
     public String getExperimentDesignDescription() {
-        return experimentDesignDescription;
+        return this.experimentDesignDescription;
     }
 
     /**
@@ -793,7 +792,7 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @Column(length = LARGE_TEXT_FIELD_LENGTH)
     public String getQualityControlDescription() {
-        return qualityControlDescription;
+        return this.qualityControlDescription;
     }
 
     /**
@@ -808,7 +807,7 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @Column(length = LARGE_TEXT_FIELD_LENGTH)
     public String getReplicateDescription() {
-        return replicateDescription;
+        return this.replicateDescription;
     }
 
     /**
@@ -826,7 +825,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Factor> getFactors() {
-        return factors;
+        return this.factors;
     }
 
     /**
@@ -853,7 +852,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @ForeignKey(name = "NORMTYPE_INVEST_FK", inverseName = "NORMTYPE_TERM_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Term> getNormalizationTypes() {
-        return normalizationTypes;
+        return this.normalizationTypes;
     }
 
     /**
@@ -880,7 +879,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @ForeignKey(name = "EXPRARRAY_INVEST_FK", inverseName = "EXPRARRAY_ARRAY_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Array> getArrays() {
-        return arrays;
+        return this.arrays;
     }
 
     /**
@@ -898,7 +897,7 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.EAGER)
     public Set<Hybridization> getHybridizations() {
-        return hybridizations;
+        return this.hybridizations;
     }
 
     @SuppressWarnings("unused")

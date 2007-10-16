@@ -128,7 +128,7 @@ public class Sample extends AbstractBioMaterial {
      */
     @ManyToMany(mappedBy = "samples")
     public Set<Source> getSources() {
-        return sources;
+        return this.sources;
     }
 
     /**
@@ -160,7 +160,7 @@ public class Sample extends AbstractBioMaterial {
     @ForeignKey(name = "SAMPLEEXTRACT_SAMPLE_FK", inverseName = "SAMPLEEXTRACT_EXTRACT_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Extract> getExtracts() {
-        return extracts;
+        return this.extracts;
     }
 
     /**
@@ -187,7 +187,7 @@ public class Sample extends AbstractBioMaterial {
     @OneToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Specimen getSpecimen() {
-        return specimen;
+        return this.specimen;
     }
 
     /**

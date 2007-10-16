@@ -4,15 +4,14 @@
     <div class="boxpad2">
         <h3>Experimental Factors</h3>
         <div class="addlink">
-            <c:url value="Project_addFactor.action" var="addFactorUrl">
-                <c:param name="cancelResult" value="dashboard"/>
-            </c:url>
+            <c:url value="Project_addFactor.action" var="addFactorUrl" />
             <a href="${addFactorUrl}" class="add">Add a new factor</a>
         </div>
     </div>
 
     <c:url var="sortUrl" value="/ajax/experiment/search/doSearch.action" />
     <c:url var="loadUrlBase" value="/experiment/management/load.action" />
+    <div class="tableboxpad">
     <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
         <display:table class="searchresults" cellspacing="0" list="${proposal.project.experiment.factors}" requestURI="${sortUrl}" id="row" pagesize="20">
             <caarray:displayTagProperties/>
@@ -31,5 +30,6 @@
                 <a href="#"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.delete"/>" /></a>
             </display:column>
         </display:table>
-    </ajax:displayTag>    
+    </ajax:displayTag>
+    </div>
 </caarray:tabPane>
