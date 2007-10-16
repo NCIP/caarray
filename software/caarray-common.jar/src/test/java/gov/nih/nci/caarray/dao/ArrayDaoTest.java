@@ -150,10 +150,24 @@ public class ArrayDaoTest  extends AbstractDaoTest {
 
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
+            List<ArrayDesign> arrayDesigns = DAO_OBJECT.getAllArrayDesigns();
+            assertNotNull(arrayDesigns);
+            for (ArrayDesign ad : arrayDesigns) {
+                DAO_OBJECT.remove(ad);
+            }
+            tx.commit();
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            arrayDesigns = DAO_OBJECT.getAllArrayDesigns();
+            assertNotNull(arrayDesigns);
+            assertEquals(0, arrayDesigns.size());
             DAO_OBJECT.save(DUMMY_ARRAYDESIGN_1);
             ArrayDesign retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getId());
+            arrayDesigns = DAO_OBJECT.getAllArrayDesigns();
             tx.commit();
             assertEquals(DUMMY_ARRAYDESIGN_1, retrievedArrayDesign);
+            assertNotNull(arrayDesigns);
+            assertEquals(1, arrayDesigns.size());            
+            assertEquals(DUMMY_ARRAYDESIGN_1, arrayDesigns.get(0));
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());

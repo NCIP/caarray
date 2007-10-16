@@ -227,6 +227,28 @@ public class VocabularyDaoTest extends AbstractDaoTest {
             fail("DAO exception while getting terms in a category: " + e.getMessage());
         }
     }
+    
+    /**
+     * Tests retrieving terms by id recursively.
+     */
+    @Test
+    public void testGetTermsById() {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            setupTestGetTermsRecursive();            
+            Term retrievedTerm1 = DAO_OBJECT.getTermById(DUMMY_TERM_1.getId());
+            Term retrievedTerm2 = DAO_OBJECT.getTermById(DUMMY_TERM_2.getId());
+            Term retrievedTerm3 = DAO_OBJECT.getTermById(DUMMY_TERM_3.getId());
+            tx.commit();
+            assertEquals(DUMMY_TERM_1, retrievedTerm1);
+            assertEquals(DUMMY_TERM_2, retrievedTerm2);
+            assertEquals(DUMMY_TERM_3, retrievedTerm3);
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception while getting terms in a category: " + e.getMessage());
+        }
+    }
 
     /**
      * Tests retrieving <code>Category</code> with the given name.
