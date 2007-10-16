@@ -97,13 +97,10 @@ import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.BooleanColumn;
 import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.FloatColumn;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
@@ -156,7 +153,7 @@ public class ArrayDataServiceTest {
         assertTrue(daoFactoryStub.dataTypeMap.containsKey(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL));
         assertTrue(daoFactoryStub.quantitationTypeMap.keySet().containsAll(Arrays.asList(AffymetrixCelQuantitationType.values())));
     }
-    
+
     @Test
     public void testImport() throws InvalidDataFileException {
         testImportCel();
@@ -180,7 +177,7 @@ public class ArrayDataServiceTest {
         assertEquals(7, dataSet.getQuantitationTypes().size());
         checkCelColumnTypes(dataSet);
     }
-    
+
     @Test
     public void testValidate() {
         CaArrayFile celFile = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL);
@@ -230,7 +227,7 @@ public class ArrayDataServiceTest {
             assertEquals(fusionCelEntry.getPixels(), numPixelsColumn.getValues()[rowIndex]);
         }
     }
-    
+
     private void checkCelColumnTypes(DataSet dataSet) {
         assertTrue(AffymetrixCelQuantitationType.CEL_X.isEquivalent(dataSet.getQuantitationTypes().get(0)));
         assertTrue(AffymetrixCelQuantitationType.CEL_Y.isEquivalent(dataSet.getQuantitationTypes().get(1)));
@@ -265,7 +262,7 @@ public class ArrayDataServiceTest {
         hybridization.setArrayData(celData);
         return celData;
     }
-    
+
     private CaArrayFile getCelCaArrayFile(File cel) {
         CaArrayFile celDataFile = fileAccessServiceStub.add(cel);
         celDataFile.setType(FileType.AFFYMETRIX_CEL);
