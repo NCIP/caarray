@@ -134,6 +134,11 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
     public static final FileType AFFYMETRIX_CEL = new FileType("AFFYMETRIX_CEL");
 
     /**
+     * Affymetrix native CHP data format.
+     */
+    public static final FileType AFFYMETRIX_CHP = new FileType("AFFYMETRIX_CHP");
+
+    /**
      * A Map of all possible file types.
      */
     private static final Map<String, FileType> INSTANCES = new HashMap<String, FileType>();
@@ -153,6 +158,7 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
 
         ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CDF);
         ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
+        ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
     }
 
     private FileType(String name) {
