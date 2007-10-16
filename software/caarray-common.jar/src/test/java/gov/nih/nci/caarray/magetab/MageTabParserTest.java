@@ -151,7 +151,7 @@ public class MageTabParserTest {
     public void testParse() throws MageTabParsingException, InvalidDataException {
         testSpecificationDocuments();
         testTcgaBroadDocuments();
-        //testEbiTemplateDocuments();
+        testEbiTemplateDocuments();
     }
 
     private void testEbiTemplateDocuments() throws InvalidDataException, MageTabParsingException {
