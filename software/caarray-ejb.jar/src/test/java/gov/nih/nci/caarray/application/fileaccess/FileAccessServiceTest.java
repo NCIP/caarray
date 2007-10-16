@@ -84,15 +84,12 @@ package gov.nih.nci.caarray.application.fileaccess;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileType;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -129,7 +126,7 @@ public class FileAccessServiceTest {
     /**
      * Test method for {@link gov.nih.nci.caarray.application.fileaccess.FileAccessService#getFile(gov.nih.nci.caarray.domain.file.CaArrayFile)}.
      * @throws IOException
-     * @throws FileAccessException 
+     * @throws FileAccessException
      */
     @Test
     public void testGetFile() throws IOException, FileAccessException {
@@ -138,27 +135,6 @@ public class FileAccessServiceTest {
         CaArrayFile caArrayFile = fileAccessService.add(file);
         File retrievedFile = fileAccessService.getFile(caArrayFile);
         assertEquals(file, retrievedFile);
-    }
-
-    /**
-     * Test method for {@link gov.nih.nci.caarray.application.fileaccess.FileAccessService#getFiles(gov.nih.nci.caarray.domain.file.CaArrayFileSet)}.
-     * @throws IOException
-     * @throws FileAccessException 
-     */
-    @Test
-    public void testGetFiles() throws IOException, FileAccessException {
-        File file1 = File.createTempFile("pre", ".ext");
-        File file2 = File.createTempFile("pre", ".ext");
-        file1.deleteOnExit();
-        file2.deleteOnExit();
-        CaArrayFile caArrayFile1 = fileAccessService.add(file1);
-        CaArrayFile caArrayFile2 = fileAccessService.add(file2);
-        CaArrayFileSet fileSet = new CaArrayFileSet();
-        fileSet.add(caArrayFile1);
-        fileSet.add(caArrayFile2);
-        Set<File> retrievedFiles = fileAccessService.getFiles(fileSet);
-        assertTrue(retrievedFiles.contains(file1));
-        assertTrue(retrievedFiles.contains(file2));
     }
 
 }

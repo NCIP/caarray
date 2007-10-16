@@ -84,15 +84,12 @@ package gov.nih.nci.caarray.application.fileaccess;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -144,7 +141,7 @@ public class FileAccessServiceBean implements FileAccessService {
         }
         return caArrayFile;
     }
-    
+
     private CaArrayFile createCaArrayFile(String filename) {
         CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setName(filename);
@@ -177,7 +174,7 @@ public class FileAccessServiceBean implements FileAccessService {
             caArrayFile.setType(fileExtension.getType());
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -196,19 +193,6 @@ public class FileAccessServiceBean implements FileAccessService {
         }
         LogUtil.logSubsystemExit(LOG);
         return file;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Set<File> getFiles(CaArrayFileSet fileSet) {
-        LogUtil.logSubsystemEntry(LOG, fileSet);
-        Set<File> files = new HashSet<File>();
-        for (CaArrayFile caArrayFile : fileSet.getFiles()) {
-            files.add(getFile(caArrayFile));
-        }
-        LogUtil.logSubsystemExit(LOG);
-        return files;
     }
 
     CaArrayDaoFactory getDaoFactory() {
