@@ -82,11 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import java.util.List;
-import java.util.Map;
-
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
@@ -94,6 +90,8 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+
+import java.util.List;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.array</code> package.
@@ -110,8 +108,9 @@ public interface ArrayDao extends CaArrayDao {
     ArrayDesign getArrayDesign(long id);
     
     /**
-     * Returns the list of all ArrayDesigns in the system
-     * @return List<ArrayDesign> of the array designs
+     * Returns the list of all ArrayDesigns in the system.
+     * 
+     * @return List&ltArrayDesign&gt of the array designs.
      */
     List<ArrayDesign> getAllArrayDesigns();
     
