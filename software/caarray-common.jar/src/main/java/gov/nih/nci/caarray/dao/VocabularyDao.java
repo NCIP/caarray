@@ -103,12 +103,12 @@ public interface VocabularyDao extends CaArrayDao {
      * @return all matching terms or an empty <code>List</code> if no matches.
      */
     List<Term> getTerms(String categoryName);
-    
+
     /**
      * Removes a given list of terms from the db.
      *
      * @param termList list of temrs
-     */    
+     */
     void removeTerms(List<Term> termList);
 
     /**
@@ -128,7 +128,7 @@ public interface VocabularyDao extends CaArrayDao {
     Category getCategory(String name);
 
     /**
-     * Returns the Term with given id
+     * Returns the Term with given id.
      * @param id id of Term to retrieve
      * @return the Term with given id or null if none found
      */
