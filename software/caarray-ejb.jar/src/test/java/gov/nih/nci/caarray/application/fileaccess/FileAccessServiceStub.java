@@ -117,20 +117,16 @@ public class FileAccessServiceStub implements FileAccessService {
         caArrayFile.setName(filename);
         return caArrayFile;
     }
-    
+
     public void remove(CaArrayFile caArrayFile) {
         // do nothing
     }
-    
+
     public void close(File file) {
         // do nothing
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.application.fileaccess.FileAccessService#save(gov.nih.nci.caarray.domain.file.CaArrayFile)
-     */
     public void save(CaArrayFile caArrayFile) {
-        // TODO Auto-generated method stub
-        
+        // do nothing
     }
 }
