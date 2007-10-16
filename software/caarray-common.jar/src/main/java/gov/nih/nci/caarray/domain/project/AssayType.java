@@ -83,16 +83,16 @@
 package gov.nih.nci.caarray.domain.project;
 
 /**
- * An enumeration of different assay types that an Experiment can perform
+ * An enumeration of different assay types that an Experiment can perform.
  */
 public enum AssayType {
-    /** gene expression */
+    /** gene expression. */
     GENE_EXPRESSION("assayType.geneExpression"),
-    /** SNP */
+    /** SNP. */
     SNP("assayType.snp"),
-    /** DNA */
+    /** DNA. */
     DNA("assayType.dna"),
-    /** aCGH*/
+    /** aCGH.*/
     ACGH("assayType.acgh");
 
     private final String resourceKey;
