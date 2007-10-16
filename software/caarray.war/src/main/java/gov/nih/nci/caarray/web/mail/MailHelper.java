@@ -80,57 +80,63 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.delegate;
+package gov.nih.nci.caarray.web.mail;
+
+import gov.nih.nci.caarray.web.exception.MailServiceException;
+import gov.nih.nci.caarray.web.helper.SpringResourceLocator;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Singleton Factory for Delegates which creates singletons.
- * Could have used Spring.
  * @author John Hedden
  *
  */
-public final class DelegateFactory {
+public class MailHelper {
 
-    private DelegateFactory() {
-    };
+    private static MailService mailService;
 
-    /**
-     * The name of the manageFiles delegate.
-     */
-    public static final String MANAGE_FILES = "manageFiles";
-
-    /**
-     * The name of the project delegate.
-     */
-    public static final String PROJECT = "project";
-
-    /**
-     * The name of the project delegate.
-     */
-    public static final String REGISTRATION = "registration";
-
-    /**
-     * The Hashmap that holds all the singleton instances of the delegate
-     * objects.
-     */
-    @SuppressWarnings("PMD")
-    private static HashMap<String, BaseDelegate> delegates;
-
-    static
-    {
-        delegates = new HashMap<String, BaseDelegate>();
-        delegates.put(MANAGE_FILES, new ManageFilesDelegate());
-        delegates.put(PROJECT, new ProjectDelegate());
-        delegates.put(REGISTRATION, new RegistrationDelegate());
+    static {
+        mailService = (MailService) SpringResourceLocator.locateBean("gov.nih.nci.caarray.mail", "mailService");
     }
 
     /**
-     * returns the delegate.
-     * @param type String
-     * @return delegate
+     * Sends a regisration email.
+     *
+     * @param user
+     *            The user to email.
+     * @throws MailServiceException
      */
-    public static BaseDelegate getDelegate(String type) {
-        return delegates.get(type);
+    public static void sendRegistrationEmail(User user)throws MailServiceException
+    {
+        MailMessage message = getMessage("regMessage");
+
+        Map map = new HashMap();
+        map.put("to", "john.hedden@amentra.com");
+        map.put("from", "NCICB@pop.nci.nih.gov");
+        map.put("subject", "caArray Registration");
+
+        sendMessage(message, map);
+    }
+
+    private static MailMessage getMessage(String message)
+    {
+        return (MailMessage) SpringResourceLocator.locateBean("gov.nih.nci.caarray.mail", message);
+    }
+
+    /**
+     * @param message
+     * @param map
+     * @throws MailServiceException
+     */
+    private static void sendMessage(MailMessage message, Map map)throws MailServiceException
+    {
+        String template = message.getTemplate();
+
+        map.put("to", message.getTo());
+        map.put("from", message.getFrom());
+        map.put("subject", message.getSubject());
+        mailService.sendMultiPartMessage(template, map);
     }
 }

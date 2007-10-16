@@ -74,6 +74,16 @@
             <result name="success" type="redirect-action">File_manage?project.id=${project.id}</result>
         </action>
         
-     </package>   
+     </package>
+     
+     <package name="registration" namespace="/registration" extends="struts-default">
+        <default-interceptor-ref name="paramsPrepareParamsStack" />
+        
+        <action name="Registration_*" class="gov.nih.nci.caarray.web.action.RegistrationAction" method="{1}"> 
+            <result name="input">/WEB-INF/pages/registration/form.jsp</result>
+            <result name="success">/WEB-INF/pages/registration/success.jsp</result> 
+        </action> 
+     
+     </package>      
     
 </struts>

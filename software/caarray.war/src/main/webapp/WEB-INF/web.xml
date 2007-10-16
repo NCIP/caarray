@@ -29,6 +29,15 @@
         <param-name>svnRevision</param-name>
         <param-value>@svn.revision@</param-value>
     </context-param>
+    
+    <!-- Context Configuration locations for Spring XML files -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            classpath*:/applicationContext.xml
+            /WEB-INF/applicationContext.xml
+        </param-value>
+    </context-param>
  
     <filter>
         <filter-name>userFilter</filter-name>

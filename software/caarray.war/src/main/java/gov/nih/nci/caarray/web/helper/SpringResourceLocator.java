@@ -80,57 +80,47 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.delegate;
+package gov.nih.nci.caarray.web.helper;
 
-import java.util.HashMap;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.access.BeanFactoryLocator;
+import org.springframework.beans.factory.access.BeanFactoryReference;
+import org.springframework.beans.factory.access.SingletonBeanFactoryLocator;
 
 /**
- * Singleton Factory for Delegates which creates singletons.
- * Could have used Spring.
- * @author John Hedden
- *
+ * Allows access to Beans and BeanFactories in Spring.
  */
-public final class DelegateFactory {
-
-    private DelegateFactory() {
-    };
+public class SpringResourceLocator {
 
     /**
-     * The name of the manageFiles delegate.
+     * The singleton Bean Factory Locator.
      */
-    public static final String MANAGE_FILES = "manageFiles";
+    public static BeanFactoryLocator singletonBeanFactoryLocator = SingletonBeanFactoryLocator.getInstance();
 
     /**
-     * The name of the project delegate.
+     * Locates the specified factory in beanRefFactory.xml
+     *
+     * @param factoryName
+     *            The name of the desired factory.
+     * @return The appropriate BeanFactory.
      */
-    public static final String PROJECT = "project";
-
-    /**
-     * The name of the project delegate.
-     */
-    public static final String REGISTRATION = "registration";
-
-    /**
-     * The Hashmap that holds all the singleton instances of the delegate
-     * objects.
-     */
-    @SuppressWarnings("PMD")
-    private static HashMap<String, BaseDelegate> delegates;
-
-    static
-    {
-        delegates = new HashMap<String, BaseDelegate>();
-        delegates.put(MANAGE_FILES, new ManageFilesDelegate());
-        delegates.put(PROJECT, new ProjectDelegate());
-        delegates.put(REGISTRATION, new RegistrationDelegate());
+    public static BeanFactory locateFactory(String factoryName) {
+        BeanFactoryReference beanFactoryReference = singletonBeanFactoryLocator.useBeanFactory(factoryName);
+        return beanFactoryReference.getFactory();
     }
 
     /**
-     * returns the delegate.
-     * @param type String
-     * @return delegate
+     * Locates the specified bean.
+     *
+     * @param factoryName
+     *            The name of the bean's factory.
+     * @param beanName
+     *            The name of the desired bean.
+     * @return The specified beans.
      */
-    public static BaseDelegate getDelegate(String type) {
-        return delegates.get(type);
+    public static Object locateBean(String factoryName, String beanName) {
+        BeanFactory beanFactory = locateFactory(factoryName);
+        return beanFactory.getBean(beanName);
     }
 }
+

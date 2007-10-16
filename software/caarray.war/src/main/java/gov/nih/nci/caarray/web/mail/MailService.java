@@ -80,57 +80,107 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.delegate;
+package gov.nih.nci.caarray.web.mail;
 
-import java.util.HashMap;
+import gov.nih.nci.caarray.web.exception.MailServiceException;
+
+import java.util.Map;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.exception.VelocityException;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.ui.velocity.VelocityEngineUtils;
 
 /**
- * Singleton Factory for Delegates which creates singletons.
- * Could have used Spring.
  * @author John Hedden
  *
  */
-public final class DelegateFactory {
+public class MailService {
 
-    private DelegateFactory() {
-    };
+    private static final Log log = LogFactory.getLog(MailService.class);
 
-    /**
-     * The name of the manageFiles delegate.
-     */
-    public static final String MANAGE_FILES = "manageFiles";
+    private JavaMailSender mailSender;
+    private VelocityEngine velocityEngine;
 
     /**
-     * The name of the project delegate.
+     * Sets the Java Mail Sender.
+     *
+     * @param mailSender
+     *            The new Java Mail Sender.
      */
-    public static final String PROJECT = "project";
-
-    /**
-     * The name of the project delegate.
-     */
-    public static final String REGISTRATION = "registration";
-
-    /**
-     * The Hashmap that holds all the singleton instances of the delegate
-     * objects.
-     */
-    @SuppressWarnings("PMD")
-    private static HashMap<String, BaseDelegate> delegates;
-
-    static
-    {
-        delegates = new HashMap<String, BaseDelegate>();
-        delegates.put(MANAGE_FILES, new ManageFilesDelegate());
-        delegates.put(PROJECT, new ProjectDelegate());
-        delegates.put(REGISTRATION, new RegistrationDelegate());
+    public void setMailSender(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
     }
 
     /**
-     * returns the delegate.
-     * @param type String
-     * @return delegate
+     * @param velocityEngine
      */
-    public static BaseDelegate getDelegate(String type) {
-        return delegates.get(type);
+    public void setVelocityEngine(VelocityEngine velocityEngine) {
+        this.velocityEngine = velocityEngine;
+    }
+
+    /**
+     * Create and send a MIME message.
+     *
+     * @param templateName
+     *            The name of the email template.
+     * @param map
+     *            The properties map for the email.
+     * @throws MailServiceException
+     */
+    public void sendMultiPartMessage(String templateName, Map map)throws MailServiceException {
+        MimeMessage message = this.mailSender.createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            Object to = map.get("to");
+            if (to instanceof String) {
+                log.info("Sending an email to: " + (String) map.get("to") + "; subject: " + map.get("subject"));
+                String emails =  (String)map.get("to");
+                String emailsArray [] = emails.split(";");
+                helper.setTo(emailsArray);
+            } else if (to instanceof InternetAddress[]) {
+                log.info("Sending an email to: " + map.get("to") + "; subject: " + map.get("subject"));
+                helper.setTo((InternetAddress[]) to);
+            }
+            Object cc = map.get("cc");
+            if (cc instanceof String) {
+                helper.setCc((String) cc);
+            } else if (cc instanceof InternetAddress[]) {
+                helper.setCc((InternetAddress[]) cc);
+            }
+
+            helper.setFrom((String) map.get("from"));
+            helper.setSubject((String) map.get("subject"));
+
+            String plaintext = bindMapToTemplate(templateName + ".vm", map);
+            helper.setText(plaintext, false);
+        } catch (MessagingException e) {
+            throw new MailServiceException("Error setting properties in MimeMessageHelper", e);
+        }
+        this.mailSender.send(message);
+    }
+
+    /**
+     * @param templateName
+     * @param map
+     * @return String
+     * @throws MailServiceException
+     */
+    private String bindMapToTemplate(String templateName, Map map) throws MailServiceException {
+        String result = null;
+        try {
+            result = VelocityEngineUtils.mergeTemplateIntoString(this.velocityEngine, templateName, map);
+        } catch (VelocityException e) {
+            throw new MailServiceException("Could not create template from map.", e);
+        }
+        return result;
     }
 }
+

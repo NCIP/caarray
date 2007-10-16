@@ -82,55 +82,36 @@
  */
 package gov.nih.nci.caarray.web.delegate;
 
-import java.util.HashMap;
+import gov.nih.nci.security.SecurityServiceProvider;
+import gov.nih.nci.security.UserProvisioningManager;
+import gov.nih.nci.security.exceptions.CSConfigurationException;
+import gov.nih.nci.security.exceptions.CSException;
 
 /**
- * Singleton Factory for Delegates which creates singletons.
- * Could have used Spring.
  * @author John Hedden
  *
  */
-public final class DelegateFactory {
+public class RegistrationDelegate extends BaseDelegate {
 
-    private DelegateFactory() {
-    };
-
-    /**
-     * The name of the manageFiles delegate.
-     */
-    public static final String MANAGE_FILES = "manageFiles";
+    private UserProvisioningManager userProvisioningManager;
 
     /**
-     * The name of the project delegate.
+     * get UserProvisioningManager.
+     * @return UserProvisioningManager
+     * @throws CaArrayException
+     * @throws CSException
+     * @throws CSConfigurationException
      */
-    public static final String PROJECT = "project";
-
-    /**
-     * The name of the project delegate.
-     */
-    public static final String REGISTRATION = "registration";
-
-    /**
-     * The Hashmap that holds all the singleton instances of the delegate
-     * objects.
-     */
-    @SuppressWarnings("PMD")
-    private static HashMap<String, BaseDelegate> delegates;
-
-    static
-    {
-        delegates = new HashMap<String, BaseDelegate>();
-        delegates.put(MANAGE_FILES, new ManageFilesDelegate());
-        delegates.put(PROJECT, new ProjectDelegate());
-        delegates.put(REGISTRATION, new RegistrationDelegate());
-    }
-
-    /**
-     * returns the delegate.
-     * @param type String
-     * @return delegate
-     */
-    public static BaseDelegate getDelegate(String type) {
-        return delegates.get(type);
+    public UserProvisioningManager getUserProvisioningManager() {
+        if (userProvisioningManager == null) {
+            try {
+                this.userProvisioningManager = SecurityServiceProvider.getUserProvisioningManager("caarray");
+            } catch (CSConfigurationException e) {
+                e.printStackTrace();
+            } catch (CSException e) {
+                e.printStackTrace();
+            }
+        }
+        return userProvisioningManager;
     }
 }

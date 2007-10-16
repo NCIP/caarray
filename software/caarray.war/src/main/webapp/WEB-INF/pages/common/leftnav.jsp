@@ -1,8 +1,12 @@
+<%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
+
 <div id="leftnav">
     <ul class="caarraymenu">
         <li class="liheader">caArray</li>
         <li><a href="#">Public Home</a></li>
-        <li><a href="#">Register</a></li>
+        <li>
+            <c:url value="/registration/Registration_input.action" var="url"/>
+            <a href="${url}">Register</a></li>
         <li><a href="#">Login</a></li>
     </ul>
     <ul class="aboutmenu">

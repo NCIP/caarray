@@ -80,57 +80,62 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.delegate;
-
-import java.util.HashMap;
+package gov.nih.nci.caarray.web.exception;
 
 /**
- * Singleton Factory for Delegates which creates singletons.
- * Could have used Spring.
  * @author John Hedden
  *
  */
-public final class DelegateFactory {
+public class CaArrayException extends Exception {
 
-    private DelegateFactory() {
-    };
-
-    /**
-     * The name of the manageFiles delegate.
-     */
-    public static final String MANAGE_FILES = "manageFiles";
+    private static final long serialVersionUID = 1L;
 
     /**
-     * The name of the project delegate.
+     * The Exception rootCause.
      */
-    public static final String PROJECT = "project";
+    private Exception rootCause;
 
     /**
-     * The name of the project delegate.
+     * Wraps a CaArrayException around another throwable.
+     *
+     * @param rootCause
+     *            a Throwable object for the error
      */
-    public static final String REGISTRATION = "registration";
+    public CaArrayException(Exception rootCause) {
 
-    /**
-     * The Hashmap that holds all the singleton instances of the delegate
-     * objects.
-     */
-    @SuppressWarnings("PMD")
-    private static HashMap<String, BaseDelegate> delegates;
-
-    static
-    {
-        delegates = new HashMap<String, BaseDelegate>();
-        delegates.put(MANAGE_FILES, new ManageFilesDelegate());
-        delegates.put(PROJECT, new ProjectDelegate());
-        delegates.put(REGISTRATION, new RegistrationDelegate());
+        super(rootCause.getMessage());
+        this.rootCause = rootCause;
+        this.fillInStackTrace();
     }
 
     /**
-     * returns the delegate.
-     * @param type String
-     * @return delegate
+     * Constructs a message with the specified message.
+     *
+     * @param message
+     *            a String with the error message
      */
-    public static BaseDelegate getDelegate(String type) {
-        return delegates.get(type);
+    public CaArrayException(String message) {
+        super(message);
+    }
+
+    /**
+     * Constructs a message with the specified message and wraps a
+     * CaArrayException around another throwable.
+     *
+     * @param message
+     *            a String with the error message
+     * @param rootCause
+     *            a Throwable object for the error
+     */
+    public CaArrayException(String message, Throwable rootCause) {
+        super(message, rootCause);
+    }
+
+    /**
+     * @return a reference to the root exception or null.
+     */
+    public Exception getRootCause() {
+        return this.rootCause;
     }
 }
+

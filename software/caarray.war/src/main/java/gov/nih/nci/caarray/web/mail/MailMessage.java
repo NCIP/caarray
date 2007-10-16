@@ -80,57 +80,88 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.delegate;
-
-import java.util.HashMap;
+package gov.nih.nci.caarray.web.mail;
 
 /**
- * Singleton Factory for Delegates which creates singletons.
- * Could have used Spring.
  * @author John Hedden
  *
  */
-public final class DelegateFactory {
+public class MailMessage {
 
-    private DelegateFactory() {
-    };
-
-    /**
-     * The name of the manageFiles delegate.
-     */
-    public static final String MANAGE_FILES = "manageFiles";
+    private String to;
+    private String from;
+    private String subject;
+    private String message;
+    private String template;
 
     /**
-     * The name of the project delegate.
+     * @return Returns the from.
      */
-    public static final String PROJECT = "project";
-
-    /**
-     * The name of the project delegate.
-     */
-    public static final String REGISTRATION = "registration";
-
-    /**
-     * The Hashmap that holds all the singleton instances of the delegate
-     * objects.
-     */
-    @SuppressWarnings("PMD")
-    private static HashMap<String, BaseDelegate> delegates;
-
-    static
+    public String getFrom()
     {
-        delegates = new HashMap<String, BaseDelegate>();
-        delegates.put(MANAGE_FILES, new ManageFilesDelegate());
-        delegates.put(PROJECT, new ProjectDelegate());
-        delegates.put(REGISTRATION, new RegistrationDelegate());
+        return this.from;
     }
-
     /**
-     * returns the delegate.
-     * @param type String
-     * @return delegate
+     * @param from The from to set.
      */
-    public static BaseDelegate getDelegate(String type) {
-        return delegates.get(type);
+    public void setFrom(String from)
+    {
+        this.from = from;
+    }
+    /**
+     * @return Returns the message.
+     */
+    public String getMessage()
+    {
+        return this.message;
+    }
+    /**
+     * @param message The message to set.
+     */
+    public void setMessage(String message)
+    {
+        this.message = message;
+    }
+    /**
+     * @return Returns the subject.
+     */
+    public String getSubject()
+    {
+        return this.subject;
+    }
+    /**
+     * @param subject The subject to set.
+     */
+    public void setSubject(String subject)
+    {
+        this.subject = subject;
+    }
+    /**
+     * @return Returns the to.
+     */
+    public String getTo()
+    {
+        return to;
+    }
+    /**
+     * @param to The to to set.
+     */
+    public void setTo(String to)
+    {
+        this.to = to;
+    }
+    /**
+     * @return Returns the template.
+     */
+    public String getTemplate()
+    {
+        return this.template;
+    }
+    /**
+     * @param template The template to set.
+     */
+    public void setTemplate(String template)
+    {
+        this.template = template;
     }
 }

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <description>Creates and sends email messages.</description>
+    
+    <bean id="mailService" class="gov.nih.nci.caarray.web.mail.MailService">
+        <description>The service for sending registration emails.</description>
+        <property name="mailSender">
+            <description>The source to send the mail from.</description>
+            <ref bean="mailSender"/>
+        </property>
+        <property name="velocityEngine">
+            <description>The email message to send.</description>
+            <ref bean="velocityEngine"/>
+        </property>
+    </bean>
+    
+    <!-- mail host config -->
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <description>The source for sending emails.</description>
+        <property name="port"> 
+            <value>25</value>
+        </property>
+        <property name="host">
+            <description>The email server.</description>
+            <!-- mail server token begins --><value>mailfwd.nih.gov</value><!-- mail server token ends -->
+        </property>
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.smtp.auth">true</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <!-- Configure Velocity for sending e-mail -->
+    <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+        <description>The Velocity engine for creating and sending email messages.</description>
+        <property name="velocityProperties">
+            <description>The Velocity configuration properties.</description>
+            <props>
+                <prop key="resource.loader">class</prop>
+                <prop key="class.resource.loader.class">
+                    org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+                </prop>
+            </props>
+        </property>
+    </bean>
+    
+    <!-- email messages -->
+    <bean id="regMessage" class="gov.nih.nci.caarray.web.mail.MailMessage">
+        <description>The customer registration email message.</description>
+        <property name="from">
+            <description>The From field of the email.</description>
+            <value><![CDATA[bgendleman@5amsolutions.com]]></value>
+        </property>
+        <property name="subject">
+            <description>The Subject field of the email.</description>
+            <value>Registration confirmation</value>
+        </property>
+        <property name="template">
+            <description>The template for the email.</description>
+            <value>registrationEmail</value>
+        </property>
+    </bean>
+</beans>
