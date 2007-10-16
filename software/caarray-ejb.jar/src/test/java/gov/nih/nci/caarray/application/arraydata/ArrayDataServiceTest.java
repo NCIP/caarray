@@ -97,10 +97,13 @@ import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.BooleanColumn;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.FloatColumn;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
@@ -153,13 +156,19 @@ public class ArrayDataServiceTest {
         assertTrue(daoFactoryStub.dataTypeMap.containsKey(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL));
         assertTrue(daoFactoryStub.quantitationTypeMap.keySet().containsAll(Arrays.asList(AffymetrixCelQuantitationType.values())));
     }
-
+    
     @Test
     public void testImport() throws InvalidDataFileException {
+        testImportCel();
+    }
+
+    private void testImportCel() throws InvalidDataFileException {
         RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
         assertEquals(FileStatus.UPLOADED, celData.getDataFile().getFileStatus());
         assertNull(celData.getDataSet());
         arrayDataService.importData(celData);
+        assertNotNull(celData.getType());
+        assertEquals(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL.getName(), celData.getType().getName());
         assertEquals(FileStatus.IMPORTED, celData.getDataFile().getFileStatus());
         assertNotNull(celData.getDataSet());
         DataSet dataSet = celData.getDataSet();
@@ -171,7 +180,7 @@ public class ArrayDataServiceTest {
         assertEquals(7, dataSet.getQuantitationTypes().size());
         checkCelColumnTypes(dataSet);
     }
-
+    
     @Test
     public void testValidate() {
         CaArrayFile celFile = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL);
@@ -221,7 +230,7 @@ public class ArrayDataServiceTest {
             assertEquals(fusionCelEntry.getPixels(), numPixelsColumn.getValues()[rowIndex]);
         }
     }
-
+    
     private void checkCelColumnTypes(DataSet dataSet) {
         assertTrue(AffymetrixCelQuantitationType.CEL_X.isEquivalent(dataSet.getQuantitationTypes().get(0)));
         assertTrue(AffymetrixCelQuantitationType.CEL_Y.isEquivalent(dataSet.getQuantitationTypes().get(1)));
@@ -250,13 +259,13 @@ public class ArrayDataServiceTest {
         Hybridization hybridization = new Hybridization();
         hybridization.setArray(array);
         RawArrayData celData = new RawArrayData();
+        celData.setType(daoFactoryStub.getArrayDao().getArrayDataType(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL));
         celData.setDataFile(getCelCaArrayFile(cel));
         celData.setHybridization(hybridization);
-        celData.setType(daoFactoryStub.getArrayDao().getArrayDataType(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL));
         hybridization.setArrayData(celData);
         return celData;
     }
-
+    
     private CaArrayFile getCelCaArrayFile(File cel) {
         CaArrayFile celDataFile = fileAccessServiceStub.add(cel);
         celDataFile.setType(FileType.AFFYMETRIX_CEL);
@@ -265,10 +274,10 @@ public class ArrayDataServiceTest {
 
     private static final class LocalDaoFactoryStub extends DaoFactoryStub {
 
-        private final Map<ArrayDataTypeDescriptor, ArrayDataType> dataTypeMap =
+        private Map<ArrayDataTypeDescriptor, ArrayDataType> dataTypeMap =
             new HashMap<ArrayDataTypeDescriptor, ArrayDataType>();
 
-        private final Map<QuantitationTypeDescriptor, QuantitationType> quantitationTypeMap =
+        private Map<QuantitationTypeDescriptor, QuantitationType> quantitationTypeMap =
             new HashMap<QuantitationTypeDescriptor, QuantitationType>();
 
         @Override
