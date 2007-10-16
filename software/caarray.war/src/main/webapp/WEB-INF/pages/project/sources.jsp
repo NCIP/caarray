@@ -21,8 +21,8 @@
 
     <div class="tableboxpad">
     <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
-        <display:table class="searchresults" cellspacing="0" list="${proposal.project.experiment.sources}" requestURI="${sortUrl}"
-            id="row" pagesize="20">
+        <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${proposal.project.experiment.sources}"
+            requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="proposalKey">
             <caarray:displayTagProperties/>
             <display:column property="name" titleKey="experiment.sources.name" sortable="true"/>
             <display:column property="description" titleKey="experiment.sources.description" sortable="true" />
