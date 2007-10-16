@@ -128,6 +128,12 @@ public class MageTabDataFiles {
     public static final File PERFORMANCE_10_SDRF =
         new File(MageTabDataFiles.class.getResource("/magetab/performance/performance_test10.sdrf").getFile());
 
+    public static final File PERFORMANCE_100_IDF =
+        new File(MageTabDataFiles.class.getResource("/magetab/performance/performance_test100.idf").getFile());
+
+    public static final File PERFORMANCE_100_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/performance/performance_test100.sdrf").getFile());
+
     public static final File PERFORMANCE_DIRECTORY =
         new File(MageTabDataFiles.class.getResource("/magetab/performance").getFile());
 }
