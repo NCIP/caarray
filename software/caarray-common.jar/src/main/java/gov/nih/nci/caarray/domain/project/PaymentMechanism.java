@@ -90,7 +90,7 @@ import javax.persistence.Entity;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * A payment mechanism for a project
+ * A payment mechanism for a project.
  */
 @Entity
 public class PaymentMechanism extends AbstractCaArrayEntity {
@@ -100,8 +100,9 @@ public class PaymentMechanism extends AbstractCaArrayEntity {
     private String name;
 
     /**
-     * Generates a new, empty 
+     * Generates a new, empty instance.
      *
+     * @param name the name
      * @return the initialized
      */
     public static PaymentMechanism createNew(String name) {
@@ -111,7 +112,7 @@ public class PaymentMechanism extends AbstractCaArrayEntity {
     }
 
     /**
-     * Gets the name
+     * Gets the name.
      * @return the name
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
@@ -120,7 +121,7 @@ public class PaymentMechanism extends AbstractCaArrayEntity {
     }
 
     /**
-     * Sets the name
+     * Sets the name.
      * @param name the name to set
      */
     public void setName(String name) {
