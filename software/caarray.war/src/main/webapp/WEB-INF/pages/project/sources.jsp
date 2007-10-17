@@ -42,7 +42,16 @@
                 </ajax:anchors>
             </display:column>
             <display:column titleKey="button.copy">
-                <a href="#"><img src="<c:url value="/images/ico_copy.gif"/>" alt="<fmt:message key="button.copy"/>" /></a>
+                <ajax:anchors target="tabboxlevel2wrapper">
+                    <s:set name="index" value="proposal.project.experiment.sources.indexOf(#attr.row)" />
+                    <c:url value="/protected/ajax_Project_copy_source.action" var="copySourceUrl">
+                        <c:param name="proposalKey" value="${proposalKey}" />
+                        <c:param name="currentSourceIndex" value="${index}" />
+                        <c:param name="ajax" value="true" />
+                    </c:url>
+                    <a href="${copySourceUrl}"><img src="<c:url value="/images/ico_copy.gif"/>" alt="<fmt:message key="button.copy"/>" /></a>
+                </ajax:anchors>
+
             </display:column>
             <display:column titleKey="button.delete">
                 <ajax:anchors target="tabboxlevel2wrapper">

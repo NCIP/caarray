@@ -115,6 +115,11 @@
             <result name="success">/WEB-INF/pages/project/{1}s.jsp</result>
         </action>
 
+        <action name="ajax_Project_copy_*"
+            class="gov.nih.nci.caarray.web.action.ProjectAction" method="{1}Copy">
+            <result name="success">/WEB-INF/pages/project/{1}Edit.jsp</result>
+        </action>
+
         <action name="ajax_Project_saveGenericTab_*"
             class="gov.nih.nci.caarray.web.action.ProjectAction" method="saveTab">
             <result name="success" type="chain">ajax_Project_loadGenericTab_{1}</result>

@@ -473,6 +473,20 @@ public class ProjectAction extends BaseAction implements Preparable {
         return SUCCESS;
     }
 
+    public String sourceCopy() {
+        if (getCurrentSource() != null) {
+            Source source = new Source();
+            source.setDescription(getCurrentSource().getDescription());
+            source.setMaterialType(getCurrentSource().getMaterialType());
+            source.setName(getText("experiment.sources.copy.of") + getCurrentSource().getName());
+            source.setOrganism(getCurrentSource().getOrganism());
+            setCurrentSource(source);
+            setCurrentSourceIndex(null);
+            saveMessage(getText("experiment.sources.copied"));
+        }
+        return SUCCESS;
+    }
+
     /**
      * gets the delegate from factory.
      * 
