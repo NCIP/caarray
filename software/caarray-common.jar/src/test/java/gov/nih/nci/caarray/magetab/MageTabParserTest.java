@@ -115,8 +115,8 @@ public class MageTabParserTest {
         ValidationResult result;
         try {
             result = parser.validate(fileSet);
-            assertTrue(result.isValid());
-            assertEquals(73, result.getMessages().size());
+            assertFalse(result.isValid());
+            assertEquals(14, result.getMessages().size());
         } catch (MageTabParsingException e) {
             e.printStackTrace();
         }
@@ -139,7 +139,7 @@ public class MageTabParserTest {
             assertEquals(1, result.getFileValidationResults().size());
             FileValidationResult fileValidationResult = result.getFileValidationResults().get(0);
             assertEquals(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF, fileValidationResult.getFile());
-            assertEquals(1, fileValidationResult.getMessages().size());
+            assertEquals(2, fileValidationResult.getMessages().size());
             ValidationMessage message = fileValidationResult.getMessages().get(0);
             assertEquals(33, message.getLine());
             assertEquals(2, message.getColumn());
