@@ -93,8 +93,16 @@ import gov.nih.nci.caarray.domain.project.Proposal;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -104,6 +112,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -244,6 +253,36 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         return p;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public File prepareForDownload(Collection<CaArrayFile> files) throws IOException {
+        LogUtil.logSubsystemEntry(LOG, files);
+
+        if (files == null || files.isEmpty()) {
+            throw new IllegalArgumentException("Files cannot be null or empty!");
+        }
+        File result = File.createTempFile("data", ".zip");
+        result.deleteOnExit();
+
+        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(result));
+        for (CaArrayFile caf : files) {
+            File f = getFileAccessService().getFile(caf);
+            InputStream is = new BufferedInputStream(new FileInputStream(f));
+
+            ZipEntry ze = new ZipEntry(f.getName());
+            zos.putNextEntry(ze);
+            IOUtils.copy(is, zos);
+            zos.closeEntry();
+            is.close();
+        }
+        zos.close();
+
+        getFileAccessService().closeFiles();
+        LogUtil.logSubsystemExit(LOG);
+        return result;
+    }
+
     FileAccessService getFileAccessService() {
         return fileAccessService;
     }
@@ -266,5 +305,4 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     void setSessionContext(SessionContext sessionContext) {
         this.sessionContext = sessionContext;
     }
-
 }

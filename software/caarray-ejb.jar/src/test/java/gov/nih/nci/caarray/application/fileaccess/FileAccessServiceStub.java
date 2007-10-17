@@ -86,7 +86,9 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -94,13 +96,19 @@ import java.util.Set;
  */
 public class FileAccessServiceStub implements FileAccessService {
 
+    private final Map<String, File> map = new HashMap<String, File>();
+
     public CaArrayFile add(File file) {
         CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setName(file.getName());
+        map.put(caArrayFile.getName(), file);
         return caArrayFile;
     }
 
     public File getFile(CaArrayFile caArrayFile) {
+        if (map.containsKey(caArrayFile.getName())) {
+            return map.get(caArrayFile.getName());
+        }
         return new File(caArrayFile.getName());
     }
 
@@ -115,6 +123,7 @@ public class FileAccessServiceStub implements FileAccessService {
     public CaArrayFile add(File file, String filename) {
         CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setName(filename);
+        map.put(caArrayFile.getName(), file);
         return caArrayFile;
     }
 

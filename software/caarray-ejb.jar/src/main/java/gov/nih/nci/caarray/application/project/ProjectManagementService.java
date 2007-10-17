@@ -88,6 +88,8 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.Proposal;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -142,7 +144,7 @@ public interface ProjectManagementService {
      * @param project project to add the file to
      * @param file the file to add to the project
      * @param filename the filename to use for the file. Allows the created CaArrayFile to have a different name
-     * from the file containing the content. This is useful for adding uploaded temporary files that don't use the 
+     * from the file containing the content. This is useful for adding uploaded temporary files that don't use the
      * original file name.
      * @return the new <code>CaArrayFile</code>.
      */
@@ -183,4 +185,13 @@ public interface ProjectManagementService {
      * @return the modified project
      */
     Project toggleBrowsableStatus(long projectId);        
+
+    /**
+     * Prepares files for download.
+     *
+     * @param files the files to download
+     * @return the single archive with all files
+     * @throws IOException on I/O error
+     */
+    File prepareForDownload(Collection<CaArrayFile> files) throws IOException;
 }

@@ -97,14 +97,21 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.Proposal;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -171,6 +178,48 @@ public class ProjectManagementServiceTest {
         } catch (ProposalWorkflowException e) {
             fail("Unexpected exception: " + e);
         }
+    }
+
+    @Test
+    public void testDownload() throws IOException {
+        try {
+            projectManagementService.prepareForDownload(null);
+            fail();
+        } catch (IllegalArgumentException iae) {
+            // expected
+        }
+
+        try {
+            projectManagementService.prepareForDownload(new ArrayList<CaArrayFile>());
+            fail();
+        } catch (IllegalArgumentException iae) {
+            // expected
+        }
+
+        Project project = projectManagementService.getProject(123L);
+        CaArrayFile file = projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+
+        File f = projectManagementService.prepareForDownload(Collections.singleton(file));
+        assertNotNull(f);
+
+        // make sure it's a zip file
+        ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(f)));
+        ZipEntry ze = zis.getNextEntry();
+        assertNotNull(ze);
+        assertEquals(file.getName(), ze.getName());
+        int size = 0;
+        int curRead = 0;
+        InputStream is = new FileInputStream(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        while ((curRead = is.read(new byte[is.available()])) > 0) {
+            size += curRead;
+        }
+
+        while ((curRead = zis.read(new byte[zis.available()])) > 0) {
+            size -= curRead;
+        }
+        assertEquals(0, size);
+        is.close();
+        zis.close();
     }
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {

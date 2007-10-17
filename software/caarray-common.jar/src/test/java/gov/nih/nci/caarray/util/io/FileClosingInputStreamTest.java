@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,65 +80,49 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.project;
+package gov.nih.nci.caarray.util.io;
 
-import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.Proposal;
+import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedInputStream;
 import java.io.File;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import org.junit.Test;
 
 /**
- * Basic sintub -- returns null for all methods returning objects. Subclass and override
- * to provide desired functionality in tests.
+ * Test cases for the file closing input stream.
  */
-public class ProjectManagementServiceStub implements ProjectManagementService {
+public class FileClosingInputStreamTest {
 
-    public Set<CaArrayFile> addFiles(Project project, Set<File> files) {
-        return null;
-    }
+    @Test
+    public void testStream() throws IOException {
+        File f = java.io.File.createTempFile("pre", ".txt");
+        f.createNewFile();
+        // write a bunch of bytes to it
+        OutputStream os = new FileOutputStream(f);
+        for (int i = 0; i < 10000; ++i) {
+            os.write(i);
+        }
+        os.close();
 
-    public List<Project> getWorkspaceProjects() {
-        return null;
-    }
-
-    public Project getProject(long id) {
-        return null;
-    }
-    
-    public Proposal getProposal(long id) {
-        return null;
-    }
-    
-    public Organization getOrganization(long id) {
-        return null;
-    }
-
-    public void submitProposal(Proposal proposal) {
-        // no-op
-    }
-    
-    public void saveDraftProposal(Proposal proposal) throws ProposalWorkflowException {
-        // no-op
-    }
-
-    public CaArrayFile addFile(Project project, File file) {
-        return null;
-    }
-
-    public CaArrayFile addFile(Project project, File file, String filename) {
-        return null;
-    }
-
-    public Project toggleBrowsableStatus(long projectId) {
-        return null;
-    }
-
-    public File prepareForDownload(Collection<CaArrayFile> files) {
-        return null;
+        InputStream is = new FileClosingInputStream(new BufferedInputStream(new FileInputStream(f)), f);
+        assertTrue(is.available() > 0);
+        assertTrue(is.markSupported());
+        // exercise the api
+        is.mark(10);
+        is.read(new byte[5]);
+        is.read(new byte[5], 0, 4);
+        is.reset();
+        is.skip(5);
+        is.read();
+        is.read();
+        assertTrue(f.exists());
+        is.close(); // here's what we really care about
+        assertTrue(!f.exists());
     }
 }
