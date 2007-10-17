@@ -167,14 +167,18 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     @Override
     protected void parse() throws MageTabParsingException {
         DelimitedFileReader tabDelimitedReader = createTabDelimitedReader();
-        handleHeaderLine(getHeaderLine(tabDelimitedReader));
-        if (minimumColumnCheck()) {
-            while (tabDelimitedReader.hasNextLine()) {
-                handleLine(tabDelimitedReader.nextLine());
+        try {
+            handleHeaderLine(getHeaderLine(tabDelimitedReader));
+            if (minimumColumnCheck()) {
+                while (tabDelimitedReader.hasNextLine()) {
+                    handleLine(tabDelimitedReader.nextLine());
+                }
+            } else {
+                addErrorMessage("SDRF file does not have the "
+                        + "minimum number of columns (Source, Hybridization, and a data file)");
             }
-        } else {
-            addErrorMessage("SDRF file does not have the "
-                    + "minimum number of columns (Source, Hybridization, and a data file)");
+        } catch (IllegalArgumentException e) {
+            addErrorMessage("SDRF type not found: " + e.getMessage());
         }
 
     }
@@ -226,11 +230,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     private void handleHeaderLine(List<String> values) {
         for (int i = 0; i < values.size(); i++) {
-            try {
                 columns.add(new SdrfColumn(createHeading(values.get(i))));
-            } catch (IllegalArgumentException e) {
-                addErrorMessage("SDRF type not found: " + e.getMessage());
-            }
         }
     }
 
