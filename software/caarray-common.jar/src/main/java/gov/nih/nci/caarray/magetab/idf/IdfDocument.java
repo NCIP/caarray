@@ -128,7 +128,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     /**
      * Creates a new IDF from an existing file.
-     *
+     * 
      * @param documentSet the MAGE-TAB document set the IDF belongs to.
      * @param file the file containing the IDF content.
      */
@@ -145,7 +145,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     /**
      * Parses the MAGE-TAB document, creating the object graph of entities.
-     *
+     * 
      * @throws MageTabParsingException if the document couldn't be read.
      */
     @Override
@@ -186,16 +186,20 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleLine(List<String> lineContents) {
         if (!isEmpty(lineContents)) {
-            EntryHeading heading = createHeading(lineContents.get(0));
-            IdfRow idfRow = new IdfRow(heading, IdfRowType.get(heading.getTypeName()));
-            validateColumnValues(idfRow, lineContents);
-            for (int columnIndex = 1; columnIndex < lineContents.size(); columnIndex++) {
-                currentColumnNumber = columnIndex + 1;
-                int valueIndex = columnIndex - 1;
-                String value = lineContents.get(columnIndex);
-                if (!StringUtils.isEmpty(value)) {
-                    handleValue(idfRow, value, valueIndex);
+            try {
+                EntryHeading heading = createHeading(lineContents.get(0));
+                IdfRow idfRow = new IdfRow(heading, IdfRowType.get(heading.getTypeName()));
+                validateColumnValues(idfRow, lineContents);
+                for (int columnIndex = 1; columnIndex < lineContents.size(); columnIndex++) {
+                    currentColumnNumber = columnIndex + 1;
+                    int valueIndex = columnIndex - 1;
+                    String value = lineContents.get(columnIndex);
+                    if (!StringUtils.isEmpty(value)) {
+                        handleValue(idfRow, value, valueIndex);
+                    }
                 }
+            } catch (IllegalArgumentException e) {
+                addErrorMessage("IDF type not found: " + e.getMessage());
             }
         }
     }
@@ -243,9 +247,8 @@ public final class IdfDocument extends AbstractMageTabDocument {
                 break;
             }
         }
-        return lineContents.isEmpty()
-        || "".equals(lineContents.get(0))
-        || lineContents.get(0).startsWith(COMMENT_CHARACTER);
+        return lineContents.isEmpty() || "".equals(lineContents.get(0))
+                || lineContents.get(0).startsWith(COMMENT_CHARACTER);
     }
 
     @SuppressWarnings("PMD")
@@ -272,11 +275,14 @@ public final class IdfDocument extends AbstractMageTabDocument {
             handleExperimentalFactorTermSourceRef(value, valueIndex);
             break;
         case PERSON_LAST_NAME:
+        case PERSON_LAST_NAMES:
             handlePersonLastName(value, valueIndex);
             break;
         case PERSON_FIRST_NAME:
+        case PERSON_FIRST_NAMES:
             handlePersonFirstName(value, valueIndex);
             break;
+        case PERSON_MID_INITIAL:
         case PERSON_MID_INITIALS:
             handlePersonMidInit(value, valueIndex);
             break;
@@ -390,15 +396,17 @@ public final class IdfDocument extends AbstractMageTabDocument {
             // no-op
             break;
         default:
-            throw new IllegalArgumentException("Unknown IdfRowType " + idfRow);
+            ValidationMessage message = addErrorMessage("IDF type not found: " + idfRow.getType());
+            message.setLine(getCurrentLineNumber());
+            message.setColumn(getCurrentColumnNumber());
         }
     }
 
     private void handleSdrfFile(String value) {
         SdrfDocument sdrfDocument = getDocumentSet().getSdrfDocument(value);
         if (sdrfDocument == null) {
-            ValidationMessage message =
-                addErrorMessage("Referenced SDRF file " + value + " was not included in the MAGE-TAB document set");
+            ValidationMessage message = addErrorMessage("Referenced SDRF file " + value
+                    + " was not included in the MAGE-TAB document set");
             message.setLine(getCurrentLineNumber());
             message.setColumn(getCurrentColumnNumber());
         } else {
@@ -684,7 +692,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     /**
      * Returns all the SDRF files referenced by the IDF.
-     *
+     * 
      * @return all related SDRF documents.
      */
     public List<SdrfDocument> getSdrfDocuments() {

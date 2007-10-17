@@ -226,7 +226,11 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     private void handleHeaderLine(List<String> values) {
         for (int i = 0; i < values.size(); i++) {
-            columns.add(new SdrfColumn(createHeading(values.get(i))));
+            try {
+                columns.add(new SdrfColumn(createHeading(values.get(i))));
+            } catch (IllegalArgumentException e) {
+                addErrorMessage("SDRF type not found: " + e.getMessage());
+            }
         }
     }
 

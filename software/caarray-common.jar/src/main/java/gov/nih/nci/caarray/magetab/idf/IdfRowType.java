@@ -133,14 +133,30 @@ enum IdfRowType {
     PERSON_LAST_NAME,
 
     /**
+     * Person Last Names. (accepting a variation)
+     */
+    PERSON_LAST_NAMES,
+
+    /**
      * Person First Name.
      */
     PERSON_FIRST_NAME,
+
+
+    /**
+     * Person First Names. (accepting a variation)
+     */
+    PERSON_FIRST_NAMES,
 
     /**
      * Person Mid Initials.
      */
     PERSON_MID_INITIALS,
+    
+    /**
+     * Person Mid Initial. (accepting a variation)
+     */
+    PERSON_MID_INITIAL,
 
     /**
      * Person Email.
