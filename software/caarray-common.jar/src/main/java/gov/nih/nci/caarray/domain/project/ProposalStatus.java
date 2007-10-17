@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.domain.project;
 
 /**
- * An enumeration of the different statuses that an experiment Proposal can be in
+ * An enumeration of the different statuses that an experiment Proposal can be in.
  */
 public enum ProposalStatus {
     /** draft - visible only to owner, still gathering data*/
@@ -108,6 +108,6 @@ public enum ProposalStatus {
      * for this ServiceType in the UI
      */
     public String getResourceKey() {
-        return resourceKey;
+        return this.resourceKey;
     }
 }

@@ -172,7 +172,7 @@ public class Experiment extends AbstractCaArrayEntity {
     private Set<Array> arrays = new HashSet<Array>();
     private Set<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
     private List<Source> sources = new ArrayList<Source>();
-    private Set<Sample> samples = new HashSet<Sample>();
+    private List<Sample> samples = new ArrayList<Sample>();
     private Set<Extract> extracts = new HashSet<Extract>();
     private Set<LabeledExtract> labeledExtracts = new HashSet<LabeledExtract>();
     private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
@@ -638,7 +638,8 @@ public class Experiment extends AbstractCaArrayEntity {
     )
     @ForeignKey(name = "EXPERIMENTSAMPLE_INVEST_FK", inverseName = "EXPERIMENTSAMPLE_SAMPLE_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    public Set<Sample> getSamples() {
+    @IndexColumn(name = "indx")
+    public List<Sample> getSamples() {
         return this.samples;
     }
 
@@ -648,7 +649,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param samplesVal the sources
      */
     @SuppressWarnings(UNUSED)
-    private void setSamples(final Set<Sample> samplesVal) {  // NOPMD
+    private void setSamples(final List<Sample> samplesVal) {  // NOPMD
         this.samples = samplesVal;
     }
 

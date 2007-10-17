@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.domain.project;
 
 /**
- * An enumeration of different lab service types that can be requested for an Experiment
+ * An enumeration of different lab service types that can be requested for an Experiment.
  */
 public enum ServiceType {
     /** request full service from a lab*/
@@ -106,6 +106,6 @@ public enum ServiceType {
      * for this ServiceType in the UI
      */
     public String getResourceKey() {
-        return resourceKey;
+        return this.resourceKey;
     }
 }

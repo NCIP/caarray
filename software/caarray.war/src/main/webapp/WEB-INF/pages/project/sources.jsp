@@ -2,7 +2,7 @@
 
 <caarray:tabPane subtab="true">
     <div class="boxpad2">
-        <h3>Sources</h3>
+        <h3><fmt:message key="experiment.sources" /></h3>
         <div class="addlink">
             <c:url value="/protected/ajax_Project_loadGenericTab_sourceEdit.action" var="addSourceUrl">
                 <c:param name="proposalKey" value="${proposalKey}" />
@@ -51,7 +51,6 @@
                     </c:url>
                     <a href="${copySourceUrl}"><img src="<c:url value="/images/ico_copy.gif"/>" alt="<fmt:message key="button.copy"/>" /></a>
                 </ajax:anchors>
-
             </display:column>
             <display:column titleKey="button.delete">
                 <ajax:anchors target="tabboxlevel2wrapper">
@@ -69,7 +68,7 @@
 
     <s:form action="ajax_Project_saveGenericTab_sources" cssClass="form" id="projectForm" method="get">
         <s:hidden name="proposalKey" />
-        <s:hidden name="ajax" value="%{'true'}"/>        
+        <s:hidden name="ajax" value="%{'true'}"/>
     </s:form>
     </div>
 </caarray:tabPane>

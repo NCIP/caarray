@@ -89,42 +89,42 @@ package gov.nih.nci.caarray.domain.project;
 public enum ExperimentOntologyCategory {
 
     /**
-     * OrganismPart category, used for tissue site
+     * OrganismPart category, used for tissue site.
      */
     ORGANISM_PART("OrganismPart"),
-    
+
     /**
-     * MaterialType category, used for tissue types
+     * MaterialType category, used for tissue types.
      */
     MATERIAL_TYPE("MaterialType"),
-    
+
     /**
-     * CellType category, used for cell types
+     * CellType category, used for cell types.
      */
     CELL_TYPE("CellType"),
-    
+
     /**
-     * DiseaseState category, used for diseases/conditions of an experiment
+     * DiseaseState category, used for diseases/conditions of an experiment.
      */
     DISEASE_STATE("DiseaseState"),
-    
+
     /**
-     * ExperimentDesignType category, for selecting type of experiment design
+     * ExperimentDesignType category, for selecting type of experiment design.
      */
     EXPERIMENT_DESIGN_TYPE("ExperimentDesignType"),
 
     /**
-     * QualityControlDescriptionType category, for selecting type of quality control measures
+     * QualityControlDescriptionType category, for selecting type of quality control measures.
      */
     QUALITY_CONTROL_TYPE("QualityControlDescriptionType"),
 
     /**
-     * QualityControlDescriptionType category, for selecting type of quality control measures
+     * QualityControlDescriptionType category, for selecting type of quality control measures.
      */
     REPLICATE_TYPE("ReplicateDescriptionType"),
-    
+
     /**
-     * Roles category, used for various roles in an experiment
+     * Roles category, used for various roles in an experiment.
      */
     ROLES("Roles");
 
@@ -138,7 +138,7 @@ public enum ExperimentOntologyCategory {
      * @return the categoryName
      */
     public String getCategoryName() {
-        return categoryName;
+        return this.categoryName;
     }
 
 }
