@@ -38,14 +38,22 @@
                         <c:param name="currentSourceIndex" value="${index}" />
                         <c:param name="ajax" value="true" />
                     </c:url>
-                <a href="${editSourceUrl}"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
+                    <a href="${editSourceUrl}"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
                 </ajax:anchors>
             </display:column>
             <display:column titleKey="button.copy">
                 <a href="#"><img src="<c:url value="/images/ico_copy.gif"/>" alt="<fmt:message key="button.copy"/>" /></a>
             </display:column>
             <display:column titleKey="button.delete">
-                <a href="#"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.delete"/>" /></a>
+                <ajax:anchors target="tabboxlevel2wrapper">
+                    <s:set name="index" value="proposal.project.experiment.sources.indexOf(#attr.row)" />
+                    <c:url value="/protected/ajax_Project_remove_source.action" var="removeSourceUrl">
+                        <c:param name="proposalKey" value="${proposalKey}" />
+                        <c:param name="currentSourceIndex" value="${index}" />
+                        <c:param name="ajax" value="true" />
+                    </c:url>
+                    <a href="${removeSourceUrl}"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.delete"/>" /></a>
+                </ajax:anchors>
             </display:column>
         </display:table>
     </ajax:displayTag>

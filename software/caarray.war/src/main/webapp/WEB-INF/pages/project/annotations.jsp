@@ -38,7 +38,7 @@
 <fmt:message key="project.tabs.hybridizations" var="hybridizationsTitle" />
 
 <ajax:tabPanel panelStyleId="tablevel2" panelStyleClass="tablevel2" currentStyleClass="selected" contentStyleId="tabboxlevel2wrapper" contentStyleClass="tabboxlevel2wrapper"
-        postFunction="TabUtils.setSelectedLevel2Tab">
+        postFunction="TabUtils.setSelectedLevel2Tab" preFunction="TabUtils.showSubtabLoadingText">
     <ajax:tab caption="${experimentalDesignTitle}" baseUrl="${experimentalDesignUrl}" defaultTab="${param.initialTab == null || param.initialTab == 'experimentalDesign'}" />
     <ajax:tab caption="${experimentalFactorsTitle}" baseUrl="${experimentalFactorsUrl}" defaultTab="${param.initialTab == null || param.initialTab == 'experimentalFactors'}" />
     <ajax:tab caption="${sourcesTitle}" baseUrl="${sourcesUrl}" defaultTab="${param.initialTab == 'sources'}" />

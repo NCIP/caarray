@@ -9,6 +9,6 @@
             <s:hidden name="currentSourceIndex" />
             <s:hidden name="proposalKey" />
         </s:form>
-        <a href="javascript:TabUtils.submitTabForm('projectForm', 'tabboxlevel2wrapper', 'save_session');" class="save" tabindex="3"><img src="<c:url value="/images/btn_save_draft.gif"/>" alt="Save Draft"></a>
+        <a href="javascript:TabUtils.submitSubTabForm('projectForm', 'tabboxlevel2wrapper', 'save_session');" class="save" tabindex="3"><img src="<c:url value="/images/btn_save_draft.gif"/>" alt="Save Draft"></a>
    </div>
 </caarray:tabPane>

@@ -391,6 +391,19 @@ public class ProjectAction extends BaseAction implements Preparable {
     }
 
     /**
+     * remove the source with the given id from the set of sources.
+     * @return the string indicating which result to forward to.
+     */
+    @SkipValidation
+    public String sourceRemoval() {
+        if (getCurrentSourceIndex() != null) {
+            getProposal().getProject().getExperiment().getSources().remove(getCurrentSourceIndex().intValue());
+            saveMessage(getText("experiment.sources.deleted"));
+        }
+        return SUCCESS;
+    }
+
+    /**
      * gets the delegate from factory.
      * @return Delegate ProjectDelegate
      */

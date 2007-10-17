@@ -3,75 +3,75 @@ function swapClass(obj, newStyle) {
     obj.className = newStyle;
 }
 
-function isUndefined(value) {   
-    var undef;   
-    return value == undef; 
+function isUndefined(value) {
+    var undef;
+    return value == undef;
 }
 
 function checkAll(theForm) { // check all the checkboxes in the list
   for (var i=0;i<theForm.elements.length;i++) {
     var e = theForm.elements[i];
-		var eName = e.name;
-    	if (eName != 'allbox' && 
+    var eName = e.name;
+      if (eName != 'allbox' &&
             (e.type.indexOf("checkbox") == 0)) {
-        	e.checked = theForm.allbox.checked;		
-		}
-	} 
+          e.checked = theForm.allbox.checked;
+    }
+  }
 }
 
 /* Function to clear a form of all it's values */
 function clearForm(frmObj) {
-	for (var i = 0; i < frmObj.length; i++) {
+  for (var i = 0; i < frmObj.length; i++) {
         var element = frmObj.elements[i];
-		if(element.type.indexOf("text") == 0 || 
-				element.type.indexOf("password") == 0) {
-					element.value="";
-		} else if (element.type.indexOf("radio") == 0) {
-			element.checked=false;
-		} else if (element.type.indexOf("checkbox") == 0) {
-			element.checked = false;
-		} else if (element.type.indexOf("select") == 0) {
-			for(var j = 0; j < element.length ; j++) {
-				element.options[j].selected=false;
-			}
+    if(element.type.indexOf("text") == 0 ||
+        element.type.indexOf("password") == 0) {
+          element.value="";
+    } else if (element.type.indexOf("radio") == 0) {
+      element.checked=false;
+    } else if (element.type.indexOf("checkbox") == 0) {
+      element.checked = false;
+    } else if (element.type.indexOf("select") == 0) {
+      for(var j = 0; j < element.length ; j++) {
+        element.options[j].selected=false;
+      }
             element.options[0].selected=true;
-		}
-	} 
+    }
+  }
 }
 
 /* Function to get a form's values in a string */
 function getFormAsString(frmObj) {
     var query = "";
-	for (var i = 0; i < frmObj.length; i++) {
+  for (var i = 0; i < frmObj.length; i++) {
         var element = frmObj.elements[i];
-        if (element.type.indexOf("checkbox") == 0 || 
-            element.type.indexOf("radio") == 0) { 
+        if (element.type.indexOf("checkbox") == 0 ||
+            element.type.indexOf("radio") == 0) {
             if (element.checked) {
                 query += element.name + '=' + escape(element.value) + "&";
             }
-		} else if (element.type.indexOf("select") == 0) {
-			for (var j = 0; j < element.length ; j++) {
-				if (element.options[j].selected) {
+    } else if (element.type.indexOf("select") == 0) {
+      for (var j = 0; j < element.length ; j++) {
+        if (element.options[j].selected) {
                     query += element.name + '=' + escape(element.value) + "&";
                 }
-			}
+      }
         } else {
-            query += element.name + '=' 
-                  + escape(element.value) + "&"; 
+            query += element.name + '='
+                  + escape(element.value) + "&";
         }
-    } 
+    }
     return query;
 }
 
 /* Function to hide form elements that show through
    the search form when it is visible */
-function toggleForm(frmObj, iState) // 1 visible, 0 hidden 
+function toggleForm(frmObj, iState) // 1 visible, 0 hidden
 {
-	for(var i = 0; i < frmObj.length; i++) {
-		if (frmObj.elements[i].type.indexOf("select") == 0 || frmObj.elements[i].type.indexOf("checkbox") == 0) {
+  for(var i = 0; i < frmObj.length; i++) {
+    if (frmObj.elements[i].type.indexOf("select") == 0 || frmObj.elements[i].type.indexOf("checkbox") == 0) {
             frmObj.elements[i].style.visibility = iState ? "visible" : "hidden";
-		}
-	} 
+    }
+  }
 }
 
 /* Helper function for re-ordering options in a select */
@@ -82,7 +82,7 @@ function opt(txt,val,sel) {
 }
 
 /* Function for re-ordering <option>'s in a <select> */
-function move(list,to) {     
+function move(list,to) {
     var total=list.options.length;
     index = list.selectedIndex;
     if (index == -1) return false;
@@ -97,24 +97,24 @@ function move(list,to) {
     opts[to] = opts[index];
     opts[index] = tempOpt
     list.options.length=0; // clear
-    
+
     for (i=0;i<opts.length;i++) {
         list.options[i] = new Option(opts[i].txt,opts[i].val);
         list.options[i].selected = opts[i].sel;
     }
-    
+
     list.focus();
-} 
+}
 
 /*  This function is to select all options in a multi-valued <select> */
 function selectAll(elementId) {
     var element = document.getElementById(elementId);
-	len = element.length;
-	if (len != 0) {
-		for (i = 0; i < len; i++) {
-			element.options[i].selected = true;
-		}
-	}
+  len = element.length;
+  if (len != 0) {
+    for (i = 0; i < len; i++) {
+      element.options[i].selected = true;
+    }
+  }
 }
 
 /* This function is used to select a checkbox by passing
@@ -139,7 +139,7 @@ function toggleRadio(elementId, index) {
 
 /* This function is used to open a pop-up window */
 function openWindow(url, winTitle, winParams) {
-	winName = window.open(url, winTitle, winParams);
+  winName = window.open(url, winTitle, winParams);
     winName.focus();
 }
 
@@ -165,20 +165,20 @@ function setCookie(name,value,expires,path,domain,secure) {
 
 /* This function is used to get cookies */
 function getCookie(name) {
-	var prefix = name + "=" 
-	var start = document.cookie.indexOf(prefix) 
+  var prefix = name + "="
+  var start = document.cookie.indexOf(prefix)
 
-	if (start==-1) {
-		return null;
-	}
-	
-	var end = document.cookie.indexOf(";", start+prefix.length) 
-	if (end==-1) {
-		end=document.cookie.length;
-	}
+  if (start==-1) {
+    return null;
+  }
 
-	var value=document.cookie.substring(start+prefix.length, end) 
-	return unescape(value);
+  var end = document.cookie.indexOf(";", start+prefix.length)
+  if (end==-1) {
+    end=document.cookie.length;
+  }
+
+  var value=document.cookie.substring(start+prefix.length, end)
+  return unescape(value);
 }
 
 /* This function is used to delete cookies */
@@ -197,31 +197,31 @@ String.prototype.trim = function () {
 };
 
 // This function is used by the login screen to validate user/pass
-// are entered. 
-function validateRequired(form) {                                    
+// are entered.
+function validateRequired(form) {
     var bValid = true;
     var focusField = null;
-    var i = 0;                                                                                          
-    var fields = new Array();                                                                           
-    oRequired = new required();                                                                         
-                                                                                                        
-    for (x in oRequired) {                                                                              
+    var i = 0;
+    var fields = new Array();
+    oRequired = new required();
+
+    for (x in oRequired) {
         if ((form[oRequired[x][0]].type == 'text' || form[oRequired[x][0]].type == 'textarea' || form[oRequired[x][0]].type == 'select-one' || form[oRequired[x][0]].type == 'radio' || form[oRequired[x][0]].type == 'password') && form[oRequired[x][0]].value == '') {
            if (i == 0)
-              focusField = form[oRequired[x][0]]; 
-              
+              focusField = form[oRequired[x][0]];
+
            fields[i++] = oRequired[x][1];
-            
-           bValid = false;                                                                             
-        }                                                                                               
-    }                                                                                                   
-                                                                                                       
+
+           bValid = false;
+        }
+    }
+
     if (fields.length > 0) {
        focusField.focus();
-       alert(fields.join('\n'));                                                                      
-    }                                                                                                   
-                                                                                                       
-    return bValid;                                                                                      
+       alert(fields.join('\n'));
+    }
+
+    return bValid;
 }
 
 // This function is a generic function to create form elements
@@ -234,7 +234,7 @@ function createFormElement(element, type, name, id, value, parent) {
     parent.appendChild(e);
 }
 
-function confirmDelete(obj) {   
+function confirmDelete(obj) {
     var msg = "Are you sure you want to delete this " + obj + "?";
     ans = confirm(msg);
     if (ans) {
@@ -246,7 +246,7 @@ function confirmDelete(obj) {
 
 function highlightTableRows(tableId) {
     var previousClass = null;
-    var table = document.getElementById(tableId); 
+    var table = document.getElementById(tableId);
     var tbody = table.getElementsByTagName("tbody")[0];
     var rows;
     if (tbody == null) {
@@ -303,7 +303,7 @@ function radio(clicked){
         }
     }
 
-    // highlight the row    
+    // highlight the row
     clicked.parentNode.parentNode.className="over";
 }
 
@@ -317,11 +317,11 @@ window.onload = function() {
     if ($('errorMessages')) {
         new Effect.Highlight('errorMessages');
     }
-    
+
     /* Initialize menus for IE */
     if ($("primary-nav")) {
         var navItems = $("primary-nav").getElementsByTagName("li");
-    
+
         for (var i=0; i<navItems.length; i++) {
             if (navItems[i].className == "menubar") {
                 navItems[i].onmouseover=function() { this.className += " over"; }
@@ -374,14 +374,37 @@ var TabUtils = {
             $('theForm').hide();
         }
     },
-    
+
+    showSubtabSubmittingText : function() {
+        if ($('submittingTextSubtab')) {
+            $('submittingTextSubtab').show();
+            $('theFormSubtab').hide();
+        }
+    },
+
+    showSubtabLoadingText : function() {
+        if ($('loadingTextSubtab')) {
+            $('loadingTextSubtab').show();
+            $('theFormSubtab').hide();
+        }
+    },
+
     submitTabForm : function(formId, divId, saveMode) {
         TabUtils.showSubmittingText();
+        TabUtils.submitTabFormIgnoreSubmittingText(formId, divId, saveMode);
+    },
+
+    submitSubTabForm : function(formId, divId, saveMode) {
+        TabUtils.showSubtabSubmittingText();
+        TabUtils.submitTabFormIgnoreSubmittingText(formId, divId, saveMode);
+    },
+
+    submitTabFormIgnoreSubmittingText : function(formId, divId, saveMode) {
         formData = Form.serialize(formId);
         formData = formData + '&saveMode=' + saveMode;
         if(console) { console.log('saveMode: ' + saveMode + ', typeof ' + (typeof formData) + ', Form data: ' + formData + '\nFoo'); }
-        
-                
+
+
         url = $(formId).action;
         new Ajax.Updater(divId, url, {parameters: formData, evalScripts: true} );
     }
