@@ -82,16 +82,15 @@
  */
 package gov.nih.nci.caarray.business.vocabulary;
 
-
-import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
-
+import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.DAOException;
+import gov.nih.nci.caarray.dao.OrganismDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +103,6 @@ import javax.ejb.TransactionAttributeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 
 /**
  * Entry point into implementation of the vocabulary service subsystem.
@@ -123,21 +121,29 @@ public class VocabularyServiceBean implements VocabularyService {
     public VocabularyServiceBean() {
         super();
     }
+
     /**
-     *
+     * 
      * @return VocabularyDao
      */
     public VocabularyDao getVocabularyDao() {
         return daoFactory.getVocabularyDao();
     }
+
     /**
-     * Returns all terms that belong to the category for the name given (including all
-     * subcategories).
-     *
+     * @return OrganismDao
+     */
+    private OrganismDao getOrganismDao() {
+        return daoFactory.getOrganismDao();
+    }
+
+    /**
+     * Returns all terms that belong to the category for the name given (including all subcategories).
+     * 
      * @param categoryName find entries that match this category.
-     * @return the matching Terms.  Empty list if no term found.
+     * @return the matching Terms. Empty list if no term found.
      * @throws VocabularyServiceException exception from EVS svc
-    */
+     */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public List<Term> getTerms(final String categoryName) throws VocabularyServiceException {
         LogUtil.logSubsystemEntry(LOG, categoryName);
@@ -153,6 +159,17 @@ public class VocabularyServiceBean implements VocabularyService {
         }
         LogUtil.logSubsystemExit(LOG);
         return termList;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public List<Organism> getOrganisms() {
+        LogUtil.logSubsystemEntry(LOG);
+        List<Organism> result = getOrganismDao().getAllOrganisms();
+        LogUtil.logSubsystemExit(LOG);
+        return result;
     }
 
     private Set<Term> getTermsFromDao(String categoryName) throws VocabularyServiceException {
@@ -177,18 +194,17 @@ public class VocabularyServiceBean implements VocabularyService {
     }
 
     /**
-     * Returns all terms that belong to the category for the name given
-     * from the EVS vocab service.
-     *
+     * Returns all terms that belong to the category for the name given from the EVS vocab service.
+     * 
      * @param categoryName find entries that match this category.
      * @return the matching Terms.
-    */
+     */
     private List<Term> getEVSTerms(final String categoryName) throws VocabularyServiceException {
         EVSUtility evsUtil = getEVSUtility();
         List<Term> evsTerms = new ArrayList<Term>();
         try {
             evsTerms = evsUtil.getConcepts(categoryName);
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new VocabularyServiceException(e);
         }
         return evsTerms;
@@ -280,7 +296,7 @@ public class VocabularyServiceBean implements VocabularyService {
         LogUtil.logSubsystemExit(LOG);
         return result.isEmpty() ? null : result.iterator().next();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -291,14 +307,24 @@ public class VocabularyServiceBean implements VocabularyService {
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public Organism getOrganism(Long id) {
+        LogUtil.logSubsystemEntry(LOG, id);
+        Organism result = getOrganismDao().getOrganism(id);
+        LogUtil.logSubsystemExit(LOG);
+        return result;
+    }
+
     final CaArrayDaoFactory getDaoFactory() {
         return daoFactory;
     }
-    
+
     final void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
-
 
 }

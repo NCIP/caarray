@@ -82,53 +82,19 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import java.util.List;
-
-import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.Proposal;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import gov.nih.nci.caarray.domain.contact.AbstractContact;
 
 /**
- * DAO for entities in the <code>gov.nih.nci.caarray.domain.project</code> package.
+ * DAO for entities in the <code>gov.nih.nci.caarray.domain.contact</code> package.
  *
- * @author Rashmi Srinivasa
+ * @author Dan Kokotov
  */
-class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
-    private static final Log LOG = LogFactory.getLog(ProjectDaoImpl.class);
-
+public interface ContactDao extends CaArrayDao {
     /**
-     * Returns the <code>Project</code> with the id given, or null if none exists.
+     * Returns the <code>Contact</code> with the id given.
      *
-     * @param id get <code>Project</code> matching this id
-     * @return the <code>Project</code> or null.
+     * @param id get <code>Contact</code> matching this id
+     * @return the <code>Contact</code>.
      */
-    public Project getProject(long id) {
-        return (Project) getCurrentSession().get(Project.class, id);
-    }
-
-    /**
-     * Returns the <code>Proposal</code> with the id given, or null if none exists.
-     *
-     * @param id get <code>Proposal</code> matching this id
-     * @return the <code>Proposal</code> or null.
-     */
-    public Proposal getProposal(long id) {
-        return (Proposal) getCurrentSession().get(Proposal.class, id);
-    }
-
-    @Override
-    Log getLog() {
-        return LOG;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    public List<Project> getProjectsForUser(String username) {
-        return getCurrentSession().createQuery("FROM " + Project.class.getName() + " p ORDER BY p.experiment.title")
-                                  .list();
-    }
+    AbstractContact getContact(long id);    
 }

@@ -384,7 +384,6 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @ManyToOne
     @ForeignKey(name = "EXPERIMENT_MANUFACTURER_FK")
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Organization getManufacturer() {
         return this.manufacturer;
     }

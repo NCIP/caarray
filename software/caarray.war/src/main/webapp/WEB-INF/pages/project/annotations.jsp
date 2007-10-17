@@ -40,7 +40,7 @@
 <ajax:tabPanel panelStyleId="tablevel2" panelStyleClass="tablevel2" currentStyleClass="selected" contentStyleId="tabboxlevel2wrapper" contentStyleClass="tabboxlevel2wrapper"
         postFunction="TabUtils.setSelectedLevel2Tab" preFunction="TabUtils.showSubtabLoadingText">
     <ajax:tab caption="${experimentalDesignTitle}" baseUrl="${experimentalDesignUrl}" defaultTab="${param.initialTab == null || param.initialTab == 'experimentalDesign'}" />
-    <ajax:tab caption="${experimentalFactorsTitle}" baseUrl="${experimentalFactorsUrl}" defaultTab="${param.initialTab == null || param.initialTab == 'experimentalFactors'}" />
+    <ajax:tab caption="${experimentalFactorsTitle}" baseUrl="${experimentalFactorsUrl}" defaultTab="${param.initialTab == 'experimentalFactors'}" />
     <ajax:tab caption="${sourcesTitle}" baseUrl="${sourcesUrl}" defaultTab="${param.initialTab == 'sources'}" />
     <ajax:tab caption="${samplesTitle}" baseUrl="${samplesUrl}" defaultTab="${param.initialTab == 'samples'}" />
     <ajax:tab caption="${hybridizationsTitle}" baseUrl="${hybridizationsUrl}" defaultTab="${param.initialTab == 'hybridizations'}" />

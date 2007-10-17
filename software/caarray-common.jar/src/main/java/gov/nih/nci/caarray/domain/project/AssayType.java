@@ -82,10 +82,12 @@
  */
 package gov.nih.nci.caarray.domain.project;
 
+import gov.nih.nci.caarray.domain.ResourceBasedEnum;
+
 /**
  * An enumeration of different assay types that an Experiment can perform.
  */
-public enum AssayType {
+public enum AssayType implements ResourceBasedEnum {
     /** gene expression. */
     GENE_EXPRESSION("assayType.geneExpression"),
     /** SNP. */

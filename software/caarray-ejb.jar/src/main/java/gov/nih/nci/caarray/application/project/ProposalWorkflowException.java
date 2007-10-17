@@ -82,58 +82,44 @@
  */
 package gov.nih.nci.caarray.application.project;
 
-import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.Proposal;
-
-import java.io.File;
-import java.util.List;
-import java.util.Set;
-
 /**
- * Basic sintub -- returns null for all methods returning objects. Subclass and override
- * to provide desired functionality in tests.
+ * Indicates that an operation was attempted on a proposal 
+ * that is prohibited by the current state of it
  */
-public class ProjectManagementServiceStub implements ProjectManagementService {
+public class ProposalWorkflowException extends Exception {
 
-    public Set<CaArrayFile> addFiles(Project project, Set<File> files) {
-        return null;
-    }
+    private static final long serialVersionUID = 3582622697786140397L;
 
-    public List<Project> getWorkspaceProjects() {
-        return null;
-    }
-
-    public Project getProject(long id) {
-        return null;
-    }
-    
-    public Proposal getProposal(long id) {
-        return null;
-    }
-    
-    public Organization getOrganization(long id) {
-        return null;
+    /**
+     * create a new ProposalWorkflowException with given message and cause
+     * @param message the message
+     * @param cause the nested exception that caused the error, if any
+     */
+    public ProposalWorkflowException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public void submitProposal(Proposal proposal) {
-        // no-op
-    }
-    
-    public void saveDraftProposal(Proposal proposal) throws ProposalWorkflowException {
-        // no-op
-    }
-
-    public CaArrayFile addFile(Project project, File file) {
-        return null;
+    /**
+     * create a new ProposalWorkflowException with given message and no cause
+     * @param message the message
+     */
+    public ProposalWorkflowException(String message) {
+        super(message);
     }
 
-    public CaArrayFile addFile(Project project, File file, String filename) {
-        return null;
+    /**
+     * create a new ProposalWorkflowException with default message and given cause
+     * @param cause the nested exception that caused the error, if any
+     */
+    public ProposalWorkflowException(Throwable cause) {
+        super(cause);
     }
 
-    public Project toggleBrowsableStatus(long projectId) {
-        return null;
+    /**
+     * create a new ProposalWorkflowException with default message and no cause
+     */
+    public ProposalWorkflowException() {
+        super();
     }
+
 }

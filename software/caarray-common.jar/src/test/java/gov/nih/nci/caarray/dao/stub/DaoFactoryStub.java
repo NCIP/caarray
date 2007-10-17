@@ -84,7 +84,9 @@ package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.ContactDao;
 import gov.nih.nci.caarray.dao.FileDao;
+import gov.nih.nci.caarray.dao.OrganismDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.ProtocolDao;
 import gov.nih.nci.caarray.dao.SampleDao;
@@ -138,11 +140,24 @@ public class DaoFactoryStub implements CaArrayDaoFactory {
         return new SampleDaoStub();
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.CaArrayDaoFactory#getFileDao()
+    /**
+     * {@inheritDoc}
      */
     public FileDao getFileDao() {
         return new FileDaoStub();
-       }
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    public ContactDao getContactDao() {
+        return new ContactDaoStub();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public OrganismDao getOrganismDao() {
+        return new OrganismDaoStub();
+    }
 }

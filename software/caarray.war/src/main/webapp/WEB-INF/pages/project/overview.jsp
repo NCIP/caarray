@@ -2,10 +2,11 @@
 
 <caarray:tabPane paneTitleKey="experiment.overview">
     <div class="boxpad">
+
     <p class="instructions">
-        The Overall Experiment Characteristics represent the minimum set of
-        attributes required to submit an experiment for review.
-        Required fields are highlighted and have
+        The Overall Experiment Characteristics represent the minimum set of 
+        attributes required to submit an experiment for review. 
+        Required fields are highlighted and have <s:property value="proposal.id"/>
         <span class="required"><span class="asterisk">*</span>asterisks<span class="asterisk">*</span></span>.
         </p>
     <s:actionerror/> <br> <s:actionmessage/>
@@ -15,7 +16,7 @@
             <td class="tdLabel"><label for="proposalStatus">Status</label></td>
             <td>
                 <span id="proposalStatus">
-                <s:if test="proposal.id != null">
+                <s:if test="proposal.status != null">
                     <s:property value="getText(proposal.status.resourceKey)"/>
                 </s:if>
                 <s:else>
@@ -52,26 +53,20 @@
                   list="cellTypes" listKey="id" listValue="value"/>
         <s:select multiple="true" name="selectedConditions" label="Conditions" tabindex="11"
                   list="conditions" listKey="id" listValue="value"/>
-        <s:hidden name="proposal.id" />
         <s:hidden name="proposalKey" />
         <s:hidden name="ajax" value="%{'true'}"/>
 <script type="text/javascript">
-console.log("configuring dols");
 var dol = new DynamicOptionList("selectedManufacturer", "selectedArrayDesigns");
 var opts = new Array();
 <s:iterator value="arrayDesignsByManufacturer.entrySet()" id="designMapping">
-console.log('<s:property value="key.id"/>');
-<s:iterator value="value">
-console.log('<s:property value="#designMapping.key.id"/> <s:property value="name"/> <s:property value="id"/>');
+    <s:iterator value="value">
 dol.forValue('<s:property value="#designMapping.key.id"/>').addOptionsTextValue('<s:property value="name"/>', '<s:property value="id"/>');
-</s:iterator>
-console.log('sel manufacturer: <s:property value="selectedManufacturer"/>');
-<s:if test="selectedManufacturer == key.id">
-<s:iterator value="selectedArrayDesigns">
-dol.forValue('<s:property value="#designMapping.key.id"/>').setDefaultOptions('<s:property value="id"/>');
-</s:iterator>
-</s:if>
-
+    </s:iterator>
+    <s:if test="selectedManufacturer == #designMapping.key.id">
+        <s:iterator value="selectedArrayDesigns">
+dol.forValue('<s:property value="#designMapping.key.id"/>').setDefaultOptions('<s:property/>');
+        </s:iterator>
+    </s:if>
 </s:iterator>
 window.setTimeout(function() { console.log("setting up dols"); initDynamicOptionLists(); }, 100);
 </script>

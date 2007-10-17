@@ -57,5 +57,10 @@
             </display:column>
         </display:table>
     </ajax:displayTag>
+
+    <s:form action="ajax_Project_saveGenericTab_sources" cssClass="form" id="projectForm" method="get">
+        <s:hidden name="proposalKey" />
+        <s:hidden name="ajax" value="%{'true'}"/>        
+    </s:form>
     </div>
 </caarray:tabPane>

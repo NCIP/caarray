@@ -82,53 +82,28 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import java.util.List;
-
-import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.Proposal;
+import gov.nih.nci.caarray.domain.contact.AbstractContact;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * DAO for entities in the <code>gov.nih.nci.caarray.domain.project</code> package.
+ * DAO for entities in the <code>gov.nih.nci.caarray.domain.contact</code> package.
  *
- * @author Rashmi Srinivasa
+ * @author Dan Kokotov
  */
-class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
-    private static final Log LOG = LogFactory.getLog(ProjectDaoImpl.class);
-
-    /**
-     * Returns the <code>Project</code> with the id given, or null if none exists.
-     *
-     * @param id get <code>Project</code> matching this id
-     * @return the <code>Project</code> or null.
-     */
-    public Project getProject(long id) {
-        return (Project) getCurrentSession().get(Project.class, id);
-    }
-
-    /**
-     * Returns the <code>Proposal</code> with the id given, or null if none exists.
-     *
-     * @param id get <code>Proposal</code> matching this id
-     * @return the <code>Proposal</code> or null.
-     */
-    public Proposal getProposal(long id) {
-        return (Proposal) getCurrentSession().get(Proposal.class, id);
-    }
-
-    @Override
-    Log getLog() {
-        return LOG;
-    }
+class ContactDaoImpl extends AbstractCaArrayDaoImpl implements ContactDao {
+    private static final Log LOG = LogFactory.getLog(ContactDaoImpl.class);
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
-    public List<Project> getProjectsForUser(String username) {
-        return getCurrentSession().createQuery("FROM " + Project.class.getName() + " p ORDER BY p.experiment.title")
-                                  .list();
+    public AbstractContact getContact(long id) {
+        return (AbstractContact) getCurrentSession().get(AbstractContact.class, id);
+    }
+    
+    @Override
+    Log getLog() {
+        return LOG;
     }
 }

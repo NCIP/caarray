@@ -5,7 +5,7 @@
     <p class="instructions">Required fields are highlighted and have <span class="required"><span class="asterisk">*</span>asterisks<span class="asterisk">*</span></span>.</p>
     <s:actionerror/> <br> <s:actionmessage/>
     <s:form action="ajax_Project_saveTab_experimentalDesign" cssClass="form" id="projectForm" method="get">
-        <s:select required="true" name="proposal.project.experiment.experimentDesignType.id" label="Experiment Design Type" tabindex="1"
+        <s:select required="true" name="selectedExperimentalDesignType" label="Experiment Design Type" tabindex="1"
                   list="experimentDesignTypes" listKey="id" listValue="value"
                   headerKey="" headerValue="--Select an Experiment Design Type--"/>
         <s:textarea name="proposal.project.experiment.experimentDesignDescription" label="Experiment Design" cols="80" rows="8" tabindex="2"/>

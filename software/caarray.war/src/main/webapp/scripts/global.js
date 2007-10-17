@@ -353,7 +353,7 @@ var TabUtils = {
         for(var i = 0; i < tabMenuItems.length; i++) {
             tabLink = tabMenuItems[i].getElementsByTagName('a')[0];
             if(tabLink.className == 'current') {
-                tabMenuItems[i].className = 'active';
+                tabMenuItems[i].className = 'selected';
             } else {
                 tabMenuItems[i].className = '';
             }
@@ -389,6 +389,16 @@ var TabUtils = {
         }
     },
 
+    // submit either the tab or subtab, depending on whether the subtab wrapper
+    // div is present
+    submitTabOrSubTabForm : function(formId, tabDivId, subTabDivId, saveMode) {
+        if ($(subTabDivId)) {
+            TabUtils.submitSubTabForm(formId, subTabDivId, saveMode);
+        } else {
+            TabUtils.submitTabForm(formId, tabDivId, saveMode);
+        }
+    },
+
     submitTabForm : function(formId, divId, saveMode) {
         TabUtils.showSubmittingText();
         TabUtils.submitTabFormIgnoreSubmittingText(formId, divId, saveMode);
@@ -402,10 +412,9 @@ var TabUtils = {
     submitTabFormIgnoreSubmittingText : function(formId, divId, saveMode) {
         formData = Form.serialize(formId);
         formData = formData + '&saveMode=' + saveMode;
-        if(console) { console.log('saveMode: ' + saveMode + ', typeof ' + (typeof formData) + ', Form data: ' + formData + '\nFoo'); }
-
-
+        if (console) { console.log('saveMode: ' + saveMode + ', typeof ' + (typeof formData) + ', Form data: ' + formData + '\nFoo'); }
         url = $(formId).action;
+
         new Ajax.Updater(divId, url, {parameters: formData, evalScripts: true} );
     }
 }

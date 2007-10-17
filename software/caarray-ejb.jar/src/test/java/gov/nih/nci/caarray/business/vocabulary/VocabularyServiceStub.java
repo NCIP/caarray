@@ -85,6 +85,8 @@ package gov.nih.nci.caarray.business.vocabulary;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.georgetown.pir.Organism;
+
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -125,6 +127,21 @@ public class VocabularyServiceStub implements VocabularyService {
         Term term = new Term();
         term.setId(id);
         return term;
+    }
+    
+    public Organism getOrganism(Long id) {
+        Organism org = new Organism();
+        org.setId(id);
+        return org;
+    }
+    
+    public List<Organism> getOrganisms() {
+        List<Organism> orgs = new ArrayList<Organism>();
+        Organism o1 = new Organism();
+        o1.setId(1L);
+        o1.setCommonName("Mizouse");
+        orgs.add(o1);
+        return orgs;
     }
 
     public Category createCategory(TermSource source, String categoryName) {

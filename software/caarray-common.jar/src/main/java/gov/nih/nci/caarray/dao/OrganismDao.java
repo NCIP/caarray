@@ -82,53 +82,27 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import edu.georgetown.pir.Organism;
+
 import java.util.List;
 
-import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.Proposal;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
- * DAO for entities in the <code>gov.nih.nci.caarray.domain.project</code> package.
+ * DAO for Organism entities 
  *
- * @author Rashmi Srinivasa
+ * @author Dan Kokotov
  */
-class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
-    private static final Log LOG = LogFactory.getLog(ProjectDaoImpl.class);
-
+public interface OrganismDao extends CaArrayDao {
     /**
-     * Returns the <code>Project</code> with the id given, or null if none exists.
+     * Returns the <code>Organism</code> with the id given.
      *
-     * @param id get <code>Project</code> matching this id
-     * @return the <code>Project</code> or null.
+     * @param id get <code>Organism</code> matching this id
+     * @return the <code>Organism</code>.
      */
-    public Project getProject(long id) {
-        return (Project) getCurrentSession().get(Project.class, id);
-    }
-
+    Organism getOrganism(long id);
+    
     /**
-     * Returns the <code>Proposal</code> with the id given, or null if none exists.
-     *
-     * @param id get <code>Proposal</code> matching this id
-     * @return the <code>Proposal</code> or null.
+     * Returns the list of all Organisms in the system
+     * @return List<Organism> of the array designs
      */
-    public Proposal getProposal(long id) {
-        return (Proposal) getCurrentSession().get(Proposal.class, id);
-    }
-
-    @Override
-    Log getLog() {
-        return LOG;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    public List<Project> getProjectsForUser(String username) {
-        return getCurrentSession().createQuery("FROM " + Project.class.getName() + " p ORDER BY p.experiment.title")
-                                  .list();
-    }
+    List<Organism> getAllOrganisms();
 }

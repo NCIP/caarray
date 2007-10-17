@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.project;
 
+import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.Proposal;
@@ -109,6 +110,22 @@ public interface ProjectManagementService {
     Project getProject(long id);
 
     /**
+     * Returns the proposal corresponding to the id given.
+     *
+     * @param id the proposal id
+     * @return the corresponding proposal.
+     */
+    Proposal getProposal(long id);
+
+    /**
+     * Returns the organization corresponding to the id given.
+     *
+     * @param id the organization id
+     * @return the corresponding organization.
+     */
+    Organization getOrganization(long id);
+
+    /**
      * Associates a single file with a project. After calling this method, clients can expect a new
      * <code>CaArrayFile</code> to be associated with the project.
      *
@@ -132,11 +149,25 @@ public interface ProjectManagementService {
     CaArrayFile addFile(Project project, File file, String filename);
 
     /**
-     * Persists a new proposal.
+     * Saves a proposal in the draft state. The proposal may be new, or may
+     * have been previously saved as a draft, but it cannot have been submitted
      *
-     * @param proposal the new proposal to save
+     * @param proposal the proposal to save as draft
+     * @throws ProposalWorkflowException if the is not new and its status is not
+     * "Draft"
      */
-    void submitProposal(Proposal proposal);
+    void saveDraftProposal(Proposal proposal) throws ProposalWorkflowException;
+
+    /**
+     * Saves a new Proposal and moves it into the submitted state. This
+     * may be a new proposal, or a proposal that is currently in draft or returned
+     * for revision state.
+     *
+     * @param proposal the proposal to submit
+     * @throws ProposalWorkflowException if the is not new and its status is not
+     * either "Draft" or "Returned for Revision"
+     */
+    void submitProposal(Proposal proposal) throws ProposalWorkflowException;
 
     /**
      * Gets all projects belonging to the current user.
@@ -151,5 +182,5 @@ public interface ProjectManagementService {
      * @param projectId the id of the project
      * @return the modified project
      */
-    Project toggleBrowsableStatus(long projectId);
+    Project toggleBrowsableStatus(long projectId);        
 }

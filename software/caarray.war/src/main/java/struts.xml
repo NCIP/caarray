@@ -84,8 +84,9 @@
         <action name="Logout" class="gov.nih.nci.caarray.web.action.LogoutAction">
             <result name="success" type="redirect-action">Project_list</result>
         </action>
-        <action name="Project_*" class="gov.nih.nci.caarray.web.action.ProjectAction" method="{1}">
-            <result name="workspace" type="redirect-action">Project_list</result>
+
+        <action name="Project_*" class="gov.nih.nci.caarray.web.action.ProjectAction" method="{1}"> 
+            <result name="workspace" type="redirect-action">Project_list</result> 
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
             <result name="details">/WEB-INF/pages/project/details.jsp</result>
             <result name="list">/WEB-INF/pages/project/list.jsp</result>
@@ -95,6 +96,7 @@
             class="gov.nih.nci.caarray.web.action.ProjectAction" method="{1}LoadTab">
             <result name="input">/WEB-INF/pages/project/{1}.jsp</result>
         </action>
+
         <action name="ajax_Project_loadGenericTab_*"
             class="gov.nih.nci.caarray.web.action.ProjectAction" method="loadTab">
             <result name="input">/WEB-INF/pages/project/{1}.jsp</result>
@@ -104,6 +106,7 @@
             class="gov.nih.nci.caarray.web.action.ProjectAction" method="{1}SaveTab">
             <result name="input">/WEB-INF/pages/project/{1}.jsp</result>
             <result name="success" type="chain">ajax_Project_loadTab_{1}</result>
+            <result name="workspace">/WEB-INF/pages/project/backToWorkspace.jsp</result> 
             <result name="sourcesTab" type="chain">ajax_Project_loadGenericTab_sources</result>
         </action>
 
@@ -115,6 +118,7 @@
         <action name="ajax_Project_saveGenericTab_*"
             class="gov.nih.nci.caarray.web.action.ProjectAction" method="saveTab">
             <result name="success" type="chain">ajax_Project_loadGenericTab_{1}</result>
+            <result name="workspace">/WEB-INF/pages/project/backToWorkspace.jsp</result> 
         </action>
 
         <action name="File_manage" class="gov.nih.nci.caarray.web.action.FileManageAction" method="manage">

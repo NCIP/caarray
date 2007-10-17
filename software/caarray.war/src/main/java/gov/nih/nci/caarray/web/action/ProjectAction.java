@@ -2,7 +2,10 @@ package gov.nih.nci.caarray.web.action;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.application.project.ProjectManagementService;
+import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
@@ -10,10 +13,10 @@ import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.PaymentMechanism;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.Proposal;
-import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.util.SecurityInterceptor;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 import gov.nih.nci.caarray.web.delegate.DelegateFactory;
@@ -29,7 +32,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
@@ -39,8 +41,9 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
  * ProjectAction.
+ * 
  * @author John Hedden
- *
+ * 
  */
 @Validation
 public class ProjectAction extends BaseAction implements Preparable {
@@ -72,6 +75,7 @@ public class ProjectAction extends BaseAction implements Preparable {
     private User user;
     private Proposal proposal;
     private String proposalKey;
+    private Long proposalId;
     private String saveMode;
 
     private List<Sample> samples = new ArrayList<Sample>();
@@ -89,7 +93,6 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     private Source currentSource;
     private Integer currentSourceIndex;
-
 
     /**
      * {@inheritDoc}
@@ -124,6 +127,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * create new project.
+     * 
      * @return path String
      */
     @SkipValidation
@@ -135,6 +139,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * Get the entity id
+     * 
      * @param entity the entity
      * @return the entity id or null if entity is null
      */
@@ -142,9 +147,9 @@ public class ProjectAction extends BaseAction implements Preparable {
         return (entity == null) ? null : entity.getId();
     }
 
-
     /**
      * Get the list of ids from a Collection of entities
+     * 
      * @param entities the Collection of entities
      * @return the List<Long> of the ids of those entities
      */
@@ -156,19 +161,20 @@ public class ProjectAction extends BaseAction implements Preparable {
         return ids;
     }
 
-
     /**
      * load a given tab in the submit experiment workflow
+     * 
      * @return name of result to forward to
      * @throws Exception Exception
      */
-    @SuppressWarnings("PMD")
-    public String overviewLoadTab() throws Exception {
+    public String overviewLoadTab() throws VocabularyServiceException {
         VocabularyService vocabService = getVocabularyService();
         this.tissueSites = vocabService.getTerms(ExperimentOntologyCategory.ORGANISM_PART.getCategoryName());
         this.tissueTypes = vocabService.getTerms(ExperimentOntologyCategory.MATERIAL_TYPE.getCategoryName());
         this.cellTypes = vocabService.getTerms(ExperimentOntologyCategory.CELL_TYPE.getCategoryName());
         this.conditions = vocabService.getTerms(ExperimentOntologyCategory.DISEASE_STATE.getCategoryName());
+        this.organisms = vocabService.getOrganisms();
+
 
         this.selectedTissueSites = getIdsFromEntities(this.proposal.getProject().getExperiment().getTissueSites());
         this.selectedTissueTypes= getIdsFromEntities(this.proposal.getProject().getExperiment().getTissueTypes());
@@ -178,6 +184,8 @@ public class ProjectAction extends BaseAction implements Preparable {
 
         ArrayDesignService arrayDesignService = getArrayDesignService();
         this.arrayDesignsByManufacturer = arrayDesignService.getArrayDesignsByOrganization();
+        this.selectedArrayDesigns = getIdsFromEntities(proposal.getProject().getExperiment().getArrayDesigns());
+        this.selectedManufacturer = getIdFromEntity(proposal.getProject().getExperiment().getManufacturer());
 
         this.selectedArrayDesigns = getIdsFromEntities(this.proposal.getProject().getExperiment().getArrayDesigns());
         this.selectedManufacturer = getIdFromEntity(this.proposal.getProject().getExperiment().getManufacturer());
@@ -187,12 +195,12 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * load a given tab in the submit experiment workflow
+     * 
      * @return name of result to forward to
      * @throws Exception Exception
      */
-    @SuppressWarnings("PMD")
-    public String contactsLoadTab() throws Exception {
-        AuthorizationManager am = getAuthorizationManager();
+    public String contactsLoadTab() {
+        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
         String username = UsernameHolder.getUser();
         this.user = am.getUser(username);
 
@@ -201,11 +209,11 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * load a given tab in the submit experiment workflow
+     * 
      * @return name of result to forward to
      * @throws Exception Exception
      */
-    @SuppressWarnings("PMD")
-    public String experimentalDesignLoadTab() throws Exception {
+    public String experimentalDesignLoadTab() throws VocabularyServiceException {
         VocabularyService vocabService = getVocabularyService();
         this.experimentDesignTypes = vocabService.getTerms(ExperimentOntologyCategory.EXPERIMENT_DESIGN_TYPE.getCategoryName());
         this.qualityControlTypes = vocabService.getTerms(ExperimentOntologyCategory.QUALITY_CONTROL_TYPE.getCategoryName());
@@ -220,6 +228,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * load a given tab in the submit experiment workflow
+     * 
      * @return name of result to forward to
      * @throws Exception Exception
      */
@@ -229,11 +238,12 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * save a project.
+     * 
      * @return path String
      * @throws Exception Exception
      */
-    @SuppressWarnings("PMD")
     public String overviewSaveTab() {
+        proposal.getProject().getExperiment().setOrganism(getOrganismFromId(this.selectedOrganism));
         this.proposal.getProject().getExperiment().getTissueTypes().clear();
         this.proposal.getProject().getExperiment().getTissueTypes().addAll(getTermsFromIds(this.selectedTissueTypes));
         this.proposal.getProject().getExperiment().getTissueSites().clear();
@@ -243,6 +253,7 @@ public class ProjectAction extends BaseAction implements Preparable {
         this.proposal.getProject().getExperiment().getConditions().clear();
         this.proposal.getProject().getExperiment().getConditions().addAll(getTermsFromIds(this.selectedConditions));
 
+        proposal.getProject().getExperiment().setManufacturer(getOrganizationFromId(this.selectedManufacturer));
         this.proposal.getProject().getExperiment().getArrayDesigns().clear();
         this.proposal.getProject().getExperiment().getArrayDesigns().addAll(getArrayDesignsFromIds(this.selectedArrayDesigns));
 
@@ -252,10 +263,10 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * save a project.
+     * 
      * @return path String
      * @throws Exception Exception
      */
-    @SuppressWarnings("PMD")
     public String experimentalDesignSaveTab() {
         this.proposal.getProject().getExperiment().getQualityControlTypes().clear();
         this.proposal.getProject().getExperiment().getQualityControlTypes().addAll(getTermsFromIds(this.selectedQualityControlTypes));
@@ -267,7 +278,8 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * Get the Term with given id
-     * @param id the id of Terms to lookup (could be null)
+     * 
+     * @param id the id of Term to lookup (could be null)
      * @return the Term with that id or null if id is null or Term could not be found
      */
     private Term getTermFromId(Long id) {
@@ -276,7 +288,30 @@ public class ProjectAction extends BaseAction implements Preparable {
     }
 
     /**
+     * Get the Organism with given id
+     * 
+     * @param id the id of Organism to lookup (could be null)
+     * @return the Organism with that id or null if id is null or Organism could not be found
+     */
+    private Organism getOrganismFromId(Long id) {
+        VocabularyService vocabService = getVocabularyService();
+        return (id == null) ? null : vocabService.getOrganism(id);
+    }
+
+    /**
+     * Get the Organization with given id
+     * 
+     * @param id the id of Organizations to lookup (could be null)
+     * @return the Organization with that id or null if id is null or Organization could not be found
+     */
+    private Organization getOrganizationFromId(Long id) {
+        ProjectManagementService projectService = getDelegate().getProjectManagementService();
+        return (id == null) ? null : projectService.getOrganization(id);        
+    }
+
+    /**
      * Get the list of Terms corresponding to a List of Term ids
+     * 
      * @param ids the ids of Terms to lookup
      * @return the List<Terms> with those ids
      */
@@ -284,6 +319,9 @@ public class ProjectAction extends BaseAction implements Preparable {
         VocabularyService vocabService = getVocabularyService();
         Set<Term> terms = new HashSet<Term>();
         for (Long id : ids) {
+            if (id == null) {
+                continue;
+            }
             Term term = vocabService.getTerm(id);
             terms.add(term);
         }
@@ -292,6 +330,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * Get the list of ArrayDesigns corresponding to a List of ArrayDesign ids
+     * 
      * @param ids the ids of ArrayDesigns to lookup
      * @return the List<ArrayDesigns> with those ids
      */
@@ -299,6 +338,9 @@ public class ProjectAction extends BaseAction implements Preparable {
         ArrayDesignService arrayDesignService = getArrayDesignService();
         Set<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
         for (Long id : ids) {
+            if (id == null) {
+                continue;
+            }
             ArrayDesign arrayDesign = arrayDesignService.getArrayDesign(id);
             arrayDesigns.add(arrayDesign);
         }
@@ -323,26 +365,41 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * save a project.
+     * 
      * @return path String
      * @throws Exception Exception
      */
     public String saveTab() {
-        if (SAVE_MODE_DRAFT.equals(this.saveMode) || SAVE_MODE_SUBMIT.equals(this.saveMode)) {
-            getProposal().setStatus(SAVE_MODE_DRAFT.equals(this.saveMode) ? ProposalStatus.DRAFT : ProposalStatus.SUBMITTED_FOR_REVIEW);
-            getDelegate().getProjectManagementService().submitProposal(getProposal());
-
-            List<String> args = new ArrayList<String>();
-            args.add(getProposal().getProject().getExperiment().getTitle());
-            saveMessage(getText("project.created", args));
+        String result = SUCCESS;
+        if (SAVE_MODE_DRAFT.equals(saveMode) || SAVE_MODE_SUBMIT.equals(saveMode)) {
+            try {
+                if (SAVE_MODE_DRAFT.equals(saveMode)) {
+                    getDelegate().getProjectManagementService().saveDraftProposal((getProposal()));
+                    List<String> args = new ArrayList<String>();
+                    args.add(getProposal().getProject().getExperiment().getTitle());
+                    saveMessage(getText("project.saved", args));
+                } else {
+                    getDelegate().getProjectManagementService().submitProposal((getProposal()));
+                    List<String> args = new ArrayList<String>();
+                    args.add(getProposal().getProject().getExperiment().getTitle());
+                    saveMessage(getText("project.submitted", args));
+                    getSession().removeAttribute(proposalKey);
+                    result = WORKSPACE_RESULT;
+                }
+            } catch (ProposalWorkflowException e) {
+                List<String> args = new ArrayList<String>();
+                args.add(e.getMessage());
+                saveMessage(getText("project.workflowProblem", args));
+            }
+        } else {
+            saveMessage(getText("project.updated"));            
         }
-
-        saveMessage(getText("project.updated"));
-        return SUCCESS;
+        return result;
     }
 
-
     /**
-     * create new project.
+     * create new proposal
+     * 
      * @return path String
      */
     @SkipValidation
@@ -355,21 +412,22 @@ public class ProjectAction extends BaseAction implements Preparable {
     }
 
     /**
-     * save a project.
+     * edit existing proposal
+     * 
      * @return path String
      */
-    public String save() {
-        setMenu("ProjectSaveLinks");
-        getDelegate().getProjectManagementService().submitProposal(getProposal());
-        List<String> args = new ArrayList<String>();
-        args.add(getProposal().getProject().getExperiment().getTitle());
-        saveMessage(getText("project.created", args));
-
-        return WORKSPACE_RESULT;
+    @SkipValidation
+    public String edit() {
+        setMenu("ProjectEditLinks");
+        proposal = getDelegate().getProjectManagementService().getProposal(proposalId);
+        proposalKey = createSessionKey();
+        getSession().setAttribute(proposalKey, proposal);
+        return INPUT;
     }
 
     /**
-     * edit files associated with a project.
+     * show details for a proposal
+     * 
      * @return path String
      */
     @SkipValidation
@@ -380,7 +438,19 @@ public class ProjectAction extends BaseAction implements Preparable {
     }
 
     /**
+     * cancel the editing of a proposal
+     * 
+     * @return path String
+     */
+    @SkipValidation
+    public String cancel() {
+        getSession().removeAttribute(proposalKey);
+        return WORKSPACE_RESULT;
+    }
+
+    /**
      * Toggles the browsability status.
+     * 
      * @return success
      */
     @SkipValidation
@@ -405,6 +475,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * gets the delegate from factory.
+     * 
      * @return Delegate ProjectDelegate
      */
     public ProjectDelegate getDelegate() {
@@ -481,23 +552,8 @@ public class ProjectAction extends BaseAction implements Preparable {
         return (ArrayDesignService) ServiceLocator.INSTANCE.lookup(ArrayDesignService.JNDI_NAME);
     }
 
-    /**
-     * @return the CSM Authorization Manager
-     */
-    private AuthorizationManager getAuthorizationManager() {
-        AuthorizationManager am = null;
-        try {
-            am = SecurityServiceProvider.getAuthorizationManager("caarray");
-        } catch (CSConfigurationException e) {
-            LOG.error("Unable to initialize CSM: " + e.getMessage(), e);
-        } catch (CSException e) {
-            LOG.error("Unable to initialize CSM: " + e.getMessage(), e);
-        }
-        return am;
-    }
-
     private String createSessionKey() {
-        return "experiment" + new Random().nextInt();
+        return "experiment" + System.currentTimeMillis();
     }
 
     /**
@@ -597,36 +653,42 @@ public class ProjectAction extends BaseAction implements Preparable {
     public void setPaymentMechanisms(List<PaymentMechanism> paymentMechanisms) {
         this.paymentMechanisms = paymentMechanisms;
     }
+
     /**
      * @return the experimentDesignTypes
      */
     public List<Term> getExperimentDesignTypes() {
         return this.experimentDesignTypes;
     }
+
     /**
      * @param experimentDesignTypes the experimentDesignTypes to set
      */
     public void setExperimentDesignTypes(List<Term> experimentDesignTypes) {
         this.experimentDesignTypes = experimentDesignTypes;
     }
+
     /**
      * @return the qualityControlTypes
      */
     public List<Term> getQualityControlTypes() {
         return this.qualityControlTypes;
     }
+
     /**
      * @param qualityControlTypes the qualityControlTypes to set
      */
     public void setQualityControlTypes(List<Term> qualityControlTypes) {
         this.qualityControlTypes = qualityControlTypes;
     }
+
     /**
      * @return the replicateTypes
      */
     public List<Term> getReplicateTypes() {
         return this.replicateTypes;
     }
+
     /**
      * @param replicateTypes the replicateTypes to set
      */
@@ -842,6 +904,20 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     public void setSelectedExperimentalDesignType(Long selectedExperimentalDesignType) {
         this.selectedExperimentalDesignType = selectedExperimentalDesignType;
+    }
+
+    /**
+     * @return the proposalId
+     */
+    public Long getProposalId() {
+        return proposalId;
+    }
+
+    /**
+     * @param proposalId the proposalId to set
+     */
+    public void setProposalId(Long proposalId) {
+        this.proposalId = proposalId;
     }
 
     /**

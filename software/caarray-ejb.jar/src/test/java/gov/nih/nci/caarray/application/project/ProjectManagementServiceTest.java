@@ -160,13 +160,17 @@ public class ProjectManagementServiceTest {
     }
 
     /**
-     * Test method for {@link gov.nih.nci.caarray.application.project.ProjectManagementService#submitProposal(gov.nih.nci.caarray.domain.project.Proposal)}.
+     * Test method for {@link gov.nih.nci.caarray.application.project.ProjectManagementService#submitProposal(Proposal)}.
      */
     @Test
     public void testSubmitProposal() {
         Proposal proposal = Proposal.createNew();
-        projectManagementService.submitProposal(proposal);
-        assertEquals(proposal, daoFactoryStub.projectDao.lastSaved);
+        try {
+            projectManagementService.submitProposal(proposal);
+            assertEquals(proposal, daoFactoryStub.projectDao.lastSaved);
+        } catch (ProposalWorkflowException e) {
+            fail("Unexpected exception: " + e);
+        }
     }
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {

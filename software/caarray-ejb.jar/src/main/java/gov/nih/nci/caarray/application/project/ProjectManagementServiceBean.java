@@ -84,10 +84,13 @@ package gov.nih.nci.caarray.application.project;
 
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.ContactDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
+import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.Proposal;
+import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.io.File;
@@ -117,6 +120,14 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     @Resource private SessionContext sessionContext;
     @EJB private FileAccessService fileAccessService;
 
+    private ProjectDao getProjectDao() {
+        return daoFactory.getProjectDao();
+    }
+
+    private ContactDao getContactDao() {
+        return daoFactory.getContactDao();
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -128,8 +139,26 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         return project;
     }
 
-    private ProjectDao getProjectDao() {
-        return daoFactory.getProjectDao();
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public Proposal getProposal(long id) {
+        LogUtil.logSubsystemEntry(LOG, id);
+        Proposal proposal = getProjectDao().getProposal(id);
+        LogUtil.logSubsystemExit(LOG);
+        return proposal;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public Organization getOrganization(long id) {
+        LogUtil.logSubsystemEntry(LOG, id);
+        Organization organization = (Organization) getContactDao().getContact(id);
+        LogUtil.logSubsystemExit(LOG);
+        return organization;
     }
 
     /**
@@ -169,8 +198,28 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void submitProposal(Proposal proposal) {
+    public void submitProposal(Proposal proposal) throws ProposalWorkflowException {
         LogUtil.logSubsystemEntry(LOG, proposal);
+        if (!proposal.isSubmissionAllowed()) {
+            LogUtil.logSubsystemExit(LOG);
+            throw new ProposalWorkflowException("Cannot submit proposal in current state");
+        }
+        proposal.setStatus(ProposalStatus.SUBMITTED_FOR_REVIEW);
+        getProjectDao().save(proposal);
+        LogUtil.logSubsystemExit(LOG);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void saveDraftProposal(Proposal proposal) throws ProposalWorkflowException {
+        LogUtil.logSubsystemEntry(LOG, proposal);
+        if (!proposal.isSaveDraftAllowed()) {
+            LogUtil.logSubsystemExit(LOG);
+            throw new ProposalWorkflowException("Cannot save proposal draft in current state");
+        }
+        proposal.setStatus(ProposalStatus.DRAFT);
         getProjectDao().save(proposal);
         LogUtil.logSubsystemExit(LOG);
     }

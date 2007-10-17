@@ -128,6 +128,11 @@ public class SecurityInterceptor extends EmptyInterceptor {
     private static final Log LOG = LogFactory.getLog(SecurityInterceptor.class);
     private static final long serialVersionUID = -2071964672876972370L;
 
+    /**
+     * Key for looking up the authorization manager instance from CSM
+     */
+    public static final String AUTHORIZATION_MANAGER_KEY = "caarray";
+    
     /** The synthetic user for anonymous access permissions. */
     public static final String ANONYMOUS_USER = "__anonymous__";
     /** The synthetic group for anonymous access permissions. */
@@ -148,7 +153,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
     static {
         AuthorizationManager am = null;
         try {
-            am = SecurityServiceProvider.getAuthorizationManager("caarray");
+            am = SecurityServiceProvider.getAuthorizationManager(AUTHORIZATION_MANAGER_KEY);
         } catch (CSConfigurationException e) {
             LOG.error("Unable to initialize CSM: " + e.getMessage(), e);
         } catch (CSException e) {

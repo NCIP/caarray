@@ -10,6 +10,7 @@
         <s:textfield required="true" name="proposal.project.experiment.title" label="Title" value="%{user.title}" size="80" tabindex="3"/>
         <s:textfield required="true" name="proposal.project.experiment.title" label="Email" value="%{user.emailId}" size="80" tabindex="4"/>
         <s:hidden name="proposalKey" />
+        <s:hidden name="ajax" value="%{'true'}"/>
     </s:form>
     </div>
 </caarray:tabPane>

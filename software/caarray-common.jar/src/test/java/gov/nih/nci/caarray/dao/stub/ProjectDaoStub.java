@@ -87,16 +87,23 @@ import java.util.List;
 
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.project.Proposal;
 
 /**
  *
  */
 public class ProjectDaoStub extends AbstractDaoStub implements ProjectDao {
-
     /**
      * {@inheritDoc}
      */
     public Project getProject(long id) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Proposal getProposal(long id) {
         return null;
     }
 

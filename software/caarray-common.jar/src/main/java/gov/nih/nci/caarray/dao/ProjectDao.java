@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.dao;
 import java.util.List;
 
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.project.Proposal;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.project</code> package.
@@ -107,4 +108,12 @@ public interface ProjectDao extends CaArrayDao {
      * @return all projects for the given user.
      */
     List<Project> getProjectsForUser(String username);
+
+    /**
+     * Returns the <code>Proposal</code> with the id given.
+     *
+     * @param id get <code>Proposal</code> matching this id
+     * @return the <code>Proposal</code>.
+     */
+    Proposal getProposal(long id);
 }

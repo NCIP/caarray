@@ -102,13 +102,6 @@ public class Term extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
     
     /**
-     * Default contructor
-     */
-    public Term() {
-        // intentionally left blank 
-    }
-
-    /**
      * The description String.
      */
     private String description;

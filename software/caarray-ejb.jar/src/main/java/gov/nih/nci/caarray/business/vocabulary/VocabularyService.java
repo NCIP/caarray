@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.business.vocabulary;
 
+import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -109,6 +110,13 @@ public interface VocabularyService {
      * @throws VocabularyServiceException exception
      */
     List<Term> getTerms(String categoryName) throws VocabularyServiceException;
+
+    /**
+     * Returns all Organisms
+     *
+     * @return the List<Organism> in the system
+     */
+    List<Organism> getOrganisms();
 
     /**
      * Returns the requested term source, if it exists.
@@ -163,6 +171,14 @@ public interface VocabularyService {
     Term getTerm(Long id);
 
     /**
+     * Returns the organism with the given id
+     *
+     * @param id the id of the desired organism
+     * @return the organism with given id or null if none found.
+     */
+    Organism getOrganism(Long id);
+
+    /**
      * Adds a new term to the vocabulary service.
      *
      * @param source the source to add the term to
@@ -171,5 +187,4 @@ public interface VocabularyService {
      * @return the new term
      */
     Term createTerm(TermSource source, Category category, String value);
-
 }

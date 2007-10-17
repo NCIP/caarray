@@ -143,10 +143,30 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
         return new SearchDaoImpl();
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.CaArrayDaoFactory#getFileDao()
+    /**
+     * Returns a <code>FileDao</code>.
+     *
+     * @return a <code>FileDao</code>.
      */
     public FileDao getFileDao() {
-        return new FileDaoImpl();    }
+        return new FileDaoImpl();    
+    }
+    
+    /**
+     * Returns a <code>ContactDao</code>.
+     *
+     * @return a <code>ContactDao</code>.
+     */
+    public ContactDao getContactDao() { 
+        return new ContactDaoImpl();
+    }
+    /**
+     * Returns a <code>OrganismDao</code>.
+     *
+     * @return a <code>OrganismDao</code>.
+     */
+    public OrganismDao getOrganismDao() { 
+        return new OrganismDaoImpl();
+    }
 }
 

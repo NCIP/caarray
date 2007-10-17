@@ -162,19 +162,6 @@ public class ProjectActionTest {
         assertEquals(ProjectAction.LIST_RESULT, result);
     }
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testSave() throws Exception {
-        MockHttpSession session = new MockHttpSession ();
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setSession(session);
-        ServletActionContext.setRequest(request);
-        Proposal proposal = Proposal.createNew();
-        action.setProposal(proposal);
-        String result = action.save();
-        assertEquals(ProjectAction.WORKSPACE_RESULT, result);
-    }
-
     @Test
     public void testFileUtility() throws Exception {
         MockHttpSession session = new MockHttpSession ();
