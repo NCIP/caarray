@@ -159,7 +159,7 @@ public class Experiment extends AbstractCaArrayEntity {
     private List<Term> cellTypes = new ArrayList<Term>();
     private List<Term> conditions = new ArrayList<Term>();
     private boolean pooledSamples;
-    private Set<Factor> factors = new HashSet<Factor>();
+    private List<Factor> factors = new ArrayList<Factor>();
     private Set<ExperimentContact> experimentContacts = new HashSet<ExperimentContact>();
     private Term experimentDesignType;
     private String experimentDesignDescription;
@@ -637,7 +637,8 @@ public class Experiment extends AbstractCaArrayEntity {
             inverseJoinColumns = { @JoinColumn(name = "SAMPLE_ID") }
     )
     @ForeignKey(name = "EXPERIMENTSAMPLE_INVEST_FK", inverseName = "EXPERIMENTSAMPLE_SAMPLE_FK")
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+          org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @IndexColumn(name = "indx")
     public List<Sample> getSamples() {
         return this.samples;
@@ -823,8 +824,9 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the factors
      */
     @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.EAGER)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    public Set<Factor> getFactors() {
+    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+          org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public List<Factor> getFactors() {
         return this.factors;
     }
 
@@ -834,7 +836,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param factorsVal the factors
      */
     @SuppressWarnings(UNUSED)
-    private void setFactors(final Set<Factor> factorsVal) {  // NOPMD
+    private void setFactors(final List<Factor> factorsVal) {  // NOPMD
         this.factors = factorsVal;
     }
 

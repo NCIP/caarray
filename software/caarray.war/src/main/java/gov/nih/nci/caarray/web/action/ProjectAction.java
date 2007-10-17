@@ -10,6 +10,7 @@ import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
+import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.PaymentMechanism;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.Proposal;
@@ -92,6 +93,9 @@ public class ProjectAction extends BaseAction implements Preparable {
     private Sample currentSample;
     private Integer currentSampleIndex;
 
+    private Factor currentFactor;
+    private Integer currentFactorIndex;
+
     /**
      * {@inheritDoc}
      */
@@ -106,6 +110,10 @@ public class ProjectAction extends BaseAction implements Preparable {
 
         if (getCurrentSampleIndex() != null) {
             setCurrentSample(this.proposal.getProject().getExperiment().getSamples().get(getCurrentSampleIndex()));
+        }
+
+        if (getCurrentFactorIndex() != null) {
+            setCurrentFactor(this.proposal.getProject().getExperiment().getFactors().get(getCurrentFactorIndex()));
         }
 
         Organism o1 = new Organism();
@@ -526,6 +534,53 @@ public class ProjectAction extends BaseAction implements Preparable {
             setCurrentSample(sample);
             setCurrentSampleIndex(null);
             saveMessage(getText("experiment.samples.copied"));
+        }
+        return SUCCESS;
+    }
+
+    /**
+     * Saves the experimentalFactor editing tab.
+     * @return the string indicating the result to use.
+     */
+    public String factorEditSaveTab() {
+        if (getCurrentFactor() != null && getCurrentFactorIndex() == null) {
+            getProposal().getProject().getExperiment().getFactors().add(getCurrentFactor());
+            getCurrentFactor().setExperiment(getProposal().getProject().getExperiment());
+            saveMessage(getText("experiment.factors.created"));
+        } else {
+            saveMessage(getText("experiment.factors.updated"));
+        }
+        saveTab();
+        return "factorsTab";
+    }
+
+    /**
+     * remove the factor with the given id from the set of factors.
+     * @return the string indicating which result to forward to.
+     */
+    @SkipValidation
+    public String factorRemoval() {
+        if (getCurrentFactorIndex() != null) {
+            getProposal().getProject().getExperiment().getFactors().remove(getCurrentFactorIndex().intValue());
+            saveMessage(getText("experiment.factors.deleted"));
+        }
+        return SUCCESS;
+    }
+
+    /**
+     * Copy the factor to a new object and forward to the edit screen.
+     * @return the string indicating the result to forward to.
+     */
+    @SkipValidation
+    public String factorCopy() {
+        if (getCurrentFactor() != null) {
+            Factor factor = new Factor();
+            factor.setName(getText("experiment.factors.copy.of") + " " + getCurrentFactor().getName());
+            factor.setExperiment(getCurrentFactor().getExperiment());
+            factor.setType(getCurrentFactor().getType());
+            setCurrentFactor(factor);
+            setCurrentFactorIndex(null);
+            saveMessage(getText("experiment.factors.copied"));
         }
         return SUCCESS;
     }
@@ -1017,5 +1072,33 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     public void setCurrentSampleIndex(Integer currentSampleIndex) {
         this.currentSampleIndex = currentSampleIndex;
+    }
+
+    /**
+     * @return the currentFactor
+     */
+    public Factor getCurrentFactor() {
+        return this.currentFactor;
+    }
+
+    /**
+     * @param currentFactor the currentFactor to set
+     */
+    public void setCurrentFactor(Factor currentFactor) {
+        this.currentFactor = currentFactor;
+    }
+
+    /**
+     * @return the currentFactorIndex
+     */
+    public Integer getCurrentFactorIndex() {
+        return this.currentFactorIndex;
+    }
+
+    /**
+     * @param currentFactorIndex the currentFactorIndex to set
+     */
+    public void setCurrentFactorIndex(Integer currentFactorIndex) {
+        this.currentFactorIndex = currentFactorIndex;
     }
 }

@@ -4,7 +4,7 @@
     <c:param name="proposalKey" value="${proposalKey}" />
     <c:param name="ajax" value="true" />
 </c:url>
-<c:url value="ajax_Project_loadGenericTab_experimentalFactors.action" var="experimentalFactorsUrl">
+<c:url value="ajax_Project_loadGenericTab_factors.action" var="experimentalFactorsUrl">
     <c:param name="proposalKey" value="${proposalKey}" />
     <c:param name="ajax" value="true" />
 </c:url>
