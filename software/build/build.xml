@@ -1186,7 +1186,12 @@
         <antcall target="remote-jboss:start" />
     </target>
 
-    <target name="remote-deploy">
+    <target name="display-properties">
+  	  <echo> Diagnostics...</echo>
+	  <echoproperties/>
+    </target>
+
+    <target name="remote-deploy" depends="display-properties">
         <antcall target="validate-properties" />
     <antcall target="continuous-integration" />
         <antcall target="remote-jboss:deploy" />
