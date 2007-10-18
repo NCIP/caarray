@@ -1119,6 +1119,8 @@
 
     <!-- BEGIN STELLIGENT ADD -->
     <property name="keyfile.file" value="caarray2-key.properties" />
+	<property name="jboss.start.sleep" value="10" />
+	<property name="jboss.stop.sleep" value="30" />
 
     <target name="validate-properties">
         <echo>lib.dir is ${lib.dir} </echo>
@@ -1153,13 +1155,13 @@
     <target name="remote-jboss:stop">
         <echo message="Stopping jboss server at ${ssh.server.hostname}..." />
         <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" keyfile="${ssh.key.file}" passphrase="" username="${ssh.server.username}" verbose="true" command="${jboss.home}/bin/stop_jboss" />
-        <sleep seconds="180" />
+        <sleep seconds="${jboss.stop.sleep}" />
     </target>
 
     <target name="remote-jboss:start">
         <echo message="Starting jboss server at ${ssh.server.hostname}..." />
         <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" verbose="true" command="${jboss.home}/bin/start_jboss" />
-    <sleep seconds="180" />
+		<sleep seconds="${jboss.start.sleep}" />
     </target>
 
     <target name="remote-jboss:configure-jboss-ds">
