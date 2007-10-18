@@ -261,6 +261,24 @@ public class ProjectAction extends BaseAction implements Preparable {
     }
 
     /**
+     * Loads the manage data tab.
+     *
+     * @return name of result to forward to
+     */
+    public String manageDataLoadTab() {
+        return loadTab();
+    }
+
+    /**
+     * Loads the download data tab.
+     *
+     * @return name of result to forward to
+     */
+    public String downloadDataLoadTab() {
+        return loadTab();
+    }
+
+    /**
      * load a given tab in the submit experiment workflow
      *
      * @return name of result to forward to
