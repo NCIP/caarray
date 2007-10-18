@@ -30,6 +30,11 @@
         </sequential>
     </macrodef>
 
+    <target name="display-properties">
+  	  <echo> Diagnostics...</echo>
+	  <echoproperties/>
+    </target>
+
     <macrodef name="run-sql-script" description="By default this will use the database.url, to use drop database &amp; user use the database.system.url property">
         <attribute name="sql.file" />
         <attribute name="sql.delimiter" default=";" />
@@ -37,7 +42,6 @@
         <attribute name="database.url" default="${database.url}" />
         <attribute name="database.user" default="${database.user}" />
         <attribute name="database.password" default="${database.password}" />
-		<echo message="database.url=${database.url} database.user=${database.user} database.password=${database.password}" />
         <sequential>
             <sql driver="${database.driver}"
                  url="@{database.url}"
