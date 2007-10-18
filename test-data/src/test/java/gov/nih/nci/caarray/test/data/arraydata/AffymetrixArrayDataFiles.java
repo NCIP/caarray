@@ -110,4 +110,7 @@ public class AffymetrixArrayDataFiles {
     public static final File TEST_HG_U133_PLUS_2_CEL =
         new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/Test_HG-U133_Plus_2.CEL").getFile());
 
+    public static final File TEST3_CALVIN_CHP =
+        new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/Test3-1-121502.calvin.CHP").getFile());
+
 }
