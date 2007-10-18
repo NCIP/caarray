@@ -82,42 +82,40 @@
  */
 package gov.nih.nci.caarray.web.listener;
 
-import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
-import gov.nih.nci.caarray.web.util.Constants;
+import gov.nih.nci.caarray.util.HibernateUtil;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 /**
- * Performs initialization operations required at startup of the caArray application.
+ * Base class for ServletContextListeners that perform operations which interact with Hibernate
+ * and thus require a current Hibernate Session. Takes care of setting up such a Session and cleaning
+ * up after the listener is done. Subclasses should implement doContextInitialized and do their work there.
+ * 
+ * @author Dan Kokotov
  */
-public class StartupListener extends HibernateSessionScopeListener {
+public abstract class HibernateSessionScopeListener implements ServletContextListener {
+
     /**
-     * Creates connection to DataService as well as sets configuration in
-     * application scope.
-     * @param event ServletContextEvent
+     * {@inheritDoc}
      */
-    @Override
-    @SuppressWarnings("unchecked")
-    public void doContextInitialized(ServletContextEvent event) {
-        ArrayDataService arrayDataService =
-            (ArrayDataService) ServiceLocator.INSTANCE.lookup(ArrayDataService.JNDI_NAME);
-        arrayDataService.initialize();
-
-        ServletContext context = event.getServletContext();
-        Map<String, Object> config = (Map<String, Object>) context.getAttribute(Constants.CONFIG);
-
-        if (config == null) {
-            config = new HashMap<String, Object>();
-        }
-
-        if (context.getInitParameter(Constants.CSS_THEME) != null) {
-            config.put(Constants.CSS_THEME, context.getInitParameter(Constants.CSS_THEME));
-        }
-        context.setAttribute(Constants.CONFIG, config);
+    public void contextDestroyed(ServletContextEvent arg0) {
+        // do nothing - subclasses can override if needed
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public final void contextInitialized(ServletContextEvent event) {
+        HibernateUtil.openAndBindSession();
+        doContextInitialized(event);
+        HibernateUtil.unbindAndCleanupSession();
+    }
+    
+    /**
+     * Subclasses should implement this method and do their work there. 
+     * @param event the servlet context event
+     * @see ServletContextListener#contextInitialized(ServletContextEvent)
+     */
+    public abstract void doContextInitialized(ServletContextEvent event);
 }

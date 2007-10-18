@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <web-app id="WebApp_9" version="2.4"
  xmlns="http://java.sun.com/xml/ns/j2ee"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
@@ -40,6 +41,10 @@
     </context-param>
  
     <filter>
+        <filter-name>openSessionFilter</filter-name>
+        <filter-class>gov.nih.nci.caarray.web.filter.OpenSessionInViewFilter</filter-class>
+    </filter>
+    <filter>
         <filter-name>userFilter</filter-name>
         <filter-class>gov.nih.nci.caarray.web.filter.UserFilter</filter-class>
     </filter>
@@ -56,6 +61,10 @@
         <filter-class>org.apache.struts2.dispatcher.FilterDispatcher</filter-class>
     </filter>
  
+    <filter-mapping>
+        <filter-name>openSessionFilter</filter-name>
+        <url-pattern>*.action</url-pattern>
+    </filter-mapping>
     <filter-mapping>
         <filter-name>userFilter</filter-name>
         <url-pattern>/*</url-pattern>

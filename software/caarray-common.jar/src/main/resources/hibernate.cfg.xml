@@ -7,7 +7,7 @@
 
         <!-- @DATASOURCE_CONFIG_START@
         <property name="hibernate.connection.datasource">java:jdbc/CaArrayDataSource</property>
-        <property name="current_session_context_class">jta</property>
+        <property name="hibernate.current_session_context_class">managed</property>
         <property name="hibernate.transaction.factory_class">org.hibernate.transaction.CMTTransactionFactory</property>
         <property name="hibernate.transaction.manager_lookup_class">org.hibernate.transaction.JBossTransactionManagerLookup</property>
         @DATASOURCE_CONFIG_END@ -->

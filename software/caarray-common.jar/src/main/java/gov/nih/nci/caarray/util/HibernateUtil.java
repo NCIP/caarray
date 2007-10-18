@@ -86,12 +86,16 @@ import gov.nih.nci.security.authorization.instancelevel.InstanceLevelSecurityHel
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.ConnectionReleaseMode;
+import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.context.ManagedSessionContext;
+import org.hibernate.engine.SessionFactoryImplementor;
 
 /**
  * Utility class to create and retrieve Hibernate sessions.
@@ -183,5 +187,36 @@ public final class HibernateUtil {
      */
     public static void enableFilters(boolean enable) {
         filtersEnabled = enable;
+    }
+
+    /**
+     * Open a hibernate session and bind it as the current session via {@link ManagedSessionContext#bind(org.hibernate.classic.Session)}.
+     * The hibernate property "hibernate.current_session_context_class" must be set to "managed" for this to have effect
+     * This method should be called from within an Interceptor or Filter type class that is setting up the scope of
+     * the Session. This method should then call {@link HibernateUtil#unbindAndCleanupSession()} when the scope of the 
+     * Session is expired.
+     * 
+     * @see ManagedSessionContext#bind(org.hibernate.classic.Session)
+     */
+    public static void openAndBindSession() {
+        SessionFactoryImplementor sessionFactory = (SessionFactoryImplementor) SESSION_FACTORY;
+        org.hibernate.classic.Session currentSession = sessionFactory.openSession(null, true, false, ConnectionReleaseMode.AFTER_STATEMENT);
+        currentSession.setFlushMode(FlushMode.COMMIT);
+        ManagedSessionContext.bind(currentSession);
+    }
+
+    /**
+     * Close the current session and unbind it via {@link ManagedSessionContext#unbind(SessionFactory)}. 
+     * The hibernate property "hibernate.current_session_context_class" must be set to "managed" for this to have effect.
+     * This method should be called from within an Interceptor or Filter type class that is setting up the scope of
+     * the Session, when this scope is about to expire. 
+     */
+    public static void unbindAndCleanupSession() {
+        org.hibernate.classic.Session currentSession = ManagedSessionContext.unbind(HibernateUtil.getSessionFactory());
+        currentSession.close();
+    }
+    
+    public static SessionFactory getSessionFactory() {
+        return SESSION_FACTORY;
     }
 }
