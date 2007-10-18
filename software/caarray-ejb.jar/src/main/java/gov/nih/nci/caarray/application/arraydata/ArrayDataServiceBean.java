@@ -166,7 +166,8 @@ public class ArrayDataServiceBean implements ArrayDataService {
     public void importData(AbstractArrayData arrayData) throws InvalidDataFileException {
         LogUtil.logSubsystemEntry(LOG, arrayData);
         checkArguments(arrayData);
-        AbstractDataSetImporter abstractDataSetImporter = AbstractDataSetImporter.create(arrayData, getDaoFactory());
+        AbstractDataSetImporter abstractDataSetImporter =
+            AbstractDataSetImporter.create(arrayData, getDaoFactory(), getFileAccessService());
         abstractDataSetImporter.importData();
         fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);

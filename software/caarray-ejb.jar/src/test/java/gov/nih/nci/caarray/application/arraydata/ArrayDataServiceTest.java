@@ -180,6 +180,29 @@ public class ArrayDataServiceTest {
 
     @Test
     public void testValidate() {
+        testCelValidation();
+        testChpValidation();
+    }
+
+    private void testChpValidation() {
+        testValidChp(AffymetrixArrayDataFiles.TEST3_CALVIN_CHP);
+        testValidChp(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP);
+        testValidChp(AffymetrixArrayDataFiles.HG_FOCUS_CHP);
+        testValidChp(AffymetrixArrayDataFiles.TEST3_CHP);
+        CaArrayFile badChpFile = getChpCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF);
+        assertEquals(FileStatus.UPLOADED, badChpFile.getFileStatus());
+        arrayDataService.validate(badChpFile);
+        assertEquals(FileStatus.VALIDATION_ERRORS, badChpFile.getFileStatus());
+    }
+
+    private void testValidChp(File file) {
+        CaArrayFile chpFile = getChpCaArrayFile(file);
+        assertEquals(FileStatus.UPLOADED, chpFile.getFileStatus());
+        arrayDataService.validate(chpFile);
+        assertEquals(FileStatus.VALIDATED, chpFile.getFileStatus());
+    }
+
+    private void testCelValidation() {
         CaArrayFile celFile = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL);
         assertEquals(FileStatus.UPLOADED, celFile.getFileStatus());
         arrayDataService.validate(celFile);
@@ -269,6 +292,12 @@ public class ArrayDataServiceTest {
         return celDataFile;
     }
 
+    private CaArrayFile getChpCaArrayFile(File chp) {
+        CaArrayFile celDataFile = fileAccessServiceStub.add(chp);
+        celDataFile.setType(FileType.AFFYMETRIX_CHP);
+        return celDataFile;
+    }
+
     private static final class LocalDaoFactoryStub extends DaoFactoryStub {
 
         private Map<ArrayDataTypeDescriptor, ArrayDataType> dataTypeMap =
@@ -317,19 +346,19 @@ public class ArrayDataServiceTest {
     }
 
     private static class LocalFileAccessServiceStub extends FileAccessServiceStub {
-        @Override
-        public File getFile(CaArrayFile caArrayFile) {
-            if (caArrayFile.getName().equals(AffymetrixArrayDesignFiles.TEST3_CDF.getName())) {
-                return AffymetrixArrayDesignFiles.TEST3_CDF;
-            } else if (caArrayFile.getName().equals(AffymetrixArrayDataFiles.TEST_HG_U133_PLUS_2_CEL.getName())) {
-                return AffymetrixArrayDataFiles.TEST_HG_U133_PLUS_2_CEL;
-            } else if (caArrayFile.getName().equals(AffymetrixArrayDataFiles.TEST3_CEL.getName())) {
-                return AffymetrixArrayDataFiles.TEST3_CEL;
-            } else if (caArrayFile.getName().equals(AffymetrixArrayDataFiles.TEST3_CALVIN_CEL.getName())) {
-                return AffymetrixArrayDataFiles.TEST3_CALVIN_CEL;
-            } else {
-                throw new IllegalArgumentException("Don't know location of " + caArrayFile.getName());
-}
-        }
+//        @Override
+//        public File getFile(CaArrayFile caArrayFile) {
+//            if (caArrayFile.getName().equals(AffymetrixArrayDesignFiles.TEST3_CDF.getName())) {
+//                return AffymetrixArrayDesignFiles.TEST3_CDF;
+//            } else if (caArrayFile.getName().equals(AffymetrixArrayDataFiles.TEST_HG_U133_PLUS_2_CEL.getName())) {
+//                return AffymetrixArrayDataFiles.TEST_HG_U133_PLUS_2_CEL;
+//            } else if (caArrayFile.getName().equals(AffymetrixArrayDataFiles.TEST3_CEL.getName())) {
+//                return AffymetrixArrayDataFiles.TEST3_CEL;
+//            } else if (caArrayFile.getName().equals(AffymetrixArrayDataFiles.TEST3_CALVIN_CEL.getName())) {
+//                return AffymetrixArrayDataFiles.TEST3_CALVIN_CEL;
+//            } else {
+//                throw new IllegalArgumentException("Don't know location of " + caArrayFile.getName());
+//            }
+//        }
     }
 }

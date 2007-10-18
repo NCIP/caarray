@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
@@ -128,12 +127,16 @@ final class DataSetLoader {
         AbstractDataFileHandler handler = getDataFileHandler();
         if (isLoadRequired(getDataSet(), types)) {
             LOG.debug("Parsing required for file " + getArrayData().getDataFile().getName());
-            File file = getFileAccessService().getFile(getArrayData().getDataFile());
+            File file = getFile();
             handler.loadData(getDataSet(), types, file);
             getDaoFactory().getArrayDao().save(getDataSet());
         } else {
             LOG.debug("File " + getArrayData().getDataFile().getName() + " has already been parsed");
         }
+    }
+
+    private File getFile() {
+        return getFileAccessService().getFile(getArrayData().getDataFile());
     }
 
     private boolean isLoadRequired(DataSet dataSet, List<QuantitationType> types) {
@@ -166,7 +169,7 @@ final class DataSetLoader {
         return arrayData;
     }
 
-  private FileAccessService getFileAccessService() {
+    private FileAccessService getFileAccessService() {
         return fileAccessService;
     }
 
@@ -179,9 +182,8 @@ final class DataSetLoader {
     }
 
     private List<QuantitationType> getQuantitationTypes() {
-        List<QuantitationType> quantitationTypes =
-            new ArrayList<QuantitationType>(AffymetrixCelQuantitationType.values().length);
-        for (QuantitationTypeDescriptor descriptor : getDataFileHandler().getQuantitationTypeDescriptors()) {
+        List<QuantitationType> quantitationTypes = new ArrayList<QuantitationType>();
+        for (QuantitationTypeDescriptor descriptor : getDataFileHandler().getQuantitationTypeDescriptors(getFile())) {
             quantitationTypes.add(getQuantitationType(descriptor));
         }
         return quantitationTypes;

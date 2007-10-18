@@ -119,7 +119,7 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
     private final FusionCELData celData = new FusionCELData();
 
     @Override
-    QuantitationTypeDescriptor[] getQuantitationTypeDescriptors() {
+    QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(File celFile) {
         return AffymetrixCelQuantitationType.values();
     }
 
