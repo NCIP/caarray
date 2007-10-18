@@ -256,18 +256,20 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public File prepareForDownload(Collection<CaArrayFile> files) throws IOException {
-        LogUtil.logSubsystemEntry(LOG, files);
+    public File prepareForDownload(Collection<Long> ids) throws IOException {
+        LogUtil.logSubsystemEntry(LOG, ids);
 
-        if (files == null || files.isEmpty()) {
-            throw new IllegalArgumentException("Files cannot be null or empty!");
+        if (ids == null || ids.isEmpty()) {
+            throw new IllegalArgumentException("Ids cannot be null or empty!");
         }
         File result = File.createTempFile("data", ".zip");
         result.deleteOnExit();
 
         ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(result));
-        for (CaArrayFile caf : files) {
-            File f = getFileAccessService().getFile(caf);
+        FileAccessService svc = getFileAccessService();
+        for (Long l : ids) {
+            CaArrayFile caf = svc.getCaArrayFile(l);
+            File f = svc.getFile(caf);
             InputStream is = new BufferedInputStream(new FileInputStream(f));
 
             ZipEntry ze = new ZipEntry(f.getName());
@@ -278,7 +280,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         }
         zos.close();
 
-        getFileAccessService().closeFiles();
+        svc.closeFiles();
         LogUtil.logSubsystemExit(LOG);
         return result;
     }

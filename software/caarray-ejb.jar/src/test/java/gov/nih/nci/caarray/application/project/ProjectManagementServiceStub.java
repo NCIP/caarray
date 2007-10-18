@@ -109,11 +109,11 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     public Project getProject(long id) {
         return null;
     }
-    
+
     public Proposal getProposal(long id) {
         return null;
     }
-    
+
     public Organization getOrganization(long id) {
         return null;
     }
@@ -121,7 +121,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     public void submitProposal(Proposal proposal) {
         // no-op
     }
-    
+
     public void saveDraftProposal(Proposal proposal) throws ProposalWorkflowException {
         // no-op
     }
@@ -138,7 +138,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         return null;
     }
 
-    public File prepareForDownload(Collection<CaArrayFile> files) {
+    public File prepareForDownload(Collection<Long> ids) {
         return null;
     }
 }

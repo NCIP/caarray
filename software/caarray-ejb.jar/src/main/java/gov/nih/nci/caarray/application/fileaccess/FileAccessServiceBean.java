@@ -197,6 +197,17 @@ public class FileAccessServiceBean implements FileAccessService {
         return file;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public CaArrayFile getCaArrayFile(Long id) {
+        LogUtil.logSubsystemEntry(LOG, id);
+        CaArrayFile file = daoFactory.getSearchDao().retrieve(CaArrayFile.class, id);
+        LogUtil.logSubsystemExit(LOG);
+
+        return file;
+    }
+
     private File openFile(CaArrayFile caArrayFile) {
         File file = new File(getSessionWorkingDirectory(), caArrayFile.getName());
         try {
@@ -274,5 +285,4 @@ public class FileAccessServiceBean implements FileAccessService {
             file.deleteOnExit();
         }
     }
-
 }

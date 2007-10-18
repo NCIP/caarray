@@ -53,7 +53,9 @@
                     <s:iterator value="project.files" status="status">
                     <tr>
                         <td><s:checkbox name="file:%{#status.index}:selected" /></td>
-                        <td><s:property value="name"/></td>
+                        <td>
+                            <a href="File_download.action?downloadIds=<s:property value="id"/>"><s:property value="name"/></a>
+                        </td>
                         <td><s:select name="file:%{#status.index}:fileType"
                                       listKey="label"
                                       listValue="value"

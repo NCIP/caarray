@@ -189,9 +189,9 @@ public interface ProjectManagementService {
     /**
      * Prepares files for download.
      *
-     * @param files the files to download
-     * @return the single archive with all files
+     * @param ids the ids of the CaArrayFiles to download
+     * @return the single zip archive with all files
      * @throws IOException on I/O error
      */
-    File prepareForDownload(Collection<CaArrayFile> files) throws IOException;
+    File prepareForDownload(Collection<Long> ids) throws IOException;
 }

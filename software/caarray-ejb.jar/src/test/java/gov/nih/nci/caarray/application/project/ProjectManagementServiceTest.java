@@ -190,7 +190,7 @@ public class ProjectManagementServiceTest {
         }
 
         try {
-            projectManagementService.prepareForDownload(new ArrayList<CaArrayFile>());
+            projectManagementService.prepareForDownload(new ArrayList<Long>());
             fail();
         } catch (IllegalArgumentException iae) {
             // expected
@@ -199,7 +199,7 @@ public class ProjectManagementServiceTest {
         Project project = projectManagementService.getProject(123L);
         CaArrayFile file = projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
 
-        File f = projectManagementService.prepareForDownload(Collections.singleton(file));
+        File f = projectManagementService.prepareForDownload(Collections.singleton(file.getId()));
         assertNotNull(f);
 
         // make sure it's a zip file

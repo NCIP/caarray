@@ -94,7 +94,7 @@ public class ProjectAction extends BaseAction implements Preparable {
     private boolean piIsMainPoc;
     private Person primaryInvestigator;
     private Person mainPointOfContact;
-    
+
     private Long selectedManufacturer;
     private Long selectedOrganism;
     private Long selectedExperimentalDesignType;
@@ -214,7 +214,7 @@ public class ProjectAction extends BaseAction implements Preparable {
         AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
         String username = UsernameHolder.getUser();
         this.user = am.getUser(username);
-                
+
         ExperimentContact pi = this.proposal.getProject().getExperiment().getPrimaryInvestigator();
         if (pi != null) {
             this.primaryInvestigator = (Person) pi.getContact();
@@ -225,7 +225,7 @@ public class ProjectAction extends BaseAction implements Preparable {
                 this.piIsMainPoc = false;
                 ExperimentContact mainPoc = this.proposal.getProject().getExperiment().getMainPointOfContact();
                 if (mainPoc != null) {
-                    this.mainPointOfContact = (Person) mainPoc.getContact();                    
+                    this.mainPointOfContact = (Person) mainPoc.getContact();
                 } else {
                     this.mainPointOfContact = new Person();
                 }
@@ -304,7 +304,7 @@ public class ProjectAction extends BaseAction implements Preparable {
     @SuppressWarnings("PMD")
     public String contactsSaveTab() {
         VocabularyService vocabService = getVocabularyService();
-        TermSource mged = vocabService.getSource(ExperimentOntology.MGED.getOntologyName());            
+        TermSource mged = vocabService.getSource(ExperimentOntology.MGED.getOntologyName());
         Category roleCat = vocabService.getCategory(mged, ExperimentOntologyCategory.ROLES.getCategoryName());
         Term piRole = vocabService.getTerm(mged, roleCat, ExperimentContact.PI_ROLE);
         Term mainPocRole = vocabService.getTerm(mged, roleCat, ExperimentContact.MAIN_POC_ROLE);
@@ -323,7 +323,7 @@ public class ProjectAction extends BaseAction implements Preparable {
             if (this.piIsMainPoc && !pi.isMainPointOfContact()) {
                 this.proposal.getProject().getExperiment().removeSeparateMainPointOfContact();
                 pi.getRoles().add(mainPocRole);
-            } 
+            }
             if (!this.piIsMainPoc) {
                 ExperimentContact mainPoc = this.proposal.getProject().getExperiment().getMainPointOfContact();
                 if (pi.isMainPointOfContact()) {
@@ -333,7 +333,7 @@ public class ProjectAction extends BaseAction implements Preparable {
                     mainPoc.setContact(new Person());
                     this.proposal.getProject().getExperiment().getExperimentContacts().add(mainPoc);
                     mainPoc.setExperiment(this.proposal.getProject().getExperiment());
-                }                
+                }
                 try {
                     PropertyUtils.copyProperties(mainPoc.getContact(), this.mainPointOfContact);
                 } catch (IllegalAccessException e) {
@@ -342,8 +342,8 @@ public class ProjectAction extends BaseAction implements Preparable {
                     // cannot happen
                 } catch (NoSuchMethodException e) {
                     // cannot happen
-                }                
-            } 
+                }
+            }
         } else {
             pi = new ExperimentContact();
             pi.setContact(this.primaryInvestigator);
@@ -357,17 +357,17 @@ public class ProjectAction extends BaseAction implements Preparable {
                 mainPoc.setContact(this.mainPointOfContact);
                 mainPoc.getRoles().add(mainPocRole);
                 this.proposal.getProject().getExperiment().getExperimentContacts().add(mainPoc);
-                mainPoc.setExperiment(this.proposal.getProject().getExperiment());                
+                mainPoc.setExperiment(this.proposal.getProject().getExperiment());
             }
         }
-        
+
 
         return saveTab();
     }
 
     /**
      * save a project.
-     * 
+     *
      * @return path String
      * @throws Exception Exception
      */

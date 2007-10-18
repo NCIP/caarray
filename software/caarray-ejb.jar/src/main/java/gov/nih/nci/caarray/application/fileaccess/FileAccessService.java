@@ -122,6 +122,14 @@ public interface FileAccessService {
     File getFile(CaArrayFile caArrayFile);
 
     /**
+     * Gets CaArrayFile by id.
+     *
+     * @param id the CaArrayFile id
+     * @return the file
+     */
+    CaArrayFile getCaArrayFile(Long id);
+
+    /**
      * Removes all files opened in the current session.
      */
     void closeFiles();

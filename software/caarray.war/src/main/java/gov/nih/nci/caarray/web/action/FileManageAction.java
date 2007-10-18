@@ -4,12 +4,16 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.util.io.FileClosingInputStream;
 import gov.nih.nci.caarray.web.delegate.DelegateFactory;
 import gov.nih.nci.caarray.web.delegate.ManageFilesDelegate;
 import gov.nih.nci.caarray.web.util.CacheManager;
 import gov.nih.nci.caarray.web.util.LabelValue;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -39,6 +43,8 @@ public class FileManageAction extends BaseAction implements Preparable {
     private List<File> uploads = new ArrayList<File>();
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<String> uploadContentTypes = new ArrayList<String>();
+    private List<Long> downloadIds = new ArrayList<Long>();
+    private InputStream downloadStream;
 
     /**
      * {@inheritDoc}
@@ -242,6 +248,20 @@ public class FileManageAction extends BaseAction implements Preparable {
     }
 
     /**
+     * @return the downloadIds
+     */
+    public List<Long> getDownloadIds() {
+        return downloadIds;
+    }
+
+    /**
+     * @param downloadIds the downloadIds to set
+     */
+    public void setDownloadIds(List<Long> downloadIds) {
+        this.downloadIds = downloadIds;
+    }
+
+    /**
      * @return the menu
      */
     public String getMenu() {
@@ -358,4 +378,28 @@ public class FileManageAction extends BaseAction implements Preparable {
     public void setUploadContentType(List<String> inContentTypes) {
         this.uploadContentTypes = inContentTypes;
     }
+
+    /**
+     * Prepares for download by zipping selected files and setting the internal InputStream.
+     *
+     * @param selectedFiles the files to download
+     * @return SUCCESS
+     * @throws IOException if
+     */
+    @SkipValidation
+    public String download() throws IOException {
+        File zipFile = getDelegate().getProjectManagementService().prepareForDownload(getDownloadIds());
+
+        downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
+
+        return SUCCESS;
+    }
+
+    /**
+     * @return the stream containing the zip file download
+     */
+    public InputStream getDownloadStream() {
+        return downloadStream;
+    }
+
 }

@@ -96,20 +96,30 @@ import java.util.Set;
  */
 public class FileAccessServiceStub implements FileAccessService {
 
-    private final Map<String, File> map = new HashMap<String, File>();
+    private final Map<String, File> nameToFile = new HashMap<String, File>();
+    private final Map<Long, CaArrayFile> idToFile = new HashMap<Long, CaArrayFile>();
 
     public CaArrayFile add(File file) {
         CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setName(file.getName());
-        map.put(caArrayFile.getName(), file);
+        nameToFile.put(caArrayFile.getName(), file);
         return caArrayFile;
     }
 
     public File getFile(CaArrayFile caArrayFile) {
-        if (map.containsKey(caArrayFile.getName())) {
-            return map.get(caArrayFile.getName());
+        if (nameToFile.containsKey(caArrayFile.getName())) {
+            return nameToFile.get(caArrayFile.getName());
         }
         return new File(caArrayFile.getName());
+    }
+
+    @SuppressWarnings("deprecation")
+    public CaArrayFile getCaArrayFile(Long id) {
+        CaArrayFile result = new CaArrayFile();
+        String name = nameToFile.values().iterator().next().getName();
+        result.setName(name);
+
+        return result;
     }
 
     public Set<File> getFiles(CaArrayFileSet fileSet) {
@@ -123,7 +133,7 @@ public class FileAccessServiceStub implements FileAccessService {
     public CaArrayFile add(File file, String filename) {
         CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setName(filename);
-        map.put(caArrayFile.getName(), file);
+        nameToFile.put(caArrayFile.getName(), file);
         return caArrayFile;
     }
 
