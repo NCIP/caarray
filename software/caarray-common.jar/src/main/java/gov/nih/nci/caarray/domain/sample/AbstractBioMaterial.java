@@ -104,6 +104,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.validator.NotEmpty;
 
 /**
  *
@@ -170,6 +171,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      * @return the name
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @NotEmpty
     public String getName() {
         return this.name;
     }

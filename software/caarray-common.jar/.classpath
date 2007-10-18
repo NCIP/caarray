@@ -27,5 +27,6 @@
 	<classpathentry kind="lib" path="/lib/cacore32-client.jar"/>
 	<classpathentry kind="lib" path="/lib/log4j-1.2.13.jar" sourcepath="/lib/src/log4j-1.2.13-src.jar"/>
 	<classpathentry kind="lib" path="/lib/clm.jar"/>
+	<classpathentry kind="lib" path="/lib/hibernate-validator.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
