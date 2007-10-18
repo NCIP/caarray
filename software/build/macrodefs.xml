@@ -37,6 +37,7 @@
         <attribute name="database.url" default="${database.url}" />
         <attribute name="database.user" default="${database.user}" />
         <attribute name="database.password" default="${database.password}" />
+		<echoproperties/>
         <sequential>
             <sql driver="${database.driver}"
                  url="@{database.url}"
