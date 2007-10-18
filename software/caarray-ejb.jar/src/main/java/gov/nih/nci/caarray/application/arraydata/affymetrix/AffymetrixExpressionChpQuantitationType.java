@@ -90,11 +90,19 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
  * Quantitation type information for Affymetrix CEL files.
  */
 public enum AffymetrixExpressionChpQuantitationType implements QuantitationTypeDescriptor {
-    
-    /**
-     * CHPSignal quantitation type.
-     */
-    CHP_SIGNAL("CHPSignal", DataType.FLOAT);
+
+    CHP_DETECTION("CHPDetection", DataType.STRING),
+    CHP_DETECTION_PVALUE("CHPDetectionPvalue", DataType.FLOAT),
+    CHP_PAIRS("CHPPairs", DataType.INTEGER),
+    CHP_PAIRS_USED("CHPPairsUsed", DataType.INTEGER),
+    CHP_SIGNAL("CHPSignal", DataType.FLOAT),
+    CHP_PROBE_SET_NAME("ProbeSetName", DataType.STRING),
+    CHP_CHANGE("CHPChange", DataType.STRING),
+    CHP_CHANGE_PVALUE("CHPChangePvalue", DataType.FLOAT),
+    CHP_SIGNAL_LOG_RATIO("CHPSignalLogRatio", DataType.FLOAT),
+    CHP_SIGNAL_LOG_RATIO_HIGH("CHPSignalLogRatioHigh", DataType.FLOAT),
+    CHP_SIGNAL_LOG_RATIO_LOW("CHPSignalLogRatioLow", DataType.FLOAT),
+    CHP_COMMON_PAIRS("CHPCommonPairs", DataType.INTEGER);
 
     private final String name;
     private final DataType type;
@@ -123,7 +131,7 @@ public enum AffymetrixExpressionChpQuantitationType implements QuantitationTypeD
     /**
      * Indicates whether this enumeration value is equivalent to the persistenct
      * <code>QuantitationType</code> object.
-     * 
+     *
      * @param quantitationType type to compare to
      * @return true if equivalent, false otherwise.
      */
