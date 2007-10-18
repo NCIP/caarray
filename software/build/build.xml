@@ -91,6 +91,7 @@
     <property name="cglib.jar" value="${lib.dir}/cglib-2.1.3.jar" />
     <property name="checkstyle.jar" value="${lib.dir}/checkstyle-all-4.3.jar" />
     <property name="cobertura.jar" value="${lib.dir}/cobertura.jar" />
+    <property name="commons-beanutils.jar" value="${lib.dir}/commons-beanutils-1.7.0.jar" />
     <property name="commons-collections.jar" value="${lib.dir}/commons-collections-3.2.jar" />
     <property name="commons-io.jar" value="${lib.dir}/commons-io-1.3.2.jar" />
     <property name="commons-lang.jar" value="${lib.dir}/commons-lang-2.1.jar" />
@@ -397,6 +398,7 @@
             <classpath>
                 <pathelement location="${caarray-client.classes.dir}" />
                 <pathelement location="${caarray-common.classes.dir}" />
+                <pathelement location="${commons-beanutils.jar}" />
                 <pathelement location="${commons-lang.jar}" />
                 <pathelement location="${commons-io.jar}" />
                 <pathelement location="${cacore32-client.jar}" />
@@ -404,6 +406,7 @@
                 <pathelement location="${affxfusion.jar}" />
                 <pathelement location="${netcdf.jar}" />
                 <pathelement location="${ejb3-persistence.jar}" />
+                <pathelement location="${hibernate.jar}" />
                 <pathelement location="${hibernate-annotations.jar}" />
                 <pathelement location="${hibernate-commons-annotations.jar}" />
                 <pathelement location="${javaee.jar}" />
@@ -592,6 +595,7 @@
                 <include name="jdbc-se2.0.jar" />
                 <include name="xerces-J_1.4.0.jar" />
                 <include name="cglib-2.1.3.jar" />
+                <include name="commons-beanutils-1.7.0.jar" />
                 <include name="commons-collections-3.2.jar" />
                 <include name="commons-discovery-0.2.jar" />
                 <include name="commons-io-1.3.2.jar" />
@@ -747,6 +751,7 @@
                 <pathelement location="${javaee.jar}" />
                 <pathelement location="${junit.jar}" />
                 <pathelement location="${ejb3-persistence.jar}" />
+                <pathelement location="${hibernate.jar}" />
                 <pathelement location="${hibernate-annotations.jar}" />
                 <pathelement location="${hibernate-commons-annotations.jar}" />
                 <pathelement location="${javaee.jar}" />
@@ -755,7 +760,7 @@
     </target>
 
     <target name="test:junit-caarray-ejb.jar" depends="test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:functional:compile-tests,test:unpack-test-data">
-        <run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};${cacore32-client.jar};${affxfusion.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${javacsv.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-lang.jar};${commons-collections.jar};${commons-io.jar};${commons-lang.jar};${javaee.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar}" />
+        <run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};${cacore32-client.jar};${csmapi.jar};${affxfusion.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${javacsv.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-beanutils.jar};${commons-lang.jar};${commons-collections.jar};${commons-io.jar};${commons-lang.jar};${javaee.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar};${hibernate.jar};${hibernate-annotations.jar};${hibernate-commons-annotations.jar};${clm.jar}" />
     </target>
 
     <!-- caarray.war -->
@@ -1128,22 +1133,22 @@
         </taskdef>
         <ncitask keyFile="${build.dir}/${keyfile.file}" compareFile="${envpropertyfile}" />
     </target>
-	
-	<!-- Globus deployment begin -->
-	<property name="remote.globus.home" value="/usr/local/ws-core-4.0.3" />
-	<property name="caarray.gar.file" value="${caaray-svc.dir}/cagrid_CaArraySvc.gar" />
-	
-	<target name="remote-globus:createDeploymentGar" depends="build:caarray-svc,prepare:create-local.properties">
+
+  <!-- Globus deployment begin -->
+  <property name="remote.globus.home" value="/usr/local/ws-core-4.0.3" />
+  <property name="caarray.gar.file" value="${caaray-svc.dir}/cagrid_CaArraySvc.gar" />
+
+  <target name="remote-globus:createDeploymentGar" depends="build:caarray-svc,prepare:create-local.properties">
         <ant dir="${caaray-svc.dir}" target="createDeploymentGar" inheritall="false"/>
     </target>
-	
-	<target name="remote-globus:copy-caarray-gar">
+
+  <target name="remote-globus:copy-caarray-gar">
         <echo message="Copying caarray gar globus server at ${ssh.server.hostname}..." />
         <scp file="${caaray-svc.dir}/cagrid_CaArraySvc.gar" keyfile="${ssh.key.file}" passphrase="" trust="true" verbose="true" todir="${ssh.server.username}@${ssh.server.hostname}:${jboss.temp.dir}" />
     </target>
-	
-	
-	<!-- Globus deployment end -->
+
+
+  <!-- Globus deployment end -->
 
     <target name="remote-jboss:stop">
         <echo message="Stopping jboss server at ${ssh.server.hostname}..." />
