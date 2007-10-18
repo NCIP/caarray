@@ -121,5 +121,5 @@ public interface SearchDao {
      * @param entityId the id of the enity to retrieve
      * @return the entity.
      */
-    Object retrieve(Class entityClass, Long entityId);
+    <T> T retrieve(Class<T> entityClass, Long entityId);
 }

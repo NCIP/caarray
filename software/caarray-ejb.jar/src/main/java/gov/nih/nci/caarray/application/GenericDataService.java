@@ -99,5 +99,5 @@ public interface GenericDataService {
      * @param entityId the id of the enity to retrieve
      * @return the entity.
      */
-    Object retrieveEnity(Class entityClass, Long entityId);
+    <T> T retrieveEnity(Class<T> entityClass, Long entityId);
 }

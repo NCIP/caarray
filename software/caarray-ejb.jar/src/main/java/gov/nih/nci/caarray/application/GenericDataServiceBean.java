@@ -95,7 +95,7 @@ public class GenericDataServiceBean implements GenericDataService {
     /**
      * {@inheritDoc}
      */
-    public Object retrieveEnity(Class entityClass, Long entityId) {
+    public <T> T retrieveEnity(Class<T> entityClass, Long entityId) {
         return this.daoFactory.getSearchDao().retrieve(entityClass, entityId);
     }
 

@@ -118,6 +118,7 @@ public class PersistentObjectTypeConverter extends StrutsTypeConverter {
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("unchecked")
     public Object convertFromString(Map context, String[] values, Class toClass) {
         XWorkBasicConverter converter = new XWorkBasicConverter();
         Long id = (Long) converter.convertValue(context, values[0], Long.class);

@@ -162,10 +162,11 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
-    public Object retrieve(Class entityClass, Long entityId) {
+    @SuppressWarnings("unchecked")
+    public <T> T retrieve(Class<T> entityClass, Long entityId) {
         Query q = HibernateUtil.getCurrentSession().createQuery("from " + entityClass.getName() + " where id = :id");
         q.setLong("id", entityId);
-        return q.uniqueResult();
+        return (T) q.uniqueResult();
     }
 
     @Override
