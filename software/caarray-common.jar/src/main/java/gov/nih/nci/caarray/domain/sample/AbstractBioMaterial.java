@@ -119,12 +119,30 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
 
+    private Term tissueSite;
     private Term materialType;
     private String name;
     private String description;
     private Set<AbstractCharacteristic> characteristics = new HashSet<AbstractCharacteristic>();
     private Set<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
     private Organism organism;
+
+    /**
+     * @return the tissueSite
+     */
+    @ManyToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ForeignKey(name = "BIOMATERIAL_SITE_FK")
+    public Term getTissueSite() {
+        return this.tissueSite;
+    }
+
+    /**
+     * @param tissueSite the tissueSite to set
+     */
+    public void setTissueSite(Term tissueSite) {
+        this.tissueSite = tissueSite;
+    }
 
     /**
      * Gets the materialType.
@@ -135,7 +153,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "BIOMATERIAL_TYPE_FK")
     public Term getMaterialType() {
-        return materialType;
+        return this.materialType;
     }
 
     /**
@@ -153,7 +171,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
-        return name;
+        return this.name;
     }
 
     /**
@@ -171,7 +189,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     /**
@@ -191,7 +209,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
     @OneToMany(mappedBy = "bioMaterial", fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<AbstractCharacteristic> getCharacteristics() {
-        return characteristics;
+        return this.characteristics;
     }
 
     /**
@@ -212,7 +230,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
     @OneToMany(mappedBy = "bioMaterial", fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<ProtocolApplication> getProtocolApplications() {
-        return protocolApplications;
+        return this.protocolApplications;
     }
 
     /**
@@ -232,7 +250,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "BIOMATERIAL_ORGANISM_FK")
     public Organism getOrganism() {
-        return organism;
+        return this.organism;
     }
 
     /**

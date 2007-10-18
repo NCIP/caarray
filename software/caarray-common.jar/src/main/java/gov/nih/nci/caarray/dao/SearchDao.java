@@ -114,4 +114,12 @@ public interface SearchDao {
      */
     List<AbstractCaArrayObject> query(CQLQuery cqlQuery);
 
+
+    /**
+     * Retrieves the object from the database.
+     * @param entityClass the class of the object to retrieve
+     * @param entityId the id of the enity to retrieve
+     * @return the entity.
+     */
+    Object retrieve(Class entityClass, Long entityId);
 }

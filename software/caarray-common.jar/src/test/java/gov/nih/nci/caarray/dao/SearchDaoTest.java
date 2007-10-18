@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
@@ -296,6 +297,23 @@ public class SearchDaoTest {
         exampleTerm.setValue(DUMMY_TERM_1.getValue());
         exampleProtocol.setType(exampleTerm);
         return exampleProtocol;
+    }
+
+    @Test
+    public void testLoadById() {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            Object obj = SEARCH_DAO.retrieve(Protocol.class, 999l);
+            assertEquals(null, obj);
+
+            obj = SEARCH_DAO.retrieve(Protocol.class, DUMMY_PROTOCOL_1.getId());
+            assertEquals(DUMMY_PROTOCOL_1, obj);
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during search by example: " + e.getMessage());
+        }
     }
 
     /**

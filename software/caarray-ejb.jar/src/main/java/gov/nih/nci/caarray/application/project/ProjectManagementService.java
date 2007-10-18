@@ -184,7 +184,7 @@ public interface ProjectManagementService {
      * @param projectId the id of the project
      * @return the modified project
      */
-    Project toggleBrowsableStatus(long projectId);        
+    Project toggleBrowsableStatus(long projectId);
 
     /**
      * Prepares files for download.

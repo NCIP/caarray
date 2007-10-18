@@ -159,6 +159,15 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         return matchingEntities;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public Object retrieve(Class entityClass, Long entityId) {
+        Query q = HibernateUtil.getCurrentSession().createQuery("from " + entityClass.getName() + " where id = :id");
+        q.setLong("id", entityId);
+        return q.uniqueResult();
+    }
+
     @Override
     Log getLog() {
         return LOG;
