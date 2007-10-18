@@ -82,12 +82,17 @@
  */
 package gov.nih.nci.caarray.application;
 
+import javax.ejb.Local;
+import javax.ejb.Stateless;
+
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 
 /**
  * Implementation of the GenericDataService.
  * @author Scott Miller
  */
+@Local
+@Stateless
 public class GenericDataServiceBean implements GenericDataService {
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
