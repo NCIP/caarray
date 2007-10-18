@@ -786,6 +786,7 @@
                 <pathelement location="${spring-mock.jar}" />
                 <pathelement location="${struts2-core-2.0.9.jar}" />
                 <pathelement location="${xwork-2.0.4.jar}" />
+                <pathelement location="${ognl-2.6.11.jar}" />
             </classpath>
         </javac>
     </target>
@@ -1203,8 +1204,8 @@
     </target>
 
     <target name="display-properties">
-  	  <echo> Diagnostics...</echo>
-	  <echoproperties/>
+      <echo> Diagnostics...</echo>
+    <echoproperties/>
     </target>
 
     <target name="remote-deploy" depends="display-properties">
