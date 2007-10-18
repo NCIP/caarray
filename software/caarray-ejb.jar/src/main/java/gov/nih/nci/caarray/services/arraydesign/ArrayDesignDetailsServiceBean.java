@@ -85,16 +85,20 @@ package gov.nih.nci.caarray.services.arraydesign;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
+import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 
 import javax.ejb.EJB;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import javax.interceptor.Interceptors;
 
 /**
  * Implementation of the remote API array design detail retrieval subsystem.
  */
 @Stateless
 @Remote(ArrayDesignDetailsService.class)
+@Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
 public class ArrayDesignDetailsServiceBean implements ArrayDesignDetailsService {
 
     @EJB private ArrayDesignService arrayDesignService;

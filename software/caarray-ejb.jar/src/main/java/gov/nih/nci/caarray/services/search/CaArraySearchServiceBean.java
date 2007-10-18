@@ -86,6 +86,8 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
+import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 import gov.nih.nci.system.query.cql.CQLQuery;
 
 import java.util.ArrayList;
@@ -93,6 +95,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import javax.interceptor.Interceptors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -104,6 +107,7 @@ import org.apache.commons.logging.LogFactory;
  */
 @Stateless
 @Remote(CaArraySearchService.class)
+@Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
 public class CaArraySearchServiceBean implements CaArraySearchService {
 
     private static final Log LOG = LogFactory.getLog(CaArraySearchServiceBean.class);

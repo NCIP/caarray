@@ -90,6 +90,8 @@ import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
+import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,12 +99,14 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import javax.interceptor.Interceptors;
 
 /**
  * Implementation for remote API data retrieval.
  */
 @Remote(DataRetrievalService.class)
 @Stateless
+@Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
 public class DataRetrievalServiceBean implements DataRetrievalService {
 
     @EJB private ArrayDataService arrayDataService;
@@ -149,7 +153,7 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
         }
     }
 
-    private void addHybridizationData(DataSet dataSet, HybridizationData copyFromHybridizationData, 
+    private void addHybridizationData(DataSet dataSet, HybridizationData copyFromHybridizationData,
             DataRetrievalRequest request) {
         HybridizationData hybridizationData = new HybridizationData();
         hybridizationData.setHybridization(copyFromHybridizationData.getHybridization());
@@ -158,7 +162,7 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
         hybridizationData.setDataSet(dataSet);
     }
 
-    private void copyColumns(HybridizationData hybridizationData, HybridizationData copyFromHybridizationData, 
+    private void copyColumns(HybridizationData hybridizationData, HybridizationData copyFromHybridizationData,
             List<QuantitationType> quantitationTypes) {
         for (QuantitationType type : quantitationTypes) {
             hybridizationData.getColumns().add(copyFromHybridizationData.getColumn(type));
@@ -178,7 +182,7 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
         return getArrayDatas(hybridizations, request.getQuantitationTypes());
     }
 
-    private List<AbstractArrayData> getArrayDatas(List<Hybridization> hybridizations, 
+    private List<AbstractArrayData> getArrayDatas(List<Hybridization> hybridizations,
             List<QuantitationType> quantitationTypes) {
         List<AbstractArrayData> arrayDatas = new ArrayList<AbstractArrayData>(hybridizations.size());
         for (Hybridization hybridization : hybridizations) {
@@ -187,7 +191,7 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
         return arrayDatas;
     }
 
-    private void addArrayDatas(List<AbstractArrayData> arrayDatas, Hybridization hybridization, 
+    private void addArrayDatas(List<AbstractArrayData> arrayDatas, Hybridization hybridization,
             List<QuantitationType> quantitationTypes) {
         if (containsAllTypes(hybridization.getArrayData(), quantitationTypes)) {
             arrayDatas.add(hybridization.getArrayData());

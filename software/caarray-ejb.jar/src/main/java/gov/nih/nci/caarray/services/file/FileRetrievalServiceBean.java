@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.services.file;
 
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
+import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -94,6 +96,7 @@ import java.io.InputStream;
 import javax.ejb.EJB;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import javax.interceptor.Interceptors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -103,6 +106,7 @@ import org.apache.commons.logging.LogFactory;
  */
 @Stateless
 @Remote(FileRetrievalService.class)
+@Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
 public class FileRetrievalServiceBean implements FileRetrievalService {
 
     private static final Log LOG = LogFactory.getLog(FileRetrievalServiceBean.class);
