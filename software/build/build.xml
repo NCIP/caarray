@@ -184,8 +184,9 @@
     <property name="mysql.datasource.file" value="caarray-mysql-ds.xml" />
 
     <filterset id="caarray.filterset" onmissingfiltersfile="warn">
-        <filtersfile file="${build.dir}/default.properties" />
+		<filtersfile file="${build.dir}/default.properties" />
         <filtersfile file="${build.dir}/local.properties" />
+		<filtersfile file="${envpropertyfile}" />
     </filterset>
 
     <!-- Tag property to display on front page -->
@@ -1215,9 +1216,9 @@
     <echoproperties/>
     </target>
 
-    <target name="remote-deploy" depends="display-properties">
+    <target name="remote-deploy" depends="clean, display-properties">
         <antcall target="validate-properties" />
-    <antcall target="continuous-integration" />
+		<antcall target="continuous-integration" />
         <antcall target="remote-jboss:deploy" />
     </target>
 
