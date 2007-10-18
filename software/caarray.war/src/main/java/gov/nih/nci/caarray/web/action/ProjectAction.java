@@ -9,6 +9,9 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.contact.Person;
+import gov.nih.nci.caarray.domain.project.ExperimentContact;
+import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.PaymentMechanism;
@@ -16,7 +19,9 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.Proposal;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.util.SecurityInterceptor;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
@@ -25,6 +30,7 @@ import gov.nih.nci.caarray.web.delegate.ProjectDelegate;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -32,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.Preparable;
@@ -83,6 +90,11 @@ public class ProjectAction extends BaseAction implements Preparable {
     private List<Long> selectedQualityControlTypes = new ArrayList<Long>();
     private List<Long> selectedReplicateTypes = new ArrayList<Long>();
     private List<Long> selectedArrayDesigns = new ArrayList<Long>();
+
+    private boolean piIsMainPoc;
+    private Person primaryInvestigator;
+    private Person mainPointOfContact;
+    
     private Long selectedManufacturer;
     private Long selectedOrganism;
     private Long selectedExperimentalDesignType;
@@ -202,7 +214,30 @@ public class ProjectAction extends BaseAction implements Preparable {
         AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
         String username = UsernameHolder.getUser();
         this.user = am.getUser(username);
-
+                
+        ExperimentContact pi = this.proposal.getProject().getExperiment().getPrimaryInvestigator();
+        if (pi != null) {
+            this.primaryInvestigator = (Person) pi.getContact();
+            if (pi.isMainPointOfContact()) {
+                this.piIsMainPoc = true;
+                this.mainPointOfContact = new Person();
+            } else {
+                this.piIsMainPoc = false;
+                ExperimentContact mainPoc = this.proposal.getProject().getExperiment().getMainPointOfContact();
+                if (mainPoc != null) {
+                    this.mainPointOfContact = (Person) mainPoc.getContact();                    
+                } else {
+                    this.mainPointOfContact = new Person();
+                }
+            }
+        } else {
+            this.primaryInvestigator = new Person();
+            this.primaryInvestigator.setFirstName(this.user.getFirstName());
+            this.primaryInvestigator.setLastName(this.user.getLastName());
+            this.primaryInvestigator.setEmail(this.user.getEmailId());
+            this.piIsMainPoc = true;
+            this.mainPointOfContact = new Person();
+        }
         return loadTab();
     }
 
@@ -263,6 +298,76 @@ public class ProjectAction extends BaseAction implements Preparable {
     /**
      * save a project.
      *
+     * @return path String
+     * @throws Exception Exception
+     */
+    @SuppressWarnings("PMD")
+    public String contactsSaveTab() {
+        VocabularyService vocabService = getVocabularyService();
+        TermSource mged = vocabService.getSource(ExperimentOntology.MGED.getOntologyName());            
+        Category roleCat = vocabService.getCategory(mged, ExperimentOntologyCategory.ROLES.getCategoryName());
+        Term piRole = vocabService.getTerm(mged, roleCat, ExperimentContact.PI_ROLE);
+        Term mainPocRole = vocabService.getTerm(mged, roleCat, ExperimentContact.MAIN_POC_ROLE);
+
+        ExperimentContact pi = this.proposal.getProject().getExperiment().getPrimaryInvestigator();
+        if (pi != null) {
+            try {
+                PropertyUtils.copyProperties(pi.getContact(), this.primaryInvestigator);
+            } catch (IllegalAccessException e) {
+                // cannot happen
+            } catch (InvocationTargetException e) {
+                // cannot happen
+            } catch (NoSuchMethodException e) {
+                // cannot happen
+            }
+            if (this.piIsMainPoc && !pi.isMainPointOfContact()) {
+                this.proposal.getProject().getExperiment().removeSeparateMainPointOfContact();
+                pi.getRoles().add(mainPocRole);
+            } 
+            if (!this.piIsMainPoc) {
+                ExperimentContact mainPoc = this.proposal.getProject().getExperiment().getMainPointOfContact();
+                if (pi.isMainPointOfContact()) {
+                    pi.removeMainPointOfContactRole();
+                    mainPoc = new ExperimentContact();
+                    mainPoc.getRoles().add(mainPocRole);
+                    mainPoc.setContact(new Person());
+                    this.proposal.getProject().getExperiment().getExperimentContacts().add(mainPoc);
+                    mainPoc.setExperiment(this.proposal.getProject().getExperiment());
+                }                
+                try {
+                    PropertyUtils.copyProperties(mainPoc.getContact(), this.mainPointOfContact);
+                } catch (IllegalAccessException e) {
+                    // cannot happen
+                } catch (InvocationTargetException e) {
+                    // cannot happen
+                } catch (NoSuchMethodException e) {
+                    // cannot happen
+                }                
+            } 
+        } else {
+            pi = new ExperimentContact();
+            pi.setContact(this.primaryInvestigator);
+            pi.getRoles().add(piRole);
+            this.proposal.getProject().getExperiment().getExperimentContacts().add(pi);
+            pi.setExperiment(this.proposal.getProject().getExperiment());
+            if (this.piIsMainPoc) {
+                pi.getRoles().add(mainPocRole);
+            } else {
+                ExperimentContact mainPoc = new ExperimentContact();
+                mainPoc.setContact(this.mainPointOfContact);
+                mainPoc.getRoles().add(mainPocRole);
+                this.proposal.getProject().getExperiment().getExperimentContacts().add(mainPoc);
+                mainPoc.setExperiment(this.proposal.getProject().getExperiment());                
+            }
+        }
+        
+
+        return saveTab();
+    }
+
+    /**
+     * save a project.
+     * 
      * @return path String
      * @throws Exception Exception
      */
@@ -1100,5 +1205,47 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     public void setCurrentFactorIndex(Integer currentFactorIndex) {
         this.currentFactorIndex = currentFactorIndex;
+    }
+
+    /**
+     * @return the piIsMainPoc
+     */
+    public boolean isPiIsMainPoc() {
+        return piIsMainPoc;
+    }
+
+    /**
+     * @param piIsMainPoc the piIsMainPoc to set
+     */
+    public void setPiIsMainPoc(boolean piIsMainPoc) {
+        this.piIsMainPoc = piIsMainPoc;
+    }
+
+    /**
+     * @return the primaryInvestigator
+     */
+    public Person getPrimaryInvestigator() {
+        return primaryInvestigator;
+    }
+
+    /**
+     * @param primaryInvestigator the primaryInvestigator to set
+     */
+    public void setPrimaryInvestigator(Person primaryInvestigator) {
+        this.primaryInvestigator = primaryInvestigator;
+    }
+
+    /**
+     * @return the mainPointOfContact
+     */
+    public Person getMainPointOfContact() {
+        return mainPointOfContact;
+    }
+
+    /**
+     * @param mainPointOfContact the mainPointOfContact to set
+     */
+    public void setMainPointOfContact(Person mainPointOfContact) {
+        this.mainPointOfContact = mainPointOfContact;
     }
 }

@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.domain.contact.AbstractContact;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -96,6 +97,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
@@ -109,6 +114,11 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      * The serial version UID for serialization.
      */
     private static final long serialVersionUID = 1234567890L;
+
+    // value of the Term for the PI Role
+    public static final String PI_ROLE = "investigator";
+    // value of the Term for the POC Role
+    public static final String MAIN_POC_ROLE = "submitter";
 
     private AbstractContact contact;
     private Set<Term> roles = new HashSet<Term>();
@@ -147,7 +157,6 @@ public class ExperimentContact extends AbstractCaArrayEntity {
             inverseJoinColumns = { @JoinColumn(name = "ROLE_ID") }
     )
     @ForeignKey(name = "INVESTCONT_CONTACT_FK", inverseName = "INVESTCONT_ROLE_FK")
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Term> getRoles() {
         return roles;
     }
@@ -166,7 +175,6 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      * @return the experiment
      */
     @ManyToOne
-    @JoinColumn(insertable = false, updatable = false)
     @ForeignKey(name = "EXPCONTACT_INVEST_FK")
     public Experiment getExperiment() {
         return experiment;
@@ -178,6 +186,40 @@ public class ExperimentContact extends AbstractCaArrayEntity {
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
     }
+    
+    /**
+     * Returns whether this contact is the PI for the experiment (based
+     * on whether he has the appropriate role)
+     * @return whether this contact is the PI for the experiment
+     */
+    @Transient
+    public boolean isPrimaryInvestigator() {
+        return CollectionUtils.exists(roles, new RolePredicate(PI_ROLE));
+    }
+
+    /**
+     * Returns whether this contact is the main POC for the experiment (based
+     * on whether he has the appropriate role)
+     * @return whether this contact is the main POC for the experiment
+     */
+    @Transient
+    public boolean isMainPointOfContact() {
+        return CollectionUtils.exists(roles, new RolePredicate(MAIN_POC_ROLE));        
+    }
+    
+    /**
+     * Remove the Main POC role from the list of roles of this ExperimentContact.
+     * If it did not have this role, then this is a no-op.
+     */
+    public void removeMainPointOfContactRole() {
+        for (Iterator<Term> it = roles.iterator(); it.hasNext(); ) {
+            Term role = it.next();
+            if (MAIN_POC_ROLE.equals(role.getValue())) {
+                it.remove();
+                break;
+            }
+        }
+    }
 
     /**
      * {@inheritDoc}
@@ -185,5 +227,29 @@ public class ExperimentContact extends AbstractCaArrayEntity {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+    
+    /**
+     * Predicate that matches role Terms having a given value
+     */
+    private static class RolePredicate implements Predicate {
+        private String roleValue;
+                
+        /**
+         * Create a RolePredicate checking for given value
+         * @param roleValue value to check for
+         */
+        public RolePredicate(String roleValue) {
+            super();
+            this.roleValue = roleValue;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public boolean evaluate(Object o) {
+            Term role = (Term) o;
+            return roleValue.equals(role.getValue());
+        }
     }
 }

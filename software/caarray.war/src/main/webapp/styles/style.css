@@ -445,7 +445,7 @@ TABLE.form TH
 TABLE.form TD
 { padding:3px; font-size:92%; vertical-align:top }
 LABEL
-{ font-size:100%; padding:4px 0; display:block }
+{ font-size:100%; padding:4px 0  }
 LABEL.inline
 { display:inline}
 td.tdLabel

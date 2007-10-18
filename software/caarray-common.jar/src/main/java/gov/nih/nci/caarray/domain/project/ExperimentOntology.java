@@ -83,62 +83,26 @@
 package gov.nih.nci.caarray.domain.project;
 
 /**
- * Enum of Ontology categories for various concepts used by Experiment.
- * Taken from MGED Ontology, http://mged.sourceforge.net/ontologies/MGEDontology.php
+ * Enum of Ontologies for various concepts used by Experiment.
+ * These correspond to names of TermSource instances
  */
-public enum ExperimentOntologyCategory {
-
+public enum ExperimentOntology {
     /**
-     * OrganismPart category, used for tissue site.
+     * MGED Ontology
      */
-    ORGANISM_PART("OrganismPart"),
+    MGED("MGED");
 
-    /**
-     * MaterialType category, used for tissue types.
-     */
-    MATERIAL_TYPE("MaterialType"),
+    private final String ontologyName;
 
-    /**
-     * CellType category, used for cell types.
-     */
-    CELL_TYPE("CellType"),
-
-    /**
-     * DiseaseState category, used for diseases/conditions of an experiment.
-     */
-    DISEASE_STATE("DiseaseState"),
-
-    /**
-     * ExperimentDesignType category, for selecting type of experiment design.
-     */
-    EXPERIMENT_DESIGN_TYPE("ExperimentDesignType"),
-
-    /**
-     * QualityControlDescriptionType category, for selecting type of quality control measures.
-     */
-    QUALITY_CONTROL_TYPE("QualityControlDescriptionType"),
-
-    /**
-     * QualityControlDescriptionType category, for selecting type of quality control measures.
-     */
-    REPLICATE_TYPE("ReplicateDescriptionType"),
-
-    /**
-     * Roles category, used for various roles in an experiment.
-     */
-    ROLES("Roles");
-
-    private final String categoryName;
-
-    ExperimentOntologyCategory(String categoryName) {
-        this.categoryName = categoryName;
+    ExperimentOntology(String ontologyName) {
+        this.ontologyName = ontologyName;
     }
 
     /**
-     * @return the categoryName
+     * @return the ontologyName
      */
-    public String getCategoryName() {
-        return this.categoryName;
+    public String getOntologyName() {
+        return ontologyName;
     }
 
 }

@@ -100,6 +100,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -137,9 +138,6 @@ public class Experiment extends AbstractCaArrayEntity {
     private static final String FK_COLUMN_NAME = "EXPERIMENT_ID";
     private static final String TERM_FK_NAME = "TERM_ID";
     private static final String EXPERIMENT_REF = "experiment";
-
-    // name of the Term for the PI Role
-    private static final String PI_ROLE = "investigator";
 
     private static final long serialVersionUID = 1234567890L;
     private static final int PAYMENT_NUMBER_FIELD_LENGTH = 100;
@@ -277,8 +275,8 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @Transient
     public String getPublicIdentifier() {
-        ExperimentContact piContact = getPI();
-        if (getId() == null || getPI() == null) {
+        ExperimentContact piContact = getPrimaryInvestigator();
+        if (getId() == null || piContact == null) {
             return null;
         }
         Person pi = (Person) piContact.getContact();
@@ -290,22 +288,51 @@ public class Experiment extends AbstractCaArrayEntity {
     /**
      * Gets the ExperimentContact corresponding to the PI for the experiment.
      *
-     * @return the PI ExperimentContact
+     * @return the PI ExperimentContact, or null if there isn't one
      */
     @Transient
-    private ExperimentContact getPI() {
+    public ExperimentContact getPrimaryInvestigator() {
         // find the first contact whose set of roles includes the PI role
         Set<ExperimentContact> contacts = getExperimentContacts();
         for (ExperimentContact contact : contacts) {
-            if (CollectionUtils.isNotEmpty(contact.getRoles())) {
-                for (Term role : contact.getRoles()) {
-                    if (role.getValue().equals(PI_ROLE)) {
-                        return contact;
-                    }
-                }
+            if (contact.isPrimaryInvestigator()) {
+                return contact;
             }
         }
         return null;
+    }
+
+    /**
+     * Gets the ExperimentContact corresponding to the Main POC for the experiment.
+     *
+     * @return the Main POC ExperimentContact, or null if there isn't 
+     */
+    @Transient
+    public ExperimentContact getMainPointOfContact() {
+        // find the first contact whose set of roles includes the PI role
+        Set<ExperimentContact> contacts = getExperimentContacts();
+        for (ExperimentContact contact : contacts) {
+            if (contact.isMainPointOfContact()) {
+                return contact;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Checks if the set of contacts for this experiment contains a contact
+     * with the POC role that does not also have the PI role, and if such a contact
+     * exists, removes it from the set of contacts.
+     */
+    public void removeSeparateMainPointOfContact() {
+        for (Iterator<ExperimentContact> it = experimentContacts.iterator(); it.hasNext(); ) {
+            ExperimentContact contact = it.next();
+            if (contact.isMainPointOfContact() && !contact.isPrimaryInvestigator()) {
+                contact.setExperiment(null);
+                it.remove();
+                break;
+            }
+        }
     }
 
     /**
@@ -741,7 +768,8 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the experimentContacts
      */
     @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.EAGER)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+          org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<ExperimentContact> getExperimentContacts() {
         return this.experimentContacts;
     }

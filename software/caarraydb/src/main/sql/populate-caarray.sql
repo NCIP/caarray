@@ -26,6 +26,8 @@ insert into term (value, source, category) select 'peer_review_quality_control',
 insert into term (value, source, category) select 'biological_replicate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ReplicateDescriptionType';
 insert into term (value, source, category) select 'dye_swap_replicate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ReplicateDescriptionType';
 insert into term (value, source, category) select 'technical_replicate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ReplicateDescriptionType';
+insert into term (value, source, category) select 'investigator', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='Roles';
+insert into term (value, source, category) select 'submitter', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='Roles';
 
 
 insert into organism (common_name, scientific_name, taxonomy_rank, ethnicity_strain) values ('canine', 'Canine', '', '');
