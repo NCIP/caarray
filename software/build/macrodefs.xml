@@ -30,10 +30,24 @@
         </sequential>
     </macrodef>
 
-    <target name="display-properties">
-  	  <echo> Diagnostics...</echo>
-	  <echoproperties/>
-    </target>
+<macrodef name="display-properties">
+   <attribute name="v" default="NOT SET"/>
+   <element name="some-tasks" optional="yes"/>
+   <sequential>
+      <echo>database.url=${database.url}</echo>
+	  <echo>database.user=${database.user}</echo>
+	  <echo>database.password=${database.password}</echo>
+      <some-tasks/>
+   </sequential>
+</macrodef>
+
+<display-properties v="This is v">
+   <some-tasks>
+      <echo>TBD</echo>
+   </some-tasks>
+</display-properties>
+
+
 
     <macrodef name="run-sql-script" description="By default this will use the database.url, to use drop database &amp; user use the database.system.url property">
         <attribute name="sql.file" />
