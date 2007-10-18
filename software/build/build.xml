@@ -1015,15 +1015,15 @@
     </target>
 
     <target name="database:create-schema" depends="database:generate-create-schema-sql" description="Create DB schema">
-        <run-sql-script sql.file="${caarraydb.sql.dir}/create_schema.sql" />
-        <run-sql-script sql.file="${caarraydb.sql.dir}/init-csm-schema.sql" />
+        <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_schema.sql" />
+        <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/init-csm-schema.sql" />
     </target>
 
     <target name="database:initialize-schema" depends="database:drop-schema,database:create-schema" description="Drop &amp; Create DB schema" />
 
     <target name="database:populate" description="populates db with initial data">
-        <run-sql-script sql.file="${caarraydb.sql.dir}/populate-csm.sql" />
-        <run-sql-script sql.file="${caarraydb.sql.dir}/populate-caarray.sql" />
+        <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-csm.sql" />
+        <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-caarray.sql" />
     </target>
 
     <target name="database:reinitialize" unless="nodbintegration"
@@ -1127,6 +1127,22 @@
         </taskdef>
         <ncitask keyFile="${build.dir}/${keyfile.file}" compareFile="${envpropertyfile}" />
     </target>
+	
+	<!-- Globus deployment begin -->
+	<property name="remote.globus.home" value="/usr/local/ws-core-4.0.3" />
+	<property name="caarray.gar.file" value="${caaray-svc.dir}/cagrid_CaArraySvc.gar" />
+	
+	<target name="remote-globus:createDeploymentGar" depends="build:caarray-svc,prepare:create-local.properties">
+        <ant dir="${caaray-svc.dir}" target="createDeploymentGar" inheritall="false"/>
+    </target>
+	
+	<target name="remote-globus:copy-caarray-gar">
+        <echo message="Copying caarray gar globus server at ${ssh.server.hostname}..." />
+        <scp file="${caaray-svc.dir}/cagrid_CaArraySvc.gar" keyfile="${ssh.key.file}" passphrase="" trust="true" verbose="true" todir="${ssh.server.username}@${ssh.server.hostname}:${jboss.temp.dir}" />
+    </target>
+	
+	
+	<!-- Globus deployment end -->
 
     <target name="remote-jboss:stop">
         <echo message="Stopping jboss server at ${ssh.server.hostname}..." />
