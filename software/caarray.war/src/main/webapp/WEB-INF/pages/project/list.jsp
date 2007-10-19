@@ -19,7 +19,9 @@
                         <display:column property="experiment.title" title="Experiment Title" escapeXml="true" sortable="true"
                             href="Project_edit.action" paramId="project.id" paramProperty="id" titleKey="project.id"/>
                         <display:column sortProperty="experiment.assayType" title="Assay Type" sortable="true" >
-                            <fmt:message key="${row.experiment.assayType.resourceKey}" />
+                            <c:if test="${row.experiment.assayType != null}">
+                                <fmt:message key="${row.experiment.assayType.resourceKey}" />
+                            </c:if>
                         </display:column>
                         <display:column property="experiment.organism.commonName" title="Organism" sortable="true" />
                         <display:column sortProperty="status" title="Status" sortable="true">

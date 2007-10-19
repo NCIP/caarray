@@ -79,7 +79,7 @@ public class ProjectAction extends BaseAction implements Preparable {
     private User user;
     private String saveMode;
     private boolean initialSave;
-    
+
     private List<Long> selectedTissueSites = new ArrayList<Long>();
     private List<Long> selectedTissueTypes = new ArrayList<Long>();
     private List<Long> selectedCellTypes = new ArrayList<Long>();
@@ -624,6 +624,7 @@ public class ProjectAction extends BaseAction implements Preparable {
         source.setMaterialType(getCurrentSource().getMaterialType());
         source.setName(getText("experiment.sources.copy.of") + " " + getCurrentSource().getName());
         source.setOrganism(getCurrentSource().getOrganism());
+        source.setTissueSite(getCurrentSource().getTissueSite());
         setCurrentSource(source);
         saveMessage(getText("experiment.sources.copied"));
         return SUCCESS;
@@ -1201,7 +1202,7 @@ public class ProjectAction extends BaseAction implements Preparable {
      * @return the initialSave
      */
     public boolean isInitialSave() {
-        return initialSave;
+        return this.initialSave;
     }
 
     /**
