@@ -503,9 +503,6 @@
       <bind-xml name="ArrayDesign" type="gov.nih.nci.caarray.domain.array.ArrayDesign" location="arrayDesigns" node="element" />
     </field>
   </class>
-  <class name="gov.nih.nci.caarray.domain.project.Proposal" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="Proposal" ns-uri="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.project" />
-  </class>
   <class name="gov.nih.nci.caarray.domain.project.Project" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
     <map-to xml="Project" ns-uri="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.project" />
     <field name="files" type="gov.nih.nci.caarray.domain.file.CaArrayFile" collection="collection" handler="gov.nih.nci.common.util.CastorCollectionFieldHandler">

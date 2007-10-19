@@ -50,16 +50,6 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="Proposal" type="Proposal" />
-  <xs:complexType name="Proposal">
-    <xs:complexContent>
-      <xs:extension base="gov.nih.nci.caarray.domain:AbstractCaArrayEntity">
-        <xs:sequence>
-          <xs:element name="project" minOccurs="0" maxOccurs="1" type="Project" />
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
   <xs:element name="Project" type="Project" />
   <xs:complexType name="Project">
     <xs:complexContent>
