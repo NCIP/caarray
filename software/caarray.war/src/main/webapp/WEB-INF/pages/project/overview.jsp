@@ -6,10 +6,9 @@
     <p class="instructions">
         The Overall Experiment Characteristics represent the minimum set of 
         attributes required to submit an experiment for review. 
-        Required fields are highlighted and have <s:property value="proposal.id"/>
+        Required fields are highlighted and have 
         <span class="required"><span class="asterisk">*</span>asterisks<span class="asterisk">*</span></span>.
         </p>
-    <s:actionerror/> <br> <s:actionmessage/>
     <s:form action="ajax_Project_saveTab_overview" cssClass="form" id="projectForm" method="get">
         <s:textfield required="true" name="proposal.project.experiment.title" label="Experiment Title" size="80" tabindex="1"/>
         <tr>
@@ -53,7 +52,7 @@
                   list="cellTypes" listKey="id" listValue="value"/>
         <s:select multiple="true" name="selectedConditions" label="Conditions" tabindex="11"
                   list="conditions" listKey="id" listValue="value"/>
-        <s:hidden name="proposalKey" />
+        <s:hidden name="proposal.id" />
         <s:hidden name="ajax" value="%{'true'}"/>
 <script type="text/javascript">
 var dol = new DynamicOptionList("selectedManufacturer", "selectedArrayDesigns");

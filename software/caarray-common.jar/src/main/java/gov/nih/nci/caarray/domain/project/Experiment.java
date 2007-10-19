@@ -851,7 +851,8 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the factors
      */
-    @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.EAGER)
+    @OneToMany
+    @JoinColumn(name="experiment")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
           org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public List<Factor> getFactors() {

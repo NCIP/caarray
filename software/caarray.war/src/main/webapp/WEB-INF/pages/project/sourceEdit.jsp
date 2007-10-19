@@ -14,8 +14,9 @@
             <s:textarea name="currentSource.description" key="experiment.sources.description" rows="3" cols="80" tabindex="2" />
             <s:select name="currentSource.tissueSite" label="Tissue Site" tabindex="3" value="currentSource.tissueSite.id"
                   list="proposal.project.experiment.tissueSites" listKey="id" listValue="value"/>
-            <s:hidden name="currentSourceIndex" />
-            <s:hidden name="proposalKey" />
+            <s:hidden name="currentSource.id" />
+            <s:hidden name="proposal.id" />
+            <s:hidden name="ajax" value="%{'true'}"/>
         </s:form>
         <a href="javascript:TabUtils.submitSubTabForm('projectForm', 'tabboxlevel2wrapper', 'save_session');" class="save" tabindex="4"><img src="<c:url value="/images/btn_save_draft.gif"/>" alt="Save Draft"></a>
    </div>

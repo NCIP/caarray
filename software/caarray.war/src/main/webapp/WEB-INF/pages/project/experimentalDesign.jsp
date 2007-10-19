@@ -15,7 +15,7 @@
         <s:textarea name="proposal.project.experiment.qualityControlDescription" label="Experiment Quality Control Description" cols="80" rows="8" tabindex="3"/>
         <s:select multiple="true" name="selectedReplicateTypes" label="Replicate Types" tabindex="6"
                   list="replicateTypes" listKey="id" listValue="value"/>
-        <s:hidden name="proposalKey" />
+        <s:hidden name="proposal.id" />
         <s:hidden name="ajax" value="%{'true'}"/>
     </s:form>
     <a href="javascript:TabUtils.submitTabForm('projectForm', 'tabboxwrapper', 'save_session');" class="save"><img src="<c:url value="/images/btn_save_draft.gif"/>" alt="Save Draft"></a>

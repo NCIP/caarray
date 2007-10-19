@@ -11,8 +11,9 @@
         <p class="instructions">Required fields are highlighted and have <span class="required"><span class="asterisk">*</span>asterisks<span class="asterisk">*</span></span>.</p>
         <s:form action="ajax_Project_saveTab_factorEdit" cssClass="form" id="projectForm" method="post">
             <s:textfield required="true" name="currentFactor.name" key="experiment.experimentalFactors.name" size="80" tabindex="1"/>
-            <s:hidden name="currentFactorIndex" />
-            <s:hidden name="proposalKey" />
+            <s:hidden name="currentFactor.id" />
+            <s:hidden name="proposal.id" />
+            <s:hidden name="ajax" value="true"/>
         </s:form>
         <a href="javascript:TabUtils.submitSubTabForm('projectForm', 'tabboxlevel2wrapper', 'save_session');" class="save" tabindex="2"><img src="<c:url value="/images/btn_save_draft.gif"/>" alt="Save Draft"></a>
    </div>

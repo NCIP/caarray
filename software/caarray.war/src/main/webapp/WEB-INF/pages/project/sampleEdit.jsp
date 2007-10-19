@@ -12,8 +12,9 @@
         <s:form action="ajax_Project_saveTab_sampleEdit" cssClass="form" id="projectForm" method="post">
             <s:textfield required="true" name="currentSample.name" key="experiment.samples.name" size="80" tabindex="1"/>
             <s:textarea name="currentSample.description" key="experiment.samples.description" rows="3" cols="75" tabindex="2" />
-            <s:hidden name="currentSampleIndex" />
-            <s:hidden name="proposalKey" />
+            <s:hidden name="currentSample.id" />
+            <s:hidden name="proposal.id" />
+            <s:hidden name="ajax" value="true" />
         </s:form>
         <a href="javascript:TabUtils.submitSubTabForm('projectForm', 'tabboxlevel2wrapper', 'save_session');" class="save" tabindex="3"><img src="<c:url value="/images/btn_save_draft.gif"/>" alt="Save Draft"></a>
    </div>

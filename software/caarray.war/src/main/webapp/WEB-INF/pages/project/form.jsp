@@ -8,27 +8,27 @@
         <%@ include file="/WEB-INF/pages/common/messages.jsp" %>
 
         <c:url value="ajax_Project_loadTab_overview.action" var="overviewUrl">
-            <c:param name="proposalKey" value="${proposalKey}" />
+            <c:param name="proposal.id" value="${proposal.id}" />
             <c:param name="ajax" value="true" />
         </c:url>
         <c:url value="ajax_Project_loadTab_contacts.action" var="contactsUrl">
-            <c:param name="proposalKey" value="${proposalKey}" />
+            <c:param name="proposal.id" value="${proposal.id}" />
             <c:param name="ajax" value="true" />
         </c:url>
         <c:url value="ajax_Project_loadGenericTab_annotations.action" var="annotationsUrl">
-            <c:param name="proposalKey" value="${proposalKey}" />
+            <c:param name="proposal.id" value="${proposal.id}" />
             <c:param name="ajax" value="true" />
         </c:url>
         <c:url value="ajax_Project_loadGenericTab_data.action" var="dataUrl">
-            <c:param name="proposalKey" value="${proposalKey}" />
+            <c:param name="proposal.id" value="${proposal.id}" />
             <c:param name="ajax" value="true" />
         </c:url>
         <c:url value="ajax_Project_loadGenericTab_data.action" var="supplementalUrl">
-            <c:param name="proposalKey" value="${proposalKey}" />
+            <c:param name="proposal.id" value="${proposal.id}" />
             <c:param name="ajax" value="true" />
         </c:url>
         <c:url value="ajax_Project_loadGenericTab_publications.action" var="publicationsUrl">
-            <c:param name="proposalKey" value="${proposalKey}" />
+            <c:param name="proposal.id" value="${proposal.id}" />
             <c:param name="ajax" value="true" />
         </c:url>
 

@@ -110,7 +110,6 @@ public class Factor extends AbstractCaArrayEntity {
     private String name;
     private Term type;
     private Set<FactorValue> factorValues = new HashSet<FactorValue>();
-    private Experiment experiment;
 
     /**
      * Gets the name.
@@ -171,22 +170,6 @@ public class Factor extends AbstractCaArrayEntity {
     @SuppressWarnings("unused")
     private void setFactorValues(final Set<FactorValue> factorValuesVal) { // NOPMD
         this.factorValues = factorValuesVal;
-    }
-
-    /**
-     * @return the experiment
-     */
-    @ManyToOne
-    @ForeignKey(name = "FACTOR_EXPR_FK")
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    /**
-     * @param experiment the experiment to set
-     */
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
     }
 
     /**

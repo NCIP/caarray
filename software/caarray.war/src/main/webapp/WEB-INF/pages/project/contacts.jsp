@@ -20,7 +20,7 @@
         <s:textfield required="true" name="mainPointOfContact.email" label="Email" size="80" tabindex="8"/>
         <s:textfield required="true" name="mainPointOfContact.phone" label="Phone" size="80" tabindex="9"/>
         </tbody>
-        <s:hidden name="proposalKey" />
+        <s:hidden name="proposal.id" />
         <s:hidden name="ajax" value="%{'true'}"/>
     </s:form>
 
