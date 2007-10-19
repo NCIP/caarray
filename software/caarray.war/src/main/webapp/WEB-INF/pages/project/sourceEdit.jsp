@@ -18,6 +18,6 @@
             <s:hidden name="project.id" />
             <s:hidden name="ajax" value="%{'true'}"/>
         </s:form>
-        <a href="javascript:TabUtils.submitSubTabForm('projectForm', 'tabboxlevel2wrapper', 'save_session');" class="save" tabindex="4"><img src="<c:url value="/images/btn_save_draft.gif"/>" alt="Save Draft"></a>
+        <a href="javascript:TabUtils.submitSubTabForm('projectForm', 'tabboxlevel2wrapper', 'save_draft');" class="save" tabindex="4"><img src="<c:url value="/images/btn_save_draft.gif"/>" alt="Save Draft"></a>
    </div>
 </caarray:tabPane>

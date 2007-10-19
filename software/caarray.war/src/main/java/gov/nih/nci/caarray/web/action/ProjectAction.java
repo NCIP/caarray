@@ -346,6 +346,7 @@ public class ProjectAction extends BaseAction implements Preparable {
         ExperimentContact pi = getProject().getExperiment().getPrimaryInvestigator();
         if (pi != null) {
             try {
+                this.primaryInvestigator.setId(pi.getContact().getId());
                 PropertyUtils.copyProperties(pi.getContact(), this.primaryInvestigator);
             } catch (IllegalAccessException e) {
                 // cannot happen
@@ -369,6 +370,7 @@ public class ProjectAction extends BaseAction implements Preparable {
                     mainPoc.setExperiment(getProject().getExperiment());
                 }
                 try {
+                    this.mainPointOfContact.setId(mainPoc.getContact().getId());
                     PropertyUtils.copyProperties(mainPoc.getContact(), this.mainPointOfContact);
                 } catch (IllegalAccessException e) {
                     // cannot happen
