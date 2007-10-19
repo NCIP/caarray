@@ -135,6 +135,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     public static Project createNew() {
         Project project = new Project();
+        project.status = ProposalStatus.DRAFT;
         project.setExperiment(Experiment.createNew());
         project.hostProfile.setSecurityLevel(SecurityLevel.READ_WRITE_SELECTIVE);
         return project;
