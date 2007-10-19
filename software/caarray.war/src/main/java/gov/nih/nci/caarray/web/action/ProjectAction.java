@@ -78,7 +78,8 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     private User user;
     private String saveMode;
-
+    private boolean initialSave;
+    
     private List<Long> selectedTissueSites = new ArrayList<Long>();
     private List<Long> selectedTissueTypes = new ArrayList<Long>();
     private List<Long> selectedCellTypes = new ArrayList<Long>();
@@ -499,6 +500,7 @@ public class ProjectAction extends BaseAction implements Preparable {
         if (SAVE_MODE_DRAFT.equals(this.saveMode) || SAVE_MODE_SUBMIT.equals(this.saveMode)) {
             try {
                 if (SAVE_MODE_DRAFT.equals(this.saveMode)) {
+                    this.initialSave = getProject().getId() == null;
                     getDelegate().getProjectManagementService().saveDraftProject((getProject()));
                     List<String> args = new ArrayList<String>();
                     args.add(getProject().getExperiment().getTitle());
@@ -1191,5 +1193,19 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     public void setMainPointOfContact(Person mainPointOfContact) {
         this.mainPointOfContact = mainPointOfContact;
+    }
+
+    /**
+     * @return the initialSave
+     */
+    public boolean isInitialSave() {
+        return initialSave;
+    }
+
+    /**
+     * @param initialSave the initialSave to set
+     */
+    public void setInitialSave(boolean initialSave) {
+        this.initialSave = initialSave;
     }
 }

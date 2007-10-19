@@ -416,5 +416,20 @@ var TabUtils = {
         url = $(formId).action;
 
         new Ajax.Updater(divId, url, {parameters: formData, evalScripts: true} );
+    },
+    
+    wrapTabLinks: function(projectId) {
+        var oldTabLinkMethod = executeAjaxTab_tabs;
+        executeAjaxTab_tabs = function(link, cls, url, arg4) {
+            url = url.replace(/project\.id=/g, 'project.id=' + projectId); 
+            oldTabLinkMethod(link, cls, url, arg4);
+        }
+        if (window.executeAjaxTab_tablevel2) {
+            var oldTabLevel2LinkMethod = executeAjaxTab_tablevel2;
+            executeAjaxTab_tablevel2 = function(link, cls, url, arg4) {
+                url = url.replace(/project\.id=/g, 'project.id=' + projectId); 
+                oldTabLevel2LinkMethod(link, cls, url, arg4);
+            }        
+        }
     }
 }

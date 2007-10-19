@@ -10,6 +10,7 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="/struts-tags" prefix="s" %>
 
 <c:if test="${empty loadingPaneMessageKey}">
     <c:set var="loadingPaneMessageKey" value="message.loading" />
@@ -48,3 +49,9 @@
     </c:if>
     <jsp:doBody />
 </div>
+
+<s:if test="initialSave">
+    <script type="text/javascript">
+        TabUtils.wrapTabLinks(<s:property value="project.id"/>);
+    </script>
+</s:if>
