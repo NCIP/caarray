@@ -91,7 +91,6 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
  */
 public enum AffymetrixSnpChpQuantitationType implements QuantitationTypeDescriptor {
 
-    CHP_PROBE_SET_NAME("ProbeSetName", DataType.STRING),
     CHP_ALLELE("CHPAllele", DataType.STRING),
     CHP_ALLELE_PVALUE("CHPAllelePvalue", DataType.FLOAT),
     CHP_RAS1("CHPAlleleRAS1", DataType.FLOAT),

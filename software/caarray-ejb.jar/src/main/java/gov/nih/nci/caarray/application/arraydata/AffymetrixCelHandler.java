@@ -154,12 +154,7 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
 
     private void prepareColumns(DataSet dataSet, List<QuantitationType> types) {
         HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
-        for (AbstractDataColumn column : hybridizationData.getColumns()) {
-            if (!column.isLoaded() && types.contains(column.getQuantitationType())) {
-                LOG.debug("Preparing unloaded data column: " + column.getQuantitationType().getName());
-                column.initializeArray(celData.getCells());
-            }
-        }
+        prepareColumns(hybridizationData, types, celData.getCells());
     }
 
     private void loadDataIntoColumns(HybridizationData hybridizationData, List<QuantitationType> types) {
@@ -202,6 +197,11 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
         } else {
             throw new IllegalArgumentException("Unsupported QuantitationType for CEL data: " + quantitationType);
         }
+    }
+
+    @Override
+    Log getLog() {
+        return LOG;
     }
 
 }

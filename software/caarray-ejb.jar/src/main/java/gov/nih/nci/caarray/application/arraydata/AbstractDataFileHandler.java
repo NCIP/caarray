@@ -85,7 +85,11 @@ package gov.nih.nci.caarray.application.arraydata;
 import java.io.File;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+
+import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -102,5 +106,16 @@ abstract class AbstractDataFileHandler {
     abstract FileValidationResult validate(CaArrayFile caArrayFile, File file);
 
     abstract void loadData(DataSet dataSet, List<QuantitationType> types, File file);
+
+    void prepareColumns(HybridizationData hybridizationData, List<QuantitationType> types, int numberOfRows) {
+        for (AbstractDataColumn column : hybridizationData.getColumns()) {
+            if (!column.isLoaded() && types.contains(column.getQuantitationType())) {
+                getLog().debug("Preparing unloaded data column: " + column.getQuantitationType().getName());
+                column.initializeArray(numberOfRows);
+            }
+        }
+    }
+
+    abstract Log getLog();
 
 }

@@ -88,6 +88,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
+import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixExpressionChpQuantitationType;
+import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceTest;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
@@ -101,12 +103,14 @@ import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.BooleanColumn;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.FloatColumn;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.data.ShortColumn;
+import gov.nih.nci.caarray.domain.data.StringColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
@@ -125,6 +129,11 @@ import org.junit.Test;
 
 import affymetrix.fusion.cel.FusionCELData;
 import affymetrix.fusion.cel.FusionCELFileEntryType;
+import affymetrix.fusion.chp.FusionCHPData;
+import affymetrix.fusion.chp.FusionCHPDataReg;
+import affymetrix.fusion.chp.FusionCHPLegacyData;
+import affymetrix.fusion.chp.FusionExpressionProbeSetResults;
+import affymetrix.fusion.chp.FusionGenotypeProbeSetResults;
 
 /**
  * Tests the ArrayDataService subsystem
@@ -157,6 +166,75 @@ public class ArrayDataServiceTest {
     @Test
     public void testImport() throws InvalidDataFileException {
         testImportCel();
+        testImportExpressionChp();
+        testImportSnpChp();
+    }
+
+    private void testImportExpressionChp() throws InvalidDataFileException {
+        testImportExpressionChp(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CHP);
+        testImportExpressionChp(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CALVIN_CHP);
+    }
+
+    private void testImportExpressionChp(File cdfFile, File chpFile) throws InvalidDataFileException {
+        DerivedArrayData chpData = getChpData(cdfFile, chpFile);
+        assertEquals(FileStatus.UPLOADED, chpData.getDataFile().getFileStatus());
+        assertNull(chpData.getDataSet());
+        arrayDataService.importData(chpData);
+        assertEquals(FileStatus.IMPORTED, chpData.getDataFile().getFileStatus());
+        assertNotNull(chpData.getDataSet());
+        DataSet dataSet = chpData.getDataSet();
+        assertNotNull(dataSet.getHybridizationDataList());
+        assertEquals(1, dataSet.getHybridizationDataList().size());
+        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
+        assertEquals(chpData.getHybridizations().iterator().next(), hybridizationData.getHybridization());
+        assertEquals(AffymetrixExpressionChpQuantitationType.values().length,
+                hybridizationData.getColumns().size());
+        assertEquals(AffymetrixExpressionChpQuantitationType.values().length,
+                dataSet.getQuantitationTypes().size());
+        checkChpExpresionColumnTypes(dataSet);
+    }
+
+    private void checkChpExpresionColumnTypes(DataSet dataSet) {
+        checkColumnTypes(dataSet, AffymetrixExpressionChpQuantitationType.values());
+    }
+
+    private void checkColumnTypes(DataSet dataSet, QuantitationTypeDescriptor[] descriptors) {
+        for (int i = 0; i < descriptors.length; i++) {
+            checkType(descriptors[i], dataSet.getQuantitationTypes().get(i));
+            checkType(descriptors[i], dataSet.getHybridizationDataList().get(0).getColumns().get(i).getQuantitationType());
+        }
+    }
+
+    private void checkType(QuantitationTypeDescriptor typeDescriptor, QuantitationType type) {
+        assertEquals(typeDescriptor.getName(), type.getName());
+    }
+
+    private void testImportSnpChp() throws InvalidDataFileException {
+        testImportSnpChp(AffymetrixArrayDesignFiles.TEN_K_CDF, AffymetrixArrayDataFiles.TEN_K_1_CHP);
+        testImportSnpChp(AffymetrixArrayDesignFiles.TEN_K_CDF, AffymetrixArrayDataFiles.TEN_K_1_CALVIN_CHP);
+    }
+
+    private void testImportSnpChp(File cdfFile, File chpFile) throws InvalidDataFileException {
+        DerivedArrayData chpData = getChpData(cdfFile, chpFile);
+        assertEquals(FileStatus.UPLOADED, chpData.getDataFile().getFileStatus());
+        assertNull(chpData.getDataSet());
+        arrayDataService.importData(chpData);
+        assertEquals(FileStatus.IMPORTED, chpData.getDataFile().getFileStatus());
+        assertNotNull(chpData.getDataSet());
+        DataSet dataSet = chpData.getDataSet();
+        assertNotNull(dataSet.getHybridizationDataList());
+        assertEquals(1, dataSet.getHybridizationDataList().size());
+        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
+        assertEquals(chpData.getHybridizations().iterator().next(), hybridizationData.getHybridization());
+        assertEquals(AffymetrixSnpChpQuantitationType.values().length,
+                hybridizationData.getColumns().size());
+        assertEquals(AffymetrixSnpChpQuantitationType.values().length,
+                dataSet.getQuantitationTypes().size());
+        checkChpSnpColumnTypes(dataSet);
+    }
+
+    private void checkChpSnpColumnTypes(DataSet dataSet) {
+        checkColumnTypes(dataSet, AffymetrixSnpChpQuantitationType.values());
     }
 
     private void testImportCel() throws InvalidDataFileException {
@@ -164,8 +242,6 @@ public class ArrayDataServiceTest {
         assertEquals(FileStatus.UPLOADED, celData.getDataFile().getFileStatus());
         assertNull(celData.getDataSet());
         arrayDataService.importData(celData);
-        assertNotNull(celData.getType());
-        assertEquals(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL.getName(), celData.getType().getName());
         assertEquals(FileStatus.IMPORTED, celData.getDataFile().getFileStatus());
         assertNotNull(celData.getDataSet());
         DataSet dataSet = celData.getDataSet();
@@ -173,8 +249,10 @@ public class ArrayDataServiceTest {
         assertEquals(1, dataSet.getHybridizationDataList().size());
         HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
         assertEquals(celData.getHybridization(), hybridizationData.getHybridization());
-        assertEquals(7, hybridizationData.getColumns().size());
-        assertEquals(7, dataSet.getQuantitationTypes().size());
+        assertEquals(AffymetrixCelQuantitationType.values().length,
+                hybridizationData.getColumns().size());
+        assertEquals(AffymetrixCelQuantitationType.values().length,
+                dataSet.getQuantitationTypes().size());
         checkCelColumnTypes(dataSet);
     }
 
@@ -215,6 +293,52 @@ public class ArrayDataServiceTest {
 
     @Test
     public void testGetData() throws InvalidDataFileException {
+        testCelData();
+        testExpressionChpData();
+        testSnpChpData();
+    }
+
+    private void testExpressionChpData() throws InvalidDataFileException {
+        DerivedArrayData chpData = getChpData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CHP);
+        arrayDataService.importData(chpData);
+        DataSet dataSet = arrayDataService.getData(chpData);
+        checkExpressionData(AffymetrixArrayDataFiles.TEST3_CHP, dataSet);
+    }
+
+    private void checkExpressionData(File chpFile, DataSet dataSet) {
+        assertNotNull(dataSet.getHybridizationDataList());
+        assertEquals(1, dataSet.getHybridizationDataList().size());
+        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
+        FusionCHPLegacyData chpData = FusionCHPLegacyData.fromBase(FusionCHPDataReg.read(chpFile.getAbsolutePath()));
+        FusionExpressionProbeSetResults results = new FusionExpressionProbeSetResults();
+        FloatColumn signalColumn = (FloatColumn) hybridizationData.getColumn(AffymetrixExpressionChpQuantitationType.CHP_SIGNAL);
+        for (int i = 0; i < chpData.getHeader().getNumProbeSets(); i++) {
+            chpData.getExpressionResults(i, results);
+            assertEquals(results.getSignal(), signalColumn.getValues()[i]);
+        }
+    }
+
+    private void testSnpChpData() throws InvalidDataFileException {
+        DerivedArrayData chpData = getChpData(AffymetrixArrayDesignFiles.TEN_K_CDF, AffymetrixArrayDataFiles.TEN_K_1_CHP);
+        arrayDataService.importData(chpData);
+        DataSet dataSet = arrayDataService.getData(chpData);
+        checkSnpData(AffymetrixArrayDataFiles.TEN_K_1_CHP, dataSet);
+    }
+
+    private void checkSnpData(File chpFile, DataSet dataSet) {
+        assertNotNull(dataSet.getHybridizationDataList());
+        assertEquals(1, dataSet.getHybridizationDataList().size());
+        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
+        FusionCHPLegacyData chpData = FusionCHPLegacyData.fromBase(FusionCHPDataReg.read(chpFile.getAbsolutePath()));
+        FusionGenotypeProbeSetResults results = new FusionGenotypeProbeSetResults();
+        StringColumn alleleColumn = (StringColumn) hybridizationData.getColumn(AffymetrixSnpChpQuantitationType.CHP_ALLELE);
+        for (int i = 0; i < chpData.getHeader().getNumProbeSets(); i++) {
+            chpData.getGenotypingResults(i, results);
+            assertEquals(results.getAlleleCallString(), alleleColumn.getValues()[i]);
+        }
+    }
+
+    private void testCelData() throws InvalidDataFileException {
         RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
         arrayDataService.importData(celData);
         DataSet dataSet = arrayDataService.getData(celData);
@@ -225,9 +349,6 @@ public class ArrayDataServiceTest {
         assertNotNull(dataSet.getHybridizationDataList());
         assertEquals(1, dataSet.getHybridizationDataList().size());
         HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
-        assertEquals(7, hybridizationData.getColumns().size());
-        assertEquals(7, dataSet.getQuantitationTypes().size());
-        checkCelColumnTypes(dataSet);
         FusionCELData fusionCelData = new FusionCELData();
         fusionCelData.setFileName(celFile.getAbsolutePath());
         fusionCelData.read();
@@ -252,24 +373,20 @@ public class ArrayDataServiceTest {
     }
 
     private void checkCelColumnTypes(DataSet dataSet) {
-        assertTrue(AffymetrixCelQuantitationType.CEL_X.isEquivalent(dataSet.getQuantitationTypes().get(0)));
-        assertTrue(AffymetrixCelQuantitationType.CEL_Y.isEquivalent(dataSet.getQuantitationTypes().get(1)));
-        assertTrue(AffymetrixCelQuantitationType.CEL_INTENSITY.isEquivalent(dataSet.getQuantitationTypes().get(2)));
-        assertTrue(AffymetrixCelQuantitationType.CEL_INTENSITY_STD_DEV.isEquivalent(dataSet.getQuantitationTypes().get(3)));
-        assertTrue(AffymetrixCelQuantitationType.CEL_MASK.isEquivalent(dataSet.getQuantitationTypes().get(4)));
-        assertTrue(AffymetrixCelQuantitationType.CEL_OUTLIER.isEquivalent(dataSet.getQuantitationTypes().get(5)));
-        assertTrue(AffymetrixCelQuantitationType.CEL_PIXELS.isEquivalent(dataSet.getQuantitationTypes().get(6)));
-
-        assertTrue(AffymetrixCelQuantitationType.CEL_X.isEquivalent(dataSet.getHybridizationDataList().get(0).getColumns().get(0).getQuantitationType()));
-        assertTrue(AffymetrixCelQuantitationType.CEL_Y.isEquivalent(dataSet.getHybridizationDataList().get(0).getColumns().get(1).getQuantitationType()));
-        assertTrue(AffymetrixCelQuantitationType.CEL_INTENSITY.isEquivalent(dataSet.getHybridizationDataList().get(0).getColumns().get(2).getQuantitationType()));
-        assertTrue(AffymetrixCelQuantitationType.CEL_INTENSITY_STD_DEV.isEquivalent(dataSet.getHybridizationDataList().get(0).getColumns().get(3).getQuantitationType()));
-        assertTrue(AffymetrixCelQuantitationType.CEL_MASK.isEquivalent(dataSet.getHybridizationDataList().get(0).getColumns().get(4).getQuantitationType()));
-        assertTrue(AffymetrixCelQuantitationType.CEL_OUTLIER.isEquivalent(dataSet.getHybridizationDataList().get(0).getColumns().get(5).getQuantitationType()));
-        assertTrue(AffymetrixCelQuantitationType.CEL_PIXELS.isEquivalent(dataSet.getHybridizationDataList().get(0).getColumns().get(6).getQuantitationType()));
-}
+        checkColumnTypes(dataSet, AffymetrixCelQuantitationType.values());
+    }
 
     private RawArrayData getCelData(File cdf, File cel) {
+        Hybridization hybridization = createAffyHybridization(cdf);
+        RawArrayData celData = new RawArrayData();
+        celData.setType(daoFactoryStub.getArrayDao().getArrayDataType(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL));
+        celData.setDataFile(getCelCaArrayFile(cel));
+        celData.setHybridization(hybridization);
+        hybridization.setArrayData(celData);
+        return celData;
+    }
+
+    private Hybridization createAffyHybridization(File cdf) {
         ArrayDesign arrayDesign = new ArrayDesign();
         CaArrayFile designFile = fileAccessServiceStub.add(cdf);
         designFile.setType(FileType.AFFYMETRIX_CDF);
@@ -278,12 +395,17 @@ public class ArrayDataServiceTest {
         array.setDesign(arrayDesign);
         Hybridization hybridization = new Hybridization();
         hybridization.setArray(array);
-        RawArrayData celData = new RawArrayData();
-        celData.setType(daoFactoryStub.getArrayDao().getArrayDataType(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL));
-        celData.setDataFile(getCelCaArrayFile(cel));
-        celData.setHybridization(hybridization);
-        hybridization.setArrayData(celData);
-        return celData;
+        return hybridization;
+    }
+
+    private DerivedArrayData getChpData(File cdf, File file) {
+        Hybridization hybridization = createAffyHybridization(cdf);
+        DerivedArrayData chpData = new DerivedArrayData();
+        chpData.setType(daoFactoryStub.getArrayDao().getArrayDataType(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CHP));
+        chpData.setDataFile(getChpCaArrayFile(file));
+        chpData.getHybridizations().add(hybridization);
+        hybridization.getDerivedDataCollection().add(chpData);
+        return chpData;
     }
 
     private CaArrayFile getCelCaArrayFile(File cel) {
