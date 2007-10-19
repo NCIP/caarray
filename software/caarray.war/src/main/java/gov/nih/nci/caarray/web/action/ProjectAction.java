@@ -47,7 +47,7 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
  * ProjectAction.
- * 
+ *
  * @author John Hedden, Dan Kokotov, Scott Miller
  */
 @Validation
@@ -124,7 +124,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * create new project.
-     * 
+     *
      * @return path String
      */
     @SkipValidation
@@ -136,7 +136,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * Get the entity id
-     * 
+     *
      * @param entity the entity
      * @return the entity id or null if entity is null
      */
@@ -146,7 +146,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * Get the list of ids from a Collection of entities
-     * 
+     *
      * @param entities the Collection of entities
      * @return the List<Long> of the ids of those entities
      */
@@ -160,7 +160,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * load the overview tab
-     * 
+     *
      * @return name of result to forward to
      * @throws Exception Exception
      */
@@ -168,10 +168,10 @@ public class ProjectAction extends BaseAction implements Preparable {
         setupOverviewTab();
         return loadTab();
     }
-    
+
     /**
      * set up needed lists for overview tab
-     * 
+     *
      * @return name of result to forward to
      * @throws Exception Exception
      */
@@ -197,11 +197,11 @@ public class ProjectAction extends BaseAction implements Preparable {
         this.selectedArrayDesigns = getIdsFromEntities(this.proposal.getProject().getExperiment().getArrayDesigns());
         this.selectedManufacturer = getIdFromEntity(this.proposal.getProject().getExperiment().getManufacturer());
     }
-    
+
 
     /**
      * load a given tab in the submit experiment workflow
-     * 
+     *
      * @return name of result to forward to
      * @throws Exception Exception
      */
@@ -212,7 +212,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * setup contacts tab
-     * 
+     *
      * @return name of result to forward to
      * @throws Exception Exception
      */
@@ -248,7 +248,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * load a given tab in the submit experiment workflow
-     * 
+     *
      * @return name of result to forward to
      * @throws Exception Exception
      */
@@ -259,7 +259,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * set up experimental design tab
-     * 
+     *
      * @return name of result to forward to
      * @throws Exception Exception
      */
@@ -298,7 +298,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * load a given tab in the submit experiment workflow
-     * 
+     *
      * @return name of result to forward to
      * @throws Exception Exception
      */
@@ -308,7 +308,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * save a project.
-     * 
+     *
      * @return path String
      * @throws VocabularyServiceException if there is an error retrieving terms
      * @throws Exception Exception
@@ -336,7 +336,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * save a project.
-     * 
+     *
      * @return path String
      * @throws Exception Exception
      */
@@ -428,7 +428,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * Get the Term with given id
-     * 
+     *
      * @param id the id of Term to lookup (could be null)
      * @return the Term with that id or null if id is null or Term could not be found
      */
@@ -439,7 +439,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * Get the Organism with given id
-     * 
+     *
      * @param id the id of Organism to lookup (could be null)
      * @return the Organism with that id or null if id is null or Organism could not be found
      */
@@ -450,7 +450,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * Get the Organization with given id
-     * 
+     *
      * @param id the id of Organizations to lookup (could be null)
      * @return the Organization with that id or null if id is null or Organization could not be found
      */
@@ -461,7 +461,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * Get the list of Terms corresponding to a List of Term ids
-     * 
+     *
      * @param ids the ids of Terms to lookup
      * @return the List<Terms> with those ids
      */
@@ -480,7 +480,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * Get the list of ArrayDesigns corresponding to a List of ArrayDesign ids
-     * 
+     *
      * @param ids the ids of ArrayDesigns to lookup
      * @return the List<ArrayDesigns> with those ids
      */
@@ -499,7 +499,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * save a project.
-     * 
+     *
      * @return path String
      * @throws Exception Exception
      */
@@ -532,7 +532,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * create new proposal
-     * 
+     *
      * @return path String
      */
     @SkipValidation
@@ -543,7 +543,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * edit existing proposal
-     * 
+     *
      * @return path String
      */
     @SkipValidation
@@ -553,8 +553,19 @@ public class ProjectAction extends BaseAction implements Preparable {
     }
 
     /**
+     * edit existing proposal permissions
+     *
+     * @return path String
+     */
+    @SkipValidation
+    public String editPermissions() {
+        setMenu("ProjectEditLinks");
+        return "permissions";
+    }
+
+    /**
      * show details for a proposal
-     * 
+     *
      * @return path String
      */
     @SkipValidation
@@ -566,19 +577,19 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * Toggles the browsability status.
-     * 
+     *
      * @return success
      */
     @SkipValidation
     public String toggle() {
         setMenu("ProjectEditLinks");
         getDelegate().getProjectManagementService().toggleBrowsableStatus(getProject().getId());
-        return SUCCESS;
+        return WORKSPACE_RESULT;
     }
 
     /**
      * Saves the source editing tab.
-     * 
+     *
      * @return the string indicating the result to use.
      */
     public String sourceEditSaveTab() {
@@ -594,7 +605,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * remove the source with the given id from the set of sources.
-     * 
+     *
      * @return the string indicating which result to forward to.
      */
     @SkipValidation
@@ -608,7 +619,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * Copy the soucre to a new object and forward to the edit screen.
-     * 
+     *
      * @return the string indicating the result to forward to.
      */
     @SkipValidation
@@ -625,7 +636,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * Saves the samples editing tab.
-     * 
+     *
      * @return the string indicating the result to use.
      */
     public String sampleEditSaveTab() {
@@ -641,7 +652,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * remove the sample with the given id from the set of samples.
-     * 
+     *
      * @return the string indicating which result to forward to.
      */
     @SkipValidation
@@ -655,7 +666,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * Copy the sample to a new object and forward to the edit screen.
-     * 
+     *
      * @return the string indicating the result to forward to.
      */
     @SkipValidation
@@ -673,7 +684,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * Saves the experimentalFactor editing tab.
-     * 
+     *
      * @return the string indicating the result to use.
      */
     public String factorEditSaveTab() {
@@ -689,7 +700,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * remove the factor with the given id from the set of factors.
-     * 
+     *
      * @return the string indicating which result to forward to.
      */
     @SkipValidation
@@ -703,7 +714,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * Copy the factor to a new object and forward to the edit screen.
-     * 
+     *
      * @return the string indicating the result to forward to.
      */
     @SkipValidation
@@ -718,7 +729,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     /**
      * gets the delegate from factory.
-     * 
+     *
      * @return Delegate ProjectDelegate
      */
     public ProjectDelegate getDelegate() {
@@ -787,9 +798,9 @@ public class ProjectAction extends BaseAction implements Preparable {
     private VocabularyService getVocabularyService() {
         return (VocabularyService) ServiceLocator.INSTANCE.lookup(VocabularyService.JNDI_NAME);
     }
-    
+
     private GenericDataService getGenericDataService() {
-        return (GenericDataService) ServiceLocator.INSTANCE.lookup(GenericDataService.JNDI_NAME);        
+        return (GenericDataService) ServiceLocator.INSTANCE.lookup(GenericDataService.JNDI_NAME);
     }
 
     /**

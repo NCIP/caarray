@@ -90,6 +90,7 @@
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
             <result name="details">/WEB-INF/pages/project/details.jsp</result>
             <result name="list">/WEB-INF/pages/project/list.jsp</result>
+            <result name="permissions">/WEB-INF/pages/project/permissions.jsp</result>
         </action>
 
         <action name="ajax_Project_loadTab_*"
