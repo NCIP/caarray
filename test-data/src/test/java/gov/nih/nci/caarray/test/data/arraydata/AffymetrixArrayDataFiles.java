@@ -107,6 +107,12 @@ public class AffymetrixArrayDataFiles {
     public static final File HG_FOCUS_CALVIN_CHP =
         new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/HG-Focus-1-121502.calvin.CHP").getFile());
 
+    public static final File TEN_K_1_CHP =
+        new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/10k_1.CHP").getFile());
+
+    public static final File TEN_K_1_CALVIN_CHP =
+        new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/10k_1-calvin.CHP").getFile());
+
     public static final File TEST_HG_U133_PLUS_2_CEL =
         new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/Test_HG-U133_Plus_2.CEL").getFile());
 

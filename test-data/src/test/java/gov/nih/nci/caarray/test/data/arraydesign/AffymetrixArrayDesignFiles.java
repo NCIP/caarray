@@ -98,4 +98,7 @@ public class AffymetrixArrayDesignFiles {
     public static final File HG_FOCUS_CDF  =
         new File(AffymetrixArrayDesignFiles.class.getResource("/arraydesign/affymetrix/HG-Focus.CDF").getFile());
 
+    public static final File TEN_K_CDF  =
+        new File(AffymetrixArrayDesignFiles.class.getResource("/arraydesign/affymetrix/Mapping10K_Xba131-xda.CDF").getFile());
+
 }
