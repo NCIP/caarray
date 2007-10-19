@@ -1119,6 +1119,8 @@
             </sequential>
         </for>
     </target>
+    
+    <target name="redeploy" description="Developer undeploy, clean, redeploy" depends="undeploy, clean, database:reinitialize, deploy"/>
 
     <!-- BEGIN STELLIGENT ADD -->
     <property name="keyfile.file" value="caarray2-key.properties" />
