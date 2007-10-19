@@ -171,13 +171,28 @@ public final class HybridizationData extends AbstractCaArrayObject {
 
     /**
      * Returns the column matching the provided type, if one exists.
-     * 
+     *
      * @param type get column for this type
      * @return the matching column or null.
      */
     public AbstractDataColumn getColumn(QuantitationType type) {
         for (AbstractDataColumn column : columns) {
             if (column.getQuantitationType().equals(type)) {
+                return column;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the column matching the provided type, if one exists.
+     *
+     * @param typeDescriptor get column for this type
+     * @return the matching column or null.
+     */
+    public AbstractDataColumn getColumn(QuantitationTypeDescriptor typeDescriptor) {
+        for (AbstractDataColumn column : columns) {
+            if (column.getQuantitationType().getName().equals(typeDescriptor.getName())) {
                 return column;
             }
         }
