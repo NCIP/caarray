@@ -36,7 +36,7 @@
             </ant>
         </schedule>
 
-        <log dir="logs\caarray2">
+        <log dir="logs\${project.name}">
             <merge dir="projects\${project.name}\software\build\site\junit" />
             <gzip every="1" unit="MONTH"/>
             <delete every="3" unit="MONTH" ignoreSuffix="true"/>
@@ -65,20 +65,17 @@
             <svn localworkingcopy="projects/${project.name}" />
         </modificationset>
 
-        <schedule interval="60">
+        <schedule interval="1800">
             <ant anthome="C:\dev\tools\apache-ant-1.7.0"
                 buildfile="projects\${project.name}\software\build\delegating-build.xml" target="nightly" uselogger="true"
-                usedebug="false">
+                usedebug="false"
+                time="2359">
                 <property name="psexec.system.username" value="cruisecontrol"/>
                 <property name="psexec.system.password" value="5AM#nci"/>
-                <!--
-					psexec.system.username=cruisecontrol
-					psexec.system.password=5AM#nci
-				-->
             </ant>
         </schedule>
 
-        <log dir="logs\caarray2">
+        <log dir="logs\${project.name}">
             <merge dir="projects\${project.name}\software\build\site\junit" />
             <gzip every="1" unit="MONTH"/>
             <delete every="3" unit="MONTH" ignoreSuffix="true"/>
