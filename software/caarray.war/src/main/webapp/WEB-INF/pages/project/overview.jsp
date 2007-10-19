@@ -4,19 +4,19 @@
     <div class="boxpad">
 
     <p class="instructions">
-        The Overall Experiment Characteristics represent the minimum set of 
-        attributes required to submit an experiment for review. 
-        Required fields are highlighted and have 
+        The Overall Experiment Characteristics represent the minimum set of
+        attributes required to submit an experiment for review.
+        Required fields are highlighted and have
         <span class="required"><span class="asterisk">*</span>asterisks<span class="asterisk">*</span></span>.
         </p>
     <s:form action="ajax_Project_saveTab_overview" cssClass="form" id="projectForm" method="get">
-        <s:textfield required="true" name="proposal.project.experiment.title" label="Experiment Title" size="80" tabindex="1"/>
+        <s:textfield required="true" name="project.experiment.title" label="Experiment Title" size="80" tabindex="1"/>
         <tr>
             <td class="tdLabel"><label for="proposalStatus">Status</label></td>
             <td>
                 <span id="proposalStatus">
-                <s:if test="proposal.status != null">
-                    <s:property value="getText(proposal.status.resourceKey)"/>
+                <s:if test="project.status != null">
+                    <s:property value="getText(project.status.resourceKey)"/>
                 </s:if>
                 <s:else>
                     <s:text name="proposalStatus.new"/>
@@ -27,13 +27,13 @@
         <tr>
             <td class="tdLabel"><label for="publicIdentifier">Experiment Identifier</label></td>
             <td>
-                <s:property id="publicId" value="proposal.project.experiment.publicIdentifier" default="None Yet (you must save the proposal and assign it a PI before an identifier can be generated)"/>
+                <s:property id="publicId" value="project.experiment.publicIdentifier" default="None Yet (you must save the project and assign it a PI before an identifier can be generated)"/>
             </td>
         </tr>
-        <s:select required="true" name="proposal.project.experiment.serviceType" label="Service Type" tabindex="4"
+        <s:select required="true" name="project.experiment.serviceType" label="Service Type" tabindex="4"
                   list="@gov.nih.nci.caarray.domain.project.ServiceType@values()" listValue="%{getText(resourceKey)}"
                   headerKey="" headerValue="--Select a Service Type--"/>
-        <s:select required="true" name="proposal.project.experiment.assayType" label="Assay Type" tabindex="5"
+        <s:select required="true" name="project.experiment.assayType" label="Assay Type" tabindex="5"
                   list="@gov.nih.nci.caarray.domain.project.AssayType@values()" listValue="%{getText(resourceKey)}"
                   headerKey="" headerValue="--Select an Assay Type--"/>
         <s:select name="selectedManufacturer" label="Manufacturer" tabindex="6"
@@ -52,7 +52,7 @@
                   list="cellTypes" listKey="id" listValue="value"/>
         <s:select multiple="true" name="selectedConditions" label="Conditions" tabindex="11"
                   list="conditions" listKey="id" listValue="value"/>
-        <s:hidden name="proposal.id" />
+        <s:hidden name="project.id" />
         <s:hidden name="ajax" value="%{'true'}"/>
 <script type="text/javascript">
 var dol = new DynamicOptionList("selectedManufacturer", "selectedArrayDesigns");

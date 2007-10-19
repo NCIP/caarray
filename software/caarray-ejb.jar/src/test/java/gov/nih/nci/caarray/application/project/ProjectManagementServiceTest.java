@@ -94,7 +94,6 @@ import gov.nih.nci.caarray.dao.stub.ProjectDaoStub;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.Proposal;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import java.io.BufferedInputStream;
@@ -127,30 +126,30 @@ public class ProjectManagementServiceTest {
     @Before
     public void setUpService() {
         ProjectManagementServiceBean projectManagementServiceBean = new ProjectManagementServiceBean();
-        projectManagementServiceBean.setDaoFactory(daoFactoryStub);
-        projectManagementServiceBean.setFileAccessService(fileAccessService);
-        projectManagementServiceBean.setSessionContext(sessionContextStub);
-        projectManagementService = projectManagementServiceBean;
+        projectManagementServiceBean.setDaoFactory(this.daoFactoryStub);
+        projectManagementServiceBean.setFileAccessService(this.fileAccessService);
+        projectManagementServiceBean.setSessionContext(this.sessionContextStub);
+        this.projectManagementService = projectManagementServiceBean;
     }
 
     @Test
     public void testGetWorkspaceProjects() {
-        List<Project> projects = projectManagementService.getWorkspaceProjects();
+        List<Project> projects = this.projectManagementService.getWorkspaceProjects();
         assertNotNull(projects);
-        assertEquals("testusername", daoFactoryStub.projectDao.username);
+        assertEquals("testusername", this.daoFactoryStub.projectDao.username);
     }
 
     @Test
     public void testGetProject() {
-        Project project = projectManagementService.getProject(123L);
+        Project project = this.projectManagementService.getProject(123L);
         assertNotNull(project);
         assertEquals(123L, project.getId());
     }
 
     @Test
     public void testAddFile() {
-        Project project = projectManagementService.getProject(123L);
-        CaArrayFile file = projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        Project project = this.projectManagementService.getProject(123L);
+        CaArrayFile file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         assertEquals(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName(), file.getName());
         assertEquals(1, project.getFiles().size());
         assertNotNull(project.getFiles().iterator().next().getProject());
@@ -167,14 +166,14 @@ public class ProjectManagementServiceTest {
     }
 
     /**
-     * Test method for {@link gov.nih.nci.caarray.application.project.ProjectManagementService#submitProposal(Proposal)}.
+     * Test method for {@link gov.nih.nci.caarray.application.project.ProjectManagementService#submitProject(Project)}.
      */
     @Test
-    public void testSubmitProposal() {
-        Proposal proposal = Proposal.createNew();
+    public void testSubmitProject() {
+        Project project = Project.createNew();
         try {
-            projectManagementService.submitProposal(proposal);
-            assertEquals(proposal, daoFactoryStub.projectDao.lastSaved);
+            this.projectManagementService.submitProject(project);
+            assertEquals(project, this.daoFactoryStub.projectDao.lastSaved);
         } catch (ProposalWorkflowException e) {
             fail("Unexpected exception: " + e);
         }
@@ -183,23 +182,23 @@ public class ProjectManagementServiceTest {
     @Test
     public void testDownload() throws IOException {
         try {
-            projectManagementService.prepareForDownload(null);
+            this.projectManagementService.prepareForDownload(null);
             fail();
         } catch (IllegalArgumentException iae) {
             // expected
         }
 
         try {
-            projectManagementService.prepareForDownload(new ArrayList<Long>());
+            this.projectManagementService.prepareForDownload(new ArrayList<Long>());
             fail();
         } catch (IllegalArgumentException iae) {
             // expected
         }
 
-        Project project = projectManagementService.getProject(123L);
-        CaArrayFile file = projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        Project project = this.projectManagementService.getProject(123L);
+        CaArrayFile file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
 
-        File f = projectManagementService.prepareForDownload(Collections.singleton(file.getId()));
+        File f = this.projectManagementService.prepareForDownload(Collections.singleton(file.getId()));
         assertNotNull(f);
 
         // make sure it's a zip file
@@ -228,10 +227,10 @@ public class ProjectManagementServiceTest {
 
         @Override
         public ProjectDao getProjectDao() {
-            if (projectDao == null) {
-                projectDao = new LocalProjectDaoStub();
+            if (this.projectDao == null) {
+                this.projectDao = new LocalProjectDaoStub();
             }
-            return projectDao;
+            return this.projectDao;
         }
 
     }
@@ -244,8 +243,8 @@ public class ProjectManagementServiceTest {
 
         @Override
         public void save(PersistentObject caArrayObject) {
-            lastSaved = caArrayObject;
-            savedObjects.put(caArrayObject.getId(), caArrayObject);
+            this.lastSaved = caArrayObject;
+            this.savedObjects.put(caArrayObject.getId(), caArrayObject);
         }
 
         @Override
@@ -257,8 +256,8 @@ public class ProjectManagementServiceTest {
         @Override
         @SuppressWarnings("PMD")
         public Project getProject(long id) {
-            if (savedObjects.containsKey(id)) {
-                return (Project) savedObjects.get(id);
+            if (this.savedObjects.containsKey(id)) {
+                return (Project) this.savedObjects.get(id);
             }
             Project project = Project.createNew();;
             // Perform voodoo magic

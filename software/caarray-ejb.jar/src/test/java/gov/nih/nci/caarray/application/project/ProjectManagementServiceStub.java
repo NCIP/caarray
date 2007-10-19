@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.application.project;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.Proposal;
 
 import java.io.File;
 import java.util.Collection;
@@ -110,19 +109,15 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         return null;
     }
 
-    public Proposal getProposal(long id) {
-        return null;
-    }
-
     public Organization getOrganization(long id) {
         return null;
     }
 
-    public void submitProposal(Proposal proposal) {
+    public void submitProject(Project project) {
         // no-op
     }
 
-    public void saveDraftProposal(Proposal proposal) throws ProposalWorkflowException {
+    public void saveDraftProject(Project project) throws ProposalWorkflowException {
         // no-op
     }
 

@@ -119,7 +119,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
@@ -305,7 +304,7 @@ public class Experiment extends AbstractCaArrayEntity {
     /**
      * Gets the ExperimentContact corresponding to the Main POC for the experiment.
      *
-     * @return the Main POC ExperimentContact, or null if there isn't 
+     * @return the Main POC ExperimentContact, or null if there isn't
      */
     @Transient
     public ExperimentContact getMainPointOfContact() {
@@ -318,14 +317,14 @@ public class Experiment extends AbstractCaArrayEntity {
         }
         return null;
     }
-    
+
     /**
      * Checks if the set of contacts for this experiment contains a contact
      * with the POC role that does not also have the PI role, and if such a contact
      * exists, removes it from the set of contacts.
      */
     public void removeSeparateMainPointOfContact() {
-        for (Iterator<ExperimentContact> it = experimentContacts.iterator(); it.hasNext(); ) {
+        for (Iterator<ExperimentContact> it = this.experimentContacts.iterator(); it.hasNext(); ) {
             ExperimentContact contact = it.next();
             if (contact.isMainPointOfContact() && !contact.isPrimaryInvestigator()) {
                 contact.setExperiment(null);

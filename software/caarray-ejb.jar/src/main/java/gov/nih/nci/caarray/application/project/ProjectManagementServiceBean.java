@@ -89,7 +89,6 @@ import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.Proposal;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
@@ -130,11 +129,11 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     @EJB private FileAccessService fileAccessService;
 
     private ProjectDao getProjectDao() {
-        return daoFactory.getProjectDao();
+        return this.daoFactory.getProjectDao();
     }
 
     private ContactDao getContactDao() {
-        return daoFactory.getContactDao();
+        return this.daoFactory.getContactDao();
     }
 
     /**
@@ -146,17 +145,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         Project project = getProjectDao().getProject(id);
         LogUtil.logSubsystemExit(LOG);
         return project;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Proposal getProposal(long id) {
-        LogUtil.logSubsystemEntry(LOG, id);
-        Proposal proposal = getProjectDao().getProposal(id);
-        LogUtil.logSubsystemExit(LOG);
-        return proposal;
     }
 
     /**
@@ -177,7 +165,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     public CaArrayFile addFile(Project project, File file) {
         LogUtil.logSubsystemEntry(LOG, project, file);
         CaArrayFile caArrayFile = doAddFile(project, file, file.getName());
-        fileAccessService.closeFiles();
+        this.fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
         return caArrayFile;
     }
@@ -188,14 +176,14 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     public CaArrayFile addFile(Project project, File file, String filename) {
         LogUtil.logSubsystemEntry(LOG, project, file);
         CaArrayFile caArrayFile = doAddFile(project, file, filename);
-        fileAccessService.closeFiles();
+        this.fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
         return caArrayFile;
     }
 
     private CaArrayFile doAddFile(Project project, File file, String filename) {
         CaArrayFile caArrayFile = null;
-        caArrayFile = fileAccessService.add(file, filename);
+        caArrayFile = this.fileAccessService.add(file, filename);
         project.getFiles().add(caArrayFile);
         caArrayFile.setProject(project);
         getProjectDao().save(caArrayFile);
@@ -207,14 +195,14 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void submitProposal(Proposal proposal) throws ProposalWorkflowException {
-        LogUtil.logSubsystemEntry(LOG, proposal);
-        if (!proposal.isSubmissionAllowed()) {
+    public void submitProject(Project project) throws ProposalWorkflowException {
+        LogUtil.logSubsystemEntry(LOG, project);
+        if (!project.isSubmissionAllowed()) {
             LogUtil.logSubsystemExit(LOG);
-            throw new ProposalWorkflowException("Cannot submit proposal in current state");
+            throw new ProposalWorkflowException("Cannot submit project in current state");
         }
-        proposal.setStatus(ProposalStatus.SUBMITTED_FOR_REVIEW);
-        getProjectDao().save(proposal);
+        project.setStatus(ProposalStatus.SUBMITTED_FOR_REVIEW);
+        getProjectDao().save(project);
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -222,20 +210,21 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void saveDraftProposal(Proposal proposal) throws ProposalWorkflowException {
-        LogUtil.logSubsystemEntry(LOG, proposal);
-        if (!proposal.isSaveDraftAllowed()) {
+    public void saveDraftProject(Project project) throws ProposalWorkflowException {
+        LogUtil.logSubsystemEntry(LOG, project);
+        if (!project.isSaveDraftAllowed()) {
             LogUtil.logSubsystemExit(LOG);
-            throw new ProposalWorkflowException("Cannot save proposal draft in current state");
+            throw new ProposalWorkflowException("Cannot save project draft in current state");
         }
-        proposal.setStatus(ProposalStatus.DRAFT);
-        getProjectDao().save(proposal);
+        project.setStatus(ProposalStatus.DRAFT);
+        getProjectDao().save(project);
         LogUtil.logSubsystemExit(LOG);
     }
 
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     public List<Project> getWorkspaceProjects() {
         String username = getSessionContext().getCallerPrincipal().getName();
         return getProjectDao().getProjectsForUser(username);
@@ -286,7 +275,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     }
 
     FileAccessService getFileAccessService() {
-        return fileAccessService;
+        return this.fileAccessService;
     }
 
     void setFileAccessService(FileAccessService fileAccessService) {
@@ -294,14 +283,14 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     }
 
     CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
+        return this.daoFactory;
     }
 
     void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
     SessionContext getSessionContext() {
-        return sessionContext;
+        return this.sessionContext;
     }
 
     void setSessionContext(SessionContext sessionContext) {

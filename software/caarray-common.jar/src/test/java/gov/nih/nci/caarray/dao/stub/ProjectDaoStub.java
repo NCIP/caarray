@@ -82,12 +82,11 @@
  */
 package gov.nih.nci.caarray.dao.stub;
 
-import java.util.Collections;
-import java.util.List;
-
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.Proposal;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -97,13 +96,6 @@ public class ProjectDaoStub extends AbstractDaoStub implements ProjectDao {
      * {@inheritDoc}
      */
     public Project getProject(long id) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Proposal getProposal(long id) {
         return null;
     }
 

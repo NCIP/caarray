@@ -17,7 +17,6 @@ import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.PaymentMechanism;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.Proposal;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
@@ -78,7 +77,6 @@ public class ProjectAction extends BaseAction implements Preparable {
     private List<Term> replicateTypes;
 
     private User user;
-    private Proposal proposal = Proposal.createNew();
     private String saveMode;
 
     private List<Long> selectedTissueSites = new ArrayList<Long>();
@@ -104,9 +102,9 @@ public class ProjectAction extends BaseAction implements Preparable {
     /**
      * {@inheritDoc}
      */
-    public void prepare() throws Exception {
-        if (this.proposal.getId() != null) {
-            this.proposal = getDelegate().getProjectManagementService().getProposal(this.proposal.getId());
+    public void prepare() {
+        if (this.project.getId() != null) {
+            this.project = getDelegate().getProjectManagementService().getProject(this.project.getId());
         }
 
         if (this.currentSource.getId() != null) {
@@ -183,21 +181,20 @@ public class ProjectAction extends BaseAction implements Preparable {
         this.conditions = vocabService.getTerms(ExperimentOntologyCategory.DISEASE_STATE.getCategoryName());
         this.organisms = vocabService.getOrganisms();
 
-        this.selectedTissueSites = getIdsFromEntities(this.proposal.getProject().getExperiment().getTissueSites());
-        this.selectedTissueTypes = getIdsFromEntities(this.proposal.getProject().getExperiment().getTissueTypes());
-        this.selectedCellTypes = getIdsFromEntities(this.proposal.getProject().getExperiment().getCellTypes());
-        this.selectedConditions = getIdsFromEntities(this.proposal.getProject().getExperiment().getConditions());
-        this.selectedOrganism = getIdFromEntity(this.proposal.getProject().getExperiment().getOrganism());
+        this.selectedTissueSites = getIdsFromEntities(getProject().getExperiment().getTissueSites());
+        this.selectedTissueTypes = getIdsFromEntities(getProject().getExperiment().getTissueTypes());
+        this.selectedCellTypes = getIdsFromEntities(getProject().getExperiment().getCellTypes());
+        this.selectedConditions = getIdsFromEntities(getProject().getExperiment().getConditions());
+        this.selectedOrganism = getIdFromEntity(getProject().getExperiment().getOrganism());
 
         ArrayDesignService arrayDesignService = getArrayDesignService();
         this.arrayDesignsByManufacturer = arrayDesignService.getArrayDesignsByOrganization();
-        this.selectedArrayDesigns = getIdsFromEntities(this.proposal.getProject().getExperiment().getArrayDesigns());
-        this.selectedManufacturer = getIdFromEntity(this.proposal.getProject().getExperiment().getManufacturer());
+        this.selectedArrayDesigns = getIdsFromEntities(getProject().getExperiment().getArrayDesigns());
+        this.selectedManufacturer = getIdFromEntity(getProject().getExperiment().getManufacturer());
 
-        this.selectedArrayDesigns = getIdsFromEntities(this.proposal.getProject().getExperiment().getArrayDesigns());
-        this.selectedManufacturer = getIdFromEntity(this.proposal.getProject().getExperiment().getManufacturer());
+        this.selectedArrayDesigns = getIdsFromEntities(getProject().getExperiment().getArrayDesigns());
+        this.selectedManufacturer = getIdFromEntity(getProject().getExperiment().getManufacturer());
     }
-
 
     /**
      * load a given tab in the submit experiment workflow
@@ -221,7 +218,7 @@ public class ProjectAction extends BaseAction implements Preparable {
         String username = UsernameHolder.getUser();
         this.user = am.getUser(username);
 
-        ExperimentContact pi = this.proposal.getProject().getExperiment().getPrimaryInvestigator();
+        ExperimentContact pi = getProject().getExperiment().getPrimaryInvestigator();
         if (pi != null) {
             this.primaryInvestigator = (Person) pi.getContact();
             if (pi.isMainPointOfContact()) {
@@ -229,7 +226,7 @@ public class ProjectAction extends BaseAction implements Preparable {
                 this.mainPointOfContact = new Person();
             } else {
                 this.piIsMainPoc = false;
-                ExperimentContact mainPoc = this.proposal.getProject().getExperiment().getMainPointOfContact();
+                ExperimentContact mainPoc = getProject().getExperiment().getMainPointOfContact();
                 if (mainPoc != null) {
                     this.mainPointOfContact = (Person) mainPoc.getContact();
                 } else {
@@ -271,11 +268,9 @@ public class ProjectAction extends BaseAction implements Preparable {
                 .getCategoryName());
         this.replicateTypes = vocabService.getTerms(ExperimentOntologyCategory.REPLICATE_TYPE.getCategoryName());
 
-        this.selectedQualityControlTypes = getIdsFromEntities(this.proposal.getProject().getExperiment()
-                .getQualityControlTypes());
-        this.selectedReplicateTypes = getIdsFromEntities(this.proposal.getProject().getExperiment().getReplicateTypes());
-        this.selectedExperimentalDesignType = getIdFromEntity(this.proposal.getProject().getExperiment()
-                .getExperimentDesignType());
+        this.selectedQualityControlTypes = getIdsFromEntities(getProject().getExperiment().getQualityControlTypes());
+        this.selectedReplicateTypes = getIdsFromEntities(getProject().getExperiment().getReplicateTypes());
+        this.selectedExperimentalDesignType = getIdFromEntity(getProject().getExperiment().getExperimentDesignType());
     }
 
     /**
@@ -314,20 +309,19 @@ public class ProjectAction extends BaseAction implements Preparable {
      * @throws Exception Exception
      */
     public String overviewSaveTab() throws VocabularyServiceException {
-        this.proposal.getProject().getExperiment().setOrganism(getOrganismFromId(this.selectedOrganism));
-        this.proposal.getProject().getExperiment().getTissueTypes().clear();
-        this.proposal.getProject().getExperiment().getTissueTypes().addAll(getTermsFromIds(this.selectedTissueTypes));
-        this.proposal.getProject().getExperiment().getTissueSites().clear();
-        this.proposal.getProject().getExperiment().getTissueSites().addAll(getTermsFromIds(this.selectedTissueSites));
-        this.proposal.getProject().getExperiment().getCellTypes().clear();
-        this.proposal.getProject().getExperiment().getCellTypes().addAll(getTermsFromIds(this.selectedCellTypes));
-        this.proposal.getProject().getExperiment().getConditions().clear();
-        this.proposal.getProject().getExperiment().getConditions().addAll(getTermsFromIds(this.selectedConditions));
+        getProject().getExperiment().setOrganism(getOrganismFromId(this.selectedOrganism));
+        getProject().getExperiment().getTissueTypes().clear();
+        getProject().getExperiment().getTissueTypes().addAll(getTermsFromIds(this.selectedTissueTypes));
+        getProject().getExperiment().getTissueSites().clear();
+        getProject().getExperiment().getTissueSites().addAll(getTermsFromIds(this.selectedTissueSites));
+        getProject().getExperiment().getCellTypes().clear();
+        getProject().getExperiment().getCellTypes().addAll(getTermsFromIds(this.selectedCellTypes));
+        getProject().getExperiment().getConditions().clear();
+        getProject().getExperiment().getConditions().addAll(getTermsFromIds(this.selectedConditions));
 
-        this.proposal.getProject().getExperiment().setManufacturer(getOrganizationFromId(this.selectedManufacturer));
-        this.proposal.getProject().getExperiment().getArrayDesigns().clear();
-        this.proposal.getProject().getExperiment().getArrayDesigns().addAll(
-                getArrayDesignsFromIds(this.selectedArrayDesigns));
+        getProject().getExperiment().setManufacturer(getOrganizationFromId(this.selectedManufacturer));
+        getProject().getExperiment().getArrayDesigns().clear();
+        getProject().getExperiment().getArrayDesigns().addAll(getArrayDesignsFromIds(this.selectedArrayDesigns));
 
         String result = saveTab();
         setupOverviewTab();
@@ -348,7 +342,7 @@ public class ProjectAction extends BaseAction implements Preparable {
         Term piRole = vocabService.getTerm(mged, roleCat, ExperimentContact.PI_ROLE);
         Term mainPocRole = vocabService.getTerm(mged, roleCat, ExperimentContact.MAIN_POC_ROLE);
 
-        ExperimentContact pi = this.proposal.getProject().getExperiment().getPrimaryInvestigator();
+        ExperimentContact pi = getProject().getExperiment().getPrimaryInvestigator();
         if (pi != null) {
             try {
                 PropertyUtils.copyProperties(pi.getContact(), this.primaryInvestigator);
@@ -360,18 +354,18 @@ public class ProjectAction extends BaseAction implements Preparable {
                 // cannot happen
             }
             if (this.piIsMainPoc && !pi.isMainPointOfContact()) {
-                this.proposal.getProject().getExperiment().removeSeparateMainPointOfContact();
+                getProject().getExperiment().removeSeparateMainPointOfContact();
                 pi.getRoles().add(mainPocRole);
             }
             if (!this.piIsMainPoc) {
-                ExperimentContact mainPoc = this.proposal.getProject().getExperiment().getMainPointOfContact();
+                ExperimentContact mainPoc = getProject().getExperiment().getMainPointOfContact();
                 if (pi.isMainPointOfContact()) {
                     pi.removeMainPointOfContactRole();
                     mainPoc = new ExperimentContact();
                     mainPoc.getRoles().add(mainPocRole);
                     mainPoc.setContact(new Person());
-                    this.proposal.getProject().getExperiment().getExperimentContacts().add(mainPoc);
-                    mainPoc.setExperiment(this.proposal.getProject().getExperiment());
+                    getProject().getExperiment().getExperimentContacts().add(mainPoc);
+                    mainPoc.setExperiment(getProject().getExperiment());
                 }
                 try {
                     PropertyUtils.copyProperties(mainPoc.getContact(), this.mainPointOfContact);
@@ -387,16 +381,16 @@ public class ProjectAction extends BaseAction implements Preparable {
             pi = new ExperimentContact();
             pi.setContact(this.primaryInvestigator);
             pi.getRoles().add(piRole);
-            this.proposal.getProject().getExperiment().getExperimentContacts().add(pi);
-            pi.setExperiment(this.proposal.getProject().getExperiment());
+            getProject().getExperiment().getExperimentContacts().add(pi);
+            pi.setExperiment(getProject().getExperiment());
             if (this.piIsMainPoc) {
                 pi.getRoles().add(mainPocRole);
             } else {
                 ExperimentContact mainPoc = new ExperimentContact();
                 mainPoc.setContact(this.mainPointOfContact);
                 mainPoc.getRoles().add(mainPocRole);
-                this.proposal.getProject().getExperiment().getExperimentContacts().add(mainPoc);
-                mainPoc.setExperiment(this.proposal.getProject().getExperiment());
+                getProject().getExperiment().getExperimentContacts().add(mainPoc);
+                mainPoc.setExperiment(getProject().getExperiment());
             }
         }
 
@@ -413,14 +407,11 @@ public class ProjectAction extends BaseAction implements Preparable {
      * @throws Exception Exception
      */
     public String experimentalDesignSaveTab() throws VocabularyServiceException {
-        this.proposal.getProject().getExperiment().getQualityControlTypes().clear();
-        this.proposal.getProject().getExperiment().getQualityControlTypes().addAll(
-                getTermsFromIds(this.selectedQualityControlTypes));
-        this.proposal.getProject().getExperiment().getReplicateTypes().clear();
-        this.proposal.getProject().getExperiment().getReplicateTypes().addAll(
-                getTermsFromIds(this.selectedReplicateTypes));
-        this.proposal.getProject().getExperiment().setExperimentDesignType(
-                getTermFromId(this.selectedExperimentalDesignType));
+        getProject().getExperiment().getQualityControlTypes().clear();
+        getProject().getExperiment().getQualityControlTypes().addAll(getTermsFromIds(this.selectedQualityControlTypes));
+        getProject().getExperiment().getReplicateTypes().clear();
+        getProject().getExperiment().getReplicateTypes().addAll(getTermsFromIds(this.selectedReplicateTypes));
+        getProject().getExperiment().setExperimentDesignType(getTermFromId(this.selectedExperimentalDesignType));
         String result = saveTab();
         setupExperimentalDesignTab();
         return result;
@@ -508,14 +499,14 @@ public class ProjectAction extends BaseAction implements Preparable {
         if (SAVE_MODE_DRAFT.equals(this.saveMode) || SAVE_MODE_SUBMIT.equals(this.saveMode)) {
             try {
                 if (SAVE_MODE_DRAFT.equals(this.saveMode)) {
-                    getDelegate().getProjectManagementService().saveDraftProposal((getProposal()));
+                    getDelegate().getProjectManagementService().saveDraftProject((getProject()));
                     List<String> args = new ArrayList<String>();
-                    args.add(getProposal().getProject().getExperiment().getTitle());
+                    args.add(getProject().getExperiment().getTitle());
                     saveMessage(getText("project.saved", args));
                 } else {
-                    getDelegate().getProjectManagementService().submitProposal((getProposal()));
+                    getDelegate().getProjectManagementService().submitProject((getProject()));
                     List<String> args = new ArrayList<String>();
-                    args.add(getProposal().getProject().getExperiment().getTitle());
+                    args.add(getProject().getExperiment().getTitle());
                     saveMessage(getText("project.submitted", args));
                     result = WORKSPACE_RESULT;
                 }
@@ -531,7 +522,7 @@ public class ProjectAction extends BaseAction implements Preparable {
     }
 
     /**
-     * create new proposal
+     * create new project
      *
      * @return path String
      */
@@ -542,7 +533,7 @@ public class ProjectAction extends BaseAction implements Preparable {
     }
 
     /**
-     * edit existing proposal
+     * edit existing project
      *
      * @return path String
      */
@@ -553,7 +544,7 @@ public class ProjectAction extends BaseAction implements Preparable {
     }
 
     /**
-     * edit existing proposal permissions
+     * edit existing project permissions
      *
      * @return path String
      */
@@ -564,7 +555,7 @@ public class ProjectAction extends BaseAction implements Preparable {
     }
 
     /**
-     * show details for a proposal
+     * show details for a project
      *
      * @return path String
      */
@@ -594,7 +585,7 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     public String sourceEditSaveTab() {
         if (this.getCurrentSource().getId() == null) {
-            getProposal().getProject().getExperiment().getSources().add(getCurrentSource());
+            getProject().getExperiment().getSources().add(getCurrentSource());
             saveMessage(getText("experiment.sources.created"));
         } else {
             saveMessage(getText("experiment.sources.updated"));
@@ -610,7 +601,7 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     @SkipValidation
     public String sourceRemoval() {
-        getProposal().getProject().getExperiment().getSources().remove(getCurrentSource());
+        getProject().getExperiment().getSources().remove(getCurrentSource());
         setSaveMode(SAVE_MODE_DRAFT);
         saveTab();
         saveMessage(getText("experiment.sources.deleted"));
@@ -641,7 +632,7 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     public String sampleEditSaveTab() {
         if (getCurrentSample().getId() == null) {
-            getProposal().getProject().getExperiment().getSamples().add(getCurrentSample());
+            getProject().getExperiment().getSamples().add(getCurrentSample());
             saveMessage(getText("experiment.samples.created"));
         } else {
             saveMessage(getText("experiment.samples.updated"));
@@ -657,7 +648,7 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     @SkipValidation
     public String sampleRemoval() {
-        getProposal().getProject().getExperiment().getSamples().remove(getCurrentSample());
+        getProject().getExperiment().getSamples().remove(getCurrentSample());
         setSaveMode(SAVE_MODE_DRAFT);
         saveTab();
         saveMessage(getText("experiment.samples.deleted"));
@@ -689,7 +680,7 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     public String factorEditSaveTab() {
         if (getCurrentFactor().getId() == null) {
-            getProposal().getProject().getExperiment().getFactors().add(getCurrentFactor());
+            getProject().getExperiment().getFactors().add(getCurrentFactor());
             saveMessage(getText("experiment.factors.created"));
         } else {
             saveMessage(getText("experiment.factors.updated"));
@@ -705,7 +696,7 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     @SkipValidation
     public String factorRemoval() {
-        getProposal().getProject().getExperiment().getFactors().remove(getCurrentFactor());
+        getProject().getExperiment().getFactors().remove(getCurrentFactor());
         setSaveMode(SAVE_MODE_DRAFT);
         saveTab();
         saveMessage(getText("experiment.factors.deleted"));
@@ -748,20 +739,6 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     public void setProjects(List<Project> projects) {
         this.projects = projects;
-    }
-
-    /**
-     * @return the proposal
-     */
-    public Proposal getProposal() {
-        return this.proposal;
-    }
-
-    /**
-     * @param proposal the proposal to set
-     */
-    public void setProposal(Proposal proposal) {
-        this.proposal = proposal;
     }
 
     /**
@@ -1178,7 +1155,7 @@ public class ProjectAction extends BaseAction implements Preparable {
      * @return the piIsMainPoc
      */
     public boolean isPiIsMainPoc() {
-        return piIsMainPoc;
+        return this.piIsMainPoc;
     }
 
     /**
@@ -1192,7 +1169,7 @@ public class ProjectAction extends BaseAction implements Preparable {
      * @return the primaryInvestigator
      */
     public Person getPrimaryInvestigator() {
-        return primaryInvestigator;
+        return this.primaryInvestigator;
     }
 
     /**
@@ -1206,7 +1183,7 @@ public class ProjectAction extends BaseAction implements Preparable {
      * @return the mainPointOfContact
      */
     public Person getMainPointOfContact() {
-        return mainPointOfContact;
+        return this.mainPointOfContact;
     }
 
     /**

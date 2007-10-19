@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.application.project;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.Proposal;
 
 import java.io.File;
 import java.io.IOException;
@@ -110,14 +109,6 @@ public interface ProjectManagementService {
      * @return the corresponding project.
      */
     Project getProject(long id);
-
-    /**
-     * Returns the proposal corresponding to the id given.
-     *
-     * @param id the proposal id
-     * @return the corresponding proposal.
-     */
-    Proposal getProposal(long id);
 
     /**
      * Returns the organization corresponding to the id given.
@@ -151,25 +142,25 @@ public interface ProjectManagementService {
     CaArrayFile addFile(Project project, File file, String filename);
 
     /**
-     * Saves a proposal in the draft state. The proposal may be new, or may
+     * Saves a project in the draft state. The project may be new, or may
      * have been previously saved as a draft, but it cannot have been submitted
      *
-     * @param proposal the proposal to save as draft
+     * @param project the project to save as draft
      * @throws ProposalWorkflowException if the is not new and its status is not
      * "Draft"
      */
-    void saveDraftProposal(Proposal proposal) throws ProposalWorkflowException;
+    void saveDraftProject(Project project) throws ProposalWorkflowException;
 
     /**
-     * Saves a new Proposal and moves it into the submitted state. This
-     * may be a new proposal, or a proposal that is currently in draft or returned
+     * Saves a new project and moves it into the submitted state. This
+     * may be a new project, or a project that is currently in draft or returned
      * for revision state.
      *
-     * @param proposal the proposal to submit
+     * @param project the project to submit
      * @throws ProposalWorkflowException if the is not new and its status is not
      * either "Draft" or "Returned for Revision"
      */
-    void submitProposal(Proposal proposal) throws ProposalWorkflowException;
+    void submitProject(Project project) throws ProposalWorkflowException;
 
     /**
      * Gets all projects belonging to the current user.

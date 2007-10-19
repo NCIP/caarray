@@ -5,7 +5,7 @@
         <h3><fmt:message key="experiment.experimentalFactors" /></h3>
         <div class="addlink">
             <c:url value="/protected/ajax_Project_loadGenericTab_factorEdit.action" var="addFactorUrl">
-                <c:param name="proposal.id" value="${proposal.id}" />
+                <c:param name="project.id" value="${project.id}" />
                 <c:param name="ajax" value="true" />
             </c:url>
             <ajax:anchors target="tabboxlevel2wrapper">
@@ -15,21 +15,21 @@
     </div>
 
     <c:url value="ajax_Project_loadGenericTab_factors.action" var="sortUrl">
-        <c:param name="proposal.id" value="${proposal.id}" />
+        <c:param name="project.id" value="${project.id}" />
         <c:param name="ajax" value="true" />
     </c:url>
 
     <div class="tableboxpad">
     <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
-        <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${proposal.project.experiment.factors}"
-            requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="proposal.id">
+        <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${project.experiment.factors}"
+            requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="project.id">
             <caarray:displayTagProperties/>
             <display:column property="name" titleKey="experiment.experimentalFactors.name" sortable="true"/>
             <display:column property="type.category.name" titleKey="experiment.experimentalFactors.category" sortable="true" />
             <display:column titleKey="button.edit">
                 <ajax:anchors target="tabboxlevel2wrapper">
                     <c:url value="/protected/ajax_Project_loadGenericTab_factorEdit.action" var="editFactorUrl">
-                        <c:param name="proposal.id" value="${proposal.id}" />
+                        <c:param name="project.id" value="${project.id}" />
                         <c:param name="currentFactor.id" value="${row.id}" />
                         <c:param name="ajax" value="true" />
                     </c:url>
@@ -39,7 +39,7 @@
             <display:column titleKey="button.copy">
                 <ajax:anchors target="tabboxlevel2wrapper">
                     <c:url value="/protected/ajax_Project_copy_factor.action" var="copyFactorUrl">
-                        <c:param name="proposal.id" value="${proposal.id}" />
+                        <c:param name="project.id" value="${project.id}" />
                         <c:param name="currentFactor.id" value="${row.id}" />
                         <c:param name="ajax" value="true" />
                     </c:url>
@@ -49,7 +49,7 @@
             <display:column titleKey="button.delete">
                 <ajax:anchors target="tabboxlevel2wrapper">
                     <c:url value="/protected/ajax_Project_remove_factor.action" var="removeFactorUrl">
-                        <c:param name="proposal.id" value="${proposal.id}" />
+                        <c:param name="project.id" value="${project.id}" />
                         <c:param name="currentFactor.id" value="${row.id}" />
                         <c:param name="ajax" value="true" />
                     </c:url>
@@ -60,7 +60,7 @@
     </ajax:displayTag>
 
     <s:form action="ajax_Project_saveGenericTab_sources" cssClass="form" id="projectForm" method="get">
-        <s:hidden name="proposal.id" />
+        <s:hidden name="project.id" />
         <s:hidden name="ajax" value="%{'true'}"/>
     </s:form>
     </div>

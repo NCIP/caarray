@@ -101,6 +101,8 @@ import java.util.TreeSet;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -116,6 +118,7 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.MapKeyManyToMany;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
+import org.hibernate.validator.NotNull;
 
  /**
   * A microarray project.
@@ -137,6 +140,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         return project;
     }
 
+    private ProposalStatus status;
     private Experiment experiment;
     private SortedSet<CaArrayFile> files = new TreeSet<CaArrayFile>();
     private AccessProfile publicProfile = new AccessProfile();
@@ -153,6 +157,45 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     }
 
     /**
+     * Gets the workflow status of this project
+     *
+     * @return the status
+     */
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    public ProposalStatus getStatus() {
+        return this.status;
+    }
+
+    /**
+     * Sets the workflow status of this project
+     *
+     * @param status the status to set
+     */
+    public void setStatus(ProposalStatus status) {
+        this.status = status;
+    }
+
+    /**
+     * Returns whether the project can be saved as a draft in its current state
+     * @return whether the project can be saved as a draft in its current state
+     */
+    @Transient
+    public boolean isSaveDraftAllowed() {
+        return getId() == null || getStatus().equals(ProposalStatus.DRAFT);
+    }
+
+    /**
+     * Returns whether the project can be submitted in its current state
+     * @return whether the project can be submitted in its current state
+     */
+    @Transient
+    public boolean isSubmissionAllowed() {
+        return getId() == null || getStatus().equals(ProposalStatus.DRAFT)
+                || getStatus().equals(ProposalStatus.RETURNED_FOR_REVISION);
+    }
+
+    /**
      * Gets the experiment.
      *
      * @return the experiment
@@ -161,7 +204,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "PROJECT_EXPERIMENT_FK")
     public Experiment getExperiment() {
-        return experiment;
+        return this.experiment;
     }
 
     /**
@@ -181,7 +224,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @OneToMany(mappedBy = "project", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Sort(type = SortType.NATURAL)
     public SortedSet<CaArrayFile> getFiles() {
-        return files;
+        return this.files;
     }
 
     /**
@@ -207,7 +250,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @Transient
     public CaArrayFileSet getFileSet() {
         CaArrayFileSet fileSet = new CaArrayFileSet(this);
-        fileSet.addAll(files);
+        fileSet.addAll(this.files);
         return fileSet;
     }
 
@@ -217,7 +260,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @ManyToOne(cascade = { CascadeType.ALL })
     @ForeignKey(name = "PROJECT_PUBLICACCESS_FK")
     public AccessProfile getPublicProfile() {
-        return publicProfile;
+        return this.publicProfile;
     }
 
     @SuppressWarnings("unused")
@@ -231,7 +274,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @ManyToOne(cascade = { CascadeType.ALL })
     @ForeignKey(name = "PROJECT_HOSTACCESS_FK")
     public AccessProfile getHostProfile() {
-        return hostProfile;
+        return this.hostProfile;
     }
 
     @SuppressWarnings("unused")
@@ -250,12 +293,12 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
             inverseJoinColumns = @JoinColumn(name = "PROFILE_ID")
     )
     public Map<CollaboratorGroup, AccessProfile> getGroupProfiles() {
-        return groupProfiles;
+        return this.groupProfiles;
     }
 
     @SuppressWarnings("unused")
     private void setGroupProfiles(Map<CollaboratorGroup, AccessProfile> profiles) { // NOPMD
-        groupProfiles = profiles;
+        this.groupProfiles = profiles;
     }
 
     /**
@@ -263,7 +306,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @Column(nullable = false)
     public boolean isBrowsable() {
-        return browsable;
+        return this.browsable;
     }
 
     /**

@@ -2,7 +2,7 @@
 "-//OpenSymphony Group//XWork Validator 1.0//EN"
 "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
 <validators>
-    <field name="proposal.project.experiment.title">
+    <field name="project.experiment.title">
         <field-validator type="requiredstring">
             <message>Project Name is required.</message>
         </field-validator>

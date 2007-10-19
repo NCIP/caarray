@@ -1,11 +1,11 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
 <c:url value="ajax_Project_loadTab_manageData.action" var="manageDataUrl">
-    <c:param name="proposalKey" value="${proposalKey}" />
+    <c:param name="project.id" value="${project.id}" />
     <c:param name="ajax" value="true" />
 </c:url>
 <c:url value="ajax_Project_loadGenericTab_downloadData.action" var="downloadDataUrl">
-    <c:param name="proposalKey" value="${proposalKey}" />
+    <c:param name="project.id" value="${project.id}" />
     <c:param name="ajax" value="true" />
 </c:url>
 

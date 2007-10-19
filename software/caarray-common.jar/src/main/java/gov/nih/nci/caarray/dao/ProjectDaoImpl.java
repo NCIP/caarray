@@ -82,10 +82,9 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import java.util.List;
-
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.Proposal;
+
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -106,16 +105,6 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      */
     public Project getProject(long id) {
         return (Project) getCurrentSession().get(Project.class, id);
-    }
-
-    /**
-     * Returns the <code>Proposal</code> with the id given, or null if none exists.
-     *
-     * @param id get <code>Proposal</code> matching this id
-     * @return the <code>Proposal</code> or null.
-     */
-    public Proposal getProposal(long id) {
-        return (Proposal) getCurrentSession().get(Proposal.class, id);
     }
 
     @Override

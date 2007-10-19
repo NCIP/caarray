@@ -92,7 +92,6 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.Proposal;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.action.ProjectAction;
 
@@ -117,9 +116,9 @@ public class ProjectActionTest {
 
     @Before
     public void setUp() throws Exception {
-        action.getDelegate().setLocator(locatorStub);
-        locatorStub.addLookup(ProjectManagementService.JNDI_NAME, projectServiceStub);
-        locatorStub.addLookup(FileManagementService.JNDI_NAME, fileManagementStub);
+        this.action.getDelegate().setLocator(this.locatorStub);
+        this.locatorStub.addLookup(ProjectManagementService.JNDI_NAME, this.projectServiceStub);
+        this.locatorStub.addLookup(FileManagementService.JNDI_NAME, this.fileManagementStub);
         loadTestProject();
     }
 
@@ -145,7 +144,7 @@ public class ProjectActionTest {
         project.getFiles().add(file2);
         project.getFiles().add(file3);
         projects.add(project);
-        action.setProjects(projects);
+        this.action.setProjects(projects);
     }
 
     @SuppressWarnings("unchecked")
@@ -156,9 +155,9 @@ public class ProjectActionTest {
         session.setAttribute("messages", null);
         request.setSession(session);
         ServletActionContext.setRequest(request);
-        assertNotNull(action.getDelegate().getLocator());
-        assertNotNull(action.getProjects());
-        String result = action.list();
+        assertNotNull(this.action.getDelegate().getLocator());
+        assertNotNull(this.action.getProjects());
+        String result = this.action.list();
         assertEquals(ProjectAction.LIST_RESULT, result);
     }
 

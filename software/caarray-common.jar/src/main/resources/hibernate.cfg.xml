@@ -20,8 +20,8 @@
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
         @HIBERNATE_CONFIG_END@ -->
 
-        <!-- mapping files -->        
-		<mapping class="edu.georgetown.pir.AdditionalOrganismName" />
+        <!-- mapping files -->
+    <mapping class="edu.georgetown.pir.AdditionalOrganismName" />
         <mapping class="edu.georgetown.pir.Organism" />
         <mapping class="edu.wustl.catissuecore.domain.MolecularSpecimen" />
         <mapping class="edu.wustl.catissuecore.domain.Specimen" />
@@ -64,7 +64,6 @@
         <mapping class="gov.nih.nci.caarray.domain.project.Experiment"/>
         <mapping class="gov.nih.nci.caarray.domain.project.ExperimentContact"/>
         <mapping class="gov.nih.nci.caarray.domain.project.Project"/>
-        <mapping class="gov.nih.nci.caarray.domain.project.Proposal"/>
         <mapping class="gov.nih.nci.caarray.domain.project.PaymentMechanism"/>
         <mapping class="gov.nih.nci.caarray.domain.protocol.Parameter"/>
         <mapping class="gov.nih.nci.caarray.domain.protocol.ParameterValue"/>
