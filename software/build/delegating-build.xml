@@ -25,6 +25,20 @@
         </svn>
     </target>
 
+    <target name="nightly" description="Invoke the nightly build target">
+        <svn username="${svn.username}" password="${svn.password}">
+            <update dir="${basedir}" />
+        </svn>
+        <copy todir="${basedir}/../.." file="software/build/cruisecontrol_config.xml" />
+        <ant antfile="build/cc-nightly-build.xml"
+            dir="software"
+            target="nightly" />
+        <svn username="${svn.username}" password="${svn.password}">
+            <copy message="Tagging with ${label}"
+                srcurl="http://gforge.nci.nih.gov/svnroot/caarray2/trunk"
+                desturl="http://gforge.nci.nih.gov/svnroot/caarray2/tags/${label}" />
+        </svn>
+    </target>
 
 
     <target name="remove-old-artifacts-publisher-antpublisher" if="cclastgoodbuildtimestamp" description="Experimental (TODO): Use to remove CC build artifacts older than the last successful build">

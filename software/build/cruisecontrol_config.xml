@@ -21,30 +21,72 @@
         <labelincrementer separator="_" defaultLabel="CAARRAY_BL_1" />
 
         <bootstrappers>
-            <currentbuildstatusbootstrapper file="logs/caarray2/buildstatus.txt" />
-            <svnbootstrapper localworkingcopy="projects/caarray2" file="software\build\delegating-build.xml" />
+            <currentbuildstatusbootstrapper file="logs/${project.name}/buildstatus.txt" />
+            <svnbootstrapper localworkingcopy="projects/${project.name}" file="software\build\delegating-build.xml" />
         </bootstrappers>
 
         <modificationset quietperiod="0" ignoreFiles="*/docs/*/*.*, /qa/*/*.*">
-            <svn localworkingcopy="projects/caarray2" />
+            <svn localworkingcopy="projects/${project.name}" />
         </modificationset>
 
         <schedule interval="60">
             <ant anthome="C:\dev\tools\apache-ant-1.7.0"
-                buildfile="projects\caarray2\software\build\delegating-build.xml" target="build" uselogger="true"
+                buildfile="projects\${project.name}\software\build\delegating-build.xml" target="build" uselogger="true"
                 usedebug="false">
             </ant>
         </schedule>
 
         <log dir="logs\caarray2">
-            <merge dir="projects\caarray2\software\build\site\junit" />
+            <merge dir="projects\${project.name}\software\build\site\junit" />
             <gzip every="1" unit="MONTH"/>
             <delete every="3" unit="MONTH" ignoreSuffix="true"/>
         </log>
 
         <publishers>
-            <artifactspublisher dir="projects\caarray2\software\build\site" dest="artifacts\caarray2" />
-            <currentbuildstatuspublisher file="logs/caarray2/buildstatus.txt" />
+            <artifactspublisher dir="projects\${project.name}\software\build\site" dest="artifacts\${project.name}" />
+            <currentbuildstatuspublisher file="logs/${project.name}/buildstatus.txt" />
+            <htmlemail buildresultsurl="${email.buildresultsurl.prefix}${project.name}">
+                <always address="teamcaarray@5amsolutions.com" />
+            </htmlemail>
+        </publishers>
+
+    </project>
+
+    <project name="caarray2-nightly" buildafterfailed="false">
+
+        <labelincrementer separator="_" defaultLabel="CAARRAY-NIGHTLY_BL_1" />
+
+        <bootstrappers>
+            <currentbuildstatusbootstrapper file="logs/${project.name}/buildstatus.txt" />
+            <svnbootstrapper localworkingcopy="projects/${project.name}" file="software\build\delegating-build.xml" />
+        </bootstrappers>
+
+        <modificationset quietperiod="0" ignoreFiles="*/docs/*/*.*, /qa/*/*.*">
+            <svn localworkingcopy="projects/${project.name}" />
+        </modificationset>
+
+        <schedule interval="60">
+            <ant anthome="C:\dev\tools\apache-ant-1.7.0"
+                buildfile="projects\${project.name}\software\build\delegating-build.xml" target="nightly" uselogger="true"
+                usedebug="false">
+                <property name="psexec.system.username" value="cruisecontrol"/>
+                <property name="psexec.system.password" value="5AM#nci"/>
+                <!--
+					psexec.system.username=cruisecontrol
+					psexec.system.password=5AM#nci
+				-->
+            </ant>
+        </schedule>
+
+        <log dir="logs\caarray2">
+            <merge dir="projects\${project.name}\software\build\site\junit" />
+            <gzip every="1" unit="MONTH"/>
+            <delete every="3" unit="MONTH" ignoreSuffix="true"/>
+        </log>
+
+        <publishers>
+            <artifactspublisher dir="projects\${project.name}\software\build\site" dest="artifacts\${project.name}" />
+            <currentbuildstatuspublisher file="logs/${project.name}/buildstatus.txt" />
             <htmlemail buildresultsurl="${email.buildresultsurl.prefix}${project.name}">
                 <always address="teamcaarray@5amsolutions.com" />
             </htmlemail>
