@@ -147,20 +147,23 @@ public class MageTabParserTest {
             assertTrue(message.getMessage().startsWith("Referenced SDRF file "));
             assertTrue(message.getMessage().endsWith( " was not included in the MAGE-TAB document set"));
     }
+    
+    @Test
+    public void testValidateMissingDataFiles() throws MageTabParsingException {
+        MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
+        inputFileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        inputFileSet.addSdrf(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
+        ValidationResult result = parser.validate(inputFileSet);
+        assertNotNull(result);
+        assertFalse(result.isValid());
+    }
 
     @Test
     public void testParse() throws MageTabParsingException, InvalidDataException {
         testSpecificationDocuments();
         testTcgaBroadDocuments();
-        testEbiTemplateDocuments();
     }
 
-    private void testEbiTemplateDocuments() throws InvalidDataException, MageTabParsingException {
-        MageTabDocumentSet documentSet = parser.parse(TestMageTabSets.EBI_TEMPLATE_INPUT_SET);
-        assertNotNull(documentSet);
-        assertEquals(1, documentSet.getIdfDocuments().size());
-        assertEquals(1, documentSet.getSdrfDocuments().size());
-    }
 
     private void testTcgaBroadDocuments() throws MageTabParsingException, InvalidDataException {
         MageTabInputFileSet fileSet = TestMageTabSets.TCGA_BROAD_INPUT_SET;
@@ -219,6 +222,10 @@ public class MageTabParserTest {
         assertEquals(SIX, sdrfDocument.getAllExtracts().size());
         assertEquals(SIX, sdrfDocument.getAllHybridizations().size());
         assertEquals(SIX, sdrfDocument.getAllLabeledExtracts().size());
+        assertEquals(1, sdrfDocument.getAllHybridizations().get(0).getSuccessorArrayDataFiles().size());
+        ArrayDataFile arrayDataFile = sdrfDocument.getAllHybridizations().get(0).getSuccessorArrayDataFiles().iterator().next();
+        assertNotNull(arrayDataFile);
+        assertEquals("H_TK6 replicate 1.CEL", arrayDataFile.getName());
     }
 
     private void checkTerms(MageTabDocumentSet documentSet) {

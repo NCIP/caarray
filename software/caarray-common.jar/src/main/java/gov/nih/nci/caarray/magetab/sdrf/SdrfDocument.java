@@ -365,6 +365,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleDerivedArrayDataFile(String value) {
         DerivedArrayDataFile adf = new DerivedArrayDataFile();
         adf.setNativeDataFile(getDocumentSet().getNativeDataFile(value));
+        if (adf.getNativeDataFile() == null) {
+            addErrorMessage("Referenced Derived Array Data File " + value + " was not found in the document set");
+        }
         adf.setName(value);
         adf.addToSdrfList(this);
         adf.link(currentNode);
@@ -374,6 +377,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleArrayDataFile(String value) {
         ArrayDataFile adf = new ArrayDataFile();
         NativeDataFile nativeDataFile = getDocumentSet().getNativeDataFile(value);
+        if (nativeDataFile == null) {
+            addErrorMessage("Referenced Array Data File " + value + " was not found in the document set");
+        }
         adf.setNativeDataFile(nativeDataFile);
         adf.setName(value);
         adf.addToSdrfList(this);
