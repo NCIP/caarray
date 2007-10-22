@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.business.vocabulary;
 
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.OrganismDao;
@@ -100,6 +101,7 @@ import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.interceptor.Interceptors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -109,6 +111,7 @@ import org.apache.commons.logging.LogFactory;
  */
 @Local(VocabularyService.class)
 @Stateless
+@Interceptors(ExceptionLoggingInterceptor.class)
 public class VocabularyServiceBean implements VocabularyService {
 
     private static final Log LOG = LogFactory.getLog(VocabularyServiceBean.class);
@@ -262,7 +265,6 @@ public class VocabularyServiceBean implements VocabularyService {
         LogUtil.logSubsystemEntry(LOG, source, categoryName);
         Category category = new Category();
         category.setName(categoryName);
-        getVocabularyDao().save(category);
         LogUtil.logSubsystemExit(LOG);
         return category;
     }
@@ -277,7 +279,6 @@ public class VocabularyServiceBean implements VocabularyService {
         term.setSource(source);
         term.setCategory(category);
         term.setValue(value);
-        getVocabularyDao().save(term);
         LogUtil.logSubsystemExit(LOG);
         return term;
     }

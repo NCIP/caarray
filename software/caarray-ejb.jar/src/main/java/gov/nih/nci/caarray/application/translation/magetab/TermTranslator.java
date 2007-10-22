@@ -134,8 +134,7 @@ final class TermTranslator extends AbstractTranslator {
     private TermSource getOrCreateSource(String name) {
         TermSource source = service.getSource(name);
         if (source == null) {
-            source = new TermSource();
-            source.setName(name);
+            source = service.createSource(name);
         }
         return source;
     }
@@ -143,8 +142,7 @@ final class TermTranslator extends AbstractTranslator {
     private Category getOrCreateCategory(TermSource source, String categoryName) {
         Category category = service.getCategory(source, categoryName);
         if (category == null) {
-            category = new Category();
-            category.setName(categoryName);
+            category = service.createCategory(source, categoryName);
         }
         return category;
     }
@@ -152,10 +150,7 @@ final class TermTranslator extends AbstractTranslator {
     private Term getOrCreateTerm(TermSource source, Category category, String value) {
         Term term = service.getTerm(source, category, value);
         if (term == null) {
-            term = new Term();
-            term.setSource(source);
-            term.setCategory(category);
-            term.setValue(value);
+            term = service.createTerm(source, category, value);
         }
         return term;
     }

@@ -94,9 +94,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabInputFileSet;
 import gov.nih.nci.caarray.magetab.MageTabParser;
@@ -114,12 +112,9 @@ class MageTabImporter {
     private final FileAccessService fileAccessService;
     private final CaArrayDaoFactory daoFactory;
     private final MageTabTranslator translator;
-    private final VocabularyService vocabularyService;
 
-    MageTabImporter(FileAccessService fileAccessService, VocabularyService vocabularyService,
-            MageTabTranslator translator, CaArrayDaoFactory daoFactory) {
+    MageTabImporter(FileAccessService fileAccessService, MageTabTranslator translator, CaArrayDaoFactory daoFactory) {
         this.fileAccessService = fileAccessService;
-        this.vocabularyService = vocabularyService;
         this.translator = translator;
         this.daoFactory = daoFactory;
     }
@@ -232,39 +227,12 @@ class MageTabImporter {
     }
 
     private void saveTerms(CaArrayTranslationResult translationResult) {
-        // TODO Better handling of sources and categories (don't look up each and every time)
         for (Term term : translationResult.getTerms()) {
-            TermSource source = getActualSource(term.getSource().getName());
-            term.setSource(source);
-            term.setCategory(getActualCategory(source, term.getCategory().getName()));
-            if (isNew(term)) {
-                vocabularyService.createTerm(term.getSource(), term.getCategory(), term.getValue());
-            }
+            getCaArrayDao().save(term);
         }
-    }
-
-    private TermSource getActualSource(String name) {
-        TermSource source = vocabularyService.getSource(name);
-        if (source == null) {
-            source = vocabularyService.createSource(name);
-        }
-        return source;
-    }
-
-    private Category getActualCategory(TermSource source, String name) {
-        Category category = vocabularyService.getCategory(source, name);
-        if (category == null) {
-            category = vocabularyService.createCategory(source, name);
-        }
-        return category;
-    }
-
-    private boolean isNew(Term term) {
-        return vocabularyService.getTerm(term.getSource(), term.getCategory(), term.getValue()) == null;
     }
 
     private void saveArrayDesigns(CaArrayTranslationResult translationResult) {
-        // TODO import array design content
         getCaArrayDao().save(translationResult.getArrayDesigns());
     }
 

@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.project;
 
+import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ContactDao;
@@ -110,6 +111,7 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.interceptor.Interceptors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -120,6 +122,7 @@ import org.apache.commons.logging.LogFactory;
  */
 @Local
 @Stateless
+@Interceptors(ExceptionLoggingInterceptor.class)
 public class ProjectManagementServiceBean implements ProjectManagementService {
 
     private static final Log LOG = LogFactory.getLog(ProjectManagementServiceBean.class);
@@ -176,7 +179,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     public CaArrayFile addFile(Project project, File file, String filename) {
         LogUtil.logSubsystemEntry(LOG, project, file);
         CaArrayFile caArrayFile = doAddFile(project, file, filename);
-        this.fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
         return caArrayFile;
     }

@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
@@ -99,6 +100,7 @@ import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.interceptor.Interceptors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -109,6 +111,7 @@ import org.apache.commons.logging.LogFactory;
  */
 @Local
 @Stateless
+@Interceptors(ExceptionLoggingInterceptor.class)
 public class FileManagementServiceBean implements FileManagementService {
 
     private static final Log LOG = LogFactory.getLog(FileManagementServiceBean.class);
@@ -118,7 +121,6 @@ public class FileManagementServiceBean implements FileManagementService {
     @EJB private FileAccessService fileAccessService;
     @EJB private ArrayDesignService arrayDesignService;
     @EJB private MageTabTranslator mageTabTranslator;
-    @EJB private VocabularyService vocabularyService;
 
     /**
      * {@inheritDoc}
@@ -172,9 +174,7 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private MageTabImporter getMageTabImporter() {
-        MageTabImporter mageTabImporter = new MageTabImporter(fileAccessService, vocabularyService, mageTabTranslator,
-                daoFactory);
-        return mageTabImporter;
+        return new MageTabImporter(fileAccessService, mageTabTranslator, daoFactory);
     }
 
     private void importArrayData(CaArrayFileSet fileSet) {
@@ -242,14 +242,6 @@ public class FileManagementServiceBean implements FileManagementService {
 
     void setMageTabTranslator(MageTabTranslator mageTabTranslator) {
         this.mageTabTranslator = mageTabTranslator;
-    }
-
-    VocabularyService getVocabularyService() {
-        return vocabularyService;
-    }
-
-    void setVocabularyService(VocabularyService vocabularyService) {
-        this.vocabularyService = vocabularyService;
     }
 
     /**
