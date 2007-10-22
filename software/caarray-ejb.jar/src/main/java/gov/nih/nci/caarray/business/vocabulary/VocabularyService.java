@@ -163,7 +163,7 @@ public interface VocabularyService {
     Term getTerm(TermSource source, Category category, String value);
 
     /**
-     * Returns the term with the given id
+     * Returns the term with the given id.
      *
      * @param id the id of the desired term
      * @return the term with given id or null if none found.
@@ -171,7 +171,7 @@ public interface VocabularyService {
     Term getTerm(Long id);
 
     /**
-     * Returns the organism with the given id
+     * Returns the organism with the given id.
      *
      * @param id the id of the desired organism
      * @return the organism with given id or null if none found.
