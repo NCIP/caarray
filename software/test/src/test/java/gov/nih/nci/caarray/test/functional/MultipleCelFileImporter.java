@@ -96,30 +96,28 @@ import org.junit.Test;
  */
 public class MultipleCelFileImporter extends AbstractSeleniumTest {
 
-    private static final int NUM_SETS_OF_TEN = 9;
-    
-    @Override
-    public void tearDown() throws Exception {
-        // don't tearDown
-    }
-    
+    private static final int NUM_SETS_OF_TEN = 10;
+
     @Test
     public void testUploadFiles() throws Exception {
         loginAsPrincipalInvestigator();
-        //importArrayDesign();
+        importArrayDesign();
         for (int i = 0; i < NUM_SETS_OF_TEN; i++) {
             importTenFiles();
         }
     }
  
-    private void importArrayDesign() throws IOException {
-        // TODO Auto-generated method stub
+    private void importArrayDesign() throws IOException, InterruptedException {
         String title = "HG-U133 Plus 2 Array Design";
         // Create project
         clickAndWait("link=Propose Project");
-        selenium.type("title", title);
-        clickAndWait("submit");
-        assertTrue(selenium.isTextPresent("created successfully."));
+        Thread.sleep(2000);
+        selenium.type("projectForm_project_experiment_title", title);
+        selenium.click("//img[@alt='Save Draft']");
+
+        clickAndWait("link=Return to Workspace");
+        clickAndWait("link=Propose Project");
+        clickAndWait("link=Return to Workspace");
 
         clickAndWait("link=" + title);
         selenium.click("link=Manage Files");
@@ -136,9 +134,13 @@ public class MultipleCelFileImporter extends AbstractSeleniumTest {
         String title = "test" + System.currentTimeMillis();
         // Create project
         clickAndWait("link=Propose Project");
-        selenium.type("title", title);
-        clickAndWait("submit");
-        assertTrue(selenium.isTextPresent("created successfully."));
+        Thread.sleep(2000);
+        selenium.type("projectForm_project_experiment_title", title);
+        selenium.click("//img[@alt='Save Draft']");
+
+        clickAndWait("link=Return to Workspace");
+        clickAndWait("link=Propose Project");
+        clickAndWait("link=Return to Workspace");
 
         clickAndWait("link=" + title);
         selenium.click("link=Manage Files");
@@ -164,13 +166,13 @@ public class MultipleCelFileImporter extends AbstractSeleniumTest {
 
     private void selectAllFiles(int numberOfFiles) {
         for (int i = 0; i < numberOfFiles; i++) {
-            selenium.click("file:" + i + ":selected");
+            selenium.click("File_import_file:" + i + ":selected");
         }
     }
     private void upload(File file) throws IOException {
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
         filePath = filePath.replaceAll("%20", " ");
-        selenium.type("upload", filePath);
+        selenium.type("document.File_upload.upload", filePath);
         clickAndWait("uploadFile");
         assertTrue(selenium.isTextPresent(file.getName()));
     }

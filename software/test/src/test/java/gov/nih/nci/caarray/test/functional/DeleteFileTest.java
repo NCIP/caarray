@@ -105,33 +105,32 @@ public class DeleteFileTest extends AbstractSeleniumTest {
         String title = "test" + System.currentTimeMillis();
         // Create project
         clickAndWait("link=Propose Project");
-        selenium.type("title", title);
-        clickAndWait("submit");
-        assertTrue(selenium.isTextPresent("created successfully."));
+        Thread.sleep(1000);
+        selenium.type("projectForm_project_experiment_title", title);
+        selenium.click("//img[@alt='Save Draft']");
 
-        // Upload the following files:
-        // - MAGE-TAB IDF
-        // - MAGE-TAB SDRF (with references to included native CEL files and corresponding Affymetrix array design)
-        // - MAGE-TAB Derived Data Matrix
-        // - CEL files referenced in SDRF
+        clickAndWait("link=Return to Workspace");
+        clickAndWait("link=Propose Project");
+        clickAndWait("link=Return to Workspace");
         clickAndWait("link=" + title);
         selenium.click("link=Manage Files");
         selenium.waitForPageToLoad("30000");
         upload(MageTabDataFiles.TCGA_BROAD_IDF);
         upload(MageTabDataFiles.TCGA_BROAD_SDRF);
-        selenium.click("selected");
+        selenium.click("File_import_file:0:selected");        
         selenium.click("removeFile");
         selenium.waitForPageToLoad("30000");
-      //assertFalse(selenium.isTextPresent(file.getName()));
+        assertFalse(selenium.isTextPresent(MageTabDataFiles.TCGA_BROAD_IDF.getName()));
+        assertTrue(selenium.isTextPresent(MageTabDataFiles.TCGA_BROAD_SDRF.getName()));
     }
 
 
     private void upload(File file) throws IOException {
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
         filePath = filePath.replaceAll("%20", " ");
-        selenium.type("upload", filePath);
+        selenium.type("document.File_upload.upload", filePath);
         clickAndWait("uploadFile");
-       // assertTrue(selenium.isTextPresent(file.getName()));
+        assertTrue(selenium.isTextPresent(file.getName()));
     }
 
 

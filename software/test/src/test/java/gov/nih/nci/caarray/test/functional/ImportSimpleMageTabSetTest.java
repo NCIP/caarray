@@ -82,26 +82,12 @@
  */
 package gov.nih.nci.caarray.test.functional;
 
-import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.FloatColumn;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.domain.sample.LabeledExtract;
-import gov.nih.nci.caarray.services.CaArrayServer;
-import gov.nih.nci.caarray.services.ServerConnectionException;
-import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
-import gov.nih.nci.caarray.test.base.TestProperties;
-import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
 
@@ -110,11 +96,9 @@ import org.junit.Test;
  *
  * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
  */
-public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
+public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
 
-    private static final int NUMBER_OF_FILES = 30;
-    private static final String TITLE =
-        "TCGA Analysis of Gene Expression for Glioblastoma Multiforme Using Affymetrix HT_HG-U133A";
+    private static final int NUMBER_OF_FILES = 10;
     
     @Test
     public void testImportAndRetrieval() throws Exception {
@@ -123,7 +107,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         String title = "test" + System.currentTimeMillis();
         // Create project
         clickAndWait("link=Propose Project");
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         selenium.type("projectForm_project_experiment_title", title);
         selenium.click("//img[@alt='Save Draft']");
 
@@ -140,16 +124,16 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         clickAndWait("link=" + title);
         selenium.click("link=Manage Files");
         selenium.waitForPageToLoad("30000");
-        upload(MageTabDataFiles.TCGA_BROAD_IDF);
-        upload(MageTabDataFiles.TCGA_BROAD_SDRF);
-        upload(MageTabDataFiles.TCGA_BROAD_DATA_MATRIX);
-        upload(AffymetrixArrayDesignFiles.HT_HG_U133A_CDF);
+        upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
+        upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
+        upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX);
         FileFilter celFilter = new FileFilter() {
             public boolean accept(File pathname) {
                 return pathname.getName().toLowerCase().endsWith(".cel");
             }
         };
-        for (File celFile : MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY.listFiles(celFilter)) {
+        for (File celFile : MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY.listFiles(celFilter)) {
             upload(celFile);
         }
         checkFileStatus("UPLOADED");
@@ -160,15 +144,12 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
         checkFileStatus("IMPORTED");
 
-        // Using the Java remote API, verify:
-        // - Expected entities exist
-        // - Permissions are correct
-        // - Files can be downloaded through API
-        // - Raw and derived data are available and accurate
-        verifyDataViaJavaApi();
+        clickAndWait("link=Return to Workspace");
+        assertTrue(selenium.isTextPresent("University of Heidelberg H sapiens TK6"));
     }
 
-    private void selectAllFiles() {
+    private void selectAllFiles() throws InterruptedException {
+        Thread.sleep(1000);
         for (int i = 0; i < NUMBER_OF_FILES; i++) {
             selenium.click("File_import_file:" + i + ":selected");
         }
@@ -187,44 +168,5 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         clickAndWait("uploadFile");
         assertTrue(selenium.isTextPresent(file.getName()));
     }
-
-    private void verifyDataViaJavaApi() throws ServerConnectionException {
-        CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties.getServerJndiPort());
-        server.connect();
-        CaArraySearchService searchService = server.getSearchService();
-        Experiment searchExperiment = new Experiment();
-        searchExperiment.setTitle(TITLE);
-        List<Experiment> matches = searchService.search(searchExperiment);
-        assertEquals(1, matches.size());
-        Experiment experiment = matches.get(0);
-
-        Set<RawArrayData> celDatas = getAllRawArrayData(experiment);
-        assertEquals(26, celDatas.size());
-
-        RawArrayData celData = celDatas.iterator().next();
-        DataSet dataSet = server.getDataRetrievalService().getDataSet(celData);
-        assertNotNull(dataSet);
-        FloatColumn signalColumn = (FloatColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(2);
-        assertNotNull(signalColumn.getValues());
-        assertEquals(553536, signalColumn.getValues().length);
-    }
-
-    private Set<RawArrayData> getAllRawArrayData(Experiment experiment) {
-        Set<RawArrayData> datas = new HashSet<RawArrayData>();
-        Set<Hybridization> hybridizations = getAllHybridizations(experiment);
-        for (Hybridization hybridization : hybridizations) {
-            datas.add(hybridization.getArrayData());
-        }
-        return datas;
-    }
-
-    private Set<Hybridization> getAllHybridizations(Experiment experiment) {
-        Set<Hybridization> hybridizations = new HashSet<Hybridization>();
-        for (LabeledExtract labeledExtract : experiment.getLabeledExtracts()) {
-            hybridizations.addAll(labeledExtract.getHybridizations());
-        }
-        return hybridizations;
-    }
-
 
 }
