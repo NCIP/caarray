@@ -206,7 +206,7 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the description
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Column(length = LARGE_TEXT_FIELD_LENGTH)
     public String getDescription() {
         return this.description;
     }
