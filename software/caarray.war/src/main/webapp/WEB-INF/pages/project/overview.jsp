@@ -67,7 +67,7 @@ dol.forValue('<s:property value="#designMapping.key.id"/>').setDefaultOptions('<
         </s:iterator>
     </s:if>
 </s:iterator>
-window.setTimeout(function() { console.log("setting up dols"); initDynamicOptionLists(); }, 100);
+window.setTimeout(function() {initDynamicOptionLists(); }, 100);
 </script>
     </s:form>
     <a href="javascript:TabUtils.submitTabForm('projectForm', 'tabboxwrapper', 'save_draft');" class="save"><img src="<c:url value="/images/btn_save_draft.gif"/>" alt="Save Draft"></a>
