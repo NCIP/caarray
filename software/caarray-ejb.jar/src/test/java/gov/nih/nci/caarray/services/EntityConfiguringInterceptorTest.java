@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.services;
 
-import gov.nih.nci.caarray.util.HibernateUtil;
-
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
@@ -92,7 +90,6 @@ import java.util.Set;
 
 import javax.interceptor.InvocationContext;
 
-import org.hibernate.Session;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

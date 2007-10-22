@@ -129,7 +129,6 @@ import org.junit.Test;
 
 import affymetrix.fusion.cel.FusionCELData;
 import affymetrix.fusion.cel.FusionCELFileEntryType;
-import affymetrix.fusion.chp.FusionCHPData;
 import affymetrix.fusion.chp.FusionCHPDataReg;
 import affymetrix.fusion.chp.FusionCHPLegacyData;
 import affymetrix.fusion.chp.FusionExpressionProbeSetResults;

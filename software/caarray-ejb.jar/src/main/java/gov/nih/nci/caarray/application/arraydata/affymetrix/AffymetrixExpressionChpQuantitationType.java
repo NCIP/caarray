@@ -82,9 +82,6 @@
  */
 package gov.nih.nci.caarray.application.arraydata.affymetrix;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import gov.nih.nci.caarray.domain.data.DataType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 

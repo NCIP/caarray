@@ -89,8 +89,6 @@ import java.util.Map;
 
 import javax.interceptor.InvocationContext;
 
-import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
 import org.junit.Test;
 
 public class ExceptionLoggingInterceptorTest {
