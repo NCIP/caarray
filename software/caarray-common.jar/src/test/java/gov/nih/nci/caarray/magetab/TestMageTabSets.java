@@ -203,6 +203,9 @@ public final class TestMageTabSets {
         MageTabInputFileSet fileSet = new MageTabInputFileSet();
         fileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
+        fileSet.addAdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
+        fileSet.addDataMatrix(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX);
+        addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY);
         return fileSet;
     }
 
