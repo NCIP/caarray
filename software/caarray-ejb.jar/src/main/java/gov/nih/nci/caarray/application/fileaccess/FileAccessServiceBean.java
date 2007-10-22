@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.fileaccess;
 
+import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
@@ -96,6 +97,7 @@ import java.util.Map;
 
 import javax.ejb.Local;
 import javax.ejb.Stateful;
+import javax.interceptor.Interceptors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -108,6 +110,7 @@ import org.apache.commons.logging.LogFactory;
  */
 @Local
 @Stateful
+@Interceptors(ExceptionLoggingInterceptor.class)
 public class FileAccessServiceBean implements FileAccessService {
 
     private static final Log LOG = LogFactory.getLog(FileAccessServiceBean.class);
@@ -161,6 +164,9 @@ public class FileAccessServiceBean implements FileAccessService {
      */
     public void remove(CaArrayFile caArrayFile) {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
+        if (caArrayFile.getProject() != null) {
+            caArrayFile.getProject().getFiles().remove(caArrayFile);
+        }
         daoFactory.getFileDao().remove(caArrayFile);
         LogUtil.logSubsystemExit(LOG);
     }
