@@ -84,12 +84,7 @@ package gov.nih.nci.caarray.web.listener;
 
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
-import gov.nih.nci.caarray.web.util.Constants;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
 /**
@@ -107,17 +102,5 @@ public class StartupListener extends HibernateSessionScopeListener {
         ArrayDataService arrayDataService =
             (ArrayDataService) ServiceLocator.INSTANCE.lookup(ArrayDataService.JNDI_NAME);
         arrayDataService.initialize();
-
-        ServletContext context = event.getServletContext();
-        Map<String, Object> config = (Map<String, Object>) context.getAttribute(Constants.CONFIG);
-
-        if (config == null) {
-            config = new HashMap<String, Object>();
-        }
-
-        if (context.getInitParameter(Constants.CSS_THEME) != null) {
-            config.put(Constants.CSS_THEME, context.getInitParameter(Constants.CSS_THEME));
-        }
-        context.setAttribute(Constants.CONFIG, config);
     }
 }

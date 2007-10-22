@@ -82,12 +82,8 @@
  */
 package gov.nih.nci.caarray.web.action;
 
-import gov.nih.nci.caarray.web.util.Constants;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -125,17 +121,6 @@ public class BaseAction extends ActionSupport {
         }
         messages.add(msg);
         getRequest().getSession().setAttribute("messages", messages);
-    }
-
-    /**
-     * Convenience method to get the Configuration HashMap
-     * from the servlet context.
-     *
-     * @return the user's populated form from the session
-     */
-    @SuppressWarnings("unchecked")
-    public Map getConfiguration() {
-        return (HashMap) getSession().getServletContext().getAttribute(Constants.CONFIG);
     }
 
     /**
