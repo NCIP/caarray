@@ -138,7 +138,7 @@ public class Image extends AbstractCaArrayEntity {
      *
      * @return the protocolApplications
      */
-    @OneToMany(mappedBy = "image", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "image", fetch = FetchType.LAZY)
     public Set<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }

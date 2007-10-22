@@ -151,7 +151,7 @@ public class Sample extends AbstractBioMaterial {
      *
      * @return the extracts
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "SAMPLEEXTRACT",
             joinColumns = { @javax.persistence.JoinColumn(name = "SAMPLE_ID") },

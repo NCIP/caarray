@@ -7,7 +7,7 @@
             <c:if test="${param.error != null}">
         	<tr>
                 <td colspan="2">
-                    <img src="${ctx}/images/iconWarning.gif" alt="<fmt:message key='icon.warning'/>" class="icon"/>
+                    <img src="<c:url value="/images/iconWarning.gif"/>" alt="<fmt:message key='icon.warning'/>" class="icon"/>
                     <fmt:message key="errors.password.mismatch"/>
                 </td>
             </tr>

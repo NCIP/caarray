@@ -16,8 +16,8 @@
     <p>To modify the browsability status, click 'Save Permissions' below.
 
     <div class="actions">
-       <c:url value="Project_list.action" var="cancelUrl"/>
-       <c:url value="Project_toggle.action" var="toggleUrl">
+       <c:url value="/protected/project/list.action" var="cancelUrl"/>
+       <c:url value="/protected/project/toggle.action" var="toggleUrl">
             <c:param name="project.id" value="${project.id}" />
        </c:url>
 

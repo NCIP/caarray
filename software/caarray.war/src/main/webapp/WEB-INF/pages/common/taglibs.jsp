@@ -11,5 +11,4 @@
 <%@ taglib uri="http://ajaxtags.org/tags/ajax" prefix="ajax" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="caarray" %>
 
-<c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <c:set var="datePattern"><fmt:message key="date.format"/></c:set>

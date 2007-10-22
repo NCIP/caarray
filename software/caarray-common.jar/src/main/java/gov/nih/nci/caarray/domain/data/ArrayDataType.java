@@ -142,7 +142,7 @@ public class ArrayDataType extends AbstractCaArrayObject {
     /**
      * @return the quantitationTypes
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "ARRAYDATATYPE_QUANTITATIONTYPES",
             joinColumns = { @javax.persistence.JoinColumn(name = "ARRAYDATATYPE_ID") },

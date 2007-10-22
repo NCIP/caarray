@@ -218,7 +218,7 @@ public class Microarray implements PersistentObject {
     /**
      * @return the reporterCollection
      */
-    @OneToMany(mappedBy = "microarray", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "microarray", fetch = FetchType.LAZY)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     public Set<ArrayReporter> getReporterCollection() {
         return reporterCollection;

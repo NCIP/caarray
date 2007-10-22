@@ -169,7 +169,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      *
      * @return the protocolApplications
      */
-    @OneToMany(mappedBy = "arrayData", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "arrayData", fetch = FetchType.LAZY)
     public Set<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }

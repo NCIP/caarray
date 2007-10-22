@@ -9,29 +9,23 @@
             Propose Experiment
         </h1>
 
-        <c:url value="ajax_Project_loadTab_overview.action" var="overviewUrl">
+        <c:url value="/protected/ajax/project/loadTab/overview.action" var="overviewUrl">
             <c:param name="project.id" value="${project.id}" />
-            <c:param name="ajax" value="true" />
         </c:url>
-        <c:url value="ajax_Project_loadTab_contacts.action" var="contactsUrl">
+        <c:url value="/protected/ajax/project/loadTab/contacts.action" var="contactsUrl">
             <c:param name="project.id" value="${project.id}" />
-            <c:param name="ajax" value="true" />
         </c:url>
-        <c:url value="ajax_Project_loadGenericTab_annotations.action" var="annotationsUrl">
+        <c:url value="/protected/ajax/project/loadGenericTab/annotations.action" var="annotationsUrl">
             <c:param name="project.id" value="${project.id}" />
-            <c:param name="ajax" value="true" />
         </c:url>
-        <c:url value="ajax_Project_loadGenericTab_data.action" var="dataUrl">
+        <c:url value="/protected/ajax/project/loadGenericTab/data.action" var="dataUrl">
             <c:param name="project.id" value="${project.id}" />
-            <c:param name="ajax" value="true" />
         </c:url>
-        <c:url value="ajax_Project_loadGenericTab_data.action" var="supplementalUrl">
+        <c:url value="/protected/ajax/project/loadGenericTab/data.action" var="supplementalUrl">
             <c:param name="project.id" value="${project.id}" />
-            <c:param name="ajax" value="true" />
         </c:url>
-        <c:url value="ajax_Project_loadGenericTab_publications.action" var="publicationsUrl">
+        <c:url value="/protected/ajax/project/loadGenericTab/publications.action" var="publicationsUrl">
             <c:param name="project.id" value="${project.id}" />
-            <c:param name="ajax" value="true" />
         </c:url>
 
         <fmt:message key="project.tabs.overview" var="overviewTitle" />

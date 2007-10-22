@@ -9,7 +9,7 @@
 
         <div class="boxpad">
             <caarray:tabPane>
-                <c:url value="/protected/Project_list.action" var="sortUrl" >
+                <c:url value="/protected/project/list.action" var="sortUrl" >
                     <c:param name="ajax" value="true" />
                 </c:url>
                 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
@@ -17,7 +17,7 @@
                         sort="list" id="row" pagesize="20" excludedParams="project.id" style="clear: none;">
                         <caarray:displayTagProperties/>
                         <display:column property="experiment.title" title="Experiment Title" escapeXml="true" sortable="true"
-                            href="Project_edit.action" paramId="project.id" paramProperty="id" titleKey="project.id"/>
+                            url="/protected/project/edit.action" paramId="project.id" paramProperty="id" titleKey="project.id"/>
                         <display:column sortProperty="experiment.assayType" title="Assay Type" sortable="true" >
                             <c:if test="${row.experiment.assayType != null}">
                                 <fmt:message key="${row.experiment.assayType.resourceKey}" />
@@ -28,14 +28,14 @@
                             <fmt:message key="${row.status.resourceKey}" />
                         </display:column>
                         <display:column title="Properties">
-                            <c:url value="/protected/Project_editPermissions.action" var="editProjectPermissionsUrl">
+                            <c:url value="/protected/project/editPermissions.action" var="editProjectPermissionsUrl">
                                 <c:param name="project.id" value="${row.id}" />
                             </c:url>
                             <a href="${editProjectPermissionsUrl}"><img src="<c:url value="/images/ico_properties.gif"/>" alt="Properties" /></a>
                         </display:column>
                         <display:column titleKey="button.edit">
                             <c:if test="${row.status == 'DRAFT' || row.status == 'RETURNED_FOR_REVISION'}">
-                                <c:url value="/protected/Project_edit.action" var="editProjectUrl">
+                                <c:url value="/protected/project/edit.action" var="editProjectUrl">
                                     <c:param name="project.id" value="${row.id}" />
                                 </c:url>
                                 <a href="${editProjectUrl}"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>

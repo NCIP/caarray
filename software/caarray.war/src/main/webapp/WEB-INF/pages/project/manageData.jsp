@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
 <caarray:tabPane subtab="true">
-    <c:url var="addUrl" value="/protected/File_manage.action">
+    <c:url var="addUrl" value="/protected/file/manage.action">
          <c:param name="project.id" value="${project.id}"/>
     </c:url>
   <div class="boxpad2">
@@ -15,9 +15,8 @@
         </div>
   </div>
 
-  <c:url value="ajax_Project_loadGenericTab_manageData.action" var="sortUrl">
+  <c:url value="/protected/ajax/project/loadGenericTab/manageData.action" var="sortUrl">
         <c:param name="project.id" value="${project.id}" />
-        <c:param name="ajax" value="true" />
     </c:url>
 
     <div class="tableboxpad">

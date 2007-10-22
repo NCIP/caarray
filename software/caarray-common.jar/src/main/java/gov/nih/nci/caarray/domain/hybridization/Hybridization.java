@@ -158,7 +158,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      *
      * @return the images
      */
-    @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.LAZY)
     public Set<Image> getImages() {
         return images;
     }
@@ -179,7 +179,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      *
      * @return the derivedDatas
      */
-    @ManyToMany(mappedBy = "hybridizations", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "hybridizations", fetch = FetchType.LAZY)
     public Set<DerivedArrayData> getDerivedDataCollection() {
         return derivedDataCollection;
     }
@@ -242,7 +242,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      *
      * @return the factorValues
      */
-    @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.LAZY)
     public Set<FactorValue> getFactorValues() {
         return factorValues;
     }
@@ -285,7 +285,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      *
      * @return the labeledExtract
      */
-    @ManyToMany(mappedBy = "hybridizations", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "hybridizations", fetch = FetchType.LAZY)
     public Set<LabeledExtract> getLabeledExtracts() {
         return labeledExtract;
     }

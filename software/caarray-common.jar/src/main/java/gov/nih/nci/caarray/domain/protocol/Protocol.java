@@ -282,7 +282,7 @@ public class Protocol extends AbstractCaArrayEntity {
      *
      * @return the parameters
      */
-    @OneToMany(mappedBy = "protocol", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "protocol", fetch = FetchType.LAZY)
     public Set<Parameter> getParameters() {
         return parameters;
     }

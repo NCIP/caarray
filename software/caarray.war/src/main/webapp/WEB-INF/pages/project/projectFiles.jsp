@@ -34,7 +34,7 @@
         <p>You are managing files for <s:property value="project.experiment.title" />.</p>
 
         <s:if test='project.files != null && !project.files.isEmpty()'>
-            <s:form action="File_import" method="post">
+            <s:form action="file/import" method="post">
                 <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
                 <table>
                     <tr>
@@ -54,7 +54,10 @@
                     <tr>
                         <td><s:checkbox name="file:%{#status.index}:selected" /></td>
                         <td>
-                            <a href="File_download.action?downloadIds=<s:property value="id"/>"><s:property value="name"/></a>
+                            <c:url var="downloadUrl" value="/protected/file/download.action">
+                                <c:param name="downloadIds"><s:property value="id"/></c:param>
+                            </c:url>
+                            <a href="${downloadUrl}"><s:property value="name"/></a>
                         </td>
                         <td><s:select name="file:%{#status.index}:fileType"
                                       listKey="label"
@@ -63,7 +66,11 @@
                                       value="type" />
                         </td>
                         <td>
-                            <a name="file:<s:property value='%{#status.index}'/>:status" href="File_messages.action?project.id=<s:property value='project.id'/>&file.id=<s:property value='id'/>">
+                            <c:url var="messagesUrl" value="/protected/file/messages.action">
+                                <c:param name="project.id"><s:property value="project.id"/></c:param>
+                                <c:param name="file.id"><s:property value="id"/></c:param>
+                            </c:url>
+                            <a name="file:<s:property value='%{#status.index}'/>:status" href="${messagesUrl}">
                                 <s:property value="status"/>
                             </a>
                         </td>
@@ -92,7 +99,7 @@
             <s:file id="upload" name="upload" label="File" />
         </div>
 
-        <s:form action="File_upload" enctype="multipart/form-data" method="post">
+        <s:form action="file/upload" enctype="multipart/form-data" method="post">
             <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
             <s:file id="upload" name="upload" label="File" />
             <span id="writeUploadDiv"></span>

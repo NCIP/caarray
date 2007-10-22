@@ -2,9 +2,8 @@
 
 <caarray:tabPane paneTitleKey="project.tabs.downloadData" subtab="true">
     <div class="tableboxpad">
-    <c:url value="ajax_Project_loadGenericTab_downloadData.action" var="sortUrl">
+    <c:url value="/protected/ajax/project/loadGenericTab/downloadData.action" var="sortUrl">
         <c:param name="project.id" value="${project.id}" />
-        <c:param name="ajax" value="true" />
     </c:url>
 
     <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
@@ -12,7 +11,7 @@
             requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="project.id">
             <caarray:displayTagProperties/>
             <display:column titleKey="experiment.files.name" sortable="true">
-                <c:url var="downloadUrl" value="/protected/File_download.action">
+                <c:url var="downloadUrl" value="/protected/file/download.action">
                   <c:param name="downloadIds" value="${row.id}"/>
                 </c:url>
               <a href="${downloadUrl}">${row.name}</a>

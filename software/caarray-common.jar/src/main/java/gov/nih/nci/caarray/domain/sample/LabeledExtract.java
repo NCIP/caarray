@@ -159,7 +159,7 @@ public class LabeledExtract extends AbstractBioMaterial {
      *
      * @return the hybridizations
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "LABELEDEXTRACTHYBRIDIZATION",
             joinColumns = { @javax.persistence.JoinColumn(name = "LABELEDEXTRACT_ID") },

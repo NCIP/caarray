@@ -9,7 +9,7 @@
 
     <div class="boxpad2">
         <p class="instructions">Required fields are highlighted and have <span class="required"><span class="asterisk">*</span>asterisks<span class="asterisk">*</span></span>.</p>
-        <s:form action="ajax_Project_saveTab_factorEdit" cssClass="form" id="projectForm" method="post">
+        <s:form action="ajax/project/saveTab/factorEdit" cssClass="form" id="projectForm" method="post">
             <s:textfield required="true" name="currentFactor.name" key="experiment.experimentalFactors.name" size="80" tabindex="1"/>
             <s:hidden name="currentFactor.id" />
             <s:hidden name="project.id" />

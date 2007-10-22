@@ -229,7 +229,7 @@ public class Specimen extends AbstractDomainObject {
     /**
      * @return the parentSpecimen
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     public Specimen getParentSpecimen() {
         return parentSpecimen;
     }

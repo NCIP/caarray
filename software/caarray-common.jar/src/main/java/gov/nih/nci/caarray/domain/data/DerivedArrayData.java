@@ -112,7 +112,7 @@ public class DerivedArrayData extends AbstractArrayData {
     /**
      * @return the hybridizations
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "DERIVEDARRAYDATA_HYBRIDIZATIONS",
             joinColumns = { @javax.persistence.JoinColumn(name = "HYBRIDIZATION_ID") },
@@ -137,7 +137,7 @@ public class DerivedArrayData extends AbstractArrayData {
     /**
      * @return the hybridizations
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "DERIVEDARRAYDATA_DERIVEDFROM",
             joinColumns = { @javax.persistence.JoinColumn(name = "DERIVEDFROM_ARRAYDATA_ID") },

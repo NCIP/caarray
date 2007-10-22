@@ -117,7 +117,7 @@ public final class DataSet extends AbstractCaArrayObject {
     /**
      * @return the hybridizationDatas
      */
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @IndexColumn(name = "HYBRIDIZATION_INDEX")
     @Cascade(CascadeType.ALL)
     public List<HybridizationData> getHybridizationDataList() {
@@ -149,7 +149,7 @@ public final class DataSet extends AbstractCaArrayObject {
     /**
      * @return the quantitationTypes
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @IndexColumn(name = "QUANTITATIONTYPE_INDEX")
     @JoinTable(
             name = "DATASETQUANTITATIONTYPE",
@@ -198,7 +198,7 @@ public final class DataSet extends AbstractCaArrayObject {
     /**
      * @return the designElements
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @IndexColumn(name = "DESIGNELEMENT_INDEX")
     @JoinTable(
             name = "DATASET_DESIGNELEMENT",

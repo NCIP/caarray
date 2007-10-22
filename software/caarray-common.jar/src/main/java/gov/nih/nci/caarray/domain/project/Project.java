@@ -222,7 +222,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      *
      * @return the files
      */
-    @OneToMany(mappedBy = "project", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Sort(type = SortType.NATURAL)
     public SortedSet<CaArrayFile> getFiles() {
         return this.files;
@@ -286,7 +286,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     /**
      * @return collaborator access profiles
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @MapKeyManyToMany(joinColumns = @JoinColumn(name = "GROUP_ID"))
     @JoinTable(
             name = "PROJECT_GROUPS",

@@ -1,32 +1,25 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
-<c:url value="ajax_Project_loadTab_experimentalDesign.action" var="experimentalDesignUrl">
+<c:url value="/protected/ajax/project/loadTab/experimentalDesign.action" var="experimentalDesignUrl">
     <c:param name="project.id" value="${project.id}" />
-    <c:param name="ajax" value="true" />
 </c:url>
-<c:url value="ajax_Project_loadGenericTab_factors.action" var="experimentalFactorsUrl">
+<c:url value="/protected/ajax/project/loadGenericTab/factors.action" var="experimentalFactorsUrl">
     <c:param name="project.id" value="${project.id}" />
-    <c:param name="ajax" value="true" />
 </c:url>
-<c:url value="ajax_Project_loadGenericTab_sources.action" var="sourcesUrl">
+<c:url value="/protected/ajax/project/loadGenericTab/sources.action" var="sourcesUrl">
     <c:param name="project.id" value="${project.id}" />
-    <c:param name="ajax" value="true" />
 </c:url>
-<c:url value="ajax_Project_loadGenericTab_samples.action" var="samplesUrl">
+<c:url value="/protected/ajax/project/loadGenericTab/samples.action" var="samplesUrl">
     <c:param name="project.id" value="${project.id}" />
-    <c:param name="ajax" value="true" />
 </c:url>
-<c:url value="ajax_Project_loadGenericTab_extracts.action" var="extractsUrl">
+<c:url value="/protected/ajax/project/loadGenericTab/extracts.action" var="extractsUrl">
     <c:param name="project.id" value="${project.id}" />
-    <c:param name="ajax" value="true" />
 </c:url>
-<c:url value="ajax_Project_loadGenericTab_labeledExtracts.action" var="labeledExtractsUrl">
+<c:url value="/protected/ajax/project/loadGenericTab/labeledExtracts.action" var="labeledExtractsUrl">
     <c:param name="project.id" value="${project.id}" />
-    <c:param name="ajax" value="true" />
 </c:url>
-<c:url value="ajax_Project_loadGenericTab_hybridizations.action" var="hybridizationsUrl">
+<c:url value="/protected/ajax/project/loadGenericTab/hybridizations.action" var="hybridizationsUrl">
     <c:param name="project.id" value="${project.id}" />
-    <c:param name="ajax" value="true" />
 </c:url>
 
 <fmt:message key="project.tabs.experimentalDesign" var="experimentalDesignTitle" />
@@ -49,5 +42,5 @@
 </ajax:tabPanel>
 
 <script type="text/javascript">
-executeAjaxTab_tablevel2(this,'selected', '${experimentalDesignUrl}', '');
+executeAjaxTab_tablevel2(null,'selected', '${experimentalDesignUrl}', '');
 </script>

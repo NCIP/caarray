@@ -4,7 +4,7 @@
     <div class="boxpad">
     <p class="instructions">Contact information for this experiment is below. Required fields are highlighted and have <span class="required"><span class="asterisk">*</span>asterisks<span class="asterisk">*</span></span>.
     </p>
-    <s:form action="ajax_Project_saveTab_contacts" cssClass="form" id="projectForm" method="post">
+    <s:form action="ajax/project/saveTab/contacts" cssClass="form" id="projectForm" method="post">
         <tbody>
         <tr><th colspan="2">Principal Investigator (P.I.)</th></tr>
         <s:textfield required="true" name="primaryInvestigator.firstName" label="P.I. First Name" size="80" tabindex="1"/>
@@ -21,7 +21,6 @@
         <s:textfield required="true" name="mainPointOfContact.phone" label="Phone" size="80" tabindex="9"/>
         </tbody>
         <s:hidden name="project.id" />
-        <s:hidden name="ajax" value="%{'true'}"/>
     </s:form>
 
     <a href="javascript:TabUtils.submitTabForm('projectForm', 'tabboxwrapper', 'save_draft');" class="save"><img src="<c:url value="/images/btn_save_draft.gif"/>" alt="Save Draft"></a>

@@ -147,7 +147,7 @@ public class Extract extends AbstractBioMaterial {
      *
      * @return the labeledExtracts
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "EXTRACTLABELEDEXTRACT",
             joinColumns = { @javax.persistence.JoinColumn(name = "EXTRACT_ID") },

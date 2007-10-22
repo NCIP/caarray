@@ -156,7 +156,7 @@ public class Factor extends AbstractCaArrayEntity {
      *
      * @return the factorValues
      */
-    @OneToMany(mappedBy = "factor", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "factor", fetch = FetchType.LAZY)
     @Cascade(CascadeType.SAVE_UPDATE)
     public Set<FactorValue> getFactorValues() {
         return factorValues;

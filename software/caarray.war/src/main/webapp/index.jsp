@@ -1,1 +1,1 @@
-<% response.sendRedirect("protected/Project_list.action"); %>
+<% response.sendRedirect(request.getContextPath() + "/protected/project/list.action"); %>

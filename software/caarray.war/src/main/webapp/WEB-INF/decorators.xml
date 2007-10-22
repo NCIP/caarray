@@ -1,8 +1,8 @@
  
 <decorators defaultdir="/decorators">
     <excludes>
-        <pattern>/*ajax=true*</pattern>
-        <pattern>/*ajax_*</pattern>
+        <pattern>/ajax/*</pattern>
+        <pattern>/protected/ajax/*</pattern>
         <pattern>/struts/dojo/*</pattern>
         <pattern>/resources/*</pattern>
     </excludes> 

@@ -164,7 +164,7 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      *
      * @return the values
      */
-    @OneToMany(mappedBy = "protocolApplication", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "protocolApplication", fetch = FetchType.LAZY)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<ParameterValue> getValues() {
         return values;

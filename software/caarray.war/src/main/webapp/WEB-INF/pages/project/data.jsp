@@ -1,12 +1,10 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
-<c:url value="ajax_Project_loadTab_manageData.action" var="manageDataUrl">
+<c:url value="/protected/ajax/project/loadTab/manageData.action" var="manageDataUrl">
     <c:param name="project.id" value="${project.id}" />
-    <c:param name="ajax" value="true" />
 </c:url>
-<c:url value="ajax_Project_loadGenericTab_downloadData.action" var="downloadDataUrl">
+<c:url value="/protected/ajax/project/loadGenericTab/downloadData.action" var="downloadDataUrl">
     <c:param name="project.id" value="${project.id}" />
-    <c:param name="ajax" value="true" />
 </c:url>
 
 <fmt:message key="project.tabs.manageData" var="manageDataTitle" />
@@ -19,5 +17,5 @@
 </ajax:tabPanel>
 
 <script type="text/javascript">
-executeAjaxTab_tablevel2(this,'selected', '${manageDataUrl}', '');
+executeAjaxTab_tablevel2(null,'selected', '${manageDataUrl}', '');
 </script>

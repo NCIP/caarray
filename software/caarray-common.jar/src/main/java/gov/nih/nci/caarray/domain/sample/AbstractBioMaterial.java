@@ -208,7 +208,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      *
      * @return the characteristics
      */
-    @OneToMany(mappedBy = "bioMaterial", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "bioMaterial", fetch = FetchType.LAZY)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<AbstractCharacteristic> getCharacteristics() {
         return this.characteristics;
@@ -229,7 +229,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      *
      * @return the protocolApplications
      */
-    @OneToMany(mappedBy = "bioMaterial", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "bioMaterial", fetch = FetchType.LAZY)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<ProtocolApplication> getProtocolApplications() {
         return this.protocolApplications;

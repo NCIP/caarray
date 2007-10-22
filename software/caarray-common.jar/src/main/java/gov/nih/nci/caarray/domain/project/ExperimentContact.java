@@ -150,7 +150,7 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      *
      * @return the roles
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "EXPERIMENTCONTACTROLE",
             joinColumns = { @JoinColumn(name = "EXPERIMENTCONTACT_ID") },

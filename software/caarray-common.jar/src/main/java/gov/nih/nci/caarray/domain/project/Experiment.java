@@ -151,12 +151,12 @@ public class Experiment extends AbstractCaArrayEntity {
     private AssayType assayType;
     private Organization manufacturer;
     private Organism organism;
-    private List<Term> tissueSites = new ArrayList<Term>();
-    private List<Term> tissueTypes = new ArrayList<Term>();
-    private List<Term> cellTypes = new ArrayList<Term>();
-    private List<Term> conditions = new ArrayList<Term>();
+    private Set<Term> tissueSites = new HashSet<Term>();
+    private Set<Term> tissueTypes = new HashSet<Term>();
+    private Set<Term> cellTypes = new HashSet<Term>();
+    private Set<Term> conditions = new HashSet<Term>();
     private boolean pooledSamples;
-    private List<Factor> factors = new ArrayList<Factor>();
+    private Set<Factor> factors = new HashSet<Factor>();
     private Set<ExperimentContact> experimentContacts = new HashSet<ExperimentContact>();
     private Term experimentDesignType;
     private String experimentDesignDescription;
@@ -168,8 +168,8 @@ public class Experiment extends AbstractCaArrayEntity {
     private Set<Publication> publications = new HashSet<Publication>();
     private Set<Array> arrays = new HashSet<Array>();
     private Set<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
-    private List<Source> sources = new ArrayList<Source>();
-    private List<Sample> samples = new ArrayList<Sample>();
+    private Set<Source> sources = new HashSet<Source>();
+    private Set<Sample> samples = new HashSet<Sample>();
     private Set<Extract> extracts = new HashSet<Extract>();
     private Set<LabeledExtract> labeledExtracts = new HashSet<LabeledExtract>();
     private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
@@ -445,8 +445,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * Gets the tissue sites associated with this experiment.
      * @return the tissue sites
      */
-    @ManyToMany(fetch = FetchType.EAGER)
-    @IndexColumn(name = "indx")
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
 
             name = "EXPERIMENTTISSUESITE",
@@ -454,14 +453,14 @@ public class Experiment extends AbstractCaArrayEntity {
             inverseJoinColumns = { @JoinColumn(name = TERM_FK_NAME) }
     )
     @ForeignKey(name = "TISSUESITE_EXP_FK", inverseName = "TISSUESITE_TERM_FK")
-    public List<Term> getTissueSites() {
+    public Set<Term> getTissueSites() {
         return this.tissueSites;
     }
 
     /**
      * @param tissueSites the tissueSites to set
      */
-    public void setTissueSites(final List<Term> tissueSites) {
+    public void setTissueSites(final Set<Term> tissueSites) {
         this.tissueSites = tissueSites;
     }
 
@@ -469,22 +468,21 @@ public class Experiment extends AbstractCaArrayEntity {
      * Gets the tissue types associated with this experiment.
      * @return the tissue types
      */
-    @ManyToMany(fetch = FetchType.EAGER)
-    @IndexColumn(name = "indx")
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "EXPERIMENTTISSUETYPE",
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = { @JoinColumn(name = TERM_FK_NAME) }
     )
     @ForeignKey(name = "TISSUETYPE_EXP_FK", inverseName = "TISSUETYPE_TERM_FK")
-    public List<Term> getTissueTypes() {
+    public Set<Term> getTissueTypes() {
         return this.tissueTypes;
     }
 
     /**
      * @param tissueTypes the tissueTypes to set
      */
-    public void setTissueTypes(final List<Term> tissueTypes) {
+    public void setTissueTypes(final Set<Term> tissueTypes) {
         this.tissueTypes = tissueTypes;
     }
 
@@ -492,22 +490,21 @@ public class Experiment extends AbstractCaArrayEntity {
      * Gets the cell types associated with this experiment.
      * @return the cell types
      */
-    @ManyToMany(fetch = FetchType.EAGER)
-    @IndexColumn(name = "indx")
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "EXPERIMENTCELLTYPE",
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = { @JoinColumn(name = TERM_FK_NAME) }
     )
     @ForeignKey(name = "CELLTYPE_EXP_FK", inverseName = "CELLTYPE_TERM_FK")
-    public List<Term> getCellTypes() {
+    public Set<Term> getCellTypes() {
         return this.cellTypes;
     }
 
     /**
      * @param cellTypes the cellTypes to set
      */
-    public void setCellTypes(final List<Term> cellTypes) {
+    public void setCellTypes(final Set<Term> cellTypes) {
         this.cellTypes = cellTypes;
     }
 
@@ -515,22 +512,21 @@ public class Experiment extends AbstractCaArrayEntity {
      * Gets the conditions associated with this experiment.
      * @return the conditions
      */
-    @ManyToMany(fetch = FetchType.EAGER)
-    @IndexColumn(name = "indx")
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "EXPERIMENTCONDITION",
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = { @JoinColumn(name = TERM_FK_NAME) }
     )
     @ForeignKey(name = "CONDITION_EXP_FK", inverseName = "CONDITION_TERM_FK")
-    public List<Term> getConditions() {
+    public Set<Term> getConditions() {
         return this.conditions;
     }
 
     /**
      * @param conditions the conditions to set
      */
-    public void setConditions(final List<Term> conditions) {
+    public void setConditions(final Set<Term> conditions) {
         this.conditions = conditions;
     }
 
@@ -555,7 +551,7 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the qualityControlTypes
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "QUALITYCONTROLTYPE",
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
@@ -581,7 +577,7 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the publications
      */
-    @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.LAZY)
     public Set<Publication> getPublications() {
         return this.publications;
     }
@@ -601,7 +597,7 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the replicateTypes
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "REPLICATETYPE",
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
@@ -627,7 +623,7 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the sources
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "EXPERIMENTSOURCE",
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
@@ -636,8 +632,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @ForeignKey(name = "EXPERIMENTSOURCE_INVEST_FK", inverseName = "EXPERIMENTSOURCE_SOURCE_FK")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
           org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @IndexColumn(name = "indx")
-    public List<Source> getSources() {
+    public Set<Source> getSources() {
         return this.sources;
     }
 
@@ -647,7 +642,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param sourcesVal the sources
      */
     @SuppressWarnings(UNUSED)
-    private void setSources(final List<Source> sourcesVal) {  // NOPMD
+    private void setSources(final Set<Source> sourcesVal) {  // NOPMD
         this.sources = sourcesVal;
     }
 
@@ -656,7 +651,7 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the samples
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "EXPERIMENTSAMPLE",
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
@@ -665,8 +660,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @ForeignKey(name = "EXPERIMENTSAMPLE_INVEST_FK", inverseName = "EXPERIMENTSAMPLE_SAMPLE_FK")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
           org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @IndexColumn(name = "indx")
-    public List<Sample> getSamples() {
+    public Set<Sample> getSamples() {
         return this.samples;
     }
 
@@ -676,7 +670,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param samplesVal the sources
      */
     @SuppressWarnings(UNUSED)
-    private void setSamples(final List<Sample> samplesVal) {  // NOPMD
+    private void setSamples(final Set<Sample> samplesVal) {  // NOPMD
         this.samples = samplesVal;
     }
 
@@ -685,7 +679,7 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the extracts
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "EXPERIMENTEXTRACT",
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
@@ -712,7 +706,7 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the labeledExtracts
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "EXPERIMENTLABELEDEXTRACT",
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
@@ -739,7 +733,7 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the arrayDesigns
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "EXPERIMENTARRAYDESIGN",
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
@@ -766,7 +760,7 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the experimentContacts
      */
-    @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.LAZY)
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
           org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<ExperimentContact> getExperimentContacts() {
@@ -854,7 +848,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @JoinColumn(name="experiment")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
           org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public List<Factor> getFactors() {
+    public Set<Factor> getFactors() {
         return this.factors;
     }
 
@@ -864,7 +858,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param factorsVal the factors
      */
     @SuppressWarnings(UNUSED)
-    private void setFactors(final List<Factor> factorsVal) {  // NOPMD
+    private void setFactors(final Set<Factor> factorsVal) {  // NOPMD
         this.factors = factorsVal;
     }
 
@@ -873,7 +867,7 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the normalizationTypes
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "NORMALIZATIONTYPE",
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
@@ -900,7 +894,7 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the arrays
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "EXPERIMENTARRAY",
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },
@@ -925,7 +919,7 @@ public class Experiment extends AbstractCaArrayEntity {
     /**
      * @return hybridizations
      */
-    @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.LAZY)
     public Set<Hybridization> getHybridizations() {
         return this.hybridizations;
     }
