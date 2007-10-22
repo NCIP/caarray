@@ -30,7 +30,7 @@
 <body>
     <div id="content" class="homepage">
         <h1>Experiment Files</h1>
-        <%@ include file="/WEB-INF/pages/common/messages.jsp" %>
+        <caarray:successMessages />
         <p>You are managing files for <s:property value="project.experiment.title" />.</p>
 
         <s:if test='project.files != null && !project.files.isEmpty()'>

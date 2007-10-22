@@ -5,10 +5,9 @@
 <body>
     <div id="content">
         <h1>
-           <a href="javascript:TabUtils.submitTabOrSubTabForm('projectForm', 'tabboxwrapper', 'tabboxlevel2wrapper', 'save_submit');"  class="submit_experiment" style="display: block; float: right"><img src="<c:url value="/images/btn_submit_experiment.gif"/>" alt="Submit Experiment Proposal"></a>        
-            Propose Experiment 
+           <a href="javascript:TabUtils.submitTabOrSubTabForm('projectForm', 'tabboxwrapper', 'tabboxlevel2wrapper', 'save_submit');"  class="submit_experiment" style="display: block; float: right"><img src="<c:url value="/images/btn_submit_experiment.gif"/>" alt="Submit Experiment Proposal"></a>
+            Propose Experiment
         </h1>
-        <%@ include file="/WEB-INF/pages/common/messages.jsp" %>
 
         <c:url value="ajax_Project_loadTab_overview.action" var="overviewUrl">
             <c:param name="project.id" value="${project.id}" />

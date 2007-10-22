@@ -5,7 +5,7 @@
 <body>
     <div id="content">
         <h1>Experiment Permissions</h1>
-        <%@ include file="/WEB-INF/pages/common/messages.jsp" %>
+        <caarray:successMessages />
 
         This project is currently
         <c:if test="${!project.browsable}">

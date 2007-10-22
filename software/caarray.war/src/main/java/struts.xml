@@ -9,7 +9,6 @@
     <constant name="struts.enable.SlashesInActionNames" value="true" />
     <constant name="struts.i18n.encoding" value="UTF-8"/>
     <constant name="struts.custom.i18n.resources" value="ApplicationResources,errors"/>
-    <constant name="struts.ui.theme" value="xhtml"/>
     <constant name="struts.codebehind.pathPrefix" value="/WEB-INF/pages/"/>
 
 

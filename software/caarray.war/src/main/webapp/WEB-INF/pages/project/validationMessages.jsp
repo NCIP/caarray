@@ -6,7 +6,7 @@
 <body>
     <div id="content">
         <h1>Experiment Workspace</h1>
-        <%@ include file="/WEB-INF/pages/common/messages.jsp" %>
+        <caarray:successMessages />
         <p>Validation Messages for <s:property value="file.name"/></p>
         <table>
         <tr>
