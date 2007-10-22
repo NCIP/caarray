@@ -13,19 +13,13 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 public class ManageFilesDelegate extends BaseDelegate {
 
     private ServiceLocator locator = ServiceLocator.INSTANCE;
-    private FileManagementService fileManagementService;
-    private ProjectManagementService projectManagementService;
-    private FileAccessService fileAccessService;
 
     /**
      * Get FileManagementService.
      * @return fileManagementService
      */
     public FileManagementService getFileManagementService() {
-        if (fileManagementService == null) {
-            fileManagementService = (FileManagementService) locator.lookup(FileManagementService.JNDI_NAME);
-        }
-        return fileManagementService;
+        return (FileManagementService) locator.lookup(FileManagementService.JNDI_NAME);
     }
 
     /**
@@ -33,11 +27,7 @@ public class ManageFilesDelegate extends BaseDelegate {
      * @return projectManagementService
      */
     public ProjectManagementService getProjectManagementService() {
-        if (projectManagementService == null) {
-            projectManagementService =
-                (ProjectManagementService) locator.lookup(ProjectManagementService.JNDI_NAME);
-        }
-        return projectManagementService;
+        return (ProjectManagementService) locator.lookup(ProjectManagementService.JNDI_NAME);
     }
 
     /**
@@ -45,10 +35,7 @@ public class ManageFilesDelegate extends BaseDelegate {
      * @return fileAccessService
      */
     public FileAccessService getFileAccessService() {
-        if (fileAccessService == null) {
-            fileAccessService = (FileAccessService) locator.lookup(FileAccessService.JNDI_NAME);
-        }
-        return fileAccessService;
+        return (FileAccessService) locator.lookup(FileAccessService.JNDI_NAME);
     }
 
     /**
