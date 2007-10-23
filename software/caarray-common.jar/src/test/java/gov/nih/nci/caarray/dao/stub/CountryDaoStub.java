@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -82,93 +82,19 @@
  */
 package gov.nih.nci.caarray.dao.stub;
 
-import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.ContactDao;
 import gov.nih.nci.caarray.dao.CountryDao;
-import gov.nih.nci.caarray.dao.FileDao;
-import gov.nih.nci.caarray.dao.OrganismDao;
-import gov.nih.nci.caarray.dao.ProjectDao;
-import gov.nih.nci.caarray.dao.ProtocolDao;
-import gov.nih.nci.caarray.dao.RegistrationDao;
-import gov.nih.nci.caarray.dao.SampleDao;
-import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.domain.country.Country;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
- * Base adapter for DAO Stubs.
+ * @author John Hedden
+ *
  */
-public class DaoFactoryStub implements CaArrayDaoFactory {
+public class CountryDaoStub extends AbstractDaoStub implements CountryDao {
 
-    /**
-     * {@inheritDoc}
-     */
-    public ArrayDao getArrayDao() {
-        return new ArrayDaoStub();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ProjectDao getProjectDao() {
-        return new ProjectDaoStub();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ProtocolDao getProtocolDao() {
-        return new ProtocolDaoStub();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public SearchDao getSearchDao() {
-        return new SearchDaoStub();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public VocabularyDao getVocabularyDao() {
-        return new VocabularyDaoStub();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public SampleDao getSampleDao() {
-        return new SampleDaoStub();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public FileDao getFileDao() {
-        return new FileDaoStub();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ContactDao getContactDao() {
-        return new ContactDaoStub();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public OrganismDao getOrganismDao() {
-        return new OrganismDaoStub();
-    }
-
-
-    public RegistrationDao getRegistrationDao() {
-        return new RegistrationDaoStub();
-    }
-
-    public CountryDao getCountryDao() {
-        return new CountryDaoStub();
+    public List<Country> getCountries() {
+        return Collections.EMPTY_LIST;
     }
 }
