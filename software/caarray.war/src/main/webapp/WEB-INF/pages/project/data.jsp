@@ -14,7 +14,7 @@
         postFunction="TabUtils.setSelectedLevel2Tab" preFunction="TabUtils.showSubtabLoadingText">
     <ajax:tab caption="${manageDataTitle}" baseUrl="${manageDataUrl}" defaultTab="${param.initialTab == null || param.initialTab == 'manageData'}" />
     <ajax:tab caption="${downloadDataTitle}" baseUrl="${downloadDataUrl}" defaultTab="${param.initialTab == 'downloadData'}" />
-</ajax:tabPanel>
+</ajax:tabPanel> 
 
 <script type="text/javascript">
 executeAjaxTab_tablevel2(null,'selected', '${manageDataUrl}', '');

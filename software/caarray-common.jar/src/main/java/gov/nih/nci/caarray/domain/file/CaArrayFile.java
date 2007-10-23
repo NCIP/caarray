@@ -129,6 +129,8 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     private Project project;
     private FileValidationResult validationResult;
     private Blob contents;
+    private int uncompressedSize;
+    private int compressedSize;
 
     /**
      * Gets the name.
@@ -202,6 +204,30 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      */
     public void setProject(Project project) {
         this.project = project;
+    }
+
+    /**
+     * @return the uncompressed size, in bytes
+     */
+    public int getUncompressedSize() {
+        return uncompressedSize;
+    }
+
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod"})
+    private void setUncompressedSize(int uncompressedSize) {
+        this.uncompressedSize = uncompressedSize;
+    }
+
+    /**
+     * @return the compressed size, in bytes
+     */
+    public int getCompressedSize() {
+        return compressedSize;
+    }
+
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod"})
+    private void setCompressedSize(int compressedSize) {
+        this.compressedSize = compressedSize;
     }
 
     /**
@@ -297,6 +323,8 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
         byte[] compressedBytes = byteArrayOutputStream.toByteArray();
         if (contents == null) {
             setContents(Hibernate.createBlob(compressedBytes));
+            setUncompressedSize(fileBytes.length);
+            setCompressedSize(compressedBytes.length);
         } else {
             throw new IllegalStateException("Can't reset the contents of an existing CaArrayFile");
         }
@@ -320,7 +348,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      * @return the contents
      */
     @Basic(fetch = FetchType.LAZY)
-    @Column(columnDefinition = "LONGBLOB")
+    @Column(columnDefinition = "LONGBLOB", updatable = false)
     @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
     private Blob getContents() {
         return contents;

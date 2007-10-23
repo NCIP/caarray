@@ -119,7 +119,6 @@ import org.hibernate.type.Type;
  * features as objects are saved.
  */
 public class SecurityInterceptor extends EmptyInterceptor {
-
     //
     // DEVELOPER NOTE: this class must be thread safe, because we enable it at the
     //                 SessionFactory level in hibernate.
@@ -132,7 +131,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
      * Key for looking up the authorization manager instance from CSM
      */
     public static final String AUTHORIZATION_MANAGER_KEY = "caarray";
-    
+
     /** The synthetic user for anonymous access permissions. */
     public static final String ANONYMOUS_USER = "__anonymous__";
     /** The synthetic group for anonymous access permissions. */

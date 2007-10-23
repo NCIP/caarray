@@ -18,7 +18,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,7 +29,6 @@ import java.util.zip.ZipFile;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.Preparable;
@@ -50,7 +51,7 @@ public class FileManageAction extends BaseAction implements Preparable {
     private List<File> uploads = new ArrayList<File>();
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<String> uploadContentTypes = new ArrayList<String>();
-    private List<Long> downloadIds = new ArrayList<Long>();
+    private String downloadIds;
     private InputStream downloadStream;
 
     /**
@@ -309,14 +310,14 @@ public class FileManageAction extends BaseAction implements Preparable {
     /**
      * @return the downloadIds
      */
-    public List<Long> getDownloadIds() {
+    public String getDownloadIds() {
         return downloadIds;
     }
 
     /**
      * @param downloadIds the downloadIds to set
      */
-    public void setDownloadIds(List<Long> downloadIds) {
+    public void setDownloadIds(String downloadIds) {
         this.downloadIds = downloadIds;
     }
 
@@ -447,7 +448,12 @@ public class FileManageAction extends BaseAction implements Preparable {
      */
     @SkipValidation
     public String download() throws IOException {
-        File zipFile = getDelegate().getProjectManagementService().prepareForDownload(getDownloadIds());
+        String[] strings = getDownloadIds().split(",");
+        Collection<Long> ids = new HashSet<Long>(strings.length);
+        for (String curString : strings) {
+            ids.add(Long.parseLong(curString));
+        }
+        File zipFile = getDelegate().getProjectManagementService().prepareForDownload(ids);
 
         downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
 

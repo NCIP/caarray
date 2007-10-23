@@ -433,3 +433,71 @@ var TabUtils = {
         }
     }
 }
+
+//
+// Download stuff here
+//
+
+function DownloadMgr(url) {
+	this.downloadUrl = url;
+	this.downloadIds = new Array();
+	this.downloadSize = 0;
+}
+
+DownloadMgr.prototype.downloadUrl;
+DownloadMgr.prototype.downloadIds;
+DownloadMgr.prototype.downloadSize;
+
+DownloadMgr.prototype.addDownloadRow = function(name, id, size) {
+    for (i = 0; i < this.downloadIds.length; ++i) {
+    	if (this.downloadIds[i] == id) {
+    		return;
+    	}
+    }
+    this.downloadIds.push(id);
+    this.downloadSize += size;
+    
+	var tbl = document.getElementById('downloadTbl');
+	var lastRow = tbl.rows.length;
+	var row = tbl.insertRow(lastRow - 1);
+
+	var cell = row.insertCell(0);
+	var textNode = document.createTextNode(name);
+	cell.appendChild(textNode);
+
+	lastRow = tbl.rows.length;
+	tbl.deleteRow(lastRow - 1);
+
+	this.addTotalRow();
+}
+
+DownloadMgr.prototype.resetDownloadInfo = function() {
+	this.downloadIds = new Array();
+	this.downloadSize = 0;
+	var tbl = document.getElementById('downloadTbl');
+	while (tbl.rows.length > 1) {
+		tbl.deleteRow(1);
+	}
+	this.addTotalRow();
+}
+
+DownloadMgr.prototype.addTotalRow = function() {
+	var tbl = document.getElementById('downloadTbl');
+	var lastRow = tbl.rows.length;
+	var iteratior = lastRow;
+	var row = tbl.insertRow(lastRow );
+	var cell = row.insertCell(0);
+	var textNode = document.createTextNode("Job Size: " + (this.downloadSize / 1024 | 0) + " KB");
+	cell.appendChild(textNode);
+}
+
+DownloadMgr.prototype.doDownloadFiles = function() {
+	if (this.downloadIds.length == 0) {
+		alert("Select file(s) first.");
+		return;
+	}
+	var curLoc = window.location;
+	window.location= this.downloadUrl + "?downloadIds=" + this.downloadIds.join();
+	this.resetDownloadInfo();
+}
+
