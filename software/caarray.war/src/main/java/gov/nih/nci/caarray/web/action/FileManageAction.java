@@ -10,17 +10,24 @@ import gov.nih.nci.caarray.web.delegate.ManageFilesDelegate;
 import gov.nih.nci.caarray.web.util.CacheManager;
 import gov.nih.nci.caarray.web.util.LabelValue;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.Preparable;
@@ -176,9 +183,10 @@ public class FileManageAction extends BaseAction implements Preparable {
      *
      * @return String
      */
-    public String upload() {
-
+    public String upload() throws Exception {
         setMenu(FILE_MANAGE_LINKS);
+
+        unzipFiles();
 
         int index = 0;
         for (File uploadedFile : getUpload()) {
@@ -196,7 +204,6 @@ public class FileManageAction extends BaseAction implements Preparable {
         return SUCCESS;
     }
 
-    @SuppressWarnings("unchecked")
     private void addSelectedFiles(CaArrayFileSet fileSet, HttpServletRequest request) {
         Enumeration<String> myenum = request.getParameterNames();
         while (myenum.hasMoreElements()) {
@@ -215,6 +222,58 @@ public class FileManageAction extends BaseAction implements Preparable {
                 fileSet.add(getFile(fileIndex));
             }
         }
+    }
+
+    /**
+     * unzips a .zip file, removes it from uploads
+     * and adds files present in zip to uploads.
+     * @throws IOException
+     */
+    protected void unzipFiles() throws IOException {
+        Pattern p = Pattern.compile(".zip$");
+        int index = 0;
+
+        for (int i = 0; i < getUploadFileName().size(); i++) {
+            Matcher m = p.matcher(getUploadFileName(i).toLowerCase());
+            if (m.find()) {
+                File uploadedFile = getUpload().get(i);
+                String uploadedFileName = uploadedFile.getAbsolutePath();
+                String directoryPath = uploadedFile.getParent();
+                ZipFile zipFile = new ZipFile(uploadedFileName);
+
+                Enumeration<? extends ZipEntry> entries = zipFile.entries();
+                while (entries.hasMoreElements()) {
+                    ZipEntry entry = entries.nextElement();
+
+                    File entryFile = new File(directoryPath + "/" + entry.getName());
+                    copyInputStream(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(entryFile)));
+
+                    uploads.add(entryFile);
+                    uploadFileNames.add(entry.getName());
+                }
+                uploads.remove(index);
+                uploadFileNames.remove(index);
+                uploadContentTypes.remove(index);
+            }
+            index++;
+        }
+    }
+
+    /**
+     * method to copy compressed file contained in zip file.
+     * @param in InputStream
+     * @param out OutputStream
+     * @throws IOException
+     */
+    public static final void copyInputStream(InputStream in, OutputStream out) throws IOException {
+      byte[] buffer = new byte[1024];
+      int len;
+
+      while((len = in.read(buffer)) >= 0) {
+          out.write(buffer, 0, len);
+      }
+      in.close();
+      out.close();
     }
 
     /**
