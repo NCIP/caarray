@@ -163,4 +163,11 @@ public interface CaArrayDaoFactory {
      * @return a <code>RegistrationDao</code>.
      */
     RegistrationDao getRegistrationDao();
+
+    /**
+     * Returns a <code>CountryDao</code>.
+     *
+     * @return a <code>CountryDao</code>.
+     */
+    CountryDao getCountryDao();
 }
