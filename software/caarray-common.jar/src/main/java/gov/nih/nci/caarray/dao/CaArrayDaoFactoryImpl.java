@@ -122,7 +122,7 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
      * @return a <code>SampleDao</code>.
      */
     public SampleDao getSampleDao() {
-        return new SampleDaoImpl(); 
+        return new SampleDaoImpl();
     }
 
     /**
@@ -139,7 +139,7 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
      *
      * @return a <code>SearchDao</code>.
      */
-    public SearchDao getSearchDao() { 
+    public SearchDao getSearchDao() {
         return new SearchDaoImpl();
     }
 
@@ -149,15 +149,15 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
      * @return a <code>FileDao</code>.
      */
     public FileDao getFileDao() {
-        return new FileDaoImpl();    
+        return new FileDaoImpl();
     }
-    
+
     /**
      * Returns a <code>ContactDao</code>.
      *
      * @return a <code>ContactDao</code>.
      */
-    public ContactDao getContactDao() { 
+    public ContactDao getContactDao() {
         return new ContactDaoImpl();
     }
     /**
@@ -165,8 +165,17 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
      *
      * @return a <code>OrganismDao</code>.
      */
-    public OrganismDao getOrganismDao() { 
+    public OrganismDao getOrganismDao() {
         return new OrganismDaoImpl();
+    }
+
+    /**
+     * Returns a <code>RegistrationDao</code>.
+     *
+     * @return a <code>RegistrationDao</code>.
+     */
+    public RegistrationDao getRegistrationDao() {
+        return new RegistrationDaoImpl();
     }
 }
 

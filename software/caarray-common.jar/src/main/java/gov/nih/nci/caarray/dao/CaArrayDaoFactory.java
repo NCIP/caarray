@@ -135,25 +135,32 @@ public interface CaArrayDaoFactory {
      * @return a <code>SearchDao</code>.
      */
     SearchDao getSearchDao();
-    
+
     /**
      * Returns a <code>FileDao</code>.
      *
      * @return a <code>FileDao</code>.
      */
     FileDao getFileDao();
-    
+
     /**
      * Returns a <code>ContactDao</code>.
      *
      * @return a <code>ContactDao</code>.
      */
     ContactDao getContactDao();
-    
+
     /**
      * Returns a <code>OrganismDao</code>.
      *
      * @return a <code>OrganismDao</code>.
      */
     OrganismDao getOrganismDao();
+
+    /**
+     * Returns a <code>RegistrationDao</code>.
+     *
+     * @return a <code>RegistrationDao</code>.
+     */
+    RegistrationDao getRegistrationDao();
 }
