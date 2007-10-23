@@ -9,9 +9,7 @@
 
         <div class="boxpad">
             <caarray:tabPane>
-                <c:url value="/protected/project/list.action" var="sortUrl" >
-                    <c:param name="ajax" value="true" />
-                </c:url>
+                <c:url value="/protected/project/list.action" var="sortUrl" />
                 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
                     <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${projects}" requestURI="${sortUrl}"
                         sort="list" id="row" pagesize="20" excludedParams="project.id" style="clear: none;">

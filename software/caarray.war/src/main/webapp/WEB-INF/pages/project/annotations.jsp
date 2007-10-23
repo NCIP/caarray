@@ -12,13 +12,13 @@
 <c:url value="/protected/ajax/project/loadGenericTab/samples.action" var="samplesUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
-<c:url value="/protected/ajax/project/loadGenericTab/extracts.action" var="extractsUrl">
+<c:url value="/ajax/notYetImplemented.jsp" var="extractsUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
-<c:url value="/protected/ajax/project/loadGenericTab/labeledExtracts.action" var="labeledExtractsUrl">
+<c:url value="/ajax/notYetImplemented.jsp" var="labeledExtractsUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
-<c:url value="/protected/ajax/project/loadGenericTab/hybridizations.action" var="hybridizationsUrl">
+<c:url value="/ajax/notYetImplemented.jsp" var="hybridizationsUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
 

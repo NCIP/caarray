@@ -5,7 +5,7 @@
     <form method="post" id="loginForm" action="<c:url value='/j_security_check'/>" >
         <table class="login">
             <c:if test="${param.error != null}">
-        	<tr>
+          <tr>
                 <td colspan="2">
                     <img src="<c:url value="/images/iconWarning.gif"/>" alt="<fmt:message key='icon.warning'/>" class="icon"/>
                     <fmt:message key="errors.password.mismatch"/>
@@ -28,16 +28,16 @@
             </tr>
             <tr>
                 <td colspan="2" class="centeredsmall">
-                    <a href="register.htm">Register</a> |
-                    <a href="password_reminder.htm">Forgot Password?</a>
-            	</td>
-        	</tr>
-    	</table>
+                    <a href="<c:url value="/notYetImplemented.jsp" />">Register</a> |
+                    <a href="<c:url value="/notYetImplemented.jsp" />">Forgot Password?</a>
+              </td>
+          </tr>
+      </table>
     </form>
     <br />
     <h1 style="border-top:1px solid #fff;">What's New</h1>
     <p class="small">caArray 2.0 software is available for download now. This installation features a new interface and increased functionality.<br />
-        <a href="#">Download caArray 2.0 &gt;&gt;</a><br />
-        <a href="#">Release Notes &gt;&gt;</a>
+        <a href="<c:url value="/notYetImplemented.jsp" />">Download caArray 2.0 &gt;&gt;</a><br />
+        <a href="<c:url value="/notYetImplemented.jsp" />">Release Notes &gt;&gt;</a>
     </p>
 </div>

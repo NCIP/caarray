@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.util.StrutsTypeConverter;
 
 import com.opensymphony.xwork2.util.XWorkBasicConverter;
@@ -121,9 +122,12 @@ public class PersistentObjectTypeConverter extends StrutsTypeConverter {
     @SuppressWarnings("unchecked")
     public Object convertFromString(Map context, String[] values, Class toClass) {
         XWorkBasicConverter converter = new XWorkBasicConverter();
-        Long id = (Long) converter.convertValue(context, values[0], Long.class);
-        GenericDataService service = (GenericDataService) getServiceLocator().lookup(GenericDataService.JNDI_NAME);
-        return service.retrieveEnity(toClass, id);
+        if (StringUtils.isNotBlank(values[0])) {
+            Long id = (Long) converter.convertValue(context, values[0], Long.class);
+            GenericDataService service = (GenericDataService) getServiceLocator().lookup(GenericDataService.JNDI_NAME);
+            return service.retrieveEnity(toClass, id);
+        }
+        return null;
     }
 
     /**

@@ -123,6 +123,7 @@ import org.apache.commons.logging.LogFactory;
 @Local
 @Stateless
 @Interceptors(ExceptionLoggingInterceptor.class)
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class ProjectManagementServiceBean implements ProjectManagementService {
 
     private static final Log LOG = LogFactory.getLog(ProjectManagementServiceBean.class);
@@ -176,6 +177,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public CaArrayFile addFile(Project project, File file, String filename) {
         LogUtil.logSubsystemEntry(LOG, project, file);
         CaArrayFile caArrayFile = doAddFile(project, file, filename);

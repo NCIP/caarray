@@ -29,10 +29,14 @@
                 ${!empty row.tissueSite ? row.tissueSite.name : 'No Tissue Site'}
             </display:column>
             <display:column titleKey="experiment.samples.sources">
-                <a href="#">mouse-11111</a>
+                <ajax:anchors target="tabboxlevel2wrapper">
+                        <a href="<c:url value="/ajax/notYetImplemented.jsp" />">mouse-11111</a>
+                </ajax:anchors>
             </display:column>
             <display:column titleKey="experiment.samples.extracts">
-                <a href="#">view</a>
+                <ajax:anchors target="tabboxlevel2wrapper">
+                    <a href="<c:url value="/ajax/notYetImplemented.jsp" />">view</a>
+                </ajax:anchors>
             </display:column>
             <display:column titleKey="button.edit">
                 <ajax:anchors target="tabboxlevel2wrapper">
@@ -44,7 +48,7 @@
                 </ajax:anchors>
             </display:column>
             <display:column titleKey="button.download">
-                <a href="#"><img src="<c:url value="/images/ico_download.gif"/>" alt="<fmt:message key="button.download"/>" /></a>
+                <a href="<c:url value="/notYetImplemented.jsp" />"><img src="<c:url value="/images/ico_download.gif"/>" alt="<fmt:message key="button.download"/>" /></a>
             </display:column>
             <display:column titleKey="button.copy">
                 <ajax:anchors target="tabboxlevel2wrapper">

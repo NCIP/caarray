@@ -82,10 +82,12 @@
  */
 package gov.nih.nci.caarray.application;
 
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+
 import javax.ejb.Local;
 import javax.ejb.Stateless;
-
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 /**
  * Implementation of the GenericDataService.
@@ -93,6 +95,7 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
  */
 @Local
 @Stateless
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class GenericDataServiceBean implements GenericDataService {
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;

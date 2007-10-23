@@ -3,11 +3,9 @@ package gov.nih.nci.caarray.web.action;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
@@ -32,8 +30,6 @@ import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -80,21 +76,9 @@ public class ProjectAction extends BaseAction implements Preparable {
     private String saveMode;
     private boolean initialSave;
 
-    private List<Long> selectedTissueSites = new ArrayList<Long>();
-    private List<Long> selectedTissueTypes = new ArrayList<Long>();
-    private List<Long> selectedCellTypes = new ArrayList<Long>();
-    private List<Long> selectedConditions = new ArrayList<Long>();
-    private List<Long> selectedQualityControlTypes = new ArrayList<Long>();
-    private List<Long> selectedReplicateTypes = new ArrayList<Long>();
-    private List<Long> selectedArrayDesigns = new ArrayList<Long>();
-
     private boolean piIsMainPoc;
     private Person primaryInvestigator;
     private Person mainPointOfContact;
-
-    private Long selectedManufacturer;
-    private Long selectedOrganism;
-    private Long selectedExperimentalDesignType;
 
     private Source currentSource = new Source();
     private Sample currentSample = new Sample();
@@ -134,30 +118,6 @@ public class ProjectAction extends BaseAction implements Preparable {
     }
 
     /**
-     * Get the entity id
-     *
-     * @param entity the entity
-     * @return the entity id or null if entity is null
-     */
-    private Long getIdFromEntity(PersistentObject entity) {
-        return (entity == null) ? null : entity.getId();
-    }
-
-    /**
-     * Get the list of ids from a Collection of entities
-     *
-     * @param entities the Collection of entities
-     * @return the List<Long> of the ids of those entities
-     */
-    private List<Long> getIdsFromEntities(Collection<? extends PersistentObject> entities) {
-        List<Long> ids = new ArrayList<Long>();
-        for (PersistentObject entity : entities) {
-            ids.add(entity.getId());
-        }
-        return ids;
-    }
-
-    /**
      * load the overview tab
      *
      * @return name of result to forward to
@@ -182,19 +142,8 @@ public class ProjectAction extends BaseAction implements Preparable {
         this.conditions = vocabService.getTerms(ExperimentOntologyCategory.DISEASE_STATE.getCategoryName());
         this.organisms = vocabService.getOrganisms();
 
-        this.selectedTissueSites = getIdsFromEntities(getProject().getExperiment().getTissueSites());
-        this.selectedTissueTypes = getIdsFromEntities(getProject().getExperiment().getTissueTypes());
-        this.selectedCellTypes = getIdsFromEntities(getProject().getExperiment().getCellTypes());
-        this.selectedConditions = getIdsFromEntities(getProject().getExperiment().getConditions());
-        this.selectedOrganism = getIdFromEntity(getProject().getExperiment().getOrganism());
-
         ArrayDesignService arrayDesignService = getArrayDesignService();
         this.arrayDesignsByManufacturer = arrayDesignService.getArrayDesignsByOrganization();
-        this.selectedArrayDesigns = getIdsFromEntities(getProject().getExperiment().getArrayDesigns());
-        this.selectedManufacturer = getIdFromEntity(getProject().getExperiment().getManufacturer());
-
-        this.selectedArrayDesigns = getIdsFromEntities(getProject().getExperiment().getArrayDesigns());
-        this.selectedManufacturer = getIdFromEntity(getProject().getExperiment().getManufacturer());
     }
 
     /**
@@ -268,10 +217,6 @@ public class ProjectAction extends BaseAction implements Preparable {
         this.qualityControlTypes = vocabService.getTerms(ExperimentOntologyCategory.QUALITY_CONTROL_TYPE
                 .getCategoryName());
         this.replicateTypes = vocabService.getTerms(ExperimentOntologyCategory.REPLICATE_TYPE.getCategoryName());
-
-        this.selectedQualityControlTypes = getIdsFromEntities(getProject().getExperiment().getQualityControlTypes());
-        this.selectedReplicateTypes = getIdsFromEntities(getProject().getExperiment().getReplicateTypes());
-        this.selectedExperimentalDesignType = getIdFromEntity(getProject().getExperiment().getExperimentDesignType());
     }
 
     /**
@@ -303,6 +248,19 @@ public class ProjectAction extends BaseAction implements Preparable {
     }
 
     /**
+     * Method to cleanup a set with null elements.  This method will be replaced by something else soon.
+     * @param s the set to clean.
+     */
+    @Deprecated
+    private void removeNullEntities(Set s) {
+        for (Object o: s) {
+            if (o == null) {
+                s.remove(o);
+            }
+        }
+    }
+
+    /**
      * save a project.
      *
      * @return path String
@@ -310,20 +268,11 @@ public class ProjectAction extends BaseAction implements Preparable {
      * @throws Exception Exception
      */
     public String overviewSaveTab() throws VocabularyServiceException {
-        getProject().getExperiment().setOrganism(getOrganismFromId(this.selectedOrganism));
-        getProject().getExperiment().getTissueTypes().clear();
-        getProject().getExperiment().getTissueTypes().addAll(getTermsFromIds(this.selectedTissueTypes));
-        getProject().getExperiment().getTissueSites().clear();
-        getProject().getExperiment().getTissueSites().addAll(getTermsFromIds(this.selectedTissueSites));
-        getProject().getExperiment().getCellTypes().clear();
-        getProject().getExperiment().getCellTypes().addAll(getTermsFromIds(this.selectedCellTypes));
-        getProject().getExperiment().getConditions().clear();
-        getProject().getExperiment().getConditions().addAll(getTermsFromIds(this.selectedConditions));
-
-        getProject().getExperiment().setManufacturer(getOrganizationFromId(this.selectedManufacturer));
-        getProject().getExperiment().getArrayDesigns().clear();
-        getProject().getExperiment().getArrayDesigns().addAll(getArrayDesignsFromIds(this.selectedArrayDesigns));
-
+        removeNullEntities(getProject().getExperiment().getTissueTypes());
+        removeNullEntities(getProject().getExperiment().getTissueSites());
+        removeNullEntities(getProject().getExperiment().getCellTypes());
+        removeNullEntities(getProject().getExperiment().getConditions());
+        removeNullEntities(getProject().getExperiment().getArrayDesigns());
         String result = saveTab();
         setupOverviewTab();
         return result;
@@ -410,85 +359,11 @@ public class ProjectAction extends BaseAction implements Preparable {
      * @throws Exception Exception
      */
     public String experimentalDesignSaveTab() throws VocabularyServiceException {
-        getProject().getExperiment().getQualityControlTypes().clear();
-        getProject().getExperiment().getQualityControlTypes().addAll(getTermsFromIds(this.selectedQualityControlTypes));
-        getProject().getExperiment().getReplicateTypes().clear();
-        getProject().getExperiment().getReplicateTypes().addAll(getTermsFromIds(this.selectedReplicateTypes));
-        getProject().getExperiment().setExperimentDesignType(getTermFromId(this.selectedExperimentalDesignType));
+        removeNullEntities(getProject().getExperiment().getQualityControlTypes());
+        removeNullEntities(getProject().getExperiment().getReplicateTypes());
         String result = saveTab();
         setupExperimentalDesignTab();
         return result;
-    }
-
-    /**
-     * Get the Term with given id
-     *
-     * @param id the id of Term to lookup (could be null)
-     * @return the Term with that id or null if id is null or Term could not be found
-     */
-    private Term getTermFromId(Long id) {
-        VocabularyService vocabService = getVocabularyService();
-        return (id == null) ? null : vocabService.getTerm(id);
-    }
-
-    /**
-     * Get the Organism with given id
-     *
-     * @param id the id of Organism to lookup (could be null)
-     * @return the Organism with that id or null if id is null or Organism could not be found
-     */
-    private Organism getOrganismFromId(Long id) {
-        VocabularyService vocabService = getVocabularyService();
-        return (id == null) ? null : vocabService.getOrganism(id);
-    }
-
-    /**
-     * Get the Organization with given id
-     *
-     * @param id the id of Organizations to lookup (could be null)
-     * @return the Organization with that id or null if id is null or Organization could not be found
-     */
-    private Organization getOrganizationFromId(Long id) {
-        ProjectManagementService projectService = getDelegate().getProjectManagementService();
-        return (id == null) ? null : projectService.getOrganization(id);
-    }
-
-    /**
-     * Get the list of Terms corresponding to a List of Term ids
-     *
-     * @param ids the ids of Terms to lookup
-     * @return the List<Terms> with those ids
-     */
-    private Set<Term> getTermsFromIds(List<Long> ids) {
-        VocabularyService vocabService = getVocabularyService();
-        Set<Term> terms = new HashSet<Term>();
-        for (Long id : ids) {
-            if (id == null) {
-                continue;
-            }
-            Term term = vocabService.getTerm(id);
-            terms.add(term);
-        }
-        return terms;
-    }
-
-    /**
-     * Get the list of ArrayDesigns corresponding to a List of ArrayDesign ids
-     *
-     * @param ids the ids of ArrayDesigns to lookup
-     * @return the List<ArrayDesigns> with those ids
-     */
-    private Set<ArrayDesign> getArrayDesignsFromIds(List<Long> ids) {
-        ArrayDesignService arrayDesignService = getArrayDesignService();
-        Set<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
-        for (Long id : ids) {
-            if (id == null) {
-                continue;
-            }
-            ArrayDesign arrayDesign = arrayDesignService.getArrayDesign(id);
-            arrayDesigns.add(arrayDesign);
-        }
-        return arrayDesigns;
     }
 
     /**
@@ -961,90 +836,6 @@ public class ProjectAction extends BaseAction implements Preparable {
     }
 
     /**
-     * @return the selectedTissueSites
-     */
-    public List<Long> getSelectedTissueSites() {
-        return this.selectedTissueSites;
-    }
-
-    /**
-     * @param selectedTissueSites the selectedTissueSites to set
-     */
-    public void setSelectedTissueSites(List<Long> selectedTissueSites) {
-        this.selectedTissueSites = selectedTissueSites;
-    }
-
-    /**
-     * @return the selectedTissueTypes
-     */
-    public List<Long> getSelectedTissueTypes() {
-        return this.selectedTissueTypes;
-    }
-
-    /**
-     * @param selectedTissueTypes the selectedTissueTypes to set
-     */
-    public void setSelectedTissueTypes(List<Long> selectedTissueTypes) {
-        this.selectedTissueTypes = selectedTissueTypes;
-    }
-
-    /**
-     * @return the selectedCellTypes
-     */
-    public List<Long> getSelectedCellTypes() {
-        return this.selectedCellTypes;
-    }
-
-    /**
-     * @param selectedCellTypes the selectedCellTypes to set
-     */
-    public void setSelectedCellTypes(List<Long> selectedCellTypes) {
-        this.selectedCellTypes = selectedCellTypes;
-    }
-
-    /**
-     * @return the selectedConditions
-     */
-    public List<Long> getSelectedConditions() {
-        return this.selectedConditions;
-    }
-
-    /**
-     * @param selectedConditions the selectedConditions to set
-     */
-    public void setSelectedConditions(List<Long> selectedConditions) {
-        this.selectedConditions = selectedConditions;
-    }
-
-    /**
-     * @return the selectedQualityControlTypes
-     */
-    public List<Long> getSelectedQualityControlTypes() {
-        return this.selectedQualityControlTypes;
-    }
-
-    /**
-     * @param selectedQualityControlTypes the selectedQualityControlTypes to set
-     */
-    public void setSelectedQualityControlTypes(List<Long> selectedQualityControlTypes) {
-        this.selectedQualityControlTypes = selectedQualityControlTypes;
-    }
-
-    /**
-     * @return the selectedReplicateTypes
-     */
-    public List<Long> getSelectedReplicateTypes() {
-        return this.selectedReplicateTypes;
-    }
-
-    /**
-     * @param selectedReplicateTypes the selectedReplicateTypes to set
-     */
-    public void setSelectedReplicateTypes(List<Long> selectedReplicateTypes) {
-        this.selectedReplicateTypes = selectedReplicateTypes;
-    }
-
-    /**
      * @return the arrayDesignsByManufacturer
      */
     public Map<Organization, List<ArrayDesign>> getArrayDesignsByManufacturer() {
@@ -1056,62 +847,6 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     public void setArrayDesignsByManufacturer(Map<Organization, List<ArrayDesign>> arrayDesignsByManufacturer) {
         this.arrayDesignsByManufacturer = arrayDesignsByManufacturer;
-    }
-
-    /**
-     * @return the selectedArrayDesigns
-     */
-    public List<Long> getSelectedArrayDesigns() {
-        return this.selectedArrayDesigns;
-    }
-
-    /**
-     * @param selectedArrayDesigns the selectedArrayDesigns to set
-     */
-    public void setSelectedArrayDesigns(List<Long> selectedArrayDesigns) {
-        this.selectedArrayDesigns = selectedArrayDesigns;
-    }
-
-    /**
-     * @return the selectedManufacturer
-     */
-    public Long getSelectedManufacturer() {
-        return this.selectedManufacturer;
-    }
-
-    /**
-     * @param selectedManufacturer the selectedManufacturer to set
-     */
-    public void setSelectedManufacturer(Long selectedManufacturer) {
-        this.selectedManufacturer = selectedManufacturer;
-    }
-
-    /**
-     * @return the selectedOrganism
-     */
-    public Long getSelectedOrganism() {
-        return this.selectedOrganism;
-    }
-
-    /**
-     * @param selectedOrganism the selectedOrganism to set
-     */
-    public void setSelectedOrganism(Long selectedOrganism) {
-        this.selectedOrganism = selectedOrganism;
-    }
-
-    /**
-     * @return the selectedExperimentalDesignType
-     */
-    public Long getSelectedExperimentalDesignType() {
-        return this.selectedExperimentalDesignType;
-    }
-
-    /**
-     * @param selectedExperimentalDesignType the selectedExperimentalDesignType to set
-     */
-    public void setSelectedExperimentalDesignType(Long selectedExperimentalDesignType) {
-        this.selectedExperimentalDesignType = selectedExperimentalDesignType;
     }
 
     /**

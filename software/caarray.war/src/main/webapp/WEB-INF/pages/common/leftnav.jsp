@@ -3,19 +3,19 @@
 <div id="leftnav">
     <ul class="caarraymenu">
         <li class="liheader">caArray</li>
-        <li><a href="#">Public Home</a></li>
-        <li>
-            <c:url value="/registration/Registration_input.action" var="url"/>
-            <a href="${url}">Register</a></li>
-        <li><a href="#">Login</a></li>
+        <li><a href="<c:url value="/notYetImplemented.jsp" />">Public Home</a></li>
+        <c:if test="${pageContext.request.remoteUser == null}">
+        <li><a href="<c:url value="/notYetImplemented.jsp" />">Register</a></li>
+        <li><a href="<c:url value="/protected/project/list.action" />">Login</a></li>
+        </c:if>
     </ul>
     <ul class="aboutmenu">
         <li class="liheader">caArray 2.0 Software</li>
-        <li><a href="#">What is caArray?</a></li>
-        <li><a href="#">Install caArray</a></li>
-        <li><a href="#">User Guide</a></li>
-        <li><a href="#">Release Notes</a></li>
-        <li><a href="#">Technical Documentation</a></li>
+        <li><a href="<c:url value="/notYetImplemented.jsp" />">What is caArray?</a></li>
+        <li><a href="<c:url value="/notYetImplemented.jsp" />">Install caArray</a></li>
+        <li><a href="<c:url value="/notYetImplemented.jsp" />">User Guide</a></li>
+        <li><a href="<c:url value="/notYetImplemented.jsp" />">Release Notes</a></li>
+        <li><a href="<c:url value="/notYetImplemented.jsp" />">Technical Documentation</a></li>
     </ul>
     <ul class="quicklinks">
         <li class="liheader">Global Quick Links</li>

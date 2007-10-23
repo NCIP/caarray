@@ -27,7 +27,7 @@
     <h1 style="border-top:1px solid #fff;">What's New</h1>
     <p class="small">
         caArray 2.0 software is available for download now. This installation features a new interface and increased functionality.<br />
-        <a href="#">Download caArray 2.0 &gt;&gt;</a><br />
-        <a href="#">Release Notes &gt;&gt;</a>
+        <a href="<c:url value="/notYetImplemented.jsp" />">Download caArray 2.0 &gt;&gt;</a><br />
+        <a href="<c:url value="/notYetImplemented.jsp" />">Release Notes &gt;&gt;</a>
     </p>
 </div>

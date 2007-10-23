@@ -21,10 +21,10 @@
         <c:url value="/protected/ajax/project/loadGenericTab/data.action" var="dataUrl">
             <c:param name="project.id" value="${project.id}" />
         </c:url>
-        <c:url value="/protected/ajax/project/loadGenericTab/data.action" var="supplementalUrl">
+        <c:url value="/ajax/notYetImplemented.jsp" var="supplementalUrl">
             <c:param name="project.id" value="${project.id}" />
         </c:url>
-        <c:url value="/protected/ajax/project/loadGenericTab/publications.action" var="publicationsUrl">
+        <c:url value="/ajax/notYetImplemented.jsp" var="publicationsUrl">
             <c:param name="project.id" value="${project.id}" />
         </c:url>
 

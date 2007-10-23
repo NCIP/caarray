@@ -97,11 +97,9 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -123,7 +121,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.IndexColumn;
 
 /**
  *
@@ -568,7 +565,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param qualityControlTypesVal the qualityControlTypes
      */
     @SuppressWarnings(UNUSED)
-    private void setQualityControlTypes(final Set<Term> qualityControlTypesVal) { // NOPMD
+    public void setQualityControlTypes(final Set<Term> qualityControlTypesVal) { // NOPMD
         this.qualityControlTypes = qualityControlTypesVal;
     }
 
@@ -614,7 +611,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param replicateTypesVal the replicateTypes
      */
     @SuppressWarnings(UNUSED)
-    private void setReplicateTypes(final Set<Term> replicateTypesVal) {  // NOPMD
+    public void setReplicateTypes(final Set<Term> replicateTypesVal) {  // NOPMD
         this.replicateTypes = replicateTypesVal;
     }
 
@@ -751,7 +748,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param arrayDesignsVal the arrayDesigns
      */
     @SuppressWarnings(UNUSED)
-    private void setArrayDesigns(final Set<ArrayDesign> arrayDesignsVal) {  // NOPMD
+    public void setArrayDesigns(final Set<ArrayDesign> arrayDesignsVal) {  // NOPMD
         this.arrayDesigns = arrayDesignsVal;
     }
 

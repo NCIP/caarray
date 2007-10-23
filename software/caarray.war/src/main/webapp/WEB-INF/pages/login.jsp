@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
-
 <page:applyDecorator name="login">
+<html>
 <head>
 </head>
 <body>
@@ -11,4 +11,5 @@
         <div class="clear"></div>
     </div>
 </body>
+</html>
 </page:applyDecorator>

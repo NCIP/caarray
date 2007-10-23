@@ -3,11 +3,11 @@
 <div id="footerwrapper">
     <div id="footernavwrapper">
         <div id="footernav">
-            <a href="#">Contact Us</a>
+            <a href="<c:url value="/notYetImplemented.jsp" />">Contact Us</a>
             <a href="http://www.nih.gov/about/privacy.htm">Privacy Notice</a>
             <a href="http://www.nih.gov/about/disclaim.htm">Disclaimer</a>
             <a href="http://www3.cancer.gov/accessibility/nci508.htm">Accessibility</a>
-            <a href="#" class="last">caArray Support</a>
+            <a href="<c:url value="/notYetImplemented.jsp" />" class="last">caArray Support</a>
         </div>
     </div>
     <div id="partnerlogos">

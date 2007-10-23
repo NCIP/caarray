@@ -14,7 +14,6 @@
             <s:textarea name="currentSample.description" key="experiment.samples.description" rows="3" cols="75" tabindex="2" />
             <s:hidden name="currentSample.id" />
             <s:hidden name="project.id" />
-            <s:hidden name="ajax" value="true" />
         </s:form>
         <a href="javascript:TabUtils.submitSubTabForm('projectForm', 'tabboxlevel2wrapper', 'save_draft');" class="save" tabindex="3"><img src="<c:url value="/images/btn_save_draft.gif"/>" alt="Save Draft"></a>
    </div>

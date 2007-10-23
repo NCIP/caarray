@@ -26,7 +26,9 @@
             <display:column property="description" titleKey="experiment.sources.description" sortable="true" />
             <display:column property="organism.commonName" titleKey="experiment.sources.organism" sortable="true" />
             <display:column titleKey="experiment.sources.relatedSamples">
-                <a href="#">view</a>
+                <ajax:anchors target="tabboxlevel2wrapper">
+                    <a href="<c:url value="/ajax/notYetImplemented.jsp" />">view</a>
+                </ajax:anchors>
             </display:column>
             <display:column titleKey="button.edit">
                 <ajax:anchors target="tabboxlevel2wrapper">
