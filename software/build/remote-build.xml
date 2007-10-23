@@ -107,7 +107,10 @@
 	    <ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml" target="remote-deploy"/>
 	</target>
 
-	<tstamp prefix="caarray" />
+	<tstamp prefix="caarray">
+		<format property="TODAY" pattern="MM/dd/yyyy h:mm a" locale="en,US"/>
+	</tstamp>
+	
 	<target name="remote-deployment-createtag" if="create.tag">
 	    <echo message="Deploying to ${ssh.server.hostname} and adding SVN tag ${svn.tag}..." />
 	    <antcall target="svn:scorch" />
