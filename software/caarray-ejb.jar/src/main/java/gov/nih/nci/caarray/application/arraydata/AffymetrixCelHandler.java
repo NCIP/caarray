@@ -116,7 +116,7 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
 
     private static final Log LOG = LogFactory.getLog(AffymetrixCelHandler.class);
 
-    private final FusionCELData celData = new FusionCELData();
+    private FusionCELData celData = new FusionCELData();
 
     @Override
     QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(File celFile) {
@@ -128,14 +128,14 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
         String celDataFileName;
         FileValidationResult result = new FileValidationResult(file);
 
-        readCelData(file);
+        celData.setFileName(file.getAbsolutePath());
         celDataFileName = StringUtils.defaultIfEmpty(celData.getFileName(), "<MISSING FILE NAME>");
 
         if (!celData.read()) {
             result.addMessage(ValidationMessage.Type.ERROR, "Unable to read the CEL file : "
                     + celDataFileName);
         }
-        celData.clear();
+        closeCelData();
         return result;
     }
 
@@ -150,8 +150,19 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
         readCelData(celFile);
         prepareColumns(dataSet, types);
         loadDataIntoColumns(dataSet.getHybridizationDataList().get(0), types);
-        celData.clear();
+        closeCelData();
         LOG.debug("Completed loadData for file: " + celFile.getName());
+    }
+
+    private void closeCelData() {
+        celData.clear();
+        celData = null;
+        /*
+         * System.gc() necesary due to unclosed FileInputStream Affymetrix bug in
+         * affymetrix.gcos.cel.CELFileData.isXDACompatibleFile(). Email sent to
+         * Affymetrix 10/24/2007. [etavela]
+         */
+        System.gc();
     }
 
     private void prepareColumns(DataSet dataSet, List<QuantitationType> types) {
