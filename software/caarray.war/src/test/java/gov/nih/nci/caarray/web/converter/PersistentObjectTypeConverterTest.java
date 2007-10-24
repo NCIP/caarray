@@ -82,15 +82,16 @@
  */
 package gov.nih.nci.caarray.web.converter;
 
+import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceBean;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**
@@ -154,13 +155,14 @@ public class PersistentObjectTypeConverterTest {
         /**
          * {@inheritDoc}
          */
+        @SuppressWarnings({ "unchecked", "deprecation" })
         @Override
-        public Object retrieve(Class entityClass, Long entityId) {
+        public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
             if (Project.class.equals(entityClass) && entityId.equals(1l)) {
                 Project p = Project.createNew();
                 p.setBrowsable(false);
                 p.setId(1l);
-                return p;
+                return (T) p;
             }
             return null;
         }

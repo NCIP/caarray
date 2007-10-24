@@ -82,14 +82,14 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
-import java.util.List;
-import java.util.Map;
-
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.validation.FileValidationResult;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Provides array design detail parsing, storage, and retrieval functionality. Interface to the
@@ -130,7 +130,7 @@ public interface ArrayDesignService {
      * Returns a Map of Organizations to the List of ArrayDesigns for which
      * that Organization is the manufacturer.
      *
-     * @return Map<Organization, List<ArrayDesign>> where the keys are array design
+     * @return Map where the keys are array design
      * manufacturers, and the values are lists of array designs for which that organization
      * is the manufacturer
      */

@@ -86,6 +86,7 @@ import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.project.Project;
 
 import org.junit.Before;
@@ -137,12 +138,13 @@ public class GenericDataServiceTest {
         /**
          * {@inheritDoc}
          */
+        @SuppressWarnings("unchecked")
         @Override
-        public Object retrieve(Class entityClass, Long entityId) {
+        public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
             if (Project.class.equals(entityClass) && entityId.equals(1l)) {
                 Project p = Project.createNew();
                 p.setBrowsable(false);
-                return p;
+                return (T) p;
             }
             return null;
         }

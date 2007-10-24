@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.application;
 
+import gov.nih.nci.caarray.domain.PersistentObject;
+
 /**
  * Generic service for handling data.
  * @author Scott Miller
@@ -99,5 +101,5 @@ public interface GenericDataService {
      * @param entityId the id of the enity to retrieve
      * @return the entity.
      */
-    <T> T retrieveEnity(Class<T> entityClass, Long entityId);
+    <T extends PersistentObject> T retrieveEnity(Class<T> entityClass, Long entityId);
 }

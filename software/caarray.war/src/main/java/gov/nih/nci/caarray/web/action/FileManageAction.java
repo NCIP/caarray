@@ -205,6 +205,7 @@ public class FileManageAction extends BaseAction implements Preparable {
         return SUCCESS;
     }
 
+    @SuppressWarnings("unchecked")
     private void addSelectedFiles(CaArrayFileSet fileSet, HttpServletRequest request) {
         Enumeration<String> myenum = request.getParameterNames();
         while (myenum.hasMoreElements()) {

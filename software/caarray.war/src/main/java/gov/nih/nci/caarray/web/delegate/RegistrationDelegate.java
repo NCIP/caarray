@@ -87,6 +87,9 @@ import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.exceptions.CSConfigurationException;
 import gov.nih.nci.security.exceptions.CSException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * @author John Hedden
  *
@@ -94,6 +97,7 @@ import gov.nih.nci.security.exceptions.CSException;
 public class RegistrationDelegate extends BaseDelegate {
 
     private UserProvisioningManager userProvisioningManager;
+    private static final Log LOG = LogFactory.getLog(RegistrationDelegate.class);
 
     /**
      * get UserProvisioningManager.
@@ -107,9 +111,9 @@ public class RegistrationDelegate extends BaseDelegate {
             try {
                 this.userProvisioningManager = SecurityServiceProvider.getUserProvisioningManager("caarray");
             } catch (CSConfigurationException e) {
-                e.printStackTrace();
+                LOG.error(e.getMessage(), e);
             } catch (CSException e) {
-                e.printStackTrace();
+                LOG.error(e.getMessage(), e);
             }
         }
         return userProvisioningManager;

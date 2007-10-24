@@ -82,14 +82,13 @@
  */
 package gov.nih.nci.caarray.business.vocabulary;
 
+import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import edu.georgetown.pir.Organism;
-
-import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 /**
  * Basic stub for tests.
@@ -123,18 +122,19 @@ public class VocabularyServiceStub implements VocabularyService {
         return term;
     }
 
+    @SuppressWarnings("deprecation")
     public Term getTerm(Long id) {
         Term term = new Term();
         term.setId(id);
         return term;
     }
-    
+
     public Organism getOrganism(Long id) {
         Organism org = new Organism();
         org.setId(id);
         return org;
     }
-    
+
     public List<Organism> getOrganisms() {
         List<Organism> orgs = new ArrayList<Organism>();
         Organism o1 = new Organism();

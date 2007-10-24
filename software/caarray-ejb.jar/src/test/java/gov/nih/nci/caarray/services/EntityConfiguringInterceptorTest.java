@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.services;
 
+import static org.junit.Assert.assertTrue;
+
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
@@ -91,8 +93,6 @@ import java.util.Set;
 import javax.interceptor.InvocationContext;
 
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  *
@@ -162,7 +162,7 @@ public class EntityConfiguringInterceptorTest {
             return null;
         }
 
-        public Collection getCollection() {
+        public Collection<?> getCollection() {
             collectionRetrieved = true;
             return null;
         }

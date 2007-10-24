@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.system.query.cql.CQLQuery;
 
 import java.util.List;
@@ -121,5 +122,5 @@ public interface SearchDao {
      * @param entityId the id of the enity to retrieve
      * @return the entity.
      */
-    <T> T retrieve(Class<T> entityClass, Long entityId);
+    <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId);
 }

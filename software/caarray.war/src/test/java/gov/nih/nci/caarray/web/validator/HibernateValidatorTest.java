@@ -82,24 +82,25 @@
  */
 package gov.nih.nci.caarray.web.validator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
+import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.validator.ActionValidatorManager;
 import com.opensymphony.xwork2.validator.ActionValidatorManagerFactory;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
-
-import gov.nih.nci.caarray.domain.sample.Source;
-import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 
 /**
  * @author Scott Miller
@@ -214,7 +215,7 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
          */
         @Override
         public String execute() {
-            return ActionSupport.SUCCESS;
+            return Action.SUCCESS;
         }
 
         @CustomValidator(type = "hibernate")

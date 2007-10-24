@@ -252,7 +252,7 @@ public class ProjectAction extends BaseAction implements Preparable {
      * @param s the set to clean.
      */
     @Deprecated
-    private void removeNullEntities(Set s) {
+    private void removeNullEntities(Set<?> s) {
         for (Object o: s) {
             if (o == null) {
                 s.remove(o);

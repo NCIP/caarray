@@ -131,11 +131,10 @@ public class FileAccessServiceTest {
 
     /**
      * Test method for {@link gov.nih.nci.caarray.application.fileaccess.FileAccessService#getFile(gov.nih.nci.caarray.domain.file.CaArrayFile)}.
-     * @throws IOException
      * @throws FileAccessException
      */
     @Test
-    public void testGetFile() throws IOException, FileAccessException {
+    public void testGetFile() throws FileAccessException {
         File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF;
         CaArrayFile caArrayFile = fileAccessService.add(file);
         File retrievedFile = fileAccessService.getFile(caArrayFile);

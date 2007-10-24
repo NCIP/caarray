@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.PersistentObject;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -103,7 +104,7 @@ public class GenericDataServiceBean implements GenericDataService {
     /**
      * {@inheritDoc}
      */
-    public <T> T retrieveEnity(Class<T> entityClass, Long entityId) {
+    public <T extends PersistentObject> T retrieveEnity(Class<T> entityClass, Long entityId) {
         return this.daoFactory.getSearchDao().retrieve(entityClass, entityId);
     }
 

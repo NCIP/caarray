@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.system.query.cql.CQLQuery;
 
 import java.util.ArrayList;
@@ -111,7 +112,7 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
     /**
      * {@inheritDoc}
      */
-    public Object retrieve(Class entityClass, Long entityId) {
+    public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
         // TODO Auto-generated method stub
         return null;
     }

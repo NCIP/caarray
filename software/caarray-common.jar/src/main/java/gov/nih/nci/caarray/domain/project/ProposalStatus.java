@@ -86,15 +86,15 @@ package gov.nih.nci.caarray.domain.project;
  * An enumeration of the different statuses that an experiment Proposal can be in.
  */
 public enum ProposalStatus {
-    /** draft - visible only to owner, still gathering data*/
+    /** draft - visible only to owner, still gathering data.*/
     DRAFT("proposalStatus.draft"),
-    /** submitted for review - awaiting review decision */
+    /** submitted for review - awaiting review decision. */
     SUBMITTED_FOR_REVIEW("proposalStatus.submittedForReview"),
-    /** returned for revision - the proposal has been reviewed and returned for revisions */
+    /** returned for revision - the proposal has been reviewed and returned for revisions. */
     RETURNED_FOR_REVISION("proposalStatus.returnedForRevision"),
-    /** rejected - the proposal has been reviewed and rejected */
+    /** rejected - the proposal has been reviewed and rejected. */
     REJECTED("proposalStatus.rejected"),
-    /** approved - the proposal has been reviewed and rejected */
+    /** approved - the proposal has been reviewed and rejected. */
     APPROVED("proposalStatus.approved");
 
     private final String resourceKey;

@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.common.util.CQL2HQL;
 import gov.nih.nci.common.util.HibernateQueryWrapper;
@@ -163,7 +164,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public <T> T retrieve(Class<T> entityClass, Long entityId) {
+    public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
         Query q = HibernateUtil.getCurrentSession().createQuery("from " + entityClass.getName() + " where id = :id");
         q.setLong("id", entityId);
         return (T) q.uniqueResult();

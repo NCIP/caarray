@@ -95,6 +95,6 @@ import java.util.List;
 public class CountryDaoStub extends AbstractDaoStub implements CountryDao {
 
     public List<Country> getCountries() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 }
