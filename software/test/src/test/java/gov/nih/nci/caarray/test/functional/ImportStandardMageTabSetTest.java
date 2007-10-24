@@ -127,8 +127,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         selenium.type("projectForm_project_experiment_title", title);
         selenium.click("//img[@alt='Save Draft']");
 
-        clickAndWait("link=Return to Workspace");
-        clickAndWait("link=Propose Project");
+        Thread.sleep(1000);
         clickAndWait("link=Return to Workspace");
 
 
@@ -170,7 +169,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
     private void selectAllFiles() {
         for (int i = 0; i < NUMBER_OF_FILES; i++) {
-            selenium.click("File_import_file:" + i + ":selected");
+            selenium.click("file:" + i + ":selected");
         }
     }
 
@@ -183,7 +182,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
     private void upload(File file) throws IOException {
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
         filePath = filePath.replaceAll("%20", " ");
-        selenium.type("document.File_upload.upload", filePath);
+        selenium.type("upload", filePath);
         clickAndWait("uploadFile");
         assertTrue(selenium.isTextPresent(file.getName()));
     }

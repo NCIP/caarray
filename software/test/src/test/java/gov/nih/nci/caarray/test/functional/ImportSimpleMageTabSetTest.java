@@ -100,6 +100,11 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 10;
     
+    @Override
+    public void tearDown() throws Exception {
+        // no-op
+    }
+    
     @Test
     public void testImportAndRetrieval() throws Exception {
         loginAsPrincipalInvestigator();
@@ -111,10 +116,9 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         selenium.type("projectForm_project_experiment_title", title);
         selenium.click("//img[@alt='Save Draft']");
 
+        Thread.sleep(2000);
         clickAndWait("link=Return to Workspace");
-        clickAndWait("link=Propose Project");
-        clickAndWait("link=Return to Workspace");
-
+        
 
         // Upload the following files:
         // - MAGE-TAB IDF
@@ -151,7 +155,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
     private void selectAllFiles() throws InterruptedException {
         Thread.sleep(1000);
         for (int i = 0; i < NUMBER_OF_FILES; i++) {
-            selenium.click("File_import_file:" + i + ":selected");
+            selenium.click("file:" + i + ":selected");
         }
     }
 
@@ -164,7 +168,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
     private void upload(File file) throws IOException {
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
         filePath = filePath.replaceAll("%20", " ");
-        selenium.type("document.File_upload.upload", filePath);
+        selenium.type("upload", filePath);
         clickAndWait("uploadFile");
         assertTrue(selenium.isTextPresent(file.getName()));
     }
