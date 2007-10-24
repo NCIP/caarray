@@ -120,4 +120,8 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         clickAndWait("//input[@value='Login']");
     }
 
+    protected void waitForElementWithId(String id) {
+        selenium.waitForCondition("selenium.browserbot.getCurrentWindow().document.getElementById('" + id + "') != null", PAGE_TIMEOUT);
+    }
+
 }

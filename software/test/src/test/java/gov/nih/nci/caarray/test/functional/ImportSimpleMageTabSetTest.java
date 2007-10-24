@@ -99,12 +99,7 @@ import org.junit.Test;
 public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 10;
-    
-    @Override
-    public void tearDown() throws Exception {
-        // no-op
-    }
-    
+
     @Test
     public void testImportAndRetrieval() throws Exception {
         loginAsPrincipalInvestigator();
@@ -112,13 +107,13 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         String title = "test" + System.currentTimeMillis();
         // Create project
         clickAndWait("link=Propose Project");
-        Thread.sleep(2000);
+        waitForElementWithId("projectForm_project_experiment_title");
         selenium.type("projectForm_project_experiment_title", title);
         selenium.click("//img[@alt='Save Draft']");
 
         Thread.sleep(2000);
         clickAndWait("link=Return to Workspace");
-        
+
 
         // Upload the following files:
         // - MAGE-TAB IDF
