@@ -6,7 +6,7 @@
         <c:param name="project.id" value="${project.id}" />
     </c:url>
 
-	<table>
+	<table class="searchresults">
 		<tr>
 			<td>
 		    <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
