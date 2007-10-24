@@ -62,7 +62,7 @@
                  userid="@{database.user}"
                  password="@{database.password}"
                  src="@{sql.file}"
-                 onerror="continue"
+                 onerror="abort"
                  autocommit="true"
                  delimiter="@{sql.delimiter}"
                  delimitertype="@{sql.delimitertype}"
