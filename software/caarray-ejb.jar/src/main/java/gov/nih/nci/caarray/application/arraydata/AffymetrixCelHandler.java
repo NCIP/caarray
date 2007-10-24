@@ -128,13 +128,14 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
         String celDataFileName;
         FileValidationResult result = new FileValidationResult(file);
 
-        celData.setFileName(file.getAbsolutePath());
+        readCelData(file);
         celDataFileName = StringUtils.defaultIfEmpty(celData.getFileName(), "<MISSING FILE NAME>");
 
         if (!celData.read()) {
             result.addMessage(ValidationMessage.Type.ERROR, "Unable to read the CEL file : "
                     + celDataFileName);
         }
+        celData.clear();
         return result;
     }
 
@@ -149,6 +150,7 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
         readCelData(celFile);
         prepareColumns(dataSet, types);
         loadDataIntoColumns(dataSet.getHybridizationDataList().get(0), types);
+        celData.clear();
         LOG.debug("Completed loadData for file: " + celFile.getName());
     }
 
