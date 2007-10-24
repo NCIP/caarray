@@ -83,10 +83,13 @@
 package gov.nih.nci.caarray.domain.register;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.country.Country;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.ForeignKey;
 import org.hibernate.validator.NotNull;
 
 /**
@@ -103,7 +106,6 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
     private static final int MIDDLE_INITIAL_FIELD_LENGTH = 1;
     private static final int LAST_NAME_FIELD_LENGTH = 50;
     private static final int EMAIL_FIELD_LENGTH = 50;
-    private static final int PASSWORD_FIELD_LENGTH = 30;
     private static final int PHONE_NUMBER_FIELD_LENGTH = 25;
     private static final int FAX_FIELD_LENGTH = 25;
     private static final int ORGANIZATION_FIELD_LENGTH = 200;
@@ -114,14 +116,12 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
     private static final int PROVINCE_FIELD_LENGTH = 50;
     private static final int ZIP_FIELD_LENGTH = 10;
     private static final int ROLE_FIELD_LENGTH = 200;
-    private static final int COUNTRY_FIELD_LENGTH = 20;
 
     private String loginName;
     private String firstName;
     private String middleInitial;
     private String lastName;
     private String email;
-    private String password;
     private String phone;
     private String fax;
     private String organization;
@@ -130,7 +130,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
     private String city;
     private String state;
     private String province;
-    private String country;
+    private Country country;
     private String zip;
     private String role;
 
@@ -231,25 +231,6 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
     public void setEmail(String email) {
         this.email = email;
     }
-
-
-
-    /**
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
-    }
-
-
-
-    /**
-     * @param password the password to set
-     */
-    public void setPassword(String password) {
-        this.password = null;
-    }
-
 
 
     /**
@@ -451,9 +432,10 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
     /**
      * @return the country
      */
-    @Column(length = COUNTRY_FIELD_LENGTH)
     @NotNull
-    public String getCountry() {
+    @ManyToOne
+    @ForeignKey(name = "REGISTRATIONREQUEST_COUNTRY_FK")
+    public Country getCountry() {
         return country;
     }
 
@@ -462,7 +444,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
     /**
      * @param country the country to set
      */
-    public void setCountry(String country) {
+    public void setCountry(Country country) {
         this.country = country;
     }
 }

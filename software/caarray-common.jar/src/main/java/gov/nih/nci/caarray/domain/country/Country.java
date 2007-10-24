@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.domain.country;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 /**
@@ -103,6 +104,7 @@ public class Country extends AbstractCaArrayEntity {
     /**
      * @return the code
      */
+    @Column(unique=true)
     public String getCode() {
         return code;
     }
@@ -139,6 +141,7 @@ public class Country extends AbstractCaArrayEntity {
     /**
      * @return the iso3
      */
+    @Column(unique=true)
     public String getIso3() {
         return iso3;
     }
