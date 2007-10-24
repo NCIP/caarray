@@ -82,11 +82,6 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.ArrayDao;
@@ -100,9 +95,16 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -112,6 +114,7 @@ import org.apache.commons.logging.LogFactory;
  */
 @Local(ArrayDesignService.class)
 @Stateless
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class ArrayDesignServiceBean implements ArrayDesignService {
 
     private static final Log LOG = LogFactory.getLog(ArrayDesignServiceBean.class);
@@ -123,6 +126,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public FileValidationResult validateDesign(CaArrayFile designFile) {
         LogUtil.logSubsystemEntry(LOG, designFile);
         FileValidationResult result = getHandler(designFile).validate();
@@ -141,6 +145,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public ArrayDesign importDesign(CaArrayFile designFile) {
         ArrayDesign design = null;
         LogUtil.logSubsystemEntry(LOG, designFile);

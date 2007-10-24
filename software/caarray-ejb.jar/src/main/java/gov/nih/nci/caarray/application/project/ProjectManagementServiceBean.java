@@ -143,7 +143,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Project getProject(long id) {
         LogUtil.logSubsystemEntry(LOG, id);
         Project project = getProjectDao().getProject(id);
@@ -154,7 +153,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Organization getOrganization(long id) {
         LogUtil.logSubsystemEntry(LOG, id);
         Organization organization = (Organization) getContactDao().getContact(id);
@@ -176,7 +174,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public CaArrayFile addFile(Project project, File file, String filename) {
         LogUtil.logSubsystemEntry(LOG, project, file);
         CaArrayFile caArrayFile = doAddFile(project, file, filename);
@@ -236,6 +234,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Project toggleBrowsableStatus(long projectId) {
         LogUtil.logSubsystemEntry(LOG, projectId);
         Project p = getProject(projectId);

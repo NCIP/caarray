@@ -97,6 +97,8 @@ import java.util.Map;
 
 import javax.ejb.Local;
 import javax.ejb.Stateful;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
 import org.apache.commons.io.FileUtils;
@@ -191,6 +193,7 @@ public class FileAccessServiceBean implements FileAccessService {
     /**
      * {@inheritDoc}
      */
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public File getFile(CaArrayFile caArrayFile) {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
         File file;
@@ -206,6 +209,7 @@ public class FileAccessServiceBean implements FileAccessService {
     /**
      * {@inheritDoc}
      */
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public CaArrayFile getCaArrayFile(Long id) {
         LogUtil.logSubsystemEntry(LOG, id);
         CaArrayFile file = daoFactory.getSearchDao().retrieve(CaArrayFile.class, id);

@@ -9,7 +9,8 @@
     <password>@database.password@</password>
     <exception-sorter-class-name>org.jboss.resource.adapter.jdbc.vendor.MySQLExceptionSorter</exception-sorter-class-name>
     <valid-connection-checker-class-name>org.jboss.resource.adapter.jdbc.vendor.MySQLValidConnectionChecker</valid-connection-checker-class-name>
-    <check-valid-connection-sql>select count(*) from category</check-valid-connection-sql>
+    <idle-timeout-minutes>30</idle-timeout-minutes>
+    <track-statements>true</track-statements>
 
     <!-- corresponding type-mapping in the standardjbosscmp-jdbc.xml (optional) -->
     <metadata>

@@ -112,6 +112,7 @@ import org.apache.commons.logging.LogFactory;
 @Local(VocabularyService.class)
 @Stateless
 @Interceptors(ExceptionLoggingInterceptor.class)
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class VocabularyServiceBean implements VocabularyService {
 
     private static final Log LOG = LogFactory.getLog(VocabularyServiceBean.class);
@@ -126,7 +127,7 @@ public class VocabularyServiceBean implements VocabularyService {
     }
 
     /**
-     * 
+     *
      * @return VocabularyDao
      */
     public VocabularyDao getVocabularyDao() {
@@ -142,7 +143,7 @@ public class VocabularyServiceBean implements VocabularyService {
 
     /**
      * Returns all terms that belong to the category for the name given (including all subcategories).
-     * 
+     *
      * @param categoryName find entries that match this category.
      * @return the matching Terms. Empty list if no term found.
      * @throws VocabularyServiceException exception from EVS svc
@@ -167,7 +168,6 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public List<Organism> getOrganisms() {
         LogUtil.logSubsystemEntry(LOG);
         List<Organism> result = getOrganismDao().getAllOrganisms();
@@ -198,7 +198,7 @@ public class VocabularyServiceBean implements VocabularyService {
 
     /**
      * Returns all terms that belong to the category for the name given from the EVS vocab service.
-     * 
+     *
      * @param categoryName find entries that match this category.
      * @return the matching Terms.
      */
@@ -220,7 +220,6 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public TermSource getSource(String name) {
         LogUtil.logSubsystemEntry(LOG, name);
         TermSource querySource = new TermSource();
@@ -246,7 +245,6 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Category getCategory(TermSource source, String categoryName) {
         LogUtil.logSubsystemEntry(LOG, source, categoryName);
         Category queryCategory = new Category();
@@ -286,7 +284,6 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Term getTerm(TermSource source, Category category, String value) {
         LogUtil.logSubsystemEntry(LOG, source, category, value);
         Term queryTerm = new Term();
@@ -301,7 +298,6 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Term getTerm(Long id) {
         LogUtil.logSubsystemEntry(LOG, id);
         Term result = getVocabularyDao().getTermById(id);
@@ -312,7 +308,6 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Organism getOrganism(Long id) {
         LogUtil.logSubsystemEntry(LOG, id);
         Organism result = getOrganismDao().getOrganism(id);

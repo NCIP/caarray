@@ -99,6 +99,8 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -108,6 +110,7 @@ import org.apache.commons.logging.LogFactory;
  */
 @Local
 @Stateless
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class ArrayDataServiceBean implements ArrayDataService {
 
     private static final Log LOG = LogFactory.getLog(ArrayDataServiceBean.class);
@@ -119,6 +122,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
     /**
      * {@inheritDoc}
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void initialize() {
         LogUtil.logSubsystemEntry(LOG);
         new TypeRegistrationManager(getDaoFactory().getArrayDao()).registerNewTypes();
@@ -166,6 +170,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
     /**
      * {@inheritDoc}
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void importData(AbstractArrayData arrayData) throws InvalidDataFileException {
         LogUtil.logSubsystemEntry(LOG, arrayData);
         FileAccessService fileAccessService = getFileAccessService();
@@ -189,6 +194,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
     /**
      * {@inheritDoc}
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public FileValidationResult validate(CaArrayFile arrayDataFile) {
         FileAccessService fileAccessService = getFileAccessService();
         DataFileValidator dataFileValidator =
