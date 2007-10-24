@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -93,7 +94,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.ejb.EJB;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
@@ -112,14 +112,8 @@ public class FileRetrievalServiceBean implements FileRetrievalService {
     private static final Log LOG = LogFactory.getLog(FileRetrievalServiceBean.class);
     private static final int CHUNK_SIZE = 4096;
 
-    @EJB private FileAccessService fileAccessService;
-
     final FileAccessService getFileAccessService() {
-        return fileAccessService;
-    }
-
-    final void setFileAccessService(final FileAccessService fileRetreivalService) {
-        this.fileAccessService = fileRetreivalService;
+        return (FileAccessService) ServiceLocator.INSTANCE.lookup(FileAccessService.JNDI_NAME);
     }
 
     /**
@@ -127,8 +121,9 @@ public class FileRetrievalServiceBean implements FileRetrievalService {
      */
     public byte[] readFile(final CaArrayFile caArrayFile) {
         InputStream is = null;
+        FileAccessService fileAccessService = getFileAccessService();
         try {
-            File file = getFile(caArrayFile);
+            File file = fileAccessService.getFile(caArrayFile);
             is = new FileInputStream(file.getPath());
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             final byte[] bytes = new byte[CHUNK_SIZE];
@@ -150,10 +145,6 @@ public class FileRetrievalServiceBean implements FileRetrievalService {
             }
             fileAccessService.closeFiles();
         }
-    }
-
-    private File getFile(CaArrayFile caArrayFile) {
-        return fileAccessService.getFile(caArrayFile);
     }
 
 }

@@ -95,6 +95,8 @@ import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -127,8 +129,10 @@ public class ProjectManagementServiceTest {
     public void setUpService() {
         ProjectManagementServiceBean projectManagementServiceBean = new ProjectManagementServiceBean();
         projectManagementServiceBean.setDaoFactory(this.daoFactoryStub);
-        projectManagementServiceBean.setFileAccessService(this.fileAccessService);
+        ServiceLocatorStub locatorStub = new ServiceLocatorStub();
+        locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessService);
         projectManagementServiceBean.setSessionContext(this.sessionContextStub);
+        projectManagementServiceBean.setServiceLocator(locatorStub);
         this.projectManagementService = projectManagementServiceBean;
     }
 

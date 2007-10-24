@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -105,7 +106,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.annotation.Resource;
-import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -128,9 +128,9 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
 
     private static final Log LOG = LogFactory.getLog(ProjectManagementServiceBean.class);
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+    private ServiceLocator serviceLocator = ServiceLocator.INSTANCE;
 
     @Resource private SessionContext sessionContext;
-    @EJB private FileAccessService fileAccessService;
 
     private ProjectDao getProjectDao() {
         return this.daoFactory.getProjectDao();
@@ -169,7 +169,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     public CaArrayFile addFile(Project project, File file) {
         LogUtil.logSubsystemEntry(LOG, project, file);
         CaArrayFile caArrayFile = doAddFile(project, file, file.getName());
-        this.fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
         return caArrayFile;
     }
@@ -187,7 +186,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
 
     private CaArrayFile doAddFile(Project project, File file, String filename) {
         CaArrayFile caArrayFile = null;
-        caArrayFile = this.fileAccessService.add(file, filename);
+        caArrayFile = getFileAccessService().add(file, filename);
         project.getFiles().add(caArrayFile);
         caArrayFile.setProject(project);
         getProjectDao().save(caArrayFile);
@@ -279,13 +278,9 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     }
 
     FileAccessService getFileAccessService() {
-        return this.fileAccessService;
+        return (FileAccessService) getServiceLocator().lookup(FileAccessService.JNDI_NAME);
     }
-
-    void setFileAccessService(FileAccessService fileAccessService) {
-        this.fileAccessService = fileAccessService;
-    }
-
+    
     CaArrayDaoFactory getDaoFactory() {
         return this.daoFactory;
     }
@@ -299,5 +294,13 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
 
     void setSessionContext(SessionContext sessionContext) {
         this.sessionContext = sessionContext;
+    }
+
+    ServiceLocator getServiceLocator() {
+        return serviceLocator;
+    }
+
+    void setServiceLocator(ServiceLocator serviceLocator) {
+        this.serviceLocator = serviceLocator;
     }
 }

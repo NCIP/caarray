@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.application.translation.magetab;
 
 import static org.junit.Assert.*;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.VocabularyDao;
@@ -119,7 +118,6 @@ public class MageTabTranslatorTest {
     private MageTabTranslator translator;
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     private final LocalVocabularyServiceStub vocabularyServiceStub = new LocalVocabularyServiceStub();
-    private final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
 
     /**
      * Prepares the translator implementation, stubbing out dependencies.
@@ -129,7 +127,6 @@ public class MageTabTranslatorTest {
         MageTabTranslatorBean mageTabTranslatorBean = new MageTabTranslatorBean();
         mageTabTranslatorBean.setDaoFactory(daoFactoryStub);
         mageTabTranslatorBean.setVocabularyService(vocabularyServiceStub);
-        mageTabTranslatorBean.setFileAccessService(fileAccessServiceStub);
         translator = mageTabTranslatorBean;
     }
 

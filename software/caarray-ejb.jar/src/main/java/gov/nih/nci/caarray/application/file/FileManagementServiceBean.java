@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 
 import javax.ejb.EJB;
 import javax.ejb.Local;
@@ -117,9 +118,9 @@ public class FileManagementServiceBean implements FileManagementService {
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
     @EJB private ArrayDataService arrayDataService;
-    @EJB private FileAccessService fileAccessService;
     @EJB private ArrayDesignService arrayDesignService;
     @EJB private MageTabTranslator mageTabTranslator;
+    private ServiceLocator serviceLocator = ServiceLocator.INSTANCE;
 
     /**
      * {@inheritDoc}
@@ -127,7 +128,8 @@ public class FileManagementServiceBean implements FileManagementService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void importFiles(CaArrayFileSet fileSet) {
         LogUtil.logSubsystemEntry(LOG, fileSet);
-        doImport(fileSet);
+        FileAccessService fileAccessService = getFileAccessService();
+        doImport(fileAccessService, fileSet);
         fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
     }
@@ -137,20 +139,21 @@ public class FileManagementServiceBean implements FileManagementService {
      */
     public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
         LogUtil.logSubsystemEntry(LOG, fileSet);
-        doImport(targetProject, fileSet);
+        FileAccessService fileAccessService = getFileAccessService();
+        doImport(fileAccessService, targetProject, fileSet);
         fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
     }
 
-    private void doImport(CaArrayFileSet fileSet) {
-        doImport(null, fileSet);
+    private void doImport(FileAccessService fileAccessService, CaArrayFileSet fileSet) {
+        doImport(fileAccessService, null, fileSet);
     }
 
-    private void doImport(Project targetProject, CaArrayFileSet fileSet) {
-        doValidate(fileSet);
+    private void doImport(FileAccessService fileAccessService, Project targetProject, CaArrayFileSet fileSet) {
+        doValidate(fileAccessService, fileSet);
         if (fileSet.getStatus().equals(FileStatus.VALIDATED)) {
             importArrayDesigns(fileSet);
-            importAnnontation(targetProject, fileSet);
+            importAnnontation(fileAccessService, targetProject, fileSet);
             importArrayData(fileSet);
         }
     }
@@ -163,16 +166,15 @@ public class FileManagementServiceBean implements FileManagementService {
         return new ArrayDesignImporter(fileSet, getArrayDesignService());
     }
 
-    private void importAnnontation(Project targetProject, CaArrayFileSet fileSet) {
+    private void importAnnontation(FileAccessService fileAccessService, Project targetProject, CaArrayFileSet fileSet) {
         try {
-            getMageTabImporter().importFiles(targetProject, fileSet);
+            getMageTabImporter(fileAccessService).importFiles(targetProject, fileSet);
         } catch (MageTabParsingException e) {
-            // TODO notify client of error and rollback
             LOG.error(e.getMessage(), e);
         }
     }
 
-    private MageTabImporter getMageTabImporter() {
+    private MageTabImporter getMageTabImporter(FileAccessService fileAccessService) {
         return new MageTabImporter(fileAccessService, mageTabTranslator, daoFactory);
     }
 
@@ -189,13 +191,14 @@ public class FileManagementServiceBean implements FileManagementService {
      * {@inheritDoc}
      */
     public void validateFiles(CaArrayFileSet fileSet) {
-        doValidate(fileSet);
+        FileAccessService fileAccessService = getFileAccessService();
+        doValidate(fileAccessService, fileSet);
         fileAccessService.closeFiles();
     }
 
-    private void doValidate(CaArrayFileSet fileSet) {
+    private void doValidate(FileAccessService fileAccessService, CaArrayFileSet fileSet) {
         validateArrayDesigns(fileSet);
-        validateAnnotation(fileSet);
+        validateAnnotation(fileAccessService, fileSet);
         validateArrayData(fileSet);
     }
 
@@ -203,8 +206,8 @@ public class FileManagementServiceBean implements FileManagementService {
         getArrayDesignImporter(fileSet).validateFiles(fileSet);
     }
 
-    private void validateAnnotation(CaArrayFileSet fileSet) {
-        getMageTabImporter().validateFiles(fileSet);
+    private void validateAnnotation(FileAccessService fileAccessService, CaArrayFileSet fileSet) {
+        getMageTabImporter(fileAccessService).validateFiles(fileSet);
     }
 
     private void validateArrayData(CaArrayFileSet fileSet) {
@@ -220,11 +223,7 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     FileAccessService getFileAccessService() {
-        return fileAccessService;
-    }
-
-    void setFileAccessService(FileAccessService fileAccessService) {
-        this.fileAccessService = fileAccessService;
+        return (FileAccessService) getServiceLocator().lookup(FileAccessService.JNDI_NAME);
     }
 
     ArrayDesignService getArrayDesignService() {
@@ -255,6 +254,14 @@ public class FileManagementServiceBean implements FileManagementService {
      */
     final void setArrayDataService(ArrayDataService arrayDataService) {
         this.arrayDataService = arrayDataService;
+    }
+
+    ServiceLocator getServiceLocator() {
+        return serviceLocator;
+    }
+
+    void setServiceLocator(ServiceLocator serviceLocator) {
+        this.serviceLocator = serviceLocator;
     }
 
 }

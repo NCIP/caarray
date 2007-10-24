@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixExpression
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceTest;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
@@ -117,6 +118,7 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
@@ -141,7 +143,7 @@ import affymetrix.fusion.chp.FusionGenotypeProbeSetResults;
 public class ArrayDataServiceTest {
 
     private ArrayDataService arrayDataService;
-    FileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
+    FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
     LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     ArrayDesignService arrayDesignService =
         ArrayDesignServiceTest.createArrayDesignService(daoFactoryStub, fileAccessServiceStub, new VocabularyServiceStub());
@@ -150,7 +152,9 @@ public class ArrayDataServiceTest {
     public void setUp() throws Exception {
         ArrayDataServiceBean arrayDataServiceBean = new ArrayDataServiceBean();
         arrayDataServiceBean.setArrayDesignService(arrayDesignService);
-        arrayDataServiceBean.setFileAccessService(fileAccessServiceStub);
+        ServiceLocatorStub locatorStub = new ServiceLocatorStub();
+        locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
+        arrayDataServiceBean.setServiceLocator(locatorStub);
         arrayDataServiceBean.setDaoFactory(daoFactoryStub);
         arrayDataService = arrayDataServiceBean;
     }
@@ -466,20 +470,4 @@ public class ArrayDataServiceTest {
         }
     }
 
-    private static class LocalFileAccessServiceStub extends FileAccessServiceStub {
-//        @Override
-//        public File getFile(CaArrayFile caArrayFile) {
-//            if (caArrayFile.getName().equals(AffymetrixArrayDesignFiles.TEST3_CDF.getName())) {
-//                return AffymetrixArrayDesignFiles.TEST3_CDF;
-//            } else if (caArrayFile.getName().equals(AffymetrixArrayDataFiles.TEST_HG_U133_PLUS_2_CEL.getName())) {
-//                return AffymetrixArrayDataFiles.TEST_HG_U133_PLUS_2_CEL;
-//            } else if (caArrayFile.getName().equals(AffymetrixArrayDataFiles.TEST3_CEL.getName())) {
-//                return AffymetrixArrayDataFiles.TEST3_CEL;
-//            } else if (caArrayFile.getName().equals(AffymetrixArrayDataFiles.TEST3_CALVIN_CEL.getName())) {
-//                return AffymetrixArrayDataFiles.TEST3_CALVIN_CEL;
-//            } else {
-//                throw new IllegalArgumentException("Don't know location of " + caArrayFile.getName());
-//            }
-//        }
-    }
 }
