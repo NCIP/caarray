@@ -10,6 +10,9 @@
             <interceptor name="caarrayParams"
                 class="gov.nih.nci.caarray.web.interceptor.DisplayTagParametersInterceptor" />
 
+            <interceptor name="nullCollectionElements"
+                class="gov.nih.nci.caarray.web.interceptor.NullCollectionElementInterceptor" />
+
             <interceptor-stack name="caarrayParamsPrepareParamsStack">
                 <interceptor-ref name="exception" />
                 <interceptor-ref name="alias" />
@@ -24,6 +27,7 @@
                 <interceptor-ref name="staticParams" />
                 <interceptor-ref name="caarrayParams" />
                 <interceptor-ref name="conversionError" />
+                <interceptor-ref name="nullCollectionElements" />
                 <interceptor-ref name="validation">
                     <param name="excludeMethods">input,back,cancel</param>
                 </interceptor-ref>
@@ -50,6 +54,7 @@
                     <param name="excludeParams">dojo\..*</param>
                 </interceptor-ref>
                 <interceptor-ref name="conversionError" />
+                <interceptor-ref name="nullCollectionElements" />
                 <interceptor-ref name="validation">
                     <param name="excludeMethods">input,back,cancel,browse</param>
                 </interceptor-ref>

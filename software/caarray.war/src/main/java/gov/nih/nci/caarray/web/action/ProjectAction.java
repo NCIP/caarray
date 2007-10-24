@@ -32,7 +32,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
@@ -248,19 +247,6 @@ public class ProjectAction extends BaseAction implements Preparable {
     }
 
     /**
-     * Method to cleanup a set with null elements.  This method will be replaced by something else soon.
-     * @param s the set to clean.
-     */
-    @Deprecated
-    private void removeNullEntities(Set<?> s) {
-        for (Object o: s) {
-            if (o == null) {
-                s.remove(o);
-            }
-        }
-    }
-
-    /**
      * save a project.
      *
      * @return path String
@@ -268,11 +254,6 @@ public class ProjectAction extends BaseAction implements Preparable {
      * @throws Exception Exception
      */
     public String overviewSaveTab() throws VocabularyServiceException {
-        removeNullEntities(getProject().getExperiment().getTissueTypes());
-        removeNullEntities(getProject().getExperiment().getTissueSites());
-        removeNullEntities(getProject().getExperiment().getCellTypes());
-        removeNullEntities(getProject().getExperiment().getConditions());
-        removeNullEntities(getProject().getExperiment().getArrayDesigns());
         String result = saveTab();
         setupOverviewTab();
         return result;
@@ -359,8 +340,6 @@ public class ProjectAction extends BaseAction implements Preparable {
      * @throws Exception Exception
      */
     public String experimentalDesignSaveTab() throws VocabularyServiceException {
-        removeNullEntities(getProject().getExperiment().getQualityControlTypes());
-        removeNullEntities(getProject().getExperiment().getReplicateTypes());
         String result = saveTab();
         setupExperimentalDesignTab();
         return result;
