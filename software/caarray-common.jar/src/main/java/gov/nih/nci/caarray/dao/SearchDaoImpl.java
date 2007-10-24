@@ -169,6 +169,17 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         q.setLong("id", entityId);
         return (T) q.uniqueResult();
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public List<String> findValuesWithSamePrefix(Class<?> entityClass, String fieldName, String namePrefix) {
+        String queryStr = "select " + fieldName + " from " + entityClass.getName() + " where " + fieldName + " like :prefix";
+        Query query = HibernateUtil.getCurrentSession().createQuery(queryStr);
+        query.setString("prefix", namePrefix + "%");
+        return query.list();
+    }
 
     @Override
     Log getLog() {

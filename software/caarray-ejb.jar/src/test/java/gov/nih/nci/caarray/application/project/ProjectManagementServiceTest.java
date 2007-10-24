@@ -85,15 +85,22 @@ package gov.nih.nci.caarray.application.project;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.application.GenericDataService;
+import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.SessionContextStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.dao.ProjectDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.ProjectDaoStub;
+import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
@@ -107,6 +114,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -114,6 +122,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -123,6 +132,7 @@ public class ProjectManagementServiceTest {
     private ProjectManagementService projectManagementService;
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     private final FileAccessService fileAccessService = new FileAccessServiceStub();
+    private final GenericDataService genericDataService = new GenericDataServiceStub();
     private final LocalSessionContextStub sessionContextStub = new LocalSessionContextStub();
 
     @Before
@@ -133,6 +143,7 @@ public class ProjectManagementServiceTest {
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessService);
         projectManagementServiceBean.setSessionContext(this.sessionContextStub);
         projectManagementServiceBean.setServiceLocator(locatorStub);
+        projectManagementServiceBean.setGenericDataService(genericDataService);
         this.projectManagementService = projectManagementServiceBean;
     }
 
@@ -182,6 +193,59 @@ public class ProjectManagementServiceTest {
             fail("Unexpected exception: " + e);
         }
     }
+    
+    /**
+     * Test method for {@link gov.nih.nci.caarray.application.project.ProjectManagementService#submitProject(Project)}.
+     */
+    @Test
+    public void testCopyFactor() {
+        Project project = Project.createNew();
+        try {
+            this.projectManagementService.saveDraftProject(project);
+            Factor factor = this.projectManagementService.copyFactor(project, 1);
+            assertNotNull(factor);
+            assertEquals("Test2", factor.getName());
+            assertEquals(1, project.getExperiment().getFactors().size());
+        } catch (ProposalWorkflowException e) {
+            fail("Unexpected exception: " + e);
+        }
+    }    
+
+    /**
+     * Test method for {@link gov.nih.nci.caarray.application.project.ProjectManagementService#submitProject(Project)}.
+     */
+    @Test
+    public void testCopySource() {
+        Project project = Project.createNew();
+        try {
+            this.projectManagementService.saveDraftProject(project);
+            Source source = this.projectManagementService.copySource(project, 1);
+            assertNotNull(source);
+            assertEquals("Test2", source.getName());
+            assertEquals("Test", source.getDescription());
+            assertEquals(1, project.getExperiment().getSources().size());
+        } catch (ProposalWorkflowException e) {
+            fail("Unexpected exception: " + e);
+        }
+    }    
+
+    /**
+     * Test method for {@link gov.nih.nci.caarray.application.project.ProjectManagementService#submitProject(Project)}.
+     */
+    @Test
+    public void testCopySample() {
+        Project project = Project.createNew();
+        try {
+            this.projectManagementService.saveDraftProject(project);
+            Sample sample = this.projectManagementService.copySample(project, 1);
+            assertNotNull(sample);
+            assertEquals("Test2", sample.getName());
+            assertEquals("Test", sample.getDescription());
+            assertEquals(1, project.getExperiment().getSamples().size());
+        } catch (ProposalWorkflowException e) {
+            fail("Unexpected exception: " + e);
+        }
+    }    
 
     @Test
     public void testDownload() throws IOException {
@@ -237,6 +301,13 @@ public class ProjectManagementServiceTest {
             return this.projectDao;
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public SearchDao getSearchDao() {
+            return new LocalSearchDaoStub();
+        }
     }
 
     private static class LocalProjectDaoStub extends ProjectDaoStub {
@@ -285,6 +356,38 @@ public class ProjectManagementServiceTest {
         }
 
     }
+    
+    private static class LocalSearchDaoStub extends SearchDaoStub {
+        /**
+         * {@inheritDoc}
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
+            if (Sample.class.equals(entityClass)) {
+                Sample s = new Sample();
+                s.setName("Test");
+                s.setDescription("Test");
+                s.setId(entityId);
+                return (T) s;
+            }
+            else if (Source.class.equals(entityClass)) {
+                Source s = new Source();
+                s.setName("Test");
+                s.setDescription("Test");
+                s.setId(entityId);
+                return (T) s;
+            }
+            else if (Factor.class.equals(entityClass)) {
+                Factor f = new Factor();
+                f.setName("Test");
+                f.setId(entityId);
+                return (T) f;
+            }
+            return null;
+        }
+    }
+
 
     private static class LocalSessionContextStub extends SessionContextStub {
 

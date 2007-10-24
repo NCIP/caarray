@@ -116,4 +116,11 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
         // TODO Auto-generated method stub
         return null;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<String> findValuesWithSamePrefix(Class<?> entityClass, String fieldName, String prefix) {
+        return new ArrayList<String>();
+    }
 }

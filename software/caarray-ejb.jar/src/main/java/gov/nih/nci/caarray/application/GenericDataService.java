@@ -102,4 +102,29 @@ public interface GenericDataService {
      * @return the entity.
      */
     <T extends PersistentObject> T retrieveEnity(Class<T> entityClass, Long entityId);
+
+    /**
+     * Generate a name suitable for assignment to a copy of an entity with the given name.
+     * The idea is to add a numeric prefix to the end of the name, so that if the current
+     * entity name is "Baz", the copy becomes "Baz2", then "Baz3", and so forth. 
+     * 
+     * More formally, the copy name is derived from the given name as follows:
+     * <ol>
+     * <li>Calculate the non-numerical prefix in the given name. Thus "Baz"->"Baz", "Baz2" -> "Baz",
+     * and "Baz2n" -> "Baz2n"
+     * <li>Look at all instances of the same entity whose names consist of the same prefix plus any number
+     * of numeric suffixes
+     * <li>Determine the maximum numeric suffix of this set of names, and add one
+     * to this number. The minimum for this value is 2.
+     * <li>The copy name is the prefix from step 1 concatenated with the number calculated in step 3.
+     * </ol>
+     * As an example, given "Baz2" as the input name, and "Baz", "Baz5", "Baz7n" and "Boo" as the names
+     * of all the entities of that class, the copy name will be "Baz6"
+     * 
+     * @param entityClass the entity class for which to calculate the copy name
+     * @param fieldName the name of the property which holds the name of the entity (will generally be "name")
+     * @param name the given name
+     * @return the copy name, as calculated according to the above algorithm
+     */
+    String getIncrementingCopyName(Class<?> entityClass, String fieldName, String name);
 }

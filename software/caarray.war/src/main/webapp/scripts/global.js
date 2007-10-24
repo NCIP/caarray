@@ -412,7 +412,6 @@ var TabUtils = {
     submitTabFormIgnoreSubmittingText : function(formId, divId, saveMode) {
         formData = Form.serialize(formId);
         formData = formData + '&saveMode=' + saveMode;
-        // if (console) { console.log('saveMode: ' + saveMode + ', typeof ' + (typeof formData) + ', Form data: ' + formData + '\nFoo'); }
         url = $(formId).action;
 
         new Ajax.Updater(divId, url, {parameters: formData, evalScripts: true} );

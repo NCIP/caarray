@@ -82,9 +82,8 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import java.util.List;
-
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
@@ -94,6 +93,8 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
@@ -101,7 +102,7 @@ import org.hibernate.Session;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.array</code> package.
- *
+ * 
  * @author Rashmi Srinivasa
  */
 class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
@@ -114,14 +115,24 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     public ArrayDesign getArrayDesign(long id) {
         return (ArrayDesign) getCurrentSession().get(ArrayDesign.class, id);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public List<ArrayDesign> getAllArrayDesigns() {
-        String query = "from " + ArrayDesign.class.getName() + " order by name asc";
+    public List<Organization> getArrayDesignProviders() {
+        String query = "select distinct ad.provider from " + ArrayDesign.class.getName() + " ad "
+                + " where ad.provider is not null order by ad.provider.name asc";
         return getCurrentSession().createQuery(query).list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public List<ArrayDesign> getArrayDesignsForProvider(Organization provider) {
+        String query = "from " + ArrayDesign.class.getName() + " ad where ad.provider = :provider order by name asc";
+        return getCurrentSession().createQuery(query).setEntity("provider", provider).list();
     }
 
     /**

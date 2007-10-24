@@ -83,14 +83,19 @@
 package gov.nih.nci.caarray.application.project;
 
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
+import gov.nih.nci.caarray.application.GenericDataService;
+import gov.nih.nci.caarray.application.GenericDataServiceBean;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ContactDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
+import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 
@@ -106,6 +111,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.annotation.Resource;
+import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -131,6 +137,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     private ServiceLocator serviceLocator = ServiceLocator.INSTANCE;
 
     @Resource private SessionContext sessionContext;
+    @EJB private GenericDataService genericDataService;
 
     private ProjectDao getProjectDao() {
         return this.daoFactory.getProjectDao();
@@ -159,7 +166,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         LogUtil.logSubsystemExit(LOG);
         return organization;
     }
-
+    
     /**
      * {@inheritDoc}
      */
@@ -276,6 +283,57 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public Sample copySample(Project project, long sampleId) {
+        Sample sample = getDaoFactory().getSearchDao().retrieve(Sample.class, sampleId);
+        Sample copy = new Sample();
+        String copyName = genericDataService.getIncrementingCopyName(Sample.class, "name", sample.getName());
+        copy.setName(copyName);
+        copy.setDescription(sample.getDescription());
+        copy.setMaterialType(sample.getMaterialType());
+        copy.setOrganism(sample.getOrganism());
+        copy.setSpecimen(sample.getSpecimen());
+        project.getExperiment().getSamples().add(copy);
+        getDaoFactory().getProjectDao().save(project);
+        return copy;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public Factor copyFactor(Project project, long factorId) {
+        Factor factor = getDaoFactory().getSearchDao().retrieve(Factor.class, factorId);
+        Factor copy = new Factor();
+        String copyName = genericDataService.getIncrementingCopyName(Factor.class, "name", factor.getName());
+        copy.setName(copyName);
+        copy.setType(factor.getType());
+        project.getExperiment().getFactors().add(copy);
+        getDaoFactory().getProjectDao().save(project);
+        return copy;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public Source copySource(Project project, long sourceId) {
+        Source source = getDaoFactory().getSearchDao().retrieve(Source.class, sourceId);
+        Source copy = new Source();
+        String copyName = genericDataService.getIncrementingCopyName(Source.class, "name", source.getName());
+        copy.setName(copyName);
+        copy.setDescription(source.getDescription());
+        copy.setMaterialType(source.getMaterialType());
+        copy.setOrganism(source.getOrganism());
+        copy.setTissueSite(source.getTissueSite());        
+        project.getExperiment().getSources().add(copy);
+        getDaoFactory().getProjectDao().save(project);
+        return copy;        
+    }
+
     FileAccessService getFileAccessService() {
         return (FileAccessService) getServiceLocator().lookup(FileAccessService.JNDI_NAME);
     }
@@ -293,6 +351,20 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
 
     void setSessionContext(SessionContext sessionContext) {
         this.sessionContext = sessionContext;
+    }
+
+    /**
+     * @return the genericDataService
+     */
+    public GenericDataService getGenericDataService() {
+        return genericDataService;
+    }
+
+    /**
+     * @param genericDataService the genericDataService to set
+     */
+    public void setGenericDataService(GenericDataService genericDataService) {
+        this.genericDataService = genericDataService;
     }
 
     ServiceLocator getServiceLocator() {

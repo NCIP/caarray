@@ -27,11 +27,18 @@
         <s:select required="true" name="project.experiment.assayType" label="Assay Type" tabindex="5"
                   list="@gov.nih.nci.caarray.domain.project.AssayType@values()" listValue="%{getText(resourceKey)}"
                   headerKey="" headerValue="--Select an Assay Type--"/>
-        <s:select name="project.experiment.manufacturer" label="Manufacturer" tabindex="6"
-                  list="arrayDesignsByManufacturer.keySet()" listKey="id" listValue="name"
+        <tr>
+            <td class="tdLabel"><label for="projectForm_project_experiment_manufacturer" class="label">Manufacturer:</label></td>        
+            <td>
+                <s:select name="project.experiment.manufacturer" label="Manufacturer" tabindex="6"
+                  list="manufacturers" listKey="id" listValue="name" theme="simple"
                   headerKey="" headerValue="--Select a Manufacturer--" value="project.experiment.manufacturer.id" />
+                <span id="progressMsg" style="display:none;"><img alt="Indicator" src="<c:url value="/images/indicator.gif"/>" /> Loading.. </span>            
+            </td>
+        </tr>
+                  
         <s:select multiple="true" name="project.experiment.arrayDesigns" label="Array Designs" tabindex="7"
-                  list="new java.util.ArrayList()" listKey="id" listValue="name" value="%{project.experiment.arrayDesigns.{id}}" />
+                  list="arrayDesigns" listKey="id" listValue="name" value="%{project.experiment.arrayDesigns.{id}}" />
         <s:select required="true" name="project.experiment.organism" label="Organism" tabindex="7"
                   list="organisms" listKey="id" listValue="commonName" value="project.experiment.organism.id"
                   headerKey="" headerValue="--Select an Organism--"/>
@@ -44,22 +51,24 @@
         <s:select multiple="true" name="project.experiment.conditions" label="Conditions" tabindex="11"
                   list="conditions" listKey="id" listValue="value" value="%{project.experiment.conditions.{id}}" />
         <s:hidden name="project.id" />
-<script type="text/javascript">
-var dol = new DynamicOptionList("project.experiment.manufacturer", "project.experiment.arrayDesigns");
-var opts = new Array();
-<s:iterator value="arrayDesignsByManufacturer.entrySet()" id="designMapping">
-    <s:iterator value="value">
-dol.forValue('<s:property value="#designMapping.key.id"/>').addOptionsTextValue('<s:property value="name"/>', '<s:property value="id"/>');
-    </s:iterator>
-    <s:if test="project.experiment.manufacturer == #designMapping.key.id">
-        <s:iterator value="project.experiment.arrayDesigns">
-dol.forValue('<s:property value="#designMapping.key.id"/>').setDefaultOptions('<s:property/>');
-        </s:iterator>
-    </s:if>
-</s:iterator>
-window.setTimeout(function() {initDynamicOptionLists(); }, 100);
-</script>
     </s:form>
+
+    <script type="text/javascript">
+        startArrayDesignLookup = function() {
+            $("progressMsg").show();
+        }
+
+        finishArrayDesignLookup = function() {
+            Effect.Fade("progressMsg");
+        }
+    </script>
+
+    <c:url var="getArrayDesignsUrl" value="/protected/ajax/project/retrieveArrayDesigns.action" />
+    <ajax:select baseUrl="${getArrayDesignsUrl}" 
+        source="projectForm_project_experiment_manufacturer" target="projectForm_project_experiment_arrayDesigns" 
+        parameters="manufacturerId={projectForm_project_experiment_manufacturer}" 
+        preFunction="startArrayDesignLookup" postFunction="finishArrayDesignLookup"/>
+
     <a href="javascript:TabUtils.submitTabForm('projectForm', 'tabboxwrapper', 'save_draft');" class="save"><img src="<c:url value="/images/btn_save_draft.gif"/>" alt="Save Draft"></a>
 
     </div>

@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
@@ -108,11 +109,21 @@ public interface ArrayDao extends CaArrayDao {
     ArrayDesign getArrayDesign(long id);
     
     /**
-     * Returns the list of all ArrayDesigns in the system.
-     * 
-     * @return List&ltArrayDesign&gt of the array designs.
+     * Returns the list of ArrayDesigns with the given provider
+     * @param provider the provider 
+     * @return the List&lt;ArrayDesign&gt; of the array designs whose
+     * provider is the given provider
      */
-    List<ArrayDesign> getAllArrayDesigns();
+    List<ArrayDesign> getArrayDesignsForProvider(Organization provider);
+    
+    /**
+     * Returns the list of Organizations that are a provider for at least 
+     * one ArrayDesign in the system
+     * @return the List&lt;Organization&gt; of Organizations where for each
+     * organization in the list there exists at least one ArrayDesign for which
+     * that Organization is the provider
+     */
+    List<Organization> getArrayDesignProviders();
     
     /**
      * Returns the array data object for the id given.

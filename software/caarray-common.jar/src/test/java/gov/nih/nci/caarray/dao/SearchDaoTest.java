@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.dao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.protocol.Parameter;
@@ -197,6 +198,33 @@ public class SearchDaoTest {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during search by example: " + e.getMessage());
         }
+    }
+    
+    /**
+     * tests the findValuesWithSamePrefix method
+     */
+    @Test
+    public void testFindValuesByPrefix() {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            List<String> values = SEARCH_DAO.findValuesWithSamePrefix(Parameter.class, "name", "DummyTest");
+            assertNotNull(values);
+            assertEquals(2, values.size());
+            assertTrue(values.contains("DummyTestParameter1"));
+            assertTrue(values.contains("DummyTestParameter2"));
+            values = SEARCH_DAO.findValuesWithSamePrefix(Parameter.class, "name", "DummyTestParameter1");
+            assertNotNull(values);
+            assertEquals(1, values.size());
+            assertTrue(values.contains("DummyTestParameter1"));
+            values = SEARCH_DAO.findValuesWithSamePrefix(Parameter.class, "name", "DummyTestParameter23");
+            assertNotNull(values);
+            assertEquals(0, values.size());
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during search by example: " + e.getMessage());
+        }                
     }
 
     /**

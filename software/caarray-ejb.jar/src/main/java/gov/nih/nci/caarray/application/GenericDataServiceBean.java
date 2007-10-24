@@ -82,13 +82,17 @@
  */
 package gov.nih.nci.caarray.application;
 
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import java.util.List;
 import gov.nih.nci.caarray.domain.PersistentObject;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+
+import org.apache.commons.lang.StringUtils;
+
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 
 /**
  * Implementation of the GenericDataService.
@@ -106,6 +110,25 @@ public class GenericDataServiceBean implements GenericDataService {
      */
     public <T extends PersistentObject> T retrieveEnity(Class<T> entityClass, Long entityId) {
         return this.daoFactory.getSearchDao().retrieve(entityClass, entityId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getIncrementingCopyName(Class<?> entityClass, String fieldName, String name) {
+        String alphaPrefix = StringUtils.stripEnd(name, "0123456789");
+        String numericSuffix = StringUtils.substringAfter(name, alphaPrefix);
+        int maxSuffix = StringUtils.isEmpty(numericSuffix) ? 1 : Integer.parseInt(numericSuffix);
+
+        List<String> currentNames = this.daoFactory.getSearchDao().findValuesWithSamePrefix(entityClass, fieldName, alphaPrefix);
+        for (String currentName : currentNames) {
+            String suffix = StringUtils.substringAfter(currentName, alphaPrefix);
+            if (!StringUtils.isNumeric(suffix) || StringUtils.isEmpty(suffix)) {
+                continue;
+            }
+            maxSuffix = Math.max(maxSuffix, Integer.parseInt(suffix));
+        }
+        return alphaPrefix + (maxSuffix + 1);
     }
 
     /**

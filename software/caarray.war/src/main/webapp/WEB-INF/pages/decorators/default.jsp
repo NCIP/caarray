@@ -21,7 +21,6 @@
         <script type="text/javascript" src="<c:url value="/scripts/ajaxtags.js"/>"></script>
         <script type="text/javascript" src="<c:url value="/scripts/ajaxtags_controls.js"/>"></script>
         <script type="text/javascript" src="<c:url value="/scripts/ajaxtags_parser.js"/>"></script>
-        <script type="text/javascript" src="<c:url value="/scripts/dynamicoptionlist.js"/>"></script>
         <decorator:head/>
     </head>
     <body>

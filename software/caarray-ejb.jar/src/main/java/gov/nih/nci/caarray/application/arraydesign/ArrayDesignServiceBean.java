@@ -191,18 +191,21 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
-    public Map<Organization, List<ArrayDesign>> getArrayDesignsByOrganization() {
-        List<ArrayDesign> allDesigns = getArrayDao().getAllArrayDesigns();
-        Map<Organization, List<ArrayDesign>> designsByManufacturer = new HashMap<Organization, List<ArrayDesign>>();
-        for (ArrayDesign design : allDesigns) {
-            List<ArrayDesign> manufacturerDesigns = designsByManufacturer.get(design.getProvider());
-            if (manufacturerDesigns == null) {
-                manufacturerDesigns = new ArrayList<ArrayDesign>();
-                designsByManufacturer.put(design.getProvider(), manufacturerDesigns);
-            }
-            manufacturerDesigns.add(design);
-        }
-        return designsByManufacturer;
+    public List<Organization> getArrayDesignProviders() {
+        LogUtil.logSubsystemEntry(LOG);
+        List<Organization> orgs = getArrayDao().getArrayDesignProviders();
+        LogUtil.logSubsystemExit(LOG);
+        return orgs;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public List<ArrayDesign> getArrayDesignsForProvider(Organization provider) {
+        LogUtil.logSubsystemEntry(LOG);
+        List<ArrayDesign> designs = getArrayDao().getArrayDesignsForProvider(provider);
+        LogUtil.logSubsystemExit(LOG);
+        return designs;
     }
 
     /**

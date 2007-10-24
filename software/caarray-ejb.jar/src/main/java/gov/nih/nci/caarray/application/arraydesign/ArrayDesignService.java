@@ -127,14 +127,21 @@ public interface ArrayDesignService {
     ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign);
 
     /**
-     * Returns a Map of Organizations to the List of ArrayDesigns for which
-     * that Organization is the manufacturer.
-     *
-     * @return Map where the keys are array design
-     * manufacturers, and the values are lists of array designs for which that organization
-     * is the manufacturer
+     * Returns the list of Organizations that are a provider for at least 
+     * one ArrayDesign in the system
+     * @return the List&lt;Organization&gt; of Organizations where for each
+     * organization in the list there exists at least one ArrayDesign for which
+     * that Organization is the provider
      */
-    Map<Organization, List<ArrayDesign>> getArrayDesignsByOrganization();
+    List<Organization> getArrayDesignProviders();
+
+    /**
+     * Returns the list of ArrayDesigns with the given provider
+     * @param provider the provider 
+     * @return the List&lt;ArrayDesign&gt; of the array designs whose
+     * provider is the given provider
+     */
+    List<ArrayDesign> getArrayDesignsForProvider(Organization provider);
 
     /**
      * Returns the <code>ArrayDesign</code> with the id given.

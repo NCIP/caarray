@@ -84,7 +84,10 @@ package gov.nih.nci.caarray.application.project;
 
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
 
 import java.io.File;
 import java.util.Collection;
@@ -134,6 +137,27 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     }
 
     public File prepareForDownload(Collection<Long> ids) {
+        return null;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Factor copyFactor(Project project, long factorId) {
+        return null;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Sample copySample(Project project, long sampleId) {
+        return null;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Source copySource(Project project, long sourceId) {
         return null;
     }
 }

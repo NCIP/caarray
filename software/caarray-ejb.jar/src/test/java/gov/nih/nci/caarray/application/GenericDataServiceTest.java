@@ -83,17 +83,25 @@
 package gov.nih.nci.caarray.application;
 
 import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.project.Project;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
  * Class to test the generic service.
+ * 
  * @author Scott Miller
  */
 public class GenericDataServiceTest {
@@ -115,7 +123,17 @@ public class GenericDataServiceTest {
         assertEquals(null, obj);
 
         obj = this.service.retrieveEnity(Project.class, 1l);
-        assertEquals(false, ((Project)obj).isBrowsable());
+        assertEquals(false, ((Project) obj).isBrowsable());
+    }
+
+    @Test
+    public void testGetIncrementingCopyName() {
+        String copyName = this.service.getIncrementingCopyName(Project.class, "name", "Name");
+        assertEquals("Name5", copyName);
+        copyName = this.service.getIncrementingCopyName(Project.class, "name", "Name3");        
+        assertEquals("Name5", copyName);
+        copyName = this.service.getIncrementingCopyName(Project.class, "name", "Namonce");        
+        assertEquals("Namonce2", copyName);
     }
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
@@ -147,6 +165,26 @@ public class GenericDataServiceTest {
                 return (T) p;
             }
             return null;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public List<String> findValuesWithSamePrefix(Class<?> entityClass, String fieldName, String prefix) {
+            if (Project.class.equals(entityClass) && fieldName.equals("name")) {
+                if (StringUtils.isEmpty(prefix)) {
+                    return Arrays.asList("Name1", "Name4", "Namonce21t");
+                } else if (prefix.equals("Name")) {
+                    return Arrays.asList("Name1", "Name4");
+                } else if (prefix.equals("Namonce")) {
+                    return Arrays.asList("Namonce21t");
+                } else {
+                    return new ArrayList<String>();
+                }
+            } else {
+                return new ArrayList<String>();
+            }
         }
     }
 }

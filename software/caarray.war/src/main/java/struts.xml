@@ -123,7 +123,16 @@
 
         <action name="ajax/project/copy/*"
             class="gov.nih.nci.caarray.web.action.ProjectAction" method="{1}Copy">
-            <result name="success">/WEB-INF/pages/project/{1}Edit.jsp</result>
+            <result name="success">/WEB-INF/pages/project/{1}s.jsp</result>
+        </action>
+
+        <action name="ajax/project/retrieveArrayDesigns"
+            class="gov.nih.nci.caarray.web.action.ProjectAction" method="retrieveArrayDesigns">
+            <result name="xmlArrayDesigns" type="stream">
+                <param name="contentType">text/xml;charset=UTF-8</param>
+                <param name="inputName">arrayDesignsAsXml</param>
+                <param name="bufferSize">4096</param>
+            </result>
         </action>
 
         <action name="file/manage" class="gov.nih.nci.caarray.web.action.FileManageAction" method="manage">

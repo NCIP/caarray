@@ -28,11 +28,15 @@ import gov.nih.nci.caarray.web.delegate.ProjectDelegate;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.ajaxtags.xml.AjaxXmlBuilder;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
@@ -57,12 +61,13 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     private String menu = null;
     private Project project = Project.createNew();
+    private Long manufacturerId;    
 
     private List<Project> projects = new ArrayList<Project>();
     private List<Organism> organisms = new ArrayList<Organism>();
     private List<Organization> manufacturers = new ArrayList<Organization>();
+    private List<ArrayDesign> arrayDesigns = new ArrayList<ArrayDesign>();
     private List<PaymentMechanism> paymentMechanisms = new ArrayList<PaymentMechanism>();
-    private Map<Organization, List<ArrayDesign>> arrayDesignsByManufacturer;
     private List<Term> tissueSites;
     private List<Term> tissueTypes;
     private List<Term> cellTypes;
@@ -142,9 +147,20 @@ public class ProjectAction extends BaseAction implements Preparable {
         this.organisms = vocabService.getOrganisms();
 
         ArrayDesignService arrayDesignService = getArrayDesignService();
-        this.arrayDesignsByManufacturer = arrayDesignService.getArrayDesignsByOrganization();
+        this.manufacturers = arrayDesignService.getArrayDesignProviders();
+        if (this.project.getExperiment().getManufacturer() != null) {
+            this.arrayDesigns = getArrayDesignService().getArrayDesignsForProvider(this.project.getExperiment().getManufacturer());                        
+        }
     }
-
+    
+    public String retrieveArrayDesigns() {
+        if (this.manufacturerId != null) {
+            Organization provider = getDelegate().getProjectManagementService().getOrganization(this.manufacturerId);
+            this.arrayDesigns = getArrayDesignService().getArrayDesignsForProvider(provider);            
+        }
+        return "xmlArrayDesigns";
+    }
+    
     /**
      * load a given tab in the submit experiment workflow
      *
@@ -473,13 +489,7 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     @SkipValidation
     public String sourceCopy() {
-        Source source = new Source();
-        source.setDescription(getCurrentSource().getDescription());
-        source.setMaterialType(getCurrentSource().getMaterialType());
-        source.setName(getText("experiment.sources.copy.of") + " " + getCurrentSource().getName());
-        source.setOrganism(getCurrentSource().getOrganism());
-        source.setTissueSite(getCurrentSource().getTissueSite());
-        setCurrentSource(source);
+        getDelegate().getProjectManagementService().copySource(getProject(), getCurrentSource().getId());
         saveMessage(getText("experiment.sources.copied"));
         return SUCCESS;
     }
@@ -521,13 +531,7 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     @SkipValidation
     public String sampleCopy() {
-        Sample sample = new Sample();
-        sample.setDescription(getCurrentSample().getDescription());
-        sample.setMaterialType(getCurrentSample().getMaterialType());
-        sample.setName(getText("experiment.samples.copy.of") + " " + getCurrentSample().getName());
-        sample.setOrganism(getCurrentSample().getOrganism());
-        sample.setSpecimen(getCurrentSample().getSpecimen());
-        setCurrentSample(sample);
+        getDelegate().getProjectManagementService().copySample(getProject(), getCurrentSample().getId());
         saveMessage(getText("experiment.samples.copied"));
         return SUCCESS;
     }
@@ -569,10 +573,7 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     @SkipValidation
     public String factorCopy() {
-        Factor factor = new Factor();
-        factor.setName(getText("experiment.factors.copy.of") + " " + getCurrentFactor().getName());
-        factor.setType(getCurrentFactor().getType());
-        setCurrentFactor(factor);
+        getDelegate().getProjectManagementService().copyFactor(getProject(), getCurrentFactor().getId());
         saveMessage(getText("experiment.factors.copied"));
         return SUCCESS;
     }
@@ -815,20 +816,6 @@ public class ProjectAction extends BaseAction implements Preparable {
     }
 
     /**
-     * @return the arrayDesignsByManufacturer
-     */
-    public Map<Organization, List<ArrayDesign>> getArrayDesignsByManufacturer() {
-        return this.arrayDesignsByManufacturer;
-    }
-
-    /**
-     * @param arrayDesignsByManufacturer the arrayDesignsByManufacturer to set
-     */
-    public void setArrayDesignsByManufacturer(Map<Organization, List<ArrayDesign>> arrayDesignsByManufacturer) {
-        this.arrayDesignsByManufacturer = arrayDesignsByManufacturer;
-    }
-
-    /**
      * @return the currentSource
      */
     public Source getCurrentSource() {
@@ -924,5 +911,47 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     public void setInitialSave(boolean initialSave) {
         this.initialSave = initialSave;
+    }
+
+    /**
+     * @return the manufacturerId
+     */
+    public Long getManufacturerId() {
+        return manufacturerId;
+    }
+
+    /**
+     * @param manufacturerId the manufacturerId to set
+     */
+    public void setManufacturerId(Long manufacturerId) {
+        this.manufacturerId = manufacturerId;
+    }
+
+    /**
+     * @return the arrayDesigns
+     */
+    public List<ArrayDesign> getArrayDesigns() {
+        return arrayDesigns;
+    }
+
+    /**
+     * @param arrayDesigns the arrayDesigns to set
+     */
+    public void setArrayDesigns(List<ArrayDesign> arrayDesigns) {
+        this.arrayDesigns = arrayDesigns;
+    }
+    
+    /**
+     * Get the set of retrieved array designs encoded in XML for use by AjaxTags
+     * @return the stream containing the XML encoding the set of array designs
+     * @throws IllegalAccessException on error
+     * @throws NoSuchMethodException on error
+     * @throws InvocationTargetException on error
+     * @throws UnsupportedEncodingException on error
+     */
+    public InputStream getArrayDesignsAsXml() throws IllegalAccessException, NoSuchMethodException,
+        InvocationTargetException, UnsupportedEncodingException {
+        AjaxXmlBuilder xmlBuilder = new AjaxXmlBuilder().addItems(this.arrayDesigns, "name", "id");
+        return new ByteArrayInputStream(xmlBuilder.toString().getBytes("UTF-8"));
     }
 }

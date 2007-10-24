@@ -95,7 +95,9 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
 
   /**
@@ -283,6 +285,7 @@ public class Protocol extends AbstractCaArrayEntity {
      * @return the parameters
      */
     @OneToMany(mappedBy = "protocol", fetch = FetchType.LAZY)
+    @Cascade(CascadeType.SAVE_UPDATE)
     public Set<Parameter> getParameters() {
         return parameters;
     }

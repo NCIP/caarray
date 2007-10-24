@@ -123,4 +123,15 @@ public interface SearchDao {
      * @return the entity.
      */
     <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId);
+    
+    /**
+     * Retrieve the list of values of the given field of the given entity that
+     * start with the given prefix
+     * @param entityClass the entity class
+     * @param fieldName the field name. This must be a String-valued field
+     * @param prefix the string that the values should begin with
+     * @return the List<String> of values of the given field of the given entity
+     * that start with the given value
+     */
+    List<String> findValuesWithSamePrefix(Class<?> entityClass, String fieldName, String prefix);
 }
