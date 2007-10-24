@@ -153,6 +153,7 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
         INSTANCES.put(MAGE_TAB_DATA_MATRIX.toString(), MAGE_TAB_DATA_MATRIX);
         INSTANCES.put(MAGE_TAB_IDF.toString(), MAGE_TAB_IDF);
         INSTANCES.put(MAGE_TAB_SDRF.toString(), MAGE_TAB_SDRF);
+        INSTANCES.put(AFFYMETRIX_CHP.toString(), AFFYMETRIX_CHP);
         INSTANCES.put(AFFYMETRIX_CDF.toString(), AFFYMETRIX_CDF);
         INSTANCES.put(AFFYMETRIX_CEL.toString(), AFFYMETRIX_CEL);
 
