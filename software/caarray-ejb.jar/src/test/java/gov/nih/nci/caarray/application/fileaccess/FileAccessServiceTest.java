@@ -83,7 +83,9 @@
 package gov.nih.nci.caarray.application.fileaccess;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
@@ -140,6 +142,10 @@ public class FileAccessServiceTest {
         File retrievedFile = fileAccessService.getFile(caArrayFile);
         assertEquals(file.getName(), retrievedFile.getName());
         assertEquals(file.length(), retrievedFile.length());
+        assertTrue(file.exists());
+        assertTrue(retrievedFile.exists());
+        fileAccessService.closeFiles();
+        assertFalse(retrievedFile.exists());
     }
 
 }
