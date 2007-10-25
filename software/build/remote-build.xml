@@ -24,7 +24,7 @@
        </fileset>
     </path>	
 
-	<taskdef name="svn" classpathref="project.classpath" classname="org.tigris.subversion.svnant.SvnTask"/>
+   <taskdef name="svn" classpathref="project.classpath" classname="org.tigris.subversion.svnant.SvnTask"/>
 	
    <property name="jsch.jar" value="jsch-0.1.34.jar"/>
    <property name="antunit.jar" value="ant-antunit-1.0.jar"/>
