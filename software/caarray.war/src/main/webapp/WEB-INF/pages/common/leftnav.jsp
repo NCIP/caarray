@@ -5,7 +5,7 @@
         <li class="liheader">caArray</li>
         <li><a href="<c:url value="/notYetImplemented.jsp" />">Public Home</a></li>
         <c:if test="${pageContext.request.remoteUser == null}">
-        <li><a href="<c:url value="/notYetImplemented.jsp" />">Register</a></li>
+        <li><c:url value="/registration/input.action" var="url"/><a href="${url}">Register</a></li>
         <li><a href="<c:url value="/protected/project/list.action" />">Login</a></li>
         </c:if>
     </ul>
