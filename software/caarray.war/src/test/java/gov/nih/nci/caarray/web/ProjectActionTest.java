@@ -116,7 +116,7 @@ public class ProjectActionTest {
 
     @Before
     public void setUp() throws Exception {
-        this.action.getDelegate().setLocator(this.locatorStub);
+        this.action.setLocator(this.locatorStub);
         this.locatorStub.addLookup(ProjectManagementService.JNDI_NAME, this.projectServiceStub);
         this.locatorStub.addLookup(FileManagementService.JNDI_NAME, this.fileManagementStub);
         loadTestProject();
@@ -155,7 +155,7 @@ public class ProjectActionTest {
         session.setAttribute("messages", null);
         request.setSession(session);
         ServletActionContext.setRequest(request);
-        assertNotNull(this.action.getDelegate().getLocator());
+        assertNotNull(this.action.getLocator());
         assertNotNull(this.action.getProjects());
         String result = this.action.list();
         assertEquals(ProjectAction.LIST_RESULT, result);

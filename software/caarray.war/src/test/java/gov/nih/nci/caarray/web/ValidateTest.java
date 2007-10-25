@@ -117,7 +117,7 @@ public class ValidateTest {
      */
     @Before
     public void setUp() throws Exception {
-        action.getDelegate().setLocator(locatorStub);
+        action.setLocator(locatorStub);
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, projectServiceStub);
         locatorStub.addLookup(FileManagementService.JNDI_NAME, fileManagementStub);
         loadTestProject();
