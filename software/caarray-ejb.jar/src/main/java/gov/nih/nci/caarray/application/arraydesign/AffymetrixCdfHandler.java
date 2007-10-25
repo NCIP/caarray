@@ -132,13 +132,24 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
                         "Unable to read the CDF file : " + fusionCDFData.getFileName());
             }
         }
+        closeCdf();
         return result;
+    }
+
+    private void closeCdf() {
+        // see development tracker issue #9735 for details on why system.gc() used here
+        fusionCDFData.clear();
+        fusionCDFData = null;
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            System.gc();
+        }
     }
 
     @Override
     void load(ArrayDesign arrayDesign) {
         arrayDesign.setName(getFusionCDFData().getChipType());
         arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + getFusionCDFData().getChipType());
+        closeCdf();
     }
 
     @Override
@@ -151,6 +162,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
         handleProbeSets(designDetails);
         handleQCProbeSets(designDetails);
         createMissingFeatures(designDetails);
+        closeCdf();
         return designDetails;
     }
 

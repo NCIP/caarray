@@ -115,7 +115,6 @@ import affymetrix.fusion.cel.FusionCELFileEntryType;
 class AffymetrixCelHandler extends AbstractDataFileHandler {
 
     private static final Log LOG = LogFactory.getLog(AffymetrixCelHandler.class);
-
     private FusionCELData celData = new FusionCELData();
 
     @Override
@@ -155,14 +154,12 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
     }
 
     private void closeCelData() {
+        // See development tracker issue #9735 for details on why System.gc() used here
         celData.clear();
         celData = null;
-        /*
-         * System.gc() necesary due to unclosed FileInputStream Affymetrix bug in
-         * affymetrix.gcos.cel.CELFileData.isXDACompatibleFile(). Email sent to
-         * Affymetrix 10/24/2007. [etavela]
-         */
-        System.gc();
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            System.gc();
+        }
     }
 
     private void prepareColumns(DataSet dataSet, List<QuantitationType> types) {
