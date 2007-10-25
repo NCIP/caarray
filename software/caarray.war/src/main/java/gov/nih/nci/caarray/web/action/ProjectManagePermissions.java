@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.web.action;
 
+import com.opensymphony.xwork2.ActionSupport;
+
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
@@ -89,7 +91,7 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 /**
  * Handles toggling browsablity status.
  */
-public class ProjectManagePermissions extends BaseAction {
+public class ProjectManagePermissions {
 
     private static final long serialVersionUID = 1L;
     private ServiceLocator locator = ServiceLocator.INSTANCE;
@@ -102,14 +104,14 @@ public class ProjectManagePermissions extends BaseAction {
     public String toggle() {
         ProjectManagementService svc = getProjectManagementService();
         svc.toggleBrowsableStatus(getProject().getId());
-        return SUCCESS;
+        return ActionSupport.SUCCESS;
     }
 
     /**
      * @return the project
      */
     public Project getProject() {
-        return project;
+        return this.project;
     }
 
     /**

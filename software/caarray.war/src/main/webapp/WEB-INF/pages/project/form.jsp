@@ -1,11 +1,6 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
-<c:url var="downloadUrl" value="/protected/file/download.action"/>
-<c:url var="removeUrl" value="/images/ico_remove.gif"/>
 <head>
-<script type="text/javascript"><!--
-	var downloadMgr = new DownloadMgr('${downloadUrl}', '${removeUrl}');
---></script>
 </head>
 <body>
     <div id="content">

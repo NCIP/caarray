@@ -92,7 +92,7 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
-import gov.nih.nci.caarray.web.action.FileManageAction;
+import gov.nih.nci.caarray.web.action.ProjectFilesAction;
 
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
@@ -106,7 +106,7 @@ import org.springframework.mock.web.MockHttpSession;
  */
 public class ImportTest {
 
-    private final FileManageAction action = new FileManageAction();
+    private final ProjectFilesAction action = new ProjectFilesAction();
     private final ServiceLocatorStub locatorStub = new ServiceLocatorStub();
     private final LocalProjectManagementServiceStub projectServiceStub = new LocalProjectManagementServiceStub();
     private final LocalFileManagementServiceStub fileManagementStub = new LocalFileManagementServiceStub();
@@ -116,9 +116,9 @@ public class ImportTest {
      */
     @Before
     public void setUp() throws Exception {
-        action.setLocator(locatorStub);
-        locatorStub.addLookup(ProjectManagementService.JNDI_NAME, projectServiceStub);
-        locatorStub.addLookup(FileManagementService.JNDI_NAME, fileManagementStub);
+        this.action.setLocator(this.locatorStub);
+        this.locatorStub.addLookup(ProjectManagementService.JNDI_NAME, this.projectServiceStub);
+        this.locatorStub.addLookup(FileManagementService.JNDI_NAME, this.fileManagementStub);
         loadTestProject();
     }
 
@@ -145,7 +145,7 @@ public class ImportTest {
         project.getFiles().add(file2);
         project.getFiles().add(file3);
 
-        action.setProject(project);
+        this.action.setProject(project);
 
         MockHttpSession session = new MockHttpSession ();
         session.setAttribute("myProject", project);
@@ -193,7 +193,7 @@ public class ImportTest {
         @Override
         public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
             super.importFiles(targetProject, fileSet);
-            calledImportFiles = true;
+            this.calledImportFiles = true;
         }
     }
 

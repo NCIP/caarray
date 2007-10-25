@@ -2,7 +2,7 @@
 
 <caarray:tabPane paneTitleKey="project.tabs.downloadData" subtab="true">
     <div class="tableboxpad">
-    <c:url value="/protected/ajax/project/loadGenericTab/downloadData.action" var="sortUrl">
+    <c:url value="/protected/ajax/project/files/downloadFiles.action" var="sortUrl">
         <c:param name="project.id" value="${project.id}" />
     </c:url>
 
@@ -50,9 +50,11 @@
     <a href="javascript:downloadMgr.doDownloadFiles();" class="save"><img src="<c:url value="/images/btn_launchjob.gif"/>" alt="Launch Job"></a>
     </div>
 </caarray:tabPane>
-
+<c:url var="downloadUrl" value="/protected/project/files/download.action"/>
+<c:url var="removeUrl" value="/images/ico_remove.gif"/>
 <script type="text/javascript">
 <!--
+  downloadMgr = new DownloadMgr('${downloadUrl}', '${removeUrl}');
   downloadMgr.resetDownloadInfo();
 -->
 </script>

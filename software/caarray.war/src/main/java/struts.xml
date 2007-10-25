@@ -135,31 +135,21 @@
             </result>
         </action>
 
-        <action name="file/manage" class="gov.nih.nci.caarray.web.action.FileManageAction" method="manage">
-            <result name="success">/WEB-INF/pages/project/projectFiles.jsp</result>
-        </action>
-         <action name="file/messages" class="gov.nih.nci.caarray.web.action.FileManageAction" method="messages">
-            <result name="input">/WEB-INF/pages/project/projectFiles.jsp</result>
-            <result name="success">/WEB-INF/pages/project/validationMessages.jsp</result>
-        </action>
-        <action name="file/upload" class="gov.nih.nci.caarray.web.action.FileManageAction" method="upload">
-            <result name="input">/WEB-INF/pages/project/projectFiles.jsp</result>
-            <result name="success" type="redirect-action">file/manage?project.id=${project.id}</result>
-        </action>
-        <action name="file/import" class="gov.nih.nci.caarray.web.action.FileManageAction">
-            <result name="input">/WEB-INF/pages/project/projectFiles.jsp</result>
-            <result name="success" type="redirect-action">file/manage?project.id=${project.id}</result>
-        </action>
-        <action name="file/download" method="download" class="gov.nih.nci.caarray.web.action.FileManageAction">
-            <result name="success" type="stream">
+        <action name="project/files/*" class="gov.nih.nci.caarray.web.action.ProjectFilesAction" method="{1}">
+            <result name="upload" type="redirect-action">project/edit?project.id=${project.id}&amp;initialTab=data</result>
+            <result name="download" type="stream">
                 <param name="contentType">application/zip</param>
                 <param name="inputName">downloadStream</param>
                 <param name="contentDisposition">filename="caArrayFiles.zip"</param>
                 <param name="bufferSize">4096</param>
             </result>
-            <interceptor-ref name="caarrayParamsPrepareParamsStack" />
         </action>
-     </package>
+
+        <action name="ajax/project/files/*" class="gov.nih.nci.caarray.web.action.ProjectFilesAction" method="{1}">
+            <result name="input">/WEB-INF/pages/project/files/list.jsp</result>
+            <result name="success">/WEB-INF/pages/project/files/{1}.jsp</result>
+        </action>
+    </package>
 
 <!--
      <package name="registration" namespace="/registration" extends="default">

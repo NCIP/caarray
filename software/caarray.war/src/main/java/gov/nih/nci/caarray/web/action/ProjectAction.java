@@ -38,6 +38,7 @@ import org.ajaxtags.xml.AjaxXmlBuilder;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 
@@ -47,7 +48,7 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
  * @author John Hedden, Dan Kokotov, Scott Miller
  */
 @Validation
-public class ProjectAction extends BaseAction implements Preparable {
+public class ProjectAction extends ActionSupport implements Preparable {
     private static final long serialVersionUID = 1L;
 
     private ServiceLocator locator = ServiceLocator.INSTANCE;
@@ -235,15 +236,6 @@ public class ProjectAction extends BaseAction implements Preparable {
     }
 
     /**
-     * Loads the manage data tab.
-     *
-     * @return name of result to forward to
-     */
-    public String manageDataLoadTab() {
-        return loadTab();
-    }
-
-    /**
      * Loads the download data tab.
      *
      * @return name of result to forward to
@@ -376,21 +368,21 @@ public class ProjectAction extends BaseAction implements Preparable {
                     getProjectManagementService().saveDraftProject((getProject()));
                     List<String> args = new ArrayList<String>();
                     args.add(getProject().getExperiment().getTitle());
-                    saveMessage(getText("project.saved", args));
+                    ActionHelper.saveMessage(getText("project.saved", args));
                 } else {
                     getProjectManagementService().submitProject((getProject()));
                     List<String> args = new ArrayList<String>();
                     args.add(getProject().getExperiment().getTitle());
-                    saveMessage(getText("project.submitted", args));
+                    ActionHelper.saveMessage(getText("project.submitted", args));
                     result = WORKSPACE_RESULT;
                 }
             } catch (ProposalWorkflowException e) {
                 List<String> args = new ArrayList<String>();
                 args.add(e.getMessage());
-                saveMessage(getText("project.workflowProblem", args));
+                ActionHelper.saveMessage(getText("project.workflowProblem", args));
             }
         } else {
-            saveMessage(getText("project.updated"));
+            ActionHelper.saveMessage(getText("project.updated"));
         }
         return result;
     }
@@ -460,9 +452,9 @@ public class ProjectAction extends BaseAction implements Preparable {
     public String sourceEditSaveTab() {
         if (this.getCurrentSource().getId() == null) {
             getProject().getExperiment().getSources().add(getCurrentSource());
-            saveMessage(getText("experiment.sources.created"));
+            ActionHelper.saveMessage(getText("experiment.sources.created"));
         } else {
-            saveMessage(getText("experiment.sources.updated"));
+            ActionHelper.saveMessage(getText("experiment.sources.updated"));
         }
         saveTab();
         return "sourcesTab";
@@ -478,7 +470,7 @@ public class ProjectAction extends BaseAction implements Preparable {
         getProject().getExperiment().getSources().remove(getCurrentSource());
         setSaveMode(SAVE_MODE_DRAFT);
         saveTab();
-        saveMessage(getText("experiment.sources.deleted"));
+        ActionHelper.saveMessage(getText("experiment.sources.deleted"));
         return SUCCESS;
     }
 
@@ -490,7 +482,7 @@ public class ProjectAction extends BaseAction implements Preparable {
     @SkipValidation
     public String sourceCopy() {
         getProjectManagementService().copySource(getProject(), getCurrentSource().getId());
-        saveMessage(getText("experiment.sources.copied"));
+        ActionHelper.saveMessage(getText("experiment.sources.copied"));
         return SUCCESS;
     }
 
@@ -502,9 +494,9 @@ public class ProjectAction extends BaseAction implements Preparable {
     public String sampleEditSaveTab() {
         if (getCurrentSample().getId() == null) {
             getProject().getExperiment().getSamples().add(getCurrentSample());
-            saveMessage(getText("experiment.samples.created"));
+            ActionHelper.saveMessage(getText("experiment.samples.created"));
         } else {
-            saveMessage(getText("experiment.samples.updated"));
+            ActionHelper.saveMessage(getText("experiment.samples.updated"));
         }
         saveTab();
         return "samplesTab";
@@ -520,7 +512,7 @@ public class ProjectAction extends BaseAction implements Preparable {
         getProject().getExperiment().getSamples().remove(getCurrentSample());
         setSaveMode(SAVE_MODE_DRAFT);
         saveTab();
-        saveMessage(getText("experiment.samples.deleted"));
+        ActionHelper.saveMessage(getText("experiment.samples.deleted"));
         return SUCCESS;
     }
 
@@ -532,7 +524,7 @@ public class ProjectAction extends BaseAction implements Preparable {
     @SkipValidation
     public String sampleCopy() {
         getProjectManagementService().copySample(getProject(), getCurrentSample().getId());
-        saveMessage(getText("experiment.samples.copied"));
+        ActionHelper.saveMessage(getText("experiment.samples.copied"));
         return SUCCESS;
     }
 
@@ -544,9 +536,9 @@ public class ProjectAction extends BaseAction implements Preparable {
     public String factorEditSaveTab() {
         if (getCurrentFactor().getId() == null) {
             getProject().getExperiment().getFactors().add(getCurrentFactor());
-            saveMessage(getText("experiment.factors.created"));
+            ActionHelper.saveMessage(getText("experiment.factors.created"));
         } else {
-            saveMessage(getText("experiment.factors.updated"));
+            ActionHelper.saveMessage(getText("experiment.factors.updated"));
         }
         saveTab();
         return "factorsTab";
@@ -562,7 +554,7 @@ public class ProjectAction extends BaseAction implements Preparable {
         getProject().getExperiment().getFactors().remove(getCurrentFactor());
         setSaveMode(SAVE_MODE_DRAFT);
         saveTab();
-        saveMessage(getText("experiment.factors.deleted"));
+        ActionHelper.saveMessage(getText("experiment.factors.deleted"));
         return SUCCESS;
     }
 
@@ -574,7 +566,7 @@ public class ProjectAction extends BaseAction implements Preparable {
     @SkipValidation
     public String factorCopy() {
         getProjectManagementService().copyFactor(getProject(), getCurrentFactor().getId());
-        saveMessage(getText("experiment.factors.copied"));
+        ActionHelper.saveMessage(getText("experiment.factors.copied"));
         return SUCCESS;
     }
 

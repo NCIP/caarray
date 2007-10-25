@@ -32,9 +32,9 @@
 <div id="${submittingDivId}" style="display: none;">
     <div><fmt:message key="${submittingPaneMessageKey}" /></div>
 </div>
-<caarray:successMessages />
 <c:set var="formDivId" value="theForm${subtab ? 'Subtab' : ''}"/>
 <div id="${formDivId}">
+    <caarray:successMessages />
     <c:if test="${not empty successMessage && ignoreSuccessMessage != 'true'}">
         <div class="confirm_msg">${successMessage}</div>
     </c:if>

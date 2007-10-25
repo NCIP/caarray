@@ -60,7 +60,7 @@
         </display:table>
     </ajax:displayTag>
 
-    <s:form action="ajax/project/saveGenericTab/sources" cssClass="form" id="projectForm">
+    <s:form action="ajax/project/saveGenericTab/sources" cssClass="form" id="projectForm" theme="simple">
         <s:hidden name="project.id" />
     </s:form>
     </div>

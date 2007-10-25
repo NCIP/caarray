@@ -416,19 +416,25 @@ var TabUtils = {
 
         new Ajax.Updater(divId, url, {parameters: formData, evalScripts: true} );
     },
-    
+
+    submitSubTabFormToUrl : function(formId, url, divId) {
+        TabUtils.showSubtabSubmittingText();
+        formData = Form.serialize(formId);
+        new Ajax.Updater(divId, url, {parameters: formData, evalScripts: true} );
+    },
+
     wrapTabLinks: function(projectId) {
         var oldTabLinkMethod = executeAjaxTab_tabs;
         executeAjaxTab_tabs = function(link, cls, url, arg4) {
-            url = url.replace(/project\.id=/g, 'project.id=' + projectId); 
+            url = url.replace(/project\.id=/g, 'project.id=' + projectId);
             oldTabLinkMethod(link, cls, url, arg4);
         }
         if (window.executeAjaxTab_tablevel2) {
             var oldTabLevel2LinkMethod = executeAjaxTab_tablevel2;
             executeAjaxTab_tablevel2 = function(link, cls, url, arg4) {
-                url = url.replace(/project\.id=/g, 'project.id=' + projectId); 
+                url = url.replace(/project\.id=/g, 'project.id=' + projectId);
                 oldTabLevel2LinkMethod(link, cls, url, arg4);
-            }        
+            }
         }
     }
 }
@@ -438,11 +444,11 @@ var TabUtils = {
 //
 
 function DownloadMgr(dUrl, iUrl) {
-	this.downloadUrl = dUrl;
-	this.imageUrl = iUrl;
-	this.downloadIds = new Array();
-	this.downloadSizeArray = new Array();
-	this.count = 0;
+  this.downloadUrl = dUrl;
+  this.imageUrl = iUrl;
+  this.downloadIds = new Array();
+  this.downloadSizeArray = new Array();
+  this.count = 0;
 }
 
 DownloadMgr.prototype.downloadUrl;
@@ -453,72 +459,72 @@ DownloadMgr.prototype.count;
 
 DownloadMgr.prototype.addDownloadRow = function(name, id, size) {
     for (i = 0; i < this.downloadIds.length; ++i) {
-    	if (this.downloadIds[i] == id) {
-    		return;
-    	}
+      if (this.downloadIds[i] == id) {
+        return;
+      }
     }
     this.downloadIds.push(id);
     this.downloadSizeArray.push(size);
     ++this.count;
-    
-	var tbl = document.getElementById('downloadTbl');
-	var lastRow = tbl.rows.length;
-	var row = tbl.insertRow(lastRow - 1);
-	row.id = 'downloadRow' + this.count;
 
-	var cell = row.insertCell(0);
-	cell.innerHTML = '<img src="'+ this.imageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + this.count + ')"/>&nbsp;&nbsp;' + name;
+  var tbl = document.getElementById('downloadTbl');
+  var lastRow = tbl.rows.length;
+  var row = tbl.insertRow(lastRow - 1);
+  row.id = 'downloadRow' + this.count;
 
-	this.addTotalRow();
+  var cell = row.insertCell(0);
+  cell.innerHTML = '<img src="'+ this.imageUrl + '" alt="remove" onclick="downloadMgr.removeRow(' + this.count + ')"/>&nbsp;&nbsp;' + name;
+
+  this.addTotalRow();
 }
 
-DownloadMgr.prototype.removeRow = function(toRemove) {	
-	var tbl = document.getElementById('downloadTbl');
-	var row = document.getElementById('downloadRow' + toRemove);
-	for (i = 0; i < tbl.rows.length; ++i) {
-		if (tbl.rows[i] == row) {
-			tbl.deleteRow(i);
-			this.downloadSizeArray.splice(i - 1, 1);
-			this.downloadIds.splice(i - 1, 1);
-		}
-	}
-	this.addTotalRow();
+DownloadMgr.prototype.removeRow = function(toRemove) {
+  var tbl = document.getElementById('downloadTbl');
+  var row = document.getElementById('downloadRow' + toRemove);
+  for (i = 0; i < tbl.rows.length; ++i) {
+    if (tbl.rows[i] == row) {
+      tbl.deleteRow(i);
+      this.downloadSizeArray.splice(i - 1, 1);
+      this.downloadIds.splice(i - 1, 1);
+    }
+  }
+  this.addTotalRow();
 }
 
 DownloadMgr.prototype.resetDownloadInfo = function() {
-	this.downloadIds = new Array();
-	this.downloadSizeArray = new Array();
-	var tbl = document.getElementById('downloadTbl');
-	while (tbl.rows.length > 1) {
-		tbl.deleteRow(1);
-	}
-	this.addTotalRow();
+  this.downloadIds = new Array();
+  this.downloadSizeArray = new Array();
+  var tbl = document.getElementById('downloadTbl');
+  while (tbl.rows.length > 1) {
+    tbl.deleteRow(1);
+  }
+  this.addTotalRow();
 }
 
 DownloadMgr.prototype.addTotalRow = function() {
-	var tbl = document.getElementById('downloadTbl');
-	var lastRow = tbl.rows.length;
-	if (lastRow > 1) {
-		tbl.deleteRow(lastRow - 1);
-	}
-	lastRow = tbl.rows.length;
-	var row = tbl.insertRow(lastRow);
-	var cell = row.insertCell(0);	
-	var downloadSize = 0;
-	for (i = 0; i < this.downloadSizeArray.length; ++i) {
-		downloadSize += this.downloadSizeArray[i];
-	}
-	var textNode = document.createTextNode(" Job Size: " + (downloadSize / 1024 | 0) + " KB");
-	cell.appendChild(textNode);
+  var tbl = document.getElementById('downloadTbl');
+  var lastRow = tbl.rows.length;
+  if (lastRow > 1) {
+    tbl.deleteRow(lastRow - 1);
+  }
+  lastRow = tbl.rows.length;
+  var row = tbl.insertRow(lastRow);
+  var cell = row.insertCell(0);
+  var downloadSize = 0;
+  for (i = 0; i < this.downloadSizeArray.length; ++i) {
+    downloadSize += this.downloadSizeArray[i];
+  }
+  var textNode = document.createTextNode(" Job Size: " + (downloadSize / 1024 | 0) + " KB");
+  cell.appendChild(textNode);
 }
 
 DownloadMgr.prototype.doDownloadFiles = function() {
-	if (this.downloadIds.length == 0) {
-		alert("Select file(s) first.");
-		return;
-	}
-	var curLoc = window.location;
-	window.location= this.downloadUrl + "?downloadIds=" + this.downloadIds.join();
-	this.resetDownloadInfo();
+  if (this.downloadIds.length == 0) {
+    alert("Select file(s) first.");
+    return;
+  }
+  var curLoc = window.location;
+  window.location= this.downloadUrl + "?downloadIds=" + this.downloadIds.join();
+  this.resetDownloadInfo();
 }
 

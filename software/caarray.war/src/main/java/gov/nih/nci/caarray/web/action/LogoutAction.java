@@ -84,22 +84,25 @@ package gov.nih.nci.caarray.web.action;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.struts2.ServletActionContext;
+
+import com.opensymphony.xwork2.ActionSupport;
+
 /**
  * @author John Hedden
  *
  */
-public class LogoutAction extends BaseAction {
+public class LogoutAction {
 
     private static final long serialVersionUID = -3980503091658538677L;
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public String execute() {
-        HttpSession session = getSession();
+        HttpSession session = ServletActionContext.getRequest().getSession();
         session.invalidate();
 
-        return SUCCESS;
+        return ActionSupport.SUCCESS;
     }
 }
