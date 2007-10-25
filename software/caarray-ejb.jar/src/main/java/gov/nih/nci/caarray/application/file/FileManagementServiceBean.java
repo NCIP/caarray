@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -127,6 +128,7 @@ public class FileManagementServiceBean implements FileManagementService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void importFiles(CaArrayFileSet fileSet) {
+        checkForImport(fileSet);
         LogUtil.logSubsystemEntry(LOG, fileSet);
         FileAccessService fileAccessService = getFileAccessService();
         doImport(fileAccessService, fileSet);
@@ -134,11 +136,30 @@ public class FileManagementServiceBean implements FileManagementService {
         LogUtil.logSubsystemExit(LOG);
     }
 
+    private void checkForImport(CaArrayFileSet fileSet) {
+        for (CaArrayFile caArrayFile : fileSet.getFiles()) {
+            if (!caArrayFile.getFileStatus().isImportable()) {
+                throw new IllegalArgumentException("Illegal attempt to import file "
+                        + caArrayFile.getName() + " with status " + caArrayFile.getFileStatus());
+            }
+        }
+    }
+
+    private void checkForValidation(CaArrayFileSet fileSet) {
+        for (CaArrayFile caArrayFile : fileSet.getFiles()) {
+            if (!caArrayFile.getFileStatus().isValidatable()) {
+                throw new IllegalArgumentException("Illegal attempt to validate file "
+                        + caArrayFile.getName() + " with status " + caArrayFile.getFileStatus());
+            }
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
     public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
         LogUtil.logSubsystemEntry(LOG, fileSet);
+        checkForImport(fileSet);
         FileAccessService fileAccessService = getFileAccessService();
         doImport(fileAccessService, targetProject, fileSet);
         fileAccessService.closeFiles();
@@ -191,6 +212,7 @@ public class FileManagementServiceBean implements FileManagementService {
      * {@inheritDoc}
      */
     public void validateFiles(CaArrayFileSet fileSet) {
+        checkForValidation(fileSet);
         FileAccessService fileAccessService = getFileAccessService();
         doValidate(fileAccessService, fileSet);
         fileAccessService.closeFiles();

@@ -166,6 +166,10 @@ public class FileAccessServiceBean implements FileAccessService {
      */
     public void remove(CaArrayFile caArrayFile) {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
+        if (!caArrayFile.getFileStatus().isDeletable()) {
+            throw new IllegalArgumentException("Illegal attempt to delete " + caArrayFile.getName()
+                    + ", status is " + caArrayFile.getFileStatus());
+        }
         if (caArrayFile.getProject() != null) {
             caArrayFile.getProject().getFiles().remove(caArrayFile);
         }
