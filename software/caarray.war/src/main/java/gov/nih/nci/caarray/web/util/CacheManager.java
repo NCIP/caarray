@@ -82,7 +82,10 @@
  */
 package gov.nih.nci.caarray.web.util;
 
+import gov.nih.nci.caarray.application.country.CountryService;
+import gov.nih.nci.caarray.domain.country.Country;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,8 +104,11 @@ public final class CacheManager {
 
     private static final Log LOG = LogFactory.getLog(CacheManager.class);
 
+    private ServiceLocator locator = ServiceLocator.INSTANCE;
+
     // instance variables that serve as cache
     private List<LabelValue> fileTypes = new ArrayList<LabelValue>();
+    private List<Country> countryList = new ArrayList<Country>();
 
     /**
      * Default constructor made private so that no other object can instantiate
@@ -132,6 +138,7 @@ public final class CacheManager {
     public void loadCache() {
         try {
             cacheFileTypes();
+            cacheCountries();
         } catch (Exception e) {
             this.LOG.error(e);
         }
@@ -168,5 +175,43 @@ public final class CacheManager {
      */
     public List<LabelValue> getFileTypes() {
         return fileTypes;
+    }
+
+    /**
+     * Cache file types.
+     */
+    protected void cacheCountries() {
+        this.countryList = getCountryService().getCountries();
+    }
+
+    /**
+     * @return the countryList
+     */
+    public List<Country> getCountries() {
+        return countryList;
+    }
+
+    /**
+     * get locator for junit.
+     * @return ServiceLocator ServiceLocator
+     */
+    public ServiceLocator getLocator() {
+        return locator;
+    }
+
+    /**
+     * For use by unit tests.
+     * @param locator locator
+     */
+    public void setLocator(ServiceLocator locator) {
+        this.locator = locator;
+    }
+
+    /**
+     * Get CountryService.
+     * @return countryService
+     */
+    public CountryService getCountryService() {
+        return (CountryService) locator.lookup(CountryService.JNDI_NAME);
     }
 }
