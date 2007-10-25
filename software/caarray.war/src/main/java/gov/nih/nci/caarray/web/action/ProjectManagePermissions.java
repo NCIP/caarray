@@ -84,8 +84,7 @@ package gov.nih.nci.caarray.web.action;
 
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.web.delegate.DelegateFactory;
-import gov.nih.nci.caarray.web.delegate.ProjectDelegate;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 
 /**
  * Handles toggling browsablity status.
@@ -93,6 +92,7 @@ import gov.nih.nci.caarray.web.delegate.ProjectDelegate;
 public class ProjectManagePermissions extends BaseAction {
 
     private static final long serialVersionUID = 1L;
+    private ServiceLocator locator = ServiceLocator.INSTANCE;
     private Project project = new Project();
 
     /**
@@ -100,8 +100,7 @@ public class ProjectManagePermissions extends BaseAction {
      * @return success
      */
     public String toggle() {
-        ProjectManagementService svc = ((ProjectDelegate) DelegateFactory.getDelegate(DelegateFactory.PROJECT))
-                        .getProjectManagementService();
+        ProjectManagementService svc = getProjectManagementService();
         svc.toggleBrowsableStatus(getProject().getId());
         return SUCCESS;
     }
@@ -118,5 +117,29 @@ public class ProjectManagePermissions extends BaseAction {
      */
     public void setProject(Project project) {
         this.project = project;
+    }
+
+    /**
+     * Get ProjectManagementService.
+     * @return projectManagementService
+     */
+    public ProjectManagementService getProjectManagementService() {
+        return (ProjectManagementService) locator.lookup(ProjectManagementService.JNDI_NAME);
+    }
+
+    /**
+     * get locator for junit.
+     * @return ServiceLocator ServiceLocator
+     */
+    public ServiceLocator getLocator() {
+        return locator;
+    }
+
+    /**
+     * For use by unit tests.
+     * @param locator locator
+     */
+    public void setLocator(ServiceLocator locator) {
+        this.locator = locator;
     }
 }

@@ -1,31 +1,27 @@
 package gov.nih.nci.caarray.web.action;
 
+import gov.nih.nci.caarray.application.file.FileManagementService;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.io.FileClosingInputStream;
-import gov.nih.nci.caarray.web.delegate.DelegateFactory;
-import gov.nih.nci.caarray.web.delegate.ManageFilesDelegate;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 import gov.nih.nci.caarray.web.util.CacheManager;
 import gov.nih.nci.caarray.web.util.LabelValue;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -43,6 +39,7 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 @Validation
 public class FileManageAction extends BaseAction implements Preparable {
 
+    private ServiceLocator locator = ServiceLocator.INSTANCE;
     private static final String FILE_MANAGE_LINKS = "FileManageLinks";
     private static final long serialVersionUID = 1L;
     private String menu = null;
@@ -59,7 +56,7 @@ public class FileManageAction extends BaseAction implements Preparable {
      */
     public void prepare() {
         if (getProject() != null && getProject().getId() != null) {
-            setProject(getDelegate().getProjectManagementService().getProject(getProject().getId()));
+            setProject(getProjectManagementService().getProject(getProject().getId()));
         }
     }
 
@@ -107,7 +104,7 @@ public class FileManageAction extends BaseAction implements Preparable {
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
         addSelectedFiles(fileSet, request);
         if (!fileSet.getFiles().isEmpty()) {
-            getDelegate().getFileManagementService().validateFiles(fileSet);
+            getFileManagementService().validateFiles(fileSet);
         }
         return SUCCESS;
     }
@@ -128,7 +125,7 @@ public class FileManageAction extends BaseAction implements Preparable {
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
         addSelectedFiles(fileSet, request);
         if (!fileSet.getFiles().isEmpty()) {
-            getDelegate().getFileManagementService().importFiles(getProject(), fileSet);
+            getFileManagementService().importFiles(getProject(), fileSet);
         }
         return SUCCESS;
     }
@@ -150,7 +147,7 @@ public class FileManageAction extends BaseAction implements Preparable {
         addSelectedFiles(fileSet, request);
         if (!fileSet.getFiles().isEmpty()) {
             for (CaArrayFile caArrayFile : fileSet.getFiles()) {
-                getDelegate().getFileAccessService().remove(caArrayFile);
+                getFileAccessService().remove(caArrayFile);
             }
         }
         return SUCCESS;
@@ -173,7 +170,7 @@ public class FileManageAction extends BaseAction implements Preparable {
         addSelectedFiles(fileSet, request);
         if (!fileSet.getFiles().isEmpty()) {
             for (CaArrayFile caArrayFile : fileSet.getFiles()) {
-                getDelegate().getFileAccessService().save(caArrayFile);
+                getFileAccessService().save(caArrayFile);
             }
         }
         return SUCCESS;
@@ -187,13 +184,13 @@ public class FileManageAction extends BaseAction implements Preparable {
     public String upload() throws Exception {
         setMenu(FILE_MANAGE_LINKS);
 
-        unzipFiles();
+        getFileAccessService().unzipFiles(getUpload(), getUploadFileName());
 
         int index = 0;
         for (File uploadedFile : getUpload()) {
             try {
                 String fileName = getUploadFileName(index);
-                getDelegate().getProjectManagementService().addFile(getProject(), uploadedFile, fileName);
+                getProjectManagementService().addFile(getProject(), uploadedFile, fileName);
             } catch (Exception e) {
                 String msg = "Unable to upload file: " + e.getMessage();
                 LOG.error(msg, e);
@@ -202,6 +199,27 @@ public class FileManageAction extends BaseAction implements Preparable {
             }
             index++;
         } // end for
+        return SUCCESS;
+    }
+
+    /**
+     * Prepares for download by zipping selected files and setting the internal InputStream.
+     *
+     * @param selectedFiles the files to download
+     * @return SUCCESS
+     * @throws IOException if
+     */
+    @SkipValidation
+    public String download() throws IOException {
+        String[] strings = getDownloadIds().split(",");
+        Collection<Long> ids = new HashSet<Long>(strings.length);
+        for (String curString : strings) {
+            ids.add(Long.parseLong(curString));
+        }
+        File zipFile = getProjectManagementService().prepareForDownload(ids);
+
+        downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
+
         return SUCCESS;
     }
 
@@ -227,71 +245,10 @@ public class FileManageAction extends BaseAction implements Preparable {
     }
 
     /**
-     * unzips a .zip file, removes it from uploads
-     * and adds files present in zip to uploads.
-     * @throws IOException
-     */
-    protected void unzipFiles() throws IOException {
-        Pattern p = Pattern.compile(".zip$");
-        int index = 0;
-
-        for (int i = 0; i < getUploadFileName().size(); i++) {
-            Matcher m = p.matcher(getUploadFileName(i).toLowerCase());
-            if (m.find()) {
-                File uploadedFile = getUpload().get(i);
-                String uploadedFileName = uploadedFile.getAbsolutePath();
-                String directoryPath = uploadedFile.getParent();
-                ZipFile zipFile = new ZipFile(uploadedFileName);
-
-                Enumeration<? extends ZipEntry> entries = zipFile.entries();
-                while (entries.hasMoreElements()) {
-                    ZipEntry entry = entries.nextElement();
-
-                    File entryFile = new File(directoryPath + "/" + entry.getName());
-                    copyInputStream(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(entryFile)));
-
-                    uploads.add(entryFile);
-                    uploadFileNames.add(entry.getName());
-                }
-                uploads.remove(index);
-                uploadFileNames.remove(index);
-                uploadContentTypes.remove(index);
-            }
-            index++;
-        }
-    }
-
-    /**
-     * method to copy compressed file contained in zip file.
-     * @param in InputStream
-     * @param out OutputStream
-     * @throws IOException
-     */
-    public static final void copyInputStream(InputStream in, OutputStream out) throws IOException {
-      byte[] buffer = new byte[1024];
-      int len;
-
-      while((len = in.read(buffer)) >= 0) {
-          out.write(buffer, 0, len);
-      }
-      in.close();
-      out.close();
-    }
-
-    /**
      * @return the fileTypes
      */
     public List<LabelValue> getFileTypes() {
         return CacheManager.getInstance().getFileTypes();
-    }
-
-    /**
-     * gets the delegate from factory.
-     *
-     * @return Delegate ProjectDelegate
-     */
-    public ManageFilesDelegate getDelegate() {
-        return (ManageFilesDelegate) DelegateFactory.getDelegate(DelegateFactory.MANAGE_FILES);
     }
 
     /**
@@ -441,31 +398,49 @@ public class FileManageAction extends BaseAction implements Preparable {
     }
 
     /**
-     * Prepares for download by zipping selected files and setting the internal InputStream.
-     *
-     * @param selectedFiles the files to download
-     * @return SUCCESS
-     * @throws IOException if
-     */
-    @SkipValidation
-    public String download() throws IOException {
-        String[] strings = getDownloadIds().split(",");
-        Collection<Long> ids = new HashSet<Long>(strings.length);
-        for (String curString : strings) {
-            ids.add(Long.parseLong(curString));
-        }
-        File zipFile = getDelegate().getProjectManagementService().prepareForDownload(ids);
-
-        downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
-
-        return SUCCESS;
-    }
-
-    /**
      * @return the stream containing the zip file download
      */
     public InputStream getDownloadStream() {
         return downloadStream;
     }
 
+    /**
+     * Get FileManagementService.
+     * @return fileManagementService
+     */
+    public FileManagementService getFileManagementService() {
+        return (FileManagementService) locator.lookup(FileManagementService.JNDI_NAME);
+    }
+
+    /**
+     * Get ProjectManagementService.
+     * @return projectManagementService
+     */
+    public ProjectManagementService getProjectManagementService() {
+        return (ProjectManagementService) locator.lookup(ProjectManagementService.JNDI_NAME);
+    }
+
+    /**
+     * Get FileAccessService.
+     * @return fileAccessService
+     */
+    public FileAccessService getFileAccessService() {
+        return (FileAccessService) locator.lookup(FileAccessService.JNDI_NAME);
+    }
+
+    /**
+     * get locator for junit.
+     * @return ServiceLocator ServiceLocator
+     */
+    public ServiceLocator getLocator() {
+        return locator;
+    }
+
+    /**
+     * For use by unit tests.
+     * @param locator locator
+     */
+    public void setLocator(ServiceLocator locator) {
+        this.locator = locator;
+    }
 }

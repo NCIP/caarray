@@ -3,6 +3,7 @@ package gov.nih.nci.caarray.web.action;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
@@ -23,8 +24,6 @@ import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.util.SecurityInterceptor;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
-import gov.nih.nci.caarray.web.delegate.DelegateFactory;
-import gov.nih.nci.caarray.web.delegate.ProjectDelegate;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -50,6 +49,8 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 @Validation
 public class ProjectAction extends BaseAction implements Preparable {
     private static final long serialVersionUID = 1L;
+
+    private ServiceLocator locator = ServiceLocator.INSTANCE;
 
     public static final String LIST_RESULT = "list";
     public static final String WORKSPACE_RESULT = "workspace";
@@ -92,7 +93,7 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     public void prepare() {
         if (this.project.getId() != null) {
-            this.project = getDelegate().getProjectManagementService().getProject(this.project.getId());
+            this.project = getProjectManagementService().getProject(this.project.getId());
         }
 
         if (this.currentSource.getId() != null) {
@@ -116,7 +117,7 @@ public class ProjectAction extends BaseAction implements Preparable {
     @SkipValidation
     public String list() {
         setMenu("ProjectListLinks");
-        setProjects(getDelegate().getProjectManagementService().getWorkspaceProjects());
+        setProjects(getProjectManagementService().getWorkspaceProjects());
         return LIST_RESULT;
     }
 
@@ -154,7 +155,7 @@ public class ProjectAction extends BaseAction implements Preparable {
 
     public String retrieveArrayDesigns() {
         if (this.manufacturerId != null) {
-            Organization provider = getDelegate().getProjectManagementService().getOrganization(this.manufacturerId);
+            Organization provider = getProjectManagementService().getOrganization(this.manufacturerId);
             this.arrayDesigns = getArrayDesignService().getArrayDesignsForProvider(provider);
         }
         return "xmlArrayDesigns";
@@ -372,12 +373,12 @@ public class ProjectAction extends BaseAction implements Preparable {
             try {
                 if (SAVE_MODE_DRAFT.equals(this.saveMode)) {
                     this.initialSave = getProject().getId() == null;
-                    getDelegate().getProjectManagementService().saveDraftProject((getProject()));
+                    getProjectManagementService().saveDraftProject((getProject()));
                     List<String> args = new ArrayList<String>();
                     args.add(getProject().getExperiment().getTitle());
                     saveMessage(getText("project.saved", args));
                 } else {
-                    getDelegate().getProjectManagementService().submitProject((getProject()));
+                    getProjectManagementService().submitProject((getProject()));
                     List<String> args = new ArrayList<String>();
                     args.add(getProject().getExperiment().getTitle());
                     saveMessage(getText("project.submitted", args));
@@ -435,7 +436,7 @@ public class ProjectAction extends BaseAction implements Preparable {
     @SkipValidation
     public String details() {
         setMenu("ProjectEditLinks");
-        setProject(getDelegate().getProjectManagementService().getProject(getProject().getId()));
+        setProject(getProjectManagementService().getProject(getProject().getId()));
         return DETAILS_RESULT;
     }
 
@@ -447,7 +448,7 @@ public class ProjectAction extends BaseAction implements Preparable {
     @SkipValidation
     public String toggle() {
         setMenu("ProjectEditLinks");
-        getDelegate().getProjectManagementService().toggleBrowsableStatus(getProject().getId());
+        getProjectManagementService().toggleBrowsableStatus(getProject().getId());
         return WORKSPACE_RESULT;
     }
 
@@ -488,7 +489,7 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     @SkipValidation
     public String sourceCopy() {
-        getDelegate().getProjectManagementService().copySource(getProject(), getCurrentSource().getId());
+        getProjectManagementService().copySource(getProject(), getCurrentSource().getId());
         saveMessage(getText("experiment.sources.copied"));
         return SUCCESS;
     }
@@ -530,7 +531,7 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     @SkipValidation
     public String sampleCopy() {
-        getDelegate().getProjectManagementService().copySample(getProject(), getCurrentSample().getId());
+        getProjectManagementService().copySample(getProject(), getCurrentSample().getId());
         saveMessage(getText("experiment.samples.copied"));
         return SUCCESS;
     }
@@ -572,18 +573,9 @@ public class ProjectAction extends BaseAction implements Preparable {
      */
     @SkipValidation
     public String factorCopy() {
-        getDelegate().getProjectManagementService().copyFactor(getProject(), getCurrentFactor().getId());
+        getProjectManagementService().copyFactor(getProject(), getCurrentFactor().getId());
         saveMessage(getText("experiment.factors.copied"));
         return SUCCESS;
-    }
-
-    /**
-     * gets the delegate from factory.
-     *
-     * @return Delegate ProjectDelegate
-     */
-    public ProjectDelegate getDelegate() {
-        return (ProjectDelegate) DelegateFactory.getDelegate(DelegateFactory.PROJECT);
     }
 
     /**
@@ -952,5 +944,29 @@ public class ProjectAction extends BaseAction implements Preparable {
         InvocationTargetException, UnsupportedEncodingException {
         AjaxXmlBuilder xmlBuilder = new AjaxXmlBuilder().addItems(this.arrayDesigns, "name", "id");
         return new ByteArrayInputStream(xmlBuilder.toString().getBytes("UTF-8"));
+    }
+
+    /**
+     * Get ProjectManagementService.
+     * @return projectManagementService
+     */
+    public ProjectManagementService getProjectManagementService() {
+        return (ProjectManagementService) locator.lookup(ProjectManagementService.JNDI_NAME);
+    }
+
+    /**
+     * get locator for junit.
+     * @return ServiceLocator ServiceLocator
+     */
+    public ServiceLocator getLocator() {
+        return locator;
+    }
+
+    /**
+     * For use by unit tests.
+     * @param locator locator
+     */
+    public void setLocator(ServiceLocator locator) {
+        this.locator = locator;
     }
 }
