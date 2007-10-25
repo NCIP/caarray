@@ -3,8 +3,7 @@
 <caarray:tabPane paneTitleKey="experiment.experimentalDesign" subtab="true">
     <div class="boxpad">
     <p class="instructions">Required fields are highlighted and have <span class="required"><span class="asterisk">*</span>asterisks<span class="asterisk">*</span></span>.</p>
-    <s:actionerror/> <br> <s:actionmessage/>
-    <s:form action="ajax/project/saveTab/experimentalDesign" cssClass="form" id="projectForm" method="get">
+    <s:form action="ajax/project/saveTab/experimentalDesign" cssClass="form" id="projectForm" onsubmit="TabUtils.submitSubTabForm('projectForm', 'tabboxlevel2wrapper', 'save_draft'); return false;">
         <s:select required="true" name="project.experiment.experimentDesignType" label="Experiment Design Type" tabindex="1"
                   list="experimentDesignTypes" listKey="id" listValue="value" value="project.experiment.experimentDesignType.id"
                   headerKey="" headerValue="--Select an Experiment Design Type--"/>

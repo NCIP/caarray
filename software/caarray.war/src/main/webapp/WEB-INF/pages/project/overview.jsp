@@ -9,7 +9,7 @@
         Required fields are highlighted and have
         <span class="required"><span class="asterisk">*</span>asterisks<span class="asterisk">*</span></span>.
         </p>
-    <s:form action="ajax/project/saveTab/overview" cssClass="form" id="projectForm" method="get">
+    <s:form action="ajax/project/saveTab/overview" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper', 'save_draft'); return false;">
         <s:textfield required="true" name="project.experiment.title" label="Experiment Title" size="80" tabindex="1"/>
         <tr>
             <td class="tdLabel"><label for="proposalStatus">Status</label></td>
