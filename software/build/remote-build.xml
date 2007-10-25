@@ -14,6 +14,8 @@
 	<property name="mail.port" value="25" />
 	<property name="from.address" value="paul.duvall@stelligent.com" />
 	<property name="to.address" value="paul.duvall@stelligent.com" />
+	<property name="private.key.dev" value="id_dsa" />
+	<property name="private.key.qa" value="id_dsa_qa" />
 
 	<!-- PATHS -->
     <path id="project.classpath">
@@ -184,8 +186,8 @@
           <include name="**/*.properties" />
        </fileset>
 	   <fileset dir="${svn.local.trunk}/trunk/caarray2/keys">
-          <include name="id_dsa" />
-		  <include name="id_dsa_qa" />
+          <include name="${private.key.dev}" />
+		  <include name="${private.key.qa}" />
        </fileset>
 	  </copy>
 	</target>
