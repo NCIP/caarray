@@ -69,7 +69,7 @@
         parameters="manufacturerId={projectForm_project_experiment_manufacturer}" 
         preFunction="startArrayDesignLookup" postFunction="finishArrayDesignLookup"/>
 
-    <a href="javascript:TabUtils.submitTabForm('projectForm', 'tabboxwrapper', 'save_draft');" class="save"><img src="<c:url value="/images/btn_save_draft.gif"/>" alt="Save Draft"></a>
+    <a href="#" onclick="TabUtils.submitTabForm('projectForm', 'tabboxwrapper', 'save_draft');" class="save"><img src="<c:url value="/images/btn_save_draft.gif"/>" alt="Save Draft"></a>
 
     </div>
 </caarray:tabPane>

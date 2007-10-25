@@ -20,7 +20,7 @@
     <div class="boxpad2">
         <h3><fmt:message key="project.tabs.manageData" /></h3>
         <div class="addlink">
-            <a onclick="javascript: Element.show('uploadFileDiv');" class="add"><fmt:message key="experiment.data.upload" /></a>
+            <a href="#" onclick="Element.show('uploadFileDiv');" class="add"><fmt:message key="experiment.data.upload" /></a>
         </div>
     </div>
 
@@ -30,9 +30,9 @@
             <s:file id="upload" name="upload" label="File" />
         </s:form>
         <div class="actions">
-            <a onclick="javascript: Effect.Fade('uploadFileDiv', { duration: 0.1 } );">Cancel</a>
-            <a onclick="javascript: moreUploads();">Add More Files</a>
-            <a onclick="javascript: document.getElementById('uploadForm').submit();">Upload</a>
+            <a href="#" onclick="Effect.Fade('uploadFileDiv', { duration: 0.1 } );">Cancel</a>
+            <a href="#" onclick="moreUploads();">Add More Files</a>
+            <a href="#" onclick="document.getElementById('uploadForm').submit();">Upload</a>
         </div>
     </div>
 
@@ -65,16 +65,16 @@
         </s:form>
     </div>
     <div class="actionsthin">
-        <a href="javascript:TabUtils.submitSubTabFormToUrl('projectForm', '<c:url value="/protected/ajax/project/files/deleteFiles.action" />', 'tabboxlevel2wrapper');">
+        <a href="#" onclick="TabUtils.submitSubTabFormToUrl('projectForm', '<c:url value="/protected/ajax/project/files/deleteFiles.action" />', 'tabboxlevel2wrapper');">
             <img src="<c:url value="/images/btn_delete.gif"/>" alt="Delete">
         </a>
-        <a href="javascript:TabUtils.submitSubTabFormToUrl('projectForm', '<c:url value="/protected/ajax/project/files/validateFiles.action" />', 'tabboxlevel2wrapper');">
+        <a href="#" onclick="TabUtils.submitSubTabFormToUrl('projectForm', '<c:url value="/protected/ajax/project/files/validateFiles.action" />', 'tabboxlevel2wrapper');">
             <img src="<c:url value="/images/btn_validate.gif"/>" alt="Validate">
         </a>
-        <a href="javascript:TabUtils.submitSubTabFormToUrl('projectForm', '<c:url value="/protected/ajax/project/files/importFiles.action" />', 'tabboxlevel2wrapper');">
+        <a href="#" onclick="TabUtils.submitSubTabFormToUrl('projectForm', '<c:url value="/protected/ajax/project/files/importFiles.action" />', 'tabboxlevel2wrapper');">
             <img src="<c:url value="/images/btn_import.gif"/>" alt="Import">
         </a>
-        <a href="javascript:TabUtils.submitSubTabFormToUrl('projectForm', '<c:url value="/ajax/notYetImplemented.jsp" />', 'tabboxlevel2wrapper');">
+        <a href="#" onclick="TabUtils.submitSubTabFormToUrl('projectForm', '<c:url value="/ajax/notYetImplemented.jsp" />', 'tabboxlevel2wrapper');">
             <img src="<c:url value="/images/btn_manage_associations.gif"/>" alt="Manage Associations">
         </a>
     </div>

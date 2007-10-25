@@ -46,8 +46,8 @@
         </td>
       </tr>
     </table>
-    <a href="javascript:downloadMgr.resetDownloadInfo();" class="save"><img src="<c:url value="/images/btn_cancel.gif"/>" alt="Cancel"></a>
-    <a href="javascript:downloadMgr.doDownloadFiles();" class="save"><img src="<c:url value="/images/btn_launchjob.gif"/>" alt="Launch Job"></a>
+    <a href="#" onclick="downloadMgr.resetDownloadInfo();" class="save"><img src="<c:url value="/images/btn_cancel.gif"/>" alt="Cancel"></a>
+    <a href="#" onclick="downloadMgr.doDownloadFiles();" class="save"><img src="<c:url value="/images/btn_launchjob.gif"/>" alt="Launch Job"></a>
     </div>
 </caarray:tabPane>
 <c:url var="downloadUrl" value="/protected/project/files/download.action"/>

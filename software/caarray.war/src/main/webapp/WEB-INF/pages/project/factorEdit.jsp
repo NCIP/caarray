@@ -14,6 +14,6 @@
             <s:hidden name="currentFactor.id" />
             <s:hidden name="project.id" />
         </s:form>
-        <a href="javascript:TabUtils.submitSubTabForm('projectForm', 'tabboxlevel2wrapper', 'save_draft');" class="save" tabindex="2"><img src="<c:url value="/images/btn_save_draft.gif"/>" alt="Save Draft"></a>
+        <a href="#" onclick="TabUtils.submitSubTabForm('projectForm', 'tabboxlevel2wrapper', 'save_draft');" class="save" tabindex="2"><img src="<c:url value="/images/btn_save_draft.gif"/>" alt="Save Draft"></a>
    </div>
 </caarray:tabPane>

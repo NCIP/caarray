@@ -23,6 +23,6 @@
         <c:url value="/protected/ajax/project/files/list.action" var="manageDataUrl">
             <c:param name="project.id" value="${project.id}" />
         </c:url>
-        <a href="javascript: executeAjaxTab_tablevel2(null,'selected', '${manageDataUrl}', '');"><img src="<c:url value="/images/btn_cancel.gif"/>" alt="<fmt:message key="button.cancel" />"></a>
+        <a href="#" onclick="executeAjaxTab_tablevel2(null,'selected', '${manageDataUrl}', '');"><img src="<c:url value="/images/btn_cancel.gif"/>" alt="<fmt:message key="button.cancel" />"></a>
     </div>
 </caarray:tabPane>
