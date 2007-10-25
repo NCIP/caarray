@@ -94,7 +94,7 @@
     <property name="commons-beanutils.jar" value="${lib.dir}/commons-beanutils-1.7.0.jar" />
     <property name="commons-collections.jar" value="${lib.dir}/commons-collections-3.2.jar" />
     <property name="commons-io.jar" value="${lib.dir}/commons-io-1.3.2.jar" />
-    <property name="commons-lang.jar" value="${lib.dir}/commons-lang-2.1.jar" />
+    <property name="commons-lang.jar" value="${lib.dir}/commons-lang-2.3.jar" />
     <property name="commons-logging.jar" value="${lib.dir}/commons-logging-1.1.jar" />
     <property name="dom4j.jar" value="${lib.dir}/dom4j-1.6.1.jar" />
     <property name="hibernate.jar" value="${lib.dir}/hibernate3.jar" />
@@ -533,7 +533,8 @@
                 <include name="commons-el-1.0.jar" />
                 <include name="commons-fileupload-1.2.jar" />
                 <include name="commons-io-1.3.2.jar" />
-                <include name="commons-lang-2.1.jar" />
+            	<include name="commons-lang-2.3.jar" />
+            	<include name="commons-configuration-1.4.jar" />
                 <include name="commons-logging-1.1.jar" />
                 <include name="displaytag-1.1.1.jar" />
                 <include name="freemarker-2.3.8.jar" />
