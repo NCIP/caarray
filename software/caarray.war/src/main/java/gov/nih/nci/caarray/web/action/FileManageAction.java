@@ -184,7 +184,7 @@ public class FileManageAction extends BaseAction implements Preparable {
     public String upload() throws Exception {
         setMenu(FILE_MANAGE_LINKS);
 
-        getFileAccessService().unzipFiles(getUpload(), getUploadFileName());
+        //getFileAccessService().unzipFiles(getUpload(), getUploadFileName());
 
         int index = 0;
         for (File uploadedFile : getUpload()) {
