@@ -98,9 +98,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -128,7 +126,6 @@ public class ProjectFilesAction extends ActionSupport implements Preparable {
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<String> uploadContentTypes = new ArrayList<String>();
     private List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
-    private String downloadIds;
     private InputStream downloadStream;
     private ServiceLocator locator = ServiceLocator.INSTANCE;
 
@@ -286,15 +283,8 @@ public class ProjectFilesAction extends ActionSupport implements Preparable {
      */
     @SkipValidation
     public String download() throws IOException {
-        String[] strings = getDownloadIds().split(",");
-        Collection<Long> ids = new HashSet<Long>(strings.length);
-        for (String curString : strings) {
-            ids.add(Long.parseLong(curString));
-        }
-        File zipFile = getProjectManagementService().prepareForDownload(ids);
-
+        File zipFile = getProjectManagementService().prepareForDownload(getSelectedFiles());
         this.downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
-
         return "download";
     }
 
@@ -397,20 +387,6 @@ public class ProjectFilesAction extends ActionSupport implements Preparable {
      */
     public void setSelectedFiles(List<CaArrayFile> selectedFiles) {
         this.selectedFiles = selectedFiles;
-    }
-
-    /**
-     * @return the downloadIds
-     */
-    public String getDownloadIds() {
-        return this.downloadIds;
-    }
-
-    /**
-     * @param downloadIds the downloadIds to set
-     */
-    public void setDownloadIds(String downloadIds) {
-        this.downloadIds = downloadIds;
     }
 
     /**

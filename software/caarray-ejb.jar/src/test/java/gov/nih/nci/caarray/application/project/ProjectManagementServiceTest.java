@@ -137,10 +137,10 @@ public class ProjectManagementServiceTest {
         ProjectManagementServiceBean projectManagementServiceBean = new ProjectManagementServiceBean();
         projectManagementServiceBean.setDaoFactory(this.daoFactoryStub);
         ServiceLocatorStub locatorStub = new ServiceLocatorStub();
-        locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessService);
+        locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessService);
         projectManagementServiceBean.setSessionContext(this.sessionContextStub);
         projectManagementServiceBean.setServiceLocator(locatorStub);
-        projectManagementServiceBean.setGenericDataService(genericDataService);
+        projectManagementServiceBean.setGenericDataService(this.genericDataService);
         this.projectManagementService = projectManagementServiceBean;
     }
 
@@ -254,7 +254,7 @@ public class ProjectManagementServiceTest {
         }
 
         try {
-            this.projectManagementService.prepareForDownload(new ArrayList<Long>());
+            this.projectManagementService.prepareForDownload(new ArrayList<CaArrayFile>());
             fail();
         } catch (IllegalArgumentException iae) {
             // expected
@@ -263,7 +263,7 @@ public class ProjectManagementServiceTest {
         Project project = this.projectManagementService.getProject(123L);
         CaArrayFile file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
 
-        File f = this.projectManagementService.prepareForDownload(Collections.singleton(file.getId()));
+        File f = this.projectManagementService.prepareForDownload(Collections.singleton(file));
         assertNotNull(f);
 
         // make sure it's a zip file

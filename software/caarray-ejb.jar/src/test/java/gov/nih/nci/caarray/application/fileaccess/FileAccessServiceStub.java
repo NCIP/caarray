@@ -102,24 +102,15 @@ public class FileAccessServiceStub implements FileAccessService {
     public CaArrayFile add(File file) {
         CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setName(file.getName());
-        nameToFile.put(caArrayFile.getName(), file);
+        this.nameToFile.put(caArrayFile.getName(), file);
         return caArrayFile;
     }
 
     public File getFile(CaArrayFile caArrayFile) {
-        if (nameToFile.containsKey(caArrayFile.getName())) {
-            return nameToFile.get(caArrayFile.getName());
+        if (this.nameToFile.containsKey(caArrayFile.getName())) {
+            return this.nameToFile.get(caArrayFile.getName());
         }
         return new File(caArrayFile.getName());
-    }
-
-    @SuppressWarnings("deprecation")
-    public CaArrayFile getCaArrayFile(Long id) {
-        CaArrayFile result = new CaArrayFile();
-        String name = nameToFile.values().iterator().next().getName();
-        result.setName(name);
-
-        return result;
     }
 
     public Set<File> getFiles(CaArrayFileSet fileSet) {
@@ -133,7 +124,7 @@ public class FileAccessServiceStub implements FileAccessService {
     public CaArrayFile add(File file, String filename) {
         CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setName(filename);
-        nameToFile.put(caArrayFile.getName(), file);
+        this.nameToFile.put(caArrayFile.getName(), file);
         return caArrayFile;
     }
 

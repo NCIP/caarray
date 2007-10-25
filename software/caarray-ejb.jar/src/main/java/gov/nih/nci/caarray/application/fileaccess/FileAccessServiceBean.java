@@ -169,7 +169,7 @@ public class FileAccessServiceBean implements FileAccessService {
         if (caArrayFile.getProject() != null) {
             caArrayFile.getProject().getFiles().remove(caArrayFile);
         }
-        daoFactory.getFileDao().remove(caArrayFile);
+        this.daoFactory.getFileDao().remove(caArrayFile);
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -178,7 +178,7 @@ public class FileAccessServiceBean implements FileAccessService {
      */
     public void save(CaArrayFile caArrayFile) {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        daoFactory.getFileDao().save(caArrayFile);
+        this.daoFactory.getFileDao().save(caArrayFile);
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -206,18 +206,6 @@ public class FileAccessServiceBean implements FileAccessService {
         return file;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
-    public CaArrayFile getCaArrayFile(Long id) {
-        LogUtil.logSubsystemEntry(LOG, id);
-        CaArrayFile file = daoFactory.getSearchDao().retrieve(CaArrayFile.class, id);
-        LogUtil.logSubsystemExit(LOG);
-
-        return file;
-    }
-
     private File openFile(CaArrayFile caArrayFile) {
         File file = new File(getSessionWorkingDirectory(), caArrayFile.getName());
         try {
@@ -229,23 +217,23 @@ public class FileAccessServiceBean implements FileAccessService {
         } catch (IOException e) {
             throw new FileAccessException("Couldn't access file contents " + caArrayFile.getName(), e);
         }
-        openFiles.put(caArrayFile, file);
+        this.openFiles.put(caArrayFile, file);
         return file;
     }
 
     private File getSessionWorkingDirectory() {
-        if (sessionWorkingDirectory == null) {
+        if (this.sessionWorkingDirectory == null) {
             createSessionWorkingDirectory();
         }
-        return sessionWorkingDirectory;
+        return this.sessionWorkingDirectory;
     }
 
     private void createSessionWorkingDirectory() {
         String sessionSubdirectoryName = new UID().toString().replace(':', '_');
-        sessionWorkingDirectory = new File(getWorkingDirectory(), sessionSubdirectoryName);
-        if (!sessionWorkingDirectory.mkdirs()) {
-            LOG.error("Couldn't create directory: " + sessionWorkingDirectory.getAbsolutePath());
-            throw new IllegalStateException("Couldn't create directory: " + sessionWorkingDirectory.getAbsolutePath());
+        this.sessionWorkingDirectory = new File(getWorkingDirectory(), sessionSubdirectoryName);
+        if (!this.sessionWorkingDirectory.mkdirs()) {
+            LOG.error("Couldn't create directory: " + this.sessionWorkingDirectory.getAbsolutePath());
+            throw new IllegalStateException("Couldn't create directory: " + this.sessionWorkingDirectory.getAbsolutePath());
         }
     }
 
@@ -256,15 +244,15 @@ public class FileAccessServiceBean implements FileAccessService {
     }
 
     private boolean fileAlreadyOpened(CaArrayFile caArrayFile) {
-        return openFiles.containsKey(caArrayFile);
+        return this.openFiles.containsKey(caArrayFile);
     }
 
     private File getOpenFile(CaArrayFile caArrayFile) {
-        return openFiles.get(caArrayFile);
+        return this.openFiles.get(caArrayFile);
     }
 
     CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
+        return this.daoFactory;
     }
 
     void setDaoFactory(CaArrayDaoFactory daoFactory) {
@@ -278,14 +266,14 @@ public class FileAccessServiceBean implements FileAccessService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Removing session files in directory: " + getSessionWorkingDirectory());
         }
-        if (sessionWorkingDirectory == null) {
+        if (this.sessionWorkingDirectory == null) {
             return;
         }
-        for (File file : openFiles.values()) {
+        for (File file : this.openFiles.values()) {
             delete(file);
         }
         delete(getSessionWorkingDirectory());
-        openFiles.clear();
+        this.openFiles.clear();
     }
 
     private void delete(File file) {

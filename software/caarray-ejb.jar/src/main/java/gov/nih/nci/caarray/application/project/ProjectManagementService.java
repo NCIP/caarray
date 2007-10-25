@@ -121,7 +121,7 @@ public interface ProjectManagementService {
      * @return the corresponding organization.
      */
     Organization getOrganization(long id);
-    
+
     /**
      * Associates a single file with a project. After calling this method, clients can expect a new
      * <code>CaArrayFile</code> to be associated with the project.
@@ -184,39 +184,39 @@ public interface ProjectManagementService {
     /**
      * Prepares files for download.
      *
-     * @param ids the ids of the CaArrayFiles to download
+     * @param files the files to download
      * @return the single zip archive with all files
      * @throws IOException on I/O error
      */
-    File prepareForDownload(Collection<Long> ids) throws IOException;
-    
+    File prepareForDownload(Collection<CaArrayFile> files) throws IOException;
+
     /**
      * Make a copy of a sample belonging to given project, and add it to the new project.
      * The new sample's name will be derived from the original sample's name
      * according to the scheme described in {@link GenericDataService#getIncrementingCopyName(Class, String, String)}
      * @param project the project to which the sample belongs
      * @param sampleId the id of the sample to copy
-     * @return the new sample 
+     * @return the new sample
      */
     Sample copySample(Project project, long sampleId);
-    
+
     /**
      * Make a copy of a source belonging to given project, and add it to the new project.
      * The new source's name will be derived from the original source's name
      * according to the scheme described in {@link GenericDataService#getIncrementingCopyName(Class, String, String)}
      * @param project the project to which the source belongs
      * @param sourceId the id of the source to copy
-     * @return the new source 
+     * @return the new source
      */
     Source copySource(Project project, long sourceId);
-    
+
     /**
      * Make a copy of a factor belonging to given project, and add it to the new project.
      * The new factor's name will be derived from the original factor's name
      * according to the scheme described in {@link GenericDataService#getIncrementingCopyName(Class, String, String)}
      * @param project the project to which the factor belongs
      * @param factorId the id of the factor to copy
-     * @return the new factor 
+     * @return the new factor
      */
     Factor copyFactor(Project project, long factorId);
 }

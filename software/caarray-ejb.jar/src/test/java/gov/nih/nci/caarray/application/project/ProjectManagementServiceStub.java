@@ -136,24 +136,24 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         return null;
     }
 
-    public File prepareForDownload(Collection<Long> ids) {
+    public File prepareForDownload(Collection<CaArrayFile> ids) {
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public Factor copyFactor(Project project, long factorId) {
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public Sample copySample(Project project, long sampleId) {
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */

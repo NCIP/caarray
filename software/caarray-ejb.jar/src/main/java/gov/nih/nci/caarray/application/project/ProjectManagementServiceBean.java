@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.application.project;
 
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.application.GenericDataService;
-import gov.nih.nci.caarray.application.GenericDataServiceBean;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ContactDao;
@@ -166,7 +165,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         LogUtil.logSubsystemExit(LOG);
         return organization;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -254,19 +253,18 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public File prepareForDownload(Collection<Long> ids) throws IOException {
-        LogUtil.logSubsystemEntry(LOG, ids);
+    public File prepareForDownload(Collection<CaArrayFile> files) throws IOException {
+        LogUtil.logSubsystemEntry(LOG, files);
 
-        if (ids == null || ids.isEmpty()) {
-            throw new IllegalArgumentException("Ids cannot be null or empty!");
+        if (files == null || files.isEmpty()) {
+            throw new IllegalArgumentException("Files cannot be null or empty!");
         }
         File result = File.createTempFile("data", ".zip");
         result.deleteOnExit();
 
         ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(result));
         FileAccessService svc = getFileAccessService();
-        for (Long l : ids) {
-            CaArrayFile caf = svc.getCaArrayFile(l);
+        for (CaArrayFile caf : files) {
             File f = svc.getFile(caf);
             InputStream is = new BufferedInputStream(new FileInputStream(f));
 
@@ -290,7 +288,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     public Sample copySample(Project project, long sampleId) {
         Sample sample = getDaoFactory().getSearchDao().retrieve(Sample.class, sampleId);
         Sample copy = new Sample();
-        String copyName = genericDataService.getIncrementingCopyName(Sample.class, "name", sample.getName());
+        String copyName = this.genericDataService.getIncrementingCopyName(Sample.class, "name", sample.getName());
         copy.setName(copyName);
         copy.setDescription(sample.getDescription());
         copy.setMaterialType(sample.getMaterialType());
@@ -300,7 +298,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         getDaoFactory().getProjectDao().save(project);
         return copy;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -308,14 +306,14 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     public Factor copyFactor(Project project, long factorId) {
         Factor factor = getDaoFactory().getSearchDao().retrieve(Factor.class, factorId);
         Factor copy = new Factor();
-        String copyName = genericDataService.getIncrementingCopyName(Factor.class, "name", factor.getName());
+        String copyName = this.genericDataService.getIncrementingCopyName(Factor.class, "name", factor.getName());
         copy.setName(copyName);
         copy.setType(factor.getType());
         project.getExperiment().getFactors().add(copy);
         getDaoFactory().getProjectDao().save(project);
         return copy;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -323,21 +321,21 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     public Source copySource(Project project, long sourceId) {
         Source source = getDaoFactory().getSearchDao().retrieve(Source.class, sourceId);
         Source copy = new Source();
-        String copyName = genericDataService.getIncrementingCopyName(Source.class, "name", source.getName());
+        String copyName = this.genericDataService.getIncrementingCopyName(Source.class, "name", source.getName());
         copy.setName(copyName);
         copy.setDescription(source.getDescription());
         copy.setMaterialType(source.getMaterialType());
         copy.setOrganism(source.getOrganism());
-        copy.setTissueSite(source.getTissueSite());        
+        copy.setTissueSite(source.getTissueSite());
         project.getExperiment().getSources().add(copy);
         getDaoFactory().getProjectDao().save(project);
-        return copy;        
+        return copy;
     }
 
     FileAccessService getFileAccessService() {
         return (FileAccessService) getServiceLocator().lookup(FileAccessService.JNDI_NAME);
     }
-    
+
     CaArrayDaoFactory getDaoFactory() {
         return this.daoFactory;
     }
@@ -357,7 +355,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * @return the genericDataService
      */
     public GenericDataService getGenericDataService() {
-        return genericDataService;
+        return this.genericDataService;
     }
 
     /**
@@ -368,7 +366,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     }
 
     ServiceLocator getServiceLocator() {
-        return serviceLocator;
+        return this.serviceLocator;
     }
 
     void setServiceLocator(ServiceLocator serviceLocator) {

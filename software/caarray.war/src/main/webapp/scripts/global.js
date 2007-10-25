@@ -524,7 +524,14 @@ DownloadMgr.prototype.doDownloadFiles = function() {
     return;
   }
   var curLoc = window.location;
-  window.location= this.downloadUrl + "?downloadIds=" + this.downloadIds.join();
+  var params = '';
+  for (i = 0; i < this.downloadIds.length; ++i) {
+    if (i != 0) {
+      params = params + '&';
+    }
+    params = params + 'selectedFiles=' + this.downloadIds[i];
+  }
+  window.location= this.downloadUrl + "?" + params;
   this.resetDownloadInfo();
 }
 
