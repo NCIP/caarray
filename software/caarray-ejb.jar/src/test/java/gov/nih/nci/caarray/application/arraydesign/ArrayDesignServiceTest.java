@@ -108,7 +108,7 @@ public class ArrayDesignServiceTest {
 
     private ArrayDesignService arrayDesignService;
     private final DaoFactoryStub caArrayDaoFactoryStub = new DaoFactoryStub();
-    private final FileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
+    private final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
     private final VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
 
     @Before
@@ -134,6 +134,16 @@ public class ArrayDesignServiceTest {
         assertEquals("Affymetrix.com", arrayDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
         assertEquals("Test3", arrayDesign.getLsidObjectId());
+    }
+
+    @Test
+    public void testImportDesign_AffymetrixMapping10K() {
+        CaArrayFile designFile = getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEN_K_CDF);
+        ArrayDesign arrayDesign = arrayDesignService.importDesign(designFile);
+        assertEquals("Mapping10K_Xba131-xda", arrayDesign.getName());
+        assertEquals("Affymetrix.com", arrayDesign.getLsidAuthority());
+        assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
+        assertEquals("Mapping10K_Xba131-xda", arrayDesign.getLsidObjectId());
     }
 
     @Test
@@ -165,16 +175,4 @@ public class ArrayDesignServiceTest {
         return caArrayFile;
     }
 
-    private static class LocalFileAccessServiceStub extends FileAccessServiceStub {
-        @Override
-        public File getFile(CaArrayFile caArrayFile) {
-            if (caArrayFile.getName().equals(AffymetrixArrayDesignFiles.TEST3_CDF.getName())) {
-                return AffymetrixArrayDesignFiles.TEST3_CDF;
-            } else if (caArrayFile.getName().equals(AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF.getName())) {
-                return AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF;
-            } else {
-                throw new IllegalArgumentException("Don't know location of " + caArrayFile.getName());
-            }
-        }
-    }
 }
