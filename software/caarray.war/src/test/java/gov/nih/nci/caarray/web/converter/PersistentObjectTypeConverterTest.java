@@ -114,7 +114,7 @@ public class PersistentObjectTypeConverterTest {
         String idString = converter.convertToString(null, p);
         assertEquals("1", idString);
 
-        idString = converter.convertToString(null, Project.createNew());
+        idString = converter.convertToString(null, new Project());
         assertEquals(null, idString);
     }
 
@@ -159,7 +159,7 @@ public class PersistentObjectTypeConverterTest {
         @Override
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
             if (Project.class.equals(entityClass) && entityId.equals(1l)) {
-                Project p = Project.createNew();
+                Project p = new Project();
                 p.setBrowsable(false);
                 p.setId(1l);
                 return (T) p;

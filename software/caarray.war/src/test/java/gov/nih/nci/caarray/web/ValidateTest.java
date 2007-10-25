@@ -125,7 +125,7 @@ public class ValidateTest {
 
     @SuppressWarnings({ "PMD", "unchecked", "deprecation" })
     private void loadTestProject() {
-        final Project project = Project.createNew();;
+        final Project project = new Project();;
         CaArrayFile file1 = new CaArrayFile();
         file1.setProject(project);
         file1.setFileStatus(FileStatus.UPLOADED);
@@ -202,7 +202,7 @@ public class ValidateTest {
     @Test
     public void testEdit() throws Exception {
 
-//        Project project = Project.createNew();
+//        Project project = new Project();
 //        CaArrayFile file1 = new CaArrayFile();
 //        file1.setProject(project);
 //        file1.setFileStatus(FileStatus.UPLOADED);

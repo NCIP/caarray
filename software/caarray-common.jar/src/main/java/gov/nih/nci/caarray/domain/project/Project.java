@@ -128,33 +128,17 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * Initializes a new, empty project.
-     *
-     * @return the new Project.
-     */
-    public static Project createNew() {
-        Project project = new Project();
-        project.status = ProposalStatus.DRAFT;
-        project.setExperiment(Experiment.createNew());
-        project.hostProfile.setSecurityLevel(SecurityLevel.READ_WRITE_SELECTIVE);
-        return project;
-    }
-
-    private ProposalStatus status;
-    private Experiment experiment;
+    private ProposalStatus status = ProposalStatus.DRAFT;
+    private Experiment experiment = new Experiment();
     private SortedSet<CaArrayFile> files = new TreeSet<CaArrayFile>();
     private AccessProfile publicProfile = new AccessProfile();
     private AccessProfile hostProfile = new AccessProfile();
     private Map<CollaboratorGroup, AccessProfile> groupProfiles = new HashMap<CollaboratorGroup, AccessProfile>();
     private boolean browsable = true;
 
-    /**
-     * @deprecated
-     */
-    @Deprecated
     public Project() {
         // hibernate & castor-only constructor
+        hostProfile.setSecurityLevel(SecurityLevel.READ_WRITE_SELECTIVE);
     }
 
     /**

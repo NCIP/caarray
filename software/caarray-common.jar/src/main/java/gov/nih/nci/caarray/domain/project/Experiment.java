@@ -172,15 +172,6 @@ public class Experiment extends AbstractCaArrayEntity {
     private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
 
     /**
-     * Creates a new, empty <code>Experiment</code>.
-     *
-     * @return the initialized <code>Experiment</code>.
-     */
-    public static Experiment createNew() {
-        return new Experiment();
-    }
-
-    /**
      * Gets the dateOfExperiment.
      *
      * @return the dateOfExperiment

@@ -93,7 +93,7 @@ import gov.nih.nci.caarray.web.delegate.ProjectDelegate;
 public class ProjectManagePermissions extends BaseAction {
 
     private static final long serialVersionUID = 1L;
-    private Project project = Project.createNew();
+    private Project project = new Project();
 
     /**
      * Toggles the browsability status.

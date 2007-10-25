@@ -146,7 +146,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
     // Experiment
     private static final String UNCHECKED = "unchecked";
-    private static Project DUMMY_PROJECT_1 = Project.createNew();
+    private static Project DUMMY_PROJECT_1 = new Project();
     private static Experiment DUMMY_EXPERIMENT_1 = new Experiment();
     private static TermSource DUMMY_TERM_SOURCE = new TermSource();
     private static Category DUMMY_CATEGORY = new Category();
@@ -192,7 +192,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
     @Before
     public void setup() {
         // Experiment
-        DUMMY_PROJECT_1 = Project.createNew();
+        DUMMY_PROJECT_1 = new Project();
         DUMMY_EXPERIMENT_1 = new Experiment();
         DUMMY_TERM_SOURCE = new TermSource();
         DUMMY_CATEGORY = new Category();
@@ -233,7 +233,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
         // Initialize all the dummy objects needed for the tests.
         initializeProjects();
-    }    
+    }
 
     /**
      * Initialize the dummy <code>Project</code> objects.
@@ -349,13 +349,13 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DUMMY_EXPERIMENT_1.getPublications().add(DUMMY_PUBLICATION_1);
         DUMMY_EXPERIMENT_1.getPublications().add(DUMMY_PUBLICATION_2);
     }
-    
+
     private static void saveSupportingObjects() {
         VOCABULARY_DAO.save(DUMMY_REPLICATE_TYPE);
-        VOCABULARY_DAO.save(DUMMY_QUALITY_CTRL_TYPE);            
-        VOCABULARY_DAO.save(DUMMY_NORMALIZATION_TYPE);            
+        VOCABULARY_DAO.save(DUMMY_QUALITY_CTRL_TYPE);
+        VOCABULARY_DAO.save(DUMMY_NORMALIZATION_TYPE);
         VOCABULARY_DAO.save(DUMMY_FACTOR_TYPE_1);
-        VOCABULARY_DAO.save(DUMMY_FACTOR_TYPE_2);        
+        VOCABULARY_DAO.save(DUMMY_FACTOR_TYPE_2);
     }
 
 
@@ -623,7 +623,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
         tx.commit();
 	}
-	
+
     @Test
     public void testFilters() {
         Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();

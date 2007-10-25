@@ -34,7 +34,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.ajaxtags.xml.AjaxXmlBuilder;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -60,8 +59,8 @@ public class ProjectAction extends BaseAction implements Preparable {
     private static final String SAVE_MODE_SUBMIT = "save_submit";
 
     private String menu = null;
-    private Project project = Project.createNew();
-    private Long manufacturerId;    
+    private Project project = new Project();
+    private Long manufacturerId;
 
     private List<Project> projects = new ArrayList<Project>();
     private List<Organism> organisms = new ArrayList<Organism>();
@@ -149,18 +148,18 @@ public class ProjectAction extends BaseAction implements Preparable {
         ArrayDesignService arrayDesignService = getArrayDesignService();
         this.manufacturers = arrayDesignService.getArrayDesignProviders();
         if (this.project.getExperiment().getManufacturer() != null) {
-            this.arrayDesigns = getArrayDesignService().getArrayDesignsForProvider(this.project.getExperiment().getManufacturer());                        
+            this.arrayDesigns = getArrayDesignService().getArrayDesignsForProvider(this.project.getExperiment().getManufacturer());
         }
     }
-    
+
     public String retrieveArrayDesigns() {
         if (this.manufacturerId != null) {
             Organization provider = getDelegate().getProjectManagementService().getOrganization(this.manufacturerId);
-            this.arrayDesigns = getArrayDesignService().getArrayDesignsForProvider(provider);            
+            this.arrayDesigns = getArrayDesignService().getArrayDesignsForProvider(provider);
         }
         return "xmlArrayDesigns";
     }
-    
+
     /**
      * load a given tab in the submit experiment workflow
      *
@@ -940,7 +939,7 @@ public class ProjectAction extends BaseAction implements Preparable {
     public void setArrayDesigns(List<ArrayDesign> arrayDesigns) {
         this.arrayDesigns = arrayDesigns;
     }
-    
+
     /**
      * Get the set of retrieved array designs encoded in XML for use by AjaxTags
      * @return the stream containing the XML encoding the set of array designs

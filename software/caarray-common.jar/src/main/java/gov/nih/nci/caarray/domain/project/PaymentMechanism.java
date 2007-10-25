@@ -100,15 +100,18 @@ public class PaymentMechanism extends AbstractCaArrayEntity {
     private String name;
 
     /**
-     * Generates a new, empty instance.
-     *
      * @param name the name
-     * @return the initialized
      */
-    public static PaymentMechanism createNew(String name) {
-        PaymentMechanism pm = new PaymentMechanism();
-        pm.setName(name);
-        return pm;
+    public PaymentMechanism(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @deprecated hibernate & castor only
+     */
+    @Deprecated
+    public PaymentMechanism() {
+        // hibernate & castor only
     }
 
     /**

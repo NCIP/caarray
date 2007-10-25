@@ -118,7 +118,7 @@ public class CaArrayFile_HibernateIntegrationTest extends AbstractCaArrayEntity_
         CaArrayFile caArrayFile = (CaArrayFile) caArrayObject;
         caArrayFile.setStatus(getNextValue(FileStatus.values(), caArrayFile.getFileStatus()).name());
         caArrayFile.setName(getUniqueStringValue());
-        caArrayFile.setProject(Project.createNew());
+        caArrayFile.setProject(new Project());
         caArrayFile.setType(FileType.AFFYMETRIX_CDF);
         caArrayFile.setValidationResult(new FileValidationResult(new File(caArrayFile.getName())));
     }

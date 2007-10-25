@@ -105,7 +105,7 @@ public class FileManagementServiceTest {
     }
 
     private Project getTgaBroadTestProject() {
-        Project project = Project.createNew();
+        Project project = new Project();
         project.getFiles().addAll(TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_SET).getFiles());
         assertEquals(29, project.getFiles().size());
         return project;

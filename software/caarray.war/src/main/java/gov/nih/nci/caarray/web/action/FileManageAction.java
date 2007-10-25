@@ -47,7 +47,7 @@ public class FileManageAction extends BaseAction implements Preparable {
     private static final long serialVersionUID = 1L;
     private String menu = null;
     private CaArrayFile file = new CaArrayFile();
-    private Project project = Project.createNew();
+    private Project project = new Project();
     private List<File> uploads = new ArrayList<File>();
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<String> uploadContentTypes = new ArrayList<String>();

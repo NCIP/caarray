@@ -83,25 +83,23 @@
 package gov.nih.nci.caarray.application;
 
 import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.project.Project;
 
-import org.apache.commons.lang.ArrayUtils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
  * Class to test the generic service.
- * 
+ *
  * @author Scott Miller
  */
 public class GenericDataServiceTest {
@@ -130,9 +128,9 @@ public class GenericDataServiceTest {
     public void testGetIncrementingCopyName() {
         String copyName = this.service.getIncrementingCopyName(Project.class, "name", "Name");
         assertEquals("Name5", copyName);
-        copyName = this.service.getIncrementingCopyName(Project.class, "name", "Name3");        
+        copyName = this.service.getIncrementingCopyName(Project.class, "name", "Name3");
         assertEquals("Name5", copyName);
-        copyName = this.service.getIncrementingCopyName(Project.class, "name", "Namonce");        
+        copyName = this.service.getIncrementingCopyName(Project.class, "name", "Namonce");
         assertEquals("Namonce2", copyName);
     }
 
@@ -160,7 +158,7 @@ public class GenericDataServiceTest {
         @Override
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
             if (Project.class.equals(entityClass) && entityId.equals(1l)) {
-                Project p = Project.createNew();
+                Project p = new Project();
                 p.setBrowsable(false);
                 return (T) p;
             }
