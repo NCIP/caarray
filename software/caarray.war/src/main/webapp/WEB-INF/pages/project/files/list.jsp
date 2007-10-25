@@ -39,7 +39,7 @@
     <div class="tableboxpad">
         <s:form action="protected/ajax/project/files/process" id="projectForm" method="post" theme="simple">
             <s:hidden name="project.id" value="${project.id}" />
-            <c:url value="/protected/ajax/project/files/listTable.action" var="sortUrl">
+            <c:url value="/protected/ajax/project/files/list.action" var="sortUrl">
                 <c:param name="project.id" value="${project.id}" />
             </c:url>
             <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">

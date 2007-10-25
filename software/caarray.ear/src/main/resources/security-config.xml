@@ -14,18 +14,6 @@
                  - The CaArrayLoginModule uses CSM and integrates with the JBoss password stacking
                    mechanism.
              -->
-            <login-module code="org.jboss.security.auth.spi.LdapExtLoginModule" flag="optional">
-                <module-option name="password-stacking">useFirstPass</module-option>
-                <module-option name="java.naming.provider.url">@ldap.provider.url@</module-option>
-                <module-option name="bindDN">@ldap.rootDN@</module-option>
-                <module-option name="bindCredential">@ldap.rootPW@</module-option>
-                <module-option name="baseCtxDN">ou=Users,@ldap.ldapSuffix@</module-option>
-                <module-option name="baseFilter">(uid={0})</module-option>
-                <module-option name="rolesCtxDN">ou=Groups,@ldap.ldapSuffix@</module-option>
-                <module-option name="roleFilter">(member={1})</module-option>
-                <module-option name="roleAttributeID">uniqueMember</module-option>
-                <module-option name="roleRecursion">0</module-option>
-            </login-module>
             <login-module code="gov.nih.nci.caarray.web.authentication.CaArrayLoginModule" flag="optional" >
                 <module-option name="driver">@database.driver@</module-option>
                 <module-option name="url">@database.url@</module-option>

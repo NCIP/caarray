@@ -164,10 +164,20 @@ public class ProjectFilesAction extends ActionSupport implements Preparable {
      */
     @SkipValidation
     public String deleteFiles() {
+        int deletedFiles = 0;
+        int skippedFiles = 0;
         for (CaArrayFile caArrayFile : getSelectedFiles()) {
-            getFileAccessService().remove(caArrayFile);
+            if (caArrayFile.getFileStatus().isDeletable()) {
+                getFileAccessService().remove(caArrayFile);
+                deletedFiles++;
+            } else {
+                skippedFiles++;
+            }
         }
-        ActionHelper.saveMessage(getSelectedFiles().size() + " files deleted.");
+        ActionHelper.saveMessage(deletedFiles + " files deleted.");
+        if (skippedFiles > 0) {
+            ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for deletion.");
+        }
         return ActionSupport.INPUT;
     }
 
@@ -177,12 +187,24 @@ public class ProjectFilesAction extends ActionSupport implements Preparable {
      */
     @SkipValidation
     public String validateFiles() {
+        int validatedFiles = 0;
+        int skippedFiles = 0;
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
-        fileSet.addAll(getSelectedFiles());
+        for (CaArrayFile file: getSelectedFiles()) {
+            if (file.getFileStatus().isValidatable()) {
+                fileSet.add(file);
+                validatedFiles++;
+            } else {
+                skippedFiles++;
+            }
+        }
         if (!fileSet.getFiles().isEmpty()) {
             getFileManagementService().validateFiles(fileSet);
         }
-        ActionHelper.saveMessage(getSelectedFiles().size() + " files validated.");
+        ActionHelper.saveMessage(validatedFiles + " files validated.");
+        if (skippedFiles > 0) {
+            ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for validation.");
+        }
         return ActionSupport.INPUT;
     }
 
@@ -191,12 +213,24 @@ public class ProjectFilesAction extends ActionSupport implements Preparable {
      * @return the string matching the result to follow
      */
     public String importFiles() {
+        int importedFiles = 0;
+        int skippedFiles = 0;
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
-        fileSet.addAll(getSelectedFiles());
+        for (CaArrayFile file: getSelectedFiles()) {
+            if (file.getFileStatus().isImportable()) {
+                fileSet.add(file);
+                importedFiles++;
+            } else {
+                skippedFiles++;
+            }
+        }
         if (!fileSet.getFiles().isEmpty()) {
             getFileManagementService().importFiles(getProject(), fileSet);
         }
-        ActionHelper.saveMessage(getSelectedFiles().size() + " files imported.");
+        ActionHelper.saveMessage(importedFiles + " files imported.");
+        if (skippedFiles > 0) {
+            ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for importing.");
+        }
         return ActionSupport.INPUT;
     }
 
