@@ -82,85 +82,53 @@
  */
 package gov.nih.nci.caarray.application.permissions;
 
-import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
-import gov.nih.nci.caarray.application.GenericDataService;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
-import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
+import java.util.Collections;
 import java.util.List;
 
-import javax.ejb.EJB;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.interceptor.Interceptors;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
- * Local implementation of interface.
+ * Stub impl.
  */
-@Local
-@Stateless
-@Interceptors(ExceptionLoggingInterceptor.class)
-public class PermissionsManagementServiceBean implements PermissionsManagementService {
+public class PermissionsManagementServiceStub implements PermissionsManagementService {
 
-    private static final Log LOG = LogFactory.getLog(PermissionsManagementServiceBean.class);
-
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-
-    @EJB private GenericDataService genericDataService;
+    private CollaboratorGroup deletedGroup;
+    private boolean getCalled = false;
 
     /**
      * {@inheritDoc}
      */
     public void delete(CollaboratorGroup group) {
-        LogUtil.logSubsystemEntry(LOG, group);
-        getGenericDataService().delete(group);
-        LogUtil.logSubsystemExit(LOG);
-    }
-
-    /**
-     * @return the genericDataService
-     */
-    public GenericDataService getGenericDataService() {
-        return genericDataService;
-    }
-
-    /**
-     * @param genericDataService the genericDataService to set
-     */
-    public void setGenericDataService(GenericDataService genericDataService) {
-        this.genericDataService = genericDataService;
+        deletedGroup = group;
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
-    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public List<CollaboratorGroup> getCollaboratorGroups() {
-        LogUtil.logSubsystemEntry(LOG);
-        List<CollaboratorGroup> result = getDaoFactory().getCollaboratorGroupDao().getAll();
-        LogUtil.logSubsystemExit(LOG);
-        return result;
+        getCalled = true;
+        return Collections.emptyList();
     }
 
     /**
-     * @return the daoFactory
+     * @return the deletedGroup
      */
-    public CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
+    public CollaboratorGroup getDeletedGroup() {
+        return deletedGroup;
     }
 
     /**
-     * @param daoFactory the daoFactory to set
+     * @return the getCalled
      */
-    public void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
+    public boolean isGetCalled() {
+        return getCalled;
     }
 
+    /**
+     * resets stub state.
+     */
+    public void reset() {
+        getCalled = false;
+        deletedGroup = null;
+    }
 }
