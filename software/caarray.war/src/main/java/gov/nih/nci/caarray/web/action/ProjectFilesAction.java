@@ -89,7 +89,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.io.FileClosingInputStream;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -127,7 +127,6 @@ public class ProjectFilesAction extends ActionSupport implements Preparable {
     private List<String> uploadContentTypes = new ArrayList<String>();
     private List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
     private InputStream downloadStream;
-    private ServiceLocator locator = ServiceLocator.INSTANCE;
 
     /**
      * {@inheritDoc}
@@ -340,15 +339,15 @@ public class ProjectFilesAction extends ActionSupport implements Preparable {
     }
 
     private ProjectManagementService getProjectManagementService() {
-        return (ProjectManagementService) this.locator.lookup(ProjectManagementService.JNDI_NAME);
+        return (ProjectManagementService) ServiceLocatorFactory.getLocator().lookup(ProjectManagementService.JNDI_NAME);
     }
 
     private FileAccessService getFileAccessService() {
-        return (FileAccessService) this.locator.lookup(FileAccessService.JNDI_NAME);
+        return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
     }
 
     private FileManagementService getFileManagementService() {
-        return (FileManagementService) this.locator.lookup(FileManagementService.JNDI_NAME);
+        return (FileManagementService) ServiceLocatorFactory.getLocator().lookup(FileManagementService.JNDI_NAME);
     }
 
     /**
@@ -433,11 +432,4 @@ public class ProjectFilesAction extends ActionSupport implements Preparable {
         this.selectedFiles = selectedFiles;
     }
 
-    /**
-     * For use by unit tests.
-     * @param locator locator
-     */
-    public void setLocator(ServiceLocator locator) {
-        this.locator = locator;
-    }
 }

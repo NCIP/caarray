@@ -23,7 +23,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.util.SecurityInterceptor;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -50,8 +50,6 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 @Validation
 public class ProjectAction extends ActionSupport implements Preparable {
     private static final long serialVersionUID = 1L;
-
-    private ServiceLocator locator = ServiceLocator.INSTANCE;
 
     public static final String LIST_RESULT = "list";
     public static final String WORKSPACE_RESULT = "workspace";
@@ -616,18 +614,18 @@ public class ProjectAction extends ActionSupport implements Preparable {
      * @return the VocabularyService
      */
     private VocabularyService getVocabularyService() {
-        return (VocabularyService) ServiceLocator.INSTANCE.lookup(VocabularyService.JNDI_NAME);
+        return (VocabularyService) ServiceLocatorFactory.getLocator().lookup(VocabularyService.JNDI_NAME);
     }
 
     private GenericDataService getGenericDataService() {
-        return (GenericDataService) ServiceLocator.INSTANCE.lookup(GenericDataService.JNDI_NAME);
+        return (GenericDataService) ServiceLocatorFactory.getLocator().lookup(GenericDataService.JNDI_NAME);
     }
 
     /**
      * @return the VocabularyService
      */
     private ArrayDesignService getArrayDesignService() {
-        return (ArrayDesignService) ServiceLocator.INSTANCE.lookup(ArrayDesignService.JNDI_NAME);
+        return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
     }
 
     /**
@@ -943,22 +941,7 @@ public class ProjectAction extends ActionSupport implements Preparable {
      * @return projectManagementService
      */
     public ProjectManagementService getProjectManagementService() {
-        return (ProjectManagementService) locator.lookup(ProjectManagementService.JNDI_NAME);
+        return (ProjectManagementService) ServiceLocatorFactory.getLocator().lookup(ProjectManagementService.JNDI_NAME);
     }
 
-    /**
-     * get locator for junit.
-     * @return ServiceLocator ServiceLocator
-     */
-    public ServiceLocator getLocator() {
-        return locator;
-    }
-
-    /**
-     * For use by unit tests.
-     * @param locator locator
-     */
-    public void setLocator(ServiceLocator locator) {
-        this.locator = locator;
-    }
 }

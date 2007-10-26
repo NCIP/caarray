@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.web.converter;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.util.Map;
 
@@ -99,7 +100,7 @@ import com.opensymphony.xwork2.util.XWorkBasicConverter;
  */
 public class PersistentObjectTypeConverter extends StrutsTypeConverter {
 
-    private static ServiceLocator LOCATOR = ServiceLocator.INSTANCE;
+    private static ServiceLocator LOCATOR = ServiceLocatorFactory.getLocator();
 
     /**
      * @return the ServiceLocator

@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.application.country.CountryService;
 import gov.nih.nci.caarray.domain.country.Country;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +105,7 @@ public final class CacheManager {
 
     private static final Log LOG = LogFactory.getLog(CacheManager.class);
 
-    private ServiceLocator locator = ServiceLocator.INSTANCE;
+    private ServiceLocator locator = ServiceLocatorFactory.getLocator();
 
     // instance variables that serve as cache
     private List<LabelValue> fileTypes = new ArrayList<LabelValue>();

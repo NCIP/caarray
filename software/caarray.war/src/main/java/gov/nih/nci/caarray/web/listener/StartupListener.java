@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.web.listener;
 
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import javax.servlet.ServletContextEvent;
 
@@ -100,7 +100,7 @@ public class StartupListener extends HibernateSessionScopeListener {
     @SuppressWarnings("unchecked")
     public void doContextInitialized(ServletContextEvent event) {
         ArrayDataService arrayDataService =
-            (ArrayDataService) ServiceLocator.INSTANCE.lookup(ArrayDataService.JNDI_NAME);
+            (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);
         arrayDataService.initialize();
     }
 }

@@ -110,15 +110,14 @@ import org.springframework.mock.web.MockHttpSession;
 public class ProjectActionTest {
 
     private final ProjectAction action = new ProjectAction();
-    private final ServiceLocatorStub locatorStub = new ServiceLocatorStub();
     private final LocalProjectManagementServiceStub projectServiceStub = new LocalProjectManagementServiceStub();
     private final LocalFileManagementServiceStub fileManagementStub = new LocalFileManagementServiceStub();
 
     @Before
     public void setUp() throws Exception {
-        this.action.setLocator(this.locatorStub);
-        this.locatorStub.addLookup(ProjectManagementService.JNDI_NAME, this.projectServiceStub);
-        this.locatorStub.addLookup(FileManagementService.JNDI_NAME, this.fileManagementStub);
+        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        locatorStub.addLookup(ProjectManagementService.JNDI_NAME, this.projectServiceStub);
+        locatorStub.addLookup(FileManagementService.JNDI_NAME, this.fileManagementStub);
         loadTestProject();
     }
 
@@ -155,7 +154,6 @@ public class ProjectActionTest {
         session.setAttribute("messages", null);
         request.setSession(session);
         ServletActionContext.setRequest(request);
-        assertNotNull(this.action.getLocator());
         assertNotNull(this.action.getProjects());
         String result = this.action.list();
         assertEquals(ProjectAction.LIST_RESULT, result);

@@ -107,7 +107,6 @@ import org.springframework.mock.web.MockHttpSession;
 public class ValidateTest {
 
     private final ProjectFilesAction action = new ProjectFilesAction();
-    private final ServiceLocatorStub locatorStub = new ServiceLocatorStub();
     private final LocalProjectManagementServiceStub projectServiceStub = new LocalProjectManagementServiceStub();
     private final LocalFileManagementServiceStub fileManagementStub = new LocalFileManagementServiceStub();
 
@@ -117,9 +116,9 @@ public class ValidateTest {
      */
     @Before
     public void setUp() throws Exception {
-        this.action.setLocator(this.locatorStub);
-        this.locatorStub.addLookup(ProjectManagementService.JNDI_NAME, this.projectServiceStub);
-        this.locatorStub.addLookup(FileManagementService.JNDI_NAME, this.fileManagementStub);
+        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        locatorStub.addLookup(FileManagementService.JNDI_NAME, fileManagementStub);
+        locatorStub.addLookup(ProjectManagementService.JNDI_NAME, projectServiceStub);
         loadTestProject();
     }
 

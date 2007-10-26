@@ -82,11 +82,12 @@
  */
 package gov.nih.nci.caarray.web.action;
 
-import com.opensymphony.xwork2.ActionSupport;
-
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+
+import com.opensymphony.xwork2.ActionSupport;
 
 /**
  * Handles toggling browsablity status.
@@ -94,7 +95,7 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 public class ProjectManagePermissions {
 
     private static final long serialVersionUID = 1L;
-    private ServiceLocator locator = ServiceLocator.INSTANCE;
+    private ServiceLocator locator = ServiceLocatorFactory.getLocator();
     private Project project = new Project();
 
     /**
