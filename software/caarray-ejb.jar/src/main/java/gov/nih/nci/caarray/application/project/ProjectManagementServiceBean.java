@@ -96,7 +96,7 @@ import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -110,7 +110,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.annotation.Resource;
-import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -133,10 +132,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
 
     private static final Log LOG = LogFactory.getLog(ProjectManagementServiceBean.class);
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-    private ServiceLocator serviceLocator = ServiceLocator.INSTANCE;
 
     @Resource private SessionContext sessionContext;
-    @EJB private GenericDataService genericDataService;
 
     private ProjectDao getProjectDao() {
         return this.daoFactory.getProjectDao();
@@ -288,7 +285,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     public Sample copySample(Project project, long sampleId) {
         Sample sample = getDaoFactory().getSearchDao().retrieve(Sample.class, sampleId);
         Sample copy = new Sample();
-        String copyName = this.genericDataService.getIncrementingCopyName(Sample.class, "name", sample.getName());
+        String copyName = getGenericDataService().getIncrementingCopyName(Sample.class, "name", sample.getName());
         copy.setName(copyName);
         copy.setDescription(sample.getDescription());
         copy.setMaterialType(sample.getMaterialType());
@@ -306,7 +303,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     public Factor copyFactor(Project project, long factorId) {
         Factor factor = getDaoFactory().getSearchDao().retrieve(Factor.class, factorId);
         Factor copy = new Factor();
-        String copyName = this.genericDataService.getIncrementingCopyName(Factor.class, "name", factor.getName());
+        String copyName = getGenericDataService().getIncrementingCopyName(Factor.class, "name", factor.getName());
         copy.setName(copyName);
         copy.setType(factor.getType());
         project.getExperiment().getFactors().add(copy);
@@ -321,7 +318,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     public Source copySource(Project project, long sourceId) {
         Source source = getDaoFactory().getSearchDao().retrieve(Source.class, sourceId);
         Source copy = new Source();
-        String copyName = this.genericDataService.getIncrementingCopyName(Source.class, "name", source.getName());
+        String copyName = getGenericDataService().getIncrementingCopyName(Source.class, "name", source.getName());
         copy.setName(copyName);
         copy.setDescription(source.getDescription());
         copy.setMaterialType(source.getMaterialType());
@@ -333,7 +330,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     }
 
     FileAccessService getFileAccessService() {
-        return (FileAccessService) getServiceLocator().lookup(FileAccessService.JNDI_NAME);
+        return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
     }
 
     CaArrayDaoFactory getDaoFactory() {
@@ -351,25 +348,9 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         this.sessionContext = sessionContext;
     }
 
-    /**
-     * @return the genericDataService
-     */
-    public GenericDataService getGenericDataService() {
-        return this.genericDataService;
+    private GenericDataService getGenericDataService() {
+        return (GenericDataService) ServiceLocatorFactory.getLocator().lookup(GenericDataService.JNDI_NAME);
     }
 
-    /**
-     * @param genericDataService the genericDataService to set
-     */
-    public void setGenericDataService(GenericDataService genericDataService) {
-        this.genericDataService = genericDataService;
-    }
 
-    ServiceLocator getServiceLocator() {
-        return this.serviceLocator;
-    }
-
-    void setServiceLocator(ServiceLocator serviceLocator) {
-        this.serviceLocator = serviceLocator;
-    }
 }

@@ -89,7 +89,6 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Provides array design detail parsing, storage, and retrieval functionality. Interface to the

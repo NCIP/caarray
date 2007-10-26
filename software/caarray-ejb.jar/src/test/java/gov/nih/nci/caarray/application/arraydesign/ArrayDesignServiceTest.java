@@ -85,7 +85,9 @@ package gov.nih.nci.caarray.application.arraydesign;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -93,6 +95,7 @@ import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.File;
@@ -116,13 +119,14 @@ public class ArrayDesignServiceTest {
         arrayDesignService = createArrayDesignService(caArrayDaoFactoryStub, fileAccessServiceStub, vocabularyServiceStub);
     }
 
-    public static ArrayDesignService createArrayDesignService(DaoFactoryStub caArrayDaoFactoryStub,
+    private static ArrayDesignService createArrayDesignService(DaoFactoryStub caArrayDaoFactoryStub,
             final FileAccessServiceStub fileAccessServiceStub,
             VocabularyServiceStub vocabularyServiceStub) {
         ArrayDesignServiceBean bean = new ArrayDesignServiceBean();
         bean.setDaoFactory(caArrayDaoFactoryStub);
-        bean.setFileAccessService(fileAccessServiceStub);
-        bean.setVocabularyService(vocabularyServiceStub);
+        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
+        locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
         return bean;
     }
 

@@ -91,9 +91,10 @@ import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantit
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixExpressionChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceTest;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceBean;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
@@ -145,16 +146,14 @@ public class ArrayDataServiceTest {
     private ArrayDataService arrayDataService;
     FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
     LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
-    ArrayDesignService arrayDesignService =
-        ArrayDesignServiceTest.createArrayDesignService(daoFactoryStub, fileAccessServiceStub, new VocabularyServiceStub());
 
     @Before
     public void setUp() throws Exception {
         ArrayDataServiceBean arrayDataServiceBean = new ArrayDataServiceBean();
-        arrayDataServiceBean.setArrayDesignService(arrayDesignService);
-        ServiceLocatorStub locatorStub = new ServiceLocatorStub();
+        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
-        arrayDataServiceBean.setServiceLocator(locatorStub);
+        locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
+        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, new ArrayDesignServiceBean());
         arrayDataServiceBean.setDaoFactory(daoFactoryStub);
         arrayDataService = arrayDataServiceBean;
     }

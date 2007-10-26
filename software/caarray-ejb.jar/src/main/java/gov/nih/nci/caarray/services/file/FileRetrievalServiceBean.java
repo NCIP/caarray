@@ -86,7 +86,7 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -113,7 +113,7 @@ public class FileRetrievalServiceBean implements FileRetrievalService {
     private static final int CHUNK_SIZE = 4096;
 
     final FileAccessService getFileAccessService() {
-        return (FileAccessService) ServiceLocator.INSTANCE.lookup(FileAccessService.JNDI_NAME);
+        return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
     }
 
     /**

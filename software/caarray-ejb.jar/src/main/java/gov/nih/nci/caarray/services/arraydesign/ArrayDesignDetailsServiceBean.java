@@ -87,8 +87,8 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
-import javax.ejb.EJB;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
@@ -101,21 +101,16 @@ import javax.interceptor.Interceptors;
 @Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
 public class ArrayDesignDetailsServiceBean implements ArrayDesignDetailsService {
 
-    @EJB private ArrayDesignService arrayDesignService;
-
     /**
      * {@inheritDoc}
      */
     public ArrayDesignDetails getDesignDetails(ArrayDesign design) {
-        return arrayDesignService.getDesignDetails(design);
+        return getArrayDesignService().getDesignDetails(design);
     }
 
-    final ArrayDesignService getArrayDesignService() {
-        return arrayDesignService;
-    }
-
-    final void setArrayDesignService(ArrayDesignService arrayDesignService) {
-        this.arrayDesignService = arrayDesignService;
+    
+    private ArrayDesignService getArrayDesignService() {
+        return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
     }
 
 }

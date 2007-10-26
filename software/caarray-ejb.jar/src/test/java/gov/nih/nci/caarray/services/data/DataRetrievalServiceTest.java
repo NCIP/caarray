@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.services.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
@@ -93,6 +94,7 @@ import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import java.util.List;
 
@@ -147,7 +149,8 @@ public class DataRetrievalServiceTest {
     private void setUpService() {
         DataRetrievalServiceBean serviceBean = new DataRetrievalServiceBean();
         serviceBean.setDaoFactory(daoFactory);
-        serviceBean.setArrayDataService(arrayDataService);
+        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        locatorStub.addLookup(ArrayDataService.JNDI_NAME, arrayDataService);
         service = serviceBean;
     }
 

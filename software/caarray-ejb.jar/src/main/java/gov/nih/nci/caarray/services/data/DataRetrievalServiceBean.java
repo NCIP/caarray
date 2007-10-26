@@ -92,11 +92,11 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ejb.EJB;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
@@ -109,7 +109,6 @@ import javax.interceptor.Interceptors;
 @Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
 public class DataRetrievalServiceBean implements DataRetrievalService {
 
-    @EJB private ArrayDataService arrayDataService;
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
     /**
@@ -117,7 +116,7 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
      */
     public DataSet getDataSet(AbstractArrayData arrayData) {
         AbstractArrayData retrievedArrayData = getDaoFactory().getArrayDao().getArrayData(arrayData.getId());
-        return arrayDataService.getData(retrievedArrayData);
+        return getArrayDataService().getData(retrievedArrayData);
     }
 
     /**
@@ -215,12 +214,8 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
         return hybridizations;
     }
 
-    final ArrayDataService getArrayDataService() {
-        return arrayDataService;
-    }
-
-    final void setArrayDataService(ArrayDataService arrayDataService) {
-        this.arrayDataService = arrayDataService;
+    private final ArrayDataService getArrayDataService() {
+        return (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);
     }
 
     CaArrayDaoFactory getDaoFactory() {

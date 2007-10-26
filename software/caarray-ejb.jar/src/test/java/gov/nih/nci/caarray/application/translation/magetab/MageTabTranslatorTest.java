@@ -82,8 +82,11 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
@@ -100,6 +103,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,7 +130,8 @@ public class MageTabTranslatorTest {
     public void setupTranslator() {
         MageTabTranslatorBean mageTabTranslatorBean = new MageTabTranslatorBean();
         mageTabTranslatorBean.setDaoFactory(daoFactoryStub);
-        mageTabTranslatorBean.setVocabularyService(vocabularyServiceStub);
+        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        locatorStub.addLookup(VocabularyService.JNDI_NAME, vocabularyServiceStub);
         translator = mageTabTranslatorBean;
     }
 

@@ -51,10 +51,13 @@
 package gov.nih.nci.caarray.application.file;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceStub;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -77,13 +80,12 @@ public class FileManagementServiceTest {
     @Before
     public void setUp() {
         FileManagementServiceBean fileManagementServiceBean = new FileManagementServiceBean();
-        fileManagementServiceBean.setArrayDataService(new LocalArrayDataServiceStub());
-        fileManagementServiceBean.setArrayDesignService(new LocalArrayDesignServiceStub());
-        fileManagementServiceBean.setMageTabTranslator(new MageTabTranslatorStub());
         fileManagementServiceBean.setDaoFactory(new DaoFactoryStub());
-        ServiceLocatorStub locatorStub = new ServiceLocatorStub();
+        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, new LocalFileAccessServiceStub());
-        fileManagementServiceBean.setServiceLocator(locatorStub);
+        locatorStub.addLookup(ArrayDataService.JNDI_NAME, new LocalArrayDataServiceStub());
+        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, new LocalArrayDesignServiceStub());
+        locatorStub.addLookup(MageTabTranslator.JNDI_NAME, new MageTabTranslatorStub());
         fileManagementService = fileManagementServiceBean;
     }
 

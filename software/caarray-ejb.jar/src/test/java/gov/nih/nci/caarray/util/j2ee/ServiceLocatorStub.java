@@ -80,50 +80,73 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.services.arraydesign;
+package gov.nih.nci.caarray.util.j2ee;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.application.GenericDataService;
+import gov.nih.nci.caarray.application.GenericDataServiceBean;
+import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
+import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceBean;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceBean;
+import gov.nih.nci.caarray.application.country.CountryService;
+import gov.nih.nci.caarray.application.country.CountryServiceBean;
+import gov.nih.nci.caarray.application.file.FileManagementService;
+import gov.nih.nci.caarray.application.file.FileManagementServiceBean;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceBean;
+import gov.nih.nci.caarray.application.project.ProjectManagementService;
+import gov.nih.nci.caarray.application.project.ProjectManagementServiceBean;
+import gov.nih.nci.caarray.application.registration.RegistrationService;
+import gov.nih.nci.caarray.application.registration.RegistrationServiceBean;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceBean;
 
-import org.junit.Before;
-import org.junit.Test;
+import java.util.HashMap;
+import java.util.Map;
 
-@SuppressWarnings("PMD")
-public class ArrayDesignDetailsServiceBeanTest {
+/**
+ * Simple stub implementation of locator -- allows clients to seed a lookup table with other stubs by JNDI name.
+ */
+public class ServiceLocatorStub implements ServiceLocator {
 
-    private ArrayDesignDetailsService arrayDesignDetailsService;
-    private LocalArrayDesignServiceStub arrayDesignServiceStub = new LocalArrayDesignServiceStub();
+    private static final long serialVersionUID = 4520519885611921043L;
     
-    @Before
-    public void setUp() {
-        ArrayDesignDetailsServiceBean arrayDesignDetailsServiceBean = new ArrayDesignDetailsServiceBean();
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
-        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, arrayDesignServiceStub);
-        arrayDesignDetailsService = arrayDesignDetailsServiceBean;
+    private final Map<String, Object> lookupMap = new HashMap<String, Object>();
+  
+    /**
+     * Prevents direct construction; use the static register methods.
+     */
+    private ServiceLocatorStub() {
+        super();
     }
     
-    @Test
-    public void testGetDesignDetails() {
-        ArrayDesign design = new ArrayDesign();
-        assertNotNull(arrayDesignDetailsService.getDesignDetails(design));
-        assertTrue(arrayDesignServiceStub.calledInternalService);
+    public Object lookup(String jndiName) {
+        return lookupMap.get(jndiName);
     }
-
-    private static class LocalArrayDesignServiceStub extends ArrayDesignServiceStub {
-
-        private boolean calledInternalService;
-
-        @Override
-        public ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign) {
-            calledInternalService = true;
-            return new ArrayDesignDetails();
-        }
-        
+    
+    public void addLookup(String jndiName, Object object) {
+        lookupMap.put(jndiName, object);
+    }
+    
+    public static ServiceLocatorStub registerEmptyLocator() {
+        ServiceLocatorStub locatorStub = new ServiceLocatorStub();
+        ServiceLocatorFactory.setLocator(locatorStub);
+        return locatorStub;
+    }
+    
+    public static ServiceLocatorStub registerActualImplementations() {
+        ServiceLocatorStub locatorStub = new ServiceLocatorStub();
+        locatorStub.addLookup(ArrayDataService.JNDI_NAME, new ArrayDataServiceBean());
+        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, new ArrayDesignServiceBean());
+        locatorStub.addLookup(CountryService.JNDI_NAME, new CountryServiceBean());
+        locatorStub.addLookup(FileAccessService.JNDI_NAME, new FileAccessServiceBean());
+        locatorStub.addLookup(FileManagementService.JNDI_NAME, new FileManagementServiceBean());
+        locatorStub.addLookup(GenericDataService.JNDI_NAME, new GenericDataServiceBean());
+        locatorStub.addLookup(ProjectManagementService.JNDI_NAME, new ProjectManagementServiceBean());
+        locatorStub.addLookup(RegistrationService.JNDI_NAME, new RegistrationServiceBean());
+        locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceBean());
+        ServiceLocatorFactory.setLocator(locatorStub);
+        return locatorStub;
     }
 
 }

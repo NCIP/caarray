@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.application.project;
 
-import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Factor;

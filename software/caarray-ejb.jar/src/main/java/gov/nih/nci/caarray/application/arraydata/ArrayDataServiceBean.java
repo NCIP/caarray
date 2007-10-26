@@ -91,12 +91,12 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.util.List;
 
-import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -115,9 +115,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
 
     private static final Log LOG = LogFactory.getLog(ArrayDataServiceBean.class);
 
-    @EJB private ArrayDesignService arrayDesignService;
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-    private ServiceLocator serviceLocator = ServiceLocator.INSTANCE;
 
     /**
      * {@inheritDoc}
@@ -204,12 +202,8 @@ public class ArrayDataServiceBean implements ArrayDataService {
         return arrayDataFile.getValidationResult();
     }
 
-    ArrayDesignService getArrayDesignService() {
-        return arrayDesignService;
-    }
-
-    void setArrayDesignService(ArrayDesignService arrayDesignService) {
-        this.arrayDesignService = arrayDesignService;
+    private ArrayDesignService getArrayDesignService() {
+        return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
     }
 
     CaArrayDaoFactory getDaoFactory() {
@@ -221,16 +215,9 @@ public class ArrayDataServiceBean implements ArrayDataService {
     }
     
     private FileAccessService getFileAccessService() {
-        return (FileAccessService) getServiceLocator().lookup(FileAccessService.JNDI_NAME);
+        return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
     }
 
-    ServiceLocator getServiceLocator() {
-        return serviceLocator;
-    }
-
-    void setServiceLocator(ServiceLocator serviceLocator) {
-        this.serviceLocator = serviceLocator;
-    }
 
 
 }

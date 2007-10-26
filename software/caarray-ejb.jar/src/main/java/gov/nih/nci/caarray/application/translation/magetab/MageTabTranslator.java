@@ -90,6 +90,11 @@ import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
  * Interface to component used to translate MAGE-TAB files to the caArray domain model.
  */
 public interface MageTabTranslator {
+    
+    /**
+     * The default JNDI name to use to lookup <code>MageTabTranslator</code>.
+     */
+    String JNDI_NAME = "caarray/MageTabTranslatorBean/local";
 
     /**
      * Returns a caArray object graph equivalent to the MAGE-TAB object graph. Existing objects

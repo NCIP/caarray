@@ -136,11 +136,10 @@ public class ProjectManagementServiceTest {
     public void setUpService() {
         ProjectManagementServiceBean projectManagementServiceBean = new ProjectManagementServiceBean();
         projectManagementServiceBean.setDaoFactory(this.daoFactoryStub);
-        ServiceLocatorStub locatorStub = new ServiceLocatorStub();
-        locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessService);
+        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessService);
+        locatorStub.addLookup(GenericDataService.JNDI_NAME, genericDataService);
         projectManagementServiceBean.setSessionContext(this.sessionContextStub);
-        projectManagementServiceBean.setServiceLocator(locatorStub);
-        projectManagementServiceBean.setGenericDataService(this.genericDataService);
         this.projectManagementService = projectManagementServiceBean;
     }
 

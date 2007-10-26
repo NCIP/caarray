@@ -88,8 +88,8 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
-import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -107,7 +107,6 @@ public class MageTabTranslatorBean implements MageTabTranslator {
 
     private static final Log LOG = LogFactory.getLog(MageTabTranslatorBean.class);
 
-    @EJB private VocabularyService vocabularyService;
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
     /**
@@ -126,7 +125,7 @@ public class MageTabTranslatorBean implements MageTabTranslator {
     }
 
     private void translateTermSources(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult) {
-        new TermSourceTranslator(documentSet, translationResult, vocabularyService, daoFactory).translate();
+        new TermSourceTranslator(documentSet, translationResult, getVocabularyService(), daoFactory).translate();
     }
 
     private void translateTerms(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
@@ -143,12 +142,8 @@ public class MageTabTranslatorBean implements MageTabTranslator {
         new SdrfTranslator(documentSet, fileSet, translationResult, daoFactory).translate();
     }
 
-    VocabularyService getVocabularyService() {
-        return vocabularyService;
-    }
-
-    void setVocabularyService(VocabularyService vocabularyService) {
-        this.vocabularyService = vocabularyService;
+    private VocabularyService getVocabularyService() {
+        return (VocabularyService) ServiceLocatorFactory.getLocator().lookup(VocabularyService.JNDI_NAME);
     }
 
     /**

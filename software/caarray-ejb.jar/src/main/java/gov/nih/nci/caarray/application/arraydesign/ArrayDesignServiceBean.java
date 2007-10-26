@@ -93,14 +93,11 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -120,8 +117,6 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     private static final Log LOG = LogFactory.getLog(ArrayDesignServiceBean.class);
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-    @EJB private VocabularyService vocabularyService;
-    @EJB private FileAccessService fileAccessService;
 
     /**
      * {@inheritDoc}
@@ -129,7 +124,8 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public FileValidationResult validateDesign(CaArrayFile designFile) {
         LogUtil.logSubsystemEntry(LOG, designFile);
-        FileValidationResult result = getHandler(designFile).validate();
+        FileAccessService fileAccessService = getFileAccessService();
+        FileValidationResult result = getHandler(designFile, fileAccessService).validate();
         designFile.setValidationResult(result);
         if (result.isValid()) {
             designFile.setFileStatus(FileStatus.VALIDATED);
@@ -147,18 +143,19 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public ArrayDesign importDesign(CaArrayFile designFile) {
+        FileAccessService fileAccessService = getFileAccessService();
         ArrayDesign design = null;
         LogUtil.logSubsystemEntry(LOG, designFile);
         if (validateDesign(designFile).isValid()) {
-            design = doImport(designFile);
+            design = doImport(designFile, fileAccessService);
         }
         fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
         return design;
     }
 
-    private ArrayDesign doImport(CaArrayFile designFile) {
-        AbstractArrayDesignHandler handler = getHandler(designFile);
+    private ArrayDesign doImport(CaArrayFile designFile, FileAccessService fileAccessService) {
+        AbstractArrayDesignHandler handler = getHandler(designFile, fileAccessService);
         ArrayDesign design = handler.getArrayDesign();
         designFile.setFileStatus(FileStatus.IMPORTED);
         getArrayDao().save(designFile);
@@ -171,18 +168,19 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      */
     public ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign) {
         LogUtil.logSubsystemEntry(LOG, arrayDesign);
-        AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile());
+        FileAccessService fileAccessService = getFileAccessService();
+        AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile(), fileAccessService);
         fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
         return handler.getDesignDetails();
     }
 
-    private AbstractArrayDesignHandler getHandler(CaArrayFile designFile) {
+    private AbstractArrayDesignHandler getHandler(CaArrayFile designFile, FileAccessService fileAccessService) {
         FileType type = designFile.getType();
         if (type == null) {
             throw new IllegalArgumentException("FileType was null");
         } else if (FileType.AFFYMETRIX_CDF.equals(type)) {
-            return new AffymetrixCdfHandler(designFile, getVocabularyService(), getFileAccessService());
+            return new AffymetrixCdfHandler(designFile, getVocabularyService(), fileAccessService);
         } else {
             throw new IllegalArgumentException("Unsupported array design file type: " + type);
         }
@@ -227,26 +225,14 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         return getDaoFactory().getArrayDao();
     }
 
-    /**
-     * @return the vocabularyService
-     */
-    VocabularyService getVocabularyService() {
-        return vocabularyService;
+    private VocabularyService getVocabularyService() {
+        return (VocabularyService) ServiceLocatorFactory.getLocator().lookup(VocabularyService.JNDI_NAME);
     }
 
-    /**
-     * @param vocabularyService the vocabularyService to set
-     */
-    void setVocabularyService(VocabularyService vocabularyService) {
-        this.vocabularyService = vocabularyService;
+
+    private FileAccessService getFileAccessService() {
+        return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
     }
 
-    FileAccessService getFileAccessService() {
-        return fileAccessService;
-    }
-
-    void setFileAccessService(FileAccessService fileAccessService) {
-        this.fileAccessService = fileAccessService;
-    }
 
 }

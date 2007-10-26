@@ -94,9 +94,8 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
-import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -118,10 +117,6 @@ public class FileManagementServiceBean implements FileManagementService {
     private static final Log LOG = LogFactory.getLog(FileManagementServiceBean.class);
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-    @EJB private ArrayDataService arrayDataService;
-    @EJB private ArrayDesignService arrayDesignService;
-    @EJB private MageTabTranslator mageTabTranslator;
-    private ServiceLocator serviceLocator = ServiceLocator.INSTANCE;
 
     /**
      * {@inheritDoc}
@@ -196,7 +191,7 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private MageTabImporter getMageTabImporter(FileAccessService fileAccessService) {
-        return new MageTabImporter(fileAccessService, mageTabTranslator, daoFactory);
+        return new MageTabImporter(fileAccessService, getMageTabTranslator(), daoFactory);
     }
 
     private void importArrayData(CaArrayFileSet fileSet) {
@@ -205,7 +200,7 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private ArrayDataImporter getArrayDataImporter() {
-        return new ArrayDataImporter(arrayDataService, daoFactory);
+        return new ArrayDataImporter(getArrayDataService(), daoFactory);
     }
 
     /**
@@ -244,46 +239,22 @@ public class FileManagementServiceBean implements FileManagementService {
         this.daoFactory = daoFactory;
     }
 
-    FileAccessService getFileAccessService() {
-        return (FileAccessService) getServiceLocator().lookup(FileAccessService.JNDI_NAME);
+    private FileAccessService getFileAccessService() {
+        return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
     }
 
-    ArrayDesignService getArrayDesignService() {
-        return arrayDesignService;
+    private ArrayDesignService getArrayDesignService() {
+        return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
     }
 
-    void setArrayDesignService(ArrayDesignService arrayDesignService) {
-        this.arrayDesignService = arrayDesignService;
+    private MageTabTranslator getMageTabTranslator() {
+        return (MageTabTranslator) ServiceLocatorFactory.getLocator().lookup(MageTabTranslator.JNDI_NAME);
     }
 
-    MageTabTranslator getMageTabTranslator() {
-        return mageTabTranslator;
+    private final ArrayDataService getArrayDataService() {
+        return (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);
     }
 
-    void setMageTabTranslator(MageTabTranslator mageTabTranslator) {
-        this.mageTabTranslator = mageTabTranslator;
-    }
 
-    /**
-     * @return the arrayDataService
-     */
-    final ArrayDataService getArrayDataService() {
-        return arrayDataService;
-    }
-
-    /**
-     * @param arrayDataService the arrayDataService to set
-     */
-    final void setArrayDataService(ArrayDataService arrayDataService) {
-        this.arrayDataService = arrayDataService;
-    }
-
-    ServiceLocator getServiceLocator() {
-        return serviceLocator;
-    }
-
-    void setServiceLocator(ServiceLocator serviceLocator) {
-        this.serviceLocator = serviceLocator;
-    }
 
 }
