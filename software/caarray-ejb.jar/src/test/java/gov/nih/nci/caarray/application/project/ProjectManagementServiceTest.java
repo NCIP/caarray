@@ -357,7 +357,7 @@ public class ProjectManagementServiceTest {
         /**
          * {@inheritDoc}
          */
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({ "unchecked", "deprecation" })
         @Override
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
             if (Sample.class.equals(entityClass)) {

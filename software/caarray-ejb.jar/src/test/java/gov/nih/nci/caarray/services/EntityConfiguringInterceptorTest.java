@@ -142,12 +142,12 @@ public class EntityConfiguringInterceptorTest {
             return null;
         }
 
-        public Object proceed() throws Exception {
+        public Object proceed() {
             return returnValue;
         }
 
         public void setParameters(Object[] arg0) {
-
+            // empty on purpose
         }
 
     }

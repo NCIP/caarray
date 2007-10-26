@@ -86,7 +86,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.struts2.ServletActionContext;
 
-import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.Action;
 
 /**
  * @author John Hedden
@@ -103,6 +103,6 @@ public class LogoutAction {
         HttpSession session = ServletActionContext.getRequest().getSession();
         session.invalidate();
 
-        return ActionSupport.SUCCESS;
+        return Action.SUCCESS;
     }
 }

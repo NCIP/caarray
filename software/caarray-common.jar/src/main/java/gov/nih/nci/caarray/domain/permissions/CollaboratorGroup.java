@@ -96,9 +96,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * CollaboratorGroups bridge CSM groups with owners.
  */
@@ -112,7 +109,6 @@ public class CollaboratorGroup implements PersistentObject {
     //
 
     private static final long serialVersionUID = -7566813289284832301L;
-    private static final Log LOG = LogFactory.getLog(CollaboratorGroup.class);
 
     private Long id;
     private Group group;

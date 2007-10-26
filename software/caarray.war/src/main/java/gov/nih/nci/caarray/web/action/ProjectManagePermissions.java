@@ -87,7 +87,7 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
-import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.Action;
 
 /**
  * Handles toggling browsablity status.
@@ -105,7 +105,7 @@ public class ProjectManagePermissions {
     public String toggle() {
         ProjectManagementService svc = getProjectManagementService();
         svc.toggleBrowsableStatus(getProject().getId());
-        return ActionSupport.SUCCESS;
+        return Action.SUCCESS;
     }
 
     /**

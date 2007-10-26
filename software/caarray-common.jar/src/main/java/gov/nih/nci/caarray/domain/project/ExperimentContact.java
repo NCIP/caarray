@@ -186,7 +186,7 @@ public class ExperimentContact extends AbstractCaArrayEntity {
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
     }
-    
+
     /**
      * Returns whether this contact is the PI for the experiment (based
      * on whether he has the appropriate role)
@@ -204,9 +204,9 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      */
     @Transient
     public boolean isMainPointOfContact() {
-        return CollectionUtils.exists(roles, new RolePredicate(MAIN_POC_ROLE));        
+        return CollectionUtils.exists(roles, new RolePredicate(MAIN_POC_ROLE));
     }
-    
+
     /**
      * Remove the Main POC role from the list of roles of this ExperimentContact.
      * If it did not have this role, then this is a no-op.
@@ -228,13 +228,13 @@ public class ExperimentContact extends AbstractCaArrayEntity {
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
-    
+
     /**
      * Predicate that matches role Terms having a given value
      */
     private static class RolePredicate implements Predicate {
-        private String roleValue;
-                
+        private final String roleValue;
+
         /**
          * Create a RolePredicate checking for given value
          * @param roleValue value to check for

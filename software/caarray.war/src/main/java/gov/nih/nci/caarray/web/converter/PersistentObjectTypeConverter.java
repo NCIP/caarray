@@ -100,20 +100,20 @@ import com.opensymphony.xwork2.util.XWorkBasicConverter;
  */
 public class PersistentObjectTypeConverter extends StrutsTypeConverter {
 
-    private static ServiceLocator LOCATOR = ServiceLocatorFactory.getLocator();
+    private static ServiceLocator locator = ServiceLocatorFactory.getLocator();
 
     /**
      * @return the ServiceLocator
      */
     public static ServiceLocator getServiceLocator() {
-        return LOCATOR;
+        return locator;
     }
 
     /**
      * @param locator the ServiceLocator to set
      */
     public static void setServiceLocator(ServiceLocator locator) {
-        LOCATOR = locator;
+        PersistentObjectTypeConverter.locator = locator;
     }
 
     /**

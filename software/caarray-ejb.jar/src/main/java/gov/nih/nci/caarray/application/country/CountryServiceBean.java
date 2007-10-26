@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.country;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.CountryDao;
 import gov.nih.nci.caarray.domain.country.Country;
+import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.util.List;
 
@@ -107,7 +108,10 @@ public class CountryServiceBean implements CountryService {
 
 
     public List<Country> getCountries() {
-        return getCountryDao().getCountries();
+        LogUtil.logSubsystemEntry(LOG);
+        List<Country> result = getCountryDao().getCountries();
+        LogUtil.logSubsystemExit(LOG);
+        return result;
     }
 
     CaArrayDaoFactory getDaoFactory() {

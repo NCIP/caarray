@@ -271,7 +271,7 @@ public class ProjectAction extends ActionSupport implements Preparable {
      * @return path String
      * @throws Exception Exception
      */
-    @SuppressWarnings("PMD")
+    @SuppressWarnings({ "PMD", "deprecation" })
     public String contactsSaveTab() {
         VocabularyService vocabService = getVocabularyService();
         TermSource mged = vocabService.getSource(ExperimentOntology.MGED.getOntologyName());

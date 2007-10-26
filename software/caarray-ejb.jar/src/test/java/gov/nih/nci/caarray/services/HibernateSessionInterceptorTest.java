@@ -82,8 +82,7 @@
  */
 package gov.nih.nci.caarray.services;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.lang.reflect.Method;
@@ -132,13 +131,13 @@ public class HibernateSessionInterceptorTest {
             return null;
         }
 
-        public Object proceed() throws Exception {
+        public Object proceed() {
             setHibernateSession();
             return null;
         }
 
         public void setParameters(Object[] arg0) {
-
+            // empty on purpose
         }
 
         public Session getHibernateSession() {

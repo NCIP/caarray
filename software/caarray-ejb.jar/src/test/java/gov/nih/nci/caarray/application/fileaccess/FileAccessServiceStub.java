@@ -97,7 +97,6 @@ import java.util.Set;
 public class FileAccessServiceStub implements FileAccessService {
 
     private final Map<String, File> nameToFile = new HashMap<String, File>();
-    private final Map<Long, CaArrayFile> idToFile = new HashMap<Long, CaArrayFile>();
 
     public CaArrayFile add(File file) {
         CaArrayFile caArrayFile = new CaArrayFile();

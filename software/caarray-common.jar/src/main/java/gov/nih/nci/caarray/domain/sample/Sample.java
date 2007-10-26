@@ -83,6 +83,10 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
+import edu.wustl.catissuecore.domain.Specimen;
+import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -97,10 +101,6 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-
-import edu.wustl.catissuecore.domain.Specimen;
-import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
 
   /**
 
@@ -204,6 +204,7 @@ public class Sample extends AbstractBioMaterial {
      * @return the Term for the sample's tissue site, or null if this Sample does not have a characteristic
      * for tissue site
      */
+    @Override
     @Transient
     public Term getTissueSite() {
         for (AbstractCharacteristic characteristic : getCharacteristics()) {

@@ -101,24 +101,26 @@ public class NullCollectionElementInterceptor implements Interceptor {
      * {@inheritDoc}
      */
     public void destroy() {
+        // do nothings
     }
 
     /**
      * {@inheritDoc}
      */
     public void init() {
+        // do nothing
     }
 
     /**
      * {@inheritDoc}
      */
     public String intercept(ActionInvocation actionInvocation) throws Exception {
-        Map params = actionInvocation.getInvocationContext().getParameters();
+        Map<?, ?> params = actionInvocation.getInvocationContext().getParameters();
         ValueStack stack = actionInvocation.getStack();
         for (Object key : params.keySet()) {
             Object value = stack.findValue((String) key);
             if (value instanceof Collection) {
-                Collection c = (Collection) value;
+                Collection<?> c = (Collection<?>) value;
                 for (Object o: c) {
                     if (o == null) {
                         c.remove(o);

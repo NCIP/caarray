@@ -90,7 +90,6 @@ import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
@@ -188,7 +187,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
             throw new IllegalArgumentException("No data file is associated with array data object");
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -213,7 +212,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
     void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
-    
+
     private FileAccessService getFileAccessService() {
         return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
     }

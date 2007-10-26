@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.domain.country.Country;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -134,13 +135,10 @@ public class CountryServiceTest {
 
     private static class LocalCountryDaoStub extends CountryDaoStub {
 
-        private final HashMap<Long, PersistentObject> savedObjects = new HashMap<Long, PersistentObject>();
-        private PersistentObject lastSaved;
-        private String username;
+        private final Map<Long, PersistentObject> savedObjects = new HashMap<Long, PersistentObject>();
 
         @Override
         public void save(PersistentObject caArrayObject) {
-            this.lastSaved = caArrayObject;
             this.savedObjects.put(caArrayObject.getId(), caArrayObject);
         }
     }
