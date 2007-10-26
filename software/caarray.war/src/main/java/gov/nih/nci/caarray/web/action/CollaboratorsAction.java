@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.web.action;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.util.List;
 
@@ -97,7 +98,7 @@ public class CollaboratorsAction extends ActionSupport {
 
     private static final long serialVersionUID = 1L;
 
-    private ServiceLocator locator = ServiceLocator.INSTANCE;
+    private ServiceLocator locator = ServiceLocatorFactory.getLocator();
     private List<CollaboratorGroup> groups;
     private CollaboratorGroup targetGroup;
 
