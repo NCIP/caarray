@@ -11,6 +11,15 @@
         formTableTbody = formTable.getElementsByTagName('tbody')[0];
         formTableTbody.appendChild(newRow);
     }
+    selectAll = function(selectAllBox, theform) {
+       var state = selectAllBox.checked;
+        for (i = 0; i < theform.elements.length; i++) {
+            var element = theform.elements[i];
+            if ("checkbox" == element.type) {
+                element.checked = state;
+            }
+        }
+    }
 </script>
 
 <caarray:tabPane subtab="true">
