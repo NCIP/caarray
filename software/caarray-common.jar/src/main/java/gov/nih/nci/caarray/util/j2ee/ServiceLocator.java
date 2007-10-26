@@ -88,11 +88,6 @@ import java.io.Serializable;
  * Looks up EJBs, Queues, etc. on behalf of clients.
  */
 public interface ServiceLocator extends Serializable {
-    
-    /**
-     * Instance of the <code>SerivceLocator</code> available to clients.
-     */
-    ServiceLocator INSTANCE = new ServiceLocatorImplementation();
 
     /**
      * Returns the resource at the JNDI name given.

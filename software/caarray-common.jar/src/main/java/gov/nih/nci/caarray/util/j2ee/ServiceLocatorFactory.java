@@ -82,24 +82,30 @@
  */
 package gov.nih.nci.caarray.util.j2ee;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Simple stub implementation of locator -- allows clients to seed a lookup table with other stubs by JNDI name.
+ * Provides access to a <code>ServiceLocator</code>.
  */
-public class ServiceLocatorStub implements ServiceLocator {
+public class ServiceLocatorFactory {
 
-    private static final long serialVersionUID = 4520519885611921043L;
-    
-    private final Map<String, Object> lookupMap = new HashMap<String, Object>();
-  
-    public Object lookup(String jndiName) {
-        return lookupMap.get(jndiName);
+    private static ServiceLocator locator = new ServiceLocatorImplementation();
+
+    /**
+     * Returns a <code>ServiceLocator</code> instance.
+     * 
+     * @return the locator
+     */
+    public static ServiceLocator getLocator() {
+        return locator;
+    }
+
+    /**
+     * Allows registration of a <code>ServiceLocator</code> instance; should only
+     * be used in test code to replace the actual locator with a test stub.
+     * 
+     * @param locator the locator to set
+     */
+    public static void setLocator(ServiceLocator locator) {
+        ServiceLocatorFactory.locator = locator;
     }
     
-    public void addLookup(String jndiName, Object object) {
-        lookupMap.put(jndiName, object);
-    }
-
 }
