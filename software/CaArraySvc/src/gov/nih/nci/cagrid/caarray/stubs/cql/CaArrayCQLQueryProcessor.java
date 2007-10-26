@@ -63,7 +63,7 @@ public class CaArrayCQLQueryProcessor extends CQLQueryProcessor {
         LOG.debug("CaArrayCQLQueryProcessor::processQuery ...");
         CQLQueryResults results = null;
         try {
-            List<AbstractCaArrayObject> coreResultsList = queryCaArrayService(cqlQuery);
+            List<? extends AbstractCaArrayObject> coreResultsList = queryCaArrayService(cqlQuery);
             String targetName = cqlQuery.getTarget().getName();
 
             Mappings mappings = null;
@@ -113,7 +113,7 @@ public class CaArrayCQLQueryProcessor extends CQLQueryProcessor {
         }
     }
 
-    private List<Object[]> convert(List<AbstractCaArrayObject> objs, String[] names, boolean distinct)
+    private List<Object[]> convert(List<? extends AbstractCaArrayObject> objs, String[] names, boolean distinct)
         throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException,
                InvocationTargetException {
         String[] upcaseNames = new String[names.length];
@@ -147,7 +147,7 @@ public class CaArrayCQLQueryProcessor extends CQLQueryProcessor {
      * @param cqlQuery query to run
      * @return list of domain objects that match the query criteria
      */
-    protected List<AbstractCaArrayObject> queryCaArrayService(final CQLQuery cqlQuery) {
+    protected List<? extends AbstractCaArrayObject> queryCaArrayService(final CQLQuery cqlQuery) {
         LOG.debug("querying ....");
         return searchService.search(CQL2CQL.convert(cqlQuery));
     }

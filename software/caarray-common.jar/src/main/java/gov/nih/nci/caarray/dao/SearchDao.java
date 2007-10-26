@@ -113,7 +113,7 @@ public interface SearchDao {
      * @param cqlQuery CQL query to use as search criteria.
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
      */
-    List<AbstractCaArrayObject> query(CQLQuery cqlQuery);
+    List<? extends AbstractCaArrayObject> query(CQLQuery cqlQuery);
 
 
     /**
@@ -123,7 +123,7 @@ public interface SearchDao {
      * @return the entity.
      */
     <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId);
-    
+
     /**
      * Retrieve the list of values of the given field of the given entity that
      * start with the given prefix

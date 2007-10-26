@@ -186,5 +186,12 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
     public CountryDao getCountryDao() {
         return new CountryDaoImpl();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public CollaboratorGroupDao getCollaboratorGroupDao() {
+        return new CollaboratorGroupDaoImpl();
+    }
 }
 

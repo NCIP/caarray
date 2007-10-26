@@ -83,8 +83,10 @@
 package gov.nih.nci.caarray.application;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.dao.stub.ProjectDaoStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -134,8 +136,29 @@ public class GenericDataServiceTest {
         assertEquals("Namonce2", copyName);
     }
 
+    @Test
+    public void testDelete() {
+        Project p = new Project();
+        service.delete(p);
+        assertEquals(p, ((LocalProjectDaoStub) daoFactoryStub.getProjectDao()).deletedObject);
+    }
+
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
+
         LocalSearchDaoStub searchDao;
+        LocalProjectDaoStub projectDao;
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public ProjectDao getProjectDao() {
+            if (this.projectDao == null) {
+                this.projectDao = new LocalProjectDaoStub();
+            }
+
+            return this.projectDao;
+        }
 
         /**
          * {@inheritDoc}
@@ -147,6 +170,28 @@ public class GenericDataServiceTest {
             }
             return this.searchDao;
         }
+    }
+
+    private static class LocalProjectDaoStub extends ProjectDaoStub {
+
+        private PersistentObject deletedObject;
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void remove(PersistentObject caArrayEntity) {
+            this.deletedObject = caArrayEntity;
+        }
+
+
+        /**
+         * @return last 'deleted' object, if any
+         */
+        public PersistentObject getDeletedObject() {
+            return deletedObject;
+        }
+
     }
 
     private static class LocalSearchDaoStub extends SearchDaoStub {

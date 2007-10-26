@@ -83,8 +83,8 @@
 package gov.nih.nci.caarray.dao;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.protocol.Parameter;
@@ -199,7 +199,7 @@ public class SearchDaoTest {
             fail("DAO exception during search by example: " + e.getMessage());
         }
     }
-    
+
     /**
      * tests the findValuesWithSamePrefix method
      */
@@ -224,7 +224,7 @@ public class SearchDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during search by example: " + e.getMessage());
-        }                
+        }
     }
 
     /**
@@ -238,7 +238,7 @@ public class SearchDaoTest {
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             Protocol retrievedProtocol = null;
-            List<AbstractCaArrayObject> matchingProtocols = SEARCH_DAO.query(cqlQuery);
+            List<? extends AbstractCaArrayObject> matchingProtocols = SEARCH_DAO.query(cqlQuery);
             if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
                 retrievedProtocol = (Protocol) matchingProtocols.get(0);
             }
@@ -266,7 +266,7 @@ public class SearchDaoTest {
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             Protocol retrievedProtocol = null;
-            List<AbstractCaArrayObject> matchingProtocols = SEARCH_DAO.query(cqlQuery);
+            List<? extends AbstractCaArrayObject> matchingProtocols = SEARCH_DAO.query(cqlQuery);
             if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
                 retrievedProtocol = (Protocol) matchingProtocols.get(0);
             }

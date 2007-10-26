@@ -140,8 +140,8 @@ public class CaArraySearchServiceBean implements CaArraySearchService {
      *
      * @return the matching entities.
      */
-    public List<AbstractCaArrayObject> search(final CQLQuery cqlQuery) {
-        List<AbstractCaArrayObject> retrievedList = new ArrayList<AbstractCaArrayObject>();
+    public List<? extends AbstractCaArrayObject> search(final CQLQuery cqlQuery) {
+        List<? extends AbstractCaArrayObject> retrievedList = new ArrayList<AbstractCaArrayObject>();
         if (cqlQuery == null) {
             LOG.error("Search was called with null CQL query.");
             return retrievedList;

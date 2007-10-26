@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.CollaboratorGroupDao;
 import gov.nih.nci.caarray.dao.ContactDao;
 import gov.nih.nci.caarray.dao.CountryDao;
 import gov.nih.nci.caarray.dao.FileDao;
@@ -170,5 +171,12 @@ public class DaoFactoryStub implements CaArrayDaoFactory {
 
     public CountryDao getCountryDao() {
         return new CountryDaoStub();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public CollaboratorGroupDao getCollaboratorGroupDao() {
+        return new CollaboratorGroupDaoStub();
     }
 }

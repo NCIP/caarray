@@ -116,5 +116,5 @@ public interface CaArraySearchService {
      *
      * @return the matching entities.
      */
-    List<AbstractCaArrayObject> search(CQLQuery cqlQuery);
+    List<? extends AbstractCaArrayObject> search(CQLQuery cqlQuery);
 }

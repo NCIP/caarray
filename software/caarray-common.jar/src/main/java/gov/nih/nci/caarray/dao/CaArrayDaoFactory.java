@@ -170,4 +170,9 @@ public interface CaArrayDaoFactory {
      * @return a <code>CountryDao</code>.
      */
     CountryDao getCountryDao();
+
+    /**
+     * @return a <code>CollaboratorGroupDao</code>.
+     */
+    CollaboratorGroupDao getCollaboratorGroupDao();
 }

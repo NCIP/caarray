@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-war
+ * source code form and machine readable, binary, object code form. The caarray-ejb-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-war Software License (the License) is between NCI and You. You (or
+ * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-war Software to (i) use, install, access, operate,
+ * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-war Software; (ii) distribute and
- * have distributed to and by third parties the caarray-war Software and any
+ * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-ejb-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,94 +80,49 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.action;
+package gov.nih.nci.caarray.application.permissions;
 
-import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
+import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.application.GenericDataServiceStub;
+import gov.nih.nci.caarray.dao.stub.CollaboratorGroupDaoStub;
+import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
+import gov.nih.nci.security.authorization.domainobjects.Group;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
-import java.util.List;
-
-import com.opensymphony.xwork2.ActionSupport;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * Collaborator group management action.
+ * Test cases for service.
  */
-public class CollaboratorsAction extends ActionSupport {
+public class PermissionsManagementServiceTest {
 
-    private static final long serialVersionUID = 1L;
+    private PermissionsManagementService permissionsManagementService;
+    private final GenericDataServiceStub genericDataServiceStub = new GenericDataServiceStub();
+    private final DaoFactoryStub daoFactoryStub = new DaoFactoryStub();
 
-    private ServiceLocator locator = ServiceLocator.INSTANCE;
-    private List<CollaboratorGroup> groups;
-    private CollaboratorGroup targetGroup;
+    @Before
+    public void setup() {
+        PermissionsManagementServiceBean bean = new PermissionsManagementServiceBean();
+        bean.setGenericDataService(genericDataServiceStub);
+        bean.setDaoFactory(daoFactoryStub);
 
-    /**
-     * @return listGroups
-     */
-    @SuppressWarnings("unchecked")
-    public String listGroups() {
-        this.groups = getPermissionManagementService().getCollaboratorGroups();
-        return "listGroups";
+        permissionsManagementService = bean;
     }
 
-    /**
-     * Deletes the targeted CollaboratorGroup.
-     * @return listGroups
-     */
-    public String delete() {
-        getPermissionManagementService().delete(targetGroup);
-        return listGroups();
+    @Test
+    public void testDelete() {
+        CollaboratorGroup cg = new CollaboratorGroup(new Group(), new User());
+        permissionsManagementService.delete(cg);
+        assertEquals(cg, genericDataServiceStub.getDeletedObject());
     }
 
-    /**
-     * @return the groups
-     */
-    public List<CollaboratorGroup> getGroups() {
-        return groups;
-    }
-
-    /**
-     * @param groups the groups to set
-     */
-    public void setGroups(List<CollaboratorGroup> groups) {
-        this.groups = groups;
-    }
-
-    /**
-     * @return the targetGroup
-     */
-    public CollaboratorGroup getTargetGroup() {
-        return targetGroup;
-    }
-
-    /**
-     * @param targetGroup the targetGroup to set
-     */
-    public void setTargetGroup(CollaboratorGroup targetGroup) {
-        this.targetGroup = targetGroup;
-    }
-
-    /**
-     * Get ProjectManagementService.
-     * @return projectManagementService
-     */
-    public PermissionsManagementService getPermissionManagementService() {
-        return (PermissionsManagementService) locator.lookup(PermissionsManagementService.JNDI_NAME);
-    }
-
-    /**
-     * get locator for junit.
-     * @return ServiceLocator ServiceLocator
-     */
-    public ServiceLocator getLocator() {
-        return locator;
-    }
-
-    /**
-     * For use by unit tests.
-     * @param locator locator
-     */
-    public void setLocator(ServiceLocator locator) {
-        this.locator = locator;
+    @Test
+    public void testGetAll() {
+        CollaboratorGroupDaoStub stub = (CollaboratorGroupDaoStub) daoFactoryStub.getCollaboratorGroupDao();
+        int count = stub.getNumGetAllCalls();
+        permissionsManagementService.getCollaboratorGroups();
+        assertEquals(count + 1, stub.getNumGetAllCalls());
     }
 }

@@ -82,13 +82,11 @@
  */
 package gov.nih.nci.caarray.domain.permissions;
 
+import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.Protectable;
-import gov.nih.nci.caarray.util.SecurityInterceptor;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
-import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
-
-import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -107,7 +105,7 @@ import org.apache.commons.logging.LogFactory;
  */
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "CSM_GROUP", "CSM_USER" }) })
-public class CollaboratorGroup implements Serializable, Protectable {
+public class CollaboratorGroup implements PersistentObject, Protectable {
     //
     // DEVELOPER NOTE: This class has-a Group, rather than is-a Group,
     // to be fully compatible with whatever CSM changes may come down
@@ -184,11 +182,7 @@ public class CollaboratorGroup implements Serializable, Protectable {
 
     @SuppressWarnings("unused")
     private void setGroupId(long groupId) { // NOPMD
-        try {
-            group = SecurityInterceptor.getAuthorizationManager().getGroupById(Long.valueOf(groupId).toString());
-        } catch (CSObjectNotFoundException e) {
-            LOG.error("Unable to load group for CollaboratorGroup: " + e, e);
-        }
+        group = (Group) HibernateUtil.getCurrentSession().load(Group.class, groupId);
     }
 
     @SuppressWarnings("unused")
@@ -199,10 +193,6 @@ public class CollaboratorGroup implements Serializable, Protectable {
 
     @SuppressWarnings("unused")
     private void setOwnerId(long ownerId) { // NOPMD
-        try {
-            owner = SecurityInterceptor.getAuthorizationManager().getUserById(Long.valueOf(ownerId).toString());
-        } catch (CSObjectNotFoundException e) {
-            LOG.error("Unable to load owner for CollaboratorGroup: " + e, e);
-        }
+        owner = (User) HibernateUtil.getCurrentSession().load(User.class, ownerId);
     }
 }

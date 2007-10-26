@@ -82,8 +82,10 @@
  */
 package gov.nih.nci.caarray.application;
 
-import java.util.List;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.PersistentObject;
+
+import java.util.List;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -91,8 +93,6 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
 import org.apache.commons.lang.StringUtils;
-
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 
 /**
  * Implementation of the GenericDataService.
@@ -137,5 +137,13 @@ public class GenericDataServiceBean implements GenericDataService {
      */
     public void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void delete(PersistentObject object) {
+        daoFactory.getProjectDao().remove(object);
     }
 }

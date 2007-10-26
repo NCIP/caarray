@@ -104,10 +104,18 @@ public interface GenericDataService {
     <T extends PersistentObject> T retrieveEnity(Class<T> entityClass, Long entityId);
 
     /**
+     * Deletes an object from the database.  May throw exceptions if the object is referenced
+     * by other objects in the system.
+     *
+     * @param object the object to delete
+     */
+    void delete(PersistentObject object);
+
+    /**
      * Generate a name suitable for assignment to a copy of an entity with the given name.
      * The idea is to add a numeric prefix to the end of the name, so that if the current
-     * entity name is "Baz", the copy becomes "Baz2", then "Baz3", and so forth. 
-     * 
+     * entity name is "Baz", the copy becomes "Baz2", then "Baz3", and so forth.
+     *
      * More formally, the copy name is derived from the given name as follows:
      * <ol>
      * <li>Calculate the non-numerical prefix in the given name. Thus "Baz"->"Baz", "Baz2" -> "Baz",
@@ -120,7 +128,7 @@ public interface GenericDataService {
      * </ol>
      * As an example, given "Baz2" as the input name, and "Baz", "Baz5", "Baz7n" and "Boo" as the names
      * of all the entities of that class, the copy name will be "Baz6"
-     * 
+     *
      * @param entityClass the entity class for which to calculate the copy name
      * @param fieldName the name of the property which holds the name of the entity (will generally be "name")
      * @param name the given name

@@ -33,7 +33,10 @@
 	                    <a href="#"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
 	                </display:column>
 	                <display:column titleKey="button.delete">
-	               		<a href="#"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.delete"/>" /></a>
+	                	<c:url value="/protected/collaborators/delete.action" var="deleteUrl">
+	                		<c:param name="targetGroup.id" value="${row.id}"/>
+	                	</c:url>
+	               		<a href="${deleteUrl}"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.delete"/>" /></a>
 	                </display:column>
 	            </display:table>
 	        </ajax:displayTag>
