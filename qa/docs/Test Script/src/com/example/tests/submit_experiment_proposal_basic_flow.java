@@ -9,7 +9,7 @@ public class submit_experiment_proposal_basic_flow extends SeleneseTestCase {
     private Selenium selenium;
     public void setUp() {
     	selenium = new DefaultSelenium("localhost",
-            4444, "*iexplore", "http://cbvapp-q1001.nci.nih.gov:19280/caarray/protected/Project_list.action");
+            4444, "*firefox", "http://cbvapp-q1001.nci.nih.gov:19280/caarray/protected/Project_list.action");
         //*iehta for internet explorer https
         //*chrome for firefox https
         //*iexplore for internet explore http
