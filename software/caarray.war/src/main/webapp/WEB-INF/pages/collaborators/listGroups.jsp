@@ -34,7 +34,7 @@
 	                </display:column>
 	                <display:column titleKey="button.delete">
 	                	<c:url value="/protected/collaborators/delete.action" var="deleteUrl">
-	                		<c:param name="targetGroup.id" value="${row.id}"/>
+	                		<c:param name="targetGroup" value="${row.id}"/>
 	                	</c:url>
 	               		<a href="${deleteUrl}"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.delete"/>" /></a>
 	                </display:column>
