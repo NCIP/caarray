@@ -100,6 +100,11 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 10;
 
+    @Override
+    public void tearDown() throws Exception {
+        // no-op
+    }
+    
     @Test
     public void testImportAndRetrieval() throws Exception {
         loginAsPrincipalInvestigator();
@@ -121,8 +126,10 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         // - MAGE-TAB Derived Data Matrix
         // - CEL files referenced in SDRF
         clickAndWait("link=" + title);
-        selenium.click("link=Manage Files");
-        selenium.waitForPageToLoad("30000");
+        Thread.sleep(1000);
+        selenium.click("link=Data");
+        waitForElementWithId("theFormSubtab");
+        selenium.click("link=Upload New File(s)");
         upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
         upload(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
@@ -160,11 +167,12 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         }
     }
 
-    private void upload(File file) throws IOException {
+    private void upload(File file) throws IOException, InterruptedException {
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
         filePath = filePath.replaceAll("%20", " ");
         selenium.type("upload", filePath);
-        clickAndWait("uploadFile");
+        selenium.click("link=Upload");
+        Thread.sleep(1000);
         assertTrue(selenium.isTextPresent(file.getName()));
     }
 
