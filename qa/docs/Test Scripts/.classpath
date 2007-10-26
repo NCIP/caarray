@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Selenium/selenium-remote-control-0.9.2/selenium-java-client-driver-0.9.2/selenium-java-client-driver-test-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Selenium/selenium-remote-control-0.9.2/selenium-java-client-driver-0.9.2/selenium-java-client-driver.jar"/>
+	<classpathentry kind="lib" path="C:/Selenium/selenium-remote-control-0.9.2/selenium-java-client-driver-0.9.2/selenium-java-client-driver-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Selenium/selenium-remote-control-0.9.2/selenium-java-client-driver-0.9.2/selenium-java-client-driver-tests.jar"/>
+	<classpathentry kind="lib" path="C:/eclipse/plugins/org.junit4_4.3.1/junit.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
