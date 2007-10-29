@@ -98,6 +98,9 @@ public class MageTabDataFiles {
     public static final File SPECIFICATION_EXAMPLE_DATA_MATRIX =
         new File(MageTabDataFiles.class.getResource("/magetab/specification/e-mexp-428data_v1.0.data").getFile());
 
+    public static final File SPECIFICATION_ZIP =
+        new File(MageTabDataFiles.class.getResource("/magetab/specification/specification.zip").getFile());
+
     public static final File SPECIFICATION_EXAMPLE_DIRECTORY =
         new File(MageTabDataFiles.class.getResource("/magetab/specification").getFile());
 
