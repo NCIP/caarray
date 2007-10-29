@@ -179,6 +179,7 @@ final class SdrfTranslator extends AbstractTranslator {
                     investigation.getExtracts().addAll(allExtracts);
                     investigation.getLabeledExtracts().addAll(allLabeledExtracts);
                     investigation.getHybridizations().addAll(allHybridizations);
+                    linkHybridizationsToExperiment(investigation);
                 }
             }
         }
@@ -626,6 +627,12 @@ final class SdrfTranslator extends AbstractTranslator {
     private void linkLabeledExtractAndHybridization(LabeledExtract labeledExtract, Hybridization hybridization) {
         hybridization.getLabeledExtracts().add(labeledExtract);
         labeledExtract.getHybridizations().add(hybridization);
+    }
+
+    private void linkHybridizationsToExperiment(Experiment experiment) {
+        for (Hybridization hybridization : allHybridizations) {
+            hybridization.setExperiment(experiment);
+        }
     }
 
     private boolean isBioMaterial(SdrfNodeType nodeType) {
