@@ -26,11 +26,11 @@
 
 <c:set var="loadingDivId" value="loadingText${subtab ? 'Subtab' : ''}"/>
 <div id="${loadingDivId}" style="display: none;">
-    <div><fmt:message key="${loadingPaneMessageKey}" /></div>
+    <div><img alt="Indicator" align="absmiddle" src="<c:url value="/images/indicator.gif"/>" /> <fmt:message key="${loadingPaneMessageKey}" /></div>
 </div>
 <c:set var="submittingDivId" value="submittingText${subtab ? 'Subtab' : ''}"/>
 <div id="${submittingDivId}" style="display: none;">
-    <div><fmt:message key="${submittingPaneMessageKey}" /></div>
+    <div><img alt="Indicator" align="absmiddle" src="<c:url value="/images/indicator.gif"/>" /> <fmt:message key="${submittingPaneMessageKey}" /></div>
 </div>
 <c:set var="formDivId" value="theForm${subtab ? 'Subtab' : ''}"/>
 <div id="${formDivId}">

@@ -19,7 +19,13 @@
                 <a href="${viewMessagesUrl}">${row.name}</a>
             </ajax:anchors>
         </display:column>
-        <display:column property="type.name" titleKey="experiment.files.type" sortable="true" />
-        <display:column property="status" titleKey="experiment.files.status" sortable="true" />
+        <display:column titleKey="experiment.files.type" sortable="true">
+            <fmt:message key="experiment.filew.filetype.${row.type.name}" />
+        </display:column>
+        <display:column titleKey="experiment.files.status" sortable="true" >
+            <fmt:message key="experiment.files.filestatus.${row.status}">
+                <fmt:param><c:url value="/" /></fmt:param>
+            </fmt:message>
+        </display:column>
     </display:table>
 </ajax:displayTag>

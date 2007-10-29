@@ -22,7 +22,7 @@
     }
 </script>
 
-<caarray:tabPane subtab="true">
+<caarray:tabPane subtab="true" submittingPaneMessageKey="experiment.files.processing">
 
     <caarray:successMessages />
 
@@ -41,7 +41,7 @@
         <div class="actions">
             <a href="#" onclick="Effect.Fade('uploadFileDiv', { duration: 0.1 } );">Cancel</a>
             <a href="#" onclick="moreUploads();">Add More Files</a>
-            <a href="#" onclick="document.getElementById('uploadForm').submit();">Upload</a>
+            <a href="#" onclick="TabUtils.showSubtabSubmittingText(); document.getElementById('uploadForm').submit();">Upload</a>
         </div>
     </div>
 
