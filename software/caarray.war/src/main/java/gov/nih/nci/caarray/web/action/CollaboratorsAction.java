@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.web.action;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getPermissionsManagementService;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.security.exceptions.CSException;
 
 import java.util.List;
 
@@ -94,10 +95,15 @@ import com.opensymphony.xwork2.ActionSupport;
  */
 public class CollaboratorsAction extends ActionSupport {
 
+    //
+    // TODO validation is not implemented
+    //
+
     private static final long serialVersionUID = 1L;
 
     private List<CollaboratorGroup> groups;
     private CollaboratorGroup targetGroup;
+    private String groupName;
 
     /**
      * @return listGroups
@@ -115,6 +121,21 @@ public class CollaboratorsAction extends ActionSupport {
     public String delete() {
         getPermissionsManagementService().delete(targetGroup);
         return listGroups();
+    }
+
+    /**
+     * Creates a new collaborator group.
+     *
+     * @return listGroups
+     * @throws CSException on CSM error
+     */
+    public String create() throws CSException {
+        getPermissionsManagementService().create(getGroupName());
+        return listGroups();
+    }
+
+    public String edit() {
+        return "edit";
     }
 
     /**
@@ -143,5 +164,19 @@ public class CollaboratorsAction extends ActionSupport {
      */
     public void setTargetGroup(CollaboratorGroup targetGroup) {
         this.targetGroup = targetGroup;
+    }
+
+    /**
+     * @return the groupName
+     */
+    public String getGroupName() {
+        return groupName;
+    }
+
+    /**
+     * @param groupName the groupName to set
+     */
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 }

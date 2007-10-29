@@ -86,7 +86,14 @@ import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.caarray.util.SecurityInterceptor;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
+import gov.nih.nci.security.AuthorizationManager;
+import gov.nih.nci.security.authorization.domainobjects.Group;
+import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
+import gov.nih.nci.security.exceptions.CSTransactionException;
 
 import java.util.List;
 
@@ -161,6 +168,28 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
      */
     public void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public CollaboratorGroup create(String name) throws CSTransactionException, CSObjectNotFoundException {
+        LogUtil.logSubsystemEntry(LOG, name);
+        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
+        Group group = new Group();
+        group.setGroupName(name);
+        group.setGroupDesc("Collaborator Group");
+        group.setApplication(am.getApplication("caarray"));
+        am.createGroup(group);
+
+        User user = am.getUser(UsernameHolder.getUser());
+
+        CollaboratorGroup cg = new CollaboratorGroup(group, user);
+        getDaoFactory().getCollaboratorGroupDao().save(cg);
+
+        LogUtil.logSubsystemExit(LOG);
+        return cg;
+
     }
 
 }

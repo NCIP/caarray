@@ -83,6 +83,8 @@
 package gov.nih.nci.caarray.application.permissions;
 
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
+import gov.nih.nci.security.exceptions.CSTransactionException;
 
 import java.util.List;
 
@@ -108,4 +110,15 @@ public interface PermissionsManagementService {
      * @return all collaborator groups in the system
      */
     List<CollaboratorGroup> getCollaboratorGroups();
+
+    /**
+     * Create a new CollaboratorGroup.  The owner of the group will be the
+     * currently logged in user.  The group will have no members.
+     *
+     * @param name name of the collaborator group.
+     * @return the new group
+     * @throws CSTransactionException on CSM error
+     * @throws CSObjectNotFoundException on CSM error
+     */
+    CollaboratorGroup create(String name) throws CSTransactionException, CSObjectNotFoundException;
 }

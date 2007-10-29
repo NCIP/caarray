@@ -87,9 +87,16 @@ import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.dao.stub.CollaboratorGroupDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.exceptions.CSException;
 
+import java.util.Iterator;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -124,5 +131,33 @@ public class PermissionsManagementServiceTest {
         int count = stub.getNumGetAllCalls();
         permissionsManagementService.getCollaboratorGroups();
         assertEquals(count + 1, stub.getNumGetAllCalls());
+    }
+
+    @Test
+    public void testCreate() throws CSException {
+        CollaboratorGroup created = permissionsManagementService.create("test");
+        CollaboratorGroupDaoStub stub = (CollaboratorGroupDaoStub) daoFactoryStub.getCollaboratorGroupDao();
+        assertEquals(created, stub.getSavedObject());
+    }
+
+    @Test(expected = CSException.class)
+    public void testCreateException() throws CSException  {
+        permissionsManagementService.create("test");
+        permissionsManagementService.create("test");
+    }
+
+    @SuppressWarnings("unchecked")
+    @After
+    public void after() {
+        HibernateUtil.enableFilters(false);
+        Session s = HibernateUtil.getCurrentSession();
+        Transaction tx = s.beginTransaction();
+        Iterator<Group> it = s.createQuery("FROM " + Group.class.getName() + " g where g.groupName = 'test'")
+                              .list()
+                              .iterator();
+        if (it.hasNext()) {
+            s.delete(it.next());
+        }
+        tx.commit();
     }
 }

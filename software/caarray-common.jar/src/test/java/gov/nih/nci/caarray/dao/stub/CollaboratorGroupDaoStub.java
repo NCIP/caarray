@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.CollaboratorGroupDao;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 
 import java.util.Collections;
@@ -94,6 +95,16 @@ import java.util.List;
 public class CollaboratorGroupDaoStub extends AbstractDaoStub implements CollaboratorGroupDao {
 
     private static int numGetAllCalls = 0;
+    private static PersistentObject savedObject;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void save(PersistentObject caArrayEntity) {
+        super.save(caArrayEntity);
+        CollaboratorGroupDaoStub.savedObject = caArrayEntity;
+    }
 
     /**
      * {@inheritDoc}
@@ -105,5 +116,12 @@ public class CollaboratorGroupDaoStub extends AbstractDaoStub implements Collabo
 
     public int getNumGetAllCalls() {
         return numGetAllCalls;
+    }
+
+    /**
+     * @return the savedObject
+     */
+    public PersistentObject getSavedObject() {
+        return savedObject;
     }
 }

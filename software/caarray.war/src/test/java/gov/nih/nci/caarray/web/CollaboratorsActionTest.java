@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.action.CollaboratorsAction;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.exceptions.CSException;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -132,5 +133,12 @@ public class CollaboratorsActionTest {
         action.delete();
         assertTrue(pstub.isGetCalled());
         assertEquals(cg, pstub.getDeletedGroup());
+    }
+
+    @Test
+    public void testCreate() throws CSException {
+        action.setGroupName("test");
+        action.create();
+        assertEquals("test", pstub.getCreateName());
     }
 }

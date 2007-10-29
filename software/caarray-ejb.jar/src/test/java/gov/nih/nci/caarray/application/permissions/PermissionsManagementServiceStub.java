@@ -83,6 +83,8 @@
 package gov.nih.nci.caarray.application.permissions;
 
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
+import gov.nih.nci.security.exceptions.CSTransactionException;
 
 import java.util.Collections;
 import java.util.List;
@@ -94,6 +96,7 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
 
     private CollaboratorGroup deletedGroup;
     private boolean getCalled = false;
+    private String createName = null;
 
     /**
      * {@inheritDoc}
@@ -130,5 +133,20 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
     public void reset() {
         getCalled = false;
         deletedGroup = null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public CollaboratorGroup create(String name) throws CSTransactionException, CSObjectNotFoundException {
+        this.createName = name;
+        return null;
+    }
+
+    /**
+     * @return name of last group 'created'
+     */
+    public String getCreateName() {
+        return createName;
     }
 }

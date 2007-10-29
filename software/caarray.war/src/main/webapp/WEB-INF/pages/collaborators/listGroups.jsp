@@ -8,7 +8,7 @@
         </h1>
         <div class="padme">
 			<div class="addlink_notabs">
-				<a href="collaboration_group_create.htm" class="btn" onclick="this.blur();"><span class="btn_img"><span class="add">Add a New Collaboration Group</span></span></a>
+				<a href="edit.action" class="btn" onclick="this.blur();"><span class="btn_img"><span class="add">Add a New Collaboration Group</span></span></a>
 			</div>		
 		    <c:url value="/protected/ajax/collaborators/listGroups.action" var="sortUrl"/>
 		    
@@ -41,5 +41,7 @@
 	            </display:table>
 	        </ajax:displayTag>
 		</div>
+		<s:actionerror/>
+		<s:actionmessage/>
     </div>
  </body>
