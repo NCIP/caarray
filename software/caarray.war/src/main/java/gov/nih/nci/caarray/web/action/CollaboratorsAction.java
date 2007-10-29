@@ -84,10 +84,14 @@ package gov.nih.nci.caarray.web.action;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getPermissionsManagementService;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.caarray.util.SecurityInterceptor;
+import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSException;
+import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 
 import java.util.List;
 
+import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 
 /**
@@ -104,6 +108,7 @@ public class CollaboratorsAction extends ActionSupport {
     private List<CollaboratorGroup> groups;
     private CollaboratorGroup targetGroup;
     private String groupName;
+    private User targetUser;
 
     /**
      * @return listGroups
@@ -111,7 +116,7 @@ public class CollaboratorsAction extends ActionSupport {
     @SuppressWarnings("unchecked")
     public String listGroups() {
         this.groups = getPermissionsManagementService().getCollaboratorGroups();
-        return "listGroups";
+        return Action.INPUT;
     }
 
     /**
@@ -134,8 +139,20 @@ public class CollaboratorsAction extends ActionSupport {
         return listGroups();
     }
 
+    /**
+     * Takes user to the edit group page.
+     * @return edit
+     */
     public String edit() {
-        return "edit";
+        return Action.SUCCESS;
+    }
+
+    /**
+     * Takes the user to the user details screen.
+     * @return userDetail
+     */
+    public String userDetail() {
+        return Action.SUCCESS;
     }
 
     /**
@@ -178,5 +195,33 @@ public class CollaboratorsAction extends ActionSupport {
      */
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    /**
+     * @return the targetUser
+     */
+    public User getTargetUser() {
+        return targetUser;
+    }
+
+    /**
+     * @param targetUser the targetUser to set
+     */
+    public void setTargetUser(User targetUser) {
+        this.targetUser = targetUser;
+    }
+
+    /**
+     * @return the targetUserId
+     */
+    public Long getTargetUserId() {
+        if (targetUser == null) {
+            return null;
+        }
+        return targetUser.getUserId();
+    }
+
+    public void setTargetUserId(Long id) throws CSObjectNotFoundException {
+        this.targetUser = SecurityInterceptor.getAuthorizationManager().getUserById(id.toString());
     }
 }

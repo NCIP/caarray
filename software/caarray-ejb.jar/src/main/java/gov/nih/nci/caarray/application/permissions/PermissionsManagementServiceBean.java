@@ -126,6 +126,11 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
      */
     public void delete(CollaboratorGroup group) {
         LogUtil.logSubsystemEntry(LOG, group);
+        if (!group.getOwner().getLoginName().equals(UsernameHolder.getUser())) {
+            throw new IllegalArgumentException(
+                    String.format("%s cannot delete group %s, because they are not the group owner.",
+                                  UsernameHolder.getUser(), group.getGroup().getGroupName()));
+        }
         getGenericDataService().delete(group);
         LogUtil.logSubsystemExit(LOG);
     }

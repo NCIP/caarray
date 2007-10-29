@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.dao.stub.CollaboratorGroupDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSException;
@@ -121,8 +122,16 @@ public class PermissionsManagementServiceTest {
     @Test
     public void testDelete() {
         CollaboratorGroup cg = new CollaboratorGroup(new Group(), new User());
+        cg.getOwner().setLoginName(UsernameHolder.getUser());
         permissionsManagementService.delete(cg);
         assertEquals(cg, genericDataServiceStub.getDeletedObject());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDeleteException() {
+        CollaboratorGroup cg = new CollaboratorGroup(new Group(), new User());
+        cg.getOwner().setLoginName("anotheruser");
+        permissionsManagementService.delete(cg);
     }
 
     @Test

@@ -25,18 +25,28 @@
 	                	</c:if>
 	                	<c:if test="${fn:length(row.group.users) <= 20}">
 		                	<c:forEach items="${row.group.users}" var="curUser" varStatus="status">
-		                		<a href="#">${curUser.firstName} ${curUser.lastName}</a><c:if test="${!status.last}">,</c:if>
+		                		<c:url value="/protected/collaborators/userDetail.action" var="viewUserUrl">
+		                			<c:param name="targetUserId" value="${curUser.userId}"/>
+		                		</c:url>
+		                		<a href="${viewUserUrl}">${curUser.firstName} ${curUser.lastName}</a><c:if test="${!status.last}">,</c:if>
 		                	</c:forEach>
+	                	</c:if>
+	                	<c:if test="${fn:length(row.group.users) == 0}">
+	                		(Empty group)
 	                	</c:if>
 	                </display:column>
 	                <display:column titleKey="button.edit">
-	                    <a href="#"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
+	                	<c:if test="${row.owner.loginName eq pageContext.request.remoteUser}">
+		                    <a href="#"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
+		                </c:if>
 	                </display:column>
 	                <display:column titleKey="button.delete">
-	                	<c:url value="/protected/collaborators/delete.action" var="deleteUrl">
-	                		<c:param name="targetGroup" value="${row.id}"/>
-	                	</c:url>
-	               		<a href="${deleteUrl}"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.delete"/>" /></a>
+	                	<c:if test="${row.owner.loginName eq pageContext.request.remoteUser}">
+		                	<c:url value="/protected/collaborators/delete.action" var="deleteUrl">
+		                		<c:param name="targetGroup" value="${row.id}"/>
+		                	</c:url>
+		               		<a href="${deleteUrl}"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.delete"/>" /></a>
+		               	</c:if>
 	                </display:column>
 	            </display:table>
 	        </ajax:displayTag>
