@@ -102,7 +102,6 @@ public class Publication extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
 
-    private String name;
     private String authors;
     private String doi;
     private String editor;
@@ -114,7 +113,6 @@ public class Publication extends AbstractCaArrayEntity {
     private String uri;
     private String volume;
     private String year;
-    private Experiment experiment;
     private Term status;
     private Term type;
     @SuppressWarnings("PMD")
@@ -240,22 +238,6 @@ public class Publication extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the experiment
-     */
-    @ManyToOne
-    @ForeignKey(name = "PUBLICATION_EXPR")
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    /**
-     * @param experiment the experiment to set
-     */
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -366,21 +348,6 @@ public class Publication extends AbstractCaArrayEntity {
      */
     public void setYear(String year) {
         this.year = year;
-    }
-
-    /**
-     * @return the name
-     */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
     }
 
     /**

@@ -103,8 +103,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Transaction;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -128,8 +127,8 @@ public class SearchDaoTest {
     /**
      * Define the dummy objects that will be used by the tests.
      */
-    @BeforeClass
-    public static void setUpBeforeClass() {
+    @Before
+    public void setUp() {
         // Initialize all the dummy objects needed for the tests.
         initializeParameters();
         initializeProtocols();
@@ -143,7 +142,6 @@ public class SearchDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             LOG.error("Error setting up dummy protocol.", e);
-            cleanUpProtocol();
         }
     }
 
@@ -341,26 +339,6 @@ public class SearchDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during search by example: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Clean up after all tests by removing the dummy objects from the database.
-     */
-    @AfterClass
-    public static void cleanUpProtocol() {
-        Transaction tx = null;
-        try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
-            PROTOCOL_DAO.remove(DUMMY_PARAMETER_1);
-            PROTOCOL_DAO.remove(DUMMY_PARAMETER_2);
-            PROTOCOL_DAO.remove(DUMMY_PROTOCOL_1);
-            PROTOCOL_DAO.remove(DUMMY_TERM_1);
-            PROTOCOL_DAO.remove(DUMMY_CATEGORY);
-            tx.commit();
-        } catch (DAOException deleteException) {
-            HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up dummy protocol.", deleteException);
         }
     }
 }

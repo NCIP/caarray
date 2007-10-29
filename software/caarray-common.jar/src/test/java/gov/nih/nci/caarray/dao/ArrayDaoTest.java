@@ -86,7 +86,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.fail;
-import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
@@ -99,7 +98,6 @@ import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -123,7 +121,6 @@ public class ArrayDaoTest extends AbstractDaoTest {
     private static ArrayDesign DUMMY_ARRAYDESIGN_1 = new ArrayDesign();
     private static ArrayDesign DUMMY_ARRAYDESIGN_2 = new ArrayDesign();
     private static ArrayDesign DUMMY_ARRAYDESIGN_3 = new ArrayDesign();
-    private List<PersistentObject> toDelete = new ArrayList<PersistentObject>();
     private static int uniqueInt = 0;
 
     private static final ArrayDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getArrayDao();
@@ -135,8 +132,6 @@ public class ArrayDaoTest extends AbstractDaoTest {
     public void setUp() {
         // Initialize all the dummy objects needed for the tests.
         initializeArrayDesigns();
-        toDelete.clear();
-
         Transaction tx = null;
         // Save dummy objects to database.
         try {
@@ -148,7 +143,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error setting up dummy protocol.", e);
+            LOG.error("Error setting up test data.", e);
         }
     }
 
@@ -219,30 +214,6 @@ public class ArrayDaoTest extends AbstractDaoTest {
         }
     }
 
-    /**
-     * Clean up after a test by removing the dummy data.
-     */
-    @org.junit.After
-    public void cleanUp() {
-        Transaction tx = null;
-        try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
-            remove(DUMMY_ARRAYDESIGN_1);
-            remove(DUMMY_ARRAYDESIGN_2);
-            remove(DUMMY_ARRAYDESIGN_3);
-            remove(DUMMY_ORGANIZATION);
-            remove(DUMMY_ORGANIZATION2);
-            remove(DUMMY_ORGANIZATION3);
-            for (PersistentObject po : toDelete) {
-                remove(po);
-            }
-            tx.commit();
-        } catch (DAOException deleteException) {
-            HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up entity.", deleteException);
-        }
-    }
-
     @Test
     public void testGetArrayData() {
         Transaction tx = null;
@@ -253,7 +224,6 @@ public class ArrayDaoTest extends AbstractDaoTest {
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             DAO_OBJECT.save(rawData);
-            toDelete.add(rawData);
             tx.commit();
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             AbstractArrayData retrievedArrayData = DAO_OBJECT.getArrayData(file);
@@ -277,14 +247,11 @@ public class ArrayDaoTest extends AbstractDaoTest {
             QuantitationType quantitationType1 = createTestQuantitationType(createTestQuantitationTypeDescriptor());
             QuantitationType quantitationType2 = createTestQuantitationType(createTestQuantitationTypeDescriptor());
             DAO_OBJECT.save(quantitationType1);
-            toDelete.add(quantitationType1);
             DAO_OBJECT.save(quantitationType2);
-            toDelete.add(quantitationType2);
             assertNotSame(quantitationType1, quantitationType2);
             arrayDataType.getQuantitationTypes().add(quantitationType1);
             arrayDataType.getQuantitationTypes().add(quantitationType2);
             DAO_OBJECT.save(arrayDataType);
-            toDelete.add(arrayDataType);
             tx.commit();
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             HibernateUtil.getCurrentSession().clear();
@@ -327,7 +294,6 @@ public class ArrayDaoTest extends AbstractDaoTest {
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             DAO_OBJECT.save(quantitationType);
-            toDelete.add(quantitationType);
             tx.commit();
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             QuantitationType retrievedQuantitationType = DAO_OBJECT.getQuantitationType(testDescriptor);
@@ -358,11 +324,5 @@ public class ArrayDaoTest extends AbstractDaoTest {
         quantitationType.setName(descriptor.getName());
         quantitationType.setTypeClass(descriptor.getDataType().getTypeClass());
         return quantitationType;
-    }
-
-    private void remove(PersistentObject entity) {
-        if (entity != null) {
-            DAO_OBJECT.remove(entity);
-        }
     }
 }

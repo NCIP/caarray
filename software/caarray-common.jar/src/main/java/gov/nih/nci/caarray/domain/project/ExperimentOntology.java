@@ -90,7 +90,13 @@ public enum ExperimentOntology {
     /**
      * MGED Ontology
      */
-    MGED("MGED");
+    MGED("MGED"),
+    
+    /**
+     * CAArray Local Ontology
+     */
+    CAARRAY("caarray");
+    
 
     private final String ontologyName;
 

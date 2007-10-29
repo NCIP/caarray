@@ -565,7 +565,16 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the publications
      */
-    @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.LAZY)
+    /**
+     * Gets the samples.
+     *
+     * @return the samples
+     */
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name="experiment")
+    @ForeignKey(name = "PUBLICATION_EXPR_FK")
+    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+          org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Publication> getPublications() {
         return this.publications;
     }

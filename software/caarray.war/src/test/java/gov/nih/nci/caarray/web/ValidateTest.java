@@ -92,7 +92,7 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
-import gov.nih.nci.caarray.web.action.ProjectFilesAction;
+import gov.nih.nci.caarray.web.action.project.ProjectFilesAction;
 
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;

@@ -9,7 +9,7 @@
         Required fields are highlighted and have
         <span class="required"><span class="asterisk">*</span>asterisks<span class="asterisk">*</span></span>.
         </p>
-    <s:form action="ajax/project/saveTab/overview" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper', 'save_draft'); return false;">
+    <s:form action="ajax/project/tab/Overview/save" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper', 'save_draft'); return false;">
         <s:textfield required="true" name="project.experiment.title" label="Experiment Title" size="80" tabindex="1"/>
         <tr>
             <td class="tdLabel"><label for="proposalStatus">Status</label></td>
@@ -63,7 +63,7 @@
         }
     </script>
 
-    <c:url var="getArrayDesignsUrl" value="/protected/ajax/project/retrieveArrayDesigns.action" />
+    <c:url var="getArrayDesignsUrl" value="/protected/ajax/project/tab/Overview/retrieveArrayDesigns.action" />
     <ajax:select baseUrl="${getArrayDesignsUrl}" 
         source="projectForm_project_experiment_manufacturer" target="projectForm_project_experiment_arrayDesigns" 
         parameters="manufacturerId={projectForm_project_experiment_manufacturer}" 

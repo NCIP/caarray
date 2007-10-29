@@ -81,7 +81,7 @@
             <result name="success" type="redirect-action">project/list</result>
         </action>
 
-        <action name="project/*" class="gov.nih.nci.caarray.web.action.ProjectAction" method="{1}">
+        <action name="project/*" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="{1}">
             <result name="workspace" type="redirect-action">project/list</result>
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
             <result name="details">/WEB-INF/pages/project/details.jsp</result>
@@ -89,45 +89,11 @@
             <result name="permissions">/WEB-INF/pages/project/permissions.jsp</result>
         </action>
 
-        <action name="ajax/project/loadTab/*"
-            class="gov.nih.nci.caarray.web.action.ProjectAction" method="{1}LoadTab">
-            <result name="input">/WEB-INF/pages/project/{1}.jsp</result>
-        </action>
-
-        <action name="ajax/project/loadGenericTab/*"
-            class="gov.nih.nci.caarray.web.action.ProjectAction" method="loadTab">
-            <result name="input">/WEB-INF/pages/project/{1}.jsp</result>
-        </action>
-
-        <action name="ajax/project/saveTab/*"
-            class="gov.nih.nci.caarray.web.action.ProjectAction" method="{1}SaveTab">
-            <result name="input" type="chain">ajax/project/loadTab/{1}</result>
-            <result name="success">/WEB-INF/pages/project/{1}.jsp</result>
+        <action name="ajax/project/tab/*/*"
+            class="gov.nih.nci.caarray.web.action.project.Project{1}Action" method="{2}">
+            <result name="input">/WEB-INF/pages/project/tab{1}.jsp</result>
+            <result name="success">/WEB-INF/pages/project/tab{1}.jsp</result>
             <result name="workspace">/WEB-INF/pages/project/backToWorkspace.jsp</result>
-            <result name="sourcesTab">/WEB-INF/pages/project/sources.jsp</result>
-            <result name="samplesTab">/WEB-INF/pages/project/samples.jsp</result>
-            <result name="factorsTab">/WEB-INF/pages/project/factors.jsp</result>
-        </action>
-
-        <action name="ajax/project/saveGenericTab/*"
-            class="gov.nih.nci.caarray.web.action.ProjectAction" method="saveTab">
-            <result name="input">/WEB-INF/pages/project/{1}.jsp</result>
-            <result name="success">/WEB-INF/pages/project/{1}.jsp</result>
-            <result name="workspace">/WEB-INF/pages/project/backToWorkspace.jsp</result>
-        </action>
-
-        <action name="ajax/project/remove/*"
-            class="gov.nih.nci.caarray.web.action.ProjectAction" method="{1}Removal">
-            <result name="success">/WEB-INF/pages/project/{1}s.jsp</result>
-        </action>
-
-        <action name="ajax/project/copy/*"
-            class="gov.nih.nci.caarray.web.action.ProjectAction" method="{1}Copy">
-            <result name="success">/WEB-INF/pages/project/{1}s.jsp</result>
-        </action>
-
-        <action name="ajax/project/retrieveArrayDesigns"
-            class="gov.nih.nci.caarray.web.action.ProjectAction" method="retrieveArrayDesigns">
             <result name="xmlArrayDesigns" type="stream">
                 <param name="contentType">text/xml;charset=UTF-8</param>
                 <param name="inputName">arrayDesignsAsXml</param>
@@ -135,7 +101,15 @@
             </result>
         </action>
 
-        <action name="project/files/*" class="gov.nih.nci.caarray.web.action.ProjectFilesAction" method="{1}">
+        <action name="ajax/project/listTab/*/*"
+            class="gov.nih.nci.caarray.web.action.project.Project{1}Action" method="{2}">
+            <result name="input">/WEB-INF/pages/project/tab{1}/edit.jsp</result>
+            <result name="success">/WEB-INF/pages/project/tab{1}/edit.jsp</result>
+            <result name="list">/WEB-INF/pages/project/tab{1}/list.jsp</result>
+            <result name="workspace">/WEB-INF/pages/project/backToWorkspace.jsp</result>
+        </action>
+
+        <action name="project/files/*" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="{1}">
             <result name="upload" type="redirect-action">project/edit?project.id=${project.id}&amp;initialTab=data</result>
             <result name="download" type="stream">
                 <param name="contentType">application/zip</param>
@@ -145,7 +119,7 @@
             </result>
         </action>
 
-        <action name="ajax/project/files/*" class="gov.nih.nci.caarray.web.action.ProjectFilesAction" method="{1}">
+        <action name="ajax/project/files/*" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="{1}">
             <result name="input">/WEB-INF/pages/project/files/list.jsp</result>
             <result name="success">/WEB-INF/pages/project/files/{1}.jsp</result>
         </action>

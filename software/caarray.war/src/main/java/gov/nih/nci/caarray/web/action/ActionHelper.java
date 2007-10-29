@@ -82,6 +82,15 @@
  */
 package gov.nih.nci.caarray.web.action;
 
+import gov.nih.nci.caarray.application.GenericDataService;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.application.file.FileManagementService;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
+import gov.nih.nci.caarray.application.project.ProjectManagementService;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,5 +115,68 @@ public class ActionHelper {
         }
         messages.add(msg);
         ServletActionContext.getRequest().getSession().setAttribute("messages", messages);
+    }
+
+    /**
+     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
+     * via static import
+     * @return the service
+     */
+    public static ProjectManagementService getProjectManagementService() {
+        return (ProjectManagementService) ServiceLocatorFactory.getLocator().lookup(ProjectManagementService.JNDI_NAME);
+    }
+
+    /**
+     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
+     * via static import
+     * @return the service
+     */
+    public static PermissionsManagementService getPermissionsManagementService() {
+        return (PermissionsManagementService) ServiceLocatorFactory.getLocator().lookup(PermissionsManagementService.JNDI_NAME);
+    }
+
+    /**
+     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
+     * via static import
+     * @return the service
+     */
+    public static FileAccessService getFileAccessService() {
+        return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
+    }
+
+    /**
+     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
+     * via static import
+     * @return the service
+     */
+    public static FileManagementService getFileManagementService() {
+        return (FileManagementService) ServiceLocatorFactory.getLocator().lookup(FileManagementService.JNDI_NAME);
+    }
+
+    /**
+     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
+     * via static import
+     * @return the service
+     */
+    public static VocabularyService getVocabularyService() {
+        return (VocabularyService) ServiceLocatorFactory.getLocator().lookup(VocabularyService.JNDI_NAME);
+    }
+
+    /**
+     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
+     * via static import
+     * @return the service
+     */
+    public static GenericDataService getGenericDataService() {
+        return (GenericDataService) ServiceLocatorFactory.getLocator().lookup(GenericDataService.JNDI_NAME);
+    }
+
+    /**
+     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
+     * via static import
+     * @return the service
+     */
+    public static ArrayDesignService getArrayDesignService() {
+        return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
     }
 }

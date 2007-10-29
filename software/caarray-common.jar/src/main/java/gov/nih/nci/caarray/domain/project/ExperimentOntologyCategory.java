@@ -126,7 +126,17 @@ public enum ExperimentOntologyCategory {
     /**
      * Roles category, used for various roles in an experiment.
      */
-    ROLES("Roles");
+    ROLES("Roles"),
+    
+    /**
+     * PublicationType category, used for type of Publications
+     */
+    PUBLICATION_TYPE("PublicationType"),
+
+    /**
+     * PublicationStatus category, used for status of Publications
+     */
+    PUBLICATION_STATUS("PublicationStatus");
 
     private final String categoryName;
 

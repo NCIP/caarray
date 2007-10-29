@@ -4,7 +4,7 @@
     <div class="boxpad">
     <p class="instructions">Contact information for this experiment is below. Required fields are highlighted and have <span class="required"><span class="asterisk">*</span>asterisks<span class="asterisk">*</span></span>.
     </p>
-    <s:form action="ajax/project/saveTab/contacts" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper', 'save_draft'); return false;">
+    <s:form action="ajax/project/tab/Contacts/save" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper', 'save_draft'); return false;">
         <tbody>
         <tr><th colspan="2">Principal Investigator (P.I.)</th></tr>
         <s:textfield required="true" name="primaryInvestigator.firstName" label="P.I. First Name" size="80" tabindex="1"/>

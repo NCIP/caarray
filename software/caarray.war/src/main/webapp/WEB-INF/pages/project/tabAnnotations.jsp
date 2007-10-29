@@ -1,15 +1,15 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
-<c:url value="/protected/ajax/project/loadTab/experimentalDesign.action" var="experimentalDesignUrl">
+<c:url value="/protected/ajax/project/tab/ExperimentalDesign/load.action" var="experimentalDesignUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
-<c:url value="/protected/ajax/project/loadGenericTab/factors.action" var="experimentalFactorsUrl">
+<c:url value="/protected/ajax/project/listTab/Factors/load.action" var="experimentalFactorsUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
-<c:url value="/protected/ajax/project/loadGenericTab/sources.action" var="sourcesUrl">
+<c:url value="/protected/ajax/project/listTab/Sources/load.action" var="sourcesUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
-<c:url value="/protected/ajax/project/loadGenericTab/samples.action" var="samplesUrl">
+<c:url value="/protected/ajax/project/listTab/Samples/load.action" var="samplesUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
 <c:url value="/ajax/notYetImplemented.jsp" var="extractsUrl">

@@ -98,7 +98,7 @@ import java.util.Iterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Transaction;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -106,42 +106,49 @@ import org.junit.Test;
  *
  * @author Rashmi Srinivasa
  */
+@SuppressWarnings("PMD")
 public class SampleDaoTest  extends AbstractDaoTest {
     private static final Log LOG = LogFactory.getLog(SampleDaoTest.class);
 
-    private static final Sample DUMMY_SAMPLE_1 = new Sample();
-
-    private static final TermSource DUMMY_SOURCE = new TermSource();
-    private static final Category DUMMY_CATEGORY = new Category();
-    private static final Term DUMMY_MATERIAL_TYPE = new Term();
-
-    private static final ValueBasedCharacteristic DUMMY_CHARACTERISTIC = new ValueBasedCharacteristic();
-
-    // private static final gov.nih.nci.caarray.domain.sample.Source DUMMY_BIOSOURCE_1 = new
-    //     gov.nih.nci.caarray.domain.sample.Source();
-    // private static final gov.nih.nci.caarray.domain.sample.Source DUMMY_BIOSOURCE_2 = new
-    //     gov.nih.nci.caarray.domain.sample.Source();
-    // private static final Extract DUMMY_EXTRACT_1 = new Extract();
-    // private static final Extract DUMMY_EXTRACT_2 = new Extract();
+    private static Sample DUMMY_SAMPLE_1 = new Sample();
+    private static TermSource DUMMY_SOURCE = new TermSource();
+    private static Category DUMMY_CATEGORY = new Category();
+    private static Term DUMMY_MATERIAL_TYPE = new Term();
+    private static ValueBasedCharacteristic DUMMY_CHARACTERISTIC = new ValueBasedCharacteristic();
 
     private static final SampleDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getSampleDao();
 
     /**
      * Define the dummy objects that will be used by the tests.
      */
-    @BeforeClass
-    public static void setUpBeforeClass() {
+    @Before
+    public void setUpBeforeClass() {
+        DUMMY_SAMPLE_1 = new Sample();
         DUMMY_SAMPLE_1.setName("DummySample1");
         DUMMY_SAMPLE_1.setDescription("DummySample1Desc");
 
+        DUMMY_SOURCE = new TermSource();
         DUMMY_SOURCE.setName("Dummy Source");
+
+        DUMMY_CATEGORY = new Category();
         DUMMY_CATEGORY.setName("Dummy Category");
+        DUMMY_MATERIAL_TYPE = new Term();
         DUMMY_MATERIAL_TYPE.setValue("Dummy Material Type");
         DUMMY_MATERIAL_TYPE.setSource(DUMMY_SOURCE);
         DUMMY_MATERIAL_TYPE.setCategory(DUMMY_CATEGORY);
         DUMMY_SAMPLE_1.setMaterialType(DUMMY_MATERIAL_TYPE);
 
+        DUMMY_CHARACTERISTIC = new ValueBasedCharacteristic();
         DUMMY_CHARACTERISTIC.setValue("Dummy Characteristic");
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            DAO_OBJECT.save(DUMMY_SAMPLE_1);
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("Error setting up test data: " + e.getMessage());
+        } 
     }
 
     /**
@@ -168,9 +175,7 @@ public class SampleDaoTest  extends AbstractDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of sample: " + e.getMessage());
-        } finally {
-            cleanUpSample();
-        }
+        } 
     }
 
     /**
@@ -196,25 +201,5 @@ public class SampleDaoTest  extends AbstractDaoTest {
             return false;
         }
         return true;
-    }
-
-    /**
-     * Clean up after a test by removing the dummy sample.
-     */
-    private void cleanUpSample() {
-        Transaction tx = null;
-        try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
-            DAO_OBJECT.remove(DUMMY_SAMPLE_1);
-            DAO_OBJECT.remove(DUMMY_MATERIAL_TYPE);
-            DAO_OBJECT.remove(DUMMY_CHARACTERISTIC);
-            DAO_OBJECT.remove(DUMMY_SOURCE);
-            DAO_OBJECT.remove(DUMMY_CATEGORY);
-            tx.commit();
-        } catch (DAOException deleteException) {
-            HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up dummy sample.", deleteException);
-            fail("DAO exception during deletion of sample: " + deleteException.getMessage());
-        }
     }
 }

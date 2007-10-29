@@ -82,10 +82,8 @@
  */
 package gov.nih.nci.caarray.web.action;
 
-import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
+import static gov.nih.nci.caarray.web.action.ActionHelper.getPermissionsManagementService;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.util.List;
 
@@ -98,7 +96,6 @@ public class CollaboratorsAction extends ActionSupport {
 
     private static final long serialVersionUID = 1L;
 
-    private ServiceLocator locator = ServiceLocatorFactory.getLocator();
     private List<CollaboratorGroup> groups;
     private CollaboratorGroup targetGroup;
 
@@ -107,7 +104,7 @@ public class CollaboratorsAction extends ActionSupport {
      */
     @SuppressWarnings("unchecked")
     public String listGroups() {
-        this.groups = getPermissionManagementService().getCollaboratorGroups();
+        this.groups = getPermissionsManagementService().getCollaboratorGroups();
         return "listGroups";
     }
 
@@ -116,7 +113,7 @@ public class CollaboratorsAction extends ActionSupport {
      * @return listGroups
      */
     public String delete() {
-        getPermissionManagementService().delete(targetGroup);
+        getPermissionsManagementService().delete(targetGroup);
         return listGroups();
     }
 
@@ -146,29 +143,5 @@ public class CollaboratorsAction extends ActionSupport {
      */
     public void setTargetGroup(CollaboratorGroup targetGroup) {
         this.targetGroup = targetGroup;
-    }
-
-    /**
-     * Get ProjectManagementService.
-     * @return projectManagementService
-     */
-    public PermissionsManagementService getPermissionManagementService() {
-        return (PermissionsManagementService) locator.lookup(PermissionsManagementService.JNDI_NAME);
-    }
-
-    /**
-     * get locator for junit.
-     * @return ServiceLocator ServiceLocator
-     */
-    public ServiceLocator getLocator() {
-        return locator;
-    }
-
-    /**
-     * For use by unit tests.
-     * @param locator locator
-     */
-    public void setLocator(ServiceLocator locator) {
-        this.locator = locator;
     }
 }

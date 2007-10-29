@@ -9,22 +9,22 @@
             Propose Experiment
         </h1>
 
-        <c:url value="/protected/ajax/project/loadTab/overview.action" var="overviewUrl">
+        <c:url value="/protected/ajax/project/tab/Overview/load.action" var="overviewUrl">
             <c:param name="project.id" value="${project.id}" />
         </c:url>
-        <c:url value="/protected/ajax/project/loadTab/contacts.action" var="contactsUrl">
+        <c:url value="/protected/ajax/project/tab/Contacts/load.action" var="contactsUrl">
             <c:param name="project.id" value="${project.id}" />
         </c:url>
-        <c:url value="/protected/ajax/project/loadGenericTab/annotations.action" var="annotationsUrl">
+        <c:url value="/protected/ajax/project/tab/Annotations/load.action" var="annotationsUrl">
             <c:param name="project.id" value="${project.id}" />
         </c:url>
-        <c:url value="/protected/ajax/project/loadGenericTab/data.action" var="dataUrl">
+        <c:url value="/protected/ajax/project/tab/Data/load.action" var="dataUrl">
             <c:param name="project.id" value="${project.id}" />
         </c:url>
         <c:url value="/ajax/notYetImplemented.jsp" var="supplementalUrl">
             <c:param name="project.id" value="${project.id}" />
         </c:url>
-        <c:url value="/ajax/notYetImplemented.jsp" var="publicationsUrl">
+        <c:url value="/protected/ajax/project/listTab/Publications/load.action" var="publicationsUrl">
             <c:param name="project.id" value="${project.id}" />
         </c:url>
 

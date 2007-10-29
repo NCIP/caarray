@@ -714,6 +714,7 @@
                 <pathelement location="${caarray-common.resources.dir}" />
                 <pathelement location="${commons-io.jar}" />
                 <pathelement location="${commons-logging.jar}" />
+                <pathelement location="${commons-lang.jar}" />
                 <pathelement location="${junit.jar}" />
                 <pathelement location="${hibernate.jar}" />
                 <pathelement location="${netcdf.jar}" />

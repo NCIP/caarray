@@ -7,8 +7,11 @@ insert into category (name) value ('ExperimentDesignType');
 insert into category (name) value ('QualityControlDescriptionType');
 insert into category (name) value ('ReplicateDescriptionType');
 insert into category (name) value ('Roles');
+insert into category (name) value ('PublicationType');
+insert into category (name) value ('PublicationStatus');
 
 insert into termsource (name, url, version) values ('MGED', 'http://mged.sourceforge.net/ontologies/MGEDontology.php', '1.3.1.1');
+insert into termsource (name, url, version) values ('Caarray', 'http://caarray.nci.nih.gov/ontologies/UserDefined.html', '0.1');
 
 insert into term (value, source, category) select 'Brain', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='OrganismPart';
 insert into term (value, source, category) select 'Leg', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='OrganismPart';
@@ -28,6 +31,12 @@ insert into term (value, source, category) select 'dye_swap_replicate', termsour
 insert into term (value, source, category) select 'technical_replicate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ReplicateDescriptionType';
 insert into term (value, source, category) select 'investigator', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='Roles';
 insert into term (value, source, category) select 'submitter', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='Roles';
+insert into term (value, source, category) select 'Book', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='PublicationType';
+insert into term (value, source, category) select 'Journal', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='PublicationType';
+insert into term (value, source, category) select 'Review', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='PublicationType';
+insert into term (value, source, category) select 'Submitted', termsource.id, category.id from termsource, category where termsource.name='Caarray' and category.name='PublicationStatus';
+insert into term (value, source, category) select 'In Preparation', termsource.id, category.id from termsource, category where termsource.name='Caarray' and category.name='PublicationStatus';
+insert into term (value, source, category) select 'Published', termsource.id, category.id from termsource, category where termsource.name='Caarray' and category.name='PublicationStatus';
 
 insert into organism (common_name, scientific_name, taxonomy_rank, ethnicity_strain) values ('canine', 'Canine', '', '');
 insert into organism (common_name, scientific_name, taxonomy_rank, ethnicity_strain) values ('c.feline', 'Cat', '', '');

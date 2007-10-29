@@ -99,7 +99,7 @@ import org.hibernate.engine.SessionFactoryImplementor;
 
 /**
  * Utility class to create and retrieve Hibernate sessions.
- *
+ * 
  * @author Rashmi Srinivasa
  */
 public final class HibernateUtil {
@@ -108,27 +108,30 @@ public final class HibernateUtil {
 
     private static final Configuration HIBERNATE_CONFIG;
     private static final SessionFactory SESSION_FACTORY;
+    public static final Class<?>[] CSM_CLASSES = { gov.nih.nci.security.authorization.domainobjects.Application.class,
+            gov.nih.nci.security.authorization.domainobjects.Group.class,
+            gov.nih.nci.security.authorization.domainobjects.Privilege.class,
+            gov.nih.nci.security.authorization.domainobjects.ProtectionElement.class,
+            gov.nih.nci.security.authorization.domainobjects.ProtectionGroup.class,
+            gov.nih.nci.security.authorization.domainobjects.Role.class,
+            gov.nih.nci.security.authorization.domainobjects.User.class,
+            gov.nih.nci.security.authorization.domainobjects.UserGroupRoleProtectionGroup.class,
+            gov.nih.nci.security.authorization.domainobjects.UserProtectionElement.class,
+            gov.nih.nci.security.authorization.domainobjects.FilterClause.class };
 
     private static boolean filtersEnabled = true;
 
     static {
         try {
-            Configuration tmpConfig = new AnnotationConfiguration().setNamingStrategy(new NamingStrategy())
-              .addClass(gov.nih.nci.security.authorization.domainobjects.Application.class)
-              .addClass(gov.nih.nci.security.authorization.domainobjects.Group.class)
-              .addClass(gov.nih.nci.security.authorization.domainobjects.Privilege.class)
-              .addClass(gov.nih.nci.security.authorization.domainobjects.ProtectionElement.class)
-              .addClass(gov.nih.nci.security.authorization.domainobjects.ProtectionGroup.class)
-              .addClass(gov.nih.nci.security.authorization.domainobjects.Role.class)
-              .addClass(gov.nih.nci.security.authorization.domainobjects.User.class)
-              .addClass(gov.nih.nci.security.authorization.domainobjects.UserGroupRoleProtectionGroup.class)
-              .addClass(gov.nih.nci.security.authorization.domainobjects.UserProtectionElement.class)
-              .addClass(gov.nih.nci.security.authorization.domainobjects.FilterClause.class)
-              .setInterceptor(new SecurityInterceptor());
+            Configuration tmpConfig = new AnnotationConfiguration().setNamingStrategy(new NamingStrategy());
+            for (Class<?> cls : CSM_CLASSES) {
+                tmpConfig.addClass(cls);
+            }
+            tmpConfig.setInterceptor(new SecurityInterceptor());
             HIBERNATE_CONFIG = tmpConfig.configure();
             // We call buildSessionFactory twice, because it appears that the annotated classes are
-            // not 'activated' in the config until we build.  The filters required the classes to
-            // be present, so we throw away the first factory and use the second.  If this is
+            // not 'activated' in the config until we build. The filters required the classes to
+            // be present, so we throw away the first factory and use the second. If this is
             // removed, you'll likely see a NoClassDefFoundError in the unit tests
             HIBERNATE_CONFIG.buildSessionFactory();
             InstanceLevelSecurityHelper.addFilters(SecurityInterceptor.getAuthorizationManager(), tmpConfig);
@@ -140,15 +143,14 @@ public final class HibernateUtil {
     }
 
     /**
-     * A private constructor because this class should not be instantiated.
-     * All callable methods are static methods.
+     * A private constructor because this class should not be instantiated. All callable methods are static methods.
      */
     private HibernateUtil() {
     }
 
     /**
      * Returns the Hibernate configuration.
-     *
+     * 
      * @return a Hibernate configuration.
      */
     public static Configuration getConfiguration() {
@@ -156,24 +158,24 @@ public final class HibernateUtil {
     }
 
     /**
-     * Returns the current Hibernate session.
-     * Note that this returns a special session that can be used only in the context of a transaction.
-     * (Assuming that the hibernate properties are set to use a JTA or JDBC transaction factory.)
-     *
+     * Returns the current Hibernate session. Note that this returns a special session that can be used only in the
+     * context of a transaction. (Assuming that the hibernate properties are set to use a JTA or JDBC transaction
+     * factory.)
+     * 
      * @return a Hibernate session.
      */
     public static Session getCurrentSession() {
         Session result = SESSION_FACTORY.getCurrentSession();
         if (filtersEnabled) {
-            InstanceLevelSecurityHelper.initializeFilters(UsernameHolder.getUser(), result,
-                    SecurityInterceptor.getAuthorizationManager());
+            InstanceLevelSecurityHelper.initializeFilters(UsernameHolder.getUser(), result, SecurityInterceptor
+                    .getAuthorizationManager());
         }
         return result;
     }
 
     /**
      * Checks if the transaction is active and then rolls it back.
-     *
+     * 
      * @param tx the Transaction to roll back.
      */
     public static void rollbackTransaction(Transaction tx) {
@@ -183,39 +185,40 @@ public final class HibernateUtil {
     }
 
     /**
-     * @param enable enabled.  This should generally only be called via test code.
+     * @param enable enabled. This should generally only be called via test code.
      */
     public static void enableFilters(boolean enable) {
         filtersEnabled = enable;
     }
 
     /**
-     * Open a hibernate session and bind it as the current session via {@link ManagedSessionContext#bind(org.hibernate.classic.Session)}.
-     * The hibernate property "hibernate.current_session_context_class" must be set to "managed" for this to have effect
-     * This method should be called from within an Interceptor or Filter type class that is setting up the scope of
-     * the Session. This method should then call {@link HibernateUtil#unbindAndCleanupSession()} when the scope of the 
-     * Session is expired.
+     * Open a hibernate session and bind it as the current session via
+     * {@link ManagedSessionContext#bind(org.hibernate.classic.Session)}. The hibernate property
+     * "hibernate.current_session_context_class" must be set to "managed" for this to have effect This method should be
+     * called from within an Interceptor or Filter type class that is setting up the scope of the Session. This method
+     * should then call {@link HibernateUtil#unbindAndCleanupSession()} when the scope of the Session is expired.
      * 
      * @see ManagedSessionContext#bind(org.hibernate.classic.Session)
      */
     public static void openAndBindSession() {
         SessionFactoryImplementor sessionFactory = (SessionFactoryImplementor) SESSION_FACTORY;
-        org.hibernate.classic.Session currentSession = sessionFactory.openSession(null, true, false, ConnectionReleaseMode.AFTER_STATEMENT);
+        org.hibernate.classic.Session currentSession = sessionFactory.openSession(null, true, false,
+                ConnectionReleaseMode.AFTER_STATEMENT);
         currentSession.setFlushMode(FlushMode.COMMIT);
         ManagedSessionContext.bind(currentSession);
     }
 
     /**
-     * Close the current session and unbind it via {@link ManagedSessionContext#unbind(SessionFactory)}. 
-     * The hibernate property "hibernate.current_session_context_class" must be set to "managed" for this to have effect.
-     * This method should be called from within an Interceptor or Filter type class that is setting up the scope of
-     * the Session, when this scope is about to expire. 
+     * Close the current session and unbind it via {@link ManagedSessionContext#unbind(SessionFactory)}. The hibernate
+     * property "hibernate.current_session_context_class" must be set to "managed" for this to have effect. This method
+     * should be called from within an Interceptor or Filter type class that is setting up the scope of the Session,
+     * when this scope is about to expire.
      */
     public static void unbindAndCleanupSession() {
         org.hibernate.classic.Session currentSession = ManagedSessionContext.unbind(HibernateUtil.getSessionFactory());
         currentSession.close();
     }
-    
+
     public static SessionFactory getSessionFactory() {
         return SESSION_FACTORY;
     }

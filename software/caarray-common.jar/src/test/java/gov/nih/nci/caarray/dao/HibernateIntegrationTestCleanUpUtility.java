@@ -82,19 +82,20 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.PersistentObject;
-import gov.nih.nci.caarray.domain.protocol.Parameter;
-import gov.nih.nci.caarray.domain.protocol.ParameterValue;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.EntityMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.metadata.ClassMetadata;
 
 /**
  * Provides methods to remove objects created during Hibernate integration tests.
@@ -102,6 +103,7 @@ import org.hibernate.Transaction;
 public final class HibernateIntegrationTestCleanUpUtility {
 
     private static final Log LOG = LogFactory.getLog(HibernateIntegrationTestCleanUpUtility.class);
+    private static List<Class<?>> classesToRemove;
 
     private HibernateIntegrationTestCleanUpUtility() {
         super();
@@ -109,35 +111,66 @@ public final class HibernateIntegrationTestCleanUpUtility {
 
     @SuppressWarnings("PMD")
     public static void cleanUp() {
-        doCleanUp();
-        if (!doCleanUp()) {
+        boolean cleanupComplete = doCleanUp();
+        if (!cleanupComplete) {
             // This means we saw an object again, and that's a problem
-            throw new RuntimeException("Last unit test didn't fully clean up after itself");
+            throw new IllegalStateException("Last unit test didn't fully clean up after itself");
         }
     }
 
     private static boolean doCleanUp() {
-        boolean done = true;
+        if (classesToRemove == null) {
+            retrieveClassMetadata();
+        }
+        int numIterations = classesToRemove.size();
+        boolean done = false;
+        for (int i = 0; i < numIterations && !done; i++) {
+            done = true;
+            for (Class<?> c : classesToRemove) {
+                boolean removed = doCleanUp(c);
+                done &= !removed;
+            }
+        }
+        return done;
+    }
+    
+    private static boolean doCleanUp(Class<?> c) {
+        Session s = getSession();
         Transaction tx = null;
+        boolean removed = false;
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
-            Session s = HibernateUtil.getCurrentSession();
-            Class<?>[] classes = new Class<?>[] {ParameterValue.class, Parameter.class, AbstractCaArrayObject.class, PersistentObject.class};
-            for (Class<?> c : classes) {
-                List<?> allObjs = s.createQuery("FROM " + c.getName()).list();
+            tx = s.beginTransaction();
+            List<?> allObjs = s.createQuery("FROM " + c.getName()).list();
+            if (!allObjs.isEmpty()) {
+                removed = true;
                 for (Object o : allObjs) {
-                    done = false;
                     s.delete(o);
-                }
+                }                        
             }
             tx.commit();
         } catch (DAOException deleteException) {
             HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up test objects.", deleteException);
+            LOG.warn("Error cleaning up test objects.", deleteException);
         } catch (HibernateException he) {
             HibernateUtil.rollbackTransaction(tx);
-            LOG.error("Error cleaning up test objects.", he);
-        }
-        return done;
+            LOG.warn("Error cleaning up test objects.", he);
+        }        
+        return removed;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static void retrieveClassMetadata() {
+        Map<String, ClassMetadata> classMetadataMap = getSession().getSessionFactory().getAllClassMetadata();
+        classesToRemove = new LinkedList<Class<?>>();
+        for (ClassMetadata classMetadata : classMetadataMap.values()) {
+            Class<?> persistentClass = classMetadata.getMappedClass(EntityMode.POJO);
+            if (!ArrayUtils.contains(HibernateUtil.CSM_CLASSES, persistentClass)) {
+                classesToRemove.add(persistentClass);
+            } 
+        }        
+    }
+    
+    private static Session getSession() {
+        return HibernateUtil.getCurrentSession();
     }
 }

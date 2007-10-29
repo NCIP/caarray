@@ -80,16 +80,15 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.action;
+package gov.nih.nci.caarray.web.action.project;
 
-import gov.nih.nci.caarray.application.file.FileManagementService;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.application.project.ProjectManagementService;
+import static gov.nih.nci.caarray.web.action.ActionHelper.getFileAccessService;
+import static gov.nih.nci.caarray.web.action.ActionHelper.getFileManagementService;
+import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.io.FileClosingInputStream;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -109,7 +108,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.lf5.util.StreamUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
-import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.Validation;
@@ -119,24 +117,14 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
  *
  */
 @Validation
-public class ProjectFilesAction extends ActionSupport implements Preparable {
+public class ProjectFilesAction extends BaseProjectAction implements Preparable {
     private static final long serialVersionUID = 1L;
 
-    private Project project;
     private List<File> uploads;
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<String> uploadContentTypes = new ArrayList<String>();
     private List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
     private InputStream downloadStream;
-
-    /**
-     * {@inheritDoc}
-     */
-    public void prepare() throws Exception {
-        if (getProject() != null && getProject().getId() != null) {
-            setProject(getProjectManagementService().getProject(getProject().getId()));
-        }
-    }
 
     /**
      * Method to get the list of files.
@@ -145,17 +133,7 @@ public class ProjectFilesAction extends ActionSupport implements Preparable {
      */
     @SkipValidation
     public String list() {
-        return Action.INPUT;
-    }
-
-    /**
-     * Method to get the list of files.
-     *
-     * @return the string matching the result to follow
-     */
-    @SkipValidation
-    public String listTable() {
-        return Action.SUCCESS;
+        return ActionSupport.INPUT;
     }
 
     /**
@@ -165,7 +143,7 @@ public class ProjectFilesAction extends ActionSupport implements Preparable {
      */
     @SkipValidation
     public String downloadFiles() {
-        return Action.SUCCESS;
+        return ActionSupport.SUCCESS;
     }
 
     /**
@@ -188,7 +166,7 @@ public class ProjectFilesAction extends ActionSupport implements Preparable {
         if (skippedFiles > 0) {
             ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for deletion.");
         }
-        return Action.INPUT;
+        return ActionSupport.INPUT;
     }
 
     /**
@@ -215,7 +193,7 @@ public class ProjectFilesAction extends ActionSupport implements Preparable {
         if (skippedFiles > 0) {
             ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for validation.");
         }
-        return Action.INPUT;
+        return ActionSupport.INPUT;
     }
 
     /**
@@ -241,7 +219,7 @@ public class ProjectFilesAction extends ActionSupport implements Preparable {
         if (skippedFiles > 0) {
             ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for importing.");
         }
-        return Action.INPUT;
+        return ActionSupport.INPUT;
     }
 
     /**
@@ -249,7 +227,7 @@ public class ProjectFilesAction extends ActionSupport implements Preparable {
      * @return the string matching the result to use.
      */
     public String validationMessages() {
-        return Action.SUCCESS;
+        return ActionSupport.SUCCESS;
     }
 
     /**
@@ -339,32 +317,6 @@ public class ProjectFilesAction extends ActionSupport implements Preparable {
         return this.downloadStream;
     }
 
-    private ProjectManagementService getProjectManagementService() {
-        return (ProjectManagementService) ServiceLocatorFactory.getLocator().lookup(ProjectManagementService.JNDI_NAME);
-    }
-
-    private FileAccessService getFileAccessService() {
-        return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
-    }
-
-    private FileManagementService getFileManagementService() {
-        return (FileManagementService) ServiceLocatorFactory.getLocator().lookup(FileManagementService.JNDI_NAME);
-    }
-
-    /**
-     * @return the project
-     */
-    public Project getProject() {
-        return this.project;
-    }
-
-    /**
-     * @param project the project to set
-     */
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
     /**
      * uploaded file.
      *
@@ -432,5 +384,4 @@ public class ProjectFilesAction extends ActionSupport implements Preparable {
     public void setSelectedFiles(List<CaArrayFile> selectedFiles) {
         this.selectedFiles = selectedFiles;
     }
-
 }
