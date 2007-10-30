@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The GridSvc2
+ * source code form and machine readable, binary, object code form. The CaArraySvc
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This GridSvc2 Software License (the License) is between NCI and You. You (or
+ * This CaArraySvc Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the GridSvc2 Software to (i) use, install, access, operate,
+ * its rights in the CaArraySvc Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the GridSvc2 Software; (ii) distribute and
- * have distributed to and by third parties the GridSvc2 Software and any
+ * and prepare derivative works of the CaArraySvc Software; (ii) distribute and
+ * have distributed to and by third parties the CaArraySvc Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,82 +80,32 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.cagrid.caarray.client;
+package gov.nih.nci.cagrid.caarray.util;
 
-import gov.nih.nci.cagrid.common.Utils;
-import gov.nih.nci.cagrid.cqlquery.CQLQuery;
-import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
-import gov.nih.nci.cagrid.data.client.DataServiceClient;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import gov.nih.nci.cagrid.caarray.util.TestCaArrayFieldHandler.B;
 
-import java.io.File;
-import java.io.FileWriter;
+import java.util.Collection;
+import java.util.Vector;
 
-import javax.xml.namespace.QName;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+/**
+ * Test cases for collection handler.
+ */
+public class TestCaArrayCollectionFieldHandler {
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-public class CaArray2xGrid extends TestCase {
-
-    private static Log LOG = LogFactory.getLog(CaArray2xGrid.class);
-
-    @Override
-    public void setUp() {
-
-        /*QA URL*/
-//        System.setProperty("test.serviceUrl", "http://cbvapp-q1001.nci.nih.gov:8080/wsrf/services/cagrid/CaArraySvc");
-        /*DEV URL*/
-//        System.setProperty("test.serviceUrl", "http://cbvapp-d1002.nci.nih.gov:8080/wsrf/services/cagrid/CaArraySvc");
-        /*Local URL*/
-        System.setProperty("test.serviceUrl", "http://localhost:8080/wsrf/services/cagrid/CaArraySvc");
-    }
-
-    /**
-     * Quick smoke test.
-     */
-    public void testRetrieveAllProjects() {
-        CQLQuery query = new CQLQuery();
-        query.setTarget(new gov.nih.nci.cagrid.cqlquery.Object());
-       query.getTarget().setName("gov.nih.nci.caarray.domain.project.Factor");
-       //query.getTarget().setName("gov.nih.nci.caarray.domain.contact.Address");
-
-        CQLQueryResults results = executeCQLQuery(query);
-        printResults(results, "all.projects.xml");
-
-    }
-
-
-    public static CQLQueryResults executeCQLQuery(CQLQuery query) {
-        try {
-            DataServiceClient client = new DataServiceClient(System.getProperty("test.serviceUrl"));
-
-            CQLQueryResults cqlQueryResult = client.query(query);
-            return cqlQueryResult;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    protected synchronized long printResults(CQLQueryResults results, String outFileName) {
-        try {
-            // StringWriter w = new StringWriter();
-            String fileName = "test/logs/" + outFileName;
-            new File(fileName).delete();
-            FileWriter w = new FileWriter(fileName);
-            Utils.serializeObject(results, new QName("http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLResultSet",
-                    "CQLResultSet"), w);
-            w.flush();
-            w.close();
-            long fileSize = new File(fileName).length();
-
-            LOG.debug("... done printing results to : " + outFileName + " size=" + fileSize + " bytes");
-            return fileSize;
-        } catch (Exception ex) {
-            throw new RuntimeException("Error printing results: " + ex.getMessage(), ex);
-        }
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testHandler() throws Exception {
+        CaArrayCollectionFieldHandler handler = new CaArrayCollectionFieldHandler();
+        Vector<B> bs = new Vector<B>();
+        bs.add(new B());
+        Collection<B> converted = (Collection<B>) handler.convertUponGet(bs.elements());
+        assertNotNull(converted);
+        assertEquals(1, converted.size());
+        assertNull(converted.iterator().next().getA());
     }
 }

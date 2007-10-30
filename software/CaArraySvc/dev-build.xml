@@ -30,6 +30,7 @@
 	        <pathelement location="../caarray-client.jar/target/caarray-client.jar"/>
 		</path>
 		<path id="test.build.extended.classpath">
+		    <pathelement location="../lib/junit-4.3.1.jar"/>
 		</path>
 		<path id="test.run.extended.classpath">
 		</path>

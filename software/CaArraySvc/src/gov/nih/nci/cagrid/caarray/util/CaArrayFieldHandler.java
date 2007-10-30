@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The GridSvc2
+ * source code form and machine readable, binary, object code form. The CaArraySvc
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This GridSvc2 Software License (the License) is between NCI and You. You (or
+ * This CaArraySvc Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the GridSvc2 Software to (i) use, install, access, operate,
+ * its rights in the CaArraySvc Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the GridSvc2 Software; (ii) distribute and
- * have distributed to and by third parties the GridSvc2 Software and any
+ * and prepare derivative works of the CaArraySvc Software; (ii) distribute and
+ * have distributed to and by third parties the CaArraySvc Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,82 +80,140 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.cagrid.caarray.client;
+package gov.nih.nci.cagrid.caarray.util;
 
-import gov.nih.nci.cagrid.common.Utils;
-import gov.nih.nci.cagrid.cqlquery.CQLQuery;
-import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
-import gov.nih.nci.cagrid.data.client.DataServiceClient;
+import gov.nih.nci.caarray.domain.PersistentObject;
 
-import java.io.File;
-import java.io.FileWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import javax.xml.namespace.QName;
+import org.exolab.castor.mapping.GeneralizedFieldHandler;
 
-import junit.framework.TestCase;
+/**
+ * Field handler that implements the standard grid idiom of cutting
+ * object graphs.  This handler takes arbitrary objects and sets (to null) subobjects
+ * that are in the domain model.  Specifically, for each bean property (get* / set*):
+ * <ul>
+ * <li>For collection properties (ie, List, Set, or Map), an empty (List, Set, Map) is
+ *     substituted for the current value.
+ * <li>For non-collection domain properties (ie, gov.nih.nci.caarray.domain.*), the
+ *     null value is substituted for the current value.
+ * <li>All other properties are unmodified.
+ * </ul>
+ *
+ * <p>As an example, consider domain classes A, B, and C that each have a single property,
+ * id, accessable via getId and setId methods.  If we have:
+ * <pre>
+ * public class A {
+ *   private B b;
+ *   private Set&lt;C&gt; c;
+ *   private int id;
+ * }
+ * </pre>
+ *
+ * After a call to convertUponGet, A.B will be <code>null</code>, A.C will be an empty
+ * <code>Set</code>, and id will retain the value it had prior to the call.
+ */
+public class CaArrayFieldHandler extends GeneralizedFieldHandler {
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-public class CaArray2xGrid extends TestCase {
-
-    private static Log LOG = LogFactory.getLog(CaArray2xGrid.class);
-
-    @Override
-    public void setUp() {
-
-        /*QA URL*/
-//        System.setProperty("test.serviceUrl", "http://cbvapp-q1001.nci.nih.gov:8080/wsrf/services/cagrid/CaArraySvc");
-        /*DEV URL*/
-//        System.setProperty("test.serviceUrl", "http://cbvapp-d1002.nci.nih.gov:8080/wsrf/services/cagrid/CaArraySvc");
-        /*Local URL*/
-        System.setProperty("test.serviceUrl", "http://localhost:8080/wsrf/services/cagrid/CaArraySvc");
+    /**
+     * Constructor.
+     */
+    public CaArrayFieldHandler() {
+        setCollectionIteration(false);
     }
 
     /**
-     * Quick smoke test.
+     * {@inheritDoc}
      */
-    public void testRetrieveAllProjects() {
-        CQLQuery query = new CQLQuery();
-        query.setTarget(new gov.nih.nci.cagrid.cqlquery.Object());
-       query.getTarget().setName("gov.nih.nci.caarray.domain.project.Factor");
-       //query.getTarget().setName("gov.nih.nci.caarray.domain.contact.Address");
+    @Override
+    public Object convertUponGet(Object val) {
+        // Set all references to other domain classes to null.
+        // Set all collection types to empty.
+        if (val == null) {
+            return null;
+        }
 
-        CQLQueryResults results = executeCQLQuery(query);
-        printResults(results, "all.projects.xml");
+        // Go up the entire inheritance chain
+        Class<?> clazz = val.getClass();
+        while (clazz != null) {
+            Method[] methods = clazz.getDeclaredMethods();
+            // find get/set pairs
+            for (Method getter : methods) {
+                if (getter.getName().startsWith("get") && getter.getParameterTypes().length == 0) {
+                    for (Method setter : methods) {
+                        if (setter.getName().equals('s' + getter.getName().substring(1))
+                                && setter.getParameterTypes().length == 1
+                                && Void.TYPE.equals(setter.getReturnType())
+                                && getter.getReturnType().equals(setter.getParameterTypes()[0])) {
+                            this.handleSetter(setter, val);
+                        }
+                    }
+                }
+            }
 
+            // handle superclass methods
+            clazz = clazz.getSuperclass();
+        }
+
+        return val;
     }
 
+    private void handleSetter(Method setter, Object val) {
+        // TODO: maybe check if the set/list/map was to a PersistentObject, and only
+        // set to empty in that case?
 
-    public static CQLQueryResults executeCQLQuery(CQLQuery query) {
+        // TODO: array types
+        Class<?> type = setter.getParameterTypes()[0];
+        Object param = null;
+        if (Set.class.isAssignableFrom(type)) {
+            param = Collections.EMPTY_SET;
+        } else if (List.class.isAssignableFrom(type)) {
+            param = Collections.EMPTY_LIST;
+        } else if (Map.class.isAssignableFrom(type)) {
+            param = Collections.EMPTY_MAP;
+        } else if (Collection.class.isAssignableFrom(type)) {
+            // if type is Collection itself
+            param = Collections.EMPTY_LIST;
+        } else if (!PersistentObject.class.isAssignableFrom(type)) {
+            // Don't call setting for primitive types, or non-domain model objects
+            return;
+        }
+
         try {
-            DataServiceClient client = new DataServiceClient(System.getProperty("test.serviceUrl"));
-
-            CQLQueryResults cqlQueryResult = client.query(query);
-            return cqlQueryResult;
-
-        } catch (Exception e) {
+            setter.invoke(val, new Object[] {param});
+        } catch (IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object convertUponSet(Object val) {
+        return val;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public Class getFieldType() {
         return null;
     }
 
-    protected synchronized long printResults(CQLQueryResults results, String outFileName) {
-        try {
-            // StringWriter w = new StringWriter();
-            String fileName = "test/logs/" + outFileName;
-            new File(fileName).delete();
-            FileWriter w = new FileWriter(fileName);
-            Utils.serializeObject(results, new QName("http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLResultSet",
-                    "CQLResultSet"), w);
-            w.flush();
-            w.close();
-            long fileSize = new File(fileName).length();
-
-            LOG.debug("... done printing results to : " + outFileName + " size=" + fileSize + " bytes");
-            return fileSize;
-        } catch (Exception ex) {
-            throw new RuntimeException("Error printing results: " + ex.getMessage(), ex);
-        }
-    }
 }

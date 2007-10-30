@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The GridSvc2
+ * source code form and machine readable, binary, object code form. The CaArraySvc
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This GridSvc2 Software License (the License) is between NCI and You. You (or
+ * This CaArraySvc Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the GridSvc2 Software to (i) use, install, access, operate,
+ * its rights in the CaArraySvc Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the GridSvc2 Software; (ii) distribute and
- * have distributed to and by third parties the GridSvc2 Software and any
+ * and prepare derivative works of the CaArraySvc Software; (ii) distribute and
+ * have distributed to and by third parties the CaArraySvc Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,82 +80,165 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.cagrid.caarray.client;
+package gov.nih.nci.cagrid.caarray.util;
 
-import gov.nih.nci.cagrid.common.Utils;
-import gov.nih.nci.cagrid.cqlquery.CQLQuery;
-import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
-import gov.nih.nci.cagrid.data.client.DataServiceClient;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.domain.PersistentObject;
 
-import java.io.File;
-import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import javax.xml.namespace.QName;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+/**
+ * Test cases for field handler.
+ */
+public class TestCaArrayFieldHandler {
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-public class CaArray2xGrid extends TestCase {
-
-    private static Log LOG = LogFactory.getLog(CaArray2xGrid.class);
-
-    @Override
-    public void setUp() {
-
-        /*QA URL*/
-//        System.setProperty("test.serviceUrl", "http://cbvapp-q1001.nci.nih.gov:8080/wsrf/services/cagrid/CaArraySvc");
-        /*DEV URL*/
-//        System.setProperty("test.serviceUrl", "http://cbvapp-d1002.nci.nih.gov:8080/wsrf/services/cagrid/CaArraySvc");
-        /*Local URL*/
-        System.setProperty("test.serviceUrl", "http://localhost:8080/wsrf/services/cagrid/CaArraySvc");
+    @Test
+    public void testHandler() throws Exception {
+        CaArrayFieldHandler h = new CaArrayFieldHandler();
+        B b = new B();
+        B converted = (B) h.convertUponGet(b);
+        assertEquals(converted.getId(), 1L);
+        assertNull(converted.getA());
+        assertNull(converted.getOther());
+        assertTrue(converted.getOtherList().isEmpty());
+        assertTrue(converted.getOtherSet().isEmpty());
+        assertTrue(converted.getOtherMap().entrySet().isEmpty());
+        assertTrue(converted.getOtherCollection().isEmpty());
     }
 
-    /**
-     * Quick smoke test.
-     */
-    public void testRetrieveAllProjects() {
-        CQLQuery query = new CQLQuery();
-        query.setTarget(new gov.nih.nci.cagrid.cqlquery.Object());
-       query.getTarget().setName("gov.nih.nci.caarray.domain.project.Factor");
-       //query.getTarget().setName("gov.nih.nci.caarray.domain.contact.Address");
+    public static class A implements PersistentObject {
+        private static final long serialVersionUID = 1L;
+        private Long id = 1L;
+        private A a;
 
-        CQLQueryResults results = executeCQLQuery(query);
-        printResults(results, "all.projects.xml");
-
-    }
-
-
-    public static CQLQueryResults executeCQLQuery(CQLQuery query) {
-        try {
-            DataServiceClient client = new DataServiceClient(System.getProperty("test.serviceUrl"));
-
-            CQLQueryResults cqlQueryResult = client.query(query);
-            return cqlQueryResult;
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        public A() {
+            this(true);
         }
-        return null;
+
+        private A(boolean recurse) {
+            if (recurse) {
+                a = new A(false);
+            }
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        /**
+         * @return the a
+         */
+        public A getA() {
+            return a;
+        }
+
+        /**
+         * @param a the a to set
+         */
+        public void setA(A a) {
+            this.a = a;
+        }
     }
 
-    protected synchronized long printResults(CQLQueryResults results, String outFileName) {
-        try {
-            // StringWriter w = new StringWriter();
-            String fileName = "test/logs/" + outFileName;
-            new File(fileName).delete();
-            FileWriter w = new FileWriter(fileName);
-            Utils.serializeObject(results, new QName("http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLResultSet",
-                    "CQLResultSet"), w);
-            w.flush();
-            w.close();
-            long fileSize = new File(fileName).length();
+    public static class B extends A {
+        private static final long serialVersionUID = 1L;
+        private A other;
+        private List<A> otherList = new ArrayList<A>();
+        private Set<A> otherSet = new HashSet<A>();
+        private Map<Integer, A> otherMap = new HashMap<Integer, A>();
+        private Collection<A> otherCollection = new HashSet<A>();
 
-            LOG.debug("... done printing results to : " + outFileName + " size=" + fileSize + " bytes");
-            return fileSize;
-        } catch (Exception ex) {
-            throw new RuntimeException("Error printing results: " + ex.getMessage(), ex);
+
+        public B() {
+            other = new A();
+            otherList.add(new A());
+            otherSet.add(new A());
+            otherMap.put(1, new A());
+            otherCollection.add(new A());
+        }
+
+        /**
+         * @return the other
+         */
+        public A getOther() {
+            return other;
+        }
+
+        /**
+         * @param other the other to set
+         */
+        public void setOther(A other) {
+            this.other = other;
+        }
+
+        /**
+         * @return the otherList
+         */
+        public List<A> getOtherList() {
+            return otherList;
+        }
+
+        /**
+         * @param otherList the otherList to set
+         */
+        public void setOtherList(List<A> otherList) {
+            this.otherList = otherList;
+        }
+
+        /**
+         * @return the otherSet
+         */
+        public Set<A> getOtherSet() {
+            return otherSet;
+        }
+
+        /**
+         * @param otherSet the otherSet to set
+         */
+        public void setOtherSet(Set<A> otherSet) {
+            this.otherSet = otherSet;
+        }
+
+        /**
+         * @return the otherMap
+         */
+        public Map<Integer, A> getOtherMap() {
+            return otherMap;
+        }
+
+        /**
+         * @param otherMap the otherMap to set
+         */
+        public void setOtherMap(Map<Integer, A> otherMap) {
+            this.otherMap = otherMap;
+        }
+
+        /**
+         * @return the otherCollection
+         */
+        public Collection<A> getOtherCollection() {
+            return otherCollection;
+        }
+
+        /**
+         * @param otherCollection the otherCollection to set
+         */
+        public void setOtherCollection(Collection<A> otherCollection) {
+            this.otherCollection = otherCollection;
         }
     }
 }
