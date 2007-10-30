@@ -86,6 +86,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixExpressionChpQuantitationType;
@@ -126,8 +127,10 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -178,11 +181,28 @@ public class ArrayDataServiceTest {
 
     private void testCreateAnnotation() throws InvalidDataFileException {
         testCreateAnnotationCel();
+        testCreateAnnotationChp();
     }
 
     private void testCreateAnnotationCel() throws InvalidDataFileException {
         CaArrayFile celFile = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL);
         arrayDataService.importData(celFile, true);
+        checkAnnotation(celFile);
+    }
+
+    private void testCreateAnnotationChp() throws InvalidDataFileException {
+        CaArrayFile chpFile = getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CHP);
+        arrayDataService.importData(chpFile, true);
+        checkAnnotation(chpFile);
+    }
+
+    private void checkAnnotation(CaArrayFile dataFile) {
+        Experiment experiment = dataFile.getProject().getExperiment();
+        assertEquals(1, experiment.getSources().size());
+        assertEquals(1, experiment.getSamples().size());
+        assertEquals(1, experiment.getExtracts().size());
+        assertEquals(1, experiment.getLabeledExtracts().size());
+        assertEquals(1, experiment.getHybridizations().size());
     }
 
     private void testImportExpressionChp() throws InvalidDataFileException {
@@ -311,6 +331,16 @@ public class ArrayDataServiceTest {
         testCelData();
         testExpressionChpData();
         testSnpChpData();
+        testCelDataForSelectedQuantitationTypes();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetDataIllegalArguments() {
+        arrayDataService.getData(null);
+        RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
+        celData.setDataFile(null);
+        arrayDataService.getData(celData);
+
     }
 
     private void testExpressionChpData() throws InvalidDataFileException {
@@ -358,6 +388,36 @@ public class ArrayDataServiceTest {
         arrayDataService.importData(celData.getDataFile(), false);
         DataSet dataSet = arrayDataService.getData(celData);
         checkCelData(AffymetrixArrayDataFiles.TEST3_CEL, dataSet);
+    }
+
+    private void testCelDataForSelectedQuantitationTypes() throws InvalidDataFileException {
+        RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
+        arrayDataService.importData(celData.getDataFile(), false);
+        List<QuantitationType> types = new ArrayList<QuantitationType>();
+        types.add(daoFactoryStub.getArrayDao().getQuantitationType(AffymetrixCelQuantitationType.CEL_INTENSITY));
+        DataSet dataSet = arrayDataService.getData(celData, types);
+        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
+        ShortColumn xColumn = (ShortColumn) hybridizationData.getColumns().get(0);
+        ShortColumn yColumn = (ShortColumn) hybridizationData.getColumns().get(1);
+        FloatColumn intensityColumn = (FloatColumn) hybridizationData.getColumns().get(2);
+        FloatColumn stdDevColumn = (FloatColumn) hybridizationData.getColumns().get(3);
+        BooleanColumn isMaskedColumn = (BooleanColumn) hybridizationData.getColumns().get(4);
+        BooleanColumn isOutlierColumn = (BooleanColumn) hybridizationData.getColumns().get(5);
+        ShortColumn numPixelsColumn = (ShortColumn) hybridizationData.getColumns().get(6);
+        assertNull(xColumn.getValues());
+        assertNull(yColumn.getValues());
+        assertNull(stdDevColumn.getValues());
+        assertNull(isMaskedColumn.getValues());
+        assertNull(isOutlierColumn.getValues());
+        assertNull(numPixelsColumn.getValues());
+        FusionCELData fusionCelData = new FusionCELData();
+        fusionCelData.setFileName(AffymetrixArrayDataFiles.TEST3_CEL.getAbsolutePath());
+        fusionCelData.read();
+        FusionCELFileEntryType fusionCelEntry = new FusionCELFileEntryType();
+        for (int rowIndex = 0; rowIndex < fusionCelData.getCells(); rowIndex++) {
+            fusionCelData.getEntry(rowIndex, fusionCelEntry);
+            assertEquals(fusionCelEntry.getIntensity(), intensityColumn.getValues()[rowIndex]);
+        }
     }
 
     private void checkCelData(File celFile, DataSet dataSet) {

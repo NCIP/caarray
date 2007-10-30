@@ -87,7 +87,6 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 /**
@@ -124,7 +123,7 @@ final class ArrayDataImporter {
     }
 
     private boolean isDataFile(CaArrayFile file) {
-        return FileType.AFFYMETRIX_CEL.equals(file.getType());
+        return file.getType().isArrayData();
     }
 
     void validateFiles(CaArrayFileSet fileSet) {

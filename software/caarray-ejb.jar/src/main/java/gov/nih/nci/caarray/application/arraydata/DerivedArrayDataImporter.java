@@ -82,11 +82,15 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import java.util.List;
+
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.Experiment;
 
 /**
  * Provides specialized behavior for importing <code>DerivedArrayData</code>.
@@ -101,7 +105,9 @@ final class DerivedArrayDataImporter extends AbstractDataSetImporter {
 
     @Override
     void addHybridizationDatas() {
-        getDataSet().addHybridizationData(getDerivedArrayData().getHybridizations().iterator().next());
+        for (Hybridization hybridization : getDerivedArrayData().getHybridizations()) {
+            getDataSet().addHybridizationData(hybridization);
+        }
     }
 
     @Override
@@ -115,7 +121,24 @@ final class DerivedArrayDataImporter extends AbstractDataSetImporter {
 
     @Override
     void createArrayData(boolean createAnnnotation) {
-        // Not implemented yet -- next up.
+        derivedArrayData = new DerivedArrayData();
+        derivedArrayData.setDataFile(getCaArrayFile());
+        List<String> sampleNames = getDataFileHandler().getSampleNamesFromFile(getFile());
+        for (String sampleName : sampleNames) {
+            createHybridization(sampleName, createAnnnotation);
+        }
+        getArrayDao().save(derivedArrayData);
+    }
+
+    private void createHybridization(String sampleName, boolean createAnnnotation) {
+        Experiment experiment = getCaArrayFile().getProject().getExperiment();
+        Hybridization hybridization = new Hybridization();
+        derivedArrayData.getHybridizations().add(hybridization);
+        hybridization.getDerivedDataCollection().add(derivedArrayData);
+        experiment.getHybridizations().add(hybridization);
+        if (createAnnnotation) {
+            createAnnotation(experiment, hybridization, sampleName);
+        }
     }
 
     @Override
