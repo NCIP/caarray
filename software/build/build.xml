@@ -95,15 +95,13 @@
     <property name="commons-collections.jar" value="${lib.dir}/commons-collections-3.2.jar" />
     <property name="commons-io.jar" value="${lib.dir}/commons-io-1.3.2.jar" />
     <property name="commons-lang.jar" value="${lib.dir}/commons-lang-2.3.jar" />
-	<property name="commons-configuration-1.4.jar" value="${lib.dir}/commons-configuration-1.4.jar" />
+  <property name="commons-configuration-1.4.jar" value="${lib.dir}/commons-configuration-1.4.jar" />
     <property name="commons-logging.jar" value="${lib.dir}/commons-logging-1.1.jar" />
     <property name="dom4j.jar" value="${lib.dir}/dom4j-1.6.1.jar" />
     <property name="hibernate.jar" value="${lib.dir}/hibernate3.jar" />
     <property name="hibernate-client.jar" value="${lib.dir}/hibernate-client.jar" />
     <property name="ejb3-persistence.jar" value="${lib.dir}/ejb3-persistence.jar" />
     <property name="hibernate-annotations.jar" value="${lib.dir}/hibernate-annotations.jar" />
-    <property name="hibernate-commons-annotations.jar" value="${lib.dir}/hibernate-commons-annotations.jar" />
-	<property name="hibernate-validator.jar" value="${lib.dir}/hibernate-validator.jar" />
     <property name="jakarta-oro-2.0.8.jar" value="${lib.dir}/jakarta-oro-2.0.8.jar" />
     <property name="javaee.jar" value="${lib.dir}/javaee.jar" />
     <property name="jaxen.jar" value="${lib.dir}/jaxen-1.1-beta.jar" />
@@ -186,9 +184,9 @@
     <property name="mysql.datasource.file" value="caarray-mysql-ds.xml" />
 
     <filterset id="caarray.filterset" onmissingfiltersfile="warn">
-		<filtersfile file="${build.dir}/default.properties" />
+    <filtersfile file="${build.dir}/default.properties" />
         <filtersfile file="${build.dir}/local.properties" />
-		<filtersfile file="${envpropertyfile}" />
+    <filtersfile file="${envpropertyfile}" />
     </filterset>
 
     <!-- Tag property to display on front page -->
@@ -377,10 +375,8 @@
         <javac srcdir="${caarray-common.src.dir}" destdir="${caarray-common.classes.dir}" debug="true">
             <classpath>
                 <pathelement location="${hibernate.jar}" />
-                <pathelement location="${hibernate-validator.jar}" />
                 <pathelement location="${ejb3-persistence.jar}" />
                 <pathelement location="${hibernate-annotations.jar}" />
-                <pathelement location="${hibernate-commons-annotations.jar}" />
                 <pathelement location="${javaee.jar}" />
                 <pathelement location="${commons-collections.jar}" />
                 <pathelement location="${commons-io.jar}" />
@@ -412,7 +408,6 @@
                 <pathelement location="${ejb3-persistence.jar}" />
                 <pathelement location="${hibernate.jar}" />
                 <pathelement location="${hibernate-annotations.jar}" />
-                <pathelement location="${hibernate-commons-annotations.jar}" />
                 <pathelement location="${javaee.jar}" />
                 <pathelement location="${csmapi.jar}"/>
             </classpath>
@@ -471,7 +466,6 @@
         <jar destfile="${caarray-client.jar}">
             <zipfileset src="${hibernate.jar}" />
             <zipfileset src="${hibernate-annotations.jar}" />
-            <zipfileset src="${hibernate-commons-annotations.jar}" />
             <zipfileset src="${ejb3-persistence.jar}" />
             <zipfileset src="${jboss-ejb3-client.jar}" />
             <zipfileset src="${jbossall-client.jar}" />
@@ -535,8 +529,8 @@
                 <include name="commons-el-1.0.jar" />
                 <include name="commons-fileupload-1.2.jar" />
                 <include name="commons-io-1.3.2.jar" />
-            	<include name="commons-lang-2.3.jar" />
-            	<include name="commons-configuration-1.4.jar" />
+              <include name="commons-lang-2.3.jar" />
+              <include name="commons-configuration-1.4.jar" />
                 <include name="commons-logging-1.1.jar" />
                 <include name="displaytag-1.1.1.jar" />
                 <include name="freemarker-2.3.8.jar" />
@@ -721,7 +715,6 @@
                 <pathelement location="${netcdf.jar}" />
                 <pathelement location="${ejb3-persistence.jar}" />
                 <pathelement location="${hibernate-annotations.jar}" />
-                <pathelement location="${hibernate-commons-annotations.jar}" />
                 <pathelement location="${javaee.jar}" />
                 <pathelement location="${cacore32-client.jar}"/>
                 <pathelement location="${csmapi.jar}"/>
@@ -730,7 +723,7 @@
     </target>
 
     <target name="test:junit-caarray-common.jar" depends="test:compile:caarray-common.test.classes,test:instrument:caarray-common.jar,configure-datasource-for-test,test:unpack-test-data">
-        <run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${csmapi.jar};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-common.resources.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar};${javacsv.jar};${hibernate-annotations.jar};${hibernate-commons-annotations.jar};${ejb3-persistence.jar};${cacore32-client.jar};${log4j.jar};${clm.jar}" />
+        <run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${csmapi.jar};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-common.resources.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar};${javacsv.jar};${hibernate-annotations.jar};${ejb3-persistence.jar};${cacore32-client.jar};${log4j.jar};${clm.jar}" />
     </target>
 
     <!-- caarray-ejb.jar -->
@@ -760,7 +753,6 @@
                 <pathelement location="${ejb3-persistence.jar}" />
                 <pathelement location="${hibernate.jar}" />
                 <pathelement location="${hibernate-annotations.jar}" />
-                <pathelement location="${hibernate-commons-annotations.jar}" />
                 <pathelement location="${javaee.jar}" />
                 <pathelement location="${csmapi.jar}"/>
             </classpath>
@@ -768,7 +760,7 @@
     </target>
 
     <target name="test:junit-caarray-ejb.jar" depends="test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:functional:compile-tests,test:unpack-test-data">
-        <run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};${cacore32-client.jar};${csmapi.jar};${affxfusion.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${javacsv.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-beanutils.jar};${commons-lang.jar};${commons-collections.jar};${commons-io.jar};${commons-lang.jar};${javaee.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar};${hibernate.jar};${hibernate-annotations.jar};${hibernate-commons-annotations.jar};${clm.jar}" />
+        <run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};${cacore32-client.jar};${csmapi.jar};${affxfusion.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${javacsv.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-beanutils.jar};${commons-lang.jar};${commons-collections.jar};${commons-io.jar};${commons-lang.jar};${javaee.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar};${hibernate.jar};${hibernate-annotations.jar};${clm.jar}" />
     </target>
 
     <!-- caarray.war -->
@@ -793,7 +785,6 @@
                 <pathelement location="${junit.jar}" />
                 <pathelement location="${ejb3-persistence.jar}" />
                 <pathelement location="${hibernate-annotations.jar}" />
-                <pathelement location="${hibernate-commons-annotations.jar}" />
                 <pathelement location="${javaee.jar}" />
                 <pathelement location="${spring.jar}" />
                 <pathelement location="${spring-mock.jar}" />
@@ -806,7 +797,7 @@
     </target>
 
     <target name="test:junit-caarray.war" depends="test:compile:caarray-war.test.classes,test:instrument:caarray.war,compile:caarray-ejb.jar,compile:caarray-common.jar,test:compile:caarray-ejb.test.classes,test:unpack-test-data">
-        <run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-logging.jar};${caarray-common.test.classes.dir};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate-validator.jar}:${hibernate.jar}:${hibernate-commons-annotations.jar}:${hibernate-annotations.jar}" />
+        <run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-logging.jar};${caarray-common.test.classes.dir};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate.jar}:${hibernate-annotations.jar}" />
     </target>
 
     <target name="test:junit-report">
@@ -1125,13 +1116,13 @@
             </sequential>
         </for>
     </target>
-    
+
     <target name="redeploy" description="Developer undeploy, clean, redeploy" depends="undeploy, clean, database:reinitialize, deploy"/>
 
     <!-- BEGIN STELLIGENT ADD -->
     <property name="keyfile.file" value="caarray2-key.properties" />
-	<property name="jboss.start.sleep" value="10" />
-	<property name="jboss.stop.sleep" value="30" />
+  <property name="jboss.start.sleep" value="10" />
+  <property name="jboss.stop.sleep" value="30" />
 
     <target name="validate-properties">
         <echo>lib.dir is ${lib.dir} </echo>
@@ -1172,7 +1163,7 @@
     <target name="remote-jboss:start">
         <echo message="Starting jboss server at ${ssh.server.hostname}..." />
         <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" verbose="true" command="${jboss.home}/bin/start_jboss" />
-		<sleep seconds="${jboss.start.sleep}" />
+    <sleep seconds="${jboss.start.sleep}" />
     </target>
 
     <target name="remote-jboss:configure-jboss-ds">
@@ -1228,7 +1219,7 @@
 
     <target name="remote-deploy" depends="clean, display-properties">
         <antcall target="validate-properties" />
-		<antcall target="continuous-integration" />
+    <antcall target="continuous-integration" />
         <antcall target="remote-jboss:deploy" />
     </target>
 
