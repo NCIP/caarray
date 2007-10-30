@@ -86,17 +86,21 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.Experiment;
+
+import java.util.List;
 
 /**
  * Provides specialized behavior for importing <code>RawArrayData</code>.
  */
 class RawArrayDataImporter extends AbstractDataSetImporter {
 
-    private final RawArrayData rawArrayData;
+    private RawArrayData rawArrayData;
 
-    RawArrayDataImporter(RawArrayData rawArrayData, CaArrayDaoFactory daoFactory, FileAccessService fileAccessService) {
-        super(daoFactory, fileAccessService);
-        this.rawArrayData = rawArrayData;
+    RawArrayDataImporter(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory, FileAccessService fileAccessService) {
+        super(caArrayFile, daoFactory, fileAccessService);
     }
 
     @Override
@@ -112,5 +116,38 @@ class RawArrayDataImporter extends AbstractDataSetImporter {
     private RawArrayData getRawArrayData() {
         return rawArrayData;
     }
+
+    @Override
+    void createArrayData(boolean createAnnnotation) {
+        rawArrayData = new RawArrayData();
+        rawArrayData.setDataFile(getCaArrayFile());
+        Experiment experiment = getCaArrayFile().getProject().getExperiment();
+        AbstractDataFileHandler fileHandler = getDataFileHandler();
+        rawArrayData.setType(getArrayDataType(fileHandler.getArrayDataTypeDescriptor(getFile())));
+        Hybridization hybridization = new Hybridization();
+        hybridization.setArrayData(rawArrayData);
+        experiment.getHybridizations().add(hybridization);
+        rawArrayData.setHybridization(hybridization);
+        if (createAnnnotation) {
+            createAnnotation(hybridization, experiment);
+        }
+        getArrayDao().save(rawArrayData);
+    }
+
+    private void createAnnotation(Hybridization hybridization, Experiment experiment) {
+        List<String> sampleNames = getDataFileHandler().getSampleNamesFromFile(getFile());
+        if (sampleNames.size() != 1) {
+            throw new IllegalStateException("RawArrayData must contain one and only one sample, contained "
+                    + sampleNames.size());
+        }
+        String sampleName = sampleNames.get(0);
+        createAnnotation(experiment, hybridization, sampleName);
+    }
+
+    @Override
+    void lookupArrayData() {
+        rawArrayData = getArrayDao().getRawArrayData(getCaArrayFile());
+    }
+
 
 }

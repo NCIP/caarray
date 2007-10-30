@@ -109,7 +109,7 @@ public class ArrayDataServiceStub implements ArrayDataService {
         return dataSet;
     }
 
-    public void importData(AbstractArrayData arrayData) throws InvalidDataFileException {
+    public void importData(CaArrayFile caArrayFile, boolean createAnnotation) throws InvalidDataFileException {
         // no-op
     }
 

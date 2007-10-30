@@ -117,13 +117,15 @@ public interface ArrayDataService {
     FileValidationResult validate(CaArrayFile arrayDataFile);
 
     /**
-     * Imports array data from the file associated with the <code>AbstractArrayData</code> entity,
-     * making it available for retrieval.
+     * Imports array data from the file given, creating annotation if necessary and requested
+     * by the client.
      * 
-     * @param arrayData the array data to import.
-     * @throws InvalidDataFileException TODO
+     * @param caArrayFile the data file to import.
+     * @param createAnnotation if no annotation is associated with the file, create a complete set of
+     * annotation from <code>Source</code> through to <code>AbstractArrayData</code>. 
+     * @throws InvalidDataFileException if the file is not a valid data file.
      */
-    void importData(AbstractArrayData arrayData) throws InvalidDataFileException;
+    void importData(CaArrayFile file, boolean createAnnotation) throws InvalidDataFileException;
 
     /**
      * Returns the complete data content of the provided array data object.

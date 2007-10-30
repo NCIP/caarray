@@ -86,17 +86,17 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
 /**
  * Provides specialized behavior for importing <code>DerivedArrayData</code>.
  */
 final class DerivedArrayDataImporter extends AbstractDataSetImporter {
 
-    private final DerivedArrayData derivedArrayData;
+    private DerivedArrayData derivedArrayData;
 
-    DerivedArrayDataImporter(DerivedArrayData derivedArrayData, CaArrayDaoFactory daoFactory, FileAccessService fileAccessService) {
-        super(daoFactory, fileAccessService);
-        this.derivedArrayData = derivedArrayData;
+    DerivedArrayDataImporter(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory, FileAccessService fileAccessService) {
+        super(caArrayFile, daoFactory, fileAccessService);
     }
 
     @Override
@@ -112,5 +112,16 @@ final class DerivedArrayDataImporter extends AbstractDataSetImporter {
     private DerivedArrayData getDerivedArrayData() {
         return derivedArrayData;
     }
+
+    @Override
+    void createArrayData(boolean createAnnnotation) {
+        // Not implemented yet -- next up.
+    }
+
+    @Override
+    void lookupArrayData() {
+        derivedArrayData = getArrayDao().getDerivedArrayData(getCaArrayFile());
+    }
+
 
 }

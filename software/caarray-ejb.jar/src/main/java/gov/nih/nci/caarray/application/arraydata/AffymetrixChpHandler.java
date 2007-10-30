@@ -82,9 +82,11 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixExpressionChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpChpQuantitationType;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
+import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.FloatColumn;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
@@ -97,12 +99,15 @@ import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -322,6 +327,25 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
     @Override
     Log getLog() {
         return LOG;
+    }
+
+    @Override
+    ArrayDataTypeDescriptor getArrayDataTypeDescriptor(File dataFile) {
+        FusionCHPLegacyData chpData = getChpData(dataFile);
+        int assayType = chpData.getHeader().getAssayType();
+        switch (assayType) {
+        case FusionCHPHeader.EXPRESSION_ASSAY:
+            return AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CHP;
+        case FusionCHPHeader.GENOTYPING_ASSAY:
+            return AffymetrixArrayDataTypes.AFFYMETRIX_SNP_CHP;
+        default:
+            throw new IllegalArgumentException("Unsupported Affymetrix CHP type");
+        }
+    }
+
+    @Override
+    List<String> getSampleNamesFromFile(File dataFile) {
+        return Collections.singletonList(FilenameUtils.getBaseName(dataFile.getName()));
     }
 
 }

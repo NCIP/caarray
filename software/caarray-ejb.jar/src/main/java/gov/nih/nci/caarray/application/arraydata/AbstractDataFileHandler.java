@@ -88,6 +88,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
+import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
@@ -117,5 +118,9 @@ abstract class AbstractDataFileHandler {
     }
 
     abstract Log getLog();
+
+    abstract ArrayDataTypeDescriptor getArrayDataTypeDescriptor(File dataFile);
+
+    abstract List<String> getSampleNamesFromFile(File dataFile);
 
 }

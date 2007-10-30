@@ -373,7 +373,7 @@ final class SdrfTranslator extends AbstractTranslator {
      */
     private ArrayDataType getArrayDataType(CaArrayFile dataFile) {
         if (FileType.AFFYMETRIX_CEL.equals(dataFile.getType())) {
-            return getDaoFactory().getArrayDao().getArrayDataType(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CEL);
+            return getDaoFactory().getArrayDao().getArrayDataType(AffymetrixArrayDataTypes.AFFYMETRIX_CEL);
         } else {
             throw new IllegalArgumentException("Unsupported data file type: " + dataFile.getType());
         }

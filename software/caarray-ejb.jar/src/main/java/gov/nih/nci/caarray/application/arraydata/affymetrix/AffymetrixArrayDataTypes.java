@@ -105,9 +105,9 @@ public enum AffymetrixArrayDataTypes implements ArrayDataTypeDescriptor {
     AFFYMETRIX_SNP_CHP("Affymetrix CHP (SNP)", AffymetrixSnpChpQuantitationType.values()),
     
     /**
-     * Affymetrix CEL format (Gene Expression).
+     * Affymetrix CEL format.
      */
-    AFFYMETRIX_EXPRESSION_CEL("Affymetrix CEL", AffymetrixCelQuantitationType.values());
+    AFFYMETRIX_CEL("Affymetrix CEL", AffymetrixCelQuantitationType.values());
     
     private final String name;
     private final List<QuantitationTypeDescriptor> quantitationTypes;

@@ -82,8 +82,10 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
+import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.BooleanColumn;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.FloatColumn;
@@ -96,10 +98,12 @@ import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -212,6 +216,16 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
     @Override
     Log getLog() {
         return LOG;
+    }
+
+    @Override
+    ArrayDataTypeDescriptor getArrayDataTypeDescriptor(File dataFile) {
+        return AffymetrixArrayDataTypes.AFFYMETRIX_CEL;
+    }
+
+    @Override
+    List<String> getSampleNamesFromFile(File dataFile) {
+        return Collections.singletonList(FilenameUtils.getBaseName(dataFile.getName()));
     }
 
 }

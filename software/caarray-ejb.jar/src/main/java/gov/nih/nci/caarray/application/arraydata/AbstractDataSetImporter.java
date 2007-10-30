@@ -86,13 +86,20 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.ArrayDataType;
+import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -107,18 +114,32 @@ abstract class AbstractDataSetImporter {
     private final CaArrayDaoFactory daoFactory;
     private AbstractDataFileHandler dataFileHandler;
     private final FileAccessService fileAccessService;
+    private final CaArrayFile caArrayFile;
 
-    AbstractDataSetImporter(CaArrayDaoFactory daoFactory, FileAccessService fileAccessService) {
+    AbstractDataSetImporter(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory, FileAccessService fileAccessService) {
+        this.caArrayFile = caArrayFile;
         this.daoFactory = daoFactory;
         this.fileAccessService = fileAccessService;
     }
 
-    void importData() {
+    void importData(boolean createAnnnotation) {
+        lookupOrCreateArrayData(createAnnnotation);
         getArrayData().setDataSet(new DataSet());
         addHybridizationDatas();
         addColumns();
         getArrayData().getDataFile().setFileStatus(FileStatus.IMPORTED);
     }
+
+    private void lookupOrCreateArrayData(boolean createAnnnotation) {
+        lookupArrayData();
+        if (getArrayData() == null) {
+            createArrayData(createAnnnotation);
+        }
+    }
+
+    abstract void lookupArrayData();
+
+    abstract void createArrayData(boolean createAnnnotation);
 
     abstract void addHybridizationDatas();
 
@@ -129,11 +150,11 @@ abstract class AbstractDataSetImporter {
         }
     }
 
-    DataSet getDataSet() {
+    final DataSet getDataSet() {
         return getArrayData().getDataSet();
     }
 
-    QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor) {
+    final QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor) {
         return getArrayDao().getQuantitationType(descriptor);
     }
 
@@ -145,37 +166,39 @@ abstract class AbstractDataSetImporter {
         return quantitationTypes;
     }
 
-    private File getFile() {
+    File getFile() {
         return getFileAccessService().getFile(getCaArrayFile());
     }
 
     abstract AbstractArrayData getArrayData();
 
-    CaArrayFile getCaArrayFile() {
-        return getArrayData().getDataFile();
+    final CaArrayFile getCaArrayFile() {
+        return caArrayFile;
     }
 
     private CaArrayDaoFactory getDaoFactory() {
         return daoFactory;
     }
 
-    private ArrayDao getArrayDao() {
+    final ArrayDao getArrayDao() {
         return getDaoFactory().getArrayDao();
     }
 
-    static AbstractDataSetImporter create(AbstractArrayData arrayData, CaArrayDaoFactory daoFactory, FileAccessService fileAccessService) {
-        if (arrayData == null) {
+    static AbstractDataSetImporter create(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory, FileAccessService fileAccessService) {
+        if (caArrayFile == null) {
             throw new IllegalArgumentException("arrayData was null");
         }
-        if (arrayData instanceof RawArrayData) {
-            return new RawArrayDataImporter((RawArrayData) arrayData, daoFactory, fileAccessService);
-        } else if (arrayData instanceof DerivedArrayData) {
-            return new DerivedArrayDataImporter((DerivedArrayData) arrayData, daoFactory, fileAccessService);
+        FileType fileType = caArrayFile.getType();
+        if (fileType.isRawArrayData()) {
+            return new RawArrayDataImporter(caArrayFile, daoFactory, fileAccessService);
+        } else if (fileType.isDerivedArrayData()) {
+            return new DerivedArrayDataImporter(caArrayFile, daoFactory, fileAccessService);
         } else {
-            throw new IllegalArgumentException("Unsupported array data type "
-                    + arrayData.getClass().getCanonicalName());
+            throw new IllegalArgumentException("The file " + caArrayFile.getName()
+                    + " does not contain array data. The file type is " + caArrayFile.getType().getName());
         }
     }
+
 
     AbstractDataFileHandler getDataFileHandler() {
         if (dataFileHandler == null) {
@@ -186,6 +209,34 @@ abstract class AbstractDataSetImporter {
 
     private FileAccessService getFileAccessService() {
         return fileAccessService;
+    }
+
+    ArrayDataType getArrayDataType(ArrayDataTypeDescriptor descriptor) {
+        return getArrayDao().getArrayDataType(descriptor);
+    }
+
+    protected void createAnnotation(Experiment experiment, Hybridization hybridization, String sampleName) {
+        hybridization.setName(sampleName);
+        LabeledExtract labeledExtract = new LabeledExtract();
+        labeledExtract.setName(sampleName);
+        hybridization.getLabeledExtracts().add(labeledExtract);
+        labeledExtract.getHybridizations().add(hybridization);
+        experiment.getLabeledExtracts().add(labeledExtract);
+        Extract extract = new Extract();
+        extract.setName(sampleName);
+        extract.getLabeledExtracts().add(labeledExtract);
+        labeledExtract.getExtracts().add(extract);
+        experiment.getExtracts().add(extract);
+        Sample sample = new Sample();
+        sample.setName(sampleName);
+        sample.getExtracts().add(extract);
+        extract.getSamples().add(sample);
+        experiment.getSamples().add(sample);
+        Source source = new Source();
+        source.setName(sampleName);
+        source.getSamples().add(sample);
+        sample.getSources().add(source);
+        experiment.getSources().add(source);
     }
 
 }
