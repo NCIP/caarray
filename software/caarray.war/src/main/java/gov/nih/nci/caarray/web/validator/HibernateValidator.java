@@ -110,6 +110,8 @@ public class HibernateValidator extends FieldValidatorSupport {
     private static final Map<Class<?>, ClassValidator<?>> CLASS_VALIDATOR_MAP =
         new HashMap<Class<?>, ClassValidator<?>>();
 
+    private String resourceKeyBase;
+
     /**
      * {@inheritDoc}
      */
@@ -156,10 +158,15 @@ public class HibernateValidator extends FieldValidatorSupport {
         if (validationMessages.length > 0) {
             for (InvalidValue message : validationMessages) {
                 String errorField = fieldName;
+                String errorFieldKey = fieldName;
+                if (StringUtils.isNotBlank(getResourceKeyBase())) {
+                    errorFieldKey = getResourceKeyBase();
+                }
                 String msg = message.getMessage();
                 if (StringUtils.isNotBlank(message.getPropertyPath())) {
                     errorField = fieldName + "." + message.getPropertyPath();
-                    msg = StringUtils.replace(msg, "fieldName", "\"" + errorField + "\"");
+                    errorFieldKey = errorFieldKey + "." + message.getPropertyPath();
+                    msg = StringUtils.replace(msg, "fieldName", "\"" + errorFieldKey + "\"");
                 }
                 ValueStack stack = ActionContext.getContext().getValueStack();
                 msg = TextParseUtil.translateVariables(msg, stack);
@@ -167,5 +174,18 @@ public class HibernateValidator extends FieldValidatorSupport {
             }
         }
     }
-}
 
+    /**
+     * @return the resourceKeyBase
+     */
+    public String getResourceKeyBase() {
+        return this.resourceKeyBase;
+    }
+
+    /**
+     * @param resourceKeyBase the resourceKeyBase to set
+     */
+    public void setResourceKeyBase(String resourceKeyBase) {
+        this.resourceKeyBase = resourceKeyBase;
+    }
+}

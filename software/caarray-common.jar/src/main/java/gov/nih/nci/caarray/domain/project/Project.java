@@ -138,7 +138,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     public Project() {
         // hibernate & castor-only constructor
-        hostProfile.setSecurityLevel(SecurityLevel.READ_WRITE_SELECTIVE);
+        this.hostProfile.setSecurityLevel(SecurityLevel.READ_WRITE_SELECTIVE);
     }
 
     /**
@@ -271,7 +271,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      * @return collaborator access profiles
      */
     @ManyToMany(fetch = FetchType.LAZY)
-    @MapKeyManyToMany(joinColumns = @JoinColumn(name = "GROUP_ID"))
+    @MapKeyManyToMany(joinColumns = @JoinColumn(name = "GROUP_ID", nullable = false))
     @JoinTable(
             name = "PROJECT_GROUPS",
             joinColumns = @JoinColumn(name = "PROJECT_ID"),
