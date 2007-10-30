@@ -125,8 +125,9 @@
         </action>
         
         <action name="collaborators/*" class="gov.nih.nci.caarray.web.action.CollaboratorsAction" method="{1}">
-            <result name="input">/WEB-INF/pages/collaborators/listGroups.jsp</result>
+            <result name="input">/WEB-INF/pages/collaborators/edit.jsp</result>
             <result name="success">/WEB-INF/pages/collaborators/{1}.jsp</result>
+            <result name="list">/WEB-INF/pages/collaborators/listGroups.jsp</result>
         </action>
         
         <action name="ajax/collaborators/*" class="gov.nih.nci.caarray.web.action.CollaboratorsAction" method="{1}">

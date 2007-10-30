@@ -85,18 +85,27 @@ package gov.nih.nci.caarray.web.action;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getPermissionsManagementService;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.util.SecurityInterceptor;
+import gov.nih.nci.security.AuthorizationManager;
+import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.dao.GroupSearchCriteria;
 import gov.nih.nci.security.exceptions.CSException;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.interceptor.validation.SkipValidation;
+
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
  * Collaborator group management action.
  */
+@Validation
 public class CollaboratorsAction extends ActionSupport {
 
     //
@@ -113,16 +122,18 @@ public class CollaboratorsAction extends ActionSupport {
     /**
      * @return listGroups
      */
+    @SkipValidation
     @SuppressWarnings("unchecked")
     public String listGroups() {
         this.groups = getPermissionsManagementService().getCollaboratorGroups();
-        return Action.INPUT;
+        return "list";
     }
 
     /**
      * Deletes the targeted CollaboratorGroup.
      * @return listGroups
      */
+    @SkipValidation
     public String delete() {
         getPermissionsManagementService().delete(targetGroup);
         return listGroups();
@@ -143,6 +154,7 @@ public class CollaboratorsAction extends ActionSupport {
      * Takes user to the edit group page.
      * @return edit
      */
+    @SkipValidation
     public String edit() {
         return Action.SUCCESS;
     }
@@ -151,6 +163,7 @@ public class CollaboratorsAction extends ActionSupport {
      * Takes the user to the user details screen.
      * @return userDetail
      */
+    @SkipValidation
     public String userDetail() {
         return Action.SUCCESS;
     }
@@ -186,6 +199,7 @@ public class CollaboratorsAction extends ActionSupport {
     /**
      * @return the groupName
      */
+    @RequiredStringValidator(message = "Group Name is Required")
     public String getGroupName() {
         return groupName;
     }
@@ -224,4 +238,27 @@ public class CollaboratorsAction extends ActionSupport {
     public void setTargetUserId(Long id) throws CSObjectNotFoundException {
         this.targetUser = SecurityInterceptor.getAuthorizationManager().getUserById(id.toString());
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void validate() {
+        super.validate();
+        if (StringUtils.isBlank(getGroupName())) {
+            // Nothing to be done in this case
+            return;
+        }
+        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
+        Group g = new Group();
+        g.setGroupName(getGroupName());
+        GroupSearchCriteria gsc = new GroupSearchCriteria(g);
+        List<Group> matchingGroups = am.getObjects(gsc);
+        if (!matchingGroups.isEmpty()) {
+            addFieldError("groupName", "Collaborator Group Name must be unique");
+        }
+    }
+
+
 }
