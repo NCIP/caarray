@@ -145,7 +145,9 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
 
     private static final Set<FileType> ARRAY_DESIGN_FILE_TYPES = new HashSet<FileType>();
 
-    private static final Set<FileType> ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
+    private static final Set<FileType> RAW_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
+
+    private static final Set<FileType> DERIVED_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
 
 
     static {
@@ -158,8 +160,8 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
         INSTANCES.put(AFFYMETRIX_CEL.toString(), AFFYMETRIX_CEL);
 
         ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CDF);
-        ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
-        ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
+        RAW_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
+        DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
     }
 
     private FileType(String name) {
@@ -228,10 +230,24 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
     }
 
     /**
+     * @return true if the file type is used for derived array data.
+     */
+    public boolean isDerivedArrayData() {
+        return DERIVED_ARRAY_DATA_FILE_TYPES.contains(this);
+    }
+
+    /**
+     * @return true if the file type is used for derived array data.
+     */
+    public boolean isRawArrayData() {
+        return RAW_ARRAY_DATA_FILE_TYPES.contains(this);
+    }
+
+    /**
      * @return true if this file type is array data.
      */
     public boolean isArrayData() {
-        return ARRAY_DATA_FILE_TYPES.contains(this);
+        return isRawArrayData() || isDerivedArrayData();
     }
 
     /**
