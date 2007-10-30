@@ -87,8 +87,10 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.util.HibernateUtil;
@@ -102,7 +104,7 @@ import org.hibernate.Session;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.array</code> package.
- * 
+ *
  * @author Rashmi Srinivasa
  */
 class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
@@ -138,11 +140,21 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     /**
      * {@inheritDoc}
      */
-    public AbstractArrayData getArrayData(CaArrayFile file) {
+    public RawArrayData getRawArrayData(CaArrayFile file) {
         Session session = HibernateUtil.getCurrentSession();
-        Query query = session.createQuery("from AbstractArrayData arrayData where arrayData.dataFile = :file");
+        Query query = session.createQuery("from " + RawArrayData.class.getName() + " arrayData where arrayData.dataFile = :file");
         query.setEntity("file", file);
-        return (AbstractArrayData) query.uniqueResult();
+        return (RawArrayData) query.uniqueResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public DerivedArrayData getDerivedArrayData(CaArrayFile file) {
+        Session session = HibernateUtil.getCurrentSession();
+        Query query = session.createQuery("from " + DerivedArrayData.class.getName() + " arrayData where arrayData.dataFile = :file");
+        query.setEntity("file", file);
+        return (DerivedArrayData) query.uniqueResult();
     }
 
     /**

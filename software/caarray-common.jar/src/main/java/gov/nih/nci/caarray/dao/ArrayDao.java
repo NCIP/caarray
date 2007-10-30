@@ -87,8 +87,10 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
@@ -134,12 +136,20 @@ public interface ArrayDao extends CaArrayDao {
     AbstractArrayData getArrayData(long id);
 
     /**
-     * Returns the array data object associated with the file provided.
+     * Returns the <code>RawArrayData</code> object associated with the file provided.
      *
      * @param file find data for this file.
      * @return the associated data or null.
      */
-    AbstractArrayData getArrayData(CaArrayFile file);
+    RawArrayData getRawArrayData(CaArrayFile file);
+
+    /**
+     * Returns the <code>DerivedArrayData</code> object associated with the file provided.
+     *
+     * @param file find data for this file.
+     * @return the associated data or null.
+     */
+    DerivedArrayData getDerivedArrayData(CaArrayFile file);
 
     /**
      * Returns the array data type corresponding to the given descriptor, if one

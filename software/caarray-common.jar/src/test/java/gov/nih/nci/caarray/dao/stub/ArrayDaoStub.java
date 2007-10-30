@@ -91,14 +91,13 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
-/**
- *
- */
 public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
 
     /**
@@ -107,33 +106,25 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
     public ArrayDesign getArrayDesign(long id) {
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public List<Organization> getArrayDesignProviders() {
         return new ArrayList<Organization>();
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public List<ArrayDesign> getArrayDesignsForProvider(Organization provider) {
         return new ArrayList<ArrayDesign>();
     }
-            
-    /**
-     * {@inheritDoc}
-     */
-    public AbstractArrayData getArrayData(CaArrayFile file) {
-        return null;
-    }
 
     /**
      * {@inheritDoc}
      */
     public ArrayDataType getArrayDataType(ArrayDataTypeDescriptor descriptor) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -141,23 +132,34 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
      * {@inheritDoc}
      */
     public QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor) {
-        // TODO Auto-generated method stub
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.ArrayDao#getArrayData(long)
+    /**
+     * {@inheritDoc}
      */
     public AbstractArrayData getArrayData(long id) {
-        // TODO Auto-generated method stub
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.ArrayDao#getHybridization(java.lang.Long)
+    /**
+     * {@inheritDoc}
      */
     public Hybridization getHybridization(Long id) {
-        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public DerivedArrayData getDerivedArrayData(CaArrayFile file) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public RawArrayData getRawArrayData(CaArrayFile file) {
         return null;
     }
 

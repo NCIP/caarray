@@ -83,15 +83,16 @@
 package gov.nih.nci.caarray.dao;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataType;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
@@ -215,7 +216,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
     }
 
     @Test
-    public void testGetArrayData() {
+    public void testGetRawArrayData() {
         Transaction tx = null;
         CaArrayFile file = new CaArrayFile();
         RawArrayData rawData = new RawArrayData();
@@ -226,12 +227,41 @@ public class ArrayDaoTest extends AbstractDaoTest {
             DAO_OBJECT.save(rawData);
             tx.commit();
             tx = HibernateUtil.getCurrentSession().beginTransaction();
-            AbstractArrayData retrievedArrayData = DAO_OBJECT.getArrayData(file);
+            RawArrayData retrievedArrayData = DAO_OBJECT.getRawArrayData(file);
             assertEquals(rawData, retrievedArrayData);
+            file = new CaArrayFile();
+            DAO_OBJECT.save(file);
+            retrievedArrayData = DAO_OBJECT.getRawArrayData(file);
+            assertNull(retrievedArrayData);
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
-            fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());
+            fail("DAO exception during save and retrieve of array data: " + e.getMessage());
+        }
+    }
+    
+    @Test
+    public void testGetDerivedArrayData() {
+        Transaction tx = null;
+        CaArrayFile file = new CaArrayFile();
+        DerivedArrayData derivedArrayData = new DerivedArrayData();
+        derivedArrayData.setDataFile(file);
+        derivedArrayData.setName("test" + System.currentTimeMillis());
+        try {
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            DAO_OBJECT.save(derivedArrayData);
+            tx.commit();
+            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            DerivedArrayData retrievedArrayData = DAO_OBJECT.getDerivedArrayData(file);
+            assertEquals(derivedArrayData, retrievedArrayData);
+            file = new CaArrayFile();
+            DAO_OBJECT.save(file);
+            retrievedArrayData = DAO_OBJECT.getDerivedArrayData(file);
+            assertNull(retrievedArrayData);
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during save and retrieve of array data: " + e.getMessage());
         }
     }
 
@@ -257,6 +287,29 @@ public class ArrayDaoTest extends AbstractDaoTest {
             HibernateUtil.getCurrentSession().clear();
             ArrayDataType retrievedArrayDataType = DAO_OBJECT.getArrayDataType(testDescriptor);
             assertEquals(arrayDataType, retrievedArrayDataType);
+            testDescriptor = new ArrayDataTypeDescriptor() {
+
+                public String getName() {
+                    return "not in db";
+                }
+
+                public List<QuantitationTypeDescriptor> getQuantitationTypes() {
+                    return null;
+                }
+
+                public String getVersion() {
+                    return null;
+                }
+
+                public boolean isEquivalent(ArrayDataType arrayDataType) {
+                    return false;
+                }
+                
+            };
+            retrievedArrayDataType = DAO_OBJECT.getArrayDataType(testDescriptor);
+            assertNull(retrievedArrayDataType);
+            retrievedArrayDataType = DAO_OBJECT.getArrayDataType(null);
+            assertNull(retrievedArrayDataType);
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
@@ -298,6 +351,21 @@ public class ArrayDaoTest extends AbstractDaoTest {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             QuantitationType retrievedQuantitationType = DAO_OBJECT.getQuantitationType(testDescriptor);
             assertEquals(quantitationType, retrievedQuantitationType);
+            testDescriptor = new QuantitationTypeDescriptor() {
+
+                public DataType getDataType() {
+                    return DataType.BOOLEAN;
+                }
+
+                public String getName() {
+                    return "not in db";
+                }
+                
+            };
+            retrievedQuantitationType = DAO_OBJECT.getQuantitationType(testDescriptor);
+            assertNull(retrievedQuantitationType);
+            retrievedQuantitationType = DAO_OBJECT.getQuantitationType(null);
+            assertNull(retrievedQuantitationType);
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
