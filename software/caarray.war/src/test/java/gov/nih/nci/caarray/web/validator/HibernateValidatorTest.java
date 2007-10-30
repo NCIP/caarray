@@ -218,7 +218,7 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
             return Action.SUCCESS;
         }
 
-        @CustomValidator(type = "hibernate")
+        @CustomValidator(type = "hibernate", parameters = { @ValidationParameter(name = "resourceKeyBase", value = "experiment.sources") })
         public Source getSource() {
             return this.source;
         }
@@ -227,7 +227,7 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
             this.source = source;
         }
 
-        @CustomValidator(type = "hibernate", parameters = { @ValidationParameter(name = "appendPrefix", value = "false") })
+        @CustomValidator(type = "hibernate", parameters = { @ValidationParameter(name = "resourceKeyBase", value = "experiment.sources"), @ValidationParameter(name = "appendPrefix", value = "false") })
         public Source getSource2() {
             return this.source2;
         }
@@ -236,7 +236,7 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
             this.source2 = source2;
         }
 
-        @CustomValidator(type = "hibernate")
+        @CustomValidator(type = "hibernate", parameters = @ValidationParameter(name = "resourceKeyBase", value = "experiment.sources"))
         public Source[] getSourceArray() {
             return this.sourceArray;
         }
@@ -248,7 +248,7 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
         /**
          * @return the protocolList
          */
-        @CustomValidator(type = "hibernate")
+        @CustomValidator(type = "hibernate", parameters = @ValidationParameter(name = "resourceKeyBase", value = "experiment.sources"))
         public List<Source> getSourceList() {
             return this.sourceList;
         }
