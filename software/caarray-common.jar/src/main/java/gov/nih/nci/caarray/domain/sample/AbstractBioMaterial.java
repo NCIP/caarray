@@ -171,9 +171,8 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      *
      * @return the name
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     @NotNull
-    @Length(min = 1)
+    @Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
         return this.name;
     }

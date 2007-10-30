@@ -94,7 +94,6 @@ import org.hibernate.validator.ClassValidator;
 import org.hibernate.validator.InvalidValue;
 
 import com.opensymphony.xwork2.ActionContext;
-import com.opensymphony.xwork2.util.TextParseUtil;
 import com.opensymphony.xwork2.util.ValueStack;
 import com.opensymphony.xwork2.validator.ValidationException;
 import com.opensymphony.xwork2.validator.validators.FieldValidatorSupport;
@@ -166,10 +165,8 @@ public class HibernateValidator extends FieldValidatorSupport {
                 if (StringUtils.isNotBlank(message.getPropertyPath())) {
                     errorField = fieldName + "." + message.getPropertyPath();
                     errorFieldKey = errorFieldKey + "." + message.getPropertyPath();
-                    msg = StringUtils.replace(msg, "fieldName", "\"" + errorFieldKey + "\"");
+                    msg = StringUtils.replace(msg, "(fieldName)",  getValidatorContext().getText(errorFieldKey));
                 }
-                ValueStack stack = ActionContext.getContext().getValueStack();
-                msg = TextParseUtil.translateVariables(msg, stack);
                 getValidatorContext().addFieldError(errorField, msg);
             }
         }
