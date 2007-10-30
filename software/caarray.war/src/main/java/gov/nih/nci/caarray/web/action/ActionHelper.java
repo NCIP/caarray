@@ -91,10 +91,14 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.interceptor.validation.SkipValidation;
+
+import com.opensymphony.xwork2.ActionContext;
 
 /**
  * Helper class for actions.
@@ -115,6 +119,19 @@ public class ActionHelper {
         }
         messages.add(msg);
         ServletActionContext.getRequest().getSession().setAttribute("messages", messages);
+    }
+
+    public static boolean isSkipValidationSetOnCurrentAction() {
+        try {
+            String methodName = ActionContext.getContext().getActionInvocation().getProxy().getMethod();
+            Method method = ActionContext.getContext().getActionInvocation().getAction().getClass().getDeclaredMethod(methodName);
+            if (method.getAnnotation(SkipValidation.class) != null) {
+                return true;
+            }
+        } catch (NoSuchMethodException e) {
+            // should never happen, as we know the method exists.
+        }
+        return false;
     }
 
     /**

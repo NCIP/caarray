@@ -135,7 +135,7 @@ public class CollaboratorsAction extends ActionSupport {
      */
     @SkipValidation
     public String delete() {
-        getPermissionsManagementService().delete(targetGroup);
+        getPermissionsManagementService().delete(this.targetGroup);
         return listGroups();
     }
 
@@ -172,7 +172,7 @@ public class CollaboratorsAction extends ActionSupport {
      * @return the groups
      */
     public List<CollaboratorGroup> getGroups() {
-        return groups;
+        return this.groups;
     }
 
     /**
@@ -186,7 +186,7 @@ public class CollaboratorsAction extends ActionSupport {
      * @return the targetGroup
      */
     public CollaboratorGroup getTargetGroup() {
-        return targetGroup;
+        return this.targetGroup;
     }
 
     /**
@@ -201,7 +201,7 @@ public class CollaboratorsAction extends ActionSupport {
      */
     @RequiredStringValidator(message = "Group Name is Required")
     public String getGroupName() {
-        return groupName;
+        return this.groupName;
     }
 
     /**
@@ -215,7 +215,7 @@ public class CollaboratorsAction extends ActionSupport {
      * @return the targetUser
      */
     public User getTargetUser() {
-        return targetUser;
+        return this.targetUser;
     }
 
     /**
@@ -229,10 +229,10 @@ public class CollaboratorsAction extends ActionSupport {
      * @return the targetUserId
      */
     public Long getTargetUserId() {
-        if (targetUser == null) {
+        if (this.targetUser == null) {
             return null;
         }
-        return targetUser.getUserId();
+        return this.targetUser.getUserId();
     }
 
     public void setTargetUserId(Long id) throws CSObjectNotFoundException {
@@ -246,19 +246,19 @@ public class CollaboratorsAction extends ActionSupport {
     @Override
     public void validate() {
         super.validate();
-        if (StringUtils.isBlank(getGroupName())) {
-            // Nothing to be done in this case
-            return;
-        }
-        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
-        Group g = new Group();
-        g.setGroupName(getGroupName());
-        GroupSearchCriteria gsc = new GroupSearchCriteria(g);
-        List<Group> matchingGroups = am.getObjects(gsc);
-        if (!matchingGroups.isEmpty()) {
-            addFieldError("groupName", "Collaborator Group Name must be unique");
+        if (!ActionHelper.isSkipValidationSetOnCurrentAction()) {
+            if (StringUtils.isBlank(getGroupName())) {
+                // Nothing to be done in this case
+                return;
+            }
+            AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
+            Group g = new Group();
+            g.setGroupName(getGroupName());
+            GroupSearchCriteria gsc = new GroupSearchCriteria(g);
+            List<Group> matchingGroups = am.getObjects(gsc);
+            if (!matchingGroups.isEmpty()) {
+                addFieldError("groupName", "Collaborator Group Name must be unique");
+            }
         }
     }
-
-
 }
