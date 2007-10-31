@@ -1,0 +1,92 @@
+<!-- *********************************************************************** -->
+<!-- ** PROJECT:   caArray Load Testing                                   ** -->
+<!-- *********************************************************************** -->
+
+<project name="caarrayLoadTesting" default="samplers:jar" basedir=".">
+    <!-- ******************************************************************* -->
+    <!-- ** PROPERTIES                                                    ** -->
+    <!-- ******************************************************************* -->
+    <property environment="env" />
+    <property name="java.src.dir" value="${basedir}/src/java" />
+    <property name="lib.dir" value="${basedir}/lib" />
+    <property name="target.dir" value="${basedir}/target" />
+    <property name="java.classes.dir" value="${target.dir}/classes" />
+    <property name="tests.src.dir" value="${basedir}/src/tests" />
+    <property name="tests.out.dir" value="${target.dir}/tests" />
+    <property name="jmeter.dir" value="${env.JMETER_HOME}" />
+    <property name="jmeter.lib.ext.dir" value="${jmeter.dir}/lib/ext" />
+    <property name="ant.lib.dir" value="${env.ANT_HOME}/lib" />
+    <property name="jmeter.ant.jar" value="${lib.dir}/ant-jmeter.jar" />
+
+    <property name="caarray.jmeter.samplers.jar" value="${target.dir}/caarray-jmeter-samplers.jar" />
+    <property name="caarray.common.jar" value="../caarray-common.jar/target/caarray-common.jar" />
+    <property name="caarray.client.jar" value="../caarray-client.jar/target/caarray-client.jar" />
+    <property name="cacore.client.jar" value="../lib/cacore32-client.jar" />
+    <property name="jmeter.core.jar" value="${lib.dir}/ApacheJMeter_core.jar" />
+    <property name="jmeter.java.jar" value="${lib.dir}/ApacheJMeter_java.jar" />
+
+    <!-- ******************************************************************* -->
+    <!-- ** TASKDEFS                                                      ** -->
+    <!-- ******************************************************************* -->
+    <taskdef name="jmeter" classname="org.programmerplanet.ant.taskdefs.jmeter.JMeterTask" classpath="${jmeter.ant.jar}" />
+
+    <!-- ******************************************************************* -->
+    <!-- ** CLEAN ALL                                                     ** -->
+    <!-- ******************************************************************* -->
+    <target name="clean">
+        <delete dir="${target.dir}" />
+    </target>
+
+    <!-- ******************************************************************* -->
+    <!-- ** BUILD AND DEPLOY CAARRAY JMETER SAMPLERS                      ** -->
+    <!-- ******************************************************************* -->
+    <target name="samplers:clean">
+        <delete dir="${java.classes.dir}" />
+  <delete file="${caarray.jmeter.samplers.jar}" />
+    </target>
+
+    <target name="samplers:compile">
+        <mkdir dir="${java.classes.dir}" />
+        <javac srcdir="${java.src.dir}" destdir="${java.classes.dir}" debug="true">
+            <classpath>
+                <pathelement location="${caarray.common.jar}" />
+                <pathelement location="${caarray.client.jar}" />
+                <pathelement location="${cacore.client.jar}" />
+                <pathelement location="${jmeter.core.jar}" />
+                <pathelement location="${jmeter.java.jar}" />
+            </classpath>
+        </javac>
+        <copy todir="${java.classes.dir}" overwrite="true">
+            <fileset dir="${java.src.dir}" includes="**/*.properties" />
+        </copy>
+    </target>
+
+    <target name="samplers:jar" depends="samplers:compile">
+        <jar destfile="${caarray.jmeter.samplers.jar}">
+            <fileset dir="${java.classes.dir}" />
+        </jar>
+    </target>
+
+    <target name="samplers:deploy" depends="samplers:jar">
+        <copy file="${caarray.jmeter.samplers.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
+        <copy file="${caarray.common.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
+        <copy file="${caarray.client.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
+        <copy file="${cacore.client.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
+    </target>
+
+    <!-- ******************************************************************* -->
+    <!-- ** RUN JMETER TESTS                                              ** -->
+    <!-- ******************************************************************* -->
+    <target name="tests:clean">
+        <delete dir="${tests.out.dir}" />
+    </target>
+
+    <!-- TODO Copy properties from default.properties to %JMETER_HOME%/bin/system.properties. -->
+
+    <target name="tests:run">
+        <mkdir dir="${tests.out.dir}" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/arraydata/DataDownloadAPITest_Basic.jmx" resultlog="${tests.out.dir}/arraydata/DataDownloadAPITest_Basic.jtl">
+    <jvmarg value="-Xmx256m" />
+  </jmeter>
+    </target>
+</project>

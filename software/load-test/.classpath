@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/java"/>
+	<classpathentry kind="lib" path="lib/ApacheJMeter_core.jar"/>
+	<classpathentry kind="lib" path="lib/ApacheJMeter_java.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/lib/cacore32-client.jar" sourcepath="/lib/src/cacore32-client-src.jar"/>
+	<classpathentry kind="lib" path="/caarray-client-jar/target/caarray-client.jar"/>
+	<classpathentry kind="lib" path="/caarray-common-jar/target/caarray-common.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/caarray-client-jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/caarray-common-jar"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>
