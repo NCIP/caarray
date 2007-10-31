@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.web;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementServiceStub;
@@ -129,7 +130,7 @@ public class CollaboratorsActionTest {
     }
 
     @Test
-    public void testDelete() {
+    public void testDelete() throws CSTransactionException {
         User owner = new User();
         Group group = new Group();
         CollaboratorGroup cg = new CollaboratorGroup(group, owner);
@@ -140,10 +141,21 @@ public class CollaboratorsActionTest {
     }
 
     @Test
-    public void testCreate() throws CSException {
+    public void testName() throws CSException {
         action.setGroupName("test");
-        action.create();
-        assertEquals("test", pstub.getCreateName());
+        action.name();
+        assertEquals("test", pstub.getName());
+        assertNull(pstub.getCurrentGroup());
+
+        User owner = new User();
+        Group group = new Group();
+        CollaboratorGroup cg = new CollaboratorGroup(group, owner);
+        action.setTargetGroup(cg);
+        action.setGroupName("test2");
+        action.name();
+
+        assertEquals("test2", pstub.getName());
+        assertNotNull(pstub.getCurrentGroup());
     }
 
     @Test

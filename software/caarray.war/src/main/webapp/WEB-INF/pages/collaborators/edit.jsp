@@ -9,13 +9,21 @@
         	<div class="boxpad2">
         		<h3>
         			<a href="listGroups.action">Collaboration Groups</a> &gt;
-        			<span class="dark">Add a New Collaboration Group</span>
+        			<span class="dark">
+        				<c:if test="${empty targetGroup}">
+	        				Add a New Collaboration Group
+	        			</c:if>
+        				<c:if test="${!empty targetGroup}">
+	        				${targetGroup.group.groupName}
+	        			</c:if>	        			
+        			</span>
         		</h3>
         	</div>
         	<div class="boxpad" style="padding-bottom: 10px;">
-        		<p class="instructions" style="margin-bottom: 10px;">Choose a name from the new group.</p>
-        		<s:form action="/protected/collaborators/create.action" cssClass="form" id="newGroupForm">
-        			<s:textfield required="true" name="groupName" key="collaboration.group.name" size="50" tabindex="1"/>
+        		<p class="instructions" style="margin-bottom: 10px;">Choose a name for the group.</p>
+        		<s:form action="/protected/collaborators/name.action" cssClass="form" id="newGroupForm">
+        			<s:textfield required="true" name="groupName" key="collaboration.group.name" size="50" tabindex="1" value="${targetGroup.group.groupName}"/>
+        			<s:hidden name="targetGroup" value="${targetGroup.id}"/>
         		</s:form>
        			<a href="#" onclick="javascript:document.getElementById('newGroupForm').submit();"><span class="btn_img, save">Save</span></a>
         	</div>

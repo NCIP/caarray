@@ -37,7 +37,10 @@
 	                </display:column>
 	                <display:column titleKey="button.edit">
 	                	<c:if test="${row.owner.loginName eq pageContext.request.remoteUser}">
-		                    <a href="#"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
+		                		<c:url value="/protected/collaborators/edit.action" var="editUrl">
+		                			<c:param name="targetGroup" value="${row.id}"/>
+		                		</c:url>
+		                    <a href="${editUrl}"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
 		                </c:if>
 	                </display:column>
 	                <display:column titleKey="button.delete">

@@ -131,21 +131,27 @@ public class CollaboratorsAction extends ActionSupport {
     /**
      * Deletes the targeted CollaboratorGroup.
      * @return listGroups
+     * @throws CSTransactionException on CSM error
      */
     @SkipValidation
-    public String delete() {
+    public String delete() throws CSTransactionException {
         getPermissionsManagementService().delete(this.targetGroup);
         return listGroups();
     }
 
     /**
-     * Creates a new collaborator group.
+     * Create a new group, or edit the name of an existing group.
      *
      * @return listGroups
      * @throws CSException on CSM error
      */
-    public String create() throws CSException {
-        getPermissionsManagementService().create(getGroupName());
+    public String name() throws CSException {
+        if (targetGroup == null) {
+            getPermissionsManagementService().create(getGroupName());
+        } else {
+            getPermissionsManagementService().rename(getTargetGroup(), getGroupName());
+        }
+
         return listGroups();
     }
 

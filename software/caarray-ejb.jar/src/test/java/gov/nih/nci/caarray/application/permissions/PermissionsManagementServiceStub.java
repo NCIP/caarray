@@ -96,7 +96,7 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
 
     private CollaboratorGroup currentGroup;
     private boolean getCalled = false;
-    private String createName = null;
+    private String name = null;
     private List<String> addedUsers;
     private List<String> removedUsers;
 
@@ -140,16 +140,16 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
     /**
      * {@inheritDoc}
      */
-    public CollaboratorGroup create(String name) throws CSTransactionException, CSObjectNotFoundException {
-        this.createName = name;
+    public CollaboratorGroup create(String n) throws CSTransactionException, CSObjectNotFoundException {
+        name = n;
         return null;
     }
 
     /**
      * @return name of last group 'created'
      */
-    public String getCreateName() {
-        return createName;
+    public String getName() {
+        return name;
     }
 
     /**
@@ -180,5 +180,13 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
      */
     public List<String> getRemovedUsers() {
         return removedUsers;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void rename(CollaboratorGroup targetGroup, String groupName) {
+        name = groupName;
+        currentGroup = targetGroup;
     }
 }

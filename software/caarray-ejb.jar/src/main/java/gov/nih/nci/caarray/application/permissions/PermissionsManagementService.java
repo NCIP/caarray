@@ -103,8 +103,9 @@ public interface PermissionsManagementService {
      * Delete a collaborator group.
      *
      * @param group the group to delete
+     * @throws CSTransactionException on CSM error
      */
-    void delete(CollaboratorGroup group);
+    void delete(CollaboratorGroup group) throws CSTransactionException;
 
     /**
      * @return all collaborator groups in the system
@@ -139,4 +140,14 @@ public interface PermissionsManagementService {
      * @throws CSTransactionException  on CSM error
      */
     void removeUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException;
+
+    /**
+     * Renames a collaboration group.
+     *
+     * @param targetGroup group to rename
+     * @param groupName new name
+     * @throws CSTransactionException on CSM error
+     * @throws CSObjectNotFoundException on CSM error
+     */
+    void rename(CollaboratorGroup targetGroup, String groupName) throws CSTransactionException, CSObjectNotFoundException;
 }

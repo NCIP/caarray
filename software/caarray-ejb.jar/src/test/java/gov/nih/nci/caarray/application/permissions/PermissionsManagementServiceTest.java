@@ -90,7 +90,6 @@ import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.SecurityInterceptor;
-import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSException;
@@ -127,15 +126,14 @@ public class PermissionsManagementServiceTest {
     }
 
     @Test
-    public void testDelete() {
-        CollaboratorGroup cg = new CollaboratorGroup(new Group(), new User());
-        cg.getOwner().setLoginName(UsernameHolder.getUser());
-        permissionsManagementService.delete(cg);
-        assertEquals(cg, genericDataServiceStub.getDeletedObject());
+    public void testDelete() throws CSTransactionException, CSObjectNotFoundException {
+        CollaboratorGroup created = permissionsManagementService.create(TEST);
+        permissionsManagementService.delete(created);
+        assertEquals(created, genericDataServiceStub.getDeletedObject());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testDeleteException() {
+    public void testDeleteException() throws CSTransactionException {
         CollaboratorGroup cg = new CollaboratorGroup(new Group(), new User());
         cg.getOwner().setLoginName("anotheruser");
         permissionsManagementService.delete(cg);
@@ -189,13 +187,23 @@ public class PermissionsManagementServiceTest {
         tx.commit();
     }
 
+    @Test
+    public void testRename() throws CSTransactionException, CSObjectNotFoundException {
+        CollaboratorGroup created = permissionsManagementService.create(TEST);
+        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+        permissionsManagementService.rename(created, "test2");
+        Group g = (Group) HibernateUtil.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
+        assertEquals("test2", g.getGroupName());
+        tx.commit();
+    }
+
     @SuppressWarnings("unchecked")
     @After
     public void after() {
         HibernateUtil.enableFilters(false);
         Session s = HibernateUtil.getCurrentSession();
         Transaction tx = s.beginTransaction();
-        Iterator<Group> it = s.createQuery("FROM " + Group.class.getName() + " g where g.groupName = '" + TEST + "'")
+        Iterator<Group> it = s.createQuery("FROM " + Group.class.getName() + " g where g.groupName like '" + TEST + "%'")
                               .list()
                               .iterator();
         if (it.hasNext()) {

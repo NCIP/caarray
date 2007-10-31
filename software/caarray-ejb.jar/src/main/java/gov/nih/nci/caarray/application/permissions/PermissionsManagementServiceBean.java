@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.SecurityInterceptor;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
@@ -124,7 +125,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     /**
      * {@inheritDoc}
      */
-    public void delete(CollaboratorGroup group) {
+    public void delete(CollaboratorGroup group) throws CSTransactionException {
         LogUtil.logSubsystemEntry(LOG, group);
         if (!group.getOwner().getLoginName().equals(UsernameHolder.getUser())) {
             throw new IllegalArgumentException(
@@ -132,6 +133,9 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
                                   UsernameHolder.getUser(), group.getGroup().getGroupName()));
         }
         getGenericDataService().delete(group);
+        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
+        am.removeGroup(group.getGroup().getGroupId().toString());
+
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -217,6 +221,19 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
         for (String u : users) {
             am.removeUserFromGroup(targetGroup.getGroup().getGroupId().toString(), u);
         }
+        LogUtil.logSubsystemExit(LOG);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void rename(CollaboratorGroup targetGroup, String groupName) throws CSTransactionException, CSObjectNotFoundException {
+        LogUtil.logSubsystemEntry(LOG, targetGroup, groupName);
+        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
+        Group g = am.getGroupById(targetGroup.getGroup().getGroupId().toString());
+        g.setGroupName(groupName);
+        am.modifyGroup(g);
+        HibernateUtil.getCurrentSession().refresh(targetGroup.getGroup());
         LogUtil.logSubsystemExit(LOG);
     }
 
