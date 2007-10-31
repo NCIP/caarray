@@ -12,8 +12,14 @@
         <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${project.experiment.factors}"
             requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="project.id">
             <caarray:displayTagProperties/>
-            <display:column property="name" titleKey="experiment.experimentalFactors.name" sortable="true"/>
-            <display:column property="type.category.name" titleKey="experiment.experimentalFactors.category" sortable="true" />
+            <display:column titleKey="experiment.factors.name" sortable="true">
+                <caarray:projectListTabActionLink entityName="Factor" action="view" itemId="${row.id}" isSubtab="true">
+                    <jsp:attribute name="linkRenderer">
+                        <a href="${actionUrl}">${row.name}</a>
+                    </jsp:attribute>
+                </caarray:projectListTabActionLink>            
+            </display:column>
+            <display:column property="type.category.name" titleKey="experiment.factors.category" sortable="true" />
             <display:column titleKey="button.edit">
                 <caarray:projectListTabActionLink entityName="Factor" action="edit" itemId="${row.id}" isSubtab="true"/>
             </display:column>

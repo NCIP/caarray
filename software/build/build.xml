@@ -1104,6 +1104,7 @@
                 <copy todir="@{toDir}">
                     <fileset dir="${caarray-war.webapp.dir}">
                         <include name="**/*.jsp" />
+                        <include name="**/*.jspf" />
                         <include name="**/*.css" />
                         <include name="**/*.js" />
                         <include name="**/*.jpg" />
@@ -1111,6 +1112,7 @@
                         <include name="**/*.png" />
                         <include name="**/*.faces" />
                         <include name="**/*.tag" />
+                        <include name="**/*.tagf" />
                     </fileset>
                 </copy>
             </sequential>

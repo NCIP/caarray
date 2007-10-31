@@ -103,7 +103,8 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
     private static final long serialVersionUID = 1L;
 
     private final String resourceKey;
-
+    private boolean editMode;
+        
     /**
      * @param resourceKey
      */
@@ -128,11 +129,21 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
      */
     @SkipValidation
     public String edit() {
+        setEditMode(true);
         return INPUT;
     }
 
     /**
-     * Saves the item
+     * loads the tab with viewing a single item
+     * @return
+     */
+    public String view() {
+        setEditMode(false);
+        return INPUT;
+    }
+
+    /**
+     * Saves the item 
      *
      * @return the string indicating the result to use.
      */
@@ -141,12 +152,20 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
     public String save() {
         if (this.getItem().getId() == null) {
             getCollection().add(getItem());
-            ActionHelper.saveMessage(getText("experiment." + this.resourceKey + ".created"));
+            ActionHelper.saveMessage(getText("experiment.items.created", new String[] { getItemName()}));
         } else {
-            ActionHelper.saveMessage(getText("experiment." + this.resourceKey + ".updated"));
+            ActionHelper.saveMessage(getText("experiment.items.updated", new String[] { getItemName()}));
         }
         super.save();
         return "list";
+    }
+
+    /**
+     * Gets the label for the item to be used in success messages
+     * @return
+     */
+    private String getItemName() {
+        return getText("experiment." + this.resourceKey);
     }
 
     /**
@@ -169,7 +188,7 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
         getCollection().remove(getItem());
         setSaveMode(SAVE_MODE_DRAFT);
         super.save();
-        ActionHelper.saveMessage(getText("experiment." + this.resourceKey + ".deleted"));
+        ActionHelper.saveMessage(getText("experiment.items.deleted", new String[] { getItemName()}));
         return "list";
     }
 
@@ -183,7 +202,7 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
     public String copy() throws VocabularyServiceException {
         doCopyItem();
         super.save();
-        ActionHelper.saveMessage(getText("experiment." + this.resourceKey + ".copied"));
+        ActionHelper.saveMessage(getText("experiment.items.copied", new String[] { getItemName()}));
         return "list";
     }
 
@@ -207,4 +226,18 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
      * Subclasses should make the actual call to the appropriate service method to copy the item
      */
     protected abstract void doCopyItem();
+
+    /**
+     * @return the editMode
+     */
+    public boolean isEditMode() {
+        return editMode;
+    }
+
+    /**
+     * @param editMode the editMode to set
+     */
+    public void setEditMode(boolean editMode) {
+        this.editMode = editMode;
+    }
 }

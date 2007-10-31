@@ -3,8 +3,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://ajaxtags.org/tags/ajax" prefix="ajax" %>
 <%@ taglib uri="/struts-tags" prefix="s" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="caarray" %>
 
+<c:set var="entityNameLower" value="${fn:toLowerCase(fn:substring(entityName, 0, 1))}${fn:substring(entityName, 1, fn:length(entityName))}"/>
 <c:set var="plural" value="${entityName}s"/>
-<c:set var="pluralLower" value="${fn:toLowerCase(plural)}"/>
+<c:set var="pluralLower" value="${entityNameLower}s"/>
+<c:set var="itemAttributeName" value="current${entityName}"/>
 <c:set var="tabAnchor" value="${isSubtab ? 'tabboxlevel2wrapper' : 'tabboxwrapper'}"/>
 <c:set var="resourceKeyPrefix" value="experiment.${pluralLower}"/>

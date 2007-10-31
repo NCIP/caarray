@@ -83,27 +83,28 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.PersistentObject;
-import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Extract;
 
 import java.util.Collection;
 
+import org.apache.commons.lang.NotImplementedException;
+
 /**
- * Action implementing the samples tab
+ * Action implementing the extracts tab
  * @author Dan Kokotov
  */
-public class ProjectSamplesAction extends ProjectListTabAction {
+public class ProjectExtractsAction extends ProjectListTabAction {
     private static final long serialVersionUID = 1L;
 
-    private Sample currentSample = new Sample();
+    private Extract currentExtract = new Extract();
 
     /**
      * Default constructor
      */
-    public ProjectSamplesAction() {
-        super("sample");
+    public ProjectExtractsAction() {
+        super("extract");
     }
 
     /**
@@ -114,8 +115,8 @@ public class ProjectSamplesAction extends ProjectListTabAction {
     public void prepare() throws VocabularyServiceException {
         super.prepare();
         
-        if (this.currentSample.getId() != null) {
-            this.currentSample = getGenericDataService().retrieveEnity(Sample.class, this.currentSample.getId());
+        if (this.currentExtract.getId() != null) {
+            this.currentExtract = getGenericDataService().retrieveEnity(Extract.class, this.currentExtract.getId());
         }
     }
     
@@ -124,15 +125,15 @@ public class ProjectSamplesAction extends ProjectListTabAction {
      */
     @Override
     protected void doCopyItem() {
-        getProjectManagementService().copySample(getProject(), this.currentSample.getId());
+        throw new NotImplementedException("Copying not supported for extracts");
     }
     
     /**
      * {@inheritDoc}
      */
     @Override
-    protected Collection<Sample> getCollection() {
-        return getProject().getExperiment().getSamples();
+    protected Collection<Extract> getCollection() {
+        return getProject().getExperiment().getExtracts();
     }
     
     /**
@@ -140,20 +141,20 @@ public class ProjectSamplesAction extends ProjectListTabAction {
      */
     @Override
     protected PersistentObject getItem() {
-        return getCurrentSample();
+        return getCurrentExtract();
     }
     
     /**
-     * @return the currentSample
+     * @return the currentExtract
      */
-    public Sample getCurrentSample() {
-        return currentSample;
+    public Extract getCurrentExtract() {
+        return currentExtract;
     }
 
     /**
-     * @param currentSample the currentSample to set
+     * @param currentExtract the currentExtract to set
      */
-    public void setCurrentSample(Sample currentSample) {
-        this.currentSample = currentSample;
+    public void setCurrentExtract(Extract currentExtract) {
+        this.currentExtract = currentExtract;
     }
 }

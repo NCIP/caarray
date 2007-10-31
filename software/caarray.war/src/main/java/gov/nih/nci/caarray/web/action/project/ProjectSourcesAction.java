@@ -108,7 +108,7 @@ public class ProjectSourcesAction extends ProjectListTabAction {
      * Default constructor
      */
     public ProjectSourcesAction() {
-        super("sources");
+        super("source");
     }
 
     /**

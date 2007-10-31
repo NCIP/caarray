@@ -82,9 +82,8 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getVocabularyService;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
+import static gov.nih.nci.caarray.web.action.ActionHelper.getVocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.PersistentObject;

@@ -14,7 +14,11 @@
             <c:param name="project.id" value="${project.id}" />
         </c:url>
         <ajax:anchors target="${tabAnchor}">
-            <a href="${addUrl}" class="add"><fmt:message key="${resourceKeyPrefix}.add" /></a>
+            <a href="${addUrl}" class="add">
+                <fmt:message key="experiment.items.add">
+                    <fmt:param><fmt:message key="experiment.${entityNameLower}"/></fmt:param>
+                </fmt:message>
+            </a>
         </ajax:anchors>
     </div>
 </div>

@@ -12,13 +12,13 @@
 <c:url value="/protected/ajax/project/listTab/Samples/load.action" var="samplesUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
-<c:url value="/ajax/notYetImplemented.jsp" var="extractsUrl">
+<c:url value="/protected/ajax/project/listTab/Extracts/load.action" var="extractsUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
-<c:url value="/ajax/notYetImplemented.jsp" var="labeledExtractsUrl">
+<c:url value="/protected/ajax/project/listTab/LabeledExtracts/load.action" var="labeledExtractsUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
-<c:url value="/ajax/notYetImplemented.jsp" var="hybridizationsUrl">
+<c:url value="/protected/ajax/project/listTab/Hybridizations/load.action" var="hybridizationsUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
 
@@ -36,9 +36,9 @@
     <ajax:tab caption="${experimentalFactorsTitle}" baseUrl="${experimentalFactorsUrl}" defaultTab="${param.initialTab == 'experimentalFactors'}" />
     <ajax:tab caption="${sourcesTitle}" baseUrl="${sourcesUrl}" defaultTab="${param.initialTab == 'sources'}" />
     <ajax:tab caption="${samplesTitle}" baseUrl="${samplesUrl}" defaultTab="${param.initialTab == 'samples'}" />
-    <ajax:tab caption="${hybridizationsTitle}" baseUrl="${hybridizationsUrl}" defaultTab="${param.initialTab == 'hybridizations'}" />
     <ajax:tab caption="${extractsTitle}" baseUrl="${extractsUrl}" defaultTab="${param.initialTab == 'extracts'}" />
     <ajax:tab caption="${labeledExtractsTitle}" baseUrl="${labeledExtractsUrl}" defaultTab="${param.initialTab == 'labeledExtracts'}" />
+    <ajax:tab caption="${hybridizationsTitle}" baseUrl="${hybridizationsUrl}" defaultTab="${param.initialTab == 'hybridizations'}" />
 </ajax:tabPanel>
 
 <script type="text/javascript">

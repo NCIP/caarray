@@ -12,13 +12,17 @@
         <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${project.experiment.sources}"
             requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="project.id">
             <caarray:displayTagProperties/>
-            <display:column property="name" titleKey="experiment.sources.name" sortable="true"/>
+            <display:column titleKey="experiment.sources.name" sortable="true">
+                <caarray:projectListTabActionLink entityName="Source" action="view" itemId="${row.id}" isSubtab="true">
+                    <jsp:attribute name="linkRenderer">
+                        <a href="${actionUrl}">${row.name}</a>
+                    </jsp:attribute>
+                </caarray:projectListTabActionLink>
+            </display:column>
             <display:column property="description" titleKey="experiment.sources.description" sortable="true" />
             <display:column property="organism.commonName" titleKey="experiment.sources.organism" sortable="true" />
             <display:column titleKey="experiment.sources.relatedSamples">
-                <ajax:anchors target="tabboxlevel2wrapper">
-                    <a href="<c:url value="/ajax/notYetImplemented.jsp" />">view</a>
-                </ajax:anchors>
+                <caarray:projectListTabRelatedItemsLinks relatedItems="${row.samples}" relatedEntityName="Sample" nameProperty="name" isSubtab="true"/>
             </display:column>
             <display:column titleKey="button.edit">
                 <caarray:projectListTabActionLink entityName="Source" action="edit" itemId="${row.id}" isSubtab="true"/>

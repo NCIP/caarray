@@ -683,7 +683,8 @@ public class Experiment extends AbstractCaArrayEntity {
             inverseJoinColumns = { @JoinColumn(name = "EXTRACT_ID") }
     )
     @ForeignKey(name = "EXPERIMENTEXTRACT_INVEST_FK", inverseName = "EXPERIMENTEXTRACT_EXTRACT_FK")
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+          org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Extract> getExtracts() {
         return this.extracts;
     }
@@ -710,7 +711,8 @@ public class Experiment extends AbstractCaArrayEntity {
             inverseJoinColumns = { @JoinColumn(name = "SAMPLE_ID") }
     )
     @ForeignKey(name = "EXPERIMENTLE_INVEST_FK", inverseName = "EXPERIMENTLE_LE_FK")
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+          org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<LabeledExtract> getLabeledExtracts() {
         return this.labeledExtracts;
     }
@@ -916,7 +918,11 @@ public class Experiment extends AbstractCaArrayEntity {
     /**
      * @return hybridizations
      */
-    @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name="experiment")
+    @ForeignKey(name = "HYBRIDIZATION_EXPR_FK")
+    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+          org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Hybridization> getHybridizations() {
         return this.hybridizations;
     }

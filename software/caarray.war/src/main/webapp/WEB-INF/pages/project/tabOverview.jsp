@@ -11,31 +11,21 @@
         </p>
     <s:form action="ajax/project/tab/Overview/save" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper', 'save_draft'); return false;">
         <s:textfield required="true" name="project.experiment.title" label="Experiment Title" size="80" tabindex="1"/>
-        <tr>
-            <td class="tdLabel"><label for="proposalStatus">Status</label></td>
-            <td><span id="proposalStatus"><s:property value="getText(project.status.resourceKey)"/></span></td>
-        </tr>
-        <tr>
-            <td class="tdLabel"><label for="publicIdentifier">Experiment Identifier</label></td>
-            <td>
-                <s:property id="publicId" value="project.experiment.publicIdentifier" default="None Yet (you must save the project and assign it a PI before an identifier can be generated)"/>
-            </td>
-        </tr>
+        <s:textfield theme="readonly" label="Status" value="%{getText(project.status.resourceKey)}"/>
+        <s:textfield theme="readonly" name="project.experiment.publicIdentifier" label="Experiment Identifier"/>
         <s:select required="true" name="project.experiment.serviceType" label="Service Type" tabindex="4"
                   list="@gov.nih.nci.caarray.domain.project.ServiceType@values()" listValue="%{getText(resourceKey)}"
                   headerKey="" headerValue="--Select a Service Type--"/>
         <s:select required="true" name="project.experiment.assayType" label="Assay Type" tabindex="5"
                   list="@gov.nih.nci.caarray.domain.project.AssayType@values()" listValue="%{getText(resourceKey)}"
                   headerKey="" headerValue="--Select an Assay Type--"/>
-        <tr>
-            <td class="tdLabel"><label for="projectForm_project_experiment_manufacturer" class="label">Manufacturer:</label></td>        
-            <td>
-                <s:select name="project.experiment.manufacturer" label="Manufacturer" tabindex="6"
-                  list="manufacturers" listKey="id" listValue="name" theme="simple"
-                  headerKey="" headerValue="--Select a Manufacturer--" value="project.experiment.manufacturer.id" />
-                <span id="progressMsg" style="display:none;"><img alt="Indicator" src="<c:url value="/images/indicator.gif"/>" /> Loading.. </span>            
-            </td>
-        </tr>
+        <s:select name="project.experiment.manufacturer" label="Manufacturer" tabindex="6"
+                  list="manufacturers" listKey="id" listValue="name" 
+                  headerKey="" headerValue="--Select a Manufacturer--" value="project.experiment.manufacturer.id">
+            <s:param name="after">
+                <span id="progressMsg" style="display:none;"><img alt="Indicator" src="<c:url value="/images/indicator.gif"/>" /> Loading.. </span>
+            </s:param>
+        </s:select>
                   
         <s:select multiple="true" name="project.experiment.arrayDesigns" label="Array Designs" tabindex="7"
                   list="arrayDesigns" listKey="id" listValue="name" value="%{project.experiment.arrayDesigns.{id}}" />

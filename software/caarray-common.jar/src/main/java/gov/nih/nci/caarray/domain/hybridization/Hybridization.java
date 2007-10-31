@@ -131,7 +131,6 @@ public class Hybridization extends AbstractCaArrayEntity {
     private Set<LabeledExtract> labeledExtract = new HashSet<LabeledExtract>();
     private Set<FactorValue> factorValues = new HashSet<FactorValue>();
     private Term label;
-    private Experiment experiment;
 
     /**
      * Gets the name.
@@ -356,20 +355,5 @@ public class Hybridization extends AbstractCaArrayEntity {
      */
     public void setLabel(Term label) {
         this.label = label;
-    }
-
-    /**
-     * @return associated experiment
-     */
-    @ManyToOne
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    /**
-     * @param experiment experiment to set
-     */
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
     }
 }

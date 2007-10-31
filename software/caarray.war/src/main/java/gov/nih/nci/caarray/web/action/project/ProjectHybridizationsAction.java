@@ -86,24 +86,26 @@ import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.PersistentObject;
-import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
 import java.util.Collection;
+
+import org.apache.commons.lang.NotImplementedException;
 
 /**
  * Action implementing the samples tab
  * @author Dan Kokotov
  */
-public class ProjectSamplesAction extends ProjectListTabAction {
+public class ProjectHybridizationsAction extends ProjectListTabAction {
     private static final long serialVersionUID = 1L;
 
-    private Sample currentSample = new Sample();
+    private Hybridization currentHybridization = new Hybridization();
 
     /**
      * Default constructor
      */
-    public ProjectSamplesAction() {
-        super("sample");
+    public ProjectHybridizationsAction() {
+        super("hybridization");
     }
 
     /**
@@ -114,8 +116,8 @@ public class ProjectSamplesAction extends ProjectListTabAction {
     public void prepare() throws VocabularyServiceException {
         super.prepare();
         
-        if (this.currentSample.getId() != null) {
-            this.currentSample = getGenericDataService().retrieveEnity(Sample.class, this.currentSample.getId());
+        if (this.currentHybridization.getId() != null) {
+            this.currentHybridization = getGenericDataService().retrieveEnity(Hybridization.class, this.currentHybridization.getId());
         }
     }
     
@@ -124,15 +126,15 @@ public class ProjectSamplesAction extends ProjectListTabAction {
      */
     @Override
     protected void doCopyItem() {
-        getProjectManagementService().copySample(getProject(), this.currentSample.getId());
+        throw new NotImplementedException("Copying not supported for hybridizations");
     }
     
     /**
      * {@inheritDoc}
      */
     @Override
-    protected Collection<Sample> getCollection() {
-        return getProject().getExperiment().getSamples();
+    protected Collection<Hybridization> getCollection() {
+        return getProject().getExperiment().getHybridizations();
     }
     
     /**
@@ -140,20 +142,20 @@ public class ProjectSamplesAction extends ProjectListTabAction {
      */
     @Override
     protected PersistentObject getItem() {
-        return getCurrentSample();
+        return getCurrentHybridization();
     }
     
     /**
-     * @return the currentSample
+     * @return the currentHybridization
      */
-    public Sample getCurrentSample() {
-        return currentSample;
+    public Hybridization getCurrentHybridization() {
+        return currentHybridization;
     }
 
     /**
-     * @param currentSample the currentSample to set
+     * @param currentHybridization the currentHybridization to set
      */
-    public void setCurrentSample(Sample currentSample) {
-        this.currentSample = currentSample;
+    public void setCurrentHybridization(Hybridization currentHybridization) {
+        this.currentHybridization = currentHybridization;
     }
 }

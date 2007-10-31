@@ -104,7 +104,7 @@ public class ProjectFactorsAction extends ProjectListTabAction {
      * Default constructor
      */
     public ProjectFactorsAction() {
-        super("factors");
+        super("factor");
     }
 
     /**
