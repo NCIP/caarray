@@ -9,7 +9,7 @@ public class submit_experiment_proposal_basic_flow extends SeleneseTestCase {
     private Selenium selenium;
     public void setUp() {
     	selenium = new DefaultSelenium("localhost",
-            4444, "*iexplore", "http://cbvapp-q1001.nci.nih.gov:19280/caarray/protected/Project_list.action");
+            4444, "*firefox", "http://cbvapp-q1001.nci.nih.gov:19280/caarray/protected/Project_list.action");
         //*iehta for internet explorer https
         //*chrome for firefox https
         //*iexplore for internet explore http
@@ -24,10 +24,12 @@ public class submit_experiment_proposal_basic_flow extends SeleneseTestCase {
 		selenium.click("login");
 		selenium.waitForPageToLoad("30000");
 		selenium.click("link=Propose Project");
+		Thread.sleep(5000);
 		selenium.type("projectForm_project_experiment_title", "qa experiment");
 		selenium.select("projectForm_project_experiment_serviceType", "label=Partial");
 		selenium.select("projectForm_project_experiment_assayType", "label=Gene Expression");
-		selenium.select("projectForm_selectedOrganism", "label=canine");
+		Thread.sleep(5000);
+		//selenium.select("projctForm_selectedOrganism", "label=canine");
 		selenium.click("//img[@alt='Submit Experiment Proposal']");
 		verifyTrue(selenium.isTextPresent("qa experiment"));
 	}
