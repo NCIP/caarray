@@ -84,7 +84,6 @@ package gov.nih.nci.cagrid.caarray.util;
 
 import gov.nih.nci.caarray.domain.PersistentObject;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
@@ -92,6 +91,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.exolab.castor.mapping.GeneralizedFieldHandler;
 
 /**
@@ -116,17 +117,18 @@ import org.exolab.castor.mapping.GeneralizedFieldHandler;
  * }
  * </pre>
  *
- * After a call to convertUponGet, A.B will be <code>null</code>, A.C will be an empty
+ * <p>After a call to convertUponGet, A.B will be <code>null</code>, A.C will be an empty
  * <code>Set</code>, and id will retain the value it had prior to the call.
+ *
+ * <p><b>Important note:</b> This class handles <em>both</em> collection and non-collection
+ * type fields.  For non-collection relationships, the cutting behavior described above is
+ * implemented directly.  For collection relationships, castor automatically iterates over
+ * the collection elements calling the handler directly.  This is in contrast to the grid
+ * handlers that come with the core sdk that do the iteration directly.
  */
 public class CaArrayFieldHandler extends GeneralizedFieldHandler {
 
-    /**
-     * Constructor.
-     */
-    public CaArrayFieldHandler() {
-        setCollectionIteration(false);
-    }
+    private static final Log LOG = LogFactory.getLog(CaArrayFieldHandler.class);
 
     /**
      * {@inheritDoc}
@@ -187,15 +189,8 @@ public class CaArrayFieldHandler extends GeneralizedFieldHandler {
 
         try {
             setter.invoke(val, new Object[] {param});
-        } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (Exception e) {
+            LOG.error("Unable to call a setter: " + e.getMessage(), e);
         }
     }
 

@@ -118,8 +118,9 @@ public class CaArray2xGrid extends TestCase {
     public void testRetrieveAllProjects() {
         CQLQuery query = new CQLQuery();
         query.setTarget(new gov.nih.nci.cagrid.cqlquery.Object());
-       query.getTarget().setName("gov.nih.nci.caarray.domain.project.Factor");
+//       query.getTarget().setName("gov.nih.nci.caarray.domain.project.Factor");
        //query.getTarget().setName("gov.nih.nci.caarray.domain.contact.Address");
+       query.getTarget().setName("gov.nih.nci.caarray.domain.project.Project");
 
         CQLQueryResults results = executeCQLQuery(query);
         printResults(results, "all.projects.xml");
