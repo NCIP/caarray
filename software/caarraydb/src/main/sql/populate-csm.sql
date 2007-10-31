@@ -18,9 +18,9 @@ insert into CSM_PROTECTION_ELEMENT(PROTECTION_ELEMENT_NAME,PROTECTION_ELEMENT_DE
 values("caarray","caarray Admin Application Protection Element","caarray",1,sysdate());
 
 -- Create some users and their protection elements
- -- f1rebird05 is password
+ -- caArray2! is password
 insert into CSM_USER (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("caarrayadmin","caArray","Administrator","gJ5bRQxV/Qnei3BvqISY2Q==",sysdate());
+values ("caarrayadmin","caArray","Administrator","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(1,1,sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
@@ -34,9 +34,9 @@ insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(2,2,sysdate());
 
 -- 2nd db-backed user to test permissions
--- f1rebird05 is password
+-- caArray2! is password
 insert into CSM_USER (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("caarrayuser","caArray","User","gJ5bRQxV/Qnei3BvqISY2Q==",sysdate());
+values ("caarrayuser","caArray","User","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(1,3,sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
@@ -49,49 +49,49 @@ values ("__anonymous__","Anonymous","User","anonymous_access_only_no_pass",sysda
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(2,4,sysdate());
 
- -- f1rebird05 is password
+ -- caArray2! is password
 insert into CSM_USER (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("researchscientist","ResearchScientist","ResearchScientist","gJ5bRQxV/Qnei3BvqISY2Q==",sysdate());
+values ("researchscientist","ResearchScientist","ResearchScientist","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(1,5,sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(2,5,sysdate());
 
- -- f1rebird05 is password
+ -- caArray2! is password
 insert into CSM_USER (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("labadministrator","LabAdministrator","LabAdministrator","gJ5bRQxV/Qnei3BvqISY2Q==",sysdate());
+values ("labadministrator","LabAdministrator","LabAdministrator","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(1,6,sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(2,6,sysdate());
 
- -- f1rebird05 is password
+ -- caArray2! is password
 insert into CSM_USER (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("labscientist","LabScientist","LabScientist","gJ5bRQxV/Qnei3BvqISY2Q==",sysdate());
+values ("labscientist","LabScientist","LabScientist","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(1,7,sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(2,7,sysdate());
 
- -- f1rebird05 is password
+ -- caArray2! is password
 insert into CSM_USER (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("biostatistician","Biostatistician","Biostatistician","gJ5bRQxV/Qnei3BvqISY2Q==",sysdate());
+values ("biostatistician","Biostatistician","Biostatistician","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(1,8,sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(2,8,sysdate());
 
--- f1rebird05 is password
+-- caArray2! is password
 insert into CSM_USER (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("systemadministrator","SystemAdministrator","SystemAdministrator","gJ5bRQxV/Qnei3BvqISY2Q==",sysdate());
+values ("systemadministrator","SystemAdministrator","SystemAdministrator","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(1,9,sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(2,9,sysdate());
 
--- f1rebird05 is password
+-- caArray2! is password
 insert into CSM_USER (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("collaborator","Collaborator","Collaborator","gJ5bRQxV/Qnei3BvqISY2Q==",sysdate());
+values ("collaborator","Collaborator","Collaborator","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(1,10,sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
