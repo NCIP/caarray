@@ -1,6 +1,17 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
 <head>
+<%--
+	IE can't seem to handle defining downloadMgr on the downloadFiles page, so it's here,
+	since this is the outer (non-ajax) page.
+--%>
+<c:url var="downloadUrl" value="/protected/project/files/download.action"/>
+<c:url var="removeUrl" value="/images/ico_remove.gif"/>
+<script type="text/javascript">
+<!--
+  downloadMgr = new DownloadMgr('${downloadUrl}', '${removeUrl}');
+-->
+</script>
 </head>
 <body>
     <div id="content">

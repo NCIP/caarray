@@ -50,11 +50,9 @@
     <a href="#" onclick="downloadMgr.doDownloadFiles();" class="save"><img src="<c:url value="/images/btn_launchjob.gif"/>" alt="Launch Job"></a>
     </div>
 </caarray:tabPane>
-<c:url var="downloadUrl" value="/protected/project/files/download.action"/>
-<c:url var="removeUrl" value="/images/ico_remove.gif"/>
 <script type="text/javascript">
 <!--
-  downloadMgr = new DownloadMgr('${downloadUrl}', '${removeUrl}');
   downloadMgr.resetDownloadInfo();
 -->
 </script>
+
