@@ -121,4 +121,22 @@ public interface PermissionsManagementService {
      * @throws CSObjectNotFoundException on CSM error
      */
     CollaboratorGroup create(String name) throws CSTransactionException, CSObjectNotFoundException;
+
+    /**
+     * Adds users to the target group.
+     *
+     * @param targetGroup group to add members to
+     * @param users user ids to add (as strings)
+     * @throws CSTransactionException  on CSM error
+     */
+    void addUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException;
+
+    /**
+     * Removes users from the target group.
+     *
+     * @param targetGroup group to remove members from
+     * @param users user ids to remove (as strings)
+     * @throws CSTransactionException  on CSM error
+     */
+    void removeUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException;
 }

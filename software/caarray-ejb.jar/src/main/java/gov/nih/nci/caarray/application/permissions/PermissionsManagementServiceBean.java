@@ -197,4 +197,27 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void addUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException {
+        LogUtil.logSubsystemEntry(LOG, targetGroup, users);
+        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
+        am.assignUsersToGroup(targetGroup.getGroup().getGroupId().toString(), users.toArray(new String[] {}));
+
+        LogUtil.logSubsystemExit(LOG);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void removeUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException {
+        LogUtil.logSubsystemEntry(LOG, targetGroup, users);
+        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
+        for (String u : users) {
+            am.removeUserFromGroup(targetGroup.getGroup().getGroupId().toString(), u);
+        }
+        LogUtil.logSubsystemExit(LOG);
+    }
+
 }

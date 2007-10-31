@@ -94,15 +94,17 @@ import java.util.List;
  */
 public class PermissionsManagementServiceStub implements PermissionsManagementService {
 
-    private CollaboratorGroup deletedGroup;
+    private CollaboratorGroup currentGroup;
     private boolean getCalled = false;
     private String createName = null;
+    private List<String> addedUsers;
+    private List<String> removedUsers;
 
     /**
      * {@inheritDoc}
      */
     public void delete(CollaboratorGroup group) {
-        deletedGroup = group;
+        currentGroup = group;
     }
 
     /**
@@ -116,8 +118,8 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
     /**
      * @return the deletedGroup
      */
-    public CollaboratorGroup getDeletedGroup() {
-        return deletedGroup;
+    public CollaboratorGroup getCurrentGroup() {
+        return currentGroup;
     }
 
     /**
@@ -132,7 +134,7 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
      */
     public void reset() {
         getCalled = false;
-        deletedGroup = null;
+        currentGroup = null;
     }
 
     /**
@@ -148,5 +150,35 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
      */
     public String getCreateName() {
         return createName;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void addUsers(CollaboratorGroup targetGroup, List<String> users) {
+        addedUsers = users;
+        currentGroup = targetGroup;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void removeUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException {
+        removedUsers = users;
+        currentGroup = targetGroup;
+    }
+
+    /**
+     * @return uses added via addUsers
+     */
+    public List<String> getAddedUsers() {
+        return addedUsers;
+    }
+
+    /**
+     * @return users removed via removeusers
+     */
+    public List<String> getRemovedUsers() {
+        return removedUsers;
     }
 }

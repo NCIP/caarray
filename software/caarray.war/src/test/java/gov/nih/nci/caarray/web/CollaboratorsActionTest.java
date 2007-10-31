@@ -93,6 +93,10 @@ import gov.nih.nci.caarray.web.action.CollaboratorsAction;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSException;
+import gov.nih.nci.security.exceptions.CSTransactionException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -132,7 +136,7 @@ public class CollaboratorsActionTest {
         action.setTargetGroup(cg);
         action.delete();
         assertTrue(pstub.isGetCalled());
-        assertEquals(cg, pstub.getDeletedGroup());
+        assertEquals(cg, pstub.getCurrentGroup());
     }
 
     @Test
@@ -140,5 +144,41 @@ public class CollaboratorsActionTest {
         action.setGroupName("test");
         action.create();
         assertEquals("test", pstub.getCreateName());
+    }
+
+    @Test
+    public void testAddUsers() throws CSTransactionException {
+        User owner = new User();
+        Group group = new Group();
+        CollaboratorGroup cg = new CollaboratorGroup(group, owner);
+        List<String> toAdd = new ArrayList<String>();
+        toAdd.add("1");
+
+        action.setTargetGroup(cg);
+        action.setUsers(toAdd);
+        action.addUsers();
+
+        List<String> stubAdd = pstub.getAddedUsers();
+        CollaboratorGroup stubGroup = pstub.getCurrentGroup();
+        assertEquals(toAdd.size(), stubAdd.size());
+        assertEquals(cg, stubGroup);
+    }
+
+    @Test
+    public void testRemoveUsers() throws CSTransactionException {
+        User owner = new User();
+        Group group = new Group();
+        CollaboratorGroup cg = new CollaboratorGroup(group, owner);
+        List<String> toAdd = new ArrayList<String>();
+        toAdd.add("1");
+
+        action.setTargetGroup(cg);
+        action.setUsers(toAdd);
+        action.removeUsers();
+
+        List<String> stubRemove = pstub.getRemovedUsers();
+        CollaboratorGroup stubGroup = pstub.getCurrentGroup();
+        assertEquals(toAdd.size(), stubRemove.size());
+        assertEquals(cg, stubGroup);
     }
 }

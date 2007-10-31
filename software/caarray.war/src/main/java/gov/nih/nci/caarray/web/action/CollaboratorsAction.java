@@ -91,6 +91,7 @@ import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.dao.GroupSearchCriteria;
 import gov.nih.nci.security.exceptions.CSException;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
+import gov.nih.nci.security.exceptions.CSTransactionException;
 
 import java.util.List;
 
@@ -108,16 +109,14 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 @Validation
 public class CollaboratorsAction extends ActionSupport {
 
-    //
-    // TODO validation is not implemented
-    //
-
     private static final long serialVersionUID = 1L;
 
     private List<CollaboratorGroup> groups;
     private CollaboratorGroup targetGroup;
     private String groupName;
     private User targetUser;
+    /** We keep these values (the ids) as Strings because the CSM API uses Strings. */
+    private List<String> users;
 
     /**
      * @return listGroups
@@ -165,6 +164,28 @@ public class CollaboratorsAction extends ActionSupport {
      */
     @SkipValidation
     public String userDetail() {
+        return Action.SUCCESS;
+    }
+
+    /**
+     * Adds the selected users to the current collaborator group.
+     * @return success
+     * @throws CSTransactionException on CSM error
+     */
+    @SkipValidation
+    public String addUsers() throws CSTransactionException {
+        getPermissionsManagementService().addUsers(getTargetGroup(), getUsers());
+        return Action.SUCCESS;
+    }
+
+    /**
+     * Removes the seleted users from the current collaborator group.
+     * @return success
+     * @throws CSTransactionException on CSM error
+     */
+    @SkipValidation
+    public String removeUsers() throws CSTransactionException {
+        getPermissionsManagementService().removeUsers(getTargetGroup(), getUsers());
         return Action.SUCCESS;
     }
 
@@ -237,6 +258,20 @@ public class CollaboratorsAction extends ActionSupport {
 
     public void setTargetUserId(Long id) throws CSObjectNotFoundException {
         this.targetUser = SecurityInterceptor.getAuthorizationManager().getUserById(id.toString());
+    }
+
+    /**
+     * @return the users
+     */
+    public List<String> getUsers() {
+        return users;
+    }
+
+    /**
+     * @param users the users to set
+     */
+    public void setUsers(List<String> users) {
+        this.users = users;
     }
 
     /**

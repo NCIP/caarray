@@ -83,17 +83,23 @@
 package gov.nih.nci.caarray.application.permissions;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.dao.stub.CollaboratorGroupDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.SecurityInterceptor;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSException;
+import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
+import gov.nih.nci.security.exceptions.CSTransactionException;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -106,6 +112,7 @@ import org.junit.Test;
  */
 public class PermissionsManagementServiceTest {
 
+    private static final String TEST = "test";
     private PermissionsManagementService permissionsManagementService;
     private final GenericDataServiceStub genericDataServiceStub = new GenericDataServiceStub();
     private final DaoFactoryStub daoFactoryStub = new DaoFactoryStub();
@@ -144,15 +151,42 @@ public class PermissionsManagementServiceTest {
 
     @Test
     public void testCreate() throws CSException {
-        CollaboratorGroup created = permissionsManagementService.create("test");
+        CollaboratorGroup created = permissionsManagementService.create(TEST);
         CollaboratorGroupDaoStub stub = (CollaboratorGroupDaoStub) daoFactoryStub.getCollaboratorGroupDao();
         assertEquals(created, stub.getSavedObject());
     }
 
     @Test(expected = CSException.class)
     public void testCreateException() throws CSException  {
-        permissionsManagementService.create("test");
-        permissionsManagementService.create("test");
+        permissionsManagementService.create(TEST);
+        permissionsManagementService.create(TEST);
+    }
+
+    @Test
+    public void testAddAndRemoveUsers() throws CSTransactionException, CSObjectNotFoundException {
+        CollaboratorGroup created = permissionsManagementService.create(TEST);
+        List<String> toAdd = new ArrayList<String>();
+        toAdd.add("1");
+        toAdd.add("3");
+        permissionsManagementService.addUsers(created, toAdd);
+        // gymnastics here due to auth manager being it's own session
+        Group g = SecurityInterceptor.getAuthorizationManager().getGroupById(created.getGroup().getGroupId().toString());
+        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+        g = (Group) HibernateUtil.getCurrentSession().merge(g);
+        assertEquals(2, g.getUsers().size());
+        tx.commit();
+
+        List<String> toRemove = new ArrayList<String>();
+        toRemove.add("1");
+        permissionsManagementService.removeUsers(created, toRemove);
+        // go the other way or remove - make sure groups are set correctly
+        tx = HibernateUtil.getCurrentSession().beginTransaction();
+        User u1 = (User) HibernateUtil.getCurrentSession().load(User.class, 1L);
+        User u2 = (User) HibernateUtil.getCurrentSession().load(User.class, 3L);
+        g = (Group) HibernateUtil.getCurrentSession().merge(g);
+        assertTrue(!u1.getGroups().contains(g));
+        assertTrue(u2.getGroups().contains(g));
+        tx.commit();
     }
 
     @SuppressWarnings("unchecked")
@@ -161,7 +195,7 @@ public class PermissionsManagementServiceTest {
         HibernateUtil.enableFilters(false);
         Session s = HibernateUtil.getCurrentSession();
         Transaction tx = s.beginTransaction();
-        Iterator<Group> it = s.createQuery("FROM " + Group.class.getName() + " g where g.groupName = 'test'")
+        Iterator<Group> it = s.createQuery("FROM " + Group.class.getName() + " g where g.groupName = '" + TEST + "'")
                               .list()
                               .iterator();
         if (it.hasNext()) {
