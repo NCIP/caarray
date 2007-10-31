@@ -19,9 +19,7 @@
 
 <c:set var="linkToList">
     <caarray:projectListTabActionLink entityName="${entityName}" action="load" itemId="${row.id}" isSubtab="${isSubtab}">
-        <jsp:attribute name="linkRenderer">
-            <a href="${actionUrl}"><fmt:message key="experiment.${pluralLower}"/></a>
-        </jsp:attribute>
+        <jsp:attribute name="linkContent"><fmt:message key="experiment.${pluralLower}"/></jsp:attribute>
     </caarray:projectListTabActionLink>    
 </c:set>
 

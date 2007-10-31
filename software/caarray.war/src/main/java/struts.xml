@@ -74,13 +74,15 @@
             <exception-mapping result="error" exception="java.lang.Throwable"/>
         </global-exception-mappings>
 
+        <action name="logout" class="gov.nih.nci.caarray.web.action.LogoutAction">
+            <result name="success" type="redirect-action">
+                <param name="namespace">/protected</param>
+                <param name="actionName">project/list</param>
+            </result>
+        </action>
     </package>
 
     <package name="protected" namespace="/protected" extends="default">
-        <action name="logout" class="gov.nih.nci.caarray.web.action.LogoutAction">
-            <result name="success" type="redirect-action">project/list</result>
-        </action>
-
         <action name="project/*" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="{1}">
             <result name="workspace" type="redirect-action">project/list</result>
             <result name="input">/WEB-INF/pages/project/form.jsp</result>

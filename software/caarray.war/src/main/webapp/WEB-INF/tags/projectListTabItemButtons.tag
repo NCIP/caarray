@@ -21,7 +21,7 @@
     <s:else>    
         <caarray:projectListTabActionLink entityName="${entityName}" action="edit" itemId="${itemId}" isSubtab="true">
             <jsp:attribute name="linkRenderer">
-                <caarray:linkButton actionClass="edit" text="Edit" url="${actionUrl}"/>
+                <caarray:linkButton actionClass="edit" text="Edit" onclick="TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}'); return false;"/>
             </jsp:attribute>
         </caarray:projectListTabActionLink>
     </s:else>       

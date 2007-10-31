@@ -13,12 +13,8 @@
             requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="project.id">
             <caarray:displayTagProperties/>
             <display:column titleKey="experiment.hybridizations.name" sortable="true">
-                <caarray:projectListTabActionLink entityName="Hybridization" action="view" itemId="${row.id}" isSubtab="true">
-                    <jsp:attribute name="linkRenderer">
-                        <a href="${actionUrl}">${row.name}</a>
-                    </jsp:attribute>
-                </caarray:projectListTabActionLink>
-            </display:column>
+                <caarray:projectListTabActionLink linkContent="${row.name}" entityName="Hybridization" action="view" itemId="${row.id}" isSubtab="true"/>
+\            </display:column>
             <display:column titleKey="experiment.hybridizations.relatedLabeledExtract">
                 <caarray:projectListTabRelatedItemsLinks relatedItems="${row.labeledExtracts}" relatedEntityName="LabeledExtract" nameProperty="name" isSubtab="true"/>
             </display:column>

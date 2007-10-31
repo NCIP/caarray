@@ -2,6 +2,31 @@
 @import url(messages.css);
 
 /* Temporary placement of CSS button styles. eventually to be integrated */
+
+.addlink, .addlink_notabs, .addlink_notabs_filterrow
+
+{ background: none no-repeat; float:right; margin-top:-2.8em; }
+
+.boxpad2 .addlink, .boxpad2 .addlink_notabs
+
+{ margin-top:-2.4em; }
+
+.addlink_notabs_filterrow
+
+{  margin:-3.1em 5px 5px 0;}
+
+:lang(en) .addlink_notabs_filterrow
+
+{  margin:-3.1em 0 5px 0;} 
+
+.addlink_notabs
+
+{ margin:0 0 5px 0; }
+
+.addlink A.btn, .addlink_notabs A.btn, .addlink_notabs_filterrow A.btn
+
+{ margin-right:0 }
+
 A.btn 
 
 { width:auto; background:transparent url("../images/bg_btn_right.gif") no-repeat scroll top right; color:#414141; display:block; float:left; font:normal 12px arial, sans-serif; height:24px; line-height:24px; margin:0 20px; padding-right:9px; /* sliding doors padding */ text-decoration:none; }

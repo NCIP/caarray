@@ -17,10 +17,6 @@
 </c:if>
 
 <c:forEach items="${relatedItems}" var="item" varStatus="itemStatus">
-    <caarray:projectListTabActionLink entityName="${relatedEntityName}" action="view" itemId="${item.id}" isSubtab="${isSubtab}">
-        <jsp:attribute name="linkRenderer">
-            <a href="${actionUrl}">${item[nameProperty]}</a>
-        </jsp:attribute>
-    </caarray:projectListTabActionLink>                    
+    <caarray:projectListTabActionLink linkContent="${item[nameProperty]}" entityName="${relatedEntityName}" action="view" itemId="${item.id}" isSubtab="${isSubtab}"/>
     <c:if test="${!itemStatus.last}">, </c:if>
 </c:forEach>

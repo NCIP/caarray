@@ -436,7 +436,26 @@ var TabUtils = {
                 oldTabLevel2LinkMethod(link, cls, url, arg4);
             }
         }
-    }
+    },
+    
+    loadLinkInTab: function(tabCaption, url) {
+        executeAjaxTab_tabs(this.findTabByCaption('tabs', tabCaption), 'active', url, '');
+    },
+    
+    loadLinkInSubTab: function(tabCaption, url) {
+        executeAjaxTab_tablevel2(this.findTabByCaption('tablevel2', tabCaption), 'selected', url, '');
+    },
+    
+    findTabByCaption: function(containerId, caption) {
+        tabMenuItems = $(containerId).getElementsByTagName('li');
+        for(var i = 0; i < tabMenuItems.length; i++) {
+            tabLink = tabMenuItems[i].getElementsByTagName('a')[0];
+            if (tabLink.innerHTML == caption) {
+                return tabLink;
+            }
+        }
+        return tabMenuItems[0].getElementsByTagName('a')[0];
+    }    
 }
 
 //

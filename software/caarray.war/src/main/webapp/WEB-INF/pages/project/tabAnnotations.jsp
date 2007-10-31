@@ -3,7 +3,7 @@
 <c:url value="/protected/ajax/project/tab/ExperimentalDesign/load.action" var="experimentalDesignUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
-<c:url value="/protected/ajax/project/listTab/Factors/load.action" var="experimentalFactorsUrl">
+<c:url value="/protected/ajax/project/listTab/Factors/load.action" var="factorsUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
 <c:url value="/protected/ajax/project/listTab/Sources/load.action" var="sourcesUrl">
@@ -23,7 +23,7 @@
 </c:url>
 
 <fmt:message key="project.tabs.experimentalDesign" var="experimentalDesignTitle" />
-<fmt:message key="project.tabs.experimentalFactors" var="experimentalFactorsTitle" />
+<fmt:message key="project.tabs.factors" var="factorsTitle" />
 <fmt:message key="project.tabs.sources" var="sourcesTitle" />
 <fmt:message key="project.tabs.samples" var="samplesTitle" />
 <fmt:message key="project.tabs.extracts" var="extractsTitle" />
@@ -33,7 +33,7 @@
 <ajax:tabPanel panelStyleId="tablevel2" panelStyleClass="tablevel2" currentStyleClass="selected" contentStyleId="tabboxlevel2wrapper" contentStyleClass="tabboxlevel2wrapper"
         postFunction="TabUtils.setSelectedLevel2Tab" preFunction="TabUtils.showSubtabLoadingText">
     <ajax:tab caption="${experimentalDesignTitle}" baseUrl="${experimentalDesignUrl}" defaultTab="${param.initialTab == null || param.initialTab == 'experimentalDesign'}" />
-    <ajax:tab caption="${experimentalFactorsTitle}" baseUrl="${experimentalFactorsUrl}" defaultTab="${param.initialTab == 'experimentalFactors'}" />
+    <ajax:tab caption="${factorsTitle}" baseUrl="${factorsUrl}" defaultTab="${param.initialTab == 'factors'}" />
     <ajax:tab caption="${sourcesTitle}" baseUrl="${sourcesUrl}" defaultTab="${param.initialTab == 'sources'}" />
     <ajax:tab caption="${samplesTitle}" baseUrl="${samplesUrl}" defaultTab="${param.initialTab == 'samples'}" />
     <ajax:tab caption="${extractsTitle}" baseUrl="${extractsUrl}" defaultTab="${param.initialTab == 'extracts'}" />

@@ -13,11 +13,7 @@
             requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="project.id">
             <caarray:displayTagProperties/>
             <display:column titleKey="experiment.publications.title" sortable="true">
-                <caarray:projectListTabActionLink entityName="Publication" action="view" itemId="${row.id}" isSubtab="true">
-                    <jsp:attribute name="linkRenderer">
-                        <a href="${actionUrl}">${row.title}</a>
-                    </jsp:attribute>
-                </caarray:projectListTabActionLink>
+                <caarray:projectListTabActionLink linkContent="${row.title}" entityName="Publication" action="view" itemId="${row.id}" isSubtab="true"/>
             </display:column>
             <display:column property="authors" titleKey="experiment.publications.authors" sortable="true" />
             <display:column property="uri" titleKey="experiment.publications.uri" sortable="true" />

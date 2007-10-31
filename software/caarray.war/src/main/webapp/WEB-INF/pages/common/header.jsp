@@ -13,7 +13,7 @@
         <span title="Subsersion URL: <c:out value='${initParam["svnUrl"]}'/>, revision: <c:out value='${initParam["svnRevision"]}'/>">caArray <c:out value='${initParam["caarrayVersion"]}'/></span>
         |  Node: <span>NCICB</span>
         <c:if test="${pageContext.request.remoteUser != null}">
-        | <a href="<c:url value="/protected/logout.action" />"><span>Logout</span></a>
+        | <a href="<c:url value="/logout.action" />"><span>Logout</span></a>
         </c:if>
     </div>
 </div>
