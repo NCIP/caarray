@@ -22,7 +22,9 @@ insert into term (value, source, category) select 'DNA', termsource.id, category
 insert into term (value, source, category) select 'Brain Tissue', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='CellType';
 insert into term (value, source, category) select 'Chromaphine Cells', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='CellType';
 insert into term (value, source, category) select 'Adrenocortical Carcinoma', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DiseaseState';
-insert into term (value, source, category) select 'Pharmacogenomic', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentDesignType';
+insert into term (value, source, category) select 'pharmacogenomic', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentDesignType';
+insert into term (value, source, category) select 'subclassification', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentDesignType';
+insert into term (value, source, category) select 'time_series_design', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentDesignType';
 insert into term (value, source, category) select 'biological_replicate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='QualityControlDescriptionType';
 insert into term (value, source, category) select 'dye_swap_quality_control', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='QualityControlDescriptionType';
 insert into term (value, source, category) select 'peer_review_quality_control', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='QualityControlDescriptionType';
@@ -38,10 +40,22 @@ insert into term (value, source, category) select 'Submitted', termsource.id, ca
 insert into term (value, source, category) select 'In Preparation', termsource.id, category.id from termsource, category where termsource.name='Caarray' and category.name='PublicationStatus';
 insert into term (value, source, category) select 'Published', termsource.id, category.id from termsource, category where termsource.name='Caarray' and category.name='PublicationStatus';
 
-insert into organism (common_name, scientific_name, taxonomy_rank, ethnicity_strain) values ('canine', 'Canine', '', '');
-insert into organism (common_name, scientific_name, taxonomy_rank, ethnicity_strain) values ('c.feline', 'Cat', '', '');
-insert into organism (common_name, scientific_name, taxonomy_rank, ethnicity_strain) values ('c.mouseful', 'Mouse', '', '');
-
+insert into organism (common_name, scientific_name, taxonomy_rank, ethnicity_strain) values ('Bovine', '', '', '');
+insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Canine', '', '', '');
+insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Chicken', '', '', '');
+insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Drosophila', '', '', '');
+insert into organism (common_name, scientific_name, taxonomy_rank, ethnicity_strain) values ('E-coli', '', '', '');
+insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Homo Sapiens', '', '', '');
+insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Mouse', '', '', '');
+insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Plasmodium/Anopheles', '', '', '');
+insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Rat', '', '', '');
+insert into organism (common_name, scientific_name, taxonomy_rank, ethnicity_strain) values ('S. Aureous', '', '', '');
+insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Songbird', '', '', '');
+insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Xenopus', '', '', '');
+insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Yeast', '', '', '');
+insert into organism (common_name, scientific_name, taxonomy_rank, ethnicity_strain) values ('Zebra finch', '', '', '');
+insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Zebrafish', '', '', '');
+ 
 insert into contact(discriminator, name) values ('O', 'Affymetrix');
 insert into contact(discriminator, name) values ('O', 'Illumina');
 

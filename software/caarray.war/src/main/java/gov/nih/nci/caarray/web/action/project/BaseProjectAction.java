@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 
 import com.opensymphony.xwork2.ActionSupport;
@@ -163,5 +164,13 @@ public abstract class BaseProjectAction extends ActionSupport implements Prepara
      */
     public void setProject(Project project) {
         this.project = project;
+    }
+    
+    /**
+     * Convenience method for getting the experiment of the current project
+     * @return the project's experiment
+     */
+    protected Experiment getExperiment() {
+        return getProject().getExperiment();
     }
 }

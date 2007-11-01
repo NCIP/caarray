@@ -270,13 +270,14 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     /**
      * @return collaborator access profiles
      */
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)    
     @MapKeyManyToMany(joinColumns = @JoinColumn(name = "GROUP_ID", nullable = false))
     @JoinTable(
             name = "PROJECT_GROUPS",
             joinColumns = @JoinColumn(name = "PROJECT_ID"),
             inverseJoinColumns = @JoinColumn(name = "PROFILE_ID")
     )
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Map<CollaboratorGroup, AccessProfile> getGroupProfiles() {
         return this.groupProfiles;
     }

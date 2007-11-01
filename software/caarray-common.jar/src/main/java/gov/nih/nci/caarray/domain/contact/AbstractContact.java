@@ -83,6 +83,8 @@
 
 package gov.nih.nci.caarray.domain.contact;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -95,7 +97,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
 /**
  * 

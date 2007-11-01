@@ -83,6 +83,8 @@
 
 package gov.nih.nci.caarray.domain.contact;
 
+import gov.nih.nci.security.authorization.domainobjects.User;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -111,6 +113,24 @@ public class Person extends AbstractContact {
     private String middleInitials;
     private String lastName;
     private Set<Organization> affiliations = new HashSet<Organization>();
+    
+    /**
+     * Default constructor
+     */
+    public Person() {
+        // intentially empty
+    }
+    
+    /**
+     * Constructor for a Person based on a CSM User instance
+     * @param user the user from which to copy name and contact properties
+     */
+    public Person(User user) {
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        setEmail(user.getEmailId());
+    }
+    
 
     /**
      * Gets the firstName.

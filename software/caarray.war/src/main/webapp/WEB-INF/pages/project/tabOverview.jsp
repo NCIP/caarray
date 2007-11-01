@@ -5,7 +5,6 @@ setExperimentTitleHeader('${project.experiment.title}');
 
 <caarray:tabPane paneTitleKey="experiment.overview">
     <div class="boxpad">
-
         <p class="instructions">
             The Overall Experiment Characteristics represent the minimum set of
             attributes required to submit an experiment for review.
@@ -22,9 +21,9 @@ setExperimentTitleHeader('${project.experiment.title}');
             <s:select required="true" name="project.experiment.assayType" label="Assay Type" tabindex="5"
                       list="@gov.nih.nci.caarray.domain.project.AssayType@values()" listValue="%{getText(resourceKey)}"
                       headerKey="" headerValue="--Select an Assay Type--"/>
-            <s:select name="project.experiment.manufacturer" label="Manufacturer" tabindex="6"
+            <s:select name="project.experiment.manufacturer" label="Provider" tabindex="6"
                       list="manufacturers" listKey="id" listValue="name"
-                      headerKey="" headerValue="--Select a Manufacturer--" value="project.experiment.manufacturer.id">
+                      headerKey="" headerValue="--Select a Provider--" value="project.experiment.manufacturer.id">
                 <s:param name="after">
                     <span id="progressMsg" style="display:none;"><img alt="Indicator" src="<c:url value="/images/indicator.gif"/>" /> Loading.. </span>
                 </s:param>

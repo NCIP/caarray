@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.application.project;
 
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.permissions.AccessProfile;
+import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -158,6 +160,13 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
      * {@inheritDoc}
      */
     public Source copySource(Project project, long sourceId) {
+        return null;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public AccessProfile addGroupProfile(Project project, CollaboratorGroup group) {
         return null;
     }
 }

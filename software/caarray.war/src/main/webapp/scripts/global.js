@@ -334,6 +334,18 @@ window.onload = function() {
 // Show the document's title on the status bar
 window.defaultStatus=document.title;
 
+var Caarray = {
+    submitAjaxForm: function(formId, divId, options) {
+        var formData = Form.serialize(formId);
+        options = options || {};
+        if (options.extraArgs) {
+            formData = formData + '&' + Hash.toQueryString(options.extraArgs);      
+        }
+        var url = options.url || $(formId).action;    
+        new Ajax.Updater(divId, url, {parameters: formData, evalScripts: true, insertion: options.insertion} );
+    }
+}
+
 var TabUtils = {
     setSelectedTab : function() {
         tabMenuItems = $('tabbed').getElementsByTagName('li');
@@ -407,17 +419,12 @@ var TabUtils = {
     },
 
     submitTabFormIgnoreSubmittingText : function(formId, divId, saveMode) {
-        formData = Form.serialize(formId);
-        formData = formData + '&saveMode=' + saveMode;
-        url = $(formId).action;
-
-        new Ajax.Updater(divId, url, {parameters: formData, evalScripts: true} );
+        Caarray.submitAjaxForm(formId, divId, { extraArgs: { saveMode : saveMode }});
     },
 
     submitSubTabFormToUrl : function(formId, url, divId) {
         TabUtils.showSubtabSubmittingText();
-        formData = Form.serialize(formId);
-        new Ajax.Updater(divId, url, {parameters: formData, evalScripts: true} );
+        Caarray.submitAjaxForm(formId, divId, { url: url});
     },
 
     wrapTabLinks: function(projectId) {

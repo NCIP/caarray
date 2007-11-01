@@ -87,6 +87,8 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.contact.AbstractContact;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -123,6 +125,35 @@ public class ExperimentContact extends AbstractCaArrayEntity {
     private AbstractContact contact;
     private Set<Term> roles = new HashSet<Term>();
     private Experiment experiment;
+    
+    /**
+     * Default constructor, mostly for hibernate
+     */
+    public ExperimentContact() {
+        // intentially blanks
+    }
+
+    /**
+     * Create a new ExperimentContact for given experiment, contacts, and roles
+     * @param experiment the experiment for which this is a contact
+     * @param contact the contact
+     * @param roles the roles this contact has on the experiment
+     */
+    public ExperimentContact(Experiment experiment, AbstractContact contact, Collection<Term> roles) {
+        this.contact = contact;
+        this.roles.addAll(roles);
+        this.experiment = experiment;
+    }
+
+    /**
+     * Create a new ExperimentContact for given experiment, contacts, and role
+     * @param experiment the experiment for which this is a contact
+     * @param contact the contact
+     * @param role the role this contact has on the experiment
+     */
+    public ExperimentContact(Experiment experiment, AbstractContact contact, Term role) {
+        this(experiment, contact, Arrays.asList(role));
+    }
 
     /**
      * Gets the contact.

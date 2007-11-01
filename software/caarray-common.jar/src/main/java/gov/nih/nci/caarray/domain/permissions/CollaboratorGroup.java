@@ -126,9 +126,11 @@ public class CollaboratorGroup implements PersistentObject {
         setOwner(owner);
     }
 
-    @Deprecated
-    CollaboratorGroup() {
-        // Hibernate only
+    /**
+     * For UI / Hibernate Usage only
+     */
+    public CollaboratorGroup() {
+        // intentionally empty
     }
 
     /**

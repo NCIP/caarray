@@ -90,6 +90,8 @@ import gov.nih.nci.caarray.dao.ContactDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.permissions.AccessProfile;
+import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
@@ -245,6 +247,19 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         getProjectDao().save(p);
         LogUtil.logSubsystemExit(LOG);
         return p;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public AccessProfile addGroupProfile(Project project, CollaboratorGroup group) {
+        LogUtil.logSubsystemEntry(LOG, project, group);
+        AccessProfile profile = new AccessProfile();
+        project.getGroupProfiles().put(group, profile);
+        getProjectDao().save(project);
+        LogUtil.logSubsystemExit(LOG);
+        return profile;
     }
 
     /**

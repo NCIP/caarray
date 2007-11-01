@@ -82,18 +82,6 @@ public class ProjectAction extends BaseProjectAction {
     }
 
     /**
-     * Toggles the browsability status.
-     *
-     * @return success
-     */
-    @SkipValidation
-    public String toggle() {
-        setMenu("ProjectEditLinks");
-        getProjectManagementService().toggleBrowsableStatus(getProject().getId());
-        return WORKSPACE_RESULT;
-    }
-
-    /**
      * @return the projects
      */
     public List<Project> getProjects() {

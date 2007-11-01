@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.application.project;
 
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.permissions.AccessProfile;
+import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Extract;
@@ -181,6 +183,15 @@ public interface ProjectManagementService {
      * @return the modified project
      */
     Project toggleBrowsableStatus(long projectId);
+
+    /**
+     * Adds an empty (no access) profile for the given collaborator group to the given project 
+     *
+     * @param project the project
+     * @param group the group for which to add an access profile
+     * @return the new access profile
+     */
+    AccessProfile addGroupProfile(Project project, CollaboratorGroup group);
 
     /**
      * Prepares files for download.

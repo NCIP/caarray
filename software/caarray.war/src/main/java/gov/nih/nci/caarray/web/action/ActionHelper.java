@@ -90,9 +90,13 @@ import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.registration.RegistrationService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.util.SecurityInterceptor;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.SecurityServiceProvider;
 import gov.nih.nci.security.UserProvisioningManager;
+import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSConfigurationException;
 import gov.nih.nci.security.exceptions.CSException;
 
@@ -137,6 +141,15 @@ public class ActionHelper {
             // should never happen, as we know the method exists.
         }
         return false;
+    }
+    
+    /**
+     * Convenience method for getting the CSM User instance for the currently logged in user
+     * @return the logged in user
+     */
+    public static User getCurrentUser() {
+        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
+        return am.getUser(UsernameHolder.getUser());
     }
 
     /**

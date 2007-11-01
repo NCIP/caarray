@@ -82,16 +82,20 @@
  */
 package gov.nih.nci.caarray.domain.permissions;
 
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.sample.Sample;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -99,13 +103,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.MapKeyManyToMany;
 
 /**
  * Container class that models the read and write permissions to samples.
  */
 @Entity
-public class AccessProfile implements Serializable {
+public class AccessProfile implements PersistentObject, Serializable {
 
     private static final long serialVersionUID = -7994016784349522735L;
 
@@ -113,6 +120,7 @@ public class AccessProfile implements Serializable {
     private SecurityLevel securityLevel = SecurityLevel.NONE;
     private Set<Sample> selectiveReadSamples = new HashSet<Sample>();
     private Set<Sample> selectiveWriteSamples = new HashSet<Sample>();
+    private Map<Sample, SecurityLevel> sampleSecurityLevels = new HashMap<Sample, SecurityLevel>();
 
     /**
      * @return database identifier
@@ -189,4 +197,26 @@ public class AccessProfile implements Serializable {
         this.selectiveWriteSamples = selectiveWriteSamples;
     }
 
+    /**
+     * @return Mapping of samples to the security level for each sample
+     */
+    @CollectionOfElements(fetch = FetchType.LAZY)
+    @MapKeyManyToMany(joinColumns = @JoinColumn(name = "SAMPLE_ID", nullable = false))
+    @JoinTable(
+            name = "ACCESS_PROFILE_SAMPLES",
+            joinColumns = @JoinColumn(name = "ACCESS_PROFILE_ID")
+    )
+    @Column(name = "security_level")
+    @Enumerated(EnumType.STRING)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    public Map<Sample, SecurityLevel> getSampleSecurityLevels() {
+        return sampleSecurityLevels;
+    }
+
+    /**
+     * @param sampleSecurityLevels the sampleSecurityLevels to set
+     */
+    public void setSampleSecurityLevels(Map<Sample, SecurityLevel> sampleSecurityLevels) {
+        this.sampleSecurityLevels = sampleSecurityLevels;
+    }
 }

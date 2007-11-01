@@ -32,13 +32,13 @@
 
 <ajax:tabPanel panelStyleId="tablevel2" panelStyleClass="tablevel2" currentStyleClass="selected" contentStyleId="tabboxlevel2wrapper" contentStyleClass="tabboxlevel2wrapper"
         postFunction="TabUtils.setSelectedLevel2Tab" preFunction="TabUtils.showSubtabLoadingText">
-    <ajax:tab caption="${experimentalDesignTitle}" baseUrl="${experimentalDesignUrl}" defaultTab="${param.initialTab == null || param.initialTab == 'experimentalDesign'}" />
-    <ajax:tab caption="${factorsTitle}" baseUrl="${factorsUrl}" defaultTab="${param.initialTab == 'factors'}" />
-    <ajax:tab caption="${sourcesTitle}" baseUrl="${sourcesUrl}" defaultTab="${param.initialTab == 'sources'}" />
-    <ajax:tab caption="${samplesTitle}" baseUrl="${samplesUrl}" defaultTab="${param.initialTab == 'samples'}" />
-    <ajax:tab caption="${extractsTitle}" baseUrl="${extractsUrl}" defaultTab="${param.initialTab == 'extracts'}" />
-    <ajax:tab caption="${labeledExtractsTitle}" baseUrl="${labeledExtractsUrl}" defaultTab="${param.initialTab == 'labeledExtracts'}" />
-    <ajax:tab caption="${hybridizationsTitle}" baseUrl="${hybridizationsUrl}" defaultTab="${param.initialTab == 'hybridizations'}" />
+    <ajax:tab caption="${experimentalDesignTitle}" baseUrl="${experimentalDesignUrl}" defaultTab="${param.initialTab2 == null || param.initialTab2 == 'experimentalDesign'}" />
+    <ajax:tab caption="${factorsTitle}" baseUrl="${factorsUrl}" defaultTab="${param.initialTab2 == 'factors'}" />
+    <ajax:tab caption="${sourcesTitle}" baseUrl="${sourcesUrl}" defaultTab="${param.initialTab2 == 'sources'}" />
+    <ajax:tab caption="${samplesTitle}" baseUrl="${samplesUrl}" defaultTab="${param.initialTab2 == 'samples'}" />
+    <ajax:tab caption="${extractsTitle}" baseUrl="${extractsUrl}" defaultTab="${param.initialTab2 == 'extracts'}" />
+    <ajax:tab caption="${labeledExtractsTitle}" baseUrl="${labeledExtractsUrl}" defaultTab="${param.initialTab2 == 'labeledExtracts'}" />
+    <ajax:tab caption="${hybridizationsTitle}" baseUrl="${hybridizationsUrl}" defaultTab="${param.initialTab2 == 'hybridizations'}" />
 </ajax:tabPanel>
 
 <script type="text/javascript">

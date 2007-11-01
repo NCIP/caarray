@@ -11,7 +11,7 @@
             <s:textfield required="true" name="primaryInvestigator.lastName" label="P.I. Last Name" size="80" tabindex="2"/>
             <s:textfield required="true" name="primaryInvestigator.email" label="Email" size="80" tabindex="3"/>
             <s:textfield required="true" name="primaryInvestigator.phone" label="Phone" size="80" tabindex="4"/>
-            <s:radio name="piIsMainPoc" label="Is the P.I. the P.O.C" list="#{true: 'Yes', false:'No'}" tabindex="5" onchange="$('poc')[$('projectForm_piIsMainPoctrue').checked ? 'hide' : 'show']();"/>
+            <s:radio name="piIsMainPoc" label="Is the P.I. the P.O.C" list="#{true: 'Yes', false:'No'}" tabindex="5" onclick="$('poc')[$('projectForm_piIsMainPoctrue').checked ? 'hide' : 'show']();"/>
             </tbody>
             <tbody id="poc"     <s:if test="piIsMainPoc == true">style="display: none"</s:if> >
             <tr><th colspan="2">Main Point of Contact (P.O.C.)</th></tr>

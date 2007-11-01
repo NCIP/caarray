@@ -29,7 +29,9 @@
                 <caarray:projectListTabActionLink entityName="Extract" action="edit" itemId="${row.id}" isSubtab="true"/>
             </display:column>
             <display:column titleKey="button.copy">
-                <caarray:projectListTabActionLink entityName="Extract" action="copy" itemId="${row.id}" isSubtab="true"/>
+                <ajax:anchors target="tabboxlevel2wrapper">
+                    <a href="<c:url value="/ajax/notYetImplemented.jsp" />"><img src="<c:url value="/images/ico_download.gif"/>" alt="<fmt:message key="button.download"/>" /></a>
+                </ajax:anchors>
             </display:column>
             <display:column titleKey="button.delete">
                 <caarray:projectListTabActionLink entityName="Extract" action="delete" itemId="${row.id}" isSubtab="true"/>            

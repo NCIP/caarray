@@ -82,8 +82,13 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
+import static gov.nih.nci.caarray.web.action.ActionHelper.getCurrentUser;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getVocabularyService;
+
+import java.lang.reflect.InvocationTargetException;
+
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.domain.contact.AbstractContact;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
@@ -91,12 +96,7 @@ import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.util.SecurityInterceptor;
-import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
-
-import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -130,9 +130,7 @@ public class ProjectContactsAction extends ProjectTabAction {
      * @throws Exception Exception
      */
     public void setup() {
-        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
-        String username = UsernameHolder.getUser();
-        this.user = am.getUser(username);
+        this.user = getCurrentUser();
 
         ExperimentContact pi = getProject().getExperiment().getPrimaryInvestigator();
         if (pi != null) {
@@ -150,10 +148,7 @@ public class ProjectContactsAction extends ProjectTabAction {
                 }
             }
         } else {
-            this.primaryInvestigator = new Person();
-            this.primaryInvestigator.setFirstName(this.user.getFirstName());
-            this.primaryInvestigator.setLastName(this.user.getLastName());
-            this.primaryInvestigator.setEmail(this.user.getEmailId());
+            this.primaryInvestigator = new Person(this.user);
             this.piIsMainPoc = true;
             this.mainPointOfContact = new Person();
         }
@@ -175,16 +170,7 @@ public class ProjectContactsAction extends ProjectTabAction {
 
         ExperimentContact pi = getProject().getExperiment().getPrimaryInvestigator();
         if (pi != null) {
-            try {
-                this.primaryInvestigator.setId(pi.getContact().getId());
-                PropertyUtils.copyProperties(pi.getContact(), this.primaryInvestigator);
-            } catch (IllegalAccessException e) {
-                // cannot happen
-            } catch (InvocationTargetException e) {
-                // cannot happen
-            } catch (NoSuchMethodException e) {
-                // cannot happen
-            }
+            copyContact(this.primaryInvestigator, pi.getContact());
             if (this.piIsMainPoc && !pi.isMainPointOfContact()) {
                 getProject().getExperiment().removeSeparateMainPointOfContact();
                 pi.getRoles().add(mainPocRole);
@@ -193,43 +179,45 @@ public class ProjectContactsAction extends ProjectTabAction {
                 ExperimentContact mainPoc = getProject().getExperiment().getMainPointOfContact();
                 if (pi.isMainPointOfContact()) {
                     pi.removeMainPointOfContactRole();
-                    mainPoc = new ExperimentContact();
-                    mainPoc.getRoles().add(mainPocRole);
-                    mainPoc.setContact(new Person());
+                    mainPoc = new ExperimentContact(getExperiment(), new Person(), mainPocRole);
                     getProject().getExperiment().getExperimentContacts().add(mainPoc);
-                    mainPoc.setExperiment(getProject().getExperiment());
                 }
-                try {
-                    this.mainPointOfContact.setId(mainPoc.getContact().getId());
-                    PropertyUtils.copyProperties(mainPoc.getContact(), this.mainPointOfContact);
-                } catch (IllegalAccessException e) {
-                    // cannot happen
-                } catch (InvocationTargetException e) {
-                    // cannot happen
-                } catch (NoSuchMethodException e) {
-                    // cannot happen
-                }
+                copyContact(this.mainPointOfContact, mainPoc.getContact());
             }
         } else {
-            pi = new ExperimentContact();
-            pi.setContact(this.primaryInvestigator);
-            pi.getRoles().add(piRole);
+            pi = new ExperimentContact(getExperiment(), this.primaryInvestigator, piRole);
             getProject().getExperiment().getExperimentContacts().add(pi);
-            pi.setExperiment(getProject().getExperiment());
             if (this.piIsMainPoc) {
                 pi.getRoles().add(mainPocRole);
             } else {
-                ExperimentContact mainPoc = new ExperimentContact();
-                mainPoc.setContact(this.mainPointOfContact);
-                mainPoc.getRoles().add(mainPocRole);
+                ExperimentContact mainPoc = new ExperimentContact(getExperiment(), this.mainPointOfContact, mainPocRole);
                 getProject().getExperiment().getExperimentContacts().add(mainPoc);
-                mainPoc.setExperiment(getProject().getExperiment());
             }
         }
 
         String result = super.save();
         setup();
         return result;
+    }
+    
+    /**
+     * Helper method to copy the properties of one contact to another. The id property is not copied
+     * 
+     * @param source contact to copy from
+     * @param dest contact to copy to
+     */
+    private void copyContact(AbstractContact source, AbstractContact dest) {
+        Long id = dest.getId();
+        try {
+            PropertyUtils.copyProperties(dest, source);
+        } catch (IllegalAccessException e) {
+            // cannot happen
+        } catch (InvocationTargetException e) {
+            // cannot happen
+        } catch (NoSuchMethodException e) {
+            // cannot happen
+        }
+        dest.setId(id);
     }
     
     /**

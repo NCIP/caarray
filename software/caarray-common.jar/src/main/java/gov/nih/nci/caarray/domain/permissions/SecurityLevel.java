@@ -82,23 +82,27 @@
  */
 package gov.nih.nci.caarray.domain.permissions;
 
+import gov.nih.nci.caarray.domain.ResourceBasedEnum;
+
 /**
  * For access profiles, what type of access is permitted.
  */
-public enum SecurityLevel {
+public enum SecurityLevel implements ResourceBasedEnum {
     /** No access to project or any samples. */
-    NONE(false),
+    NONE(false, "None"),
     /** Read access to project and all samples. */
-    READ(true),
+    READ(true, "Read"),
     /** Read access to project and specified samples. */
-    READ_SELECTIVE(true),
+    READ_SELECTIVE(true, "Read Selective"),
     /** Read access to project.  Read access and/or write access to specificed samples. */
-    READ_WRITE_SELECTIVE(true);
+    READ_WRITE_SELECTIVE(true, "Read/Write Selective");
 
     private final boolean projectVisible;
+    private String resourceKey;
 
-    SecurityLevel(boolean projectVisible) {
+    SecurityLevel(boolean projectVisible, String resourceKey) {
         this.projectVisible = projectVisible;
+        this.resourceKey = resourceKey;
     }
 
     /**
@@ -107,5 +111,12 @@ public enum SecurityLevel {
      */
     public boolean isProjectVisible() {
         return projectVisible;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String getResourceKey() {
+        return this.resourceKey;
     }
 }
