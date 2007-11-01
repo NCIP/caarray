@@ -288,7 +288,9 @@ public class CollaboratorsAction extends ActionSupport {
     public void validate() {
         super.validate();
         if (!ActionHelper.isSkipValidationSetOnCurrentAction()) {
-            if (StringUtils.isBlank(getGroupName())) {
+            if (StringUtils.isBlank(getGroupName())
+                    || getTargetGroup() == null
+                    || getGroupName().equals(getTargetGroup().getGroup().getGroupName()))  {
                 // Nothing to be done in this case
                 return;
             }

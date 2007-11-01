@@ -133,7 +133,7 @@
         </action>
         
         <action name="ajax/collaborators/*" class="gov.nih.nci.caarray.web.action.CollaboratorsAction" method="{1}">
-            <result name="listGroups">/WEB-INF/pages/collaborators/listGroups.jsp</result>
+            <result name="list">/WEB-INF/pages/collaborators/listGroups.jsp</result>
         </action>
         
     </package>
