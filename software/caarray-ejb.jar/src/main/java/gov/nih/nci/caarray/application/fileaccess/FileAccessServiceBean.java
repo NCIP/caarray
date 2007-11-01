@@ -315,7 +315,14 @@ public class FileAccessServiceBean implements FileAccessService {
                     while (entries.hasMoreElements()) {
                         ZipEntry entry = entries.nextElement();
                         File entryFile = new File(directoryPath + "/" + entry.getName());
-                        IOUtils.copy(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(entryFile)));
+
+                        InputStream fileInputStream = zipFile.getInputStream(entry);
+                        FileOutputStream fileOutputStream = new FileOutputStream(entryFile);
+                        BufferedOutputStream bufferedOutput = new BufferedOutputStream(fileOutputStream);
+                        IOUtils.copy(fileInputStream, bufferedOutput);
+
+                        bufferedOutput.flush();
+
                         uploads.add(entryFile);
                         uploadFileNames.add(entry.getName());
                     }
