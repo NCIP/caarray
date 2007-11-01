@@ -45,13 +45,13 @@
                                     <tr>
                                         <th style="height: 2.5em;">Access Profiles</th>
                                     </tr>
-                                    <c:url var="loadPublicProfileUrl" value="/protected/project/permissions/loadPublicProfile.action">
+                                    <c:url var="loadPublicProfileUrl" value="/protected/ajax/project/permissions/loadPublicProfile.action">
                                         <c:param name="project.id" value="${project.id}"/>
                                     </c:url>
                                     <caarray:projectAccessProfileOwner name="The Public" loadProfileUrl="${loadPublicProfileUrl}"
                                         description="Control access to the experiment by anonymous users"/>
                                     <c:forEach items="${project.groupProfiles}" var="groupMapping">                                    
-                                        <c:url var="loadGroupProfileUrl" value="/protected/project/permissions/loadGroupProfile.action">
+                                        <c:url var="loadGroupProfileUrl" value="/protected/ajax/project/permissions/loadGroupProfile.action">
                                             <c:param name="project.id" value="${project.id}"/>
                                             <c:param name="collaboratorGroup.id" value="${groupMapping.key.id}"/>
                                         </c:url>
