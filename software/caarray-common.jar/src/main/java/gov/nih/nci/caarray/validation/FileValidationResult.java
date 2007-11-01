@@ -101,6 +101,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
+
 /**
  * Contains all the validation messsages for a single file.
  */
@@ -217,6 +219,16 @@ public final class FileValidationResult implements Serializable, Comparable<File
     @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" }) // NOPMD
     private void setId(Long id) {
         this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer stringBuffer = new StringBuffer();
+        for (ValidationMessage message : getMessages()) {
+            stringBuffer.append(message.toString());
+            stringBuffer.append('\n');
+        }
+        return stringBuffer.toString();
     }
 
 }

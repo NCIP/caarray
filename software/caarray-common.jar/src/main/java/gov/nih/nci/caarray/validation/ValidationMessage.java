@@ -197,6 +197,16 @@ public final class ValidationMessage implements Serializable, Comparable<Validat
     private void setId(Long id) {
         this.id = id;
     }
+
+    private void setType(Type type) {
+        this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return getType() + ": " + getMessage();
+    }
+    
     /**
      * Indicates the type/level of the message.
      */
@@ -218,9 +228,6 @@ public final class ValidationMessage implements Serializable, Comparable<Validat
         INFO;
 
 
-    }
-    private void setType(Type type) {
-        this.type = type;
     }
 
 }
