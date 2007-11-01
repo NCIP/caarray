@@ -4,6 +4,7 @@
 <head>
     <title>Experiment Permissions</title>
 </head>
+<body>
     <h1>Experiment Permissions</h1>
     <caarray:successMessages />
 

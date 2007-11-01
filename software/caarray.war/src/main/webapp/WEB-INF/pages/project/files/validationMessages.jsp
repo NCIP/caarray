@@ -20,19 +20,9 @@
         </ajax:displayTag>
     </div>
      <caarray:actions divclass="actionsthin">
-        <c:url value="/protected/ajax/project/files/deleteFiles.action" var="deleteUrl" />
-        <caarray:linkButton actionClass="delete" text="Delete" onclick="TabUtils.submitSubTabFormToUrl('projectForm', '${deleteUrl}', 'tabboxlevel2wrapper');" />
-        <c:url value="/protected/ajax/project/files/validateFiles.action" var="validateUrl" />
-        <caarray:linkButton actionClass="validate" text="Validate" onclick="TabUtils.submitSubTabFormToUrl('projectForm', '${validateUrl}', 'tabboxlevel2wrapper');" />
-        <c:url value="/protected/ajax/project/files/importFiles.action" var="importUrl"/>
-        <caarray:linkButton actionClass="import" text="Import" onclick="TabUtils.submitSubTabFormToUrl('projectForm', '${importUrl}', 'tabboxlevel2wrapper');" />
-        <c:url value="/ajax/notYetImplemented.jsp" var="associationsUrl" />
-        <caarray:linkButton actionClass="manage_associations" text="Manage Associations" onclick="TabUtils.submitSubTabFormToUrl('projectForm', '${associationsUrl}', 'tabboxlevel2wrapper');" />
-    </caarray:actions>
-    <div class="actionsthin">
         <c:url value="/protected/ajax/project/files/list.action" var="manageDataUrl">
             <c:param name="project.id" value="${project.id}" />
         </c:url>
         <caarray:linkButton actionClass="cancel" text="Cancel" onclick="executeAjaxTab_tablevel2(null,'selected', '${manageDataUrl}', '');" />
-    </div>
+    </caarray:actions>
 </caarray:tabPane>
