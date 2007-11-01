@@ -88,8 +88,13 @@ import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
+import gov.nih.nci.caarray.application.registration.RegistrationService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+import gov.nih.nci.security.SecurityServiceProvider;
+import gov.nih.nci.security.UserProvisioningManager;
+import gov.nih.nci.security.exceptions.CSConfigurationException;
+import gov.nih.nci.security.exceptions.CSException;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -195,5 +200,28 @@ public class ActionHelper {
      */
     public static ArrayDesignService getArrayDesignService() {
         return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
+    }
+
+    /**
+     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
+     * via static import
+     * @return the service
+     */
+    public static RegistrationService getRegistrationService() {
+        return (RegistrationService) ServiceLocatorFactory.getLocator().lookup(RegistrationService.JNDI_NAME);
+    }
+
+    /**
+     * get UserProvisioningManager.
+     * @return UserProvisioningManager
+     * @throws CaArrayException
+     * @throws CaArrayException
+     * @throws CSException
+     * @throws CSConfigurationException
+     * @throws CSException
+     * @throws CSConfigurationException
+     */
+    public static UserProvisioningManager getUserProvisioningManager() throws CSConfigurationException, CSException {
+            return SecurityServiceProvider.getUserProvisioningManager("caarray");
     }
 }

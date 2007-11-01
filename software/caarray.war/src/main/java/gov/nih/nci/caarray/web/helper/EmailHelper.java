@@ -80,138 +80,107 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.util;
+package gov.nih.nci.caarray.web.helper;
 
-import gov.nih.nci.caarray.application.country.CountryService;
-import gov.nih.nci.caarray.domain.country.Country;
-import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+import gov.nih.nci.caarray.domain.register.RegistrationRequest;
+import gov.nih.nci.caarray.util.EmailUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
+
+import org.apache.log4j.Logger;
 
 /**
- * @author John Hedden
- * This class manages cached information. It implements singleton pattern.
+ * @author John Hedden (Amentra, Inc.)
+ *
  */
-public final class CacheManager {
+public class EmailHelper {
 
-    // The singleton static variable
-    private static CacheManager instance = null;
+    private static final Logger log = Logger.getLogger(EmailHelper.class);
 
-    private static final Log LOG = LogFactory.getLog(CacheManager.class);
-
-    private ServiceLocator locator = ServiceLocatorFactory.getLocator();
-
-    // instance variables that serve as cache
-    private List<LabelValue> fileTypes = new ArrayList<LabelValue>();
-    private List<Country> countryList = new ArrayList<Country>();
+    private static final String REGISTRATION_SUBJECT = "mail.registration.subject";
+    private static final String REGISTRATION_FROM = "mail.registration.from";
+    private static final String ADMIN_EMAIL_ADDRESS = "mail.registration.admin";
 
     /**
-     * Default constructor made private so that no other object can instantiate
-     * it.
+     * No instantiation is allowed, hence the private constructor
      */
-    private CacheManager() {
-        loadCache();
+    private EmailHelper() {
+        // nothing here.
     }
 
-    /**
-     * The singleton instance getter method.
-     *
-     * @return CacheManager
-     */
-    public static synchronized CacheManager getInstance() {
-        if (instance == null) {
-            instance = new CacheManager();
-        }
-        return instance;
-    }
+    public static void registerEmail (RegistrationRequest registrationRequest) throws AddressException, MessagingException {
+        List<String> mailRecipients = new ArrayList<String>();
+        mailRecipients.add(registrationRequest.getEmail());
+        String subject = null;
+        String from = null;
 
-    /**
-     * This method caches the various constant lists in variables.
-     */
-    @SuppressWarnings("static-access")
-    public void loadCache() {
+        String mailBody = "Dear CBIIT_Customer\n" +
+            "Thank you for your submission concerning caArray registration request.  It has\n" +
+            "been logged in our SupportWizard database with an ID of " + registrationRequest.getLoginName() + ".\n" +
+            "Your questions and suggestions are very important to us. You will receive a followup call or email shortly.\n" +
+            "Thank you,\n" +
+            "CBIIT Application Support Group";
+
         try {
-            cacheFileTypes();
-            cacheCountries();
-        } catch (Exception e) {
-            this.LOG.error(e);
+            subject = getRegistrationProperties().get("subject");
+            from = getRegistrationProperties().get("from");
+        } catch (ConfigurationException e) {
+            log.error(e.getMessage(), e);
         }
+
+        EmailUtil.sendMail(mailRecipients, from, subject, mailBody);
     }
 
-    /**
-     * This method clears the cache variables effectively flushes the cache.
-     */
-    public void flushCache() {
-        this.fileTypes = null;
-    }
+    public static void registerEmailAdmin (RegistrationRequest registrationRequest) throws AddressException, MessagingException {
+        List<String> mailRecipients = new ArrayList<String>();
+        String admin = null;
+        String subject = null;
+        String from = null;
 
-    /**
-     * This method reloads the cache by first flushing the cache and then
-     * loading the cache.
-     */
-    public void reloadCache() {
-        flushCache();
-        loadCache();
-    }
+        String mailBody = "Registration Request:\n" +
+            "First Name: " + registrationRequest.getFirstName() + "\n" + "Middle Initial: " + registrationRequest.getMiddleInitial() + "\n" +
+            "Last Name: " + registrationRequest.getLastName() + "\n" + "Email: " + registrationRequest.getEmail() + "\n" +
+            "Phone: " + registrationRequest.getPhone() + "\n" + "Fax: " + registrationRequest.getFax() + "\n" +
+            "Organization: " + registrationRequest.getOrganization() + "\n" + "Address1: " + registrationRequest.getAddress1() + "\n" +
+            "Address2: " + registrationRequest.getAddress2() + "\n" +  "City: " + registrationRequest.getCity() + "\n" +
+            "State: " + registrationRequest.getState() + "\n" + "Province: " + registrationRequest.getProvince() + "\n" +
+            "Country: " + registrationRequest.getCountry().getPrintableName() + "\n" + "Zip: " + registrationRequest.getZip() + "\n" +
+            "Role: " + registrationRequest.getRole();
 
-    /**
-     * Cache file types.
-     */
-    protected void cacheFileTypes() {
-        fileTypes.add(new LabelValue("", "UNKNOWN"));
-        for (FileType fileType : FileType.getTypes()) {
-            fileTypes.add(new LabelValue(fileType.getName(), fileType.getName()));
+        try {
+            subject = getRegistrationProperties().get("subject");
+            from = getRegistrationProperties().get("from");
+            admin = getRegistrationProperties().get("admin");
+            mailRecipients.add(admin);
+        } catch (ConfigurationException e) {
+            log.error(e.getMessage(), e);
         }
+        EmailUtil.sendMail(mailRecipients, from, subject, mailBody);
     }
 
-    /**
-     * @return the fileTypes
-     */
-    public List<LabelValue> getFileTypes() {
-        return fileTypes;
-    }
+    public static Map<String, String> getRegistrationProperties() throws ConfigurationException {
+        Map<String, String> propertiesMap = new HashMap<String, String>();
 
-    /**
-     * Cache file types.
-     */
-    protected void cacheCountries() {
-        this.countryList = getCountryService().getCountries();
-    }
+        Configuration config = new PropertiesConfiguration("default.properties");
+        String subject = config.getString(REGISTRATION_SUBJECT);
+        String from = config.getString(REGISTRATION_FROM);
+        String admin = config.getString(ADMIN_EMAIL_ADDRESS);
 
-    /**
-     * @return the countryList
-     */
-    public List<Country> getCountries() {
-        return countryList;
-    }
+        propertiesMap.put("subject", subject);
+        propertiesMap.put("from", from);
+        propertiesMap.put("admin", admin);
 
-    /**
-     * get locator for junit.
-     * @return ServiceLocator ServiceLocator
-     */
-    public ServiceLocator getLocator() {
-        return locator;
-    }
+        return propertiesMap;
 
-    /**
-     * For use by unit tests.
-     * @param locator locator
-     */
-    public void setLocator(ServiceLocator locator) {
-        this.locator = locator;
-    }
-
-    /**
-     * Get CountryService.
-     * @return countryService
-     */
-    public CountryService getCountryService() {
-        return (CountryService) locator.lookup(CountryService.JNDI_NAME);
     }
 }

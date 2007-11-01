@@ -135,16 +135,14 @@
         <action name="ajax/collaborators/*" class="gov.nih.nci.caarray.web.action.CollaboratorsAction" method="{1}">
             <result name="listGroups">/WEB-INF/pages/collaborators/listGroups.jsp</result>
         </action>
+        
     </package>
     
-
-<!--
-     <package name="registration" namespace="/registration" extends="default">
+    <package name="registration" namespace="/registration" extends="default">
         <default-interceptor-ref name="paramsPrepareParamsStack" />
-        <action name="Registration_*" class="gov.nih.nci.caarray.web.action.RegistrationAction" method="{1}">
+        <action name="*" class="gov.nih.nci.caarray.web.action.registration.RegistrationAction" method="{1}">
             <result name="input">/WEB-INF/pages/registration/form.jsp</result>
             <result name="success">/WEB-INF/pages/registration/success.jsp</result>
         </action>
      </package>
--->
 </struts>
