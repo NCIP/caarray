@@ -117,6 +117,7 @@ public class CollaboratorsAction extends ActionSupport {
     private User targetUser;
     /** We keep these values (the ids) as Strings because the CSM API uses Strings. */
     private List<String> users;
+    private List<User> allUsers;
 
     /**
      * @return listGroups
@@ -161,6 +162,9 @@ public class CollaboratorsAction extends ActionSupport {
      */
     @SkipValidation
     public String edit() {
+        if (getTargetGroup() != null) {
+            setAllUsers(getPermissionsManagementService().getUsers());
+        }
         return Action.SUCCESS;
     }
 
@@ -177,10 +181,14 @@ public class CollaboratorsAction extends ActionSupport {
      * Adds the selected users to the current collaborator group.
      * @return success
      * @throws CSTransactionException on CSM error
+     * @throws CSObjectNotFoundException on CSM error
      */
     @SkipValidation
-    public String addUsers() throws CSTransactionException {
-        getPermissionsManagementService().addUsers(getTargetGroup(), getUsers());
+    public String addUsers() throws CSTransactionException, CSObjectNotFoundException {
+        if (getUsers() != null && !getUsers().isEmpty()) {
+            getPermissionsManagementService().addUsers(getTargetGroup(), getUsers());
+        }
+        setAllUsers(getPermissionsManagementService().getUsers());
         return Action.SUCCESS;
     }
 
@@ -192,7 +200,12 @@ public class CollaboratorsAction extends ActionSupport {
     @SkipValidation
     public String removeUsers() throws CSTransactionException {
         getPermissionsManagementService().removeUsers(getTargetGroup(), getUsers());
-        return Action.SUCCESS;
+        return Action.INPUT;
+    }
+
+    @SkipValidation
+    public String editTable() {
+        return "editTable";
     }
 
     /**
@@ -281,6 +294,20 @@ public class CollaboratorsAction extends ActionSupport {
     }
 
     /**
+     * @return the allUsers
+     */
+    public List<User> getAllUsers() {
+        return allUsers;
+    }
+
+    /**
+     * @param allUsers the allUsers to set
+     */
+    public void setAllUsers(List<User> allUsers) {
+        this.allUsers = allUsers;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
@@ -289,8 +316,8 @@ public class CollaboratorsAction extends ActionSupport {
         super.validate();
         if (!ActionHelper.isSkipValidationSetOnCurrentAction()) {
             if (StringUtils.isBlank(getGroupName())
-                    || getTargetGroup() == null
-                    || getGroupName().equals(getTargetGroup().getGroup().getGroupName()))  {
+                    || (getTargetGroup() != null
+                            && getTargetGroup().getGroup().getGroupName().equals(getGroupName()))) {
                 // Nothing to be done in this case
                 return;
             }
@@ -299,6 +326,7 @@ public class CollaboratorsAction extends ActionSupport {
             g.setGroupName(getGroupName());
             GroupSearchCriteria gsc = new GroupSearchCriteria(g);
             List<Group> matchingGroups = am.getObjects(gsc);
+
             if (!matchingGroups.isEmpty()) {
                 addFieldError("groupName", "Collaborator Group Name must be unique");
             }

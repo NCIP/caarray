@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.permissions;
 
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 
@@ -129,8 +130,9 @@ public interface PermissionsManagementService {
      * @param targetGroup group to add members to
      * @param users user ids to add (as strings)
      * @throws CSTransactionException  on CSM error
+     * @throws CSObjectNotFoundException on CSM error
      */
-    void addUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException;
+    void addUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException, CSObjectNotFoundException;
 
     /**
      * Removes users from the target group.
@@ -150,4 +152,9 @@ public interface PermissionsManagementService {
      * @throws CSObjectNotFoundException on CSM error
      */
     void rename(CollaboratorGroup targetGroup, String groupName) throws CSTransactionException, CSObjectNotFoundException;
+
+    /**
+     * @return users in the system
+     */
+    List<User> getUsers();
 }

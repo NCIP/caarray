@@ -94,11 +94,13 @@ import gov.nih.nci.caarray.web.action.CollaboratorsAction;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSException;
+import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -159,7 +161,7 @@ public class CollaboratorsActionTest {
     }
 
     @Test
-    public void testAddUsers() throws CSTransactionException {
+    public void testAddUsers() throws CSTransactionException, CSObjectNotFoundException {
         User owner = new User();
         Group group = new Group();
         CollaboratorGroup cg = new CollaboratorGroup(group, owner);
@@ -192,5 +194,20 @@ public class CollaboratorsActionTest {
         CollaboratorGroup stubGroup = pstub.getCurrentGroup();
         assertEquals(toAdd.size(), stubRemove.size());
         assertEquals(cg, stubGroup);
+    }
+
+    @Test
+    public void testEdit() {
+        action.edit();
+        assertTrue(!pstub.isGetUsersCalled());
+
+        action.setTargetGroup(new CollaboratorGroup(new Group(), new User()));
+        action.edit();
+        assertTrue(pstub.isGetUsersCalled());
+    }
+
+    @After
+    public void reset() {
+        pstub.reset();
     }
 }

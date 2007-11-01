@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.permissions;
 
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 
@@ -99,6 +100,14 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
     private String name = null;
     private List<String> addedUsers;
     private List<String> removedUsers;
+    private boolean getUsersCalled = false;
+
+    /**
+     * @return the getUsersCalled
+     */
+    public boolean isGetUsersCalled() {
+        return getUsersCalled;
+    }
 
     /**
      * {@inheritDoc}
@@ -133,8 +142,12 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
      * resets stub state.
      */
     public void reset() {
-        getCalled = false;
         currentGroup = null;
+        getCalled = false;
+        name = null;
+        addedUsers = null;
+        removedUsers = null;
+        getUsersCalled = false;
     }
 
     /**
@@ -188,5 +201,13 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
     public void rename(CollaboratorGroup targetGroup, String groupName) {
         name = groupName;
         currentGroup = targetGroup;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<User> getUsers() {
+        getUsersCalled = true;
+        return null;
     }
 }

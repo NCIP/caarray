@@ -93,10 +93,13 @@ import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.dao.UserSearchCriteria;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.Local;
@@ -204,11 +207,21 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     /**
      * {@inheritDoc}
      */
-    public void addUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException {
+    @SuppressWarnings("unchecked")
+    public void addUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException, CSObjectNotFoundException {
         LogUtil.logSubsystemEntry(LOG, targetGroup, users);
-        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
-        am.assignUsersToGroup(targetGroup.getGroup().getGroupId().toString(), users.toArray(new String[] {}));
 
+        // This is a hack.  We should simply call am.assignUserToGroup, but that method appears to be buggy.
+        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
+        String groupId = targetGroup.getGroup().getGroupId().toString();
+        Set<User> curUsers = am.getUsers(groupId);
+        Set<String> newUsers = new HashSet(curUsers.size() + users.size());
+        newUsers.addAll(users);
+        for (User u : curUsers) {
+            newUsers.add(u.getUserId().toString());
+        }
+        String[] userIds = newUsers.toArray(new String[] {});
+        am.assignUsersToGroup(groupId, userIds);
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -235,6 +248,18 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
         am.modifyGroup(g);
         HibernateUtil.getCurrentSession().refresh(targetGroup.getGroup());
         LogUtil.logSubsystemExit(LOG);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public List<User> getUsers() {
+        LogUtil.logSubsystemEntry(LOG);
+        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
+        List<User> users = am.getObjects(new UserSearchCriteria(new User()));
+        LogUtil.logSubsystemExit(LOG);
+        return users;
     }
 
 }

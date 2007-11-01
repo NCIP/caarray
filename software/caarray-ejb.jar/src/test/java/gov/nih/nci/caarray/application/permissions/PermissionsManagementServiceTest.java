@@ -83,13 +83,13 @@
 package gov.nih.nci.caarray.application.permissions;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.dao.stub.CollaboratorGroupDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.caarray.util.SecurityInterceptor;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSException;
@@ -100,6 +100,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.After;
@@ -168,10 +169,13 @@ public class PermissionsManagementServiceTest {
         toAdd.add("3");
         permissionsManagementService.addUsers(created, toAdd);
         // gymnastics here due to auth manager being it's own session
-        Group g = SecurityInterceptor.getAuthorizationManager().getGroupById(created.getGroup().getGroupId().toString());
         Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
-        g = (Group) HibernateUtil.getCurrentSession().merge(g);
-        assertEquals(2, g.getUsers().size());
+        Group g =  (Group) HibernateUtil.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
+        User u1 = (User) HibernateUtil.getCurrentSession().load(User.class, 1L);
+        User u2 = (User) HibernateUtil.getCurrentSession().load(User.class, 3L);
+        Hibernate.initialize(u1.getGroups());
+        assertTrue(u1.getGroups().contains(g));
+        assertTrue(u2.getGroups().contains(g));
         tx.commit();
 
         List<String> toRemove = new ArrayList<String>();
@@ -179,9 +183,9 @@ public class PermissionsManagementServiceTest {
         permissionsManagementService.removeUsers(created, toRemove);
         // go the other way or remove - make sure groups are set correctly
         tx = HibernateUtil.getCurrentSession().beginTransaction();
-        User u1 = (User) HibernateUtil.getCurrentSession().load(User.class, 1L);
-        User u2 = (User) HibernateUtil.getCurrentSession().load(User.class, 3L);
-        g = (Group) HibernateUtil.getCurrentSession().merge(g);
+        HibernateUtil.getCurrentSession().refresh(u1);
+        HibernateUtil.getCurrentSession().refresh(u2);
+        HibernateUtil.getCurrentSession().refresh(g);
         assertTrue(!u1.getGroups().contains(g));
         assertTrue(u2.getGroups().contains(g));
         tx.commit();
@@ -195,6 +199,13 @@ public class PermissionsManagementServiceTest {
         Group g = (Group) HibernateUtil.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
         assertEquals("test2", g.getGroupName());
         tx.commit();
+    }
+
+    @Test
+    public void testGetUsers() {
+        List<User> users = permissionsManagementService.getUsers();
+        assertNotNull(users);
+        assertTrue(!users.isEmpty());
     }
 
     @SuppressWarnings("unchecked")
