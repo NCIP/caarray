@@ -90,7 +90,10 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.validator.Email;
+import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
+import org.hibernate.validator.Pattern;
 
 /**
  * @author John Hedden
@@ -158,8 +161,9 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
     /**
      * @return the firstName
      */
-    @Column(length = FIRST_NAME_FIELD_LENGTH)
-    @NotNull
+     @Column(length = FIRST_NAME_FIELD_LENGTH)
+     @NotNull
+     @Length(min=1, max=30)
     public String getFirstName() {
         return firstName;
     }
@@ -179,6 +183,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      * @return the middleInitial
      */
     @Column(length = MIDDLE_INITIAL_FIELD_LENGTH)
+    @Length(max=1)
     public String getMiddleInitial() {
         return middleInitial;
     }
@@ -199,6 +204,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      */
     @Column(length = LAST_NAME_FIELD_LENGTH)
     @NotNull
+    @Length(min=1, max=50)
     public String getLastName() {
         return lastName;
     }
@@ -219,6 +225,8 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      */
     @Column(length = EMAIL_FIELD_LENGTH)
     @NotNull
+    @Email
+    @Length(min=1, max=50)
     public String getEmail() {
         return email;
     }
@@ -238,6 +246,8 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      */
     @Column(length = PHONE_NUMBER_FIELD_LENGTH)
     @NotNull
+    @Length(min=1, max=25)
+    @Pattern(regex="(\\+)?([-\\._\\(\\) ]?[\\d]{3,20}[-\\._\\(\\) ]?){2,10}")
     public String getPhone() {
         return phone;
     }
@@ -257,6 +267,8 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      * @return the fax
      */
     @Column(length = FAX_FIELD_LENGTH)
+    @Length(max=25)
+    @Pattern(regex="(\\+)?([-\\._\\(\\) ]?[\\d]{3,20}[-\\._\\(\\) ]?){2,10}||^$")
     public String getFax() {
         return fax;
     }
@@ -277,6 +289,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      */
     @Column(length = ORGANIZATION_FIELD_LENGTH)
     @NotNull
+    @Length(min=1, max=200)
     public String getOrganization() {
         return organization;
     }
@@ -297,6 +310,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      */
     @Column(length = ADDRESS1_FIELD_LENGTH)
     @NotNull
+    @Length(min=1, max=200)
     public String getAddress1() {
         return address1;
     }
@@ -316,6 +330,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      * @return the address2
      */
     @Column(length = ADDRESS2_FIELD_LENGTH)
+    @Length(max=200)
     public String getAddress2() {
         return address2;
     }
@@ -336,6 +351,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      */
     @Column(length = CITY_FIELD_LENGTH)
     @NotNull
+    @Length(min=1, max=50)
     public String getCity() {
         return city;
     }
@@ -355,6 +371,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      * @return the state
      */
     @Column(length = STATE_FIELD_LENGTH)
+    @Length(max=2)
     public String getState() {
         return state;
     }
@@ -374,6 +391,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      * @return the province
      */
     @Column(length = PROVINCE_FIELD_LENGTH)
+    @Length(max=50)
     public String getProvince() {
         return province;
     }
@@ -394,6 +412,8 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      */
     @Column(length = ZIP_FIELD_LENGTH)
     @NotNull
+    @Length(min=1, max=10)
+    @Pattern(regex="^\\d{5}-\\d{4}|\\d{5}|[A-Z]\\d[A-Z] \\d[A-Z]\\d$")
     public String getZip() {
         return zip;
     }
@@ -432,8 +452,8 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
     /**
      * @return the country
      */
-    @NotNull
     @ManyToOne
+    @NotNull
     @ForeignKey(name = "REGISTRATIONREQUEST_COUNTRY_FK")
     public Country getCountry() {
         return country;
