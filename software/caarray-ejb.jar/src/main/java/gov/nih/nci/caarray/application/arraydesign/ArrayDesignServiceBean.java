@@ -172,7 +172,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile(), fileAccessService);
         fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
-        return handler.getDesignDetails();
+        return handler.getDesignDetails(arrayDesign);
     }
 
     private AbstractArrayDesignHandler getHandler(CaArrayFile designFile, FileAccessService fileAccessService) {
@@ -181,6 +181,8 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             throw new IllegalArgumentException("FileType was null");
         } else if (FileType.AFFYMETRIX_CDF.equals(type)) {
             return new AffymetrixCdfHandler(designFile, getVocabularyService(), fileAccessService);
+        } else if (FileType.ILLUMINA_DESIGN_CSV.equals(type)) {
+            return new IlluminaCsvDesignHandler(designFile, getVocabularyService(), fileAccessService);
         } else {
             throw new IllegalArgumentException("Unsupported array design file type: " + type);
         }

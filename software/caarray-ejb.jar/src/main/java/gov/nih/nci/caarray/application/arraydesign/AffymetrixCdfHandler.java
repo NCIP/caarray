@@ -153,7 +153,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     }
 
     @Override
-    ArrayDesignDetails getDesignDetails() {
+    ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign) {
         ArrayDesignDetails designDetails = new ArrayDesignDetails();
         probeGroup = new ProbeGroup(designDetails);
         probeGroup.setName(LSID_AUTHORITY + ":" + probeGroup.getClass().getSimpleName() + ":All."

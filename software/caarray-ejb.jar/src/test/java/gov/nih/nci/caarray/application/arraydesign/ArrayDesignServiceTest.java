@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.arraydesign;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
@@ -95,6 +96,7 @@ import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
@@ -151,6 +153,17 @@ public class ArrayDesignServiceTest {
     }
 
     @Test
+    public void testImportDesign_IlluminaHumanWG6() {
+        CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
+        ArrayDesign arrayDesign = arrayDesignService.importDesign(designFile);
+        assertEquals("Human_WG-6", arrayDesign.getName());
+        assertEquals("illumina.com", arrayDesign.getLsidAuthority());
+        assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
+        assertEquals("Human_WG-6", arrayDesign.getLsidObjectId());
+        assertEquals(47296, arrayDesign.getNumberOfFeatures());
+    }
+
+    @Test
     public void testValidateDesign_AffymetrixTest3() {
         CaArrayFile designFile = getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF);
         FileValidationResult result = arrayDesignService.validateDesign(designFile);
@@ -165,6 +178,29 @@ public class ArrayDesignServiceTest {
     }
 
     @Test
+    public void testValidateDesign_IlluminaHumanWG6() {
+        CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
+        FileValidationResult result = arrayDesignService.validateDesign(designFile);
+        assertTrue(result.isValid());
+        designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV_INVALID_CONTENT);
+        result = arrayDesignService.validateDesign(designFile);
+        assertFalse(result.isValid());
+        designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV_INVALID_HEADERS);
+        result = arrayDesignService.validateDesign(designFile);
+        assertFalse(result.isValid());
+    }
+
+    @Test
+    public void testGetDesignDetails_IlluminaHumanWG6() {
+        CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
+        ArrayDesign arrayDesign = arrayDesignService.importDesign(designFile);
+        assertEquals("Human_WG-6", arrayDesign.getName());
+        ArrayDesignDetails details = arrayDesignService.getDesignDetails(arrayDesign);
+        assertNotNull(details);
+        assertEquals(arrayDesign.getNumberOfFeatures(), details.getLogicalProbes().size());
+    }
+
+    @Test
     public void testGetDesignDetails_AffymetrixTest3() {
         CaArrayFile caArrayFile = getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF);
         ArrayDesign arrayDesign = arrayDesignService.importDesign(caArrayFile);
@@ -176,6 +212,12 @@ public class ArrayDesignServiceTest {
     private CaArrayFile getAffymetrixCaArrayFile(File file) {
         CaArrayFile caArrayFile = fileAccessServiceStub.add(file);
         caArrayFile.setType(FileType.AFFYMETRIX_CDF);
+        return caArrayFile;
+    }
+
+    private CaArrayFile getIlluminaCaArrayFile(File file) {
+        CaArrayFile caArrayFile = fileAccessServiceStub.add(file);
+        caArrayFile.setType(FileType.ILLUMINA_DESIGN_CSV);
         return caArrayFile;
     }
 

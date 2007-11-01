@@ -82,55 +82,21 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
-import java.io.File;
-
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.validation.FileValidationResult;
-
 /**
- * Base class for all design handlers.
+ * Contains Illumina design headers in expected order.
  */
-abstract class AbstractArrayDesignHandler {
-
-    private final CaArrayFile designFile;
-    private final VocabularyService vocabularyService;
-    private final FileAccessService fileAccessService;
-
-    AbstractArrayDesignHandler(CaArrayFile designFile, VocabularyService vocabularyService, 
-            FileAccessService fileAccessService) {
-        super();
-        this.designFile = designFile;
-        this.vocabularyService = vocabularyService;
-        this.fileAccessService = fileAccessService;
-    }
-
-    final CaArrayFile getDesignFile() {
-        return designFile;
-    }
-
-    final VocabularyService getVocabularyService() {
-        return vocabularyService;
-    }
-    
-    final ArrayDesign getArrayDesign() {
-        ArrayDesign arrayDesign = new ArrayDesign();
-        arrayDesign.setDesignFile(getDesignFile());
-        load(arrayDesign);
-        return arrayDesign;
-    }
-
-    final File getFile(CaArrayFile caArrayFile) {
-        return fileAccessService.getFile(caArrayFile);
-    }
-
-    abstract void load(ArrayDesign arrayDesign);
-
-    abstract ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign);
-
-    abstract FileValidationResult validate();
-
+enum IlluminaDesignCsvHeader {
+    SEARCH_KEY,
+    TARGET,
+    PROBEID,
+    GID,
+    TRANSCRIPT,
+    ACCESSION,
+    SYMBOL,
+    TYPE,
+    START,
+    PROBE_SEQUENCE,
+    DEFINITION,
+    ONTOLOGY,
+    SYNONYM;
 }
