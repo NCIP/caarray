@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.fileaccess;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Provides file storage and retrieval services to the system.
@@ -139,5 +140,14 @@ public interface FileAccessService {
      * @param caArrayFile the caArrayFile to store
      */
     void save(CaArrayFile caArrayFile);
+
+    /**
+     * unzips a .zip file, removes it from uploads
+     * and adds files present in zip to uploads.
+     *
+     * @param uploads the list of files that were uploaded
+     * @param uploadFileNames the list of filenames to go along with the uploaded files
+     */
+    void unzipFiles(List<File> uploads, List<String> uploadFileNames);
 
 }

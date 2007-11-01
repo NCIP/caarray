@@ -93,6 +93,8 @@ import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -148,4 +150,43 @@ public class FileAccessServiceTest {
         assertFalse(retrievedFile.exists());
     }
 
+    /**
+     * Test method for {@link gov.nih.nci.caarray.application.fileaccess.FileAccessService#unzipFiles(java.util.List, java.util.List)}.
+     * @throws FileAccessException
+     */
+    @Test
+    public void testUnzipFilesSingle() throws FileAccessException {
+        File file1 = MageTabDataFiles.SPECIFICATION_ZIP;
+
+        List<File> uploadFiles = new ArrayList<File>();
+        uploadFiles.add(file1);
+
+        List<String> uploadFileNames = new ArrayList<String>();
+        uploadFileNames.add(MageTabDataFiles.SPECIFICATION_ZIP.getName());
+
+        assertEquals(1, uploadFiles.size());
+        fileAccessService.unzipFiles(uploadFiles, uploadFileNames);
+        assertEquals(10, uploadFiles.size());
+    }
+
+    /**
+     * Test method for {@link gov.nih.nci.caarray.application.fileaccess.FileAccessService#unzipFiles(java.util.List, java.util.List)}.
+     * @throws IOException
+     */
+    @Test
+    public void testUnzipFilesMultiple() throws IOException {
+        File file1 = MageTabDataFiles.SPECIFICATION_ZIP;
+        File file2 = MageTabDataFiles.EBI_TEMPLATE_IDF;
+
+        List<File> uploadFiles = new ArrayList<File>();
+        uploadFiles.add(file1);
+        uploadFiles.add(file2);
+
+        List<String> uploadFileNames = new ArrayList<String>();
+        uploadFileNames.add(MageTabDataFiles.SPECIFICATION_ZIP.getName());
+
+        assertEquals(2, uploadFiles.size());
+        fileAccessService.unzipFiles(uploadFiles, uploadFileNames);
+        assertEquals(11, uploadFiles.size());
+    }
 }

@@ -87,13 +87,21 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.rmi.server.UID;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import javax.ejb.Local;
 import javax.ejb.Stateful;
@@ -285,6 +293,39 @@ public class FileAccessServiceBean implements FileAccessService {
         if (!file.delete()) {
             LOG.warn("Couldn't delete file: " + file.getAbsolutePath());
             file.deleteOnExit();
+        }
+    }
+
+    /**
+     * @see gov.nih.nci.caarray.application.fileaccess.FileAccessService#unzipFiles(java.util.List, java.util.List)
+     */
+    public void unzipFiles(List<File> uploads, List<String> uploadFileNames) {
+        try {
+            Pattern p = Pattern.compile(".zip$");
+            int index = 0;
+            for (int i = 0; i < uploadFileNames.size(); i++) {
+                Matcher m = p.matcher(uploadFileNames.get(i).toLowerCase());
+
+                if (m.find()) {
+                    File uploadedFile = uploads.get(i);
+                    String uploadedFileName = uploadedFile.getAbsolutePath();
+                    String directoryPath = uploadedFile.getParent();
+                    ZipFile zipFile = new ZipFile(uploadedFileName);
+                    Enumeration<? extends ZipEntry> entries = zipFile.entries();
+                    while (entries.hasMoreElements()) {
+                        ZipEntry entry = entries.nextElement();
+                        File entryFile = new File(directoryPath + "/" + entry.getName());
+                        IOUtils.copy(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(entryFile)));
+                        uploads.add(entryFile);
+                        uploadFileNames.add(entry.getName());
+                    }
+                    uploads.remove(index);
+                    uploadFileNames.remove(index);
+                }
+                index++;
+            }
+        } catch (IOException e) {
+            throw new FileAccessException("Couldn't unzip archive.", e);
         }
     }
 }

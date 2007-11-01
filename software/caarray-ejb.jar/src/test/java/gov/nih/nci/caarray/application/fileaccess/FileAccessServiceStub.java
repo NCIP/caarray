@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -137,5 +138,9 @@ public class FileAccessServiceStub implements FileAccessService {
 
     public void save(CaArrayFile caArrayFile) {
         // do nothing
+    }
+
+    public void unzipFiles(List<File> uploads, List<String> uploadFileNames) {
+        //do nothing
     }
 }
