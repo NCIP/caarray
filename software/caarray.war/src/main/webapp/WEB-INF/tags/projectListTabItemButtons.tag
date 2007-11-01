@@ -11,18 +11,21 @@
 <c:if test="${empty isSubtab}">
     <c:set var="isSubtab" value="${false}"/>
 </c:if>
-
 <c:set var="submitTabFormMethod" value="${isSubtab ? 'submitSubTabForm' : 'submitTabForm'}"/>
-
-<div class="actionsthin">
+<caarray:actions>
     <s:if test="editMode">
-        <caarray:linkButton actionClass="save" text="Save" onclick="TabUtils.${submitTabFormMethod}('projectForm', '${tabAnchor}', 'save_draft'); return false;"/>
-    </s:if> 
-    <s:else>    
-        <caarray:projectListTabActionLink entityName="${entityName}" action="edit" itemId="${itemId}" isSubtab="true">
+        <caarray:projectListTabActionLink entityName="${entityName}" action="load" itemId="${row.id}" isSubtab="${isSubtab}">
             <jsp:attribute name="linkRenderer">
-                <caarray:linkButton actionClass="edit" text="Edit" onclick="TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}'); return false;"/>
+                <caarray:action actionClass="cancel" text="Cancel" onclick="TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}'); return false;"/>
             </jsp:attribute>
         </caarray:projectListTabActionLink>
-    </s:else>       
-</div>
+        <caarray:action actionClass="save" text="Save" onclick="TabUtils.${submitTabFormMethod}('projectForm', '${tabAnchor}', 'save_draft'); return false;"/>
+    </s:if>
+    <s:else>
+        <caarray:projectListTabActionLink entityName="${entityName}" action="edit" itemId="${itemId}" isSubtab="true">
+            <jsp:attribute name="linkRenderer">
+                <caarray:action actionClass="edit" text="Edit" onclick="TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}'); return false;"/>
+            </jsp:attribute>
+        </caarray:projectListTabActionLink>
+    </s:else>
+</caarray:actions>

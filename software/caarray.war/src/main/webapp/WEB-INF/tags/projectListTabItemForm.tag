@@ -12,7 +12,7 @@
 
 <c:if test="${empty instructions}">
     <c:set var="instructions">
-        Required fields are highlighted and have <span class="required"><span class="asterisk">*</span>asterisks<span class="asterisk">*</span></span>.    
+        Required fields are highlighted and have <span class="required"><span class="asterisk">*</span>asterisks<span class="asterisk">*</span></span>.
     </c:set>
 </c:if>
 
@@ -22,11 +22,10 @@
 
 <caarray:projectListTabItemHeader entityName="${entityName}" itemId="${itemId}" itemName="${itemName}" isSubtab="${isSubtab}"/>
 
-<div class="boxpad2">
-    <s:form action="ajax/project/listTab/${plural}/save" cssClass="form" id="projectForm" 
+<div class="boxpad">
+    <s:form action="ajax/project/listTab/${plural}/save" cssClass="form" id="projectForm"
             onsubmit="TabUtils.submitSubTabForm('projectForm', '${tabAnchor}', 'save_draft'); return false;">
         <jsp:doBody/>
-    </s:form>        
+    </s:form>
+    <caarray:projectListTabItemButtons entityName="${entityName}" itemId="${itemId}" isSubtab="${isSubtab}"/>
 </div>
-
-<caarray:projectListTabItemButtons entityName="${entityName}" itemId="${itemId}" isSubtab="${isSubtab}"/>

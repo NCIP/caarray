@@ -85,7 +85,6 @@
 	<classpathentry kind="lib" path="/lib/struts2-core-2.0.9.jar"/>
 	<classpathentry kind="lib" path="/lib/struts2-sitemesh-plugin-2.0.9.jar"/>
 	<classpathentry kind="lib" path="/lib/struts2-spring-plugin-2.0.9.jar"/>
-	<classpathentry kind="lib" path="/lib/struts-menu-2.4.3.jar"/>
 	<classpathentry kind="lib" path="/lib/svnant.jar"/>
 	<classpathentry kind="lib" path="/lib/svnClientAdapter.jar"/>
 	<classpathentry kind="lib" path="/lib/svnjavahl.jar"/>

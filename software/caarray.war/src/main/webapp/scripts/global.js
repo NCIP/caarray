@@ -373,20 +373,17 @@ var TabUtils = {
             $('loadingText').show();
             $('theForm').hide();
         }
+        if ($('tabHeader')) {
+            $('tabHeader').hide();
+        }
     },
 
     showSubtabSubmittingText : function() {
-        if ($('submittingTextSubtab')) {
-            $('submittingTextSubtab').show();
-            $('theFormSubtab').hide();
-        }
+        TabUtils.showSubmittingText();
     },
 
     showSubtabLoadingText : function() {
-        if ($('loadingTextSubtab')) {
-            $('loadingTextSubtab').show();
-            $('theFormSubtab').hide();
-        }
+        TabUtils.showLoadingText();
     },
 
     // submit either the tab or subtab, depending on whether the subtab wrapper
@@ -437,15 +434,15 @@ var TabUtils = {
             }
         }
     },
-    
+
     loadLinkInTab: function(tabCaption, url) {
         executeAjaxTab_tabs(this.findTabByCaption('tabs', tabCaption), 'active', url, '');
     },
-    
+
     loadLinkInSubTab: function(tabCaption, url) {
         executeAjaxTab_tablevel2(this.findTabByCaption('tablevel2', tabCaption), 'selected', url, '');
     },
-    
+
     findTabByCaption: function(containerId, caption) {
         tabMenuItems = $(containerId).getElementsByTagName('li');
         for(var i = 0; i < tabMenuItems.length; i++) {
@@ -455,7 +452,7 @@ var TabUtils = {
             }
         }
         return tabMenuItems[0].getElementsByTagName('a')[0];
-    }    
+    }
 }
 
 //

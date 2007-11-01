@@ -15,19 +15,20 @@
 
 <c:if test="${!editMode}">
     <c:set var="theme" value="readonly" scope="request"/>
-</c:if>    
+</c:if>
 
 <c:set var="linkToList">
     <caarray:projectListTabActionLink entityName="${entityName}" action="load" itemId="${row.id}" isSubtab="${isSubtab}">
         <jsp:attribute name="linkContent"><fmt:message key="experiment.${pluralLower}"/></jsp:attribute>
-    </caarray:projectListTabActionLink>    
+    </caarray:projectListTabActionLink>
 </c:set>
 
+<c:if test="${isSubtab}"><div class="boxpad2"></c:if>
 <c:choose>
     <c:when test="${empty itemId}">
         <h3>
             <c:out value="${linkToList}" escapeXml="false"/>
-             > 
+             >
             <fmt:message key="experiment.items.add">
                 <fmt:param><fmt:message key="experiment.${entityNameLower}"/></fmt:param>
             </fmt:message>
@@ -40,3 +41,4 @@
         </h3>
     </c:otherwise>
 </c:choose>
+<c:if test="${isSubtab}"></div></c:if>

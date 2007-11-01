@@ -1,16 +1,38 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
 <div id="leftnav">
-    <ul class="caarraymenu">
-        <li class="liheader">caArray</li>
-        <li><a href="<c:url value="/notYetImplemented.jsp" />">Public Home</a></li>
-        <c:if test="${pageContext.request.remoteUser == null}">
-        <li><c:url value="/registration/input.action" var="url"/><a href="${url}">Register</a></li>
-        <li><a href="<c:url value="/protected/project/list.action" />">Login</a></li>
-        </c:if>
-    </ul>
-    <ul class="aboutmenu">
-        <li class="liheader">caArray 2.0 Software</li>
+    <c:choose>
+        <c:when test="${pageContext.request.remoteUser != null}">
+            <div class="navheader">caArray Actions</div>
+            <ul class="caarraymenu">
+                <li class="liheader">Experiments</li>
+                <li><a href="<c:url value="/protected/project/list.action" />">My Experiment Workspace</a></li>
+                <li><a href="<c:url value="/protected/project/create.action" />">Create/Propose Experiment</a></li>
+
+                <li class="liheader">Users &amp; Groups</li>
+                <li><a href="<c:url value="/notYetImplemented.jsp" />">Manage Users</a></li>
+                <li><a href="<c:url value="/protected/collaborators/listGroups.action" />">Manage Collaboration Groups</a></li>
+
+                <li class="liheader">Curation</li>
+                <li><a href="<c:url value="/notYetImplemented.jsp" />">Import Array Designs</a></li>
+            </ul>
+
+            <ul class="welcomemenu">
+                <li class="liheader">Welcome to caArray</li>
+                <li><a href="<c:url value="/" />">Public Home</a></li>
+            </ul>
+        </c:when>
+        <c:otherwise>
+            <div class="navheader">Welcome to caArray</div>
+            <ul class="caarraymenu">
+                <li><a href="<c:url value="/" />">Public Home</a></li>
+                <li><a href="<c:url value="/notYetImplemented.jsp" />">Register</a></li>
+                <li><a href="<c:url value="/protected/project/list.action" />">Login</a></li>
+            </ul>
+        </c:otherwise>
+    </c:choose>
+    <ul class="${pageContext.request.remoteUser != null ? 'aboutmenu' : 'welcomemenu' }">
+        <li class="liheader">About caArray</li>
         <li><a href="<c:url value="/notYetImplemented.jsp" />">What is caArray?</a></li>
         <li><a href="<c:url value="/notYetImplemented.jsp" />">Install caArray</a></li>
         <li><a href="<c:url value="/notYetImplemented.jsp" />">User Guide</a></li>

@@ -544,7 +544,6 @@
                 <include name="struts2-core-2.0.9.jar" />
                 <include name="struts2-sitemesh-plugin-2.0.9.jar" />
                 <include name="struts2-spring-plugin-2.0.9.jar" />
-                <include name="struts-menu-2.4.3.jar" />
                 <include name="urlrewrite-2.6.0.jar" />
                 <include name="velocity-1.5.jar" />
                 <include name="velocity-tools-1.3.jar" />

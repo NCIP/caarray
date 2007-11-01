@@ -15,24 +15,24 @@
 
 <%@ include file="projectListTabCommon.tagf"%>
 
-    <c:url value="/protected/ajax/project/listTab/${plural}/${action}.action" var="actionUrl">
-        <c:param name="project.id" value="${project.id}" />
-        <c:param name="current${entityName}.id" value="${itemId}" />
-    </c:url>
-    
+<c:url value="/protected/ajax/project/listTab/${plural}/${action}.action" var="actionUrl">
+    <c:param name="project.id" value="${project.id}" />
+    <c:param name="current${entityName}.id" value="${itemId}" />
+</c:url>
+
 <c:set var="loadTabFunction" value="${isSubtab ? 'loadLinkInSubTab' : 'loadLinkInTab' }"/>
 <fmt:message key="project.tabs.${pluralLower}" var="tabCaption" />
-    
+
 <c:choose>
     <c:when test="${empty linkRenderer}">
         <c:if test="${empty linkContent}">
-            <c:set var="linkContent"><img src="<c:url value="/images/ico_${action}.gif"/>" alt="<fmt:message key="button.${action}"/>"></c:set>            
+            <c:set var="linkContent"><img src="<c:url value="/images/ico_${action}.gif"/>" alt="<fmt:message key="button.${action}"/>"></c:set>
         </c:if>
         <a href="#" onclick="TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}'); return false;">
-            <c:out value="${linkContent}" escapeXml="false"/>                
+            <c:out value="${linkContent}" escapeXml="false"/>
         </a>
     </c:when>
     <c:otherwise>
         <jsp:invoke fragment="linkRenderer"/>
-    </c:otherwise>    
+    </c:otherwise>
 </c:choose>

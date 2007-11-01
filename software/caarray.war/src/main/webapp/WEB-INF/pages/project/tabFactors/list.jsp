@@ -23,7 +23,7 @@
                 <caarray:projectListTabActionLink entityName="Factor" action="copy" itemId="${row.id}" isSubtab="true"/>
             </display:column>
             <display:column titleKey="button.delete">
-                <caarray:projectListTabActionLink entityName="Factor" action="delete" itemId="${row.id}" isSubtab="true"/>            
+                <caarray:projectListTabActionLink entityName="Factor" action="delete" itemId="${row.id}" isSubtab="true"/>
             </display:column>
         </display:table>
     </ajax:displayTag>

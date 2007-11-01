@@ -104,7 +104,7 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
 
     private final String resourceKey;
     private boolean editMode;
-        
+
     /**
      * @param resourceKey
      */
@@ -143,7 +143,7 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
     }
 
     /**
-     * Saves the item 
+     * Saves the item
      *
      * @return the string indicating the result to use.
      */
@@ -231,7 +231,7 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
      * @return the editMode
      */
     public boolean isEditMode() {
-        return editMode;
+        return this.editMode;
     }
 
     /**
@@ -239,5 +239,16 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
      */
     public void setEditMode(boolean editMode) {
         this.editMode = editMode;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void validate() {
+        super.validate();
+        if (this.hasErrors()) {
+            setEditMode(true);
+        }
     }
 }

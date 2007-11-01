@@ -20,19 +20,20 @@
     <c:set var="submittingPaneMessageKey" value="message.saving" />
 </c:if>
 
-<c:if test="${!empty paneTitleKey}">
-    <h3><fmt:message key="${paneTitleKey}" /></h3>
-</c:if>
-
-<c:set var="loadingDivId" value="loadingText${subtab ? 'Subtab' : ''}"/>
+<c:set var="loadingDivId" value="loadingText"/>
 <div id="${loadingDivId}" style="display: none;">
     <div><img alt="Indicator" align="absmiddle" src="<c:url value="/images/indicator.gif"/>" /> <fmt:message key="${loadingPaneMessageKey}" /></div>
 </div>
-<c:set var="submittingDivId" value="submittingText${subtab ? 'Subtab' : ''}"/>
+<c:if test="${!empty paneTitleKey}">
+    <div id="tabHeader" <c:if test="${subtab}">class="boxpad2"</c:if>>
+        <h3><fmt:message key="${paneTitleKey}" /></h3>
+    </div>
+</c:if>
+<c:set var="submittingDivId" value="submittingText"/>
 <div id="${submittingDivId}" style="display: none;">
     <div><img alt="Indicator" align="absmiddle" src="<c:url value="/images/indicator.gif"/>" /> <fmt:message key="${submittingPaneMessageKey}" /></div>
 </div>
-<c:set var="formDivId" value="theForm${subtab ? 'Subtab' : ''}"/>
+<c:set var="formDivId" value="theForm"/>
 <div id="${formDivId}">
     <caarray:successMessages />
     <c:if test="${not empty successMessage && ignoreSuccessMessage != 'true'}">

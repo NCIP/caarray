@@ -10,10 +10,10 @@
 </div>
 <div id="infobar">
     <div id="rightinfo">
-        <span title="Subsersion URL: <c:out value='${initParam["svnUrl"]}'/>, revision: <c:out value='${initParam["svnRevision"]}'/>">caArray <c:out value='${initParam["caarrayVersion"]}'/></span>
-        |  Node: <span>NCICB</span>
+        <span title="Subversion URL: <c:out value='${initParam["svnUrl"]}'/>, revision: <c:out value='${initParam["svnRevision"]}'/>">caArray <c:out value='${initParam["caarrayVersion"]}'/></span>
+        <span class="bar">|</span>  Node: <span>NCICB</span>
         <c:if test="${pageContext.request.remoteUser != null}">
-        | <a href="<c:url value="/logout.action" />"><span>Logout</span></a>
+            <span class="bar">|</span> <a href="<c:url value="/logout.action" />"><span>Logout</span></a>
         </c:if>
     </div>
 </div>

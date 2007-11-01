@@ -2,12 +2,13 @@
 
 <div id="sidebar" class="homepage">
     <h1>caArray Login</h1>
-    <form method="post" id="loginForm" action="<c:url value='/j_security_check'/>" >
+    <form method="post" id="login" action="<c:url value='/j_security_check'/>" >
         <table class="login">
             <c:if test="${param.error != null}">
-          <tr>
-                <td colspan="2">
-                    <img src="<c:url value="/images/iconWarning.gif"/>" alt="<fmt:message key='icon.warning'/>" class="icon"/>
+            <tr>
+                <td colspan="2" class="centered">
+                    <br />
+                    <img align="absmiddle" src="<c:url value="/images/iconWarning.gif"/>" alt="<fmt:message key='icon.warning'/>" class="icon"/>
                     <fmt:message key="errors.password.mismatch"/>
                 </td>
             </tr>
@@ -24,20 +25,22 @@
                 <td class="value"><input type="password" id="j_password" name="j_password" maxlength="100" size="15" value="" style="width:90px" tabindex="2"/></td>
             </tr>
             <tr>
-                <td colspan="2" class="centered"><input type="submit" class="button" name="login" value="<fmt:message key='button.login'/>" tabindex="3" /></td>
+                <td colspan="2" class="centered">
+                    <del class="btnwrapper">
+                        <ul id="btnrow">
+                            <li><caarray:linkButton actionClass="register" text="Login" tabindex="3" onclick="document.getElementById('login').submit();"/></li>
+                        </ul>
+                    </del>
+                </td>
             </tr>
             <tr>
-                <td colspan="2" class="centeredsmall">
-                    <a href="<c:url value="/notYetImplemented.jsp" />">Register</a> |
+                <td colspan="2" class="centered">
+                    <br />
+                    <a href="<c:url value="/notYetImplemented.jsp" />">Register</a>
+                    <span class="bar">|</span>
                     <a href="<c:url value="/notYetImplemented.jsp" />">Forgot Password?</a>
               </td>
           </tr>
       </table>
     </form>
-    <br />
-    <h1 style="border-top:1px solid #fff;">What's New</h1>
-    <p class="small">caArray 2.0 software is available for download now. This installation features a new interface and increased functionality.<br />
-        <a href="<c:url value="/notYetImplemented.jsp" />">Download caArray 2.0 &gt;&gt;</a><br />
-        <a href="<c:url value="/notYetImplemented.jsp" />">Release Notes &gt;&gt;</a>
-    </p>
 </div>

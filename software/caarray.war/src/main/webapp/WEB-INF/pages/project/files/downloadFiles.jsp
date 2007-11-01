@@ -46,9 +46,12 @@
         </td>
       </tr>
     </table>
-    <a href="#" onclick="downloadMgr.resetDownloadInfo();" class="save"><img src="<c:url value="/images/btn_cancel.gif"/>" alt="Cancel"></a>
-    <a href="#" onclick="downloadMgr.doDownloadFiles();" class="save"><img src="<c:url value="/images/btn_launchjob.gif"/>" alt="Launch Job"></a>
+
     </div>
+    <caarray:actions divclass="actionsthin">
+        <caarray:action onclick="downloadMgr.resetDownloadInfo();" actionClass="cancel" text="Cancel" />
+        <caarray:action onclick="downloadMgr.doDownloadFiles();" actionClass="launch_download" text="Launch Download Job" />
+    </caarray:actions>
 </caarray:tabPane>
 <script type="text/javascript">
 <!--

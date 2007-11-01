@@ -14,7 +14,7 @@
             <caarray:displayTagProperties/>
             <display:column titleKey="experiment.hybridizations.name" sortable="true">
                 <caarray:projectListTabActionLink linkContent="${row.name}" entityName="Hybridization" action="view" itemId="${row.id}" isSubtab="true"/>
-\            </display:column>
+            </display:column>
             <display:column titleKey="experiment.hybridizations.relatedLabeledExtract">
                 <caarray:projectListTabRelatedItemsLinks relatedItems="${row.labeledExtracts}" relatedEntityName="LabeledExtract" nameProperty="name" isSubtab="true"/>
             </display:column>
@@ -28,7 +28,7 @@
                 <a href="<c:url value="/notYetImplemented.jsp" />"><img src="<c:url value="/images/ico_download.gif"/>" alt="<fmt:message key="button.download"/>" /></a>
             </display:column>
             <display:column titleKey="button.delete">
-                <caarray:projectListTabActionLink entityName="Hybridization" action="delete" itemId="${row.id}" isSubtab="true"/>            
+                <caarray:projectListTabActionLink entityName="Hybridization" action="delete" itemId="${row.id}" isSubtab="true"/>
             </display:column>
         </display:table>
     </ajax:displayTag>

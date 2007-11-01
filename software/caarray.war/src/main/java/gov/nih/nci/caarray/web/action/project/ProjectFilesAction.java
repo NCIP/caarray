@@ -142,6 +142,16 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
      * @return the string matching the result to follow
      */
     @SkipValidation
+    public String listTable() {
+        return ActionSupport.SUCCESS;
+    }
+
+    /**
+     * Method to get the list of files.
+     *
+     * @return the string matching the result to follow
+     */
+    @SkipValidation
     public String downloadFiles() {
         return ActionSupport.SUCCESS;
     }
