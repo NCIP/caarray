@@ -12,7 +12,7 @@
 
 <c:if test="${empty instructions}">
     <c:set var="instructions">
-        Required fields are highlighted and have <span class="required"><span class="asterisk">*</span>asterisks<span class="asterisk">*</span></span>.
+        Required fields are marked with <span class="required">*asterisks*</span>.
     </c:set>
 </c:if>
 

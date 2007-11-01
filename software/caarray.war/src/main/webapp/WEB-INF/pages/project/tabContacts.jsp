@@ -2,7 +2,7 @@
 
 <caarray:tabPane paneTitleKey="experiment.contacts">
     <div class="boxpad">
-        <p class="instructions">Contact information for this experiment is below. Required fields are highlighted and have <span class="required"><span class="asterisk">*</span>asterisks<span class="asterisk">*</span></span>.
+        <p class="instructions">Contact information for this experiment is below. Required fields are marked with <span class="required">*asterisks*</span>.
         </p>
         <s:form action="ajax/project/tab/Contacts/save" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper', 'save_draft'); return false;">
             <tbody>
