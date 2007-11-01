@@ -80,53 +80,52 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.test.jmeter.arraydata;
-
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
+package gov.nih.nci.caarray.test.jmeter.search;
 
 import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
-
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
-import gov.nih.nci.caarray.services.data.DataRetrievalService;
-import gov.nih.nci.caarray.services.data.DataRetrievalRequest;
 import gov.nih.nci.caarray.test.jmeter.base.TestProperties;
+import gov.nih.nci.system.query.cql.CQLAssociation;
+import gov.nih.nci.system.query.cql.CQLAttribute;
+import gov.nih.nci.system.query.cql.CQLGroup;
+import gov.nih.nci.system.query.cql.CQLLogicalOperator;
+import gov.nih.nci.system.query.cql.CQLObject;
+import gov.nih.nci.system.query.cql.CQLPredicate;
+import gov.nih.nci.system.query.cql.CQLQuery;
 
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
-import org.apache.jmeter.config.Arguments;
 
 /**
- * A custom JMeter Sampler that acts as a client downloading array data through CaArray's Remote Java API.
+ * A custom JMeter Sampler that acts as a client searching for experiments using CQL through CaArray's Remote Java API.
  *
  * @author Rashmi Srinivasa
  */
-public class DataDownloadClient implements JavaSamplerClient {
-    private static final String EXPERIMENT_NAMES_PARAM = "experimentNamesCsv";
-    private static final String QUANTITATION_TYPES_PARAM = "quantitationTypesCsv";
+public class CQLSearchClient implements JavaSamplerClient {
+    private static final String MANUFACTURER_PARAM = "manufacturerName";
+    private static final String ORGANISM_PARAM = "organismName";
 
-    private static final String DEFAULT_EXPERIMENT_NAME = "Glioblastoma Affymetrix 01";
-    private static final String DEFAULT_QUANTITATION_TYPE = "CELintensity";
+    private static final String DEFAULT_MANUFACTURER = "Affymetrix";
+    private static final String DEFAULT_ORGANISM = "c.mouseful";
 
-    private String experimentTitlesCsv;
-    private String quantitationTypesCsv;
+    private String manufacturer;
+    private String organism;
 
     /**
-     * Sets up the data download test by initializing the <code>Experiment</code>s to download array data from, and
-     * the <code>Quantitation</code> types to include in the result.
+     * Sets up the search-by-example test by initializing the search criteria to use.
      *
      * @param context the <code>JavaSamplerContext</code> which contains the arguments passed in.
      */
     public void setupTest(JavaSamplerContext context) {
-        experimentTitlesCsv = context.getParameter(EXPERIMENT_NAMES_PARAM, DEFAULT_EXPERIMENT_NAME);
-        quantitationTypesCsv = context.getParameter(QUANTITATION_TYPES_PARAM, DEFAULT_QUANTITATION_TYPE);
+        manufacturer = context.getParameter(MANUFACTURER_PARAM, DEFAULT_MANUFACTURER);
+        organism = context.getParameter(ORGANISM_PARAM, DEFAULT_ORGANISM);
     }
 
     /**
@@ -136,13 +135,13 @@ public class DataDownloadClient implements JavaSamplerClient {
      */
     public Arguments getDefaultParameters() {
         Arguments params = new Arguments();
-        params.addArgument(EXPERIMENT_NAMES_PARAM, DEFAULT_EXPERIMENT_NAME);
-        params.addArgument(QUANTITATION_TYPES_PARAM, DEFAULT_QUANTITATION_TYPE);
+        params.addArgument(MANUFACTURER_PARAM, DEFAULT_MANUFACTURER);
+        params.addArgument(ORGANISM_PARAM, DEFAULT_ORGANISM);
         return params;
     }
 
     /**
-     * Runs the data download test and returns the result.
+     * Runs the CQL search test and returns the result.
      *
      * @param context the <code>JavaSamplerContext</code> to read arguments from.
      * @param the <code>SampleResult</code> containing the success/failure and timing results of the test.
@@ -150,24 +149,19 @@ public class DataDownloadClient implements JavaSamplerClient {
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
 
-        DataRetrievalRequest request = new DataRetrievalRequest();
+        CQLQuery cqlQuery = createCqlQuery();
         try {
-            CaArrayServer server = new CaArrayServer(TestProperties.CAARRAY_SERVER_HOSTNAME, TestProperties.CAARRAY_SERVER_JNDI_PORT);
+            CaArrayServer server = new CaArrayServer(TestProperties.CAARRAY_SERVER_HOSTNAME,
+                    TestProperties.CAARRAY_SERVER_JNDI_PORT);
             server.connect();
             CaArraySearchService searchService = server.getSearchService();
-            lookupExperiments(searchService, request);
-            lookupQuantitationTypes(searchService, request);
-            DataRetrievalService dataService = server.getDataRetrievalService();
             results.sampleStart();
-            DataSet dataSet = dataService.getDataSet(request);
+            List experimentList = searchService.search(cqlQuery);
             results.sampleEnd();
-            // Check if the retrieved number of hybridizations and quantitation types are as requested.
-            if ((dataSet != null) && (request.getHybridizations().size() == dataSet.getHybridizationDataList().size())) {
-                if ((request.getQuantitationTypes().size() == 0)
-                        || (request.getQuantitationTypes().size()) == dataSet.getQuantitationTypes().size()) {
-                    results.setSuccessful(true);
-                    results.setResponseCodeOK();
-                }
+            if (isResultOkay(experimentList)) {
+                results.setSuccessful(true);
+                results.setResponseCodeOK();
+                results.setResponseMessage("Retrieved " + experimentList.size() + " experiments.");
             } else {
                 results.setSuccessful(false);
                 results.setResponseCode("Error: Response did not match request.");
@@ -178,7 +172,6 @@ public class DataDownloadClient implements JavaSamplerClient {
         } catch (RuntimeException e) {
             results.setSuccessful(false);
             results.setResponseCode("Runtime exception: " + e);
-        e.printStackTrace();
         } catch (Throwable t) {
             // Catches things like out-of-memory errors and logs them in the test output.
             results.setSuccessful(false);
@@ -187,51 +180,51 @@ public class DataDownloadClient implements JavaSamplerClient {
         return results;
     }
 
-    private void lookupExperiments(CaArraySearchService service, DataRetrievalRequest request) {
-        String[] experimentTitles = experimentTitlesCsv.split(",");
-        if (experimentTitles == null) {
-            return;
-        }
+    private CQLQuery createCqlQuery() {
+        CQLQuery cqlQuery = new CQLQuery();
+        CQLObject target = new CQLObject();
+        target.setName("gov.nih.nci.caarray.domain.project.Experiment");
 
-        // Locate each experiment, and add its hybridizations to the request.
-        Experiment exampleExperiment = new Experiment();
-        for (int i = 0; i < experimentTitles.length; i++) {
-            String experimentTitle = experimentTitles[i];
-            exampleExperiment.setTitle(experimentTitle);
-            List<Experiment> experimentList = service.search(exampleExperiment);
-            Set<Hybridization> allHybs = getAllHybridizations(experimentList);
-            request.getHybridizations().addAll(allHybs);
-        }
+        CQLAssociation manufacturer = new CQLAssociation();
+        manufacturer.setName("gov.nih.nci.caarray.domain.contact.Organization");
+        CQLAttribute manufacturerName = new CQLAttribute();
+        manufacturerName.setName("name");
+        manufacturerName.setValue("Affymetrix");
+        manufacturerName.setPredicate(CQLPredicate.EQUAL_TO);
+        manufacturer.setAttribute(manufacturerName);
+
+        CQLAssociation organism = new CQLAssociation();
+        organism.setName("edu.georgetown.pir.Organism");
+        CQLAttribute organismName = new CQLAttribute();
+        organismName.setName("commonName");
+        organismName.setValue("c.mouseful");
+        organismName.setPredicate(CQLPredicate.EQUAL_TO);
+        organism.setAttribute(organismName);
+
+        CQLGroup associations = new CQLGroup();
+        associations.addAssociation(manufacturer);
+        associations.addAssociation(organism);
+        associations.setLogicOperator(CQLLogicalOperator.AND);
+        target.setGroup(associations);
+
+        cqlQuery.setTarget(target);
+        return cqlQuery;
     }
 
-    private void lookupQuantitationTypes(CaArraySearchService service, DataRetrievalRequest request) {
-        String[] quantitationTypeNames = quantitationTypesCsv.split(",");
-        if (quantitationTypeNames == null) {
-            return;
+    private boolean isResultOkay(List experimentList) {
+        if (experimentList.isEmpty()) {
+            return false;
         }
 
-        // Locate each quantitation type and add it to the request.
-        QuantitationType exampleQuantitationType = new QuantitationType();
-        for (int i = 0; i < quantitationTypeNames.length; i++) {
-            String quantitationTypeName = quantitationTypeNames[i];
-            exampleQuantitationType.setName(quantitationTypeName);
-            List<QuantitationType> quantitationTypeList = service.search(exampleQuantitationType);
-            request.getQuantitationTypes().addAll(quantitationTypeList);
+        Iterator i = experimentList.iterator();
+        while (i.hasNext()) {
+            Experiment retrievedExperiment = (Experiment) i.next();
+            if ((!manufacturer.equals(retrievedExperiment.getManufacturer().getName()))
+                    || (!organism.equals(retrievedExperiment.getOrganism().getCommonName()))) {
+                return false;
+            }
         }
-    }
-
-    private Set<Hybridization> getAllHybridizations(List<Experiment> experimentList) {
-        Set<Hybridization> hybridizations = new HashSet<Hybridization>();
-        for (Experiment experiment : experimentList) {
-            hybridizations.addAll(getAllHybridizations(experiment));
-        }
-        return hybridizations;
-    }
-
-    private Set<Hybridization> getAllHybridizations(Experiment experiment) {
-        Set<Hybridization> hybridizations = new HashSet<Hybridization>();
-        hybridizations.addAll(experiment.getHybridizations());
-        return hybridizations;
+        return true;
     }
 
     /**
