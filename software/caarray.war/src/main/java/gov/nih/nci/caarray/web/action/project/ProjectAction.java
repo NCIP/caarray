@@ -1,10 +1,6 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
-import gov.nih.nci.caarray.domain.project.Project;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
@@ -20,22 +16,6 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 public class ProjectAction extends BaseProjectAction {
     private static final long serialVersionUID = 1L;
 
-    private String menu = null;
-
-    private List<Project> projects = new ArrayList<Project>();
-
-    /**
-     * Retrieve list of workspace projects
-     *
-     * @return path String
-     */
-    @SkipValidation
-    public String list() {
-        setMenu("ProjectListLinks");
-        setProjects(getProjectManagementService().getWorkspaceProjects());
-        return LIST_RESULT;
-    }
-
     /**
      * create new project
      *
@@ -43,7 +23,6 @@ public class ProjectAction extends BaseProjectAction {
      */
     @SkipValidation
     public String create() {
-        setMenu("ProjectCreateLinks");
         return INPUT;
     }
 
@@ -54,7 +33,6 @@ public class ProjectAction extends BaseProjectAction {
      */
     @SkipValidation
     public String edit() {
-        setMenu("ProjectEditLinks");
         return INPUT;
     }
 
@@ -65,7 +43,6 @@ public class ProjectAction extends BaseProjectAction {
      */
     @SkipValidation
     public String editPermissions() {
-        setMenu("ProjectEditLinks");
         return "permissions";
     }
 
@@ -76,36 +53,7 @@ public class ProjectAction extends BaseProjectAction {
      */
     @SkipValidation
     public String details() {
-        setMenu("ProjectEditLinks");
         setProject(getProjectManagementService().getProject(getProject().getId()));
         return DETAILS_RESULT;
-    }
-
-    /**
-     * @return the projects
-     */
-    public List<Project> getProjects() {
-        return this.projects;
-    }
-
-    /**
-     * @param projects the projects to set
-     */
-    public void setProjects(List<Project> projects) {
-        this.projects = projects;
-    }
-
-    /**
-     * @return the menu
-     */
-    public String getMenu() {
-        return this.menu;
-    }
-
-    /**
-     * @param menu the menu to set
-     */
-    public void setMenu(String menu) {
-        this.menu = menu;
     }
 }

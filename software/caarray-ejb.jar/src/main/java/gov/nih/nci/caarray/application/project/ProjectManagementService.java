@@ -82,14 +82,13 @@
  */
 package gov.nih.nci.caarray.application.project;
 
+import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.sample.Extract;
-import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 
@@ -174,7 +173,14 @@ public interface ProjectManagementService {
      *
      * @return all projects belonging to the user.
      */
-    List<Project> getWorkspaceProjects();
+    List<Project> getMyNonPublicProjects();
+
+    /**
+     * Gets all public projects
+     *
+     * @return allpublic projects
+     */
+    List<Project> getPublicProjects();
 
     /**
      * Toggles the browsable status for the given project.

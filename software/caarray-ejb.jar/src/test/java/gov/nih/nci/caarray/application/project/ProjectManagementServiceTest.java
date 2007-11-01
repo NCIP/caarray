@@ -137,17 +137,16 @@ public class ProjectManagementServiceTest {
         ProjectManagementServiceBean projectManagementServiceBean = new ProjectManagementServiceBean();
         projectManagementServiceBean.setDaoFactory(this.daoFactoryStub);
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
-        locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessService);
-        locatorStub.addLookup(GenericDataService.JNDI_NAME, genericDataService);
+        locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessService);
+        locatorStub.addLookup(GenericDataService.JNDI_NAME, this.genericDataService);
         projectManagementServiceBean.setSessionContext(this.sessionContextStub);
         this.projectManagementService = projectManagementServiceBean;
     }
 
     @Test
     public void testGetWorkspaceProjects() {
-        List<Project> projects = this.projectManagementService.getWorkspaceProjects();
+        List<Project> projects = this.projectManagementService.getMyNonPublicProjects();
         assertNotNull(projects);
-        assertEquals("testusername", this.daoFactoryStub.projectDao.username);
     }
 
     @Test
@@ -310,7 +309,6 @@ public class ProjectManagementServiceTest {
 
         private final HashMap<Long, PersistentObject> savedObjects = new HashMap<Long, PersistentObject>();
         private PersistentObject lastSaved;
-        private String username;
 
         @Override
         public void save(PersistentObject caArrayObject) {
@@ -318,9 +316,19 @@ public class ProjectManagementServiceTest {
             this.savedObjects.put(caArrayObject.getId(), caArrayObject);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
-        public List<Project> getProjectsForUser(String name) {
-            this.username = name;
+        public List<Project> getNonPublicProjectsForUser() {
+            return new ArrayList<Project>();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public List<Project> getPublicProjects() {
             return new ArrayList<Project>();
         }
 

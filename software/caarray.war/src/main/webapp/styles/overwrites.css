@@ -31,7 +31,7 @@ div.message {
 #tabs UL LI A
 {   display:block; margin:0; padding:5px 10px; background:#9d9a8e url("../images/bg_headerbar_tan.gif") repeat-x; color:#fff; text-decoration:none; border:1px solid #999; }
 .tabs2 LI A
-{ width:78px }
+{ min-width:78px; width: auto; }
 #tabs UL LI A:hover
 {   color:#333; background-color:#efeee9; text-decoration:none; }
 #tabs UL LI A.active

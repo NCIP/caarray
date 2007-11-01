@@ -1,14 +1,5 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
-<html>
-<head>
-    <title>Experiment Workspace</title>
-</head>
-<body>
-    <h1>Experiment Workspace</h1>
-
-    <div class="boxpad">
-        <caarray:tabPane>
-            <c:url value="/protected/project/list.action" var="sortUrl" />
+        <div class="tableboxpad">
             <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
                 <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${projects}" requestURI="${sortUrl}"
                     sort="list" id="row" pagesize="20" excludedParams="project.id" style="clear: none;">
@@ -41,11 +32,4 @@
                     </display:column>
                 </display:table>
             </ajax:displayTag>
-        </caarray:tabPane>
-    </div>
-
-    <script type="text/javascript">
-        highlightTableRows("projectList");
-    </script>
-</body>
-</html>
+        </div>

@@ -6,7 +6,7 @@
             <div class="navheader">caArray Actions</div>
             <ul class="caarraymenu">
                 <li class="liheader">Experiments</li>
-                <li><a href="<c:url value="/protected/project/list.action" />">My Experiment Workspace</a></li>
+                <li><a href="<c:url value="/protected/project/workspace.action" />">My Experiment Workspace</a></li>
                 <li><a href="<c:url value="/protected/project/create.action" />">Create/Propose Experiment</a></li>
 
                 <li class="liheader">Users &amp; Groups</li>
@@ -27,7 +27,7 @@
             <ul class="caarraymenu">
                 <li><a href="<c:url value="/" />">Public Home</a></li>
                 <li><a href="<c:url value="/notYetImplemented.jsp" />">Register</a></li>
-                <li><a href="<c:url value="/protected/project/list.action" />">Login</a></li>
+                <li><a href="<c:url value="/protected/project/workspace.action" />">Login</a></li>
             </ul>
         </c:otherwise>
     </c:choose>

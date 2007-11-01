@@ -230,10 +230,15 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
-    public List<Project> getWorkspaceProjects() {
-        String username = getSessionContext().getCallerPrincipal().getName();
-        return getProjectDao().getProjectsForUser(username);
+    public List<Project> getMyNonPublicProjects() {
+        return getProjectDao().getNonPublicProjectsForUser();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Project> getPublicProjects() {
+        return getProjectDao().getPublicProjects();
     }
 
     /**

@@ -82,12 +82,14 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Project;
 
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Query;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.project</code> package.
@@ -116,8 +118,21 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public List<Project> getProjectsForUser(String username) {
-        return getCurrentSession().createQuery("FROM " + Project.class.getName() + " p ORDER BY p.experiment.title")
-                                  .list();
+    public List<Project> getNonPublicProjectsForUser() {
+        String hql = "from " + Project.class.getName() + " where publicProfile.securityLevel = :level order by experiment.title";
+        Query query = getCurrentSession().createQuery(hql);
+        query.setParameter("level", SecurityLevel.NONE);
+        return query.list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public List<Project> getPublicProjects() {
+        String hql = "from " + Project.class.getName() + " where publicProfile.securityLevel != :level order by experiment.title";
+        Query query = getCurrentSession().createQuery(hql);
+        query.setParameter("level", SecurityLevel.NONE);
+        return query.list();
     }
 }

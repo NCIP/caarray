@@ -106,7 +106,17 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         return null;
     }
 
-    public List<Project> getWorkspaceProjects() {
+    /**
+     * {@inheritDoc}
+     */
+    public List<Project> getMyNonPublicProjects() {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Project> getPublicProjects() {
         return null;
     }
 

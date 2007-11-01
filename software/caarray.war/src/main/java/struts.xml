@@ -83,11 +83,18 @@
     </package>
 
     <package name="protected" namespace="/protected" extends="default">
+        <action name="project/workspace">
+            <result>/WEB-INF/pages/project/workspace/tabs.jsp</result>
+        </action>
+
+        <action name="ajax/project/workspace/*" class="gov.nih.nci.caarray.web.action.project.ProjectWorkspaceAction" method="{1}">
+            <result name="success">/WEB-INF/pages/project/workspace/{1}.jsp</result>
+        </action>
+
         <action name="project/*" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="{1}">
-            <result name="workspace" type="redirect-action">project/list</result>
+            <result name="workspace" type="redirect-action">project/workspace</result>
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
             <result name="details">/WEB-INF/pages/project/details.jsp</result>
-            <result name="list">/WEB-INF/pages/project/list.jsp</result>
             <result name="permissions">/WEB-INF/pages/project/permissions.jsp</result>
         </action>
 
@@ -110,12 +117,12 @@
             <result name="list">/WEB-INF/pages/project/tab{1}/list.jsp</result>
             <result name="workspace">/WEB-INF/pages/project/backToWorkspace.jsp</result>
         </action>
-        
+
         <action name="project/permissions/*" class="gov.nih.nci.caarray.web.action.project.ProjectPermissionsAction" method="{1}">
             <result name="input">/WEB-INF/pages/project/permissions/profiles.jsp</result>
             <result name="success">/WEB-INF/pages/project/permissions/profiles.jsp</result>
         </action>
-        
+
         <action name="ajax/project/permissions/*" class="gov.nih.nci.caarray.web.action.project.ProjectPermissionsAction" method="{1}">
             <result name="input">/WEB-INF/pages/project/permissions/{1}.jsp</result>
             <result name="success">/WEB-INF/pages/project/permissions/{1}.jsp</result>
@@ -136,20 +143,20 @@
             <result name="input">/WEB-INF/pages/project/files/list.jsp</result>
             <result name="success">/WEB-INF/pages/project/files/{1}.jsp</result>
         </action>
-        
+
         <action name="collaborators/*" class="gov.nih.nci.caarray.web.action.CollaboratorsAction" method="{1}">
             <result name="input">/WEB-INF/pages/collaborators/edit.jsp</result>
             <result name="success">/WEB-INF/pages/collaborators/{1}.jsp</result>
             <result name="list">/WEB-INF/pages/collaborators/listGroups.jsp</result>
         </action>
-        
+
         <action name="ajax/collaborators/*" class="gov.nih.nci.caarray.web.action.CollaboratorsAction" method="{1}">
             <result name="list">/WEB-INF/pages/collaborators/listGroups.jsp</result>
             <result name="editTable">/WEB-INF/pages/collaborators/editTable.jsp</result>
         </action>
-        
+
     </package>
-    
+
     <package name="registration" namespace="/registration" extends="default">
         <default-interceptor-ref name="paramsPrepareParamsStack" />
         <action name="*" class="gov.nih.nci.caarray.web.action.registration.RegistrationAction" method="{1}">

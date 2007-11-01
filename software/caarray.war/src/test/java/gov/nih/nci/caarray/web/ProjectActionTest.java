@@ -94,6 +94,7 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.action.project.ProjectAction;
+import gov.nih.nci.caarray.web.action.project.ProjectWorkspaceAction;
 
 import java.util.ArrayList;
 
@@ -103,6 +104,8 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
 
+import com.opensymphony.xwork2.ActionSupport;
+
 /**
  * @author John Hedden
  *
@@ -110,6 +113,7 @@ import org.springframework.mock.web.MockHttpSession;
 public class ProjectActionTest {
 
     private final ProjectAction action = new ProjectAction();
+    private final ProjectWorkspaceAction workspaceAction = new ProjectWorkspaceAction();
     private final LocalProjectManagementServiceStub projectServiceStub = new LocalProjectManagementServiceStub();
     private final LocalFileManagementServiceStub fileManagementStub = new LocalFileManagementServiceStub();
 
@@ -143,7 +147,7 @@ public class ProjectActionTest {
         project.getFiles().add(file2);
         project.getFiles().add(file3);
         projects.add(project);
-        this.action.setProjects(projects);
+        this.workspaceAction.setProjects(projects);
     }
 
     @SuppressWarnings("unchecked")
@@ -154,9 +158,9 @@ public class ProjectActionTest {
         session.setAttribute("messages", null);
         request.setSession(session);
         ServletActionContext.setRequest(request);
-        assertNotNull(this.action.getProjects());
-        String result = this.action.list();
-        assertEquals(ProjectAction.LIST_RESULT, result);
+        assertNotNull(this.workspaceAction.getProjects());
+        String result = this.workspaceAction.myProjects();
+        assertEquals(ActionSupport.SUCCESS, result);
     }
 
     @Test

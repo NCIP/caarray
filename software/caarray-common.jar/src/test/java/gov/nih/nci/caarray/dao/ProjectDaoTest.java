@@ -370,7 +370,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             saveSupportingObjects();
-            int size = DAO_OBJECT.getProjectsForUser(null).size();
+            int size = DAO_OBJECT.getNonPublicProjectsForUser().size();
 
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             Project retrievedProject = DAO_OBJECT.getProject(DUMMY_PROJECT_1.getId());
@@ -385,7 +385,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
                 fail("Retrieved project is different from saved project.");
             }
             tx = HibernateUtil.getCurrentSession().beginTransaction();
-            assertEquals(size + 1, DAO_OBJECT.getProjectsForUser(null).size());
+            assertEquals(size + 1, DAO_OBJECT.getNonPublicProjectsForUser().size());
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
@@ -622,7 +622,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         assertEquals(2, list.size()); // expect the user-only one and the anonymous access one
 
         tx.commit();
-	}
+    }
 
     @Test
     public void testFilters() {

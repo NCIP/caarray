@@ -25,15 +25,6 @@
         <param-value>@svn.revision@</param-value>
     </context-param>
 
-    <!-- Context Configuration locations for Spring XML files -->
-    <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>
-            classpath*:/applicationContext.xml
-            /WEB-INF/applicationContext.xml
-        </param-value>
-    </context-param>
-
     <filter>
         <filter-name>openSessionFilter</filter-name>
         <filter-class>gov.nih.nci.caarray.web.filter.OpenSessionInViewFilter</filter-class>
@@ -87,10 +78,6 @@
     </listener>
 
     <servlet>
-        <servlet-name>velocity</servlet-name>
-        <servlet-class>org.apache.velocity.tools.view.servlet.VelocityViewServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>dwr</servlet-name>
         <servlet-class>uk.ltd.getahead.dwr.DWRServlet</servlet-class>
         <init-param>
@@ -98,10 +85,6 @@
             <param-value>true</param-value>
         </init-param>
     </servlet>
-    <servlet-mapping>
-        <servlet-name>velocity</servlet-name>
-        <url-pattern>*.vm</url-pattern>
-    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>dwr</servlet-name>
         <url-pattern>/dwr/*</url-pattern>
