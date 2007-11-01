@@ -101,8 +101,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
-import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
-
 /**
  * Contains all the validation messsages for a single file.
  */
