@@ -122,7 +122,7 @@ public final class CaArrayServer {
     /**
      * Starts a new session with this server for an anonymous (unauthenticated) user.
      *
-     * @throws ServerConnectionException
+     * @throws ServerConnectionException thrown when the connection is dropped/missing
      */
     public void connect() throws ServerConnectionException {
         connectToServer();
@@ -133,8 +133,8 @@ public final class CaArrayServer {
      *
      * @param username username to use to authenticate
      * @param password password to use to authenticate
-     * @throws ServerConnectionException
-     * @throws LoginException
+     * @throws ServerConnectionException thrown when the connection is dropped/missing
+     * @throws LoginException thrown when there is a problem with the login credentials
      */
     public void connect(String username, String password) throws ServerConnectionException, LoginException {
         login(username, password);
@@ -165,7 +165,8 @@ public final class CaArrayServer {
         try {
             initialContext = new InitialContext(namingProperties);
             searchService = (CaArraySearchService) initialContext.lookup(CaArraySearchService.JNDI_NAME);
-            arrayDesignDetailsService = (ArrayDesignDetailsService) initialContext.lookup(ArrayDesignDetailsService.JNDI_NAME);
+            arrayDesignDetailsService = (ArrayDesignDetailsService)
+                                initialContext.lookup(ArrayDesignDetailsService.JNDI_NAME);
             dataRetrievalService = (DataRetrievalService) initialContext.lookup(DataRetrievalService.JNDI_NAME);
         } catch (NamingException e) {
             throw new ServerConnectionException("Couldn't connect to the caArray server", e);
