@@ -135,11 +135,29 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
         celDataFileName = StringUtils.defaultIfEmpty(celData.getFileName(), "<MISSING FILE NAME>");
 
         if (!celData.read()) {
-            result.addMessage(ValidationMessage.Type.ERROR, "Unable to read the CEL file : "
+            result.addMessage(ValidationMessage.Type.ERROR, "Unable to read the CEL file: "
                     + celDataFileName);
+        } else {
+            validateHeader(result);
         }
         closeCelData();
         return result;
+    }
+
+
+    private void validateHeader(FileValidationResult result) {
+        if (celData.getRows() == 0) {
+            result.addMessage(ValidationMessage.Type.ERROR, "Invalid CEL file: header specified 0 rows.");
+        }
+        if (celData.getCols() == 0) {
+            result.addMessage(ValidationMessage.Type.ERROR, "Invalid CEL file: header specified 0 columns.");
+        }
+        if (celData.getCells() == 0) {
+            result.addMessage(ValidationMessage.Type.ERROR, "Invalid CEL file: header specified 0 cells.");
+        }
+        if (StringUtils.isEmpty(celData.getChipType())) {
+            result.addMessage(ValidationMessage.Type.ERROR, "Invalid CEL file: no array design type was specified.");
+        }
     }
 
     private void readCelData(File celFile) {

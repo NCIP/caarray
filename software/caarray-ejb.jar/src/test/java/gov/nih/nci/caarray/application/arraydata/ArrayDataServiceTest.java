@@ -324,6 +324,14 @@ public class ArrayDataServiceTest {
         assertEquals(FileStatus.UPLOADED, badCelFile.getFileStatus());
         arrayDataService.validate(badCelFile);
         assertEquals(FileStatus.VALIDATION_ERRORS, badCelFile.getFileStatus());
+        badCelFile = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_INVALID_DATA_CEL);
+        assertEquals(FileStatus.UPLOADED, badCelFile.getFileStatus());
+        arrayDataService.validate(badCelFile);
+        assertEquals(FileStatus.VALIDATION_ERRORS, badCelFile.getFileStatus());
+        badCelFile = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_INVALID_HEADER_CEL);
+        assertEquals(FileStatus.UPLOADED, badCelFile.getFileStatus());
+        arrayDataService.validate(badCelFile);
+        assertEquals(FileStatus.VALIDATION_ERRORS, badCelFile.getFileStatus());
     }
 
     @Test
