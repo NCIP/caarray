@@ -90,7 +90,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 /**

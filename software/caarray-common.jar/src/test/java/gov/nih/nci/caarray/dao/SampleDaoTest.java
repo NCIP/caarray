@@ -95,8 +95,6 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
@@ -108,8 +106,6 @@ import org.junit.Test;
  */
 @SuppressWarnings("PMD")
 public class SampleDaoTest  extends AbstractDaoTest {
-    private static final Log LOG = LogFactory.getLog(SampleDaoTest.class);
-
     private static Sample DUMMY_SAMPLE_1 = new Sample();
     private static TermSource DUMMY_SOURCE = new TermSource();
     private static Category DUMMY_CATEGORY = new Category();
@@ -148,7 +144,7 @@ public class SampleDaoTest  extends AbstractDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("Error setting up test data: " + e.getMessage());
-        } 
+        }
     }
 
     /**
@@ -175,7 +171,7 @@ public class SampleDaoTest  extends AbstractDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of sample: " + e.getMessage());
-        } 
+        }
     }
 
     /**

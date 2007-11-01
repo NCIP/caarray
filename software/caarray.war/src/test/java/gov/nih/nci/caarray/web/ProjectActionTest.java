@@ -93,7 +93,6 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
-import gov.nih.nci.caarray.web.action.project.ProjectAction;
 import gov.nih.nci.caarray.web.action.project.ProjectWorkspaceAction;
 
 import java.util.ArrayList;
@@ -104,7 +103,7 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
 
-import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.Action;
 
 /**
  * @author John Hedden
@@ -112,7 +111,6 @@ import com.opensymphony.xwork2.ActionSupport;
  */
 public class ProjectActionTest {
 
-    private final ProjectAction action = new ProjectAction();
     private final ProjectWorkspaceAction workspaceAction = new ProjectWorkspaceAction();
     private final LocalProjectManagementServiceStub projectServiceStub = new LocalProjectManagementServiceStub();
     private final LocalFileManagementServiceStub fileManagementStub = new LocalFileManagementServiceStub();
@@ -160,7 +158,7 @@ public class ProjectActionTest {
         ServletActionContext.setRequest(request);
         assertNotNull(this.workspaceAction.getProjects());
         String result = this.workspaceAction.myProjects();
-        assertEquals(ActionSupport.SUCCESS, result);
+        assertEquals(Action.SUCCESS, result);
     }
 
     @Test

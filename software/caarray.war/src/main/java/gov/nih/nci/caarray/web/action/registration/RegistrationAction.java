@@ -102,13 +102,14 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
+import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.RegexFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.Validations;
-import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 
 /**
  * @author John Hedden
@@ -139,10 +140,11 @@ public class RegistrationAction extends ActionSupport implements Preparable {
      *
      * @return the directive for the next action / page to be directed to
      */
+    @Override
     @SkipValidation
     public String input() {
         setupForm();
-        return ActionSupport.INPUT;
+        return Action.INPUT;
     }
 
     /**
@@ -153,7 +155,7 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     @SkipValidation
     public String cancel() {
         setupForm();
-        return ActionSupport.INPUT;
+        return Action.INPUT;
     }
 
     /**
@@ -165,7 +167,7 @@ public class RegistrationAction extends ActionSupport implements Preparable {
         EmailHelper.registerEmail(getRegistrationRequest());
         EmailHelper.registerEmailAdmin(getRegistrationRequest());
 
-        return ActionSupport.SUCCESS;
+        return Action.SUCCESS;
     }
 
     /**
@@ -192,11 +194,11 @@ public class RegistrationAction extends ActionSupport implements Preparable {
         if (getLdapInstall().equalsIgnoreCase("true")) {
             if (!LDAPUtil.ldapAuthenticateUser(registrationRequest.getLoginName(), getPassword())) {
                 addActionError("LDAP Authentication Failed.");
-                return ActionSupport.INPUT;
+                return Action.INPUT;
             }
         } else {
             if (!validateDBUniqueFields()) {
-                return ActionSupport.INPUT;
+                return Action.INPUT;
             }
         }
 
@@ -204,7 +206,7 @@ public class RegistrationAction extends ActionSupport implements Preparable {
         EmailHelper.registerEmail(getRegistrationRequest());
         EmailHelper.registerEmailAdmin(getRegistrationRequest());
 
-        return ActionSupport.SUCCESS;
+        return Action.SUCCESS;
     }
 
 

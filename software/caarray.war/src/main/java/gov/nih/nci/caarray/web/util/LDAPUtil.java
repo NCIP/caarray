@@ -25,7 +25,7 @@ public class LDAPUtil {
     static final Logger logger = Logger.getLogger(LDAPUtil.class);
     private static final String INITCTX = "com.sun.jndi.ldap.LdapCtxFactory";
     private static Map<String, String> configMap = new HashMap<String, String>();
-    private static Hashtable env = new Hashtable();
+    private static Hashtable<String, String> env = new Hashtable<String, String>();
 
     private LDAPUtil() {
      //do nothing
@@ -71,11 +71,11 @@ public class LDAPUtil {
             ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
             String fdn = null;
-            NamingEnumeration searchEnum = ctx.search(configMap.get("ldapSearchbase"), searchFilter, ctls);
+            NamingEnumeration<SearchResult> searchEnum = ctx.search(configMap.get("ldapSearchbase"), searchFilter, ctls);
             ctx.close();
 
             while (searchEnum.hasMore()) {
-                SearchResult sr = (SearchResult) searchEnum.next();
+                SearchResult sr = searchEnum.next();
                 fdn = sr.getName() + "," + configMap.get("ldapSearchbase");
                 logger.debug("sr.getName() = " + sr.getName() + " " + "Dn = " + fdn);
                 return fdn;
@@ -121,15 +121,15 @@ public class LDAPUtil {
     /**
      * @return the env
      */
-    public Hashtable getEnv() {
+    public Hashtable<String, String> getEnv() {
         return env;
     }
 
     /**
      * @param env the env to set
      */
-    public void setEnv(Hashtable env) {
-        this.env = env;
+    public void setEnv(Hashtable<String, String> env) {
+        LDAPUtil.env = env;
     }
 
     /**
@@ -143,6 +143,6 @@ public class LDAPUtil {
      * @param configMap the configMap to set
      */
     public void setConfigMap(Map<String, String> configMap) {
-        this.configMap = configMap;
+        LDAPUtil.configMap = configMap;
     }
 }

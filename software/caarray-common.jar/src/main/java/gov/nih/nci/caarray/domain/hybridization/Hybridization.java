@@ -88,7 +88,6 @@ import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
-import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;

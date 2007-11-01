@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 
@@ -184,7 +183,7 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
      * @return the string indicating which result to forward to.
      */
     @SkipValidation
-    public String delete() throws VocabularyServiceException {
+    public String delete() {
         getCollection().remove(getItem());
         setSaveMode(SAVE_MODE_DRAFT);
         super.save();
@@ -199,7 +198,7 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
      * @return the string indicating the result to forward to.
      */
     @SkipValidation
-    public String copy() throws VocabularyServiceException {
+    public String copy() {
         doCopyItem();
         super.save();
         ActionHelper.saveMessage(getText("experiment.items.copied", new String[] { getItemName()}));

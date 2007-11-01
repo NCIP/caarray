@@ -171,10 +171,9 @@ public class FileAccessServiceTest {
 
     /**
      * Test method for {@link gov.nih.nci.caarray.application.fileaccess.FileAccessService#unzipFiles(java.util.List, java.util.List)}.
-     * @throws IOException
      */
     @Test
-    public void testUnzipFilesMultiple() throws IOException {
+    public void testUnzipFilesMultiple() {
         File file1 = MageTabDataFiles.SPECIFICATION_ZIP;
         File file2 = MageTabDataFiles.EBI_TEMPLATE_IDF;
 

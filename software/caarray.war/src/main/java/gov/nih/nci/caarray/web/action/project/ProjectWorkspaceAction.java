@@ -90,6 +90,7 @@ import java.util.List;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
+import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 
 /**
@@ -108,7 +109,7 @@ public class ProjectWorkspaceAction {
     @SkipValidation
     public String publicProjects() {
         setProjects(getProjectManagementService().getPublicProjects());
-        return ActionSupport.SUCCESS;
+        return Action.SUCCESS;
     }
 
     /**
@@ -118,7 +119,7 @@ public class ProjectWorkspaceAction {
     @SkipValidation
     public String myProjects() {
         setProjects(getProjectManagementService().getMyNonPublicProjects());
-        return ActionSupport.SUCCESS;
+        return Action.SUCCESS;
     }
 
     /**

@@ -108,7 +108,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.lf5.util.StreamUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
-import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 
@@ -133,7 +133,7 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
      */
     @SkipValidation
     public String list() {
-        return ActionSupport.INPUT;
+        return Action.INPUT;
     }
 
     /**
@@ -143,7 +143,7 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
      */
     @SkipValidation
     public String listTable() {
-        return ActionSupport.SUCCESS;
+        return Action.SUCCESS;
     }
 
     /**
@@ -153,7 +153,7 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
      */
     @SkipValidation
     public String downloadFiles() {
-        return ActionSupport.SUCCESS;
+        return Action.SUCCESS;
     }
 
     /**
@@ -176,7 +176,7 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
         if (skippedFiles > 0) {
             ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for deletion.");
         }
-        return ActionSupport.INPUT;
+        return Action.INPUT;
     }
 
     /**
@@ -203,7 +203,7 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
         if (skippedFiles > 0) {
             ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for validation.");
         }
-        return ActionSupport.INPUT;
+        return Action.INPUT;
     }
 
     /**
@@ -229,7 +229,7 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
         if (skippedFiles > 0) {
             ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for importing.");
         }
-        return ActionSupport.INPUT;
+        return Action.INPUT;
     }
 
     /**
@@ -237,7 +237,7 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
      * @return the string matching the result to use.
      */
     public String validationMessages() {
-        return ActionSupport.SUCCESS;
+        return Action.SUCCESS;
     }
 
     /**
