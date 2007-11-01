@@ -91,12 +91,14 @@ public class FileTypeTest {
     @Test
     public final void testIsArrayDesign() {
         assertTrue(FileType.AFFYMETRIX_CDF.isArrayDesign());
+        assertTrue(FileType.ILLUMINA_DESIGN_CSV.isArrayDesign());
         assertFalse(FileType.AFFYMETRIX_CEL.isArrayDesign());
     }
 
     @Test
     public final void testIsDerivedArrayData() {
         assertTrue(FileType.AFFYMETRIX_CHP.isDerivedArrayData());
+        assertTrue(FileType.ILLUMINA_DATA_CSV.isDerivedArrayData());
         assertFalse(FileType.AFFYMETRIX_CEL.isDerivedArrayData());
     }
 

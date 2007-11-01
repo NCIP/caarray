@@ -137,6 +137,16 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
      * Affymetrix native CHP data format.
      */
     public static final FileType AFFYMETRIX_CHP = new FileType("AFFYMETRIX_CHP");
+    
+    /**
+     * Illumina array design CSV file.
+     */
+    public static final FileType ILLUMINA_DESIGN_CSV = new FileType("ILLUMINA_DESIGN_CSV");
+    
+    /**
+     * Illumina array data CSV file.
+     */
+    public static final FileType ILLUMINA_DATA_CSV = new FileType("ILLUMINA_DATA_CSV");
 
     /**
      * A Map of all possible file types.
@@ -160,8 +170,10 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
         INSTANCES.put(AFFYMETRIX_CEL.toString(), AFFYMETRIX_CEL);
 
         ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CDF);
+        ARRAY_DESIGN_FILE_TYPES.add(ILLUMINA_DESIGN_CSV);
         RAW_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
+        DERIVED_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_DATA_CSV);
     }
 
     private FileType(String name) {
