@@ -36,7 +36,7 @@
             <tr>
                 <td colspan="2" class="centered">
                     <br />
-                    <a href="<c:url value="/notYetImplemented.jsp" />">Register</a>
+                    <a href="<c:url value="/registration/input.action"/>">Register</a>
                     <span class="bar">|</span>
                     <a href="<c:url value="/notYetImplemented.jsp" />">Forgot Password?</a>
               </td>
