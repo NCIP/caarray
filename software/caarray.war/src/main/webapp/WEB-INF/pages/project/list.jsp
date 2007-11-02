@@ -12,9 +12,11 @@
             url="/notYetImplemented.jsp" paramId="project.id" paramProperty="id" />
         <display:column property="experiment.title" title="Experiment Title" escapeXml="true" sortable="true"/>
         <display:column sortProperty="experiment.assayType" title="Assay Type" sortable="true" >
-            <c:if test="${row.experiment.assayType != null}">
+            <s:if test="${row.experiment.assayType != null}">
                 <fmt:message key="${row.experiment.assayType.resourceKey}" />
-            </c:if>
+            </s:if>
+            <s:else>&nbsp;
+            </s:else>
         </display:column>
         <display:column value="${fn:length(row.experiment.samples)}" title="Samples" sortable="true" href="${editSamplesUrl}" />
         <display:column sortProperty="status" title="Status" sortable="true">
