@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,88 +80,31 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.permissions;
+package gov.nih.nci.caarray.domain.permissions;
 
-import gov.nih.nci.caarray.domain.permissions.AccessProfile;
-import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
-import gov.nih.nci.security.authorization.domainobjects.User;
-import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
-import gov.nih.nci.security.exceptions.CSTransactionException;
-
-import java.util.List;
+import gov.nih.nci.caarray.domain.ResourceBasedEnum;
 
 /**
- * Interface to the PermissionsManagementService, provides for the creation and management
- * of authorization groups and the setting of permissions.
+ * Enum of access types for sample-level security 
  */
-public interface PermissionsManagementService {
+public enum SampleSecurityLevel implements ResourceBasedEnum {
+    /** No access to the sample. */
+    NONE("SampleSecurityLevel.none"),
+    /** Read access to the sample */
+    READ("SampleSecurityLevel.read"),
+    /** Read / write access to the sample. */
+    READ_WRITE("SampleSecurityLevel.readWrite");
+
+    private String resourceKey;
+
+    SampleSecurityLevel(String resourceKey) {
+        this.resourceKey = resourceKey;
+    }
 
     /**
-     * The default JNDI name to use to lookup <code>PermissionsManagementService</code>.
+     * {@inheritDoc}
      */
-    String JNDI_NAME = "caarray/PermissionsManagementServiceBean/local";
-
-    /**
-     * Delete a collaborator group.
-     *
-     * @param group the group to delete
-     * @throws CSTransactionException on CSM error
-     */
-    void delete(CollaboratorGroup group) throws CSTransactionException;
-
-    /**
-     * @return all collaborator groups in the system
-     */
-    List<CollaboratorGroup> getCollaboratorGroups();
-
-    /**
-     * Create a new CollaboratorGroup.  The owner of the group will be the
-     * currently logged in user.  The group will have no members.
-     *
-     * @param name name of the collaborator group.
-     * @return the new group
-     * @throws CSTransactionException on CSM error
-     * @throws CSObjectNotFoundException on CSM error
-     */
-    CollaboratorGroup create(String name) throws CSTransactionException, CSObjectNotFoundException;
-
-    /**
-     * Adds users to the target group.
-     *
-     * @param targetGroup group to add members to
-     * @param users user ids to add (as strings)
-     * @throws CSTransactionException  on CSM error
-     * @throws CSObjectNotFoundException on CSM error
-     */
-    void addUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException, CSObjectNotFoundException;
-
-    /**
-     * Removes users from the target group.
-     *
-     * @param targetGroup group to remove members from
-     * @param users user ids to remove (as strings)
-     * @throws CSTransactionException  on CSM error
-     */
-    void removeUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException;
-
-    /**
-     * Renames a collaboration group.
-     *
-     * @param targetGroup group to rename
-     * @param groupName new name
-     * @throws CSTransactionException on CSM error
-     * @throws CSObjectNotFoundException on CSM error
-     */
-    void rename(CollaboratorGroup targetGroup, String groupName) throws CSTransactionException, CSObjectNotFoundException;
-
-    /**
-     * @return users in the system
-     */
-    List<User> getUsers();
-
-    /**
-     * Creates or updates an access profile
-     * @param profile the profile to create or update
-     */
-    void saveAccessProfile(AccessProfile profile);
+    public String getResourceKey() {
+        return this.resourceKey;
+    }
 }

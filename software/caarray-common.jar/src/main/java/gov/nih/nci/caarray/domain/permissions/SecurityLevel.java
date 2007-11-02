@@ -89,13 +89,13 @@ import gov.nih.nci.caarray.domain.ResourceBasedEnum;
  */
 public enum SecurityLevel implements ResourceBasedEnum {
     /** No access to project or any samples. */
-    NONE(false, "None"),
+    NONE(false, "SecurityLevel.none"),
     /** Read access to project and all samples. */
-    READ(true, "Read"),
+    READ(true, "SecurityLevel.read"),
     /** Read access to project and specified samples. */
-    READ_SELECTIVE(true, "Read Selective"),
+    READ_SELECTIVE(true, "SecurityLevel.readSelective"),
     /** Read access to project.  Read access and/or write access to specificed samples. */
-    READ_WRITE_SELECTIVE(true, "Read/Write Selective");
+    READ_WRITE_SELECTIVE(true, "SecurityLevel.readWriteSelective");
 
     private final boolean projectVisible;
     private String resourceKey;

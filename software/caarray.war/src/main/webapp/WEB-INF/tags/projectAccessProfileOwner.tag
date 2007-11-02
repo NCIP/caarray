@@ -9,12 +9,10 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="caarray" %>
 <%@ taglib uri="http://ajaxtags.org/tags/ajax" prefix="ajax" %>
 
-<tr class="listhover">
+<tr>
     <td style="border-left: 0; padding-left: 0">
         <div class="bigbold">${name}</div>
         <p class="nopad">${description}</p>
-        <ajax:anchors target="access_profile_details">
-            <caarray:linkButton actionClass="edit" text="Edit" url="${loadProfileUrl}"/>
-        </ajax:anchors>
+        <caarray:linkButton actionClass="edit" text="Edit" onclick="loadProfile('${loadProfileUrl}');"/>
     </td>
 </tr>

@@ -15,6 +15,7 @@ import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.opensymphony.xwork2.validator.annotations.Validation;
@@ -55,8 +56,9 @@ public class ProjectTabAction extends BaseProjectAction {
             TermSource mged = vocabService.getSource(ExperimentOntology.MGED.getOntologyName());
             Category roleCat = vocabService.getCategory(mged, ExperimentOntologyCategory.ROLES.getCategoryName());
             Term piRole = vocabService.getTerm(mged, roleCat, ExperimentContact.PI_ROLE);
+            Term mainPocRole = vocabService.getTerm(mged, roleCat, ExperimentContact.MAIN_POC_ROLE);
 
-            ExperimentContact pi = new ExperimentContact(getExperiment(), new Person(getCurrentUser()), piRole);
+            ExperimentContact pi = new ExperimentContact(getExperiment(), new Person(getCurrentUser()), Arrays.asList(piRole, mainPocRole));
             getExperiment().getExperimentContacts().add(pi);
         }
         if (SAVE_MODE_DRAFT.equals(getSaveMode()) || SAVE_MODE_SUBMIT.equals(getSaveMode())) {

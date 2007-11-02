@@ -50,8 +50,11 @@
 
     <c:if test="${param.initialTab == 'annotations' && param.initialTab2 != null}">
         <c:set value="${param.initialTab2}" scope="session" var="initialTab2" />
+        <c:if test="${param.initialTab2Url != null}">
+            <c:set value="${param.initialTab2Url}" scope="session" var="initialTab2Url" />
+        </c:if>    
     </c:if>
-
+        
     <div class="padme">
         <h2><span class="dark">Experiment:</span>   <span id="experimentTitleHeader">${project.experiment.title}</span></h2>
         <ajax:tabPanel panelStyleId="tabs" panelStyleClass="tabs2" currentStyleClass="active" contentStyleId="tabboxwrapper" contentStyleClass="tabboxwrapper"

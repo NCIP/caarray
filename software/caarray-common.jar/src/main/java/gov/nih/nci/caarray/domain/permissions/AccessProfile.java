@@ -120,7 +120,7 @@ public class AccessProfile implements PersistentObject, Serializable {
     private SecurityLevel securityLevel = SecurityLevel.NONE;
     private Set<Sample> selectiveReadSamples = new HashSet<Sample>();
     private Set<Sample> selectiveWriteSamples = new HashSet<Sample>();
-    private Map<Sample, SecurityLevel> sampleSecurityLevels = new HashMap<Sample, SecurityLevel>();
+    private Map<Sample, SampleSecurityLevel> sampleSecurityLevels = new HashMap<Sample, SampleSecurityLevel>();
 
     /**
      * @return database identifier
@@ -131,8 +131,14 @@ public class AccessProfile implements PersistentObject, Serializable {
         return id;
     }
 
-    @SuppressWarnings("unused")
-    private void setId(Long id) { // NOPMD
+    /**
+     * Sets the id.
+     *
+     * @param id the id to set
+     * @deprecated should only be used by castor, hibernate and struts
+     */
+    @Deprecated
+    public void setId(Long id) { 
         this.id = id;
     }
 
@@ -209,14 +215,14 @@ public class AccessProfile implements PersistentObject, Serializable {
     @Column(name = "security_level")
     @Enumerated(EnumType.STRING)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    public Map<Sample, SecurityLevel> getSampleSecurityLevels() {
+    public Map<Sample, SampleSecurityLevel> getSampleSecurityLevels() {
         return sampleSecurityLevels;
     }
 
     /**
      * @param sampleSecurityLevels the sampleSecurityLevels to set
      */
-    public void setSampleSecurityLevels(Map<Sample, SecurityLevel> sampleSecurityLevels) {
+    public void setSampleSecurityLevels(Map<Sample, SampleSecurityLevel> sampleSecurityLevels) {
         this.sampleSecurityLevels = sampleSecurityLevels;
     }
 }

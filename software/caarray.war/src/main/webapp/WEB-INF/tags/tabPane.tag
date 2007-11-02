@@ -36,9 +36,6 @@
 <c:set var="formDivId" value="theForm"/>
 <div id="${formDivId}">
     <caarray:successMessages />
-    <c:if test="${not empty successMessage && ignoreSuccessMessage != 'true'}">
-        <div class="confirm_msg">${successMessage}</div>
-    </c:if>
     <jsp:doBody />
 </div>
 

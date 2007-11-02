@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.permissions;
 
+import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
@@ -101,6 +102,7 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
     private List<String> addedUsers;
     private List<String> removedUsers;
     private boolean getUsersCalled = false;
+    private AccessProfile savedProfile;
 
     /**
      * @return the getUsersCalled
@@ -148,6 +150,7 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
         addedUsers = null;
         removedUsers = null;
         getUsersCalled = false;
+        savedProfile = null;
     }
 
     /**
@@ -209,5 +212,19 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
     public List<User> getUsers() {
         getUsersCalled = true;
         return null;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void saveAccessProfile(AccessProfile profile) {
+        savedProfile = profile;
+    }
+
+    /**
+     * @return the savedProfile
+     */
+    public AccessProfile getSavedProfile() {
+        return savedProfile;
     }
 }

@@ -1,34 +1,58 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
-<s:form action="ajax/project/permissions/saveProfile" theme="simple" id="profileForm">
-                                <table class="searchresults" cellspacing="0">
-                                    <tr>
-                                        <th style="height: 2.5em;">Control Access to Specific Contents</th>
-                                    </tr>
-                                    <tr>
-                                       <td class="filterrow" style="border-bottom: 1px solid #999">
-                                            <s:label for="profileForm_accessProfile_securityLevel" value="Experiment Access"/>
-                                            <s:select required="true" name="accessProfile.securityLevel" tabindex="1"
-                                                  list="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@values()" listValue="%{getText(resourceKey)}"/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th class="title"><a href="#">Sample ID</a></th>
-                                    </tr>
-                                </table>
+<s:form action="ajax/project/permissions/saveAccessProfile" theme="simple" id="profileForm">
+    <s:hidden name="project.id"/>
+    <s:hidden name="accessProfile.id"/>
+    
+    <table class="searchresults" cellspacing="0">
+        <tr>
+            <th style="height: 2.5em;">Control Access to Experiment for ${profileOwnerName}</th>
+        </tr>
+        <tr>
+            <td class="filterrow" style="border-bottom: 1px solid #999">
+                <s:label for="profileForm_accessProfile_securityLevel" value="Experiment Access"/>
+                <s:select required="true" name="accessProfile.securityLevel" tabindex="1"
+                    list="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@values()" listValue="%{getText(resourceKey)}"/>
+            </td>
+        </tr>
+        <tr>
+            <th class="title">Sample ID</th>
+        </tr>
+    </table>
                                 
-        <div class="scrolltable" style="height:21em">
-                                                            <table class="searchresults" cellspacing="0" style="width:287px">
-                                                            <c:forEach items="${accessProfile.sampleSecurityLevels}" var="sampleMapping"> 
-                                                                <tr class="odd">
-                                                                    <td><a href="experiment_sample_details.htm">${sampleMapping.key.name}</a></td>
-                                                                    <td>${sampleMapping.key.description}</td>
-                                                                    <td>
-                                                                        <s:select required="true" name="accessProfile.sampleSecurityLevels[${sampleMapping.key.id}]" tabindex="1"
-                                                                            list="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@values()" listValue="%{getText(resourceKey)}"/>
-                                                                    </td>
-                                                                </tr>
-                                                            </c:forEach>
-                                                            </table>
-        </div>                                                                                                                                        
+        <table class="searchresults" cellspacing="0" style="width: 305px">
+            <c:forEach items="${project.experiment.samples}" var="sample">
+                <c:set var="sampleSecLevel" value="${accessProfile.sampleSecurityLevels[sample]}"/>
+                <tr class="odd">
+                    <td>
+                        <c:url var="sampleUrl" value="/protected/ajax/project/listTab/Samples/view.action">
+                            <c:param name="project.id" value="${project.id}" />
+                            <c:param name="currentSample.id" value="${sample.id}" />
+                        </c:url>
+                        <c:url var="projectUrl" value="/protected/project/edit.action">
+                            <c:param name="project.id" value="${project.id}"/>
+                            <c:param name="initialTab" value="annotations"/>
+                            <c:param name="initialTab2" value="samples"/>
+                            <c:param name="initialTab2Url" value="${sampleUrl}"/>
+                        </c:url>
+                        <a href="${projectUrl}">${sample.name}</a>
+                    </td>
+                    <td>${sample.description}</td>
+                    <td>
+                        <s:select required="true" name="sampleSecurityLevels[${sample.id}]" tabindex="1"
+                            list="@gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel@values()" listValue="%{getText(resourceKey)}"/>
+                    </td>
+                </tr>
+            </c:forEach>
+                <tr>
+                    <td colspan="3">
+        <caarray:actions divclass="actionsthin">
+            <caarray:action actionClass="cancel" text="Cancel" onclick="$('access_profile_details').update(''); return false; " />
+            <caarray:action actionClass="save" text="Save" onclick="Caarray.submitAjaxForm('profileForm', 'access_profile_details'); return false;" />
+        </caarray:actions>
+                    
+                    </td>                
+                </tr>            
+        </table>
+    
 </s:form>

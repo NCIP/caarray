@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.permissions;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.SecurityInterceptor;
@@ -262,4 +263,13 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
         return users;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)    
+    public void saveAccessProfile(AccessProfile profile) {
+        LogUtil.logSubsystemEntry(LOG, profile);
+        getDaoFactory().getCollaboratorGroupDao().save(profile);
+        LogUtil.logSubsystemExit(LOG);        
+    }
 }

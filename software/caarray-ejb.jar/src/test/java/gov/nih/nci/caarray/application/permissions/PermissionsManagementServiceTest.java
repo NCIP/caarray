@@ -88,6 +88,7 @@ import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.dao.stub.CollaboratorGroupDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.security.authorization.domainobjects.Group;
@@ -207,7 +208,7 @@ public class PermissionsManagementServiceTest {
         assertNotNull(users);
         assertTrue(!users.isEmpty());
     }
-
+    
     @SuppressWarnings("unchecked")
     @After
     public void after() {

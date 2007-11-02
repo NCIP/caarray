@@ -142,8 +142,14 @@ public class CollaboratorGroup implements PersistentObject {
         return id;
     }
 
-    @SuppressWarnings("unused")
-    private void setId(Long id) { // NOPMD
+    /**
+     * Sets the id.
+     *
+     * @param id the id to set
+     * @deprecated should only be used by castor, hibernate and struts
+     */
+    @Deprecated
+    public void setId(Long id) { // NOPMD
         this.id = id;
     }
 

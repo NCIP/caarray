@@ -6,10 +6,16 @@ import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementSe
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
+import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.validator.annotations.Validation;
@@ -26,13 +32,18 @@ public class ProjectPermissionsAction extends BaseProjectAction {
     private List<CollaboratorGroup> collaboratorGroupsWithoutProfiles = new ArrayList<CollaboratorGroup>();
     private CollaboratorGroup collaboratorGroup = new CollaboratorGroup();
     private AccessProfile accessProfile = new AccessProfile();
-    
+    private String profileOwnerName;
+    private Map<Long, SampleSecurityLevel> sampleSecurityLevels = new HashMap<Long, SampleSecurityLevel>();
     /**
      * {@inheritDoc}
      */
     @Override
     public void prepare() throws VocabularyServiceException {
         super.prepare();
+
+        this.collaboratorGroupsWithoutProfiles = getPermissionsManagementService().getCollaboratorGroups();
+        this.collaboratorGroupsWithoutProfiles.removeAll(getProject().getGroupProfiles().keySet());
+        
         if (this.collaboratorGroup.getId() != null) {
             this.collaboratorGroup = getGenericDataService().retrieveEnity(CollaboratorGroup.class, this.collaboratorGroup.getId());
         }
@@ -48,11 +59,9 @@ public class ProjectPermissionsAction extends BaseProjectAction {
      */
     @SkipValidation
     public String editPermissions() {
-        this.collaboratorGroupsWithoutProfiles = getPermissionsManagementService().getCollaboratorGroups();
-        this.collaboratorGroupsWithoutProfiles.removeAll(getProject().getGroupProfiles().keySet());
         return "success";
     }
-    
+
     /**
      * Toggles the browsability status.
      *
@@ -71,6 +80,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
      */
     public String addGroupProfile() {
         getProjectManagementService().addGroupProfile(getProject(), this.collaboratorGroup);
+        this.collaboratorGroupsWithoutProfiles.remove(this.collaboratorGroup);
         return "success";
     }
 
@@ -79,8 +89,11 @@ public class ProjectPermissionsAction extends BaseProjectAction {
      *
      * @return success
      */
+    @SkipValidation
     public String loadPublicProfile() {
         this.accessProfile = getProject().getPublicProfile();
+        this.profileOwnerName = getText("project.permissions.publicProfile");
+        setupSamplePermissions();        
         return "accessProfile";
     }
 
@@ -89,9 +102,40 @@ public class ProjectPermissionsAction extends BaseProjectAction {
      *
      * @return success
      */
+    @SkipValidation
     public String loadGroupProfile() {
         this.accessProfile = getProject().getGroupProfiles().get(this.collaboratorGroup);
+        this.profileOwnerName = getText("project.permissions.groupProfile", new String[] { this.collaboratorGroup
+                .getGroup().getGroupName() });
+        setupSamplePermissions();
         return "accessProfile";
+    }
+    
+    private void setupSamplePermissions() {
+        for (Map.Entry<Sample, SampleSecurityLevel> sampleEntry : this.accessProfile.getSampleSecurityLevels().entrySet()) {
+            this.sampleSecurityLevels.put(sampleEntry.getKey().getId(), sampleEntry.getValue());
+        }
+    }
+
+    private void saveSamplePermissions() {
+        this.accessProfile.getSampleSecurityLevels().clear();
+        for (Map.Entry<Long, SampleSecurityLevel> sampleEntry : this.sampleSecurityLevels.entrySet()) {
+            Sample sample = getGenericDataService().retrieveEnity(Sample.class, sampleEntry.getKey());
+            this.accessProfile.getSampleSecurityLevels().put(sample, sampleEntry.getValue());
+        }
+    }
+
+    /**
+     * Saves an access profile
+     *
+     * @return success
+     */
+    @SkipValidation
+    public String saveAccessProfile() {
+        saveSamplePermissions();
+        getPermissionsManagementService().saveAccessProfile(this.accessProfile);
+        ActionHelper.saveMessage(getText("project.permissionsSaved"));
+        return "success";
     }
 
     /**
@@ -134,5 +178,33 @@ public class ProjectPermissionsAction extends BaseProjectAction {
      */
     public void setAccessProfile(AccessProfile accessProfile) {
         this.accessProfile = accessProfile;
+    }
+
+    /**
+     * @return the sampleSecurityLevels
+     */
+    public Map<Long, SampleSecurityLevel> getSampleSecurityLevels() {
+        return sampleSecurityLevels;
+    }
+
+    /**
+     * @param sampleSecurityLevels the sampleSecurityLevels to set
+     */
+    public void setSampleSecurityLevels(Map<Long, SampleSecurityLevel> sampleSecurityLevels) {
+        this.sampleSecurityLevels = sampleSecurityLevels;
+    }
+
+    /**
+     * @return the profileOwnerName
+     */
+    public String getProfileOwnerName() {
+        return profileOwnerName;
+    }
+
+    /**
+     * @param profileOwnerName the profileOwnerName to set
+     */
+    public void setProfileOwnerName(String profileOwnerName) {
+        this.profileOwnerName = profileOwnerName;
     }
 }

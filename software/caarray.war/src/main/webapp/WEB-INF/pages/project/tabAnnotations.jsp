@@ -34,6 +34,10 @@
 <fmt:message key="project.tabs.hybridizations" var="hybridizationsTitle" />
 
 <c:choose>
+    <c:when test="${!empty initialTab2Url}">
+        <c:set var="initUrl" value="${initialTab2Url}"/>
+        <c:remove var="initialTab2Url" scope="session"/>
+    </c:when>
     <c:when test="${initTab == 'factors'}">
         <c:set var="initUrl" value="${factorsUrl}"/>
     </c:when>
