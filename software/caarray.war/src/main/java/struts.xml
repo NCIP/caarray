@@ -77,7 +77,7 @@
         <action name="logout" class="gov.nih.nci.caarray.web.action.LogoutAction">
             <result name="success" type="redirect-action">
                 <param name="namespace">/protected</param>
-                <param name="actionName">project/list</param>
+                <param name="actionName">project/workspace</param>
             </result>
         </action>
     </package>
