@@ -13,10 +13,12 @@
           <span class="dark">
             <c:if test="${empty targetGroup}">
                 Add a New Collaboration Group
-              </c:if>
+                <c:set var="displayMembers" value="none"/>
+            </c:if>
             <c:if test="${!empty targetGroup}">
                 ${targetGroup.group.groupName}
-              </c:if>
+                <c:set var="displayMembers" value="block"/>
+            </c:if>
           </span>
         </h3>
       </div>
@@ -32,6 +34,7 @@
             <caarray:action onclick="document.getElementById('newGroupForm').submit();" actionClass="save" text="Save" />
         </caarray:actions>
         
+        <div style="display: ${displayMembers};">
         <div class="line" style="margin-bottom: 15px;"></div>
         
         <div>
@@ -55,6 +58,7 @@
 			<li><caarray:linkButton url="${deleteUrl}" actionClass="delete" text="Delete"/>       		
        	</ul>
       </div>      
+	</div>
 	</div>
 	</div>
 </body>
