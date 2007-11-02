@@ -89,4 +89,7 @@ public class IlluminaArrayDataFiles {
     public static final File HUMAN_WG6 =
         new File(IlluminaArrayDataFiles.class.getResource("/arraydata/illumina/Human_WG-6_data.csv").getFile());
 
+    public static final File HUMAN_WG6_SMALL =
+        new File(IlluminaArrayDataFiles.class.getResource("/arraydata/illumina/Human_WG-6_data_small.csv").getFile());
+
 }
