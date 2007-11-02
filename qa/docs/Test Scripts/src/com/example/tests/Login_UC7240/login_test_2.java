@@ -14,9 +14,10 @@ public class login_test_2 extends TestCase {
         selenium.start();
     }
     
-    public void testGoogle() {
+    public void testGoogle() throws InterruptedException {
 		selenium.open("/caarray/protected/Project_list.action");
 		selenium.type("j_username", "caarrayadmin");
+		Thread.sleep(9000);
 		selenium.type("j_password", "abcd");
 		selenium.click("login");
 		selenium.waitForPageToLoad("30000");

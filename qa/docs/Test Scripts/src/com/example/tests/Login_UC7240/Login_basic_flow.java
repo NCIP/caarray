@@ -14,7 +14,7 @@ public class Login_basic_flow extends TestCase {
         selenium.start();
     }
     
-    public void testGoogle() {
+    public void testcaarray() {
 		selenium.open("/caarray/protected/Project_list.action");
 		selenium.type("j_username", "caarrayadmin");
 		selenium.type("j_password", "f1rebird05");
