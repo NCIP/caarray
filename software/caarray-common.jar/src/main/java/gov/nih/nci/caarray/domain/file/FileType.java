@@ -168,6 +168,8 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
         INSTANCES.put(AFFYMETRIX_CHP.toString(), AFFYMETRIX_CHP);
         INSTANCES.put(AFFYMETRIX_CDF.toString(), AFFYMETRIX_CDF);
         INSTANCES.put(AFFYMETRIX_CEL.toString(), AFFYMETRIX_CEL);
+        INSTANCES.put(ILLUMINA_DESIGN_CSV.toString(), ILLUMINA_DESIGN_CSV);
+        INSTANCES.put(ILLUMINA_DATA_CSV.toString(), ILLUMINA_DATA_CSV);
 
         ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CDF);
         ARRAY_DESIGN_FILE_TYPES.add(ILLUMINA_DESIGN_CSV);
