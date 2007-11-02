@@ -94,6 +94,7 @@ enum FileExtension {
     CDF(FileType.AFFYMETRIX_CDF),
     CEL(FileType.AFFYMETRIX_CEL),
     CHP(FileType.AFFYMETRIX_CHP),
+    CSV(FileType.ILLUMINA_DATA_CSV),
     ADF(FileType.MAGE_TAB_ADF),
     IDF(FileType.MAGE_TAB_IDF),
     SDRF(FileType.MAGE_TAB_SDRF),
