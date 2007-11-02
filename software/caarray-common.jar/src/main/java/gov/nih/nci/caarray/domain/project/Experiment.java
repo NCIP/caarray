@@ -663,6 +663,14 @@ public class Experiment extends AbstractCaArrayEntity {
     public Set<Sample> getSamples() {
         return this.samples;
     }
+    
+    /**
+     * @return the number of samples in this experiment
+     */
+    @Transient
+    public int getSampleCount() {
+        return this.samples.size();
+    }
 
     /**
      * Sets the samples.

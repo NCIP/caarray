@@ -21,6 +21,7 @@
     </table>
                                 
         <table class="searchresults" cellspacing="0" style="width: 305px">
+            <tbody id="access_profile_samples">
             <c:forEach items="${project.experiment.samples}" var="sample">
                 <c:set var="sampleSecLevel" value="${accessProfile.sampleSecurityLevels[sample]}"/>
                 <tr class="odd">
@@ -44,6 +45,8 @@
                     </td>
                 </tr>
             </c:forEach>
+            </tbody>
+            <tfoot>
                 <tr>
                     <td colspan="3">
         <caarray:actions divclass="actionsthin">
@@ -53,6 +56,7 @@
                     
                     </td>                
                 </tr>            
+            </tfoot>
         </table>
     
 </s:form>

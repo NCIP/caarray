@@ -2,11 +2,6 @@
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
     <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${projects}" requestURI="${sortUrl}"
         sort="list" id="row" pagesize="20" excludedParams="project.id" style="clear: none;">
-        <c:url value="/protected/project/edit.action" var="editSamplesUrl">
-            <c:param name="project.id" value="${row.id}" />
-            <c:param name="initialTab" value="annotations" />
-            <c:param name="initialTab2" value="samples" />
-        </c:url>
         <caarray:displayTagProperties/>
         <display:column property="experiment.publicIdentifier" title="Experiment ID" escapeXml="true" sortable="true"
             url="/notYetImplemented.jsp" paramId="project.id" paramProperty="id" />
@@ -18,7 +13,14 @@
             <s:else>&nbsp;
             </s:else>
         </display:column>
-        <display:column value="${fn:length(row.experiment.samples)}" title="Samples" sortable="true" href="${editSamplesUrl}" />
+        <display:column sortProperty="experiment.sampleCount" title="Samples" sortable="true">
+            <c:url value="/protected/project/edit.action" var="editSamplesUrl">
+                <c:param name="project.id" value="${row.id}" />
+                <c:param name="initialTab" value="annotations" />
+                <c:param name="initialTab2" value="samples" />
+            </c:url>
+            <a href="${editSamplesUrl}">${row.experiment.sampleCount}</a>                
+        </display:column>
         <display:column sortProperty="status" title="Status" sortable="true">
             <fmt:message key="${row.status.resourceKey}" />
         </display:column>
