@@ -20,6 +20,7 @@
             }
         }
     }
+    setExperimentTitleHeader('${project.experiment.title}');
 </script>
 
 <caarray:tabPane subtab="true" submittingPaneMessageKey="experiment.files.processing">
@@ -49,19 +50,22 @@
     </div>
 
     <div class="tableboxpad">
-        <s:form action="protected/ajax/project/files/process" id="projectForm" method="post" theme="simple">
+        <s:form action="protected/ajax/project/files/process" id="selectFilesForm" method="post" theme="simple">
             <s:hidden name="project.id" value="${project.id}" />
             <%@ include file="/WEB-INF/pages/project/files/listTable.jsp" %>
+        </s:form>
+        <s:form action="ajax/project/listTab/Sources/saveList" cssClass="form" id="projectForm" theme="simple">
+            <s:hidden name="project.id" />
         </s:form>
     </div>
     <caarray:actions divclass="actionsthin">
         <c:url value="/protected/ajax/project/files/deleteFiles.action" var="deleteUrl" />
-        <caarray:linkButton actionClass="delete" text="Delete" onclick="TabUtils.submitSubTabFormToUrl('projectForm', '${deleteUrl}', 'tabboxlevel2wrapper');" />
+        <caarray:linkButton actionClass="delete" text="Delete" onclick="TabUtils.submitSubTabFormToUrl('selectFilesForm', '${deleteUrl}', 'tabboxlevel2wrapper');" />
         <c:url value="/protected/ajax/project/files/validateFiles.action" var="validateUrl" />
-        <caarray:linkButton actionClass="validate" text="Validate" onclick="TabUtils.submitSubTabFormToUrl('projectForm', '${validateUrl}', 'tabboxlevel2wrapper');" />
+        <caarray:linkButton actionClass="validate" text="Validate" onclick="TabUtils.submitSubTabFormToUrl('selectFilesForm', '${validateUrl}', 'tabboxlevel2wrapper');" />
         <c:url value="/protected/ajax/project/files/importFiles.action" var="importUrl"/>
-        <caarray:linkButton actionClass="import" text="Import" onclick="TabUtils.submitSubTabFormToUrl('projectForm', '${importUrl}', 'tabboxlevel2wrapper');" />
+        <caarray:linkButton actionClass="import" text="Import" onclick="TabUtils.submitSubTabFormToUrl('selectFilesForm', '${importUrl}', 'tabboxlevel2wrapper');" />
         <c:url value="/ajax/notYetImplemented.jsp" var="associationsUrl" />
-        <caarray:linkButton actionClass="manage_associations" text="Manage Associations" onclick="TabUtils.submitSubTabFormToUrl('projectForm', '${associationsUrl}', 'tabboxlevel2wrapper');" />
+        <caarray:linkButton actionClass="manage_associations" text="Manage Associations" onclick="TabUtils.submitSubTabFormToUrl('selectFilesForm', '${associationsUrl}', 'tabboxlevel2wrapper');" />
     </caarray:actions>
 </caarray:tabPane>

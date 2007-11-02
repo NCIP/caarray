@@ -18,6 +18,9 @@
                 <display:column property="message" title="Message" sortable="true" />
             </display:table>
         </ajax:displayTag>
+        <s:form action="ajax/project/listTab/Sources/saveList" cssClass="form" id="projectForm" theme="simple">
+            <s:hidden name="project.id" />
+        </s:form>
     </div>
      <caarray:actions divclass="actionsthin">
         <c:url value="/protected/ajax/project/files/list.action" var="manageDataUrl">

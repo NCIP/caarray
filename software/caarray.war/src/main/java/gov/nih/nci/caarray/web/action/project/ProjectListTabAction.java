@@ -136,6 +136,7 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
      * loads the tab with viewing a single item
      * @return
      */
+    @SkipValidation
     public String view() {
         setEditMode(false);
         return INPUT;
@@ -155,7 +156,9 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
         } else {
             ActionHelper.saveMessage(getText("experiment.items.updated", new String[] { getItemName()}));
         }
-        super.save();
+        if (WORKSPACE_RESULT.equals(super.save())) {
+            return WORKSPACE_RESULT;
+        }
         return "list";
     }
 
@@ -173,6 +176,7 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
      * @return the string indicating the result to use.
      */
     @SuppressWarnings("unchecked")
+    @SkipValidation
     public String saveList() {
         return super.save();
     }

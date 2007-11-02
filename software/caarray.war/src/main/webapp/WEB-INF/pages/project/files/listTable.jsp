@@ -2,7 +2,7 @@
 <c:url value="/protected/ajax/project/files/listTable.action" var="sortUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
-<c:set var="checkboxAll" value="<input type=\"checkbox\" name=\"selectAllCheckbox\" onClick=\"javascript: selectAll(this, document.getElementById('projectForm'));\" >" />
+<c:set var="checkboxAll" value="<input type=\"checkbox\" name=\"selectAllCheckbox\" onClick=\"javascript: selectAll(this, document.getElementById('selectFilesForm'));\" >" />
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
     <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${project.files}"
         requestURI="${sortUrl}" sort="list" id="row" excludedParams="project.id">
