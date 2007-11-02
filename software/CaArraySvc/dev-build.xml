@@ -74,7 +74,8 @@
 	<!-- Pre Compile Stubs Build Target                                 -->
 	<!-- ============================================================== -->
 	<target name="preCompileStubs">
-
+	    <!-- These stubs shouldn't be generated in the first place.  Figure out why, then delete this line -->
+		<delete dir="${stubs.src}/edu"></delete>
 	</target>
 
 	<!-- ============================================================== -->

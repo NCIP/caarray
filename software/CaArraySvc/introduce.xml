@@ -84,8 +84,8 @@
    <ns2:SchemaElement className="Specimen" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Specimen" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
   <ns2:Namespace location="./edu.georgetown.pir.xsd" namespace="gme://caCORE.caCORE/3.2/edu.georgetown.pir" packageName="edu.georgetown.pir" xsi:type="ns2:NamespaceType">
-   <ns2:SchemaElement className="Organismn" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AbstractDomainObject" xsi:type="ns2:SchemaElementType"/>
-   <ns2:SchemaElement className="AdditionalOrganismName" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="MolecularSpecimen" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement className="Organismn" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Organism" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement className="AdditionalOrganismName" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AdditionalOrganismName" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
   <ns2:Namespace location="./gov.nih.nci.caarray.domain.publication.xsd" namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.publication" packageName="gov.nih.nci.caarray.domain.publication" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="Publication" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Publication" xsi:type="ns2:SchemaElementType"/>
