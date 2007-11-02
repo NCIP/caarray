@@ -1195,8 +1195,8 @@
         <antcall target="remote-globus:createDeploymentGar" />
         <antcall target="remote-globus:copy-caarray-gar" />
         <antcall target="remote-globus:deploy-remote-globus" />
-		<antcall target="remote-globus:stop-remote-globus" />
-		<antcall target="remote-globus:start-remote-globus" />
+		<!--<antcall target="remote-globus:stop-remote-globus" />
+		<antcall target="remote-globus:start-remote-globus" />-->
     </target>
 
   <!-- Globus deployment end -->
