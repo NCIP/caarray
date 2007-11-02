@@ -3,8 +3,7 @@
     <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${projects}" requestURI="${sortUrl}"
         sort="list" id="row" pagesize="20" excludedParams="project.id" style="clear: none;">
         <caarray:displayTagProperties/>
-        <display:column property="experiment.publicIdentifier" title="Experiment ID" escapeXml="true" sortable="true"
-            url="/notYetImplemented.jsp" paramId="project.id" paramProperty="id" />
+        <display:column property="experiment.publicIdentifier" title="Experiment ID" escapeXml="true" sortable="true"/>
         <display:column property="experiment.title" title="Experiment Title" escapeXml="true" sortable="true"/>
         <display:column sortProperty="experiment.assayType" title="Assay Type" sortable="true" >
             <s:if test="${row.experiment.assayType != null}">
