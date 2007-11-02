@@ -27,7 +27,7 @@ insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(2,1,sysdate());
 
 insert into CSM_USER (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("fb_admin","caArray","ldapuser","ldap_only_no_pass",sysdate());
+values ("fb_admin","caArray","ldapuser","sNYUJiYS6oaabiiT/fn5hIc+SidokNh2+YRTFJJYiuZLRCIBFypS8Q==",sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(1,2,sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
@@ -45,7 +45,7 @@ values(2,3,sysdate());
 -- The synthetic anonymous user.  This is required because we are using instance level
 -- security on objects that anonymous (non-logged-in) users sometimes have access to.
 insert into CSM_USER (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("__anonymous__","Anonymous","User","anonymous_access_only_no_pass",sysdate());
+values ("__anonymous__","Anonymous","User","sNYUJiYS6oaabiiT/fn5hIc+SidokNh2+YRTFJJYiuZLRCIBFypS8Q==",sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(2,4,sysdate());
 
