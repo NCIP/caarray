@@ -1,5 +1,8 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
+<c:set var="initTab" value="${sessionScope.initialTab2 == null ? param.initialTab2 : sessionScope.initialTab2}" />
+<c:remove var="initialTab2" scope="session" />
+
 <c:url value="/protected/ajax/project/tab/ExperimentalDesign/load.action" var="experimentalDesignUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
@@ -30,17 +33,41 @@
 <fmt:message key="project.tabs.labeledExtracts" var="labeledExtractsTitle" />
 <fmt:message key="project.tabs.hybridizations" var="hybridizationsTitle" />
 
+<c:choose>
+    <c:when test="${initTab == 'factors'}">
+        <c:set var="initUrl" value="${factorsUrl}"/>
+    </c:when>
+    <c:when test="${initTab == 'sources'}">
+        <c:set var="initUrl" value="${sourcesUrl}"/>
+    </c:when>
+    <c:when test="${initTab == 'samples'}">
+        <c:set var="initUrl" value="${samplesUrl}"/>
+    </c:when>
+    <c:when test="${initTab == 'extracts'}">
+        <c:set var="initUrl" value="${extractsUrl}"/>
+    </c:when>
+    <c:when test="${initTab == 'labeledExtracts'}">
+        <c:set var="initUrl" value="${labeledExtractsUrl}"/>
+    </c:when>
+    <c:when test="${initTab == 'hybridizations'}">
+        <c:set var="initUrl" value="${hybridizationsUrl}"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="initUrl" value="${experimentalDesignUrl}"/>
+    </c:otherwise>
+</c:choose>
+
 <ajax:tabPanel panelStyleId="tablevel2" panelStyleClass="tablevel2" currentStyleClass="selected" contentStyleId="tabboxlevel2wrapper" contentStyleClass="tabboxlevel2wrapper"
         postFunction="TabUtils.setSelectedLevel2Tab" preFunction="TabUtils.showSubtabLoadingText">
-    <ajax:tab caption="${experimentalDesignTitle}" baseUrl="${experimentalDesignUrl}" defaultTab="${param.initialTab2 == null || param.initialTab2 == 'experimentalDesign'}" />
-    <ajax:tab caption="${factorsTitle}" baseUrl="${factorsUrl}" defaultTab="${param.initialTab2 == 'factors'}" />
-    <ajax:tab caption="${sourcesTitle}" baseUrl="${sourcesUrl}" defaultTab="${param.initialTab2 == 'sources'}" />
-    <ajax:tab caption="${samplesTitle}" baseUrl="${samplesUrl}" defaultTab="${param.initialTab2 == 'samples'}" />
-    <ajax:tab caption="${extractsTitle}" baseUrl="${extractsUrl}" defaultTab="${param.initialTab2 == 'extracts'}" />
-    <ajax:tab caption="${labeledExtractsTitle}" baseUrl="${labeledExtractsUrl}" defaultTab="${param.initialTab2 == 'labeledExtracts'}" />
-    <ajax:tab caption="${hybridizationsTitle}" baseUrl="${hybridizationsUrl}" defaultTab="${param.initialTab2 == 'hybridizations'}" />
+    <ajax:tab caption="${experimentalDesignTitle}" baseUrl="${experimentalDesignUrl}" defaultTab="${initTab == null || initTab == 'experimentalDesign'}" />
+    <ajax:tab caption="${factorsTitle}" baseUrl="${factorsUrl}" defaultTab="${initTab == 'factors'}" />
+    <ajax:tab caption="${sourcesTitle}" baseUrl="${sourcesUrl}" defaultTab="${initTab == 'sources'}" />
+    <ajax:tab caption="${samplesTitle}" baseUrl="${samplesUrl}" defaultTab="${initTab == 'samples'}" />
+    <ajax:tab caption="${extractsTitle}" baseUrl="${extractsUrl}" defaultTab="${initTab == 'extracts'}" />
+    <ajax:tab caption="${labeledExtractsTitle}" baseUrl="${labeledExtractsUrl}" defaultTab="${initTab == 'labeledExtracts'}" />
+    <ajax:tab caption="${hybridizationsTitle}" baseUrl="${hybridizationsUrl}" defaultTab="${initTab == 'hybridizations'}" />
 </ajax:tabPanel>
 
 <script type="text/javascript">
-executeAjaxTab_tablevel2(null,'selected', '${experimentalDesignUrl}', '');
+executeAjaxTab_tablevel2(null,'selected', '${initUrl}', '');
 </script>

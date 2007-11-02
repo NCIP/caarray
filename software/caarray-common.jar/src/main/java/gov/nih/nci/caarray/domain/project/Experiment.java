@@ -121,6 +121,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 /**
  *
@@ -648,7 +650,8 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the samples
      */
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
+    @LazyCollection(LazyCollectionOption.EXTRA)
     @JoinTable(
             name = "EXPERIMENTSAMPLE",
             joinColumns = { @JoinColumn(name = FK_COLUMN_NAME) },

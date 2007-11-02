@@ -48,6 +48,10 @@
     <fmt:message key="project.tabs.supplemental" var="supplementalTitle" />
     <fmt:message key="project.tabs.publications" var="publicationsTitle" />
 
+    <c:if test="${param.initialTab == 'annotations' && param.initialTab2 != null}">
+        <c:set value="${param.initialTab2}" scope="session" var="initialTab2" />
+    </c:if>
+
     <div class="padme">
         <h2><span class="dark">Experiment:</span>   <span id="experimentTitleHeader">${project.experiment.title}</span></h2>
         <ajax:tabPanel panelStyleId="tabs" panelStyleClass="tabs2" currentStyleClass="active" contentStyleId="tabboxwrapper" contentStyleClass="tabboxwrapper"
