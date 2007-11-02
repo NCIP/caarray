@@ -95,6 +95,7 @@ import gov.nih.nci.security.exceptions.CSTransactionException;
 
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
@@ -185,7 +186,7 @@ public class CollaboratorsAction extends ActionSupport {
      */
     @SkipValidation
     public String addUsers() throws CSTransactionException, CSObjectNotFoundException {
-        if (getUsers() != null && !getUsers().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(getUsers())) {
             getPermissionsManagementService().addUsers(getTargetGroup(), getUsers());
         }
         setAllUsers(getPermissionsManagementService().getUsers());
