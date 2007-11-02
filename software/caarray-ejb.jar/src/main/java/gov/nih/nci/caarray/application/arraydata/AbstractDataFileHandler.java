@@ -89,10 +89,17 @@ import org.apache.commons.logging.Log;
 
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.BooleanColumn;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.DoubleColumn;
+import gov.nih.nci.caarray.domain.data.FloatColumn;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
+import gov.nih.nci.caarray.domain.data.IntegerColumn;
+import gov.nih.nci.caarray.domain.data.LongColumn;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.ShortColumn;
+import gov.nih.nci.caarray.domain.data.StringColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
@@ -100,6 +107,7 @@ import gov.nih.nci.caarray.validation.FileValidationResult;
 /**
  * Base class for array data file handlers.
  */
+@SuppressWarnings("PMD.CyclomaticComplexity") // switch-like statement
 abstract class AbstractDataFileHandler {
 
     abstract QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(File file);
@@ -122,5 +130,27 @@ abstract class AbstractDataFileHandler {
     abstract ArrayDataTypeDescriptor getArrayDataTypeDescriptor(File dataFile);
 
     abstract List<String> getSampleNamesFromFile(File dataFile);
+
+    @SuppressWarnings("PMD.CyclomaticComplexity") // switch-like statement
+    protected void setValue(AbstractDataColumn column, int rowIndex, String value) {
+        Class columnTypeClass = column.getQuantitationType().getTypeClass();
+        if (columnTypeClass.equals(Boolean.class)) {
+            ((BooleanColumn) column).getValues()[rowIndex] = Boolean.valueOf(value);
+        } else if (columnTypeClass.equals(Short.class)) {
+            ((ShortColumn) column).getValues()[rowIndex] = Short.parseShort(value);
+        } else if (columnTypeClass.equals(Integer.class)) {
+            ((IntegerColumn) column).getValues()[rowIndex] = Integer.parseInt(value);
+        } else if (columnTypeClass.equals(Long.class)) {
+            ((LongColumn) column).getValues()[rowIndex] = Long.parseLong(value);
+        } else if (columnTypeClass.equals(Float.class)) {
+            ((FloatColumn) column).getValues()[rowIndex] = Float.parseFloat(value);
+        } else if (columnTypeClass.equals(Double.class)) {
+            ((DoubleColumn) column).getValues()[rowIndex] = Double.parseDouble(value);
+        } else if (columnTypeClass.equals(String.class)) {
+            ((StringColumn) column).getValues()[rowIndex] = value;
+        } else {
+            throw new IllegalArgumentException("Unsupported type class " + columnTypeClass.getCanonicalName());
+        }
+    }
 
 }

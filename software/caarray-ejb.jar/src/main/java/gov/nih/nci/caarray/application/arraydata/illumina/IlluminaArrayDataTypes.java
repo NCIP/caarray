@@ -80,32 +80,66 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydata;
+package gov.nih.nci.caarray.application.arraydata.illumina;
 
-import gov.nih.nci.caarray.domain.file.FileType;
+import java.util.Arrays;
+import java.util.List;
+
+import gov.nih.nci.caarray.domain.data.ArrayDataType;
+import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 
 /**
- * Provides access to an appropriate <code>AbstractDataHandler</code> for a given <code>AbstractArrayData</code>
- * instance.
+ * The array data types supported for Affymetrix.
  */
-final class ArrayDataHandlerFactory {
+public enum IlluminaArrayDataTypes implements ArrayDataTypeDescriptor {
 
-    private static final ArrayDataHandlerFactory INSTANCE = new ArrayDataHandlerFactory();
+    /**
+     * Illumina gene Expression CSV format.
+     */
+    ILLUMINA_EXPRESSION("Illumina CSV (Gene Expression)", IlluminaExpressionQuantitationType.values()),
 
-    static ArrayDataHandlerFactory getInstance() {
-        return INSTANCE;
+    /**
+     * Illumina Gene Expression CSV format.
+     */
+    ILLUMINA_GENOTYPING("Illumina CSV (Genotyping)", IlluminaGenotypingQuantitationType.values());
+
+
+    private final String name;
+    private final List<QuantitationTypeDescriptor> quantitationTypes;
+
+    IlluminaArrayDataTypes(String name, QuantitationTypeDescriptor[] quantitationTypes) {
+        this.name = name;
+        this.quantitationTypes = Arrays.asList(quantitationTypes);
     }
 
-    AbstractDataFileHandler getHandler(FileType type) {
-        if (FileType.AFFYMETRIX_CEL.equals(type)) {
-            return new AffymetrixCelHandler();
-        } else if (FileType.AFFYMETRIX_CHP.equals(type)) {
-            return new AffymetrixChpHandler();
-        } else if (FileType.ILLUMINA_DATA_CSV.equals(type)) {
-            return new IlluminaDataHandler();
-        } else {
-            throw new IllegalArgumentException("Unsupported type " + type);
-        }
+    /**
+     * {@inheritDoc}
+     */
+    public String getName() {
+        return name;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<QuantitationTypeDescriptor> getQuantitationTypes() {
+        return quantitationTypes;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getVersion() {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isEquivalent(ArrayDataType arrayDataType) {
+        return name.equals(arrayDataType.getName());
+    }
+
 
 }

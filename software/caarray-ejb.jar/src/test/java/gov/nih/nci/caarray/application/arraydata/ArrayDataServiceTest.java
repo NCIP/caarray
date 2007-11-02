@@ -90,6 +90,8 @@ import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataT
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixExpressionChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpChpQuantitationType;
+import gov.nih.nci.caarray.application.arraydata.illumina.IlluminaArrayDataTypes;
+import gov.nih.nci.caarray.application.arraydata.illumina.IlluminaExpressionQuantitationType;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceBean;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
@@ -99,6 +101,7 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
@@ -121,7 +124,9 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
+import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
@@ -181,27 +186,34 @@ public class ArrayDataServiceTest {
     private void testCreateAnnotation() throws InvalidDataFileException {
         testCreateAnnotationCel();
         testCreateAnnotationChp();
+        testCreateAnnotationIllumina();
+    }
+
+    private void testCreateAnnotationIllumina() throws InvalidDataFileException {
+        CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6);
+        arrayDataService.importData(illuminaFile, true);
+        checkAnnotation(illuminaFile, 19);
     }
 
     private void testCreateAnnotationCel() throws InvalidDataFileException {
         CaArrayFile celFile = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL);
         arrayDataService.importData(celFile, true);
-        checkAnnotation(celFile);
+        checkAnnotation(celFile, 1);
     }
 
     private void testCreateAnnotationChp() throws InvalidDataFileException {
         CaArrayFile chpFile = getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CHP);
         arrayDataService.importData(chpFile, true);
-        checkAnnotation(chpFile);
+        checkAnnotation(chpFile, 1);
     }
 
-    private void checkAnnotation(CaArrayFile dataFile) {
+    private void checkAnnotation(CaArrayFile dataFile, int numberOfSamples) {
         Experiment experiment = dataFile.getProject().getExperiment();
-        assertEquals(1, experiment.getSources().size());
-        assertEquals(1, experiment.getSamples().size());
-        assertEquals(1, experiment.getExtracts().size());
-        assertEquals(1, experiment.getLabeledExtracts().size());
-        assertEquals(1, experiment.getHybridizations().size());
+        assertEquals(numberOfSamples, experiment.getSources().size());
+        assertEquals(numberOfSamples, experiment.getSamples().size());
+        assertEquals(numberOfSamples, experiment.getExtracts().size());
+        assertEquals(numberOfSamples, experiment.getLabeledExtracts().size());
+        assertEquals(numberOfSamples, experiment.getHybridizations().size());
     }
 
     private void testImportExpressionChp() throws InvalidDataFileException {
@@ -294,6 +306,14 @@ public class ArrayDataServiceTest {
     public void testValidate() {
         testCelValidation();
         testChpValidation();
+        testIlluminaValidation();
+    }
+
+    private void testIlluminaValidation() {
+        CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6);
+        assertEquals(FileStatus.UPLOADED, illuminaFile.getFileStatus());
+        arrayDataService.validate(illuminaFile);
+        assertEquals(FileStatus.VALIDATED, illuminaFile.getFileStatus());
     }
 
     private void testChpValidation() {
@@ -338,7 +358,23 @@ public class ArrayDataServiceTest {
         testCelData();
         testExpressionChpData();
         testSnpChpData();
+        testIlluminaData();
         testCelDataForSelectedQuantitationTypes();
+    }
+
+    private void testIlluminaData() throws InvalidDataFileException {
+        CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6_SMALL);
+        arrayDataService.importData(illuminaFile, true);
+        DerivedArrayData illuminaData = daoFactoryStub.getArrayDao().getDerivedArrayData(illuminaFile);
+        DataSet dataSet = arrayDataService.getData(illuminaData);
+        assertEquals(19, dataSet.getHybridizationDataList().size());
+        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
+        assertEquals(4, hybridizationData.getColumns().size());
+        FloatColumn signalColumn = (FloatColumn) hybridizationData.getColumn(IlluminaExpressionQuantitationType.AVG_SIGNAL);
+        assertNotNull(signalColumn);
+        assertEquals(10, signalColumn.getValues().length);
+        assertEquals(5.8, signalColumn.getValues()[0]);
+        assertEquals(3.6, signalColumn.getValues()[9]);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -470,9 +506,13 @@ public class ArrayDataServiceTest {
     }
 
     private Hybridization createAffyHybridization(File cdf) {
+        return createHybridization(cdf, FileType.AFFYMETRIX_CDF);
+    }
+
+    private Hybridization createHybridization(File design, FileType type) {
         ArrayDesign arrayDesign = new ArrayDesign();
-        CaArrayFile designFile = fileAccessServiceStub.add(cdf);
-        designFile.setType(FileType.AFFYMETRIX_CDF);
+        CaArrayFile designFile = fileAccessServiceStub.add(design);
+        designFile.setType(type);
         arrayDesign.setDesignFile(designFile);
         Array array = new Array();
         array.setDesign(arrayDesign);
@@ -506,6 +546,14 @@ public class ArrayDataServiceTest {
         chpDataFile.setProject(new Project());
         chpDataFile.getProject().setExperiment(new Experiment());
         return chpDataFile;
+    }
+
+    private CaArrayFile getIlluminaCaArrayFile(File file) {
+        CaArrayFile caArrayFile = fileAccessServiceStub.add(file);
+        caArrayFile.setType(FileType.ILLUMINA_DATA_CSV);
+        caArrayFile.setProject(new Project());
+        caArrayFile.getProject().setExperiment(new Experiment());
+        return caArrayFile;
     }
 
     private static final class LocalDaoFactoryStub extends DaoFactoryStub {
@@ -561,6 +609,13 @@ public class ArrayDataServiceTest {
                 @Override
                 public DerivedArrayData getDerivedArrayData(CaArrayFile file) {
                     return (DerivedArrayData) fileDataMap.get(file);
+                }
+
+                @Override
+                public void save(PersistentObject caArrayEntity) {
+                    if (caArrayEntity instanceof AbstractArrayData) {
+                        addData((AbstractArrayData) caArrayEntity);
+                    }
                 }
 
             };

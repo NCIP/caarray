@@ -80,32 +80,56 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydata;
+package gov.nih.nci.caarray.application.arraydata.illumina;
 
-import gov.nih.nci.caarray.domain.file.FileType;
+import java.util.ArrayList;
+import java.util.List;
+
+import gov.nih.nci.caarray.domain.data.DataType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 
 /**
- * Provides access to an appropriate <code>AbstractDataHandler</code> for a given <code>AbstractArrayData</code>
- * instance.
+ * Quantitation type information for Affymetrix CEL files.
  */
-final class ArrayDataHandlerFactory {
+public enum IlluminaExpressionQuantitationType implements QuantitationTypeDescriptor {
 
-    private static final ArrayDataHandlerFactory INSTANCE = new ArrayDataHandlerFactory();
+    MIN_SIGNAL("MIN_Signal", DataType.FLOAT),
+    AVG_SIGNAL("AVG_Signal", DataType.FLOAT),
+    MAX_SIGNAL("MAX_Signal", DataType.FLOAT),
+    NARRAYS("NARRAYS", DataType.INTEGER),
+    ARRAY_STDEV("ARRAY_STDEV", DataType.FLOAT),
+    BEAD_STDEV("BEAD_STDEV", DataType.FLOAT),
+    AVG_NBEADS("Avg_NBEADS", DataType.INTEGER),
+    DETECTION("Detection", DataType.FLOAT);
 
-    static ArrayDataHandlerFactory getInstance() {
-        return INSTANCE;
+    private final String name;
+    private final DataType type;
+
+    IlluminaExpressionQuantitationType(String name, DataType type) {
+        this.name = name;
+        this.type = type;
     }
 
-    AbstractDataFileHandler getHandler(FileType type) {
-        if (FileType.AFFYMETRIX_CEL.equals(type)) {
-            return new AffymetrixCelHandler();
-        } else if (FileType.AFFYMETRIX_CHP.equals(type)) {
-            return new AffymetrixChpHandler();
-        } else if (FileType.ILLUMINA_DATA_CSV.equals(type)) {
-            return new IlluminaDataHandler();
-        } else {
-            throw new IllegalArgumentException("Unsupported type " + type);
+    /**
+     * {@inheritDoc}
+     */
+    public DataType getDataType() {
+        return type;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getName() {
+        return name;
+    }
+
+    public static List<String> getTypeNames() {
+        List<String> names = new ArrayList<String>(values().length);
+        for (IlluminaExpressionQuantitationType type : values()) {
+            names.add(type.getName());
         }
+        return names;
     }
 
 }
