@@ -1177,24 +1177,20 @@
 		<sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" 
 				username="globus" keyfile="${ssh.key.file}" 
 				passphrase="" verbose="true" 
-				command="export GLOBUS_LOCATION=/usr/local/ws-core-4.0.3; 
-							export ANT_HOME=/usr/local/ant-1.7.0/; export JAVA_HOME=/usr/jdk1.5.0_10/; 
-							/usr/local/ws-core-4.0.3/bin/globus-stop-container" />
+				command="export JAVA_HOME=/usr/jdk1.5.0_10/;/usr/local/ws-core-4.0.3/bin/globus-stop-container" />
 	</target>
 	
 	<target name="remote-globus:start-remote-globus">
 		<sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" 
 				username="globus" keyfile="${ssh.key.file}" 
 				passphrase="" verbose="true" 
-				command="export GLOBUS_LOCATION=/usr/local/ws-core-4.0.3; 
-							export ANT_HOME=/usr/local/ant-1.7.0/; export JAVA_HOME=/usr/jdk1.5.0_10/; 
-							/usr/local/ws-core-4.0.3/bin/globus-start-container" />
+				command="export JAVA_HOME=/usr/jdk1.5.0_10/;nohup /usr/local/ws-core-4.0.3/bin/globus-start-container -nosec &" />
 	</target>
 	
 	<target name="remote-globus:deploy" unless="noglobus">
         <antcall target="remote-globus:createDeploymentGar" />
         <antcall target="remote-globus:copy-caarray-gar" />
-		<antcall target="remote-globus:stop-remote-globus" />
+		<!--<antcall target="remote-globus:stop-remote-globus" />-->
 		<antcall target="remote-globus:deploy-remote-globus" />
 		<antcall target="remote-globus:start-remote-globus" />
     </target>
