@@ -32,7 +32,7 @@
         <copy todir="${basedir}/../.." file="software/build/cruisecontrol_config.xml" />
         <ant antfile="build/cc-nightly-build.xml"
             dir="software"
-            target="nightly" />
+            target="nightly-build" />
         <svn username="${svn.username}" password="${svn.password}">
             <copy message="Tagging with ${label}"
                 srcurl="http://gforge.nci.nih.gov/svnroot/caarray2/trunk"
