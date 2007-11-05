@@ -5,7 +5,8 @@
     <c:url value="/protected/ajax/project/files/downloadFiles.action" var="sortUrl">
         <c:param name="project.id" value="${project.id}" />
     </c:url>
-
+  <c:url var="addIco" value="/images/ico_add.gif"/>
+  <c:set var="addAll" value="<img src=\"${addIco}\" alt=\"Add all\" onclick=\"javascript:downloadMgr.addAll();\">"/>
   <table class="searchresults">
     <tr>
       <td>
@@ -13,10 +14,15 @@
             <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${project.files}"
                 requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="project.id">
                 <caarray:displayTagProperties/>
-                <display:column titleKey="experiment.files.name" sortProperty="name" sortable="true">
-                    <c:url var="downloadUrl" value="/protected/file/download.action"/>
-                  <a href="#" onclick="downloadMgr.addDownloadRow('${row.name}', '${row.id}', ${row.compressedSize})">${row.name}</a>
+                <display:column title="${addAll}">
+                  <script type="text/javascript"><!--
+                  	downloadMgr.populateAll('${row.name}', '${row.id}', ${row.compressedSize});
+                  --></script>
+                  <a href="#" onclick="downloadMgr.addDownloadRow('${row.name}', '${row.id}', ${row.compressedSize})">
+                  	<img src="<c:url value="/images/ico_add.gif"/>" alt="Add ${row.name}"/>
+                  </a>                	
                 </display:column>
+                <display:column titleKey="experiment.files.name" property="name" sortable="true"/>
                 <display:column property="type.name" titleKey="experiment.files.type" sortable="true" />
                 <display:column titleKey="experiment.files.extension" sortable="true">
                   .${fn:split(row.name, ".")[fn:length(fn:split(row.name, ".")) - 1]}
