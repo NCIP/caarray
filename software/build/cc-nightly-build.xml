@@ -17,7 +17,7 @@
     </description>
 
 
-    <import file="build/build.xml"/>
+    <import file="build.xml"/>
 
 	<property name="psexec.exe.cmd" value="${basedir}/build/resources/cruisecontrol/windows/psexec.exe"/>
 
