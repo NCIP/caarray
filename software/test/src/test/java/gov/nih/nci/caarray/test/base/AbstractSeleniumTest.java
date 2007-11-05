@@ -116,7 +116,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected void loginAsPrincipalInvestigator() {
         selenium.open("/caarray/");
         selenium.type("j_username", "caarrayadmin");
-        selenium.type("j_password", "f1rebird05");
+        selenium.type("j_password", "caArray2!");
         clickAndWait("//input[@value='Login']");
     }
 
