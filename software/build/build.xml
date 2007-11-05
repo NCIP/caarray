@@ -1140,12 +1140,12 @@
 
         <taskdef name="ncitask" classname="com.stelligent.anttasks.PropertyValidator">
             <classpath>
-                <pathelement location="${lib.dir}/nci-ant.jar" />
+                <pathelement location="${lib.dir}/ncicb-ant.jar" />
             </classpath>
         </taskdef>
         <taskdef name="appversion" classname="com.stelligent.anttasks.ApplicationVersion">
             <classpath>
-                <pathelement location="${lib.dir}/nci-ant.jar" />
+                <pathelement location="${lib.dir}/ncicb-ant.jar" />
             </classpath>
         </taskdef>
         <ncitask keyFile="${build.dir}/${keyfile.file}" compareFile="${envpropertyfile}" />
