@@ -14,12 +14,15 @@ public class login_test_7 extends TestCase {
         selenium.start();
     }
     
-    public void testGoogle() {
-		selenium.open("/caarray/protected/Project_list.action");
-		selenium.type("j_username", "");
-		selenium.type("j_password", "");
-		selenium.click("login");
+    public void testcaarray() throws InterruptedException {
+		selenium.open("/caarray/protected/project/workspace.action");
+		selenium.click("//span/span");
 		selenium.waitForPageToLoad("30000");
+		for (int second = 0;; second++) {
+			if (second >= 10) fail("timeout");
+			try { if (selenium.isTextPresent("Invalid username and/or password, please try again.")) break; } catch (Exception e) {}
+			Thread.sleep(1000);
+		}
     }
     
     public void tearDown() {

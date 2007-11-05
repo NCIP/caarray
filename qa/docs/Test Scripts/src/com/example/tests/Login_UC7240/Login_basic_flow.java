@@ -6,7 +6,7 @@ public class Login_basic_flow extends TestCase {
     private Selenium selenium;
     public void setUp() {
     	selenium = new DefaultSelenium("localhost",
-            4444, "*chrome", "http://array-qa.nci.nih.gov/caarray/");
+            4444, "*iexplore", "http://array-qa.nci.nih.gov/caarray/");
     	//*iehta - internet explore experimental browser for https
     	//*chrome - firefox experimental browser for https
     	//*firefox - firefox browser
@@ -15,11 +15,12 @@ public class Login_basic_flow extends TestCase {
     }
     
     public void testcaarray() {
-		selenium.open("/caarray/protected/Project_list.action");
+		selenium.open("/caarray/protected/project/workspace.action");
 		selenium.type("j_username", "caarrayadmin");
-		selenium.type("j_password", "f1rebird05");
-		selenium.click("login");
+		selenium.type("j_password", "caArray2!");
+		selenium.click("//span/span");
 		selenium.waitForPageToLoad("30000");
+		assertTrue(selenium.isTextPresent("Experiment Workspace"));
     }
     
     public void tearDown() {

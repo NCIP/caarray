@@ -6,7 +6,7 @@ public class login_test_2 extends TestCase {
     private Selenium selenium;
     public void setUp() {
     	selenium = new DefaultSelenium("localhost",
-            4444, "*chrome", "http://array-qa.nci.nih.gov/caarray/");
+            4444, "*iexplore", "http://array-qa.nci.nih.gov/caarray/");
     	//*iehta - internet explore experimental browser for https
     	//*chrome - firefox experimental browser for https
     	//*firefox - firefox browser
@@ -14,13 +14,17 @@ public class login_test_2 extends TestCase {
         selenium.start();
     }
     
-    public void testGoogle() throws InterruptedException {
-		selenium.open("/caarray/protected/Project_list.action");
+    public void testcaarray() throws InterruptedException {
+		selenium.open("/caarray/protected/project/workspace.action");
 		selenium.type("j_username", "caarrayadmin");
-		Thread.sleep(9000);
 		selenium.type("j_password", "abcd");
-		selenium.click("login");
-		selenium.waitForPageToLoad("30000");
+		selenium.click("//span/span");
+		selenium.open("/caarray/j_security_check");
+		for (int second = 0;; second++) {
+			if (second >= 5) fail("timeout");
+			try { if (selenium.isTextPresent("Invalid username and/or password, please try again.")) break; } catch (Exception e) {}
+			Thread.sleep(1000);}
+		
     }
     
     public void tearDown() {
