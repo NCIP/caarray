@@ -1143,7 +1143,14 @@
                 <pathelement location="${lib.dir}/nci-ant.jar" />
             </classpath>
         </taskdef>
+        <taskdef name="appversion" classname="com.stelligent.nci.anttasks.ApplicationVersion">
+            <classpath>
+                <pathelement location="${lib.dir}/nci-ant.jar" />
+            </classpath>
+        </taskdef>
         <ncitask keyFile="${build.dir}/${keyfile.file}" compareFile="${envpropertyfile}" />
+		<appversion version="${build.tag_built}" buildTag="${version}" 
+		buildNumber="${buildNumber}" buildDateTime="${build.date_time}"  />
     </target>
 
 	<!-- Globus deployment begin -->
