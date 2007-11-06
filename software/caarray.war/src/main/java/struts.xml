@@ -83,8 +83,11 @@
         <action name="login" class="gov.nih.nci.caarray.web.action.LoginAction">
             <result name="input">/WEB-INF/pages/login.jsp</result>
         </action>
-        <action name="search" class="gov.nih.nci.caarray.web.action.SearchAction">
-            <result name="success">/notYetImplemented.jsp</result>
+        <action name="search/*" class="gov.nih.nci.caarray.web.action.SearchAction" method="{1}">
+            <result name="success">/WEB-INF/pages/experiment/searchResults.jsp</result>
+        </action>
+        <action name="ajax/search/*" class="gov.nih.nci.caarray.web.action.SearchAction" method="{1}">
+            <result name="tab">/WEB-INF/pages/experiment/searchTab.jsp</result>
         </action>
     </package>
 

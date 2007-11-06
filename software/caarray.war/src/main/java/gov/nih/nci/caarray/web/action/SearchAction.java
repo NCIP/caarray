@@ -82,7 +82,12 @@
  */
 package gov.nih.nci.caarray.web.action;
 
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
@@ -92,10 +97,16 @@ import com.opensymphony.xwork2.ActionSupport;
  *
  */
 public class SearchAction extends ActionSupport {
-
+    // search parameters
     private String keyword;
     private SearchCategory category;
     private String location;
+
+    // fields for displaying search results
+    private String currentTab;
+    private List<Experiment> results;
+    private Map<String,Integer> tabs;
+
     /**
      * @return the keyword
      */
@@ -132,8 +143,67 @@ public class SearchAction extends ActionSupport {
     public void setLocation(String location) {
         this.location = location;
     }
+    /**
+     * @return the current tab
+     */
+    public String getCurrentTab() {
+        return currentTab;
+    }
+    /**
+     * Returns a map of tabs to #results in that tab.
+     * @return the tabs
+     */
+    public Map<String, Integer> getTabs() {
+        return tabs;
+    }
+    /**
+     * @return the experiments
+     */
+    public List<Experiment> getResults() {
+        return results;
+    }
 
-    public String execute() {
+    /**
+     * This action queries for the result counts of each tab.
+     * The tabs call other methods to return the actual data.
+     * @return
+     */
+    public String basicSearch() {
+        tabs = new LinkedHashMap<String, Integer>();
+        // TODO get count for each tab
+        tabs.put("experiments", 0);
+        tabs.put("arrayDesigns", 0);
+        tabs.put("samples", 0);
         return Action.SUCCESS;
+    }
+    /**
+     * Search action for the experiments tab
+     * @return
+     */
+    public String experiments() {
+        currentTab = "experiments";
+        // TODO get results for experiments
+        results = null;
+        return "tab";
+    }
+    /**
+     * Search action for the arrayDesigns tab
+     * @return
+     */
+    public String arrayDesigns() {
+        currentTab = "arrayDesigns";
+        // TODO get results for array designs
+        results = null;
+        return "tab";
+    }
+    /**
+     * Search action for the samples tab
+     * @return
+     */
+    public String samples() {
+        currentTab = "samples";
+        // TODO get results for samples
+        results = null;
+        return "tab";
     }
 }

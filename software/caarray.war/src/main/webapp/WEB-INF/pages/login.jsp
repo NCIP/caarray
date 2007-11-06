@@ -11,7 +11,7 @@
         <div id="searchboxhome">
             <h2 class="tanbar">Search caArray</h2>
             <div class="boxpad">
-                <s:form action="/search.action">
+                <s:form action="/search/basicSearch.action">
                     <s:textfield name="keyword" key="search.keyword"/>
                     <s:select name="category" key="search.category"
                               list="@gov.nih.nci.caarray.domain.search.SearchCategory@values()" listValue="%{getText(resourceKey)}"

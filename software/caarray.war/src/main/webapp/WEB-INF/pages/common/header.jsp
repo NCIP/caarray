@@ -9,7 +9,7 @@
     <div id="caarraylogo"><a href="<c:url value="/" />"><img src="<c:url value="/images/logo_caarray.gif"/>" width="172" height="46" alt="Logo: caArray - Array Data Management System" /></a></div>
     <c:if test="${pageContext.request.remoteUser != null}">
         <div id="topsearch">
-            <s:form action="/search.action" theme="simple">
+            <s:form action="/search/basicSearch.action" theme="simple">
                 <s:textfield required="true" name="keyword"/>
                 <s:select required="true" name="category"
                           list="@gov.nih.nci.caarray.domain.search.SearchCategory@values()" listValue="%{getText(resourceKey)}"
