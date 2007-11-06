@@ -803,6 +803,7 @@
 
     <target name="test:junit-report">
         <mkdir dir="${site.dir}/junit" />
+        <mkdir dir="${test.target.dir}/junit" />
         <junitreport todir="${site.dir}/junit">
             <fileset dir="${caarray-client.target.dir}/junit">
                 <include name="TEST-*.xml" />
