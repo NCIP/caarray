@@ -1,4 +1,6 @@
-package com.example.tests.Login_UC7240;
+package Login_UC7240;
+
+
 
 import junit.framework.TestCase;
 
@@ -6,7 +8,7 @@ import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
 
 
-public class Login_test_1 extends TestCase {
+public class login_test_1 extends TestCase {
     private Selenium selenium;
     public void setUp() {
     	selenium = new DefaultSelenium("localhost",
