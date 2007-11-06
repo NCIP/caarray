@@ -211,9 +211,9 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
      */
     public List<User> getUsers() {
         getUsersCalled = true;
-        return null;
+        return Collections.emptyList();
     }
-    
+
     /**
      * {@inheritDoc}
      */

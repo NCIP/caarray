@@ -98,6 +98,7 @@ import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.After;
@@ -164,6 +165,7 @@ public class CollaboratorsActionTest {
     public void testAddUsers() throws CSTransactionException, CSObjectNotFoundException {
         User owner = new User();
         Group group = new Group();
+        group.setUsers(Collections.emptySet());
         CollaboratorGroup cg = new CollaboratorGroup(group, owner);
         List<String> toAdd = new ArrayList<String>();
         toAdd.add("1");
