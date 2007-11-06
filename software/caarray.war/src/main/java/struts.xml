@@ -146,7 +146,10 @@
         </action>
 
         <action name="ajax/project/files/*" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="{1}">
-            <result name="input">/WEB-INF/pages/project/files/list.jsp</result>
+            <result name="input">/WEB-INF/pages/project/files/listUnimported.jsp</result>
+            <result name="listImported">/WEB-INF/pages/project/files/listImported.jsp</result>
+            <result name="listUnimported">/WEB-INF/pages/project/files/listUnimported.jsp</result>
+            <result name="table">/WEB-INF/pages/project/files/listTable.jsp</result>
             <result name="success">/WEB-INF/pages/project/files/{1}.jsp</result>
         </action>
 

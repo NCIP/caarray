@@ -87,6 +87,7 @@ import static gov.nih.nci.caarray.web.action.ActionHelper.getFileManagementServi
 import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.io.FileClosingInputStream;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 
@@ -98,7 +99,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -119,21 +122,28 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 @Validation
 public class ProjectFilesAction extends BaseProjectAction implements Preparable {
     private static final long serialVersionUID = 1L;
+    private static final String ACTION_UNIMPORTED = "listUnimported";
+    private static final String ACTION_IMPORTED = "listImported";
+    private static final String ACTION_TABLE = "table";
 
     private List<File> uploads;
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<String> uploadContentTypes = new ArrayList<String>();
     private List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
     private InputStream downloadStream;
+    private Set<CaArrayFile> files = new HashSet<CaArrayFile>();
+    private String listAction;
 
-    /**
-     * Method to get the list of files.
-     *
-     * @return the string matching the result to follow
-     */
-    @SkipValidation
-    public String list() {
-        return Action.INPUT;
+    private String prepListUnimportedPage() {
+        setListAction(ACTION_UNIMPORTED);
+        setFiles(getProject().getUnImportedFiles());
+        return ACTION_UNIMPORTED;
+    }
+
+    private String prepListImportedPage() {
+        setListAction(ACTION_IMPORTED);
+        setFiles(getProject().getImportedFiles());
+        return ACTION_IMPORTED;
     }
 
     /**
@@ -142,8 +152,40 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
      * @return the string matching the result to follow
      */
     @SkipValidation
-    public String listTable() {
-        return Action.SUCCESS;
+    public String listUnimported() {
+        return prepListUnimportedPage();
+    }
+
+    /**
+     * Method to get the list of files.
+     *
+     * @return the string matching the result to follow
+     */
+    @SkipValidation
+    public String listUnimportedTable() {
+        prepListUnimportedPage();
+        return ACTION_TABLE;
+    }
+
+    /**
+     * Method to get the list of files.
+     *
+     * @return the string matching the result to follow
+     */
+    @SkipValidation
+    public String listImported() {
+        return prepListImportedPage();
+    }
+
+    /**
+     * Method to get the list of files.
+     *
+     * @return the string matching the result to follow
+     */
+    @SkipValidation
+    public String listImportedTable() {
+        prepListImportedPage();
+        return ACTION_TABLE;
     }
 
     /**
@@ -176,7 +218,7 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
         if (skippedFiles > 0) {
             ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for deletion.");
         }
-        return Action.INPUT;
+        return prepListUnimportedPage();
     }
 
     /**
@@ -203,13 +245,14 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
         if (skippedFiles > 0) {
             ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for validation.");
         }
-        return Action.INPUT;
+        return prepListUnimportedPage();
     }
 
     /**
      * Method to import the files.
      * @return the string matching the result to follow
      */
+    @SkipValidation
     public String importFiles() {
         int importedFiles = 0;
         int skippedFiles = 0;
@@ -229,13 +272,15 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
         if (skippedFiles > 0) {
             ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for importing.");
         }
-        return Action.INPUT;
+        HibernateUtil.getCurrentSession().refresh(getProject());
+        return prepListUnimportedPage();
     }
 
     /**
      * View the validation messages for the selected files.
      * @return the string matching the result to use.
      */
+    @SkipValidation
     public String validationMessages() {
         return Action.SUCCESS;
     }
@@ -393,5 +438,33 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
      */
     public void setSelectedFiles(List<CaArrayFile> selectedFiles) {
         this.selectedFiles = selectedFiles;
+    }
+
+    /**
+     * @return the files
+     */
+    public Set<CaArrayFile> getFiles() {
+        return this.files;
+    }
+
+    /**
+     * @param files the files to set
+     */
+    public void setFiles(Set<CaArrayFile> files) {
+        this.files = files;
+    }
+
+    /**
+     * @return the listAction
+     */
+    public String getListAction() {
+        return this.listAction;
+    }
+
+    /**
+     * @param listAction the listAction to set
+     */
+    public void setListAction(String listAction) {
+        this.listAction = listAction;
     }
 }

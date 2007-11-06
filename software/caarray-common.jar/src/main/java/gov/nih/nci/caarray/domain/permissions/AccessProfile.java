@@ -128,7 +128,7 @@ public class AccessProfile implements PersistentObject, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public Long getId() {
-        return id;
+        return this.id;
     }
 
     /**
@@ -138,7 +138,7 @@ public class AccessProfile implements PersistentObject, Serializable {
      * @deprecated should only be used by castor, hibernate and struts
      */
     @Deprecated
-    public void setId(Long id) { 
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -148,7 +148,7 @@ public class AccessProfile implements PersistentObject, Serializable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     public SecurityLevel getSecurityLevel() {
-        return securityLevel;
+        return this.securityLevel;
     }
 
     /**
@@ -156,13 +156,6 @@ public class AccessProfile implements PersistentObject, Serializable {
      */
     public void setSecurityLevel(SecurityLevel securityLevel) {
         this.securityLevel = securityLevel;
-        if (securityLevel == SecurityLevel.NONE
-                || securityLevel == SecurityLevel.READ) {
-            selectiveReadSamples.clear();
-            selectiveWriteSamples.clear();
-        } else if (securityLevel == SecurityLevel.READ_SELECTIVE) {
-            selectiveWriteSamples.clear();
-        }
     }
 
     /**
@@ -176,7 +169,7 @@ public class AccessProfile implements PersistentObject, Serializable {
     )
     @ForeignKey(name = "PROFILEREAD_PROFILE_FK", inverseName = "PROFILEREAD_READ_FK")
     public Set<Sample> getSelectiveReadSamples() {
-        return selectiveReadSamples;
+        return this.selectiveReadSamples;
     }
 
     @SuppressWarnings("unused")
@@ -195,7 +188,7 @@ public class AccessProfile implements PersistentObject, Serializable {
     )
     @ForeignKey(name = "PROFILEWRITE_PROFILE_FK", inverseName = "PROFILEWRITE_WRITE_FK")
     public Set<Sample> getSelectiveWriteSamples() {
-        return selectiveWriteSamples;
+        return this.selectiveWriteSamples;
     }
 
     @SuppressWarnings("unused")
@@ -216,7 +209,7 @@ public class AccessProfile implements PersistentObject, Serializable {
     @Enumerated(EnumType.STRING)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Map<Sample, SampleSecurityLevel> getSampleSecurityLevels() {
-        return sampleSecurityLevels;
+        return this.sampleSecurityLevels;
     }
 
     /**

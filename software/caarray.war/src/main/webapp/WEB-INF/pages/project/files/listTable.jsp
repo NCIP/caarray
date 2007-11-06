@@ -1,10 +1,18 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
-<c:url value="/protected/ajax/project/files/listTable.action" var="sortUrl">
+<c:url value="/protected/ajax/project/files/${listAction}Table.action" var="sortUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
+<c:choose>
+    <c:when test="${listAction == 'listImported'}">
+        <c:set var="pageSize" value="20" />
+    </c:when>
+    <c:otherwise>
+        <c:set var="pageSize" value="-1" />
+    </c:otherwise>
+</c:choose>
 <c:set var="checkboxAll" value="<input type=\"checkbox\" name=\"selectAllCheckbox\" onClick=\"javascript: selectAll(this, document.getElementById('selectFilesForm'));\" >" />
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
-    <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${project.files}"
+    <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${files}" pagesize="${pageSize}"
         requestURI="${sortUrl}" sort="list" id="row" excludedParams="project.id">
         <caarray:displayTagProperties/>
         <display:column title="${checkboxAll}">
@@ -32,6 +40,7 @@
                         <c:url value="/protected/ajax/project/files/validationMessages.action" var="viewMessagesUrl">
                             <c:param name="project.id" value="${project.id}" />
                             <c:param name="selectedFiles" value="${row.id}" />
+                            <c:param name="returnAction" value="${listAction}" />
                         </c:url>
                         <a href="${viewMessagesUrl}">${statusVal}</a>
                     </c:otherwise>

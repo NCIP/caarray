@@ -11,15 +11,6 @@
         formTableTbody = formTable.getElementsByTagName('tbody')[0];
         formTableTbody.appendChild(newRow);
     }
-    selectAll = function(selectAllBox, theform) {
-       var state = selectAllBox.checked;
-        for (i = 0; i < theform.elements.length; i++) {
-            var element = theform.elements[i];
-            if ("checkbox" == element.type) {
-                element.checked = state;
-            }
-        }
-    }
     setExperimentTitleHeader('${project.experiment.title}');
 </script>
 
@@ -28,7 +19,7 @@
     <caarray:successMessages />
 
     <div class="boxpad2">
-        <h3><fmt:message key="project.tabs.manageData" /></h3>
+        <h3><fmt:message key="project.tabs.unimportedFiles" /></h3>
         <div class="addlink">
             <fmt:message key="experiment.data.upload" var="uploadLabel" />
             <caarray:linkButton actionClass="add" text="${uploadLabel}" onclick="Element.show('uploadFileDiv');"/>
@@ -65,7 +56,5 @@
         <caarray:linkButton actionClass="validate" text="Validate" onclick="TabUtils.submitSubTabFormToUrl('selectFilesForm', '${validateUrl}', 'tabboxlevel2wrapper');" />
         <c:url value="/protected/ajax/project/files/importFiles.action" var="importUrl"/>
         <caarray:linkButton actionClass="import" text="Import" onclick="TabUtils.submitSubTabFormToUrl('selectFilesForm', '${importUrl}', 'tabboxlevel2wrapper');" />
-        <c:url value="/ajax/notYetImplemented.jsp" var="associationsUrl" />
-        <caarray:linkButton actionClass="manage_associations" text="Manage Associations" onclick="TabUtils.submitSubTabFormToUrl('selectFilesForm', '${associationsUrl}', 'tabboxlevel2wrapper');" />
     </caarray:actions>
 </caarray:tabPane>

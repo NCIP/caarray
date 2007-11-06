@@ -91,9 +91,8 @@ import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.util.Protectable;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -118,6 +117,7 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.MapKeyManyToMany;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
+import org.hibernate.annotations.Where;
 import org.hibernate.validator.NotNull;
 
  /**
@@ -131,6 +131,8 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private ProposalStatus status = ProposalStatus.DRAFT;
     private Experiment experiment = new Experiment();
     private SortedSet<CaArrayFile> files = new TreeSet<CaArrayFile>();
+    private SortedSet<CaArrayFile> importedFiles = new TreeSet<CaArrayFile>();
+    private SortedSet<CaArrayFile> unImportedFiles = new TreeSet<CaArrayFile>();
     private AccessProfile publicProfile = new AccessProfile();
     private AccessProfile hostProfile = new AccessProfile();
     private Map<CollaboratorGroup, AccessProfile> groupProfiles = new HashMap<CollaboratorGroup, AccessProfile>();
@@ -212,21 +214,61 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         return this.files;
     }
 
-    /**
-     * Helper method to get files as list for JSF controls.
-     *
-     * @return files, as list
-     */
-    @Transient
-    public List<CaArrayFile> getFilesList() {
-        List<CaArrayFile> result = new ArrayList<CaArrayFile>(getFiles().size());
-        result.addAll(getFiles());
-        return result;
-    }
-
     @SuppressWarnings("unused")
     private void setFiles(final SortedSet<CaArrayFile> filesVal) { // NOPMD
         this.files = filesVal;
+    }
+
+    /**
+     * Get the files.
+     * @return the files.
+     */
+    @Transient
+    public SortedSet<CaArrayFile> getImportedFiles() {
+        return Collections.unmodifiableSortedSet(getImportedFileSet());
+    }
+
+    /**
+     * Gets the files.
+     *
+     * @return the files
+     */
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    @Sort(type = SortType.NATURAL)
+    @Where(clause = "status = 'IMPORTED'")
+    private SortedSet<CaArrayFile> getImportedFileSet() {
+        return this.importedFiles;
+    }
+
+    @SuppressWarnings("unused")
+    private void setImportedFileSet(final SortedSet<CaArrayFile> filesVal) { // NOPMD
+        this.importedFiles = filesVal;
+    }
+
+    /**
+     * Get the files.
+     * @return the files.
+     */
+    @Transient
+    public SortedSet<CaArrayFile> getUnImportedFiles() {
+        return Collections.unmodifiableSortedSet(getUnImportedFileSet());
+    }
+
+    /**
+     * Gets the files.
+     *
+     * @return the files
+     */
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    @Sort(type = SortType.NATURAL)
+    @Where(clause = "status != 'IMPORTED'")
+    private SortedSet<CaArrayFile> getUnImportedFileSet() {
+        return this.unImportedFiles;
+    }
+
+    @SuppressWarnings("unused")
+    private void setUnImportedFileSet(final SortedSet<CaArrayFile> filesVal) { // NOPMD
+        this.unImportedFiles = filesVal;
     }
 
     /**
@@ -270,7 +312,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     /**
      * @return collaborator access profiles
      */
-    @ManyToMany(fetch = FetchType.LAZY)    
+    @ManyToMany(fetch = FetchType.LAZY)
     @MapKeyManyToMany(joinColumns = @JoinColumn(name = "GROUP_ID", nullable = false))
     @JoinTable(
             name = "PROJECT_GROUPS",

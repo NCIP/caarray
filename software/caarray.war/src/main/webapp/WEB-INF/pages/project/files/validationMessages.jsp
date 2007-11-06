@@ -23,7 +23,7 @@
         </s:form>
     </div>
      <caarray:actions divclass="actionsthin">
-        <c:url value="/protected/ajax/project/files/list.action" var="manageDataUrl">
+        <c:url value="/protected/ajax/project/files/${param.returnAction}.action" var="manageDataUrl">
             <c:param name="project.id" value="${project.id}" />
         </c:url>
         <caarray:linkButton actionClass="cancel" text="Cancel" onclick="executeAjaxTab_tablevel2(null,'selected', '${manageDataUrl}', '');" />
