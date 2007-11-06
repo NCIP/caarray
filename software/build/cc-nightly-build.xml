@@ -31,4 +31,18 @@
 		   <arg line="-u ${psexec.system.username} -p ${psexec.system.password} -d -i -w ${jboss.home}/bin/ ${jboss.home}/bin/run.bat" />
 		</exec>
     </target>
+
+    <target name="nightly-build" depends="continuous-integration,
+        deploy:stop-jboss,
+        deploy:start-jboss,
+        deploy:deploy-and-wait,
+        test:functional,
+        test:junit-report,
+        deploy:stop-jboss,
+        test:check-functional-test-results" />
+
+    <target name="test:functional" unless="notest" description="overridden to not fail build immediately on failing tests.">
+        <antcall target="test:functional:run-tests"/>
+    </target>
+
 </project>
