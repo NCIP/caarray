@@ -115,6 +115,7 @@ import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.security.authorization.domainobjects.FilterClause;
+import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -130,7 +131,9 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
@@ -634,5 +637,19 @@ public class ProjectDaoTest extends AbstractDaoTest {
         List<?> list = SecurityInterceptor.getAuthorizationManager().getObjects(searchCriteria);
         assertTrue(list.size() > 0);
         tx.commit();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testExtraLazyNess() {
+        Session s = HibernateUtil.getCurrentSession();
+        Transaction tx = s.beginTransaction();
+        List<Group> groups = s.createQuery("FROM " + Group.class.getName()).list();
+        Group g = groups.get(0);
+        assertTrue(!Hibernate.isInitialized(g.getUsers()));
+        g.getUsers().size();
+        assertTrue(!Hibernate.isInitialized(g.getUsers()));
+        tx.commit();
+
     }
 }

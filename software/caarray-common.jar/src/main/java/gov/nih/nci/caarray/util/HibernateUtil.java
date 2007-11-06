@@ -82,7 +82,10 @@
  */
 package gov.nih.nci.caarray.util;
 
+import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.instancelevel.InstanceLevelSecurityHelper;
+
+import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -96,12 +99,14 @@ import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.context.ManagedSessionContext;
 import org.hibernate.engine.SessionFactoryImplementor;
+import org.hibernate.mapping.Collection;
 
 /**
  * Utility class to create and retrieve Hibernate sessions.
- * 
+ *
  * @author Rashmi Srinivasa
  */
+@SuppressWarnings("unchecked")
 public final class HibernateUtil {
 
     private static final Log LOG = LogFactory.getLog(HibernateUtil.class);
@@ -135,6 +140,15 @@ public final class HibernateUtil {
             // removed, you'll likely see a NoClassDefFoundError in the unit tests
             HIBERNATE_CONFIG.buildSessionFactory();
             InstanceLevelSecurityHelper.addFilters(SecurityInterceptor.getAuthorizationManager(), tmpConfig);
+            Iterator<Collection> it = HIBERNATE_CONFIG.getCollectionMappings();
+            final String role = Group.class.getName() + ".users";
+            while (it.hasNext()) {
+                Collection c = it.next();
+                if (c.getRole().equals(role)) {
+                    c.setLazy(true);
+                    c.setExtraLazy(true);
+                }
+            }
             SESSION_FACTORY = HIBERNATE_CONFIG.buildSessionFactory();
         } catch (HibernateException e) {
             LOG.error(e.getMessage(), e);
@@ -150,7 +164,7 @@ public final class HibernateUtil {
 
     /**
      * Returns the Hibernate configuration.
-     * 
+     *
      * @return a Hibernate configuration.
      */
     public static Configuration getConfiguration() {
@@ -161,7 +175,7 @@ public final class HibernateUtil {
      * Returns the current Hibernate session. Note that this returns a special session that can be used only in the
      * context of a transaction. (Assuming that the hibernate properties are set to use a JTA or JDBC transaction
      * factory.)
-     * 
+     *
      * @return a Hibernate session.
      */
     public static Session getCurrentSession() {
@@ -175,7 +189,7 @@ public final class HibernateUtil {
 
     /**
      * Checks if the transaction is active and then rolls it back.
-     * 
+     *
      * @param tx the Transaction to roll back.
      */
     public static void rollbackTransaction(Transaction tx) {
@@ -197,7 +211,7 @@ public final class HibernateUtil {
      * "hibernate.current_session_context_class" must be set to "managed" for this to have effect This method should be
      * called from within an Interceptor or Filter type class that is setting up the scope of the Session. This method
      * should then call {@link HibernateUtil#unbindAndCleanupSession()} when the scope of the Session is expired.
-     * 
+     *
      * @see ManagedSessionContext#bind(org.hibernate.classic.Session)
      */
     public static void openAndBindSession() {
