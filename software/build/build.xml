@@ -816,6 +816,9 @@
             <fileset dir="${caarray-war.target.dir}/junit">
                 <include name="TEST-*.xml" />
             </fileset>
+            <fileset dir="${test.target.dir}/junit">
+            	<include name="TEST-*.xml" />
+            </fileset>
             <report format="frames" todir="${site.dir}/junit" />
         </junitreport>
     </target>
@@ -1082,7 +1085,7 @@
 
     <target name="deploy:stop-jboss">
         <java classname="org.jboss.Shutdown" fork="true" spawn="false">
-            <arg line="-s ${jboss.server.hostname} -S" />
+            <arg line="-s ${jboss.server.hostname}:${jboss.server.jndi.port} -S" />
             <classpath>
                 <pathelement location="${jboss.home}/bin/shutdown.jar" />
             </classpath>
@@ -1149,7 +1152,7 @@
             </classpath>
         </taskdef>
         <ncitask keyFile="${build.dir}/${keyfile.file}" compareFile="${envpropertyfile}" />
-		<appversion version="${build.tag_built}" buildTag="${version}" 
+		<appversion version="${build.tag_built}" buildTag="${version}"
 		buildNumber="${buildNumber}" buildDateTime="${build.date_time}"  />
     </target>
 
@@ -1172,28 +1175,28 @@
 	</target>
 
 	<target name="remote-globus:deploy-remote-globus">
-		<sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" 
-				username="globus" keyfile="${ssh.key.file}" 
-				passphrase="" verbose="true" 
-				command="export GLOBUS_LOCATION=/usr/local/ws-core-4.0.3; 
-							export ANT_HOME=/usr/local/ant-1.7.0/; export JAVA_HOME=/usr/jdk1.5.0_10/; 
+		<sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true"
+				username="globus" keyfile="${ssh.key.file}"
+				passphrase="" verbose="true"
+				command="export GLOBUS_LOCATION=/usr/local/ws-core-4.0.3;
+							export ANT_HOME=/usr/local/ant-1.7.0/; export JAVA_HOME=/usr/jdk1.5.0_10/;
 							/usr/local/ws-core-4.0.3/bin/globus-deploy-gar /tmp/cagrid_CaArraySvc.gar" />
 	</target>
-	
+
 	<target name="remote-globus:stop-remote-globus">
-		<sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" 
-				username="globus" keyfile="${ssh.key.file}" 
-				passphrase="" verbose="true" 
+		<sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true"
+				username="globus" keyfile="${ssh.key.file}"
+				passphrase="" verbose="true"
 				command="export JAVA_HOME=/usr/jdk1.5.0_10/;/usr/local/ws-core-4.0.3/bin/globus-stop-container" />
 	</target>
-	
+
 	<target name="remote-globus:start-remote-globus">
-		<sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" 
-				username="globus" keyfile="${ssh.key.file}" 
-				passphrase="" verbose="true" 
+		<sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true"
+				username="globus" keyfile="${ssh.key.file}"
+				passphrase="" verbose="true"
 				command="export JAVA_HOME=/usr/jdk1.5.0_10/;nohup /usr/local/ws-core-4.0.3/bin/globus-start-container -nosec &amp;" />
 	</target>
-	
+
 	<target name="remote-globus:deploy" unless="noglobus">
         <antcall target="remote-globus:createDeploymentGar" />
         <antcall target="remote-globus:copy-caarray-gar" />
