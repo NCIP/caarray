@@ -184,12 +184,14 @@ public class CollaboratorsAction extends ActionSupport {
      * @throws CSTransactionException on CSM error
      * @throws CSObjectNotFoundException on CSM error
      */
+    @SuppressWarnings("unchecked")
     @SkipValidation
     public String addUsers() throws CSTransactionException, CSObjectNotFoundException {
         if (CollectionUtils.isNotEmpty(getUsers())) {
             getPermissionsManagementService().addUsers(getTargetGroup(), getUsers());
         }
-        setAllUsers(getPermissionsManagementService().getUsers());
+        setAllUsers((List<User>) CollectionUtils.subtract(getPermissionsManagementService().getUsers(),
+                                                          getTargetGroup().getGroup().getUsers()));
         return Action.SUCCESS;
     }
 

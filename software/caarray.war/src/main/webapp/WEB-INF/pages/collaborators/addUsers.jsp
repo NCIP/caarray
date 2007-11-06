@@ -11,7 +11,7 @@
         <h3>
           <a href="listGroups.action">Collaboration Groups</a> &gt;
           <span class="dark">
-          	${targetGroup.group.groupName}
+          	<a href="edit.action?targetGroup=${targetGroup.id}">${targetGroup.group.groupName}</a>
           </span>
         </h3>
       </div>
@@ -20,29 +20,7 @@
       	<strong>Add icon</strong> in the column on the right to add the user as a group member.
       	</p>
 	  </div>
-		<c:url value="/protected/ajax/collaborators/addUsers.action" var="sortUrl">
-			<c:param name="targetGroup" value="${targetGroup.id}"/>
-		</c:url>
-		<ajax:displayTag id="dataTable" ajaxFlag="true" tableClass="searchresults">
-			<display:table class="searchresults" cellspacing="0" defaultsort="1" list="${allUsers}"
-				requestURI="${sortUrl}" sort="list" id="row" pagesize="20">
-				<caarray:displayTagProperties/>
-				<display:column titleKey="member.name" sortable="true">
-					${row.lastName}, ${row.firstName}
-				</display:column>
-				<display:column titleKey="label.institution" sortable="true" property="organization"/>
-				<display:column titleKey="label.email" sortable="true" sortProperty="email">
-					<a href="mailto:${row.emailId}">${row.emailId}</a>
-				</display:column>
-				<display:column titleKey="button.add">
-					<c:url value="/protected/collaborators/addUsers.action" var="addUrl">
-						<c:param name="users" value="${row.userId}"/>
-						<c:param name="targetGroup" value="${targetGroup.id}"/>
-					</c:url>
-					<a href="${addUrl}"><img src="<c:url value="/images/ico_add.gif"/>" alt="<fmt:message key="button.add"/>"/></a>
-				</display:column>
-			</display:table>
-		</ajax:displayTag>
+		<%@ include file="/WEB-INF/pages/collaborators/addTable.jsp" %>
 	</div>
 	</div>
 </body>

@@ -162,6 +162,7 @@
         <action name="ajax/collaborators/*" class="gov.nih.nci.caarray.web.action.CollaboratorsAction" method="{1}">
             <result name="list">/WEB-INF/pages/collaborators/listGroups.jsp</result>
             <result name="editTable">/WEB-INF/pages/collaborators/editTable.jsp</result>
+            <result name="success">/WEB-INF/pages/collaborators/addTable.jsp</result>
         </action>
 
     </package>

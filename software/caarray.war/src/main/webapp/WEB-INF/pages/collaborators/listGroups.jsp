@@ -16,9 +16,7 @@
             <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${groups}"
                 requestURI="${sortUrl}" sort="list" id="row" pagesize="20">
                 <caarray:displayTagProperties/>
-                <display:column sortProperty="group.groupName" titleKey="collaboration.group.name" sortable="true">
-                  <a href="#">${row.group.groupName}</a>
-                </display:column>
+                <display:column property="group.groupName" titleKey="collaboration.group.name" sortable="true"/>
                 <display:column titleKey="collaboration.group.members">
                   <c:if test="${fn:length(row.group.users) > 20}">
                     <a href="#">(View All ${fn:length(row.group.users)})</a>
