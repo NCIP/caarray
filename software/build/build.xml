@@ -1138,12 +1138,12 @@
         <echo>keyfile.file is ${keyfile.file} </echo>
         <echo>envpropertyfile is ${envpropertyfile} </echo>
 
-        <taskdef name="ncitask" classname="com.stelligent.anttasks.PropertyValidator">
+        <taskdef name="ncitask" classname="gov.nih.ncicb.anttasks.PropertyValidator">
             <classpath>
                 <pathelement location="${lib.dir}/ncicb-ant.jar" />
             </classpath>
         </taskdef>
-        <taskdef name="appversion" classname="com.stelligent.anttasks.ApplicationVersion">
+        <taskdef name="appversion" classname="gov.nih.ncicb.anttasks.ApplicationVersion">
             <classpath>
                 <pathelement location="${lib.dir}/ncicb-ant.jar" />
             </classpath>
