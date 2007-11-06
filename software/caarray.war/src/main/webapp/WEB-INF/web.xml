@@ -65,6 +65,8 @@
     <filter-mapping>
         <filter-name>struts2</filter-name>
         <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
 
     <listener>
@@ -141,8 +143,8 @@
     <login-config>
         <auth-method>FORM</auth-method>
         <form-login-config>
-            <form-login-page>/WEB-INF/pages/login.jsp</form-login-page>
-            <form-error-page>/WEB-INF/pages/login.jsp?error=true</form-error-page>
+            <form-login-page>/login.action</form-login-page>
+            <form-error-page>/login.action?error=true</form-error-page>
         </form-login-config>
     </login-config>
 

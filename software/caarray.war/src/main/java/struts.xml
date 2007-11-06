@@ -80,6 +80,12 @@
                 <param name="actionName">project/workspace</param>
             </result>
         </action>
+        <action name="login" class="gov.nih.nci.caarray.web.action.LoginAction">
+            <result name="input">/WEB-INF/pages/login.jsp</result>
+        </action>
+        <action name="search" class="gov.nih.nci.caarray.web.action.SearchAction">
+            <result name="success">/notYetImplemented.jsp</result>
+        </action>
     </package>
 
     <package name="protected" namespace="/protected" extends="default">
