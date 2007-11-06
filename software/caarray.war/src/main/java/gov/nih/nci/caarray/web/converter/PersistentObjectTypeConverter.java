@@ -123,7 +123,8 @@ public class PersistentObjectTypeConverter extends StrutsTypeConverter {
     @SuppressWarnings("unchecked")
     public Object convertFromString(Map context, String[] values, Class toClass) {
         XWorkBasicConverter converter = new XWorkBasicConverter();
-        if (StringUtils.isNotBlank(values[0])) {
+        // the check for numeric is needed here to support checkboxes.
+        if (StringUtils.isNotBlank(values[0]) && StringUtils.isNumeric(values[0])) {
             Long id = (Long) converter.convertValue(context, values[0], Long.class);
             GenericDataService service = (GenericDataService) getServiceLocator().lookup(GenericDataService.JNDI_NAME);
             return service.retrieveEnity(toClass, id);

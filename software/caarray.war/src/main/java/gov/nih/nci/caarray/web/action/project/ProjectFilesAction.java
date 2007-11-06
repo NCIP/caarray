@@ -294,14 +294,24 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
     public String upload() throws Exception {
         unzipFiles();
 
+        Set<String> existingFileNameSet = new HashSet<String>();
+        for (CaArrayFile file: getProject().getFiles()) {
+            existingFileNameSet.add(file.getName());
+        }
+
         int index = 0;
         int fileCount = 0;
         for (File uploadedFile : getUpload()) {
             try {
                 String fileName = getUploadFileName().get(index);
                 if (StringUtils.isNotBlank(fileName)) {
-                    getProjectManagementService().addFile(getProject(), uploadedFile, fileName);
-                    fileCount++;
+                    if (existingFileNameSet.contains(fileName)) {
+                        ActionHelper.saveMessage(getText("experiment.files.upload.filename.exists", new String[] { fileName }));
+                    } else {
+                        getProjectManagementService().addFile(getProject(), uploadedFile, fileName);
+                        existingFileNameSet.add(fileName);
+                        fileCount++;
+                    }
                 }
             } catch (Exception e) {
                 String msg = "Unable to upload file: " + e.getMessage();

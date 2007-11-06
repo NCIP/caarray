@@ -83,7 +83,9 @@
 package gov.nih.nci.caarray.web.interceptor;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.Interceptor;
@@ -121,11 +123,9 @@ public class NullCollectionElementInterceptor implements Interceptor {
             Object value = stack.findValue((String) key);
             if (value instanceof Collection) {
                 Collection<?> c = (Collection<?>) value;
-                for (Object o: c) {
-                    if (o == null) {
-                        c.remove(o);
-                    }
-                }
+                Set<Object> toRemove = new HashSet<Object>();
+                toRemove.add(null);
+                c.removeAll(toRemove);
             }
         }
         return actionInvocation.invoke();
