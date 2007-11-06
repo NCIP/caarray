@@ -116,7 +116,13 @@ abstract class AbstractDataFileHandler {
 
     abstract void loadData(DataSet dataSet, List<QuantitationType> types, File file);
 
-    void prepareColumns(HybridizationData hybridizationData, List<QuantitationType> types, int numberOfRows) {
+    void prepareColumns(DataSet dataSet, List<QuantitationType> types, int numberOfRows) {
+        for (HybridizationData hybridizationData : dataSet.getHybridizationDataList()) {
+            prepareColumns(hybridizationData, types, numberOfRows);
+        }
+    }
+
+    private void prepareColumns(HybridizationData hybridizationData, List<QuantitationType> types, int numberOfRows) {
         for (AbstractDataColumn column : hybridizationData.getColumns()) {
             if (!column.isLoaded() && types.contains(column.getQuantitationType())) {
                 getLog().debug("Preparing unloaded data column: " + column.getQuantitationType().getName());

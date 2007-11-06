@@ -1,0 +1,274 @@
+/**
+ * The software subject to this notice and license includes both human readable
+ * source code form and machine readable, binary, object code form. The caArray
+ * Software was developed in conjunction with the National Cancer Institute
+ * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
+ * government employees are authors, any rights in such works shall be subject
+ * to Title 17 of the United States Code, section 105.
+ *
+ * This caArray Software License (the License) is between NCI and You. You (or
+ * Your) shall mean a person or an entity, and all other entities that control,
+ * are controlled by, or are under common control with the entity. Control for
+ * purposes of this definition means (i) the direct or indirect power to cause
+ * the direction or management of such entity, whether by contract or otherwise,
+ * or (ii) ownership of fifty percent (50%) or more of the outstanding shares,
+ * or (iii) beneficial ownership of such entity.
+ *
+ * This License is granted provided that You agree to the conditions described
+ * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
+ * no-charge, irrevocable, transferable and royalty-free right and license in
+ * its rights in the caArray Software to (i) use, install, access, operate,
+ * execute, copy, modify, translate, market, publicly display, publicly perform,
+ * and prepare derivative works of the caArray Software; (ii) distribute and
+ * have distributed to and by third parties the caArray Software and any
+ * modifications and derivative works thereof; and (iii) sublicense the
+ * foregoing rights set out in (i) and (ii) to third parties, including the
+ * right to license such rights to further third parties. For sake of clarity,
+ * and not by way of limitation, NCI shall have no right of accounting or right
+ * of payment from You or Your sub-licensees for the rights granted under this
+ * License. This License is granted at no charge to You.
+ *
+ * Your redistributions of the source code for the Software must retain the
+ * above copyright notice, this list of conditions and the disclaimer and
+ * limitation of liability of Article 6, below. Your redistributions in object
+ * code form must reproduce the above copyright notice, this list of conditions
+ * and the disclaimer of Article 6 in the documentation and/or other materials
+ * provided with the distribution, if any.
+ *
+ * Your end-user documentation included with the redistribution, if any, must
+ * include the following acknowledgment: This product includes software
+ * developed by 5AM and the National Cancer Institute. If You do not include
+ * such end-user documentation, You shall include this acknowledgment in the
+ * Software itself, wherever such third-party acknowledgments normally appear.
+ *
+ * You may not use the names "The National Cancer Institute", "NCI", or "5AM"
+ * to endorse or promote products derived from this Software. This License does
+ * not authorize You to use any trademarks, service marks, trade names, logos or
+ * product names of either NCI or 5AM, except as required to comply with the
+ * terms of this License.
+ *
+ * For sake of clarity, and not by way of limitation, You may incorporate this
+ * Software into Your proprietary programs and into any third party proprietary
+ * programs. However, if You incorporate the Software into third party
+ * proprietary programs, You agree that You are solely responsible for obtaining
+ * any permission from such third parties required to incorporate the Software
+ * into such third party proprietary programs and for informing Your
+ * sub-licensees, including without limitation Your end-users, of their
+ * obligation to secure any required permissions from such third parties before
+ * incorporating the Software into such third party proprietary software
+ * programs. In the event that You fail to obtain such permissions, You agree
+ * to indemnify NCI for any claims against NCI by such third parties, except to
+ * the extent prohibited by law, resulting from Your failure to obtain such
+ * permissions.
+ *
+ * For sake of clarity, and not by way of limitation, You may add Your own
+ * copyright statement to Your modifications and to the derivative works, and
+ * You may provide additional or different license terms and conditions in Your
+ * sublicenses of modifications of the Software, or any derivative works of the
+ * Software as a whole, provided Your use, reproduction, and distribution of the
+ * Work otherwise complies with the conditions stated in this License.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS," AND ANY EXPRESSED OR IMPLIED WARRANTIES,
+ * (INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE) ARE DISCLAIMED. IN NO
+ * EVENT SHALL THE NATIONAL CANCER INSTITUTE, 5AM SOLUTIONS, INC. OR THEIR
+ * AFFILIATES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package gov.nih.nci.caarray.application.arraydata.genepix;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import gov.nih.nci.caarray.domain.data.DataType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+
+/**
+ * Quantitation type information for Affymetrix CEL files.
+ */
+public enum GenepixQuantitationType implements QuantitationTypeDescriptor {
+
+    AUTOFLAG("Autoflag", DataType.BOOLEAN),
+    B_PIXELS("B Pixels", DataType.INTEGER),
+    B532("B532", DataType.INTEGER),
+    B532_CV("B532 CV", DataType.INTEGER),
+    B532_MEAN("B532 Mean", DataType.INTEGER),
+    B532_MEDIAN("B532 Median", DataType.INTEGER),
+    B532_SD("B532 SD", DataType.INTEGER),
+    B635("B635", DataType.INTEGER),
+    B635_CV("B635 CV", DataType.INTEGER),
+    B635_MEAN("B635 Mean", DataType.INTEGER),
+    B635_MEDIAN("B635 Median", DataType.INTEGER),
+    B635_SD("B635 SD", DataType.INTEGER),
+    CIRCULARITY("Circularity", DataType.INTEGER),
+    DIA("Dia.", DataType.INTEGER),
+    F_PIXELS("F Pixels", DataType.INTEGER),
+    F532_CV("F532 CV", DataType.INTEGER),
+    F532_MEAN("F532 Mean", DataType.INTEGER),
+    F532_MEAN_B532("F532 Mean - B532", DataType.INTEGER),
+    F532_MEDIAN("F532 Median", DataType.INTEGER),
+    F532_MEDIAN_B532("F532 Median - B532", DataType.INTEGER),
+    F532_PERCENT_SAT("F532 % Sat.", DataType.INTEGER),
+    F532_SD("F532 SD", DataType.INTEGER),
+    F532_TOTAL_INTENSITY("F532 Total Intensity", DataType.INTEGER),
+    F635_CV("F635 CV", DataType.INTEGER),
+    F635_MEAN("F635 Mean", DataType.INTEGER),
+    F635_MEAN_B635("F635 Mean - B635", DataType.INTEGER),
+    F635_MEDIAN("F635 Median", DataType.INTEGER),
+    F635_MEDIAN_B635("F635 Median - B635", DataType.INTEGER),
+    F635_PERCENT_SAT("F635 % Sat.", DataType.INTEGER),
+    F635_SD("F635 SD", DataType.INTEGER),
+    F635_TOTAL_INTENSITY("F635 Total Intensity", DataType.INTEGER),
+    FLAGS("Flags", DataType.INTEGER),
+    LOG_RATIO_635_532("Log Ratio (635/532)", DataType.FLOAT),
+    MEAN_OF_RATIOS_635_532("Mean of Ratios (635/532)", DataType.FLOAT),
+    MEDIAN_OF_RATIOS_635_532("Median of Ratios (635/532)", DataType.FLOAT),
+    NORMALIZE("Normalize", DataType.BOOLEAN),
+    PERCENT_GT_B532_1SD("% > B532+1SD", DataType.INTEGER),
+    PERCENT_GT_B532_2SD("% > B532+2SD", DataType.INTEGER),
+    PERCENT_GT_B635_1SD("% > B635+1SD", DataType.INTEGER),
+    PERCENT_GT_B635_2SD("% > B635+2SD", DataType.INTEGER),
+    RATIO_OF_MEANS_635_532("Ratio of Means (635/532)", DataType.FLOAT),
+    RATIO_OF_MEDIANS_635_532("Ratio of Medians (635/532)", DataType.FLOAT),
+    RATIOS_SD_635_532("Ratios SD (635/532)", DataType.FLOAT),
+    RGN_R2_635_532("Rgn R2 (635/532)", DataType.FLOAT),
+    RGN_RATIO_635_532("Rgn Ratio (635/532)", DataType.FLOAT),
+    SNR_532("SNR 532", DataType.FLOAT),
+    SNR_635("SNR 635", DataType.FLOAT),
+    SUM_OF_MEANS_635_532("Sum of Means (635/532)", DataType.INTEGER),
+    SUM_OF_MEDIANS_635_532("Sum of Medians (635/532)", DataType.INTEGER),
+    X("X", DataType.INTEGER),
+    Y("Y", DataType.INTEGER),
+    B3_MEAN("B3 Mean", DataType.INTEGER),
+    B3_MEDIAN("B3 Median", DataType.INTEGER),
+    B3_SD("B3 SD", DataType.INTEGER),
+    B4_MEAN("B4 Mean", DataType.INTEGER),
+    B4_MEDIAN("B4 Median", DataType.INTEGER),
+    B4_SD("B4 SD", DataType.INTEGER),
+    F3_MEAN("F3 Mean", DataType.INTEGER),
+    F3_MEAN_B3("F3 Mean - B3", DataType.INTEGER),
+    F3_MEDIAN("F3 Median", DataType.INTEGER),
+    F3_MEDIAN_B3("F3 Median - B3", DataType.INTEGER),
+    F3_PERCENT_SAT("F3 % Sat.", DataType.INTEGER),
+    F3_SD("F3 SD", DataType.INTEGER),
+    F4_MEAN("F4 Mean", DataType.INTEGER),
+    F4_MEAN_B4("F4 Mean - B4", DataType.INTEGER),
+    F4_MEDIAN("F4 Median", DataType.INTEGER),
+    F4_MEDIAN_B4("F4 Median - B4", DataType.INTEGER),
+    F4_PERCENT_SAT("F4 % Sat.", DataType.INTEGER),
+    F4_SD("F4 SD", DataType.INTEGER),
+    LOG_RATIO_RATIO_2("Log Ratio (Ratio/2)", DataType.FLOAT),
+    LOG_RATIO_RATIO_3("Log Ratio (Ratio/3)", DataType.FLOAT),
+    MEAN_OF_RATIOS_RATIO_2("Mean of Ratios (Ratio/2)", DataType.FLOAT),
+    MEAN_OF_RATIOS_RATIO_3("Mean of Ratios (Ratio/3)", DataType.FLOAT),
+    MEDIAN_OF_RATIOS_RATIO_2("Median of Ratios (Ratio/2)", DataType.FLOAT),
+    MEDIAN_OF_RATIOS_RATIO_3("Median of Ratios (Ratio/3)", DataType.FLOAT),
+    PERCENT_GT_B3_1SD("% > B3+1SD", DataType.INTEGER),
+    PERCENT_GT_B3_2SD("% > B3+2SD", DataType.INTEGER),
+    PERCENT_GT_B4_1SD("% > B4+1SD", DataType.INTEGER),
+    PERCENT_GT_B4_2SD("% > B4+2SD", DataType.INTEGER),
+    RATIO_OF_MEANS_RATIO_2("Ratio of Means (Ratio/2)", DataType.FLOAT),
+    RATIO_OF_MEANS_RATIO_3("Ratio of Means (Ratio/3)", DataType.FLOAT),
+    RATIO_OF_MEDIANS_RATIO_2("Ratio of Medians (Ratio/2)", DataType.FLOAT),
+    RATIO_OF_MEDIANS_RATIO_3("Ratio of Medians (Ratio/3)", DataType.FLOAT),
+    RATIOS_SD_RATIO_2("Ratios SD (Ratio/2)", DataType.FLOAT),
+    RATIOS_SD_RATIO_3("Ratios SD (Ratio/3)", DataType.FLOAT),
+    RGN_R2_RATIO_2("Rgn R2 (Ratio/2)", DataType.FLOAT),
+    RGN_R2_RATIO_3("Rgn R2 (Ratio/3)", DataType.FLOAT),
+    RGN_RATIO_RATIO_2("Rgn Ratio (Ratio/2)", DataType.FLOAT),
+    RGN_RATIO_RATIO_3("Rgn Ratio (Ratio/3)", DataType.FLOAT);
+
+    public static final GenepixQuantitationType[] COLOR_635_NM_FIELDS = new GenepixQuantitationType[] {
+        B635,
+        B635_CV,
+        B635_MEAN,
+        B635_MEDIAN,
+        B635_SD,
+        F635_CV,
+        F635_MEAN,
+        F635_MEAN_B635,
+        F635_MEDIAN,
+        F635_MEDIAN_B635,
+        F635_PERCENT_SAT,
+        F635_SD,
+        F635_TOTAL_INTENSITY,
+        SNR_635
+    };
+
+    public static final GenepixQuantitationType[] COLOR_532_NM_FIELDS = new GenepixQuantitationType[] {
+        B532,
+        B532_CV,
+        B532_MEAN,
+        B532_MEDIAN,
+        B532_SD,
+        F532_CV,
+        F532_MEAN,
+        F532_MEAN_B532,
+        F532_MEDIAN,
+        F532_MEDIAN_B532,
+        F532_PERCENT_SAT,
+        F532_SD,
+        F532_TOTAL_INTENSITY,
+        SNR_532
+    };
+
+    public static final GenepixQuantitationType[] COLOR_THREE_FIELDS = new GenepixQuantitationType[] {
+        B3_MEAN,
+        B3_MEDIAN,
+        B3_SD,
+        F3_MEAN,
+        F3_MEAN_B3,
+        F3_MEDIAN,
+        F3_MEDIAN_B3,
+        F3_PERCENT_SAT,
+        F3_SD
+    };
+
+    public static final GenepixQuantitationType[] COLOR_FOUR_FIELDS = new GenepixQuantitationType[] {
+        B4_MEAN,
+        B4_MEDIAN,
+        B4_SD,
+        F4_MEAN,
+        F4_MEAN_B4,
+        F4_MEDIAN,
+        F4_MEDIAN_B4,
+        F4_PERCENT_SAT,
+        F4_SD
+    };
+
+    private final String name;
+    private final DataType type;
+
+    GenepixQuantitationType(String name, DataType type) {
+        this.name = name;
+        this.type = type;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public DataType getDataType() {
+        return type;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getName() {
+        return name;
+    }
+
+    public static List<String> getTypeNames() {
+        List<String> names = new ArrayList<String>(values().length);
+        for (GenepixQuantitationType type : values()) {
+            names.add(type.getName());
+        }
+        return names;
+    }
+
+}

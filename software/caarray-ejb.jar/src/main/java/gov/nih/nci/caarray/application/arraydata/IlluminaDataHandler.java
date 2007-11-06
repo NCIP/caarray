@@ -286,10 +286,10 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
     }
 
     private void loadData(List<String> headers, DelimitedFileReader reader, DataSet dataSet, List<QuantitationType> types) {
+        prepareColumns(dataSet, types, getNumberOfDataRows(reader));
         Map<String, Integer> groupIdToHybridizationDataIndexMap = getGroupIdToHybridizationDataIndexMap(headers);
         Set<QuantitationType> typeSet = new HashSet<QuantitationType>();
         typeSet.addAll(types);
-        prepareColumns(groupIdToHybridizationDataIndexMap, reader, dataSet, types);
         positionAtData(reader);
         int rowIndex = 0;
         while (reader.hasNextLine()) {
@@ -301,7 +301,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void loadValue(String value, String header, DataSet dataSet, Set<QuantitationType> typeSet, 
+    private void loadValue(String value, String header, DataSet dataSet, Set<QuantitationType> typeSet,
             Map<String, Integer> groupIdToHybridizationDataIndexMap, int rowIndex) {
         String[] headerParts = header.split("-", 2);
         if (headerParts.length == 2) {
@@ -313,9 +313,9 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void setValue(HybridizationData hybridizationData, String typeHeader, String value, 
+    private void setValue(HybridizationData hybridizationData, String typeHeader, String value,
             Set<QuantitationType> typeSet, int rowIndex) {
-        QuantitationTypeDescriptor typeDescriptor = 
+        QuantitationTypeDescriptor typeDescriptor =
             IlluminaExpressionQuantitationType.valueOf(typeHeader.toUpperCase(Locale.getDefault()));
         AbstractDataColumn column = getColumn(hybridizationData, typeDescriptor);
         if (typeSet.contains(column.getQuantitationType())) {
@@ -330,14 +330,6 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
             }
         }
         return null;
-    }
-
-    private void prepareColumns(Map<String, Integer> groupIdToHybridizationDataIndexMap, DelimitedFileReader reader, DataSet dataSet, List<QuantitationType> types) {
-        int numberOfRows = getNumberOfDataRows(reader);
-        for (String groupId : groupIdToHybridizationDataIndexMap.keySet()) {
-            int hybridizationDataIndex = groupIdToHybridizationDataIndexMap.get(groupId);
-            prepareColumns(dataSet.getHybridizationDataList().get(hybridizationDataIndex), types, numberOfRows);
-        }
     }
 
     private int getNumberOfDataRows(DelimitedFileReader reader) {

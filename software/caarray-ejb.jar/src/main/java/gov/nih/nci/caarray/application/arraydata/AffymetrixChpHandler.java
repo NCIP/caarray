@@ -160,8 +160,8 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
         Set<QuantitationType> typeSet = new HashSet<QuantitationType>();
         typeSet.addAll(types);
         FusionCHPLegacyData chpData = getChpData(file);
+        prepareColumns(dataSet, types, chpData.getHeader().getNumProbeSets());
         HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
-        prepareColumns(hybridizationData, types, chpData.getHeader().getNumProbeSets());
         int assayType = chpData.getHeader().getAssayType();
         switch (assayType) {
         case FusionCHPHeader.EXPRESSION_ASSAY:

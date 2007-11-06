@@ -169,7 +169,7 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
     void loadData(DataSet dataSet, List<QuantitationType> types, File celFile) {
         LOG.debug("Started loadData for file: " + celFile.getName());
         readCelData(celFile);
-        prepareColumns(dataSet, types);
+        prepareColumns(dataSet, types, celData.getCells());
         loadDataIntoColumns(dataSet.getHybridizationDataList().get(0), types);
         closeCelData();
         LOG.debug("Completed loadData for file: " + celFile.getName());
@@ -182,11 +182,6 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
         if (System.getProperty("os.name").startsWith("Windows")) {
             System.gc();
         }
-    }
-
-    private void prepareColumns(DataSet dataSet, List<QuantitationType> types) {
-        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
-        prepareColumns(hybridizationData, types, celData.getCells());
     }
 
     private void loadDataIntoColumns(HybridizationData hybridizationData, List<QuantitationType> types) {
