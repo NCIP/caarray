@@ -126,7 +126,7 @@ public final class FileValidationResult implements Serializable, Comparable<File
      */
     public FileValidationResult(File file) {
         super();
-        this.file = file;
+        setFile(file);
     }
 
     /**
@@ -189,6 +189,22 @@ public final class FileValidationResult implements Serializable, Comparable<File
     public ValidationMessage addMessage(Type type, String message) {
         ValidationMessage validationMessage = new ValidationMessage(type, message);
         add(validationMessage);
+        return validationMessage;
+    }
+
+    /**
+     * Adds a new validation message to the result including line and column information.
+     *
+     * @param type the type/level of the message
+     * @param message the actual message content
+     * @param lineNumber the line number the error occurs on
+     * @param columnNumber the column number the error occurs on
+     * @return the newly added message, if additional configuration of the message is required.
+     */
+    public ValidationMessage addMessage(Type type, String message, int lineNumber, int columnNumber) {
+        ValidationMessage validationMessage = addMessage(type, message);
+        validationMessage.setLine(lineNumber);
+        validationMessage.setColumn(columnNumber);
         return validationMessage;
     }
 

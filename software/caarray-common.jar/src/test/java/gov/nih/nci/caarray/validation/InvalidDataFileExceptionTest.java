@@ -80,41 +80,21 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain.file;
+package gov.nih.nci.caarray.validation;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+
 import org.junit.Test;
 
-public class FileTypeTest {
+public class InvalidDataFileExceptionTest {
 
     @Test
-    public final void testIsArrayDesign() {
-        assertTrue(FileType.AFFYMETRIX_CDF.isArrayDesign());
-        assertTrue(FileType.ILLUMINA_DESIGN_CSV.isArrayDesign());
-        assertTrue(FileType.GENEPIX_GAL.isArrayDesign());
-        assertFalse(FileType.AFFYMETRIX_CEL.isArrayDesign());
-    }
-
-    @Test
-    public final void testIsDerivedArrayData() {
-        assertTrue(FileType.AFFYMETRIX_CHP.isDerivedArrayData());
-        assertTrue(FileType.ILLUMINA_DATA_CSV.isDerivedArrayData());
-        assertTrue(FileType.GENEPIX_GPR.isDerivedArrayData());
-        assertFalse(FileType.AFFYMETRIX_CEL.isDerivedArrayData());
-    }
-
-    @Test
-    public final void testIsRawArrayData() {
-        assertTrue(FileType.AFFYMETRIX_CEL.isRawArrayData());
-        assertFalse(FileType.AFFYMETRIX_CHP.isRawArrayData());
-    }
-
-    @Test
-    public final void testIsArrayData() {
-        assertFalse(FileType.AFFYMETRIX_CDF.isArrayData());
-        assertTrue(FileType.AFFYMETRIX_CEL.isArrayData());
-        assertTrue(FileType.AFFYMETRIX_CHP.isArrayData());
+    public final void testGetFileValidationResult() {
+        FileValidationResult result = new FileValidationResult(new File("."));
+        InvalidDataFileException exception = new InvalidDataFileException(result);
+        assertEquals(result, exception.getFileValidationResult());
     }
 
 }

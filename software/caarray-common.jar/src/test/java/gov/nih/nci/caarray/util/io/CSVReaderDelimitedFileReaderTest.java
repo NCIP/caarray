@@ -32,6 +32,18 @@ public class CSVReaderDelimitedFileReaderTest {
             assertEquals(line, reader.getCurrentLineNumber());
         }
     }
+    
+    @Test
+    public void testReset() throws IOException {
+        assertEquals(0, reader.getCurrentLineNumber());
+        assertEquals("Investigation Title", reader.nextLine().get(0));
+        reader.nextLine();
+        reader.nextLine();
+        assertEquals(3, reader.getCurrentLineNumber());
+        reader.reset();
+        assertEquals(0, reader.getCurrentLineNumber());
+        assertEquals("Investigation Title", reader.nextLine().get(0));
+    }
 
 
 }

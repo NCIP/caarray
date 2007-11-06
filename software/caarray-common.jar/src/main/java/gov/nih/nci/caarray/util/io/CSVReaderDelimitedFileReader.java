@@ -170,6 +170,7 @@ final class CSVReaderDelimitedFileReader implements DelimitedFileReader {
         reader.setTextQualifier(delimiter);
         reader.setSkipEmptyRecords(false);
         nextLine();
+        currentLineNumber = 0;
     }
 
     /**

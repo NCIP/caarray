@@ -204,7 +204,19 @@ public final class ValidationMessage implements Serializable, Comparable<Validat
 
     @Override
     public String toString() {
-        return getType() + ": " + getMessage();
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append(getType());
+        stringBuffer.append(": ");
+        stringBuffer.append(getMessage());
+        if (line != 0) {
+            stringBuffer.append(", line=");
+            stringBuffer.append(line);
+        }
+        if (column != 0) {
+            stringBuffer.append(", column=");
+            stringBuffer.append(column);
+        }
+        return stringBuffer.toString();
     }
     
     /**

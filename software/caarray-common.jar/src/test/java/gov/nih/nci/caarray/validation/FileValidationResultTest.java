@@ -80,41 +80,64 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain.file;
+package gov.nih.nci.caarray.validation;
 
 import static org.junit.Assert.*;
 
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
+
+import java.io.File;
+
 import org.junit.Test;
 
-public class FileTypeTest {
+public class FileValidationResultTest {
 
     @Test
-    public final void testIsArrayDesign() {
-        assertTrue(FileType.AFFYMETRIX_CDF.isArrayDesign());
-        assertTrue(FileType.ILLUMINA_DESIGN_CSV.isArrayDesign());
-        assertTrue(FileType.GENEPIX_GAL.isArrayDesign());
-        assertFalse(FileType.AFFYMETRIX_CEL.isArrayDesign());
+    public final void testGetFile() {
+        File file = new File(".");
+        FileValidationResult result = new FileValidationResult(file);
+        assertEquals(file, result.getFile());
     }
 
     @Test
-    public final void testIsDerivedArrayData() {
-        assertTrue(FileType.AFFYMETRIX_CHP.isDerivedArrayData());
-        assertTrue(FileType.ILLUMINA_DATA_CSV.isDerivedArrayData());
-        assertTrue(FileType.GENEPIX_GPR.isDerivedArrayData());
-        assertFalse(FileType.AFFYMETRIX_CEL.isDerivedArrayData());
+    public final void testIsValid() {
+        File file = new File(".");
+        FileValidationResult result = new FileValidationResult(file);
+        assertTrue(result.isValid());
+        result.addMessage(Type.INFO, "");
+        result.addMessage(Type.WARNING, "");
+        assertTrue(result.isValid());    
+        result.addMessage(Type.ERROR, "");
+        assertFalse(result.isValid());    
     }
 
     @Test
-    public final void testIsRawArrayData() {
-        assertTrue(FileType.AFFYMETRIX_CEL.isRawArrayData());
-        assertFalse(FileType.AFFYMETRIX_CHP.isRawArrayData());
+    public final void testGetMessages() {
+        File file = new File(".");
+        FileValidationResult result = new FileValidationResult(file);
+        result.addMessage(Type.ERROR, "message1");
+        result.addMessage(Type.ERROR, "message2");
+        result.addMessage(Type.ERROR, "message3");
+        assertEquals(3, result.getMessages().size());
     }
 
     @Test
-    public final void testIsArrayData() {
-        assertFalse(FileType.AFFYMETRIX_CDF.isArrayData());
-        assertTrue(FileType.AFFYMETRIX_CEL.isArrayData());
-        assertTrue(FileType.AFFYMETRIX_CHP.isArrayData());
+    public final void testAddMessage() {
+        File file = new File(".");
+        FileValidationResult result = new FileValidationResult(file);
+        result.addMessage(Type.ERROR, "message1", 1, 2);
+        assertEquals(1, result.getMessages().size());
+        assertEquals(1, result.getMessages().get(0).getLine());
+        assertEquals(2, result.getMessages().get(0).getColumn());
+    }
+
+    @Test
+    public final void testToString() {
+        File file = new File(".");
+        FileValidationResult result = new FileValidationResult(file);
+        result.addMessage(Type.ERROR, "message1");
+        String messageString = result.toString();
+        assertEquals(messageString, "ERROR: message1\n");
     }
 
 }

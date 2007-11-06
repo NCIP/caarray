@@ -147,6 +147,16 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
      * Illumina array data CSV file.
      */
     public static final FileType ILLUMINA_DATA_CSV = new FileType("ILLUMINA_DATA_CSV");
+    
+    /**
+     * Genepix array design GAL file.
+     */
+    public static final FileType GENEPIX_GAL = new FileType("GENEPIX_GAL");
+    
+    /**
+     * Genepix array data GPR file.
+     */
+    public static final FileType GENEPIX_GPR = new FileType("GENEPIX_GPR");
 
     /**
      * A Map of all possible file types.
@@ -170,12 +180,16 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
         INSTANCES.put(AFFYMETRIX_CEL.toString(), AFFYMETRIX_CEL);
         INSTANCES.put(ILLUMINA_DESIGN_CSV.toString(), ILLUMINA_DESIGN_CSV);
         INSTANCES.put(ILLUMINA_DATA_CSV.toString(), ILLUMINA_DATA_CSV);
+        INSTANCES.put(GENEPIX_GAL.toString(), GENEPIX_GAL);
+        INSTANCES.put(GENEPIX_GPR.toString(), GENEPIX_GPR);
 
         ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CDF);
         ARRAY_DESIGN_FILE_TYPES.add(ILLUMINA_DESIGN_CSV);
+        ARRAY_DESIGN_FILE_TYPES.add(GENEPIX_GAL);
         RAW_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CEL);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_DATA_CSV);
+        DERIVED_ARRAY_DATA_FILE_TYPES.add(GENEPIX_GPR);
     }
 
     private FileType(String name) {
