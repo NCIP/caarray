@@ -188,7 +188,7 @@
     </filterset>
 
     <!-- Tag property to display on front page -->
-    <property name="caarray.version" value="${build.tag_built}|${version}|${buildNumber}|${build.date_time}" />
+    <property name="caarray.version" value="${build.tag_built}|${version}-${buildNumber}|${build.date_time}" />
 
     <!-- ******************************************************************* -->
     <!-- ** IMPORTS                                                       ** -->
