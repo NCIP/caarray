@@ -458,6 +458,12 @@ var TabUtils = {
 var PermissionUtils = {
     SAMPLE_LIST_ID: 'access_profile_samples',
     SAMPLE_DROPDOWN_SELECTOR: 'select.sample_security_level',
+    PROFILE_LOADING_ID: 'access_profile_loading',
+    PROFILE_SAVING_ID: 'access_profile_saving',
+    PROFILE_INSTRUCTIONS_ID: 'access_profile_instructions',
+    PROFILE_DETAILS_ID: 'access_profile_details',
+    PROFILE_FORM_ID: 'profileForm',
+    
     changeExperimentAccess: function(theselect) {
         var selectVal = $F(theselect);
         var sampleSecLevels = SecurityLevel.sampleSecurityLevels[selectVal];
@@ -475,7 +481,25 @@ var PermissionUtils = {
                 });
             });
         }
-    }
+    },
+    
+    loadProfile: function(url) {
+        $(PermissionUtils.PROFILE_INSTRUCTIONS_ID).hide();
+        $(PermissionUtils.PROFILE_LOADING_ID).show();
+        new Ajax.Updater(PermissionUtils.PROFILE_DETAILS_ID, url,
+              {evalScripts: true, onComplete: function() { $(PermissionUtils.PROFILE_LOADING_ID).hide();}});
+        return false;
+    },
+        
+    cancelEditProfile: function() {
+        $(PermissionUtils.PROFILE_DETAILS_ID).update(''); 
+        $(PermissionUtils.PROFILE_INSTRUCTIONS_ID).show(); 
+    },
+    
+    saveProfile: function() {
+        $(PermissionUtils.PROFILE_SAVING_ID).show(); 
+        Caarray.submitAjaxForm(PermissionUtils.PROFILE_FORM_ID, PermissionUtils.PROFILE_DETAILS_ID);
+    }            
 }
 
 //

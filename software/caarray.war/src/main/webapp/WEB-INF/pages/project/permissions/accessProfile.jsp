@@ -6,7 +6,7 @@
     
     <table class="searchresults" cellspacing="0">
         <tr>
-            <th style="height: 2.5em;">Control Access to Experiment for ${profileOwnerName}</th>
+            <th>Control Access to Experiment for ${profileOwnerName}</th>
         </tr>
         <tr>
             <td class="filterrow" style="border-bottom: 1px solid #999">
@@ -20,8 +20,10 @@
             <th class="title">Sample ID</th>
         </tr>
     </table>
-                                
-        <table class="searchresults" cellspacing="0" style="width: 305px">
+
+    <div class="datatable" style="padding-bottom: 0px">
+        <div class="scrolltable" style="height: auto; max-height: 200px; overflow-x: hidden">
+        <table class="searchresults permissiontable" cellspacing="0">
             <tbody id="access_profile_samples" 
                 <c:if test="${!accessProfile.securityLevel.sampleLevelPermissionsAllowed}">style="display:none"</c:if>
             >
@@ -49,17 +51,18 @@
                 </tr>
             </c:forEach>
             </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="3">
-        <caarray:actions divclass="actionsthin">
-            <caarray:action actionClass="cancel" text="Cancel" onclick="$('access_profile_details').update(''); return false; " />
-            <caarray:action actionClass="save" text="Save" onclick="Caarray.submitAjaxForm('profileForm', 'access_profile_details'); return false;" />
-        </caarray:actions>
-                    
-                    </td>                
-                </tr>            
-            </tfoot>
         </table>
+        </div>
+    </div>
+    <table class="searchresults permissiontable" cellspacing="0">
+        <tr>
+            <td>
+                <caarray:actions divclass="actionsthin">
+                    <caarray:action actionClass="cancel" text="Cancel" onclick="PermissionUtils.cancelEditProfile(); return false; " />
+                    <caarray:action actionClass="save" text="Save" onclick="PermissionUtils.saveProfile(); return false;" />
+                </caarray:actions>                    
+            </td>
+        </tr>
+    </table>
     
 </s:form>

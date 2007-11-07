@@ -10,9 +10,9 @@
 <%@ taglib uri="http://ajaxtags.org/tags/ajax" prefix="ajax" %>
 
 <tr>
-    <td style="border-left: 0; padding-left: 0">
+    <td>
         <div class="bigbold">${name}</div>
         <p class="nopad">${description}</p>
-        <caarray:linkButton actionClass="edit" text="Edit" onclick="loadProfile('${loadProfileUrl}');"/>
+        <caarray:linkButton actionClass="edit" text="Edit" onclick="PermissionUtils.loadProfile('${loadProfileUrl}');"/>
     </td>
 </tr>

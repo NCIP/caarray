@@ -212,6 +212,11 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             throw new ProposalWorkflowException("Cannot transition project to status " + newStatus);
         }
         project.setStatus(newStatus);
+        
+        // in progress projects get automatically set to browsable, if they weren't before
+        if (newStatus == ProposalStatus.SUBMITTED) {
+            project.setBrowsable(true);
+        }
         getProjectDao().save(project);
         LogUtil.logSubsystemExit(LOG);
     }

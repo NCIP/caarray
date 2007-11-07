@@ -98,5 +98,6 @@ TABLE.form TD .line
 TABLE.form TD .hidden INPUT, TABLE.form TD .hidden SELECT, TABLE.form TD .hidden TEXTAREA
 { margin-top:0px }
 
-.scrolltable
-{ overflow:auto; height:200px; background:#fff; border: 1px solid #999; margin:5px 0 }
+TABLE.permissiontable {
+  margin: 0px;  
+}
