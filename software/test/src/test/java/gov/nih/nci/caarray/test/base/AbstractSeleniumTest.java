@@ -115,13 +115,28 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     protected void loginAsPrincipalInvestigator() {
         selenium.open("/caarray/");
+        
         selenium.type("j_username", "caarrayadmin");
         selenium.type("j_password", "caArray2!");
-        clickAndWait("//input[@value='Login']");
+        clickAndWait("//span/span");
+        //selenium.click("link=Login");
+        
+        
     }
 
     protected void waitForElementWithId(String id) {
         selenium.waitForCondition("selenium.browserbot.getCurrentWindow().document.getElementById('" + id + "') != null", PAGE_TIMEOUT);
+    }
+    protected void waitForText(String id) {
+        for (int second = 0;; second++) {
+            if (second >= Integer.valueOf(PAGE_TIMEOUT)) fail("timeout");
+            try { if (selenium.isTextPresent(id)) break; } catch (Exception e) {}
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

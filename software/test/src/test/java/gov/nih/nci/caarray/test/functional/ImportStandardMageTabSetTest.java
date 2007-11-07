@@ -114,21 +114,27 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 30;
     private static final String TITLE =
-        "TCGA Analysis of Gene Expression for Glioblastoma Multiforme Using Affymetrix HT_HG-U133A";
-    
+        "test" + System.currentTimeMillis();
+    private int cnt = 1;
     @Test
     public void testImportAndRetrieval() throws Exception {
         loginAsPrincipalInvestigator();
 
-        String title = "test" + System.currentTimeMillis();
         // Create project
-        clickAndWait("link=Propose Project");
-        Thread.sleep(1000);
-        selenium.type("projectForm_project_experiment_title", title);
-        selenium.click("//img[@alt='Save Draft']");
+        //String title = "test" + System.currentTimeMillis();
+        // Create project
+        selenium.click("link=Create/Propose Experiment");
+        waitForElementWithId("projectForm_project_experiment_title");
+        // type in the Experiment anme
+        selenium.type("projectForm_project_experiment_title", TITLE);
+        // save
+        selenium.click("link=Save");
+        waitForText("has been successfully saved");
+        // go to the data tab
+        selenium.click("link=Data");
 
-        Thread.sleep(1000);
-        clickAndWait("link=Return to Workspace");
+        waitForText("Upload New File(s)");
+        selenium.click("link=Upload New File(s)");
 
 
         // Upload the following files:
@@ -136,9 +142,6 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         // - MAGE-TAB SDRF (with references to included native CEL files and corresponding Affymetrix array design)
         // - MAGE-TAB Derived Data Matrix
         // - CEL files referenced in SDRF
-        clickAndWait("link=" + title);
-        selenium.click("link=Manage Files");
-        selenium.waitForPageToLoad("30000");
         upload(MageTabDataFiles.TCGA_BROAD_IDF);
         upload(MageTabDataFiles.TCGA_BROAD_SDRF);
         upload(MageTabDataFiles.TCGA_BROAD_DATA_MATRIX);
@@ -151,13 +154,18 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         for (File celFile : MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY.listFiles(celFilter)) {
             upload(celFile);
         }
-        checkFileStatus("UPLOADED");
+        checkFileStatus("Uploaded");
+        waitForText("files uploaded");
+        selenium.click("selectAllCheckbox");
+        // import button
+        selenium.click("link=Import");
+        waitForText("files imported");
 
-        // Import the files.
-        selectAllFiles();
-        clickAndWait("importFile");
+        checkFileStatus("Imported");
 
-        checkFileStatus("IMPORTED");
+        clickAndWait("link=My Experiment Workspace");
+        waitForText("Permissions");
+
 
         // Using the Java remote API, verify:
         // - Expected entities exist
@@ -167,23 +175,30 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         verifyDataViaJavaApi();
     }
 
-    private void selectAllFiles() {
-        for (int i = 0; i < NUMBER_OF_FILES; i++) {
-            selenium.click("file:" + i + ":selected");
-        }
-    }
-
     private void checkFileStatus(String status) {
-        for (int i = 0; i < NUMBER_OF_FILES; i++) {
-            assertEquals(status, selenium.getText("file:" + i + ":status"));
+        // first status are hyperlinks for this file set.
+        for (int i = 3; i < NUMBER_OF_FILES; i++) {
+            assertEquals(status, selenium.getText("//tr[" + i + "]/td[4]"));
         }
+
     }
 
-    private void upload(File file) throws IOException {
+    private void upload(File file) throws IOException, InterruptedException {
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
-        filePath = filePath.replaceAll("%20", " ");
         selenium.type("upload", filePath);
-        clickAndWait("uploadFile");
+        selenium.click("link=Upload");
+        for (int second = 0;; second++) {
+            if (second >= 60)
+                fail("timeout");
+            try {
+                if (file.getName().equals(selenium.getTable("row." + (cnt) + ".1")))
+                    break;
+            } catch (Exception e) {
+            }
+            Thread.sleep(1000);
+
+        }
+        cnt++;
         assertTrue(selenium.isTextPresent(file.getName()));
     }
 
