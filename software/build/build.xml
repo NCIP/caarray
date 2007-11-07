@@ -1172,24 +1172,24 @@
 	</target>
 
 	<target name="remote-globus:stop-remote-globus">
-		<sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true"
-				username="globus" keyfile="${ssh.key.file}"
-				passphrase="" verbose="true"
-				command="export JAVA_HOME=/usr/jdk1.5.0_10/;/usr/local/ws-core-4.0.3/bin/globus-stop-container" />
+		<sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" 
+				username="globus" keyfile="${ssh.key.file}" 
+				passphrase="" verbose="true" 
+				command="export JAVA_HOME=/usr/jdk1.5.0_10/;nohup /usr/local/ws-core-4.0.3/bin/globus-stop-container -s http://localhost:8080/wsrf/services/ShutdownService -nosec &gt;/tmp/globus_shutdown.log 2&gt;&amp;1 &amp;" />
 	</target>
-
+	
 	<target name="remote-globus:start-remote-globus">
-		<sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true"
-				username="globus" keyfile="${ssh.key.file}"
-				passphrase="" verbose="true"
-				command="export JAVA_HOME=/usr/jdk1.5.0_10/;nohup /usr/local/ws-core-4.0.3/bin/globus-start-container -nosec &amp;" />
+		<sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" 
+				username="globus" keyfile="${ssh.key.file}" 
+				passphrase="" verbose="true" 
+				command="export JAVA_HOME=/usr/jdk1.5.0_10/;nohup /usr/local/ws-core-4.0.3/bin/globus-start-container -nosec &gt;/tmp/globus_startup.log 2&gt;&amp;1 &amp;" />
 	</target>
 
 	<target name="remote-globus:deploy" unless="noglobus">
         <antcall target="remote-globus:createDeploymentGar" />
         <antcall target="remote-globus:copy-caarray-gar" />
-		<!--<antcall target="remote-globus:stop-remote-globus" />-->
 		<antcall target="remote-globus:deploy-remote-globus" />
+		<antcall target="remote-globus:stop-remote-globus" />
 		<antcall target="remote-globus:start-remote-globus" />
     </target>
 
