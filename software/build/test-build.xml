@@ -40,7 +40,7 @@
   </target>
 
   <target name="test-suite" depends="testEnvPropertyFile,testPropertiesFileExists,testSshKeyFileExists,
-    testSvnLocalTrunk,testWebAppOnline" />
+    testSvnLocalTrunk" />
 
   <target name="remote-test-suite" depends="testEnvPropertyFile,testJavaSecureChannelFileExists, 
   testPropertiesFileExists,testSshKeyFileExists,testSvnLocalTrunk,testBuildNoTest" />
