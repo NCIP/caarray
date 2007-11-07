@@ -16,6 +16,5 @@ These properties should be set to point to the remote CaArray server.
 By default, localhost and 1099 are used.
 (Note: This step should be unnecessary once the Ant build is modified to do this automatically from a default.properties file.)
 4. Run the ant targets "samplers:clean" and "samplers:deploy" to compile and deploy CaArray custom samplers for JMeter.
-5. In Caarray, upload the MAGE-TAB file set contained in data/affy_cel_01.zip. (Note: This step should be unnecessary once the Data Download test is modified to pre-load the data automatically before running.)
-6. Run the ant targets "tests:clean" and "tests:run" to clear previous output and run the tests.
+5. Run the ant targets "tests:clean" and "tests:run" to clear previous output and run the tests.
 

@@ -85,10 +85,15 @@
 
     <target name="tests:run">
         <mkdir dir="${tests.out.dir}" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/setup/ExperimentDataImporter.jmx" resultlog="${tests.out.dir}/setup/ExperimentDataImporter.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/setup/HundredExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/HundredExperimentLoader.jtl" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/SearchByExampleAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchByExampleAPITest_Basic.jtl" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/CQLSearchAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/CQLSearchAPITest_Basic.jtl" />
         <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/arraydata/DataDownloadAPITest_Basic.jmx" resultlog="${tests.out.dir}/arraydata/DataDownloadAPITest_Basic.jtl">
             <jvmarg value="-Xmx256m" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/SearchByExampleAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchByExampleAPITest_Basic.jtl" />
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/CQLSearchAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/CQLSearchAPITest_Basic.jtl" />
     </target>
 </project>
