@@ -82,12 +82,14 @@
  */
 package gov.nih.nci.caarray.application.project;
 
+import javax.ejb.ApplicationException;
+
 /**
  * Indicates that an operation was attempted on a proposal 
  * that is prohibited by the current state of it
  */
+@ApplicationException(rollback = true)
 public class ProposalWorkflowException extends Exception {
-
     private static final long serialVersionUID = 3582622697786140397L;
 
     /**

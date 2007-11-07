@@ -135,7 +135,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     private static final Log LOG = LogFactory.getLog(ProjectManagementServiceBean.class);
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
-    @Resource private SessionContext sessionContext;
+    @Resource
+    private SessionContext sessionContext;
 
     private ProjectDao getProjectDao() {
         return this.daoFactory.getProjectDao();
@@ -169,8 +170,9 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public CaArrayFile addFile(Project project, File file) {
+    public CaArrayFile addFile(Project project, File file) throws ProposalWorkflowException {
         LogUtil.logSubsystemEntry(LOG, project, file);
+        checkIfProjectSaveAllowed(project);
         CaArrayFile caArrayFile = doAddFile(project, file, file.getName());
         LogUtil.logSubsystemExit(LOG);
         return caArrayFile;
@@ -180,8 +182,9 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public CaArrayFile addFile(Project project, File file, String filename) {
+    public CaArrayFile addFile(Project project, File file, String filename) throws ProposalWorkflowException {
         LogUtil.logSubsystemEntry(LOG, project, file);
+        checkIfProjectSaveAllowed(project);
         CaArrayFile caArrayFile = doAddFile(project, file, filename);
         LogUtil.logSubsystemExit(LOG);
         return caArrayFile;
@@ -201,31 +204,41 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void submitProject(Project project) throws ProposalWorkflowException {
-        LogUtil.logSubsystemEntry(LOG, project);
-        if (!project.isSubmissionAllowed()) {
+    public void changeProjectStatus(long projectId, ProposalStatus newStatus) throws ProposalWorkflowException {
+        LogUtil.logSubsystemEntry(LOG, projectId);
+        Project project = getProjectDao().getProject(projectId);
+        if (!project.getStatus().canTransitionTo(newStatus)) {
             LogUtil.logSubsystemExit(LOG);
-            throw new ProposalWorkflowException("Cannot submit project in current state");
+            throw new ProposalWorkflowException("Cannot transition project to status " + newStatus);
         }
-        project.setStatus(ProposalStatus.SUBMITTED_FOR_REVIEW);
+        project.setStatus(newStatus);
+        getProjectDao().save(project);
+        LogUtil.logSubsystemExit(LOG);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void saveProject(Project project) throws ProposalWorkflowException {
+        LogUtil.logSubsystemEntry(LOG, project);
+        checkIfProjectSaveAllowed(project);
         getProjectDao().save(project);
         LogUtil.logSubsystemExit(LOG);
     }
 
     /**
-     * {@inheritDoc}
+     * Checks whether the project can be saved. if it can, does nothing, otherwise throws an exception
+     * @param project project to check for being able to save
+     * @throws ProposalWorkflowException if the project can't be saved due to workflow state
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void saveDraftProject(Project project) throws ProposalWorkflowException {
-        LogUtil.logSubsystemEntry(LOG, project);
-        if (!project.isSaveDraftAllowed()) {
+    private void checkIfProjectSaveAllowed(Project project) throws ProposalWorkflowException {
+        if (!project.isSaveAllowed()) {
             LogUtil.logSubsystemExit(LOG);
-            throw new ProposalWorkflowException("Cannot save project draft in current state");
-        }
-        project.setStatus(ProposalStatus.DRAFT);
-        getProjectDao().save(project);
-        LogUtil.logSubsystemExit(LOG);
+            throw new ProposalWorkflowException("Cannot save project in current state");
+        }        
     }
+
 
     /**
      * {@inheritDoc}
@@ -253,7 +266,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         LogUtil.logSubsystemExit(LOG);
         return p;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -302,7 +315,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Sample copySample(Project project, long sampleId) {
+    public Sample copySample(Project project, long sampleId) throws ProposalWorkflowException {
+        checkIfProjectSaveAllowed(project);
         Sample sample = getDaoFactory().getSearchDao().retrieve(Sample.class, sampleId);
         Sample copy = new Sample();
         String copyName = getGenericDataService().getIncrementingCopyName(Sample.class, "name", sample.getName());
@@ -320,7 +334,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Factor copyFactor(Project project, long factorId) {
+    public Factor copyFactor(Project project, long factorId) throws ProposalWorkflowException{
+        checkIfProjectSaveAllowed(project);
         Factor factor = getDaoFactory().getSearchDao().retrieve(Factor.class, factorId);
         Factor copy = new Factor();
         String copyName = getGenericDataService().getIncrementingCopyName(Factor.class, "name", factor.getName());
@@ -335,7 +350,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Source copySource(Project project, long sourceId) {
+    public Source copySource(Project project, long sourceId) throws ProposalWorkflowException {
+        checkIfProjectSaveAllowed(project);
         Source source = getDaoFactory().getSearchDao().retrieve(Source.class, sourceId);
         Source copy = new Source();
         String copyName = getGenericDataService().getIncrementingCopyName(Source.class, "name", source.getName());
@@ -360,6 +376,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
+
     SessionContext getSessionContext() {
         return this.sessionContext;
     }
@@ -371,6 +388,4 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     private GenericDataService getGenericDataService() {
         return (GenericDataService) ServiceLocatorFactory.getLocator().lookup(GenericDataService.JNDI_NAME);
     }
-
-
 }

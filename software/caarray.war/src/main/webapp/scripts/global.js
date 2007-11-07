@@ -390,40 +390,13 @@ var TabUtils = {
         }
     },
 
-    showSubtabSubmittingText : function() {
+    submitTabForm : function(formId, tabDivId) {
         TabUtils.showSubmittingText();
+	    Caarray.submitAjaxForm(formId, tabDivId);
     },
 
-    showSubtabLoadingText : function() {
-        TabUtils.showLoadingText();
-    },
-
-    // submit either the tab or subtab, depending on whether the subtab wrapper
-    // div is present
-    submitTabOrSubTabForm : function(formId, tabDivId, subTabDivId, saveMode) {
-        if ($(subTabDivId)) {
-            TabUtils.submitSubTabForm(formId, subTabDivId, saveMode);
-        } else {
-            TabUtils.submitTabForm(formId, tabDivId, saveMode);
-        }
-    },
-
-    submitTabForm : function(formId, divId, saveMode) {
+    submitTabFormToUrl : function(formId, url, divId) {
         TabUtils.showSubmittingText();
-        TabUtils.submitTabFormIgnoreSubmittingText(formId, divId, saveMode);
-    },
-
-    submitSubTabForm : function(formId, divId, saveMode) {
-        TabUtils.showSubtabSubmittingText();
-        TabUtils.submitTabFormIgnoreSubmittingText(formId, divId, saveMode);
-    },
-
-    submitTabFormIgnoreSubmittingText : function(formId, divId, saveMode) {
-        Caarray.submitAjaxForm(formId, divId, { extraArgs: { saveMode : saveMode }});
-    },
-
-    submitSubTabFormToUrl : function(formId, url, divId) {
-        TabUtils.showSubtabSubmittingText();
         Caarray.submitAjaxForm(formId, divId, { url: url});
     },
 

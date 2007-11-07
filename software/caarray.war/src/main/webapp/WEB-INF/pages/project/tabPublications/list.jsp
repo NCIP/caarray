@@ -17,20 +17,9 @@
             </display:column>
             <display:column property="authors" titleKey="experiment.publications.authors" sortable="true" />
             <display:column property="uri" titleKey="experiment.publications.uri" sortable="true" />
-            <display:column titleKey="button.edit">
-                <caarray:projectListTabActionLink entityName="Publication" itemId="${row.id}" action="edit"/>
-            </display:column>
-            <display:column titleKey="button.delete">
-                <caarray:projectListTabActionLink entityName="Publication" itemId="${row.id}" action="delete"/>
-            </display:column>
+            <caarray:projectListTabActionColumns entityName="Publication" itemId="${row.id}" actions="!edit,!delete"/>
         </display:table>
     </ajax:displayTag>
-
-    <s:form action="ajax/project/listTab/Publications/save" cssClass="form" id="projectForm" theme="simple">
-        <s:hidden name="project.id" />
-    </s:form>
-
-    <caarray:projectListTabHiddenForm entityName="Publication"/>
 
     </div>
 </caarray:tabPane>

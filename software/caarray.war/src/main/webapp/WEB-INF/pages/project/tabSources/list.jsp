@@ -20,18 +20,9 @@
             <display:column titleKey="experiment.sources.relatedSamples">
                 <caarray:projectListTabRelatedItemsLinks relatedItems="${row.samples}" relatedEntityName="Sample" nameProperty="name" isSubtab="true"/>
             </display:column>
-            <display:column titleKey="button.edit">
-                <caarray:projectListTabActionLink entityName="Source" action="edit" itemId="${row.id}" isSubtab="true"/>
-            </display:column>
-            <display:column titleKey="button.copy">
-                <caarray:projectListTabActionLink entityName="Source" action="copy" itemId="${row.id}" isSubtab="true"/>
-            </display:column>
-            <display:column titleKey="button.delete">
-                <caarray:projectListTabActionLink entityName="Source" action="delete" itemId="${row.id}" isSubtab="true"/>            
-            </display:column>
+            <caarray:projectListTabActionColumns entityName="Source" itemId="${row.id}" actions="!edit,!copy,!delete" isSubtab="true"/>
         </display:table>
     </ajax:displayTag>
 
-    <caarray:projectListTabHiddenForm entityName="Source" isSubtab="true"/>
     </div>
 </caarray:tabPane>

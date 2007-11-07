@@ -1,10 +1,14 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
+<c:if test="${!editMode}">
+    <c:set var="theme" value="readonly" scope="request"/>
+</c:if>
+
 <caarray:tabPane paneTitleKey="experiment.contacts">
     <div class="boxpad">
         <p class="instructions">Contact information for this experiment is below. Required fields are marked with <span class="required">*asterisks*</span>.
         </p>
-        <s:form action="ajax/project/tab/Contacts/save" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper', 'save_draft'); return false;">
+        <s:form action="ajax/project/tab/Contacts/save" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper'); return false;">
             <tbody>
             <tr><th colspan="2">Principal Investigator (P.I.)</th></tr>
             <s:textfield required="true" name="primaryInvestigator.firstName" label="P.I. First Name" size="80" tabindex="1"/>
@@ -22,9 +26,6 @@
             </tbody>
             <s:hidden name="project.id" />
         </s:form>
-
-        <caarray:actions>
-           <caarray:action onclick="TabUtils.submitTabForm('projectForm', 'tabboxwrapper', 'save_draft');" actionClass="save" text="Save" />
-        </caarray:actions>
+        <caarray:projectTabButtons tab="Contacts"/>
     </div>
 </caarray:tabPane>

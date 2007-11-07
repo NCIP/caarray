@@ -137,6 +137,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
     /** The synthetic group for anonymous access permissions. */
     public static final String ANONYMOUS_GROUP = "__anonymous__";
     private static final String READ_ROLE = "Read";
+    private static final String WRITE_ROLE = "Write";
 
     private static final AuthorizationManager AUTH_MGR;
     private static final String APPLICATION_NAME = "caarray";
@@ -374,7 +375,6 @@ public class SecurityInterceptor extends EmptyInterceptor {
                 csmUser.getUserId().toString(),
                 new String[] {getReadRole().getId().toString() },
                 pg.getProtectionGroupId().toString());
-
         return pg;
     }
 
@@ -401,8 +401,18 @@ public class SecurityInterceptor extends EmptyInterceptor {
 
     @SuppressWarnings("unchecked")
     private static Role getReadRole() {
+        return getRoleByName(READ_ROLE);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Role getWriteRole() {
+        return getRoleByName(WRITE_ROLE);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Role getRoleByName(String roleName) {
         Role role = new Role();
-        role.setName(READ_ROLE);
+        role.setName(roleName);
         RoleSearchCriteria rsc = new RoleSearchCriteria(role);
         List<Role> roleList = AUTH_MGR.getObjects(rsc);
         role = roleList.get(0);

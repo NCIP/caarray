@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
-<caarray:tabPane subtab="true">
+<caarray:tabPane>
     <caarray:projectListTabItemForm entityName="Publication" itemId="${currentPublication.id}"
         itemName="${currentPublication.title}">
         <s:textfield required="true" name="currentPublication.title" key="experiment.publications.title" size="80"

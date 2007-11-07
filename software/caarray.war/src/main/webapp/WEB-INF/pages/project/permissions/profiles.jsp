@@ -18,7 +18,7 @@
     </script>
 
     <div class="padme">
-        <c:url var="detailsUrl" value="/protected/project/edit.action">
+        <c:url var="detailsUrl" value="/protected/project/details.action">
             <c:param name="project.id" value="${project.id}" />
         </c:url>
         <h2><span class="dark">Experiment:</span> ${project.experiment.title} (<a href="${detailsUrl}">Details</a>)</h2>

@@ -15,9 +15,11 @@
     <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${files}" pagesize="${pageSize}"
         requestURI="${sortUrl}" sort="list" id="row" excludedParams="project.id">
         <caarray:displayTagProperties/>
-        <display:column title="${checkboxAll}">
-            <s:checkbox name="selectedFiles" fieldValue="${row.id}" value="false" theme="simple" />
-        </display:column>
+        <c:if test="${project.saveAllowed}">
+            <display:column title="${checkboxAll}">
+                <s:checkbox name="selectedFiles" fieldValue="${row.id}" value="false" theme="simple" />
+            </display:column>
+        </c:if>
         <display:column property="name" titleKey="experiment.files.name" sortable="true" />
         <display:column titleKey="experiment.files.type" sortable="true">
             <c:if test="${row.type != null}">

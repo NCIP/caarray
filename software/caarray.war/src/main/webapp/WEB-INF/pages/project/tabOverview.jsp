@@ -1,7 +1,12 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
+
 <script type="text/javascript">
 setExperimentTitleHeader('${project.experiment.title}');
 </script>
+
+<c:if test="${!editMode}">
+    <c:set var="theme" value="readonly" scope="request"/>
+</c:if>
 
 <caarray:tabPane paneTitleKey="experiment.overview">
     <div class="boxpad">
@@ -9,8 +14,8 @@ setExperimentTitleHeader('${project.experiment.title}');
             The Overall Experiment Characteristics represent the minimum set of
             attributes required to submit an experiment for review.
             Required fields are marked with <span class="required">*asterisks*</span>.
-            </p>
-        <s:form action="ajax/project/tab/Overview/save" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper', 'save_draft'); return false;">
+        </p>
+        <s:form action="ajax/project/tab/Overview/save" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper'); return false;">
             <s:textfield required="true" name="project.experiment.title" label="Experiment Title" size="80" tabindex="1"/>
             <s:textfield theme="readonly" label="Status" value="%{getText(project.status.resourceKey)}"/>
             <s:textfield theme="readonly" name="project.experiment.publicIdentifier" label="Experiment Identifier"/>
@@ -60,8 +65,6 @@ setExperimentTitleHeader('${project.experiment.title}');
             parameters="manufacturerId={projectForm_project_experiment_manufacturer}"
             preFunction="startArrayDesignLookup" postFunction="finishArrayDesignLookup"/>
 
-        <caarray:actions>
-           <caarray:action onclick="TabUtils.submitTabForm('projectForm', 'tabboxwrapper', 'save_draft');" actionClass="save" text="Save" />
-        </caarray:actions>
+        <caarray:projectTabButtons tab="Overview"/>
     </div>
 </caarray:tabPane>

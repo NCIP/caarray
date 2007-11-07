@@ -93,6 +93,7 @@ import org.apache.commons.lang.NotImplementedException;
 
 /**
  * Action implementing the extracts tab
+ * 
  * @author Dan Kokotov
  */
 public class ProjectExtractsAction extends ProjectListTabAction {
@@ -109,17 +110,26 @@ public class ProjectExtractsAction extends ProjectListTabAction {
 
     /**
      * {@inheritDoc}
-     * @throws VocabularyServiceException 
+     * 
+     * @throws VocabularyServiceException
      */
     @Override
     public void prepare() throws VocabularyServiceException {
         super.prepare();
-        
+
         if (this.currentExtract.getId() != null) {
             this.currentExtract = getGenericDataService().retrieveEnity(Extract.class, this.currentExtract.getId());
         }
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String copy() {
+        return "notYetImplemented";
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -127,7 +137,7 @@ public class ProjectExtractsAction extends ProjectListTabAction {
     protected void doCopyItem() {
         throw new NotImplementedException("Copying not supported for extracts");
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -135,7 +145,7 @@ public class ProjectExtractsAction extends ProjectListTabAction {
     protected Collection<Extract> getCollection() {
         return getProject().getExperiment().getExtracts();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -143,7 +153,7 @@ public class ProjectExtractsAction extends ProjectListTabAction {
     protected PersistentObject getItem() {
         return getCurrentExtract();
     }
-    
+
     /**
      * @return the currentExtract
      */

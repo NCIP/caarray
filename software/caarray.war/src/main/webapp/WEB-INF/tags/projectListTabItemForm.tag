@@ -24,7 +24,7 @@
 
 <div class="boxpad">
     <s:form action="ajax/project/listTab/${plural}/save" cssClass="form" id="projectForm"
-            onsubmit="TabUtils.submitSubTabForm('projectForm', '${tabAnchor}', 'save_draft'); return false;">
+            onsubmit="TabUtils.submitTabForm('projectForm', '${tabAnchor}'); return false;">
         <jsp:doBody/>
     </s:form>
     <caarray:projectListTabItemButtons entityName="${entityName}" itemId="${itemId}" isSubtab="${isSubtab}"/>

@@ -89,19 +89,23 @@ import gov.nih.nci.caarray.domain.ResourceBasedEnum;
  */
 public enum SecurityLevel implements ResourceBasedEnum {
     /** No access to project or any samples. */
-    NONE(false, "SecurityLevel.none"),
+    NONE(false, false, "SecurityLevel.none"),
     /** Read access to project and all samples. */
-    READ(true, "SecurityLevel.read"),
+    READ(true, false, "SecurityLevel.read"),
     /** Read access to project and specified samples. */
-    READ_SELECTIVE(true, "SecurityLevel.readSelective"),
-    /** Read access to project.  Read access and/or write access to specificed samples. */
-    READ_WRITE_SELECTIVE(true, "SecurityLevel.readWriteSelective");
+    READ_SELECTIVE(true, true, "SecurityLevel.readSelective"),
+    /** Write access to project and all samples. */
+    WRITE(true, false, "SecurityLevel.write"),
+    /** Write access to project.  Read access and/or write access to specificed samples. */
+    READ_WRITE_SELECTIVE(true, true, "SecurityLevel.readWriteSelective");
 
     private final boolean projectVisible;
-    private String resourceKey;
+    private final boolean allowSampleLevelPermissions;
+    private final String resourceKey;
 
-    SecurityLevel(boolean projectVisible, String resourceKey) {
+    SecurityLevel(boolean projectVisible, boolean allowSampleLevelPermissions, String resourceKey) {
         this.projectVisible = projectVisible;
+        this.allowSampleLevelPermissions = allowSampleLevelPermissions;
         this.resourceKey = resourceKey;
     }
 
@@ -118,5 +122,13 @@ public enum SecurityLevel implements ResourceBasedEnum {
      */
     public String getResourceKey() {
         return this.resourceKey;
+    }
+
+    /**
+     * @return whether or not this security level allows finer grained restriction at the permission
+     * level
+     */
+    public boolean isAllowSampleLevelPermissions() {
+        return allowSampleLevelPermissions;
     }
 }

@@ -82,10 +82,13 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
+import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
@@ -102,8 +105,7 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
     private static final long serialVersionUID = 1L;
 
     private final String resourceKey;
-    private boolean editMode;
-
+    
     /**
      * @param resourceKey
      */
@@ -156,10 +158,7 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
         } else {
             ActionHelper.saveMessage(getText("experiment.items.updated", new String[] { getItemName()}));
         }
-        if (WORKSPACE_RESULT.equals(super.save())) {
-            return WORKSPACE_RESULT;
-        }
-        return "list";
+        return super.save();
     }
 
     /**
@@ -171,17 +170,6 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
     }
 
     /**
-     * handles submitting experiment from the list view
-     *
-     * @return the string indicating the result to use.
-     */
-    @SuppressWarnings("unchecked")
-    @SkipValidation
-    public String saveList() {
-        return super.save();
-    }
-
-    /**
      * remove the item with the given id from the set of items.
      *
      * @return the string indicating which result to forward to.
@@ -189,7 +177,6 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
     @SkipValidation
     public String delete() {
         getCollection().remove(getItem());
-        setSaveMode(SAVE_MODE_DRAFT);
         super.save();
         ActionHelper.saveMessage(getText("experiment.items.deleted", new String[] { getItemName()}));
         return "list";
@@ -203,9 +190,14 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
      */
     @SkipValidation
     public String copy() {
-        doCopyItem();
-        super.save();
-        ActionHelper.saveMessage(getText("experiment.items.copied", new String[] { getItemName()}));
+        try {
+            doCopyItem();
+            ActionHelper.saveMessage(getText("experiment.items.copied", new String[] { getItemName()}));
+        } catch (ProposalWorkflowException e) {
+            List<String> args = new ArrayList<String>();
+            args.add(getProject().getExperiment().getTitle());
+            ActionHelper.saveMessage(getText("project.saveProblem", args));
+        }
         return "list";
     }
 
@@ -227,22 +219,9 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
 
     /**
      * Subclasses should make the actual call to the appropriate service method to copy the item
+     * @throws ProposalWorkflowException when the experiment cannot be saved due to workflow restrictions
      */
-    protected abstract void doCopyItem();
-
-    /**
-     * @return the editMode
-     */
-    public boolean isEditMode() {
-        return this.editMode;
-    }
-
-    /**
-     * @param editMode the editMode to set
-     */
-    public void setEditMode(boolean editMode) {
-        this.editMode = editMode;
-    }
+    protected abstract void doCopyItem() throws ProposalWorkflowException;
 
     /**
      * {@inheritDoc}

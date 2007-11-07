@@ -38,9 +38,3 @@
     <caarray:successMessages />
     <jsp:doBody />
 </div>
-
-<s:if test="initialSave">
-    <script type="text/javascript">
-        TabUtils.wrapTabLinks(<s:property value="project.id"/>);
-    </script>
-</s:if>

@@ -29,20 +29,9 @@
             <display:column titleKey="experiment.labeledExtracts.relatedHybridizations">
                 <caarray:projectListTabRelatedItemsLinks relatedItems="${row.hybridizations}" relatedEntityName="Hybridization" nameProperty="name" isSubtab="true"/>
             </display:column>
-            <display:column titleKey="button.edit">
-                <caarray:projectListTabActionLink entityName="LabeledExtract" action="edit" itemId="${row.id}" isSubtab="true"/>
-            </display:column>
-            <display:column titleKey="button.copy">
-                <ajax:anchors target="tabboxlevel2wrapper">
-                    <a href="<c:url value="/ajax/notYetImplemented.jsp" />"><img src="<c:url value="/images/ico_download.gif"/>" alt="<fmt:message key="button.download"/>" /></a>
-                </ajax:anchors>
-            </display:column>
-            <display:column titleKey="button.delete">
-                <caarray:projectListTabActionLink entityName="LabeledExtract" action="delete" itemId="${row.id}" isSubtab="true"/>            
-            </display:column>
+            <caarray:projectListTabActionColumns entityName="LabeledExtract" itemId="${row.id}" actions="!edit,!copy,!delete" isSubtab="true"/>
         </display:table>
     </ajax:displayTag>
 
-    <caarray:projectListTabHiddenForm entityName="LabeledExtract" isSubtab="true"/>
     </div>
 </caarray:tabPane>

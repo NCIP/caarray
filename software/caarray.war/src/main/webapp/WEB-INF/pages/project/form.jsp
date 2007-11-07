@@ -1,4 +1,6 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
+<%@ page import="gov.nih.nci.caarray.domain.project.ProposalStatus"%>
+
 <html>
 <head>
     <title>Experiment Details</title>
@@ -17,28 +19,56 @@
 </head>
 <body>
     <h1>
-        <caarray:linkButton onclick="TabUtils.submitTabOrSubTabForm('projectForm', 'tabboxwrapper', 'tabboxlevel2wrapper', 'save_submit');"
-            actionClass="submit_experiment" text="Submit Experiment Proposal" style="display: block; float: right"/>
+        <c:if test="${!empty project.id}">
+            <c:choose>
+                <c:when test="${project.submissionAllowed}">                    
+                    <c:set var="newWorkflowStatus" value="<%= ProposalStatus.SUBMITTED %>"/>
+                    <c:set var="buttonTitle" value="Submit Experiment Proposal"/>
+                </c:when>
+                <c:when test="${project.makingPublicAllowed}">
+                    <c:set var="newWorkflowStatus" value="<%= ProposalStatus.PUBLIC %>"/>
+                    <c:set var="buttonTitle" value="Make Experiment Public"/>
+                </c:when>
+                <c:when test="${project.public}">
+                    <c:set var="newWorkflowStatus" value="<%= ProposalStatus.SUBMITTED %>"/>
+                    <c:set var="buttonTitle" value="Make Experiment Not Public"/>
+                </c:when>                
+            </c:choose>
+            <c:if test="${!empty newWorkflowStatus}">
+                <s:form action="project/changeWorkflowStatus" id="workflowForm" cssStyle="display: inline">
+                    <s:hidden name="project.id"/>
+                    <s:hidden name="workflowStatus" value="${newWorkflowStatus}"/>            
+                </s:form>                    
+                <caarray:linkButton onclick="$('workflowForm').submit(); return false"
+                        actionClass="submit_experiment" text="${buttonTitle}" style="display: block; float: right; margin-bottom: -1em"/>
+            </c:if>
+        </c:if>
         Experiment Details
     </h1>
 
     <c:url value="/protected/ajax/project/tab/Overview/load.action" var="overviewUrl">
         <c:param name="project.id" value="${project.id}" />
+        <c:param name="editMode" value="${editMode}" />
     </c:url>
     <c:url value="/protected/ajax/project/tab/Contacts/load.action" var="contactsUrl">
         <c:param name="project.id" value="${project.id}" />
+        <c:param name="editMode" value="${editMode}" />
     </c:url>
     <c:url value="/protected/ajax/project/tab/Annotations/load.action" var="annotationsUrl">
         <c:param name="project.id" value="${project.id}" />
+        <c:param name="editMode" value="${editMode}" />
     </c:url>
     <c:url value="/protected/ajax/project/tab/Data/load.action" var="dataUrl">
         <c:param name="project.id" value="${project.id}" />
+        <c:param name="editMode" value="${editMode}" />
     </c:url>
     <c:url value="/ajax/notYetImplemented.jsp" var="supplementalUrl">
         <c:param name="project.id" value="${project.id}" />
+        <c:param name="editMode" value="${editMode}" />
     </c:url>
     <c:url value="/protected/ajax/project/listTab/Publications/load.action" var="publicationsUrl">
         <c:param name="project.id" value="${project.id}" />
+        <c:param name="editMode" value="${editMode}" />
     </c:url>
 
     <fmt:message key="project.tabs.overview" var="overviewTitle" />
@@ -60,11 +90,13 @@
         <ajax:tabPanel panelStyleId="tabs" panelStyleClass="tabs2" currentStyleClass="active" contentStyleId="tabboxwrapper" contentStyleClass="tabboxwrapper"
                 postFunction="TabUtils.setSelectedTab" preFunction="TabUtils.showLoadingText">
             <ajax:tab caption="${overviewTitle}" baseUrl="${overviewUrl}" defaultTab="${param.initialTab == null || param.initialTab == 'overview'}" />
-            <ajax:tab caption="${contactsTitle}" baseUrl="${contactsUrl}" defaultTab="${param.initialTab == 'contacts'}" />
-            <ajax:tab caption="${annotationsTitle}" baseUrl="${annotationsUrl}" defaultTab="${param.initialTab == 'annotations'}" />
-            <ajax:tab caption="${dataTitle}" baseUrl="${dataUrl}" defaultTab="${param.initialTab == 'data'}" />
-            <ajax:tab caption="${supplementalTitle}" baseUrl="${supplementalUrl}" defaultTab="${param.initialTab == 'supplemental'}" />
-            <ajax:tab caption="${publicationsTitle}" baseUrl="${publicationsUrl}" defaultTab="${param.initialTab == 'publications'}" />
+            <c:if test="${!empty project.id}">            
+                <ajax:tab caption="${contactsTitle}" baseUrl="${contactsUrl}" defaultTab="${param.initialTab == 'contacts'}" />
+                <ajax:tab caption="${annotationsTitle}" baseUrl="${annotationsUrl}" defaultTab="${param.initialTab == 'annotations'}" />
+                <ajax:tab caption="${dataTitle}" baseUrl="${dataUrl}" defaultTab="${param.initialTab == 'data'}" />
+                <ajax:tab caption="${supplementalTitle}" baseUrl="${supplementalUrl}" defaultTab="${param.initialTab == 'supplemental'}" />
+                <ajax:tab caption="${publicationsTitle}" baseUrl="${publicationsUrl}" defaultTab="${param.initialTab == 'publications'}" />
+            </c:if>
         </ajax:tabPanel>
     </div>
 </body>

@@ -1,9 +1,13 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
+<c:if test="${!editMode}">
+    <c:set var="theme" value="readonly" scope="request"/>
+</c:if>
+
 <caarray:tabPane paneTitleKey="experiment.experimentalDesign" subtab="true">
     <div class="boxpad">
         <p class="instructions">Required fields are marked with <span class="required">*asterisks*</span>.</p>
-        <s:form action="ajax/project/tab/ExperimentalDesign/save" cssClass="form" id="projectForm" onsubmit="TabUtils.submitSubTabForm('projectForm', 'tabboxlevel2wrapper', 'save_draft'); return false;">
+        <s:form action="ajax/project/tab/ExperimentalDesign/save" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxlevel2wrapper'); return false;">
             <s:select required="true" name="project.experiment.experimentDesignType" label="Experiment Design Type" tabindex="1"
                       list="experimentDesignTypes" listKey="id" listValue="value" value="project.experiment.experimentDesignType.id"
                       headerKey="" headerValue="--Select an Experiment Design Type--"/>
@@ -16,8 +20,6 @@
                       list="replicateTypes" listKey="id" listValue="value" value="%{project.experiment.replicateTypes.{id}}" />
             <s:hidden name="project.id" />
         </s:form>
-        <caarray:actions>
-           <caarray:action onclick="TabUtils.submitSubTabForm('projectForm', 'tabboxlevel2wrapper', 'save_draft');" actionClass="save" text="Save" />
-        </caarray:actions>
+        <caarray:projectTabButtons tab="ExperimentalDesign" isSubtab="true"/>
     </div>
 </caarray:tabPane>

@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 
@@ -131,8 +132,9 @@ public interface ProjectManagementService {
      * @param project project to add the file to
      * @param file the file to add to the project
      * @return the new <code>CaArrayFile</code>.
+     * @throws ProposalWorkflowException if the project cannot currently be modified due to workflow status 
      */
-    CaArrayFile addFile(Project project, File file);
+    CaArrayFile addFile(Project project, File file) throws ProposalWorkflowException;
 
     /**
      * Associates a single file with a project. After calling this method, clients can expect a new
@@ -144,29 +146,29 @@ public interface ProjectManagementService {
      * from the file containing the content. This is useful for adding uploaded temporary files that don't use the
      * original file name.
      * @return the new <code>CaArrayFile</code>.
+     * @throws ProposalWorkflowException if the project cannot currently be modified due to workflow status 
      */
-    CaArrayFile addFile(Project project, File file, String filename);
+    CaArrayFile addFile(Project project, File file, String filename) throws ProposalWorkflowException;
 
     /**
-     * Saves a project in the draft state. The project may be new, or may
-     * have been previously saved as a draft, but it cannot have been submitted
-     *
-     * @param project the project to save as draft
-     * @throws ProposalWorkflowException if the is not new and its status is not
-     * "Draft"
+     * Saves a project. The project may be new, or be currently in the draft or submitted state,
+     * but it cannot be public. 
+     * If the project is new, then it is put into the draft state.
+     * 
+     * @param project the project to save 
+     * @throws ProposalWorkflowException if the project cannot currently be saved because it is public
      */
-    void saveDraftProject(Project project) throws ProposalWorkflowException;
-
+    void saveProject(Project project) throws ProposalWorkflowException;
+        
     /**
-     * Saves a new project and moves it into the submitted state. This
-     * may be a new project, or a project that is currently in draft or returned
-     * for revision state.
+     * Moves a project into a new workflow status. 
      *
-     * @param project the project to submit
-     * @throws ProposalWorkflowException if the is not new and its status is not
-     * either "Draft" or "Returned for Revision"
+     * @param projectId the id of the project to move to the given status
+     * @param newStatus the new workflow status
+     * @throws ProposalWorkflowException if the project's current status does not allow
+     * a transition to the given status 
      */
-    void submitProject(Project project) throws ProposalWorkflowException;
+    void changeProjectStatus(long projectId, ProposalStatus newStatus) throws ProposalWorkflowException;
 
     /**
      * Gets all projects belonging to the current user.
@@ -215,8 +217,9 @@ public interface ProjectManagementService {
      * @param project the project to which the sample belongs
      * @param sampleId the id of the sample to copy
      * @return the new sample
+     * @throws ProposalWorkflowException if the project cannot currently be modified because it is public
      */
-    Sample copySample(Project project, long sampleId);
+    Sample copySample(Project project, long sampleId) throws ProposalWorkflowException;
 
     /**
      * Make a copy of a source belonging to given project, and add it to the new project.
@@ -225,8 +228,9 @@ public interface ProjectManagementService {
      * @param project the project to which the source belongs
      * @param sourceId the id of the source to copy
      * @return the new source
+     * @throws ProposalWorkflowException if the project cannot currently be modified because it is public
      */
-    Source copySource(Project project, long sourceId);
+    Source copySource(Project project, long sourceId) throws ProposalWorkflowException;
 
     /**
      * Make a copy of a factor belonging to given project, and add it to the new project.
@@ -235,6 +239,7 @@ public interface ProjectManagementService {
      * @param project the project to which the factor belongs
      * @param factorId the id of the factor to copy
      * @return the new factor
+     * @throws ProposalWorkflowException if the project cannot currently be modified because it is public
      */
-    Factor copyFactor(Project project, long factorId);
+    Factor copyFactor(Project project, long factorId) throws ProposalWorkflowException;
 }

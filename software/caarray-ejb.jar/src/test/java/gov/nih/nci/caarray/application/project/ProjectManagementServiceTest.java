@@ -159,11 +159,15 @@ public class ProjectManagementServiceTest {
     @Test
     public void testAddFile() {
         Project project = this.projectManagementService.getProject(123L);
-        CaArrayFile file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-        assertEquals(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName(), file.getName());
-        assertEquals(1, project.getFiles().size());
-        assertNotNull(project.getFiles().iterator().next().getProject());
-        assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        try {
+            CaArrayFile file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+            assertEquals(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName(), file.getName());
+            assertEquals(1, project.getFiles().size());
+            assertNotNull(project.getFiles().iterator().next().getProject());
+            assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        } catch (ProposalWorkflowException e) {
+            fail("Should not have gotten a workflow exception adding files");
+        }
     }
 
     private void assertContains(Set<CaArrayFile> caArrayFiles, File file) {
@@ -179,10 +183,10 @@ public class ProjectManagementServiceTest {
      * Test method for {@link gov.nih.nci.caarray.application.project.ProjectManagementService#submitProject(Project)}.
      */
     @Test
-    public void testSubmitProject() {
+    public void testSaveProject() {
         Project project = new Project();
         try {
-            this.projectManagementService.submitProject(project);
+            this.projectManagementService.saveProject(project);
             assertEquals(project, this.daoFactoryStub.projectDao.lastSaved);
         } catch (ProposalWorkflowException e) {
             fail("Unexpected exception: " + e);
@@ -196,7 +200,7 @@ public class ProjectManagementServiceTest {
     public void testCopyFactor() {
         Project project = new Project();
         try {
-            this.projectManagementService.saveDraftProject(project);
+            this.projectManagementService.saveProject(project);
             Factor factor = this.projectManagementService.copyFactor(project, 1);
             assertNotNull(factor);
             assertEquals("Test2", factor.getName());
@@ -213,7 +217,7 @@ public class ProjectManagementServiceTest {
     public void testCopySource() {
         Project project = new Project();
         try {
-            this.projectManagementService.saveDraftProject(project);
+            this.projectManagementService.saveProject(project);
             Source source = this.projectManagementService.copySource(project, 1);
             assertNotNull(source);
             assertEquals("Test2", source.getName());
@@ -231,7 +235,7 @@ public class ProjectManagementServiceTest {
     public void testCopySample() {
         Project project = new Project();
         try {
-            this.projectManagementService.saveDraftProject(project);
+            this.projectManagementService.saveProject(project);
             Sample sample = this.projectManagementService.copySample(project, 1);
             assertNotNull(sample);
             assertEquals("Test2", sample.getName());
@@ -259,7 +263,12 @@ public class ProjectManagementServiceTest {
         }
 
         Project project = this.projectManagementService.getProject(123L);
-        CaArrayFile file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        CaArrayFile file = null;
+        try {
+            file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        } catch (ProposalWorkflowException e) {
+            fail("Should not have gotten a workflow exception adding files");
+        }
 
         File f = this.projectManagementService.prepareForDownload(Collections.singleton(file));
         assertNotNull(f);

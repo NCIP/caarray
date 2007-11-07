@@ -118,8 +118,6 @@ public class AccessProfile implements PersistentObject, Serializable {
 
     private Long id;
     private SecurityLevel securityLevel = SecurityLevel.NONE;
-    private Set<Sample> selectiveReadSamples = new HashSet<Sample>();
-    private Set<Sample> selectiveWriteSamples = new HashSet<Sample>();
     private Map<Sample, SampleSecurityLevel> sampleSecurityLevels = new HashMap<Sample, SampleSecurityLevel>();
 
     /**
@@ -156,44 +154,6 @@ public class AccessProfile implements PersistentObject, Serializable {
      */
     public void setSecurityLevel(SecurityLevel securityLevel) {
         this.securityLevel = securityLevel;
-    }
-
-    /**
-     * @return the selectiveReadSamples
-     */
-    @ManyToMany
-    @JoinTable(
-            name = "PROFILE_READ_SAMPLES",
-            joinColumns = { @JoinColumn(name = "ACCESS_PROFILE_ID") },
-            inverseJoinColumns = { @JoinColumn(name = "SAMPLE_ID") }
-    )
-    @ForeignKey(name = "PROFILEREAD_PROFILE_FK", inverseName = "PROFILEREAD_READ_FK")
-    public Set<Sample> getSelectiveReadSamples() {
-        return this.selectiveReadSamples;
-    }
-
-    @SuppressWarnings("unused")
-    private void setSelectiveReadSamples(Set<Sample> selectiveReadSamples) { // NOPMD
-        this.selectiveReadSamples = selectiveReadSamples;
-    }
-
-    /**
-     * @return the selectiveWriteSamples
-     */
-    @ManyToMany
-    @JoinTable(
-            name = "PROFILE_WRITE_SAMPLES",
-            joinColumns = { @JoinColumn(name = "ACCESS_PROFILE_ID") },
-            inverseJoinColumns = { @JoinColumn(name = "SAMPLE_ID") }
-    )
-    @ForeignKey(name = "PROFILEWRITE_PROFILE_FK", inverseName = "PROFILEWRITE_WRITE_FK")
-    public Set<Sample> getSelectiveWriteSamples() {
-        return this.selectiveWriteSamples;
-    }
-
-    @SuppressWarnings("unused")
-    private void setSelectiveWriteSamples(Set<Sample> selectiveWriteSamples) { // NOPMD
-        this.selectiveWriteSamples = selectiveWriteSamples;
     }
 
     /**

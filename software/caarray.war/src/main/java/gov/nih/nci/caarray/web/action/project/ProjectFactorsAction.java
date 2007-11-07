@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
+import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.project.Factor;
@@ -122,9 +123,10 @@ public class ProjectFactorsAction extends ProjectListTabAction {
 
     /**
      * {@inheritDoc}
+     * @throws ProposalWorkflowException 
      */
     @Override
-    protected void doCopyItem() {
+    protected void doCopyItem() throws ProposalWorkflowException {
         getProjectManagementService().copyFactor(getProject(), this.currentFactor.getId());
     }
 

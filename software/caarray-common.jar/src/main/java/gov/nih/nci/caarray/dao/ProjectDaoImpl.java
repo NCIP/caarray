@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.project.ProposalStatus;
 
 import java.util.List;
 
@@ -119,9 +120,9 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      */
     @SuppressWarnings("unchecked")
     public List<Project> getNonPublicProjectsForUser() {
-        String hql = "from " + Project.class.getName() + " where publicProfile.securityLevel = :level order by experiment.title";
+        String hql = "from " + Project.class.getName() + " p where p.status != :status order by experiment.title";
         Query query = getCurrentSession().createQuery(hql);
-        query.setParameter("level", SecurityLevel.NONE);
+        query.setParameter("status", ProposalStatus.PUBLIC);
         return query.list();
     }
 
@@ -130,9 +131,9 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      */
     @SuppressWarnings("unchecked")
     public List<Project> getPublicProjects() {
-        String hql = "from " + Project.class.getName() + " where publicProfile.securityLevel != :level order by experiment.title";
+        String hql = "from " + Project.class.getName() + " p where p.status = :status order by experiment.title";
         Query query = getCurrentSession().createQuery(hql);
-        query.setParameter("level", SecurityLevel.NONE);
+        query.setParameter("status", ProposalStatus.PUBLIC);
         return query.list();
     }
 }

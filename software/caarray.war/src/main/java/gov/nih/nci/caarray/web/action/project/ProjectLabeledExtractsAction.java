@@ -119,7 +119,15 @@ public class ProjectLabeledExtractsAction extends ProjectListTabAction {
             this.currentLabeledExtract = getGenericDataService().retrieveEnity(LabeledExtract.class, this.currentLabeledExtract.getId());
         }
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String copy() {
+        return "notYetImplemented";
+    }
+
     /**
      * {@inheritDoc}
      */

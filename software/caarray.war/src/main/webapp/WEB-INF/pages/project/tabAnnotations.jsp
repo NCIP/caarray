@@ -5,24 +5,31 @@
 
 <c:url value="/protected/ajax/project/tab/ExperimentalDesign/load.action" var="experimentalDesignUrl">
     <c:param name="project.id" value="${project.id}" />
+    <c:param name="editMode" value="${editMode}" />
 </c:url>
 <c:url value="/protected/ajax/project/listTab/Factors/load.action" var="factorsUrl">
     <c:param name="project.id" value="${project.id}" />
+    <c:param name="editMode" value="${editMode}" />
 </c:url>
 <c:url value="/protected/ajax/project/listTab/Sources/load.action" var="sourcesUrl">
     <c:param name="project.id" value="${project.id}" />
+    <c:param name="editMode" value="${editMode}" />
 </c:url>
 <c:url value="/protected/ajax/project/listTab/Samples/load.action" var="samplesUrl">
     <c:param name="project.id" value="${project.id}" />
+    <c:param name="editMode" value="${editMode}" />
 </c:url>
 <c:url value="/protected/ajax/project/listTab/Extracts/load.action" var="extractsUrl">
     <c:param name="project.id" value="${project.id}" />
+    <c:param name="editMode" value="${editMode}" />
 </c:url>
 <c:url value="/protected/ajax/project/listTab/LabeledExtracts/load.action" var="labeledExtractsUrl">
     <c:param name="project.id" value="${project.id}" />
+    <c:param name="editMode" value="${editMode}" />
 </c:url>
 <c:url value="/protected/ajax/project/listTab/Hybridizations/load.action" var="hybridizationsUrl">
     <c:param name="project.id" value="${project.id}" />
+    <c:param name="editMode" value="${editMode}" />
 </c:url>
 
 <fmt:message key="project.tabs.experimentalDesign" var="experimentalDesignTitle" />
@@ -62,7 +69,7 @@
 </c:choose>
 
 <ajax:tabPanel panelStyleId="tablevel2" panelStyleClass="tablevel2" currentStyleClass="selected" contentStyleId="tabboxlevel2wrapper" contentStyleClass="tabboxlevel2wrapper"
-        postFunction="TabUtils.setSelectedLevel2Tab" preFunction="TabUtils.showSubtabLoadingText">
+        postFunction="TabUtils.setSelectedLevel2Tab" preFunction="TabUtils.showTabLoadingText">
     <ajax:tab caption="${experimentalDesignTitle}" baseUrl="${experimentalDesignUrl}" defaultTab="${initTab == null || initTab == 'experimentalDesign'}" />
     <ajax:tab caption="${factorsTitle}" baseUrl="${factorsUrl}" defaultTab="${initTab == 'factors'}" />
     <ajax:tab caption="${sourcesTitle}" baseUrl="${sourcesUrl}" defaultTab="${initTab == 'sources'}" />

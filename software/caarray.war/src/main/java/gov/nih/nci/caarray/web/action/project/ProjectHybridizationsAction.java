@@ -119,7 +119,22 @@ public class ProjectHybridizationsAction extends ProjectListTabAction {
             this.currentHybridization = getGenericDataService().retrieveEnity(Hybridization.class, this.currentHybridization.getId());
         }
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String copy() {
+        return "notYetImplemented";
+    }
+
+    /**
+     * download the data for the hyb
+     */
+    public String download() {
+        return "notYetImplemented";
+    }
+
     /**
      * {@inheritDoc}
      */

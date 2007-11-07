@@ -118,10 +118,14 @@ public class ProjectPermissionsAction extends BaseProjectAction {
     }
 
     private void saveSamplePermissions() {
+        // if the new experiment-wide security level does not allow sample-level permissions
+        // then any existing sample-level security levels get wiped
         this.accessProfile.getSampleSecurityLevels().clear();
-        for (Map.Entry<Long, SampleSecurityLevel> sampleEntry : this.sampleSecurityLevels.entrySet()) {
-            Sample sample = getGenericDataService().retrieveEnity(Sample.class, sampleEntry.getKey());
-            this.accessProfile.getSampleSecurityLevels().put(sample, sampleEntry.getValue());
+        if (this.accessProfile.getSecurityLevel().isAllowSampleLevelPermissions()) {
+            for (Map.Entry<Long, SampleSecurityLevel> sampleEntry : this.sampleSecurityLevels.entrySet()) {
+                Sample sample = getGenericDataService().retrieveEnity(Sample.class, sampleEntry.getKey());
+                this.accessProfile.getSampleSecurityLevels().put(sample, sampleEntry.getValue());
+            }            
         }
     }
 

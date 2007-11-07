@@ -164,22 +164,35 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     }
 
     /**
-     * Returns whether the project can be saved as a draft in its current state
-     * @return whether the project can be saved as a draft in its current state
+     * @return whether the project can be saved in its current state
      */
     @Transient
-    public boolean isSaveDraftAllowed() {
-        return getId() == null || getStatus().equals(ProposalStatus.DRAFT);
+    public boolean isSaveAllowed() {
+        return !getStatus().equals(ProposalStatus.PUBLIC);
     }
 
     /**
-     * Returns whether the project can be submitted in its current state
      * @return whether the project can be submitted in its current state
      */
     @Transient
     public boolean isSubmissionAllowed() {
-        return getId() == null || getStatus().equals(ProposalStatus.DRAFT)
-                || getStatus().equals(ProposalStatus.RETURNED_FOR_REVISION);
+        return getStatus() != ProposalStatus.PUBLIC && getStatus().canTransitionTo(ProposalStatus.SUBMITTED);
+    }
+
+    /**
+     * @return whether the project can be made public in its current state
+     */
+    @Transient
+    public boolean isMakingPublicAllowed() {
+        return getStatus().canTransitionTo(ProposalStatus.PUBLIC);
+    }
+
+    /**
+     * @return whether the project is currently public
+     */
+    @Transient
+    public boolean isPublic() {
+        return getStatus() == ProposalStatus.PUBLIC;
     }
 
     /**

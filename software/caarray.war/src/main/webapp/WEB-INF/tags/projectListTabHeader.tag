@@ -13,15 +13,17 @@
 
 <div class="boxpad2">
     <h3><fmt:message key="${resourceKeyPrefix}" /></h3>
-    <div class="addlink">
-        <fmt:message key="experiment.items.add" var="addCaption">
-            <fmt:param><fmt:message key="experiment.${entityNameLower}"/></fmt:param>
-        </fmt:message>
-        <caarray:projectListTabActionLink entityName="${entityName}" action="edit" itemId="" isSubtab="${isSubtab}">
-            <jsp:attribute name="linkRenderer">
-                <caarray:linkButton actionClass="add" text="${addCaption}" onclick="TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}'); return false;"/>
-            </jsp:attribute>
-        </caarray:projectListTabActionLink>
-    </div>
+    <c:if test="${project.saveAllowed}">
+        <div class="addlink">
+            <fmt:message key="experiment.items.add" var="addCaption">
+                <fmt:param><fmt:message key="experiment.${entityNameLower}"/></fmt:param>
+            </fmt:message>
+            <caarray:projectListTabActionLink entityName="${entityName}" action="edit" itemId="" isSubtab="${isSubtab}">
+                <jsp:attribute name="linkRenderer">
+                    <caarray:linkButton actionClass="add" text="${addCaption}" onclick="TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}'); return false;"/>
+                </jsp:attribute>
+            </caarray:projectListTabActionLink>
+        </div>
+    </c:if>
 </div>
 

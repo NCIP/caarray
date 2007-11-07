@@ -16,18 +16,9 @@
                 <caarray:projectListTabActionLink linkContent="${row.name}" entityName="Factor" action="view" itemId="${row.id}" isSubtab="true"/>
             </display:column>
             <display:column property="type.category.name" titleKey="experiment.factors.category" sortable="true" />
-            <display:column titleKey="button.edit">
-                <caarray:projectListTabActionLink entityName="Factor" action="edit" itemId="${row.id}" isSubtab="true"/>
-            </display:column>
-            <display:column titleKey="button.copy">
-                <caarray:projectListTabActionLink entityName="Factor" action="copy" itemId="${row.id}" isSubtab="true"/>
-            </display:column>
-            <display:column titleKey="button.delete">
-                <caarray:projectListTabActionLink entityName="Factor" action="delete" itemId="${row.id}" isSubtab="true"/>
-            </display:column>
+            <caarray:projectListTabActionColumns entityName="Factor" itemId="${row.id}" actions="!edit,!copy,!delete" isSubtab="true"/>
         </display:table>
     </ajax:displayTag>
 
-    <caarray:projectListTabHiddenForm entityName="Factor" isSubtab="true"/>
     </div>
 </caarray:tabPane>

@@ -100,12 +100,10 @@ public abstract class BaseProjectAction extends ActionSupport implements Prepara
 
     public static final String WORKSPACE_RESULT = "workspace";
     public static final String DETAILS_RESULT = "details";
-    protected static final String SAVE_MODE_DRAFT = "save_draft";
-    protected static final String SAVE_MODE_SUBMIT = "save_submit";
 
     private Project project = new Project();
-    private boolean initialSave;
-    private String saveMode;
+
+    private boolean editMode;
 
     /**
      *
@@ -121,34 +119,6 @@ public abstract class BaseProjectAction extends ActionSupport implements Prepara
         if (this.project.getId() != null) {
             this.project = getProjectManagementService().getProject(this.project.getId());
         }
-    }
-
-    /**
-     * @return the saveMode
-     */
-    public String getSaveMode() {
-        return this.saveMode;
-    }
-
-    /**
-     * @param saveMode the saveMode to set
-     */
-    public void setSaveMode(String saveMode) {
-        this.saveMode = saveMode;
-    }
-
-    /**
-     * @return the initialSave
-     */
-    public boolean isInitialSave() {
-        return this.initialSave;
-    }
-
-    /**
-     * @param initialSave the initialSave to set
-     */
-    public void setInitialSave(boolean initialSave) {
-        this.initialSave = initialSave;
     }
 
     /**
@@ -171,5 +141,19 @@ public abstract class BaseProjectAction extends ActionSupport implements Prepara
      */
     protected Experiment getExperiment() {
         return getProject().getExperiment();
+    }
+
+    /**
+     * @return the editMode
+     */
+    public boolean isEditMode() {
+        return this.editMode;
+    }
+
+    /**
+     * @param editMode the editMode to set
+     */
+    public void setEditMode(boolean editMode) {
+        this.editMode = editMode;
     }
 }

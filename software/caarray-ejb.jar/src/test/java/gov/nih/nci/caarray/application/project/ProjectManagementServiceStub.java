@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 
@@ -132,7 +133,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         // no-op
     }
 
-    public void saveDraftProject(Project project) throws ProposalWorkflowException {
+    public void saveProject(Project project) throws ProposalWorkflowException {
         // no-op
     }
 
@@ -178,5 +179,12 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
      */
     public AccessProfile addGroupProfile(Project project, CollaboratorGroup group) {
         return null;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void changeProjectStatus(long projectId, ProposalStatus newStatus) throws ProposalWorkflowException {
+        // does nothing
     }
 }

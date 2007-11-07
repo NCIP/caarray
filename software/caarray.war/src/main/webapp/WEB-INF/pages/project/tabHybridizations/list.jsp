@@ -21,18 +21,9 @@
             <display:column titleKey="experiment.hybridizations.fileSize" sortable="true">
                 TODO
             </display:column>
-            <display:column titleKey="button.edit">
-                <caarray:projectListTabActionLink entityName="Hybridization" action="edit" itemId="${row.id}" isSubtab="true"/>
-            </display:column>
-            <display:column titleKey="button.download">
-                <a href="<c:url value="/notYetImplemented.jsp" />"><img src="<c:url value="/images/ico_download.gif"/>" alt="<fmt:message key="button.download"/>" /></a>
-            </display:column>
-            <display:column titleKey="button.delete">
-                <caarray:projectListTabActionLink entityName="Hybridization" action="delete" itemId="${row.id}" isSubtab="true"/>
-            </display:column>
+            <caarray:projectListTabActionColumns entityName="Hybridization" itemId="${row.id}" actions="!edit,download,!delete" isSubtab="true"/>
         </display:table>
     </ajax:displayTag>
 
-    <caarray:projectListTabHiddenForm entityName="Hybridization" isSubtab="true"/>
     </div>
 </caarray:tabPane>
