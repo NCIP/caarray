@@ -40,10 +40,10 @@
   </target>
 
   <target name="test-suite" depends="testEnvPropertyFile,testPropertiesFileExists,testSshKeyFileExists,
-    testSvnLocalTrunk,testIsWindows,testWebAppOnline" />
+    testSvnLocalTrunk,testWebAppOnline" />
 
   <target name="remote-test-suite" depends="testEnvPropertyFile,testJavaSecureChannelFileExists, 
-  testPropertiesFileExists,testSshKeyFileExists,testSvnLocalTrunk,testIsWindows,testBuildNoTest" />
+  testPropertiesFileExists,testSshKeyFileExists,testSvnLocalTrunk,testBuildNoTest" />
 
   <target name="testEnvPropertyFile">
 	<au:assertPropertySet name="envpropertyfile" message="Target environment file not found. 
