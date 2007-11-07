@@ -61,6 +61,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.criterion.MatchMode;
+
 /**
  * @author John Pike
  *
@@ -101,15 +103,17 @@ public class VocabularyDaoTestStub implements VocabularyDao {
     }
 
     /**
-     * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity,
-     * or null if none exists.
-     *
-     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
-     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
-     * @throws DAOException if the list of matching entities could not be retrieved.
+     * {@inheritDoc}
      */
-    public List<PersistentObject> queryEntityByExample(PersistentObject entityToMatch) throws DAOException {
-        return new ArrayList<PersistentObject>();
+    public <T> List<T> queryEntityByExample(T entityToMatch) throws DAOException {
+        return queryEntityByExample(entityToMatch, MatchMode.EXACT);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode) throws DAOException {
+        return new ArrayList<T>();
     }
 
     public List<PersistentObject> queryEntityAndAssociationsByExample(PersistentObject entityToMatch) throws DAOException {

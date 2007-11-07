@@ -792,6 +792,7 @@
                 <pathelement location="${csmapi.jar}"/>
               <pathelement location="${commons-configuration.jar}"/>
                 <pathelement location="${displaytag.jar}"/>
+                <pathelement location="${hibernate.jar}"/>
             </classpath>
         </javac>
     </target>

@@ -16,9 +16,21 @@
         </h3>
       </div>
       <div class="boxpad" style="padding-bottom: 10px;">
-      	<p class="instructions" style="margin-bottom: 10px;">Search for users to add in the list below.  Click the corresponding
+		<caarray:successMessages />
+      	<p class="instructions" style="margin-bottom: 10px;">Search for users by choosing filter criteria.  Click the corresponding
       	<strong>Add icon</strong> in the column on the right to add the user as a group member.
       	</p>
+	  </div>
+	  <div id="searchboxwrapper">
+	  	<s:form action="/protected/collaborators/addUsers.action" cssClass="form" id="filterForm">
+	  		<s:textfield name="targetUser.lastName" key="label.lastName" size="30" tabindex="1" value="${targetUser.lastName}"/>
+	  		<s:textfield name="targetUser.firstName" key="label.firstName" size="30" tabindex="2" value="${targetUser.firstName}"/>
+	  		<s:textfield name="targetUser.organization" key="label.institution" size="30" tabindex="3" value="${targetUser.organization}"/>
+			<s:hidden name="targetGroup" value="${targetGroup.id}"/>
+	  	</s:form>
+        <caarray:actions>
+            <caarray:action onclick="document.getElementById('filterForm').submit();" actionClass="filter" text="Filter" />
+        </caarray:actions>
 	  </div>
 		<%@ include file="/WEB-INF/pages/collaborators/addTable.jsp" %>
 	</div>

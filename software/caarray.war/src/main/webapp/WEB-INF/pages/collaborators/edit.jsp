@@ -42,7 +42,7 @@
         	Members
         </h2>
        <div class="addlink">
-       		<c:url value="/protected/collaborators/addUsers.action" var="addUsersUrl">
+       		<c:url value="/protected/collaborators/preAdd.action" var="addUsersUrl">
        			<c:param name="targetGroup" value="${targetGroup.id}"/>
        		</c:url>
         	<caarray:linkButton url="${addUsersUrl}" actionClass="add" text="Add a New Group Member" />

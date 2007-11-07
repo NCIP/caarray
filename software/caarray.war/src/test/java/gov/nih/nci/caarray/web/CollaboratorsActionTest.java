@@ -101,10 +101,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.struts2.ServletActionContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 /**
  * Test cases for struts action.
@@ -123,6 +125,7 @@ public class CollaboratorsActionTest {
     @Before
     public void before() {
         pstub.reset();
+        ServletActionContext.setRequest(new MockHttpServletRequest());
     }
 
     @Test
@@ -205,7 +208,7 @@ public class CollaboratorsActionTest {
 
         action.setTargetGroup(new CollaboratorGroup(new Group(), new User()));
         action.edit();
-        assertTrue(pstub.isGetUsersCalled());
+        assertTrue(!pstub.isGetUsersCalled());
     }
 
     @After

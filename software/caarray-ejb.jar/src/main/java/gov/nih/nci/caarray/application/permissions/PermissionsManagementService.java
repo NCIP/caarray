@@ -155,9 +155,10 @@ public interface PermissionsManagementService {
     void rename(CollaboratorGroup targetGroup, String groupName) throws CSTransactionException, CSObjectNotFoundException;
 
     /**
-     * @return users in the system
+     * @param example object (may be null)
+     * @return users in the system meeting the criteria
      */
-    List<User> getUsers();
+    List<User> getUsers(User u);
 
     /**
      * Creates or updates an access profile

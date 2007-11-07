@@ -82,10 +82,14 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.util.CaArrayUtils;
+import gov.nih.nci.caarray.util.HibernateUtil;
+
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.hibernate.Criteria;
@@ -93,9 +97,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Example;
-
-import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.caarray.domain.PersistentObject;
+import org.hibernate.criterion.MatchMode;
 
 /**
  * Base DAO implementation for all caArray domain DAOs.
@@ -170,8 +172,15 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
+    public <T> List<T> queryEntityByExample(T entityToMatch) {
+        return queryEntityByExample(entityToMatch, MatchMode.EXACT);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
-    public <T extends PersistentObject> List<T> queryEntityByExample(T entityToMatch) {
+    public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode) {
         List<T> resultList = new ArrayList<T>();
         List hibernateReturnedEntities = null;
         if (entityToMatch == null) {
@@ -180,10 +189,14 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
 
         Session mySession = HibernateUtil.getCurrentSession();
         try {
+            CaArrayUtils.blankStringPropsToNull(entityToMatch);
             // Query database for list of entities matching the given entity's attributes.
             Criteria criteria = mySession.createCriteria(entityToMatch.getClass())
                                          .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-            criteria.add(Example.create(entityToMatch));
+            criteria.add(Example.create(entityToMatch)
+                                 .enableLike(mode)
+                                 .ignoreCase()
+                    );
             hibernateReturnedEntities = criteria.list();
         } catch (HibernateException he) {
             getLog().error(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
@@ -195,7 +208,6 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         }
         return resultList;
     }
-
 
     /**
      * {@inheritDoc}

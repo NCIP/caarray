@@ -115,7 +115,7 @@ public class CollaboratorsAction extends ActionSupport {
     private List<CollaboratorGroup> groups;
     private CollaboratorGroup targetGroup;
     private String groupName;
-    private User targetUser;
+    private User targetUser = new User();
     /** We keep these values (the ids) as Strings because the CSM API uses Strings. */
     private List<String> users;
     private List<User> allUsers;
@@ -163,9 +163,6 @@ public class CollaboratorsAction extends ActionSupport {
      */
     @SkipValidation
     public String edit() {
-        if (getTargetGroup() != null) {
-            setAllUsers(getPermissionsManagementService().getUsers());
-        }
         return Action.SUCCESS;
     }
 
@@ -184,15 +181,21 @@ public class CollaboratorsAction extends ActionSupport {
      * @throws CSTransactionException on CSM error
      * @throws CSObjectNotFoundException on CSM error
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "PMD"})
     @SkipValidation
     public String addUsers() throws CSTransactionException, CSObjectNotFoundException {
         if (CollectionUtils.isNotEmpty(getUsers())) {
             getPermissionsManagementService().addUsers(getTargetGroup(), getUsers());
+            ActionHelper.saveMessage(getText("collaboration.group.added"));
         }
-        setAllUsers((List<User>) CollectionUtils.subtract(getPermissionsManagementService().getUsers(),
-                                                          getTargetGroup().getGroup().getUsers()));
+        setAllUsers((List<User>) CollectionUtils.subtract(getPermissionsManagementService().getUsers(getTargetUser()),
+                getTargetGroup().getGroup().getUsers()));
         return Action.SUCCESS;
+    }
+
+    @SkipValidation
+    public String preAdd() {
+        return "addUsers";
     }
 
     /**

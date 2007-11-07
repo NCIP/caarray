@@ -94,7 +94,6 @@ import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
-import gov.nih.nci.security.dao.UserSearchCriteria;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 
@@ -111,6 +110,7 @@ import javax.interceptor.Interceptors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.criterion.MatchMode;
 
 /**
  * Local implementation of interface.
@@ -255,21 +255,21 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public List<User> getUsers() {
+    public List<User> getUsers(User u) {
         LogUtil.logSubsystemEntry(LOG);
-        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
-        List<User> users = am.getObjects(new UserSearchCriteria(new User()));
+        List<User> result = getDaoFactory().getArrayDao().queryEntityByExample(u == null ? new User() : u,
+                                                                               MatchMode.START);
         LogUtil.logSubsystemExit(LOG);
-        return users;
+        return result;
     }
 
     /**
      * {@inheritDoc}
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)    
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void saveAccessProfile(AccessProfile profile) {
         LogUtil.logSubsystemEntry(LOG, profile);
         getDaoFactory().getCollaboratorGroupDao().save(profile);
-        LogUtil.logSubsystemExit(LOG);        
+        LogUtil.logSubsystemExit(LOG);
     }
 }

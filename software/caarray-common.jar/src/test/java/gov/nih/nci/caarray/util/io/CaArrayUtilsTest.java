@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-ejb-jar
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-ejb-jar Software and any
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,151 +80,29 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.permissions;
+package gov.nih.nci.caarray.util.io;
 
-import gov.nih.nci.caarray.domain.permissions.AccessProfile;
-import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.security.authorization.domainobjects.User;
-import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
-import gov.nih.nci.security.exceptions.CSTransactionException;
 
-import java.util.Collections;
-import java.util.List;
+import org.junit.Test;
 
 /**
- * Stub impl.
+ * Test the utils class.
  */
-public class PermissionsManagementServiceStub implements PermissionsManagementService {
+public class CaArrayUtilsTest {
 
-    private CollaboratorGroup currentGroup;
-    private boolean getCalled = false;
-    private String name = null;
-    private List<String> addedUsers;
-    private List<String> removedUsers;
-    private boolean getUsersCalled = false;
-    private AccessProfile savedProfile;
-
-    /**
-     * @return the getUsersCalled
-     */
-    public boolean isGetUsersCalled() {
-        return getUsersCalled;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void delete(CollaboratorGroup group) {
-        currentGroup = group;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<CollaboratorGroup> getCollaboratorGroups() {
-        getCalled = true;
-        return Collections.emptyList();
-    }
-
-    /**
-     * @return the deletedGroup
-     */
-    public CollaboratorGroup getCurrentGroup() {
-        return currentGroup;
-    }
-
-    /**
-     * @return the getCalled
-     */
-    public boolean isGetCalled() {
-        return getCalled;
-    }
-
-    /**
-     * resets stub state.
-     */
-    public void reset() {
-        currentGroup = null;
-        getCalled = false;
-        name = null;
-        addedUsers = null;
-        removedUsers = null;
-        getUsersCalled = false;
-        savedProfile = null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public CollaboratorGroup create(String n) throws CSTransactionException, CSObjectNotFoundException {
-        name = n;
-        return null;
-    }
-
-    /**
-     * @return name of last group 'created'
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void addUsers(CollaboratorGroup targetGroup, List<String> users) {
-        addedUsers = users;
-        currentGroup = targetGroup;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void removeUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException {
-        removedUsers = users;
-        currentGroup = targetGroup;
-    }
-
-    /**
-     * @return uses added via addUsers
-     */
-    public List<String> getAddedUsers() {
-        return addedUsers;
-    }
-
-    /**
-     * @return users removed via removeusers
-     */
-    public List<String> getRemovedUsers() {
-        return removedUsers;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void rename(CollaboratorGroup targetGroup, String groupName) {
-        name = groupName;
-        currentGroup = targetGroup;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<User> getUsers(User u) {
-        getUsersCalled = true;
-        return Collections.emptyList();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void saveAccessProfile(AccessProfile profile) {
-        savedProfile = profile;
-    }
-
-    /**
-     * @return the savedProfile
-     */
-    public AccessProfile getSavedProfile() {
-        return savedProfile;
+    @Test
+    public void testNullSetter() {
+        User u = new User();
+        u.setFirstName("");
+        u.setLastName(" \t");
+        u.setOrganization(" test ");
+        CaArrayUtils.blankStringPropsToNull(u);
+        assertNull(u.getFirstName());
+        assertNull(u.getLastName());
+        assertNotNull(u.getOrganization());
     }
 }

@@ -87,6 +87,8 @@ import gov.nih.nci.caarray.domain.PersistentObject;
 import java.util.Collection;
 import java.util.List;
 
+import org.hibernate.criterion.MatchMode;
+
 /**
  * Base interface for all caArray domain DAOs.
  * It provides methods to save, update, remove and query entities by example.
@@ -119,14 +121,24 @@ public interface CaArrayDao {
     void remove(PersistentObject persistentObject);
 
     /**
+     * Calls queryEntityByExample(entityToMatch, MatchMode.EXACT).
+     *
+     * @param <T> entity type
+     * @param entityToMatch get objects matching this entity
+     * @return the List of objects, or an empty List.
+     */
+    <T> List<T> queryEntityByExample(T entityToMatch);
+
+    /**
      * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity,
      * or null if none exists.
      *
      * @param <T> entity type
-     * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
-     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
+     * @param mode string comparison mode
+     * @param entityToMatch get objects matching this entity
+     * @return the List of objects, or an empty List.
      */
-    <T extends PersistentObject> List<T> queryEntityByExample(T entityToMatch);
+    <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode);
 
     /**
      * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity

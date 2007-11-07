@@ -192,8 +192,8 @@ public class VocabularyServiceTest {
         }
 
         @Override
-        public List<PersistentObject> queryEntityByExample(PersistentObject entityToMatch) throws DAOException {
-            return new ArrayList<PersistentObject>();
+        public <T> List<T> queryEntityByExample(T entityToMatch) throws DAOException {
+            return new ArrayList<T>();
         }
         @Override
         public List<PersistentObject> queryEntityAndAssociationsByExample(PersistentObject entityToMatch) throws DAOException {
