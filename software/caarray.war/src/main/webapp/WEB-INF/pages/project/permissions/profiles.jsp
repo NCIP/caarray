@@ -15,6 +15,15 @@
               {evalScripts: true, onComplete: function() { $('access_profile_loading').hide();}});
         return false;
     }
+    
+    var SecurityLevel = new Object();
+    SecurityLevel.sampleSecurityLevels = new Object();
+    <s:iterator value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@values()" id="secLevel">
+    SecurityLevel.sampleSecurityLevels['<s:property value="#secLevel.name()"/>'] = new Array();
+        <s:iterator value="#secLevel.sampleSecurityLevels" id="sampleSecLevel">
+    SecurityLevel.sampleSecurityLevels['<s:property value="#secLevel.name()"/>'].push({ value: '<s:property value="#sampleSecLevel.name()"/>', label: '<s:property value="getText(#sampleSecLevel.resourceKey)"/>' });
+        </s:iterator>
+    </s:iterator>    
     </script>
 
     <div class="padme">

@@ -84,39 +84,41 @@ package gov.nih.nci.caarray.domain.permissions;
 
 import gov.nih.nci.caarray.domain.ResourceBasedEnum;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+
 /**
  * For access profiles, what type of access is permitted.
  */
 public enum SecurityLevel implements ResourceBasedEnum {
     /** No access to project or any samples. */
-    NONE(false, false, "SecurityLevel.none"),
+    NONE("SecurityLevel.none", true),
     /** Read access to project and all samples. */
-    READ(true, false, "SecurityLevel.read"),
+    READ("SecurityLevel.read", true),
     /** Read access to project and specified samples. */
-    READ_SELECTIVE(true, true, "SecurityLevel.readSelective"),
+    READ_SELECTIVE("SecurityLevel.readSelective", true, SampleSecurityLevel.NONE, SampleSecurityLevel.READ),
     /** Write access to project and all samples. */
-    WRITE(true, false, "SecurityLevel.write"),
-    /** Write access to project.  Read access and/or write access to specificed samples. */
-    READ_WRITE_SELECTIVE(true, true, "SecurityLevel.readWriteSelective");
+    WRITE("SecurityLevel.write", false),
+    /** Write access to project. Read access and/or write access to specificed samples. */
+    READ_WRITE_SELECTIVE("SecurityLevel.readWriteSelective", false, SampleSecurityLevel.NONE, SampleSecurityLevel.READ,
+            SampleSecurityLevel.READ_WRITE);
 
-    private final boolean projectVisible;
-    private final boolean allowSampleLevelPermissions;
+    private final boolean availableToPublic;
     private final String resourceKey;
+    private final List<SampleSecurityLevel> sampleSecurityLevels = new ArrayList<SampleSecurityLevel>();
 
-    SecurityLevel(boolean projectVisible, boolean allowSampleLevelPermissions, String resourceKey) {
-        this.projectVisible = projectVisible;
-        this.allowSampleLevelPermissions = allowSampleLevelPermissions;
+    private SecurityLevel(String resourceKey, boolean availableToPublic, SampleSecurityLevel... sampleSecurityLevels) {
+        this.availableToPublic = availableToPublic;
         this.resourceKey = resourceKey;
+        this.sampleSecurityLevels.addAll(Arrays.asList(sampleSecurityLevels));
     }
 
-    /**
-     * @return whether or not this security level makes a project visible
-     *         (distict from access to individual samples)
-     */
-    public boolean isProjectVisible() {
-        return projectVisible;
-    }
-    
     /**
      * {@inheritDoc}
      */
@@ -125,10 +127,36 @@ public enum SecurityLevel implements ResourceBasedEnum {
     }
 
     /**
-     * @return whether or not this security level allows finer grained restriction at the permission
-     * level
+     * @return whether or not this security level can be granted in the public access profile
      */
-    public boolean isAllowSampleLevelPermissions() {
-        return allowSampleLevelPermissions;
+    public boolean isAvailableToPublic() {
+        return availableToPublic;
+    }
+
+    /**
+     * @return the set of security levels that can be assigned to samples given this project security level
+     */
+    public List<SampleSecurityLevel> getSampleSecurityLevels() {
+        return sampleSecurityLevels;
+    }
+
+    /**
+     * @return whether this project security level allows permissions to be set at the sample level
+     */
+    public boolean isSampleLevelPermissionsAllowed() {
+        return !getSampleSecurityLevels().isEmpty();
+    }
+
+    /**
+     * @return the list of SecurityLevels that are available to the public access profile
+     */
+    public static List<SecurityLevel> publicLevels() {
+        List<SecurityLevel> levels = new ArrayList<SecurityLevel>(Arrays.asList(SecurityLevel.values()));
+        CollectionUtils.filter(levels, new Predicate() {
+            public boolean evaluate(Object o) {
+                return ((SecurityLevel) o).isAvailableToPublic();
+            }
+        });
+        return levels;
     }
 }

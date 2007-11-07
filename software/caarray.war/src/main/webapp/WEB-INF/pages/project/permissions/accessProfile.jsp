@@ -1,16 +1,5 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
-<script type="text/javascript">
-    changeExperimentAccess = function(theselect) {
-      var selectVal = $F(theselect);
-      if (selectVal == 'NONE' || selectVal == 'READ') {
-        $('access_profile_samples').hide();
-      } else {
-        $('access_profile_samples').show();      
-      }
-    }
-</script>
-
 <s:form action="ajax/project/permissions/saveAccessProfile" theme="simple" id="profileForm">
     <s:hidden name="project.id"/>
     <s:hidden name="accessProfile.id"/>
@@ -23,8 +12,8 @@
             <td class="filterrow" style="border-bottom: 1px solid #999">
                 <s:label for="profileForm_accessProfile_securityLevel" value="Experiment Access"/>
                 <s:select required="true" name="accessProfile.securityLevel" tabindex="1"
-                    list="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@values()" listValue="%{getText(resourceKey)}"
-                    onchange="changeExperimentAccess(this)"/>
+                    list="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@${publicProfile ? 'publicLevels' : 'values'}()" listValue="%{getText(resourceKey)}"
+                    onchange="PermissionUtils.changeExperimentAccess(this)"/>
             </td>
         </tr>
         <tr>
@@ -33,7 +22,9 @@
     </table>
                                 
         <table class="searchresults" cellspacing="0" style="width: 305px">
-            <tbody id="access_profile_samples">
+            <tbody id="access_profile_samples" 
+                <c:if test="${!accessProfile.securityLevel.sampleLevelPermissionsAllowed}">style="display:none"</c:if>
+            >
             <c:forEach items="${project.experiment.samples}" var="sample">
                 <c:set var="sampleSecLevel" value="${accessProfile.sampleSecurityLevels[sample]}"/>
                 <tr class="odd">
@@ -52,8 +43,8 @@
                     </td>
                     <td>${sample.description}</td>
                     <td>
-                        <s:select required="true" name="sampleSecurityLevels[${sample.id}]" tabindex="1"
-                            list="@gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel@values()" listValue="%{getText(resourceKey)}"/>
+                        <s:select required="true" name="sampleSecurityLevels[${sample.id}]" tabindex="1" cssClass="sample_security_level"
+                            list="accessProfile.securityLevel.sampleSecurityLevels" listValue="%{getText(resourceKey)}"/>
                     </td>
                 </tr>
             </c:forEach>

@@ -455,6 +455,29 @@ var TabUtils = {
     }
 }
 
+var PermissionUtils = {
+    SAMPLE_LIST_ID: 'access_profile_samples',
+    SAMPLE_DROPDOWN_SELECTOR: 'select.sample_security_level',
+    changeExperimentAccess: function(theselect) {
+        var selectVal = $F(theselect);
+        var sampleSecLevels = SecurityLevel.sampleSecurityLevels[selectVal];
+        if (sampleSecLevels.length == 0) {
+            $(PermissionUtils.SAMPLE_LIST_ID).hide();
+        } else {
+            $(PermissionUtils.SAMPLE_LIST_ID).show();      
+            var sampleSelects = $(PermissionUtils.SAMPLE_LIST_ID).getElementsBySelector(PermissionUtils.SAMPLE_DROPDOWN_SELECTOR);
+            sampleSelects.each(function(sampleSelect) {
+                var currentValue = $F(sampleSelect);
+                sampleSelect.options.length = 0;
+                sampleSecLevels.each(function(sampleSecLevel) {
+                    var opt = new Option(sampleSecLevel.label, sampleSecLevel.value, false, sampleSecLevel.value == currentValue);
+                    sampleSelect.options[sampleSelect.options.length] = opt;
+                });
+            });
+        }
+    }
+}
+
 //
 // Download stuff here
 //

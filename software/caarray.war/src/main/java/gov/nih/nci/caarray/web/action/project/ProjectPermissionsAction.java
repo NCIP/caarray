@@ -32,6 +32,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
     private List<CollaboratorGroup> collaboratorGroupsWithoutProfiles = new ArrayList<CollaboratorGroup>();
     private CollaboratorGroup collaboratorGroup = new CollaboratorGroup();
     private AccessProfile accessProfile = new AccessProfile();
+    private boolean publicProfile;
     private String profileOwnerName;
     private Map<Long, SampleSecurityLevel> sampleSecurityLevels = new HashMap<Long, SampleSecurityLevel>();
     /**
@@ -92,6 +93,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
     @SkipValidation
     public String loadPublicProfile() {
         this.accessProfile = getProject().getPublicProfile();
+        this.publicProfile = true;
         this.profileOwnerName = getText("project.permissions.publicProfile");
         setupSamplePermissions();        
         return "accessProfile";
@@ -105,6 +107,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
     @SkipValidation
     public String loadGroupProfile() {
         this.accessProfile = getProject().getGroupProfiles().get(this.collaboratorGroup);
+        this.publicProfile = false;
         this.profileOwnerName = getText("project.permissions.groupProfile", new String[] { this.collaboratorGroup
                 .getGroup().getGroupName() });
         setupSamplePermissions();
@@ -121,10 +124,12 @@ public class ProjectPermissionsAction extends BaseProjectAction {
         // if the new experiment-wide security level does not allow sample-level permissions
         // then any existing sample-level security levels get wiped
         this.accessProfile.getSampleSecurityLevels().clear();
-        if (this.accessProfile.getSecurityLevel().isAllowSampleLevelPermissions()) {
+        if (this.accessProfile.getSecurityLevel().isSampleLevelPermissionsAllowed()) {
             for (Map.Entry<Long, SampleSecurityLevel> sampleEntry : this.sampleSecurityLevels.entrySet()) {
                 Sample sample = getGenericDataService().retrieveEnity(Sample.class, sampleEntry.getKey());
-                this.accessProfile.getSampleSecurityLevels().put(sample, sampleEntry.getValue());
+                if (this.accessProfile.getSecurityLevel().getSampleSecurityLevels().contains(sampleEntry.getValue())) {
+                    this.accessProfile.getSampleSecurityLevels().put(sample, sampleEntry.getValue());                    
+                }
             }            
         }
     }
@@ -210,5 +215,19 @@ public class ProjectPermissionsAction extends BaseProjectAction {
      */
     public void setProfileOwnerName(String profileOwnerName) {
         this.profileOwnerName = profileOwnerName;
+    }
+
+    /**
+     * @return the publicProfile
+     */
+    public boolean isPublicProfile() {
+        return publicProfile;
+    }
+
+    /**
+     * @param publicProfile the publicProfile to set
+     */
+    public void setPublicProfile(boolean publicProfile) {
+        this.publicProfile = publicProfile;
     }
 }
