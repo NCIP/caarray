@@ -339,14 +339,34 @@ var Caarray = {
         var formData = Form.serialize(formId);
         options = options || {};
         if (options.extraArgs) {
-            formData = formData + '&' + Hash.toQueryString(options.extraArgs);      
+            formData = formData + '&' + Hash.toQueryString(options.extraArgs);
         }
-        var url = options.url || $(formId).action;    
+        var url = options.url || $(formId).action;
         new Ajax.Updater(divId, url, {parameters: formData, evalScripts: true, insertion: options.insertion} );
     }
 }
 
 var TabUtils = {
+
+    savedFormData : null,
+
+    preFunction : function() {
+        if (TabUtils.savedFormData != null && $('projectForm') && TabUtils.savedFormData != Form.serialize('projectForm')) {
+            if (!confirm('There are unsaved changed in your form, are you sure you want to continue?')) {
+                return false;
+            }
+        }
+        TabUtils.showLoadingText();
+    },
+
+    updateSavedFormData : function() {
+        if ($('projectForm')) {
+            TabUtils.savedFormData = Form.serialize('projectForm');
+        } else {
+            TabUtils.savedFormData = null;
+        }
+    },
+
     setSelectedTab : function() {
         tabMenuItems = $('tabbed').getElementsByTagName('li');
         for(var i = 0; i < tabMenuItems.length; i++) {
@@ -392,7 +412,7 @@ var TabUtils = {
 
     submitTabForm : function(formId, tabDivId) {
         TabUtils.showSubmittingText();
-	    Caarray.submitAjaxForm(formId, tabDivId);
+      Caarray.submitAjaxForm(formId, tabDivId);
     },
 
     submitTabFormToUrl : function(formId, url, divId) {
@@ -445,7 +465,7 @@ function DownloadMgr(dUrl, iUrl) {
   this.downloadIds = new Array();
   this.downloadSizeArray = new Array();
   this.count = 0;
-  
+
   this.allIds = new Array();
   this.allNames = new Array();
   this.allSizes = new Array();
@@ -462,15 +482,15 @@ DownloadMgr.prototype.allNames;
 DownloadMgr.prototype.allSizes;
 
 DownloadMgr.prototype.addDownloadRow = function(name, id, size) {
-	this.addDownloadRow(name, id, size, null);
+  this.addDownloadRow(name, id, size, null);
 }
 
 DownloadMgr.prototype.addDownloadRow = function(name, id, size, doAlert) {
     for (i = 0; i < this.downloadIds.length; ++i) {
       if (this.downloadIds[i] == id) {
-      	if (doAlert == null) { 
-      		alert('File ' + name + ' already in queue.');
-      	}
+        if (doAlert == null) {
+          alert('File ' + name + ' already in queue.');
+        }
         return;
       }
     }
@@ -547,15 +567,15 @@ DownloadMgr.prototype.doDownloadFiles = function() {
 }
 
 DownloadMgr.prototype.addAll = function() {
-	for (j = 0; j < this.allNames.length; j++) {
-		this.addDownloadRow(this.allNames[j], this.allIds[j], this.allSizes[j], false);
-	}
+  for (j = 0; j < this.allNames.length; j++) {
+    this.addDownloadRow(this.allNames[j], this.allIds[j], this.allSizes[j], false);
+  }
 }
 
 DownloadMgr.prototype.populateAll = function(name, id, size) {
-	this.allNames.push(name);
-	this.allIds.push(id);
-	this.allSizes.push(size);
+  this.allNames.push(name);
+  this.allIds.push(id);
+  this.allSizes.push(size);
 }
 
 

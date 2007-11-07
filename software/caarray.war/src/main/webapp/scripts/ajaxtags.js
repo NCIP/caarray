@@ -1,21 +1,21 @@
 /**
  * Copyright 2005 Darren L. Spurgeon
  * Copyright 2007 Jens Kapitza
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
- 
+
+
 var AjaxJspTag = {
   Version: '1.3'
 };
@@ -36,7 +36,7 @@ AjaxJspTag.Base.prototype = {
       this.options.parameters = qs;
     }
     this.url = trimQueryString(this.url);
-    
+
     if ((this.options.parameters.length > 0 ) && (this.options.parameters.charAt(this.options.parameters.length - 1) === ',')) {
       this.options.parameters = this.options.parameters.substr(0,this.options.parameters.length-1);
     }
@@ -53,13 +53,13 @@ AjaxJspTag.PreFunctionUpdateInvoke.prototype = Object.extend(new AjaxJspTag.Base
   initialize: function(ajaxupdateData) {
   this.preFunction = ajaxupdateData.preFunction;
   if (isFunction(this.preFunction))
-  { 
-  	this.preFunction();
+  {
+    this.preFunction();
   }
   if (this.cancelExecution) {
-	    	this.cancelExecution = false;
-	    	return ;
-      	}
+        this.cancelExecution = false;
+        return ;
+        }
   var thisCall = new Ajax.Updater(ajaxupdateData.id,ajaxupdateData.href,{onComplete: ajaxupdateData.postFunction});
   }
 
@@ -98,13 +98,13 @@ AjaxJspTag.UpdateField.prototype = Object.extend(new AjaxJspTag.Base(), {
   },
 
   execute: function(e) {
-    if (isFunction(this.options.preFunction)) 
+    if (isFunction(this.options.preFunction))
     {
-    	this.options.preFunction();
-	}
-	if (this.options.cancelExecution) {
-	    this.cancelExecution = false;
-	    return ;
+      this.options.preFunction();
+  }
+  if (this.options.cancelExecution) {
+      this.cancelExecution = false;
+      return ;
       }
     // parse parameters and do replacements
     var params = buildParameterString(this.options.parameters);
@@ -127,7 +127,7 @@ AjaxJspTag.UpdateField.prototype = Object.extend(new AjaxJspTag.Base(), {
       onFailure: function(request) {
         if (isFunction(obj.options.errorFunction)){
          obj.options.errorFunction(request,obj.options.parser);
-     	}
+       }
       },
       onComplete: function(request) {
         if (isFunction(obj.options.postFunction)) { obj.options.postFunction(); }
@@ -138,13 +138,13 @@ AjaxJspTag.UpdateField.prototype = Object.extend(new AjaxJspTag.Base(), {
   handler: function(request, optionsArr) {
   // this points to options
     for (var i=0; i<optionsArr.targets.length && i<optionsArr.items.length; i++) {
-   	namedIndex = i;
-   	if (this.valueUpdateByName) {
-    	for (j=0; j <optionsArr.items.length; j++) {
-    		if (optionsArr.targets[i]  ===  optionsArr.items[j][0]) {
-    			namedIndex = j;
-    		}
-    	}
+     namedIndex = i;
+     if (this.valueUpdateByName) {
+      for (j=0; j <optionsArr.items.length; j++) {
+        if (optionsArr.targets[i]  ===  optionsArr.items[j][0]) {
+          namedIndex = j;
+        }
+      }
     }
     $(optionsArr.targets[i]).value = optionsArr.items[namedIndex][1];
     }
@@ -162,7 +162,7 @@ AjaxJspTag.Callback.prototype = Object.extend(new AjaxJspTag.Base(), {
 
   initialize: function(url, options) {
     this.url = url;
-    this.setOptions(options); 
+    this.setOptions(options);
     this.errorCount = 0;
     addOnLoadEvent(this );
   },
@@ -175,19 +175,19 @@ AjaxJspTag.Callback.prototype = Object.extend(new AjaxJspTag.Base(), {
     }, options || {});
   },
   onload: function(){
-  	this.run();
+    this.run();
   },
   run: function(){
   // wenn fehler kommen den client veranlassen eben nicht mehr versuchen sich anzumelden
     if (!this.isRunning && this.errorCount < 100) {
       this.execute();
-    }  
+    }
   },
   execute: function(e) {
     if (isFunction(this.options.preFunction)) { this.options.preFunction();}
-	if (this.options.cancelExecution) {
-	    this.cancelExecution = false;
-	    return ;
+  if (this.options.cancelExecution) {
+      this.cancelExecution = false;
+      return ;
       }
     // parse parameters and do replacements
     //var params = buildParameterString(this.options.parameters);
@@ -201,9 +201,9 @@ AjaxJspTag.Callback.prototype = Object.extend(new AjaxJspTag.Base(), {
       evalScripts: true,
       onSuccess: function(request) {
         obj.options.parser.load(request);
-        obj.options.list = obj.options.parser.items; 
+        obj.options.list = obj.options.parser.items;
         obj.errorCount = 0;
-      
+
       },
       onFailure: function(request) {
         if (isFunction(obj.options.errorFunction)) {obj.options.errorFunction();}
@@ -211,7 +211,7 @@ AjaxJspTag.Callback.prototype = Object.extend(new AjaxJspTag.Base(), {
         obj.errorCount++;
       },
       onComplete: function(request) {
-      	// nun this.list kann mit der antwor alles gemacht werden was man will
+        // nun this.list kann mit der antwor alles gemacht werden was man will
         if (isFunction(obj.options.postFunction)) {obj.options.postFunction();}
         obj.isRunning = false;
         obj.run();
@@ -244,7 +244,7 @@ AjaxJspTag.Select.prototype = Object.extend(new AjaxJspTag.Base(), {
   reload: function () {
     this.setListeners();
   },
-  
+
   setOptions: function(options) {
     this.options = Object.extend({
       parameters: options.parameters || '',
@@ -258,8 +258,8 @@ AjaxJspTag.Select.prototype = Object.extend(new AjaxJspTag.Base(), {
   },
 
   setListeners: function() {
-  $(this.options.source).ajaxSelect = this; 
-  
+  $(this.options.source).ajaxSelect = this;
+
     Event.observe($(this.options.source),
       this.options.eventType,
       this.execute.bindAsEventListener(this),
@@ -269,9 +269,9 @@ AjaxJspTag.Select.prototype = Object.extend(new AjaxJspTag.Base(), {
 
   execute: function(e) {
     if (isFunction(this.options.preFunction)) {this.options.preFunction();}
-	if (this.options.cancelExecution) {
-	    this.cancelExecution = false;
-	    return ;
+  if (this.options.cancelExecution) {
+      this.cancelExecution = false;
+      return ;
       }
     // parse parameters and do replacements
     var params = buildParameterString(this.options.parameters);
@@ -299,7 +299,7 @@ AjaxJspTag.Select.prototype = Object.extend(new AjaxJspTag.Base(), {
 
   handler: function(request, options) {
     // build an array of option values to be set as selected
-    
+
     $(options.target).options.length = 0;
     $(options.target).disabled = false;
     for (var i=0; i<options.items.length; i++) {
@@ -311,18 +311,18 @@ AjaxJspTag.Select.prototype = Object.extend(new AjaxJspTag.Base(), {
       }
       $(options.target).options[i] = newOption;
     }
-    
-    
+
+
     if (options.items.length == 0)
     {
       $(options.target).options[i] = new Option(this.emptyOptionName, this.emptyOptionValue);
-    	$(options.target).disabled = true;
+      $(options.target).disabled = true;
     }
     // auch ein SELECT TAG ?
-   	if ($(options.target).ajaxSelect && $(options.target).ajaxSelect.execute)
-   	{
-   		$(options.target).ajaxSelect.execute();
-   	}
+     if ($(options.target).ajaxSelect && $(options.target).ajaxSelect.execute)
+     {
+       $(options.target).ajaxSelect.execute();
+     }
   }
 
 });
@@ -339,21 +339,21 @@ AjaxJspTag.HtmlContent.prototype = Object.extend(new AjaxJspTag.Base(), {
     this.setOptions(options);
     this.setListeners();
     addAjaxListener(this);
-    
+
   },
   reload: function(){
-  	this.setListeners();
+    this.setListeners();
   },
   setOptions: function(options) {
     this.options = Object.extend({
       parameterName: options.parameterName ? options.parameterName : AJAX_DEFAULT_PARAMETER,
       parameters: options.parameters || '',
       doPost: options.doPost || false,
-      
+
       preFunctionParameter:options.preFunctionParameter || null,
       errorFunctionParameter:  options.errorFunctionParameter || null,
       postFunctionParameter: options.postFunctionParameter || null,
-      
+
       eventType: options.eventType ? options.eventType : "click",
       parser: options.parser ? options.parser : new ResponseHtmlParser(),
       handler: options.handler ? options.handler : this.handler
@@ -372,12 +372,12 @@ AjaxJspTag.HtmlContent.prototype = Object.extend(new AjaxJspTag.Base(), {
   },
 
   execute: function(e) {
-  	this.options.preFunctionParameters = evalJScriptParameters(  this.options.preFunctionParameter);
-   
+    this.options.preFunctionParameters = evalJScriptParameters(  this.options.preFunctionParameter);
+
     if (isFunction(this.options.preFunction)) {this.options.preFunction();}
-	if (this.options.cancelExecution) {
-	    this.cancelExecution = false;
-	    return ;
+  if (this.options.cancelExecution) {
+      this.cancelExecution = false;
+      return ;
       }
     // replace default parameter with value/content of source element selected
     var ajaxParameters = this.options.parameters;
@@ -441,11 +441,11 @@ AjaxJspTag.Tree.prototype = Object.extend(new AjaxJspTag.Base(), {
 
   execute: function(e) {
     if (isFunction(this.options.preFunction)) {this.options.preFunction();}
-	if (this.options.cancelExecution) {
-	    this.cancelExecution = false;
-	    return ;
+  if (this.options.cancelExecution) {
+      this.cancelExecution = false;
+      return ;
       }
-       
+
     //if the node is expanded, just collapse it
     if(this.options.target != null) {
       var imgElem = $("span_" + this.options.target);
@@ -454,23 +454,23 @@ AjaxJspTag.Tree.prototype = Object.extend(new AjaxJspTag.Base(), {
         if(!expanded) {
           $(this.options.target).innerHTML = "";
              if (! $(this.options.target).style)
-       			$(this.options.target).setAttribute("style","");
-    
-     		$(this.options.target).style.display ="none";
-    
+             $(this.options.target).setAttribute("style","");
+
+         $(this.options.target).style.display ="none";
+
           return;
         }
       }
     }
-    // indicator 
-    
+    // indicator
+
     // parse parameters and do replacements
     var ajaxParameters = this.options.parameters || '';
     var re = new RegExp("(\\{"+this.calloutParameter+"\\})", 'g');
     ajaxParameters = ajaxParameters.replace(re, this.options.target);
-    
+
     var params = buildParameterString(ajaxParameters);
-      
+
     var obj = this; // required because 'this' conflict with Ajax.Request
     var aj = new Ajax.Request(this.url, {
       asynchronous: true,
@@ -478,10 +478,10 @@ AjaxJspTag.Tree.prototype = Object.extend(new AjaxJspTag.Base(), {
       evalScripts: true,
       parameters: params,
       onSuccess: function(request) {
-      // IE 5,6 BUG 
-      	objx = new Object();
-		objx.responseXML = request.responseXML;
-      
+      // IE 5,6 BUG
+        objx = new Object();
+    objx.responseXML = request.responseXML;
+
          obj.options.parser.load(Object.extend(objx, {
                                                    collapsedClass: obj.options.collapsedClass,
                                                    treeClass:      obj.options.treeClass,
@@ -496,18 +496,18 @@ AjaxJspTag.Tree.prototype = Object.extend(new AjaxJspTag.Base(), {
       },
       onComplete: function(request) {
         if (isFunction(obj.options.postFunction)) {obj.options.postFunction();}
-		// damit htmlcontent wieder geht
+    // damit htmlcontent wieder geht
         reloadAjaxListeners();
       }
     });
   },
-  
+
   toggle: function (e) {
     var expanded =  e.className == this.options.expandedClass;
     e.className =  expanded ? this.options.collapsedClass : this.options.expandedClass;
     return !expanded;
   },
-  
+
   handler: function(request, options) {
     var parser = options.parser;
     var target = $(options.target);
@@ -515,33 +515,33 @@ AjaxJspTag.Tree.prototype = Object.extend(new AjaxJspTag.Base(), {
 
          // div.setAttribute("style","");
         //  div.style.display ="none";
-          
-    if (!target.style)
-      target.setAttribute("style","");
-    
-    target.style.display ="none";
-    
-    	 target.innerHTML = "";
-     	return;
-    }
-      
 
-     
-    target.appendChild(parser.content);   
-    
     if (!target.style)
       target.setAttribute("style","");
-    
+
+    target.style.display ="none";
+
+       target.innerHTML = "";
+       return;
+    }
+
+
+
+    target.appendChild(parser.content);
+
+    if (!target.style)
+      target.setAttribute("style","");
+
     target.style.display ="block";
-    
+
     var images = target.getElementsByTagName("span");
     for (var i=0; i<images.length; i++) {
       //get id
       var id = images[i].id.substring(5);
       var toggleFunction = "function() {toggleTreeNode('" +  id + "', '" + options.url + "', null);}";
-      eval("images[i].on" + options.eventType + "=" + toggleFunction); 
+      eval("images[i].on" + options.eventType + "=" + toggleFunction);
     }
-   
+
     //toggle the one that must be expanded
     var expandedNodes = parser.expandedNodes;
     for (var i=0; i<expandedNodes.length; i++) {
@@ -573,10 +573,14 @@ AjaxJspTag.TabPanel.prototype = Object.extend(new AjaxJspTag.Base(), {
   },
 
   execute: function(e) {
-    if (isFunction(this.options.preFunction)){ this.options.preFunction();}
-	if (this.options.cancelExecution) {
-	    this.cancelExecution = false;
-	    return ;
+    if (isFunction(this.options.preFunction)) {
+        if (this.options.preFunction() == false) {
+            return;
+        }
+    }
+  if (this.options.cancelExecution) {
+      this.cancelExecution = false;
+      return ;
       }
     // parse parameters and do replacements
     this.resolveParameters();
@@ -636,9 +640,9 @@ AjaxJspTag.Portlet.prototype = Object.extend(new AjaxJspTag.Base(), {
       this.execute();
     }
     if (this.preserveState) this.checkCookie();
-    
+
     if (parseBoolean(this.options.startMinimize)) {
-   		this.togglePortlet();
+       this.togglePortlet();
     }
     addAjaxListener(this);
     // should i reloadAjaxListeners() after execute?
@@ -646,7 +650,7 @@ AjaxJspTag.Portlet.prototype = Object.extend(new AjaxJspTag.Base(), {
   reload: function () {
     this.setListeners();
   },
-  
+
   setOptions: function(options) {
     this.options = Object.extend({
       parameters: options.parameters || '',
@@ -693,9 +697,9 @@ AjaxJspTag.Portlet.prototype = Object.extend(new AjaxJspTag.Base(), {
 
   execute: function(e) {
     if (isFunction(this.options.preFunction)){ this.options.preFunction();}
-	if (this.options.cancelExecution) {
-	    this.cancelExecution = false;
-	    return ;
+  if (this.options.cancelExecution) {
+      this.cancelExecution = false;
+      return ;
       }
     // parse parameters and do replacements
     this.resolveParameters();
@@ -736,7 +740,7 @@ AjaxJspTag.Portlet.prototype = Object.extend(new AjaxJspTag.Base(), {
         }
       });
     }
-    
+
   },
 
   checkCookie: function() {
@@ -827,45 +831,45 @@ Object.extend(Object.extend(Ajax.XmlToHtmlAutocompleter.prototype,  Autocomplete
   },
   // onblur hack IE works with FF
      onBlur: function (event) {
-  	  // Dont hide the div on "blur" if the user clicks scrollbar 
-	if(Element.getStyle(this.update, 'height') != ''){ 
- 		var x=999999;
- 		var y=999999;
- 		var offsets = Position.positionedOffset(this.update);
- 		var top = offsets[1];
- 		var left = offsets[0];
- 		var data = Element.getDimensions(this.update);
- 		var width = data.width;
- 		var height = data.height;
- 		if (event)
- 		{
- 			x=event.x-left;
- 			y=event.y -top;
- 		} 
- 		
+      // Dont hide the div on "blur" if the user clicks scrollbar
+  if(Element.getStyle(this.update, 'height') != ''){
+     var x=999999;
+     var y=999999;
+     var offsets = Position.positionedOffset(this.update);
+     var top = offsets[1];
+     var left = offsets[0];
+     var data = Element.getDimensions(this.update);
+     var width = data.width;
+     var height = data.height;
+     if (event)
+     {
+       x=event.x-left;
+       y=event.y -top;
+     }
+
         if (x > 0 && x <  width && y > 0 && y < height )
-        { 
-      	this.element.focus();
+        {
+        this.element.focus();
         return;
-        } 
+        }
       }
-      
+
         // needed to make click events working
     setTimeout(this.hide.bind(this), 250);
     this.hasFocus = false;
-    this.active = false;     
-      
-      
+    this.active = false;
+
+
   },
   getUpdatedChoices: function() {
    if (isFunction(this.options.preFunction)){ this.options.preFunction();}
       // preFunction can cancelExecution set this.cancelExecution = true;
-	  if (this.options.cancelExecution) {
-	    this.cancelExecution = false;
-	    this.stopIndicator();
-	    return ;
+    if (this.options.cancelExecution) {
+      this.cancelExecution = false;
+      this.stopIndicator();
+      return ;
       }
-    entry = encodeURIComponent(this.options.paramName) + '=' + 
+    entry = encodeURIComponent(this.options.paramName) + '=' +
       encodeURIComponent(this.getToken());
 
     this.options.parameters = this.options.callback ?
@@ -883,7 +887,7 @@ Object.extend(Object.extend(Ajax.XmlToHtmlAutocompleter.prototype,  Autocomplete
     var parser = this.options.parser;
     parser.load(request);
     this.updateChoices(parser.content);
-  } 
+  }
 
 });
 
@@ -952,14 +956,14 @@ AjaxJspTag.Autocomplete.prototype = Object.extend(new AjaxJspTag.Base(), {
     }
     options.selectedIndex = options.autocomplete.index;
     options.selectedObject = options.list[options.autocomplete.index];
-    
+
     if (isFunction(options.postFunction)) {
       //Disable onupdate event handler of input field
       //because, postFunction can change the content of
       //input field and get into eternal loop.
       var onupdateHandler = $(options.inputField).onupdate;
       $(options.inputField).onupdate = '';
-      
+
       options.postFunction();
       //Enable onupdate event handler of input field
       $(options.inputField).onupdate = onupdateHandler;
@@ -991,7 +995,7 @@ AjaxJspTag.Toggle.prototype = Object.extend(new AjaxJspTag.Base(), {
   reload: function () {
     this.setListeners();
   },
-  
+
   setOptions: function(options) {
     this.options = Object.extend({
       parameters: options.parameters || 'rating={ajaxParameter}',
@@ -1131,9 +1135,9 @@ AjaxJspTag.Toggle.prototype = Object.extend(new AjaxJspTag.Base(), {
 
   execute: function(ratingValue) {
     if (isFunction(this.options.preFunction)){ this.options.preFunction();}
-	if (this.options.cancelExecution) {
-	    this.cancelExecution = false;
-	    return ;
+  if (this.options.cancelExecution) {
+      this.cancelExecution = false;
+      return ;
       }
     // parse parameters and do replacements
     var ajaxParameters = this.options.parameters || '';
@@ -1164,9 +1168,9 @@ AjaxJspTag.Toggle.prototype = Object.extend(new AjaxJspTag.Base(), {
 
   handler: function(request, roptions) {
   //daten in items
-  	var erg = roptions.items[0][0] ; // on/off / 1,2,3
-  	try  {
-  	this.updateFunction(erg);
+    var erg = roptions.items[0][0] ; // on/off / 1,2,3
+    try  {
+    this.updateFunction(erg);
     // TODO: anything?
     } catch (e) {} // muss nicht forhanden sein
   },
@@ -1196,7 +1200,7 @@ AjaxJspTag.Callout.prototype = Object.extend(new AjaxJspTag.Base(), {
   reload: function () {
     this.setListeners();
   },
-  
+
   setOptions: function(options) {
     this.options = Object.extend({
       parameters: options.parameters || '',
@@ -1230,9 +1234,9 @@ AjaxJspTag.Callout.prototype = Object.extend(new AjaxJspTag.Base(), {
 
   execute: function(e) {
     if (isFunction(this.options.preFunction)){ this.options.preFunction();}
-	if (this.options.cancelExecution) {
-	    this.cancelExecution = false;
-	    return ;
+  if (this.options.cancelExecution) {
+      this.cancelExecution = false;
+      return ;
       }
     // parse parameters and do replacements
     var ajaxParameters = this.options.parameters || '';
@@ -1266,7 +1270,7 @@ AjaxJspTag.Callout.prototype = Object.extend(new AjaxJspTag.Base(), {
   },
 
   handler: function(content, options) {
-  if (content != "") { // #4 
+  if (content != "") { // #4
     if (options.overlib) {
       if (options.title) {
         return eval("overlib(content,CAPTION,options.title,"+options.overlib+")");

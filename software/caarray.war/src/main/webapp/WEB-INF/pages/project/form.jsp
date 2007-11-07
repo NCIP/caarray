@@ -21,7 +21,7 @@
     <h1>
         <c:if test="${!empty project.id}">
             <c:choose>
-                <c:when test="${project.submissionAllowed}">                    
+                <c:when test="${project.submissionAllowed}">
                     <c:set var="newWorkflowStatus" value="<%= ProposalStatus.SUBMITTED %>"/>
                     <c:set var="buttonTitle" value="Submit Experiment Proposal"/>
                 </c:when>
@@ -32,13 +32,13 @@
                 <c:when test="${project.public}">
                     <c:set var="newWorkflowStatus" value="<%= ProposalStatus.SUBMITTED %>"/>
                     <c:set var="buttonTitle" value="Make Experiment Not Public"/>
-                </c:when>                
+                </c:when>
             </c:choose>
             <c:if test="${!empty newWorkflowStatus}">
                 <s:form action="project/changeWorkflowStatus" id="workflowForm" cssStyle="display: inline">
                     <s:hidden name="project.id"/>
-                    <s:hidden name="workflowStatus" value="${newWorkflowStatus}"/>            
-                </s:form>                    
+                    <s:hidden name="workflowStatus" value="${newWorkflowStatus}"/>
+                </s:form>
                 <caarray:linkButton onclick="$('workflowForm').submit(); return false"
                         actionClass="submit_experiment" text="${buttonTitle}" style="display: block; float: right; margin-bottom: -1em"/>
             </c:if>
@@ -82,15 +82,15 @@
         <c:set value="${param.initialTab2}" scope="session" var="initialTab2" />
         <c:if test="${param.initialTab2Url != null}">
             <c:set value="${param.initialTab2Url}" scope="session" var="initialTab2Url" />
-        </c:if>    
+        </c:if>
     </c:if>
-        
+
     <div class="padme">
         <h2><span class="dark">Experiment:</span>   <span id="experimentTitleHeader">${project.experiment.title}</span></h2>
         <ajax:tabPanel panelStyleId="tabs" panelStyleClass="tabs2" currentStyleClass="active" contentStyleId="tabboxwrapper" contentStyleClass="tabboxwrapper"
-                postFunction="TabUtils.setSelectedTab" preFunction="TabUtils.showLoadingText">
+                postFunction="TabUtils.setSelectedTab" preFunction="TabUtils.preFunction">
             <ajax:tab caption="${overviewTitle}" baseUrl="${overviewUrl}" defaultTab="${param.initialTab == null || param.initialTab == 'overview'}" />
-            <c:if test="${!empty project.id}">            
+            <c:if test="${!empty project.id}">
                 <ajax:tab caption="${contactsTitle}" baseUrl="${contactsUrl}" defaultTab="${param.initialTab == 'contacts'}" />
                 <ajax:tab caption="${annotationsTitle}" baseUrl="${annotationsUrl}" defaultTab="${param.initialTab == 'annotations'}" />
                 <ajax:tab caption="${dataTitle}" baseUrl="${dataUrl}" defaultTab="${param.initialTab == 'data'}" />

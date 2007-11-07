@@ -15,7 +15,7 @@
     <s:if test="editMode">
         <caarray:projectListTabActionLink entityName="${entityName}" action="load" itemId="${row.id}" isSubtab="${isSubtab}">
             <jsp:attribute name="linkRenderer">
-                <caarray:action actionClass="cancel" text="Cancel" onclick="TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}'); return false;"/>
+                <caarray:action actionClass="cancel" text="Cancel" onclick="TabUtils.updateSavedFormData(); TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}'); return false;"/>
             </jsp:attribute>
         </caarray:projectListTabActionLink>
         <caarray:action actionClass="save" text="Save" onclick="TabUtils.submitTabForm('projectForm', '${tabAnchor}'); return false;"/>

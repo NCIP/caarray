@@ -38,3 +38,6 @@
     <caarray:successMessages />
     <jsp:doBody />
 </div>
+<script type="text/javascript">
+TabUtils.updateSavedFormData();
+</script>

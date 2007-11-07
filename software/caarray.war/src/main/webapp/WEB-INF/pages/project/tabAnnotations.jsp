@@ -69,7 +69,7 @@
 </c:choose>
 
 <ajax:tabPanel panelStyleId="tablevel2" panelStyleClass="tablevel2" currentStyleClass="selected" contentStyleId="tabboxlevel2wrapper" contentStyleClass="tabboxlevel2wrapper"
-        postFunction="TabUtils.setSelectedLevel2Tab" preFunction="TabUtils.showLoadingText">
+        postFunction="TabUtils.setSelectedLevel2Tab" preFunction="TabUtils.preFunction">
     <ajax:tab caption="${experimentalDesignTitle}" baseUrl="${experimentalDesignUrl}" defaultTab="${initTab == null || initTab == 'experimentalDesign'}" />
     <ajax:tab caption="${factorsTitle}" baseUrl="${factorsUrl}" defaultTab="${initTab == 'factors'}" />
     <ajax:tab caption="${sourcesTitle}" baseUrl="${sourcesUrl}" defaultTab="${initTab == 'sources'}" />
