@@ -39,7 +39,7 @@
   <target name="pre-build-checks" depends="testEnvPropertyFile,testPropertiesFileExists,testSshKeyFileExists,
     testSvnLocalTrunk" />
 
-  <target name="post-build-checks" depends="testWebAppOnline" />
+  <target name="post-build-checks"/>
 
   <target name="pre-build-checks-command-line" depends="pre-build-checks, testJavaSecureChannelFileExists, 
     testBuildNoTest" />
