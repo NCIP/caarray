@@ -188,9 +188,6 @@
     <filtersfile file="${envpropertyfile}" />
     </filterset>
 
-    <!-- Tag property to display on front page -->
-    <property name="caarray.version" value="${build.tag_built}|${version}-${buildNumber}|${build.date_time}" />
-
     <!-- ******************************************************************* -->
     <!-- ** IMPORTS                                                       ** -->
     <!-- ******************************************************************* -->
@@ -220,7 +217,7 @@
     <!-- ** MAIN TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
 
-  <target name="continuous-integration">
+  <target name="continuous-integration" depends="build-tags">
     <antcall target="clean"/>
     <antcall target="database:reinitialize"/>
     <antcall target="build"/>
@@ -1271,6 +1268,31 @@
     <target name="display-properties">
       <echo> Diagnostics...</echo>
     <echoproperties/>
+    </target>
+
+    <!-- Tag property to display on front page -->
+    <target name="build-tags" depends="-get-version-info, -build-with-tag, -build-without-tag"/>
+
+	<target name="-get-version-info">
+      <condition property="buildtagbuilt.null">
+        <and>
+          <not>
+            <isset property="build.tag_built" />
+          </not>
+        </and>
+      </condition>
+    </target>
+
+    <target name="-build-with-tag" unless="buildtagbuilt.null">
+	  <echo> Building WITH Tag...</echo>
+	  <property name="caarray.version" value="${build.tag_built}(${buildNumber})|${build.date_time}" /> 
+	  <echo> caarray.version=${caarray.version}</echo>
+    </target>
+
+    <target name="-build-without-tag" if="buildtagbuilt.null">
+	  <echo> Building WITHOUT Tag...</echo>
+	  <property name="caarray.version" value="trunk-(${buildNumber})|${build.date_time}" /> 
+	  <echo> caarray.version=${caarray.version}</echo>
     </target>
 
 	<target name="remote-deploy" depends="clean, display-properties">
