@@ -1,8 +1,5 @@
 <project name="test-build" default="setUp" basedir="." xmlns:au="antlib:org.apache.ant.antunit" xmlns="antlib:org.apache.tools.ant">
 
-<!-- IMPORTANT: This file works is tightly coupled with remote-build.xml 
-  and does not work indepently of it -->
-
 <property name="antunit.jar" value="ant-antunit-1.0.jar"/>
 <property name="antunit.jar.location" value="${lib.dir}/${antunit.jar}"/>
 
@@ -25,9 +22,9 @@
   <target name="setUp">
   </target>
 
-  <target name="test-build" depends="display-properties,setUp,test-suite,tearDown" />
+  <target name="test-build" depends="display-properties,setUp,pre-build-checks,tearDown" />
 
-  <target name="test-remote-build" depends="display-properties,setUp,remote-test-suite,tearDown" />
+  <target name="test-remote-build" depends="display-properties,setUp,pre-build-checks-command-line,tearDown" />
 
   <!-- is called after the test, even if that caused an error -->
   <target name="tearDown">
@@ -39,11 +36,13 @@
 	  <echoproperties/>
   </target>
 
-  <target name="test-suite" depends="testEnvPropertyFile,testPropertiesFileExists,testSshKeyFileExists,
+  <target name="pre-build-checks" depends="testEnvPropertyFile,testPropertiesFileExists,testSshKeyFileExists,
     testSvnLocalTrunk" />
 
-  <target name="remote-test-suite" depends="testEnvPropertyFile,testJavaSecureChannelFileExists, 
-  testPropertiesFileExists,testSshKeyFileExists,testSvnLocalTrunk,testBuildNoTest" />
+  <target name="post-build-checks" depends="testWebAppOnline" />
+
+  <target name="pre-build-checks-command-line" depends="pre-build-checks, testJavaSecureChannelFileExists, 
+    testBuildNoTest" />
 
   <target name="testEnvPropertyFile">
 	<au:assertPropertySet name="envpropertyfile" message="Target environment file not found. 
