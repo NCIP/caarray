@@ -15,6 +15,13 @@
   setExperimentTitleHeader = function(value) {
     $('experimentTitleHeader').innerHTML = value || 'New Experiment';
   }
+
+  submitWorkflowForm = function() {
+    if (TabUtils.preFunction() != false) {
+        $('workflowForm').submit();
+    }
+    return false;
+  }
 </script>
 </head>
 <body>
@@ -39,7 +46,7 @@
                     <s:hidden name="project.id"/>
                     <s:hidden name="workflowStatus" value="${newWorkflowStatus}"/>
                 </s:form>
-                <caarray:linkButton onclick="$('workflowForm').submit(); return false"
+                <caarray:linkButton onclick="submitWorkflowForm();"
                         actionClass="submit_experiment" text="${buttonTitle}" style="display: block; float: right; margin-bottom: -1em"/>
             </c:if>
         </c:if>
