@@ -1271,7 +1271,7 @@
     </target>
 
     <!-- Tag property to display on front page -->
-    <target name="build-tags" depends="-get-version-info, -build-with-tag, -build-without-tag"/>
+    <target name="build-tags" depends="-get-version-info, -command-build-with-tag, -build-with-tag, -build-without-tag"/>
 
 	<target name="-get-version-info">
       <condition property="buildtagbuilt.null">
@@ -1281,6 +1281,21 @@
           </not>
         </and>
       </condition>
+	  <!-- If svn.tag is populated and build.tag_built is null, use svn.tag -->
+      <condition property="command.line.build.with.tag">
+        <and>
+          <isset property="svn.tag" />
+          <not>
+            <isset property="build.tag_built" />
+          </not>
+        </and>
+      </condition>
+    </target>
+
+    <target name="-command-build-with-tag" if="command.line.build.with.tag">
+	  <echo> Building WITH Tag, Command Line...</echo>
+	  <property name="caarray.version" value="${svn.tag}" /> 
+	  <echo> caarray.version=${caarray.version}</echo>
     </target>
 
     <target name="-build-with-tag" unless="buildtagbuilt.null">
@@ -1289,9 +1304,11 @@
 	  <echo> caarray.version=${caarray.version}</echo>
     </target>
 
+	<!-- Missing - if build master types a value in Build as Version: -->
+
     <target name="-build-without-tag" if="buildtagbuilt.null">
 	  <echo> Building WITHOUT Tag...</echo>
-	  <property name="caarray.version" value="trunk-(${buildNumber})|${build.date_time}" /> 
+	  <property name="caarray.version" value="trunk(${buildNumber})|${build.date_time}" /> 
 	  <echo> caarray.version=${caarray.version}</echo>
     </target>
 
