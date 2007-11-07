@@ -22,7 +22,7 @@
     </table>
 
     <div class="datatable" style="padding-bottom: 0px">
-        <div class="scrolltable" style="height: auto; max-height: 200px; overflow-x: hidden">
+        <div class="scrolltable" style="height: auto; max-height: 170px; overflow-x: hidden">
         <table class="searchresults permissiontable" cellspacing="0">
             <tbody id="access_profile_samples" 
                 <c:if test="${!accessProfile.securityLevel.sampleLevelPermissionsAllowed}">style="display:none"</c:if>
