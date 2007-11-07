@@ -1296,10 +1296,12 @@
     </target>
 
 	<target name="remote-deploy" depends="clean">
+	    <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/test-build.xml" target="test-build" />
         <antcall target="validate-properties" />
         <antcall target="continuous-integration" />
         <antcall target="remote-jboss:deploy" />
 		<antcall target="remote-globus:deploy"/>
+		<ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/test-build.xml" target="testWebAppOnline" />
     </target>
 
 </project>

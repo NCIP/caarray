@@ -1,7 +1,10 @@
 <project name="test-build" default="setUp" basedir="." xmlns:au="antlib:org.apache.ant.antunit" xmlns="antlib:org.apache.tools.ant">
 
-<!-- IMPORTANT: This file works with tightly coupled with remote-build.xml 
+<!-- IMPORTANT: This file works is tightly coupled with remote-build.xml 
   and does not work indepently of it -->
+
+<property name="antunit.jar" value="ant-antunit-1.0.jar"/>
+<property name="antunit.jar.location" value="${lib.dir}/${antunit.jar}"/>
 
 <taskdef uri="antlib:org.apache.ant.antunit"
   resource="org/apache/ant/antunit/antlib.xml">
