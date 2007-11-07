@@ -144,7 +144,7 @@
 	</target>
 
 	<target name="diagnostics" depends="fail-if-no-antunit, fail-if-no-jsch">
-	  <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/test-build.xml" />
+	  <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/test-build.xml" target="test-remote-build"/>
 	</target>
 
 	<target name="fail-if-no-tag" if="tag.error">

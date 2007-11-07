@@ -1136,24 +1136,12 @@
 	<property name="jboss.stop.sleep" value="30" />
 
     <target name="validate-properties">
-        <echo>lib.dir is ${lib.dir} </echo>
-        <echo>properties.dir is ${build.dir} </echo>
-        <echo>keyfile.file is ${keyfile.file} </echo>
-        <echo>envpropertyfile is ${envpropertyfile} </echo>
-
         <taskdef name="ncitask" classname="gov.nih.ncicb.anttasks.PropertyValidator">
             <classpath>
                 <pathelement location="${lib.dir}/ncicb-ant.jar" />
             </classpath>
         </taskdef>
-        <taskdef name="appversion" classname="gov.nih.ncicb.anttasks.ApplicationVersion">
-            <classpath>
-                <pathelement location="${lib.dir}/ncicb-ant.jar" />
-            </classpath>
-        </taskdef>
         <ncitask keyFile="${build.dir}/${keyfile.file}" compareFile="${envpropertyfile}" />
-		<appversion version="${build.tag_built}" buildTag="${version}"
-		buildNumber="${buildNumber}" buildDateTime="${build.date_time}"  />
     </target>
 
 	<!-- Globus deployment begin -->
@@ -1265,11 +1253,6 @@
         <antcall target="remote-jboss:start" />
     </target>
 
-    <target name="display-properties">
-      <echo> Diagnostics...</echo>
-    <echoproperties/>
-    </target>
-
     <!-- Tag property to display on front page -->
     <target name="build-tags" depends="-get-version-info, -command-build-with-tag, -build-with-tag, -build-without-tag"/>
 
@@ -1312,7 +1295,8 @@
 	  <echo> caarray.version=${caarray.version}</echo>
     </target>
 
-	<target name="remote-deploy" depends="clean, display-properties">
+	<target name="remote-deploy" depends="clean">
+	    <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/test-build.xml" target="test-build" />
         <antcall target="validate-properties" />
         <antcall target="continuous-integration" />
         <antcall target="remote-jboss:deploy" />
