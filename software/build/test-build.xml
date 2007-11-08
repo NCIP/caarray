@@ -1,6 +1,5 @@
 <project name="test-build" default="setUp" basedir="." xmlns:au="antlib:org.apache.ant.antunit" xmlns="antlib:org.apache.tools.ant">
 
-
 <property name="lib.dir" value="../lib"/>
 <property file="${envpropertyfile}" />
 <property name="antunit.jar" value="ant-antunit-1.0.jar"/>
@@ -21,6 +20,11 @@
 		</not>
     </and>
   </condition>
+
+  
+<target name="usage">
+   <echo>ant -f test-build.xml -Denvpropertyfile=C:\dev\caarray2\software\build\DEV.properties</echo>
+</target>
 
   <target name="setUp">
   </target>
@@ -86,6 +90,7 @@
   testWebAppOnline "/>
 
   <target name="-check-server-availability">
+    <echo>Checking Servers' Availability...</echo>
     <condition property="mysql.running">
       <socket port="${database.port}" server="${database.server}" />
     </condition>
@@ -102,6 +107,7 @@
   </target>
 
   <target name="testMySQLOnline">
+    <echo>Checking MySQL Availability...</echo>
     <fail message="MySQL is not running at ${database.server}:${database.port}">
       <condition>
 	    <not>
@@ -112,6 +118,7 @@
   </target>
 
   <target name="testJBossOnline">
+    <echo>Checking JBoss Availability...</echo>
     <fail message="JBoss is not running at ${jboss.server.hostname}:${jboss.server.port}">
       <condition>
 	    <not>
@@ -124,6 +131,7 @@
   <target name="testGridServiceOnline" />
 
   <target name="testWebAppOnline">
+    <echo>Checking Web Application Availability...</echo>    
     <property name="app.url" value="http://${jboss.server.hostname}:${jboss.server.port}/caarray/"/>
 	<echo>Testing if ${app.url} is Offline...</echo>
 	<au:assertEquals message="Unable to reach ${app.url}" expected="true"
