@@ -325,9 +325,9 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
     private static void setFiles() {
         DUMMY_FILE_1.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
-        DUMMY_FILE_1.setType(FileType.MAGE_TAB_IDF);
+        DUMMY_FILE_1.setFileType(FileType.MAGE_TAB_IDF);
         DUMMY_FILE_2.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF.getName());
-        DUMMY_FILE_1.setType(FileType.MAGE_TAB_SDRF);
+        DUMMY_FILE_1.setFileType(FileType.MAGE_TAB_SDRF);
         DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_1);
         DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_2);
     }

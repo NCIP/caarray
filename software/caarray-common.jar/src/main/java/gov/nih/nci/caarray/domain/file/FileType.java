@@ -83,106 +83,75 @@
 
 package gov.nih.nci.caarray.domain.file;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
-
 /**
+ *
  */
-public final class FileType extends AbstractCaArrayObject implements Comparable<FileType>  {
-    /**
-     * The serial version UID for serialization.
-     */
-    private static final long serialVersionUID = 1234567890L;
-
-    private String name;
-
-    /**
-     * The MAGE_TAB Array Design Format file type.
-     */
-    public static final FileType MAGE_TAB_ADF = new FileType("MAGE_TAB_ADF");
-
-    /**
-     * The MAGE_TAB data file type.
-     */
-    public static final FileType MAGE_TAB_DATA_MATRIX = new FileType("MAGE_TAB_DATA_MATRIX");
-
-    /**
-     * The MAGE_TAB Investigation Description Format file type.
-     */
-    public static final FileType MAGE_TAB_IDF = new FileType("MAGE_TAB_IDF");
-
-    /**
-     * The MAGE_TAB Sample and Data Relationship Format file type.
-     */
-    public static final FileType MAGE_TAB_SDRF = new FileType("MAGE_TAB_SDRF");
+public enum FileType implements Comparable<FileType>  {
 
     /**
      * Affymetrix native array design file.
      */
-    public static final FileType AFFYMETRIX_CDF = new FileType("AFFYMETRIX_CDF");
+    AFFYMETRIX_CDF,
 
     /**
      * Affymetrix native CEL data format.
      */
-    public static final FileType AFFYMETRIX_CEL = new FileType("AFFYMETRIX_CEL");
+    AFFYMETRIX_CEL,
 
     /**
      * Affymetrix native CHP data format.
      */
-    public static final FileType AFFYMETRIX_CHP = new FileType("AFFYMETRIX_CHP");
-
-    /**
-     * Illumina array design CSV file.
-     */
-    public static final FileType ILLUMINA_DESIGN_CSV = new FileType("ILLUMINA_DESIGN_CSV");
-
-    /**
-     * Illumina array data CSV file.
-     */
-    public static final FileType ILLUMINA_DATA_CSV = new FileType("ILLUMINA_DATA_CSV");
+    AFFYMETRIX_CHP,
 
     /**
      * Genepix array design GAL file.
      */
-    public static final FileType GENEPIX_GAL = new FileType("GENEPIX_GAL");
+    GENEPIX_GAL,
 
     /**
      * Genepix array data GPR file.
      */
-    public static final FileType GENEPIX_GPR = new FileType("GENEPIX_GPR");
+    GENEPIX_GPR,
 
     /**
-     * A Map of all possible file types.
+     * Illumina array data CSV file.
      */
-    private static final Map<String, FileType> INSTANCES = new HashMap<String, FileType>();
+    ILLUMINA_DATA_CSV,
+
+    /**
+     * Illumina array design CSV file.
+     */
+    ILLUMINA_DESIGN_CSV,
+
+    /**
+     * The MAGE_TAB Array Design Format file type.
+     */
+    MAGE_TAB_ADF,
+
+    /**
+     * The MAGE_TAB data file type.
+     */
+    MAGE_TAB_DATA_MATRIX,
+
+    /**
+     * The MAGE_TAB Investigation Description Format file type.
+     */
+    MAGE_TAB_IDF,
+
+    /**
+     * The MAGE_TAB Sample and Data Relationship Format file type.
+     */
+    MAGE_TAB_SDRF;
 
     private static final Set<FileType> ARRAY_DESIGN_FILE_TYPES = new HashSet<FileType>();
-
     private static final Set<FileType> RAW_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
-
     private static final Set<FileType> DERIVED_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();
 
 
     static {
-        INSTANCES.put(MAGE_TAB_ADF.toString(), MAGE_TAB_ADF);
-        INSTANCES.put(MAGE_TAB_DATA_MATRIX.toString(), MAGE_TAB_DATA_MATRIX);
-        INSTANCES.put(MAGE_TAB_IDF.toString(), MAGE_TAB_IDF);
-        INSTANCES.put(MAGE_TAB_SDRF.toString(), MAGE_TAB_SDRF);
-        INSTANCES.put(AFFYMETRIX_CHP.toString(), AFFYMETRIX_CHP);
-        INSTANCES.put(AFFYMETRIX_CDF.toString(), AFFYMETRIX_CDF);
-        INSTANCES.put(AFFYMETRIX_CEL.toString(), AFFYMETRIX_CEL);
-        INSTANCES.put(ILLUMINA_DESIGN_CSV.toString(), ILLUMINA_DESIGN_CSV);
-        INSTANCES.put(ILLUMINA_DATA_CSV.toString(), ILLUMINA_DATA_CSV);
-        INSTANCES.put(GENEPIX_GAL.toString(), GENEPIX_GAL);
-        INSTANCES.put(GENEPIX_GPR.toString(), GENEPIX_GPR);
-
         ARRAY_DESIGN_FILE_TYPES.add(AFFYMETRIX_CDF);
         ARRAY_DESIGN_FILE_TYPES.add(ILLUMINA_DESIGN_CSV);
         ARRAY_DESIGN_FILE_TYPES.add(GENEPIX_GAL);
@@ -190,72 +159,6 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
         DERIVED_ARRAY_DATA_FILE_TYPES.add(AFFYMETRIX_CHP);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(ILLUMINA_DATA_CSV);
         DERIVED_ARRAY_DATA_FILE_TYPES.add(GENEPIX_GPR);
-    }
-
-    private FileType(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @deprecated for castor use only
-     */
-    @Deprecated
-    public FileType() {
-        // don't use this
-    }
-
-    /**
-     * Gets the file type.
-     *
-     * @param nameVal the file type
-     * @return the file type instance
-     */
-    public static FileType getInstance(String nameVal) {
-        return INSTANCES.get(nameVal);
-    }
-
-    /**
-     * Get all of the file types.
-     * @return all the file types
-     */
-    public static Collection<FileType> getAllInstances() {
-        return INSTANCES.values();
-    }
-
-    /**
-     * Returns the name of the file type.
-     *
-     * @return the name of the file type
-     */
-    @Override
-    public String toString() {
-        return this.name;
-    }
-
-    /**
-     * Returns the name of the file type.
-     *
-     * @return the name of the file type
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
-     * @deprecated for castor only
-     * @param name file type name
-     */
-    @Deprecated
-    public void setName(String name) {
-        if (this.name == null || this.name.equals(name)) {
-            if (INSTANCES.keySet().contains(name)) {
-                this.name = name;
-                return;
-            } else {
-                throw new IllegalArgumentException("Invalid name: " + name);
-            }
-        }
-        throw new IllegalArgumentException("Cannot set name if already non-null: " + this.name + ", " + name);
     }
 
     /**
@@ -287,49 +190,11 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the enum name -- necessary for bean property access.
      */
-    public int compareTo(FileType o) {
-        return new CompareToBuilder()
-            .append(this.name, o.name)
-            .toComparison();
+    public String getName() {
+        return name();
     }
 
-    /**
-     * Returns all file types.
-     *
-     * @return the file types.
-     */
-    public static Collection<FileType> getTypes() {
-        return INSTANCES.values();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        } else if (!(o instanceof FileType)) {
-            return false;
-        } else if (o == this) {
-            return true;
-        } else {
-            FileType otherFileType = (FileType) o;
-            return this.name.equals(otherFileType.name);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        if (this.name == null) {
-            return System.identityHashCode(this);
-        }
-        return this.name.hashCode();
-    }
 
 }

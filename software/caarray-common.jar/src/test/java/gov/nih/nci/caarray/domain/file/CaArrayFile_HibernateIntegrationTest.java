@@ -109,7 +109,7 @@ public class CaArrayFile_HibernateIntegrationTest extends AbstractCaArrayEntity_
         assertEquals(original.getName(), retrieved.getName());
         assertEquals(original.getProject(), retrieved.getProject());
         assertEquals(original.getStatus(), retrieved.getStatus());
-        assertEquals(original.getType(), retrieved.getType());
+        assertEquals(original.getFileType(), retrieved.getFileType());
         assertEquals(original.getValidationResult(), retrieved.getValidationResult());
     }
 
@@ -119,7 +119,7 @@ public class CaArrayFile_HibernateIntegrationTest extends AbstractCaArrayEntity_
         caArrayFile.setStatus(getNextValue(FileStatus.values(), caArrayFile.getFileStatus()).name());
         caArrayFile.setName(getUniqueStringValue());
         caArrayFile.setProject(new Project());
-        caArrayFile.setType(FileType.AFFYMETRIX_CDF);
+        caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
         caArrayFile.setValidationResult(new FileValidationResult(new File(caArrayFile.getName())));
     }
 
@@ -127,7 +127,7 @@ public class CaArrayFile_HibernateIntegrationTest extends AbstractCaArrayEntity_
     protected void setNullableValuesToNull(AbstractCaArrayObject caArrayObject) {
         CaArrayFile caArrayFile = (CaArrayFile) caArrayObject;
         caArrayFile.setProject(null);
-        caArrayFile.setType(null);
+        caArrayFile.setFileType(null);
         caArrayFile.setValidationResult(null);
     }
 

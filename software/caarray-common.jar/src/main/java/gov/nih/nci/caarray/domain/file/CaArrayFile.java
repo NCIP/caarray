@@ -113,7 +113,6 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Type;
 
 /**
  */
@@ -124,7 +123,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     private static final long serialVersionUID = 1234567890L;
 
     private String name;
-    private FileType type;
+    private String type;
     private String status = FileStatus.UPLOADED.name();
     private Project project;
     private FileValidationResult validationResult;
@@ -151,24 +150,6 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
         this.name = name;
     }
 
-    /**
-     * Gets the type.
-     *
-     * @return the type
-     */
-    @Type(type = "gov.nih.nci.caarray.domain.file.FileTypeUserType")
-    public FileType getType() {
-        return type;
-    }
-
-    /**
-     * Sets the type.
-     *
-     * @param typeVal the type
-     */
-    public void setType(final FileType typeVal) {
-        this.type = typeVal;
-    }
 
     /**
      * @return the fileStatus
@@ -186,6 +167,25 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
             setStatus(fileStatus.name());
         } else {
             setStatus(null);
+        }
+    }
+
+    /**
+     * @return the fileType
+     */
+    @Transient
+    public FileType getFileType() {
+        return getType() != null ? FileType.valueOf(getType()) : null;
+    }
+
+    /**
+     * @param fileType the fileType to set
+     */
+    public void setFileType(FileType fileType) {
+        if (fileType != null) {
+            setType(fileType.name());
+        } else {
+            setType(null);
         }
     }
 
@@ -237,7 +237,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
         return new CompareToBuilder()
             .append(getProject(), o.getProject())
             .append(getFileStatus(), o.getFileStatus())
-            .append(getType(), o.getType())
+            .append(getFileType(), o.getFileType())
             .append(getName(), o.getName())
             .append(getId(), o.getId())
             .toComparison();
@@ -275,6 +275,28 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     private void checkForLegalStatusValue(String checkStatus) {
         if (checkStatus != null) {
             FileStatus.valueOf(checkStatus);
+        }
+    }
+
+    /**
+     * @return the type
+     */
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(String type) {
+        checkForLegalTypeValue(type);
+        this.type = type;
+    }
+
+    private void checkForLegalTypeValue(String checkType) {
+        if (checkType != null) {
+            FileType.valueOf(checkType);
         }
     }
 

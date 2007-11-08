@@ -244,15 +244,15 @@ public final class TestMageTabSets {
         CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setName(mageTabDocument.getFile().getName());
         if (mageTabDocument instanceof IdfDocument) {
-            caArrayFile.setType(FileType.MAGE_TAB_IDF);
+            caArrayFile.setFileType(FileType.MAGE_TAB_IDF);
         } else if (mageTabDocument instanceof SdrfDocument) {
-            caArrayFile.setType(FileType.MAGE_TAB_SDRF);
+            caArrayFile.setFileType(FileType.MAGE_TAB_SDRF);
         } else if (mageTabDocument instanceof AdfDocument) {
-            caArrayFile.setType(FileType.MAGE_TAB_ADF);
+            caArrayFile.setFileType(FileType.MAGE_TAB_ADF);
         } else if (mageTabDocument instanceof DataMatrix) {
-            caArrayFile.setType(FileType.MAGE_TAB_DATA_MATRIX);
+            caArrayFile.setFileType(FileType.MAGE_TAB_DATA_MATRIX);
         } else if (mageTabDocument.getFile().getName().toLowerCase().endsWith(".cel")) {
-            caArrayFile.setType(FileType.AFFYMETRIX_CEL);
+            caArrayFile.setFileType(FileType.AFFYMETRIX_CEL);
         } else {
             throw new IllegalArgumentException("Unrecognized document file " + mageTabDocument.getFile());
         }
