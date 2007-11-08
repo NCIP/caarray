@@ -90,8 +90,27 @@
             <jvmarg value="-Xmx1024m" />
         </jmeter>
         <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/setup/HundredExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/HundredExperimentLoader.jtl" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/browse/BrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseTest_Basic.jtl" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/browse/BrowseExperimentTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseExperimentTest_Basic.jtl" />
         <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/SearchByExampleAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchByExampleAPITest_Basic.jtl" />
         <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/CQLSearchAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/CQLSearchAPITest_Basic.jtl" />
+	<!-- UNCOMMENT TO RUN TESTS WITH BIGGER DATABASE SIZES.
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/setup/FiveHundredExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/FiveHundredExperimentLoader.jtl" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/browse/BrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseTest_Basic.jtl" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/browse/BrowseExperimentTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseExperimentTest_Basic.jtl" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/SearchByExampleAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchByExampleAPITest_Basic.jtl" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/CQLSearchAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/CQLSearchAPITest_Basic.jtl" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/setup/ThousandExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/ThousandExperimentLoader.jtl" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/browse/BrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseTest_Basic.jtl" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/browse/BrowseExperimentTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseExperimentTest_Basic.jtl" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/SearchByExampleAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchByExampleAPITest_Basic.jtl" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/CQLSearchAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/CQLSearchAPITest_Basic.jtl" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/setup/TwoThousandExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/TwoThousandExperimentLoader.jtl" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/browse/BrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseTest_Basic.jtl" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/browse/BrowseExperimentTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseExperimentTest_Basic.jtl" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/SearchByExampleAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchByExampleAPITest_Basic.jtl" />
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/CQLSearchAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/CQLSearchAPITest_Basic.jtl" />
+	-->
         <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/arraydata/DataDownloadAPITest_Basic.jmx" resultlog="${tests.out.dir}/arraydata/DataDownloadAPITest_Basic.jtl">
             <jvmarg value="-Xmx256m" />
         </jmeter>

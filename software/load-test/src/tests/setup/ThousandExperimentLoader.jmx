@@ -140,7 +140,7 @@
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Experiment Attributes CSV Data Set" enabled="true">
             <stringProp name="delimiter">\t</stringProp>
             <stringProp name="fileEncoding"></stringProp>
-            <stringProp name="filename">experimentAttributes1-100.csv</stringProp>
+            <stringProp name="filename">experimentAttributes500-1000.csv</stringProp>
             <boolProp name="recycle">false</boolProp>
             <boolProp name="stopThread">true</boolProp>
             <stringProp name="variableNames">experimentName,arrayManufacturer,organismName</stringProp>
