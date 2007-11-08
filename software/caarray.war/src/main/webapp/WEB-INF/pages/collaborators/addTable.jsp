@@ -18,6 +18,9 @@
 			<c:url value="/protected/collaborators/addUsers.action" var="addUrl">
 				<c:param name="users" value="${row.userId}"/>
 				<c:param name="targetGroup" value="${targetGroup.id}"/>
+				<c:param name="targetUser.lastName" value="${targetUser.lastName}"/>
+				<c:param name="targetUser.firstName" value="${targetUser.firstName}"/>
+				<c:param name="targetUser.organization" value="${targetUser.organization}"/>
 			</c:url>
 			<a href="${addUrl}"><img src="<c:url value="/images/ico_add.gif"/>" alt="<fmt:message key="button.add"/>"/></a>
 		</display:column>

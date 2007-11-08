@@ -2,6 +2,14 @@
 <html>
 <head>
     <title>Manage Collaboration Group</title>
+    <script type="text/javascript">
+		function clearFilter() {    
+			document.getElementById('targetUserLastName').value = ''; 
+			document.getElementById('targetUserFirstName').value = ''; 
+			document.getElementById('targetUserOrganization').value = ''; 
+			document.getElementById('filterForm').submit();
+		}    
+    </script>
 </head>
 <body>
     <h1>Manage Collaboration Group</h1>
@@ -23,12 +31,13 @@
 	  </div>
 	  <div id="searchboxwrapper">
 	  	<s:form action="/protected/collaborators/addUsers.action" cssClass="form" id="filterForm">
-	  		<s:textfield name="targetUser.lastName" key="label.lastName" size="30" tabindex="1" value="${targetUser.lastName}"/>
-	  		<s:textfield name="targetUser.firstName" key="label.firstName" size="30" tabindex="2" value="${targetUser.firstName}"/>
-	  		<s:textfield name="targetUser.organization" key="label.institution" size="30" tabindex="3" value="${targetUser.organization}"/>
+	  		<s:textfield name="targetUser.lastName" key="label.lastName" size="30" tabindex="1" value="${targetUser.lastName}" id="targetUserLastName"/>
+	  		<s:textfield name="targetUser.firstName" key="label.firstName" size="30" tabindex="2" value="${targetUser.firstName}" id="targetUserFirstName"/>
+	  		<s:textfield name="targetUser.organization" key="label.institution" size="30" tabindex="3" value="${targetUser.organization}" id="targetUserOrganization"/>
 			<s:hidden name="targetGroup" value="${targetGroup.id}"/>
 	  	</s:form>
         <caarray:actions>
+            <caarray:action onclick="clearFilter();" actionClass="cancel" text="Clear" />
             <caarray:action onclick="document.getElementById('filterForm').submit();" actionClass="filter" text="Filter" />
         </caarray:actions>
 	  </div>
