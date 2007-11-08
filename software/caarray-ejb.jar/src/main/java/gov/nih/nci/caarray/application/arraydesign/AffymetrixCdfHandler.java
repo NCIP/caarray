@@ -86,13 +86,17 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.array.Feature;
+import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.array.ProbeGroup;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import affymetrix.fusion.cdf.FusionCDFData;
 import affymetrix.fusion.cdf.FusionCDFHeader;
 import affymetrix.fusion.cdf.FusionCDFProbeGroupInformation;
@@ -107,8 +111,8 @@ import affymetrix.fusion.cdf.FusionCDFQCProbeSetInformation;
 class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
 
     private static final String LSID_AUTHORITY = "Affymetrix.com";
-
     private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
+    private static final Log LOG = LogFactory.getLog(AffymetrixCdfHandler.class);
 
     private boolean[][] featureCreated;
 
@@ -122,8 +126,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     }
 
     @Override
-    FileValidationResult validate() {
-        FileValidationResult result = new FileValidationResult(getFile(getDesignFile()));
+    void validate(FileValidationResult result) {
         if (!loadFusionCDFData()) {
             if (fusionCDFData == null) {
                 result.addMessage(ValidationMessage.Type.ERROR, "CDF file is missing");
@@ -133,7 +136,6 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
             }
         }
         closeCdf();
-        return result;
     }
 
     private void closeCdf() {
@@ -270,8 +272,13 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
 
     private boolean loadFusionCDFData() {
         fusionCDFData = new FusionCDFData();
-        fusionCDFData.setFileName(getFile(getDesignFile()).getAbsolutePath());
+        fusionCDFData.setFileName(getFile().getAbsolutePath());
         return fusionCDFData.read();
+    }
+
+    @Override
+    Log getLog() {
+        return LOG;
     }
 
 }

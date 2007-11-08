@@ -333,14 +333,12 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    FileValidationResult validate(CaArrayFile caArrayFile, File file) {
-        FileValidationResult result = new FileValidationResult(file);
+    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result) {
         DelimitedFileReader reader = getReader(file);
         validateHeader(reader, result);
         if (result.isValid()) {
             validateData(reader, result);
         }
-        return result;
     }
 
     private void validateData(DelimitedFileReader reader, FileValidationResult result) {

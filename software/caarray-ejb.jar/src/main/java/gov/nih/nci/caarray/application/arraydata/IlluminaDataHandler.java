@@ -95,6 +95,8 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
 import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
 import java.io.IOException;
@@ -210,7 +212,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
                 return values;
             }
         }
-        throw new IllegalStateException("Invalid Illumina CSV file");
+        return null;
     }
 
     private void reset(DelimitedFileReader reader) {
@@ -356,8 +358,31 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    FileValidationResult validate(CaArrayFile caArrayFile, File file) {
-        return new FileValidationResult(file);
+    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result) {
+        DelimitedFileReader reader = getReader(file);
+        validateHeaders(reader, result);
+        if (result.isValid()) {
+            validateData(reader, result);
+        }
     }
+
+    private void validateHeaders(DelimitedFileReader reader, FileValidationResult result) {
+        List<String> headers = getHeaders(reader);
+        if (headers == null) {
+            result.addMessage(Type.ERROR, "No headers found");
+        }
+    }
+
+    private void validateData(DelimitedFileReader reader, FileValidationResult result) {
+        List<String> headers = getHeaders(reader);
+        positionAtData(reader);
+        while (reader.hasNextLine()) {
+            if (reader.nextLine().size() != headers.size()) {
+                ValidationMessage message = result.addMessage(Type.ERROR, "Invalid number of values in row");
+                message.setLine(reader.getCurrentLineNumber());
+            }
+        }
+    }
+
 
 }

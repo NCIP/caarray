@@ -95,6 +95,7 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
@@ -186,6 +187,9 @@ public class ArrayDesignServiceTest {
         result = arrayDesignService.validateDesign(designFile);
         assertFalse(result.isValid());
         designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV_INVALID_HEADERS);
+        result = arrayDesignService.validateDesign(designFile);
+        assertFalse(result.isValid());
+        designFile = getIlluminaCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL);
         result = arrayDesignService.validateDesign(designFile);
         assertFalse(result.isValid());
     }

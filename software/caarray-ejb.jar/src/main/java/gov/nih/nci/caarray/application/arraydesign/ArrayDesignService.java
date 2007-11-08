@@ -126,8 +126,8 @@ public interface ArrayDesignService {
     ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign);
 
     /**
-     * Returns the list of Organizations that are a provider for at least 
-     * one ArrayDesign in the system
+     * Returns the list of Organizations that are a provider for at least
+     * one ArrayDesign in the system.
      * @return the List&lt;Organization&gt; of Organizations where for each
      * organization in the list there exists at least one ArrayDesign for which
      * that Organization is the provider
@@ -136,7 +136,7 @@ public interface ArrayDesignService {
 
     /**
      * Returns the list of ArrayDesigns with the given provider
-     * @param provider the provider 
+     * @param provider the provider
      * @return the List&lt;ArrayDesign&gt; of the array designs whose
      * provider is the given provider
      */

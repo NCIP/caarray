@@ -197,7 +197,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         LogUtil.logSubsystemExit(LOG);
         return orgs;
     }
-    
+
     /**
      * {@inheritDoc}
      */

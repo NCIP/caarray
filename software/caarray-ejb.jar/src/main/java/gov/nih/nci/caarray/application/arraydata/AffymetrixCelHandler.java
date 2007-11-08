@@ -125,13 +125,10 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    FileValidationResult validate(CaArrayFile caArrayFile, File file) {
+    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result) {
         String celDataFileName;
-        FileValidationResult result = new FileValidationResult(file);
-
         celData.setFileName(file.getAbsolutePath());
         celDataFileName = StringUtils.defaultIfEmpty(celData.getFileName(), "<MISSING FILE NAME>");
-
         if (!celData.read()) {
             result.addMessage(ValidationMessage.Type.ERROR, "Unable to read the CEL file: "
                     + celDataFileName);
@@ -139,7 +136,6 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
             validateHeader(result);
         }
         closeCelData();
-        return result;
     }
 
 

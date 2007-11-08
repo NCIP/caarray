@@ -104,6 +104,7 @@ import gov.nih.nci.caarray.domain.data.ShortColumn;
 import gov.nih.nci.caarray.domain.data.StringColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 
 /**
@@ -114,7 +115,19 @@ abstract class AbstractDataFileHandler {
 
     abstract QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(File file);
 
-    abstract FileValidationResult validate(CaArrayFile caArrayFile, File file);
+    final FileValidationResult validate(CaArrayFile caArrayFile, File file) {
+        FileValidationResult result = new FileValidationResult(file);
+        try {
+            validate(caArrayFile, file, result);
+        } catch (RuntimeException e) {
+            getLog().error("Unexpected RuntimeException validating data file", e);
+            result.addMessage(Type.ERROR, "Unexpected error validating data file: " + e.getMessage());
+        }
+        return result;
+    }
+
+    abstract void validate(CaArrayFile caArrayFile, File file, FileValidationResult result);
+
 
     abstract void loadData(DataSet dataSet, List<QuantitationType> types, File file);
 
