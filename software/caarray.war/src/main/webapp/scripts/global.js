@@ -625,4 +625,8 @@ DownloadMgr.prototype.populateAll = function(name, id, size) {
   this.allSizes.push(size);
 }
 
-
+DownloadMgr.prototype.resetAddAll = function() {
+  this.allIds = new Array();
+  this.allNames = new Array();
+  this.allSizes = new Array();
+}

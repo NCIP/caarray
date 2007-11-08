@@ -102,12 +102,16 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.set.TransformedSet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.lf5.util.StreamUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
@@ -122,6 +126,7 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
  * @author Scott Miller
  *
  */
+@SuppressWarnings("unchecked")
 @Validation
 @Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.", expression = "selectedFiles.size() > 0"))
 public class ProjectFilesAction extends BaseProjectAction implements Preparable {
@@ -129,6 +134,19 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
     private static final String ACTION_UNIMPORTED = "listUnimported";
     private static final String ACTION_IMPORTED = "listImported";
     private static final String ACTION_TABLE = "table";
+    private static final Transformer EXTENSION_TRANSFORMER = new Transformer() {
+        /**
+         * Transforms files to their extensions.
+         */
+        public Object transform(Object o) {
+            CaArrayFile f = (CaArrayFile) o;
+            int index = f.getName().lastIndexOf('.');
+            if (index == -1) {
+                return "(No Extension)";
+            }
+            return f.getName().substring(index).toLowerCase(Locale.US);
+        }
+    };
 
     private List<File> uploads;
     private List<String> uploadFileNames = new ArrayList<String>();
@@ -137,6 +155,8 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
     private InputStream downloadStream;
     private Set<CaArrayFile> files = new HashSet<CaArrayFile>();
     private String listAction;
+    private String extensionFilter;
+    private Set<String> allExtensions = new TreeSet<String>();
 
     private String prepListUnimportedPage() {
         setListAction(ACTION_UNIMPORTED);
@@ -197,9 +217,38 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
      *
      * @return the string matching the result to follow
      */
+    @SuppressWarnings("unchecked")
     @SkipValidation
     public String downloadFiles() {
+        for (CaArrayFile f : getProject().getFiles()) {
+            if (StringUtils.isBlank(extensionFilter) || EXTENSION_TRANSFORMER.transform(f).equals(extensionFilter)) {
+                getFiles().add(f);
+            }
+        }
+        Set s = TransformedSet.decorate(new TreeSet<String>(), EXTENSION_TRANSFORMER);
+        s.addAll(getProject().getFiles());
+        setAllExtensions(s);
+
         return Action.SUCCESS;
+    }
+
+    /**
+     * Ajax-only call to handle changing the filter extension.
+     * @return success.
+     */
+    @SkipValidation
+    public String downloadFilesList() {
+        return downloadFiles();
+    }
+
+    /**
+     * Ajax-only call to handle sorting.
+     *
+     * @return success
+     */
+    @SkipValidation
+    public String downloadFilesListTable() {
+        return downloadFiles();
     }
 
     /**
@@ -510,6 +559,22 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
      */
     public void setListAction(String listAction) {
         this.listAction = listAction;
+    }
+
+    public Set<String> getAllExtensions() {
+        return allExtensions;
+    }
+
+    public void setAllExtensions(Set<String> allExtensions) {
+        this.allExtensions = allExtensions;
+    }
+
+    public String getExtensionFilter() {
+        return extensionFilter;
+    }
+
+    public void setExtensionFilter(String extensionFilter) {
+        this.extensionFilter = extensionFilter;
     }
 
     /**
