@@ -143,7 +143,7 @@ public class EntityConfiguringInterceptorTest {
         }
 
         public Object proceed() {
-            return returnValue;
+            return this.returnValue;
         }
 
         public void setParameters(Object[] arg0) {
@@ -154,16 +154,16 @@ public class EntityConfiguringInterceptorTest {
 
     public static class TestEntity {
 
-        private boolean attributeRetrieved;
-        private boolean collectionRetrieved;
+        boolean attributeRetrieved;
+        boolean collectionRetrieved;
 
         public Object getAttribute() {
-            attributeRetrieved = true;
+            this.attributeRetrieved = true;
             return null;
         }
 
         public Collection<?> getCollection() {
-            collectionRetrieved = true;
+            this.collectionRetrieved = true;
             return null;
         }
 

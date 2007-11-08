@@ -112,8 +112,8 @@ public class HibernateSessionInterceptorTest {
 
     private static class TestInvocationContext implements InvocationContext {
 
-        private Session hibernateSession;
-        private boolean hibernateSessionOpenInCall;
+        Session hibernateSession;
+        boolean hibernateSessionOpenInCall;
 
         public Map<String, Object> getContextData() {
             return null;
@@ -141,12 +141,12 @@ public class HibernateSessionInterceptorTest {
         }
 
         public Session getHibernateSession() {
-            return hibernateSession;
+            return this.hibernateSession;
         }
 
         public void setHibernateSession() {
             this.hibernateSession = HibernateUtil.getCurrentSession();
-            hibernateSessionOpenInCall = hibernateSession.isOpen();
+            this.hibernateSessionOpenInCall = this.hibernateSession.isOpen();
         }
     }
 

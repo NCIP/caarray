@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.validator.annotations.Validation;
@@ -44,7 +43,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
 
         this.collaboratorGroupsWithoutProfiles = getPermissionsManagementService().getCollaboratorGroups();
         this.collaboratorGroupsWithoutProfiles.removeAll(getProject().getGroupProfiles().keySet());
-        
+
         if (this.collaboratorGroup.getId() != null) {
             this.collaboratorGroup = getGenericDataService().retrieveEnity(CollaboratorGroup.class, this.collaboratorGroup.getId());
         }
@@ -73,7 +72,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
         getProjectManagementService().toggleBrowsableStatus(getProject().getId());
         return "success";
     }
-    
+
     /**
      * Creates an access profile for a new collaboration group
      *
@@ -95,7 +94,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
         this.accessProfile = getProject().getPublicProfile();
         this.publicProfile = true;
         this.profileOwnerName = getText("project.permissions.publicProfile");
-        setupSamplePermissions();        
+        setupSamplePermissions();
         return "accessProfile";
     }
 
@@ -113,7 +112,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
         setupSamplePermissions();
         return "accessProfile";
     }
-    
+
     private void setupSamplePermissions() {
         for (Map.Entry<Sample, SampleSecurityLevel> sampleEntry : this.accessProfile.getSampleSecurityLevels().entrySet()) {
             this.sampleSecurityLevels.put(sampleEntry.getKey().getId(), sampleEntry.getValue());
@@ -128,9 +127,9 @@ public class ProjectPermissionsAction extends BaseProjectAction {
             for (Map.Entry<Long, SampleSecurityLevel> sampleEntry : this.sampleSecurityLevels.entrySet()) {
                 Sample sample = getGenericDataService().retrieveEnity(Sample.class, sampleEntry.getKey());
                 if (this.accessProfile.getSecurityLevel().getSampleSecurityLevels().contains(sampleEntry.getValue())) {
-                    this.accessProfile.getSampleSecurityLevels().put(sample, sampleEntry.getValue());                    
+                    this.accessProfile.getSampleSecurityLevels().put(sample, sampleEntry.getValue());
                 }
-            }            
+            }
         }
     }
 
@@ -151,7 +150,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
      * @return the collaboratorGroup
      */
     public CollaboratorGroup getCollaboratorGroup() {
-        return collaboratorGroup;
+        return this.collaboratorGroup;
     }
 
     /**
@@ -165,7 +164,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
      * @return the collaboratorGroupsWithoutProfiles
      */
     public List<CollaboratorGroup> getCollaboratorGroupsWithoutProfiles() {
-        return collaboratorGroupsWithoutProfiles;
+        return this.collaboratorGroupsWithoutProfiles;
     }
 
     /**
@@ -179,7 +178,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
      * @return the accessProfile
      */
     public AccessProfile getAccessProfile() {
-        return accessProfile;
+        return this.accessProfile;
     }
 
     /**
@@ -193,7 +192,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
      * @return the sampleSecurityLevels
      */
     public Map<Long, SampleSecurityLevel> getSampleSecurityLevels() {
-        return sampleSecurityLevels;
+        return this.sampleSecurityLevels;
     }
 
     /**
@@ -207,7 +206,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
      * @return the profileOwnerName
      */
     public String getProfileOwnerName() {
-        return profileOwnerName;
+        return this.profileOwnerName;
     }
 
     /**
@@ -221,7 +220,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
      * @return the publicProfile
      */
     public boolean isPublicProfile() {
-        return publicProfile;
+        return this.publicProfile;
     }
 
     /**

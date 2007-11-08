@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
 

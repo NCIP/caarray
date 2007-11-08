@@ -112,6 +112,9 @@ import com.opensymphony.xwork2.Action;
  */
 public class ProjectFilesActionTest {
 
+    private static final String LIST_IMPORTED = "listImported";
+    private static final String LIST_UNIMPORTED = "listUnimported";
+    private static final String UPLOAD = "upload";
     private static final ProjectManagementServiceStub projectManagementServiceStub = new ProjectManagementServiceStub();
     private static final FileManagementServiceStub fileManagementServiceStub = new FileManagementServiceStub();
     private static final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
@@ -153,7 +156,7 @@ public class ProjectFilesActionTest {
     @Test
     public void testUpload() throws Exception {
         this.action.setUpload(new ArrayList<File>());
-        assertEquals("upload", this.action.upload());
+        assertEquals(UPLOAD, this.action.upload());
         assertEquals(0, projectManagementServiceStub.getFilesAddedCount());
 
         List<String> fileNames = new ArrayList<String>();
@@ -164,19 +167,19 @@ public class ProjectFilesActionTest {
         files.add(new File("testfile1.cel"));
         this.action.setUpload(files);
 
-        assertEquals("upload", this.action.upload());
+        assertEquals(UPLOAD, this.action.upload());
         assertEquals(0, projectManagementServiceStub.getFilesAddedCount());
 
         fileNames.add("  ");
         files.add(new File("other.cel"));
 
-        assertEquals("upload", this.action.upload());
+        assertEquals(UPLOAD, this.action.upload());
         assertEquals(0, projectManagementServiceStub.getFilesAddedCount());
 
         fileNames.add("other.cel");
         files.add(new File("other.cel"));
 
-        assertEquals("upload", this.action.upload());
+        assertEquals(UPLOAD, this.action.upload());
         assertEquals(1, projectManagementServiceStub.getFilesAddedCount());
     }
 
@@ -184,8 +187,8 @@ public class ProjectFilesActionTest {
     public void testValidate() throws Exception {
         List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
-        assertEquals("listUnimported", this.action.validateFiles());
-        assertEquals("listUnimported", this.action.getListAction());
+        assertEquals(LIST_UNIMPORTED, this.action.validateFiles());
+        assertEquals(LIST_UNIMPORTED, this.action.getListAction());
         assertEquals(0, fileManagementServiceStub.getValidatedFileCount());
 
         CaArrayFile file = new CaArrayFile();
@@ -212,8 +215,8 @@ public class ProjectFilesActionTest {
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATION_ERRORS);
         selectedFiles.add(file);
-        assertEquals("listUnimported", this.action.validateFiles());
-        assertEquals("listUnimported", this.action.getListAction());
+        assertEquals(LIST_UNIMPORTED, this.action.validateFiles());
+        assertEquals(LIST_UNIMPORTED, this.action.getListAction());
         assertEquals(3, fileManagementServiceStub.getValidatedFileCount());
     }
 
@@ -221,8 +224,8 @@ public class ProjectFilesActionTest {
     public void testImport() throws Exception {
         List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
-        assertEquals("listUnimported", this.action.importFiles());
-        assertEquals("listUnimported", this.action.getListAction());
+        assertEquals(LIST_UNIMPORTED, this.action.importFiles());
+        assertEquals(LIST_UNIMPORTED, this.action.getListAction());
         assertEquals(0, fileManagementServiceStub.getValidatedFileCount());
 
         CaArrayFile file = new CaArrayFile();
@@ -249,8 +252,8 @@ public class ProjectFilesActionTest {
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATION_ERRORS);
         selectedFiles.add(file);
-        assertEquals("listUnimported", this.action.importFiles());
-        assertEquals("listUnimported", this.action.getListAction());
+        assertEquals(LIST_UNIMPORTED, this.action.importFiles());
+        assertEquals(LIST_UNIMPORTED, this.action.getListAction());
         assertEquals(2, fileManagementServiceStub.getImportedFilecCount());
     }
 
@@ -258,8 +261,8 @@ public class ProjectFilesActionTest {
     public void testDelete() throws Exception {
         List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
-        assertEquals("listUnimported", this.action.deleteFiles());
-        assertEquals("listUnimported", this.action.getListAction());
+        assertEquals(LIST_UNIMPORTED, this.action.deleteFiles());
+        assertEquals(LIST_UNIMPORTED, this.action.getListAction());
         assertEquals(0, fileManagementServiceStub.getValidatedFileCount());
 
         CaArrayFile file = new CaArrayFile();
@@ -286,8 +289,8 @@ public class ProjectFilesActionTest {
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATION_ERRORS);
         selectedFiles.add(file);
-        assertEquals("listUnimported", this.action.deleteFiles());
-        assertEquals("listUnimported", this.action.getListAction());
+        assertEquals(LIST_UNIMPORTED, this.action.deleteFiles());
+        assertEquals(LIST_UNIMPORTED, this.action.getListAction());
         assertEquals(3, fileAccessServiceStub.getRemovedFileCount());
     }
 
@@ -295,8 +298,8 @@ public class ProjectFilesActionTest {
     public void testSave() throws Exception {
         List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
-        assertEquals("listUnimported", this.action.saveFiles());
-        assertEquals("listUnimported", this.action.getListAction());
+        assertEquals(LIST_UNIMPORTED, this.action.saveFiles());
+        assertEquals(LIST_UNIMPORTED, this.action.getListAction());
         assertEquals(0, fileManagementServiceStub.getValidatedFileCount());
 
         CaArrayFile file = new CaArrayFile();
@@ -325,8 +328,8 @@ public class ProjectFilesActionTest {
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATION_ERRORS);
         selectedFiles.add(file);
-        assertEquals("listUnimported", this.action.saveFiles());
-        assertEquals("listUnimported", this.action.getListAction());
+        assertEquals(LIST_UNIMPORTED, this.action.saveFiles());
+        assertEquals(LIST_UNIMPORTED, this.action.getListAction());
         assertEquals(6, fileAccessServiceStub.getSavedFileCount());
         assertEquals(FileStatus.UPLOADED, selectedFiles.get(0).getFileStatus());
         assertEquals(0, selectedFiles.get(0).getValidationResult().getMessages().size());
@@ -349,14 +352,14 @@ public class ProjectFilesActionTest {
 
     @Test
     public void testLoadListActions() {
-        assertEquals("listUnimported", this.action.listUnimported());
-        assertEquals("listUnimported", this.action.getListAction());
+        assertEquals(LIST_UNIMPORTED, this.action.listUnimported());
+        assertEquals(LIST_UNIMPORTED, this.action.getListAction());
         assertEquals("table", this.action.listUnimportedTable());
-        assertEquals("listUnimported", this.action.getListAction());
+        assertEquals(LIST_UNIMPORTED, this.action.getListAction());
 
-        assertEquals("listImported", this.action.listImported());
-        assertEquals("listImported", this.action.getListAction());
+        assertEquals(LIST_IMPORTED, this.action.listImported());
+        assertEquals(LIST_IMPORTED, this.action.getListAction());
         assertEquals("table", this.action.listImportedTable());
-        assertEquals("listImported", this.action.getListAction());
+        assertEquals(LIST_IMPORTED, this.action.getListAction());
     }
 }

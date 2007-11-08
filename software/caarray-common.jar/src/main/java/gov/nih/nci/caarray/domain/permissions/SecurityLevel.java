@@ -86,9 +86,7 @@ import gov.nih.nci.caarray.domain.ResourceBasedEnum;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -130,14 +128,14 @@ public enum SecurityLevel implements ResourceBasedEnum {
      * @return whether or not this security level can be granted in the public access profile
      */
     public boolean isAvailableToPublic() {
-        return availableToPublic;
+        return this.availableToPublic;
     }
 
     /**
      * @return the set of security levels that can be assigned to samples given this project security level
      */
     public List<SampleSecurityLevel> getSampleSecurityLevels() {
-        return sampleSecurityLevels;
+        return this.sampleSecurityLevels;
     }
 
     /**

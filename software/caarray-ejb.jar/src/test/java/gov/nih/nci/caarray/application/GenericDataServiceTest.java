@@ -139,8 +139,8 @@ public class GenericDataServiceTest {
     @Test
     public void testDelete() {
         Project p = new Project();
-        service.delete(p);
-        assertEquals(p, ((LocalProjectDaoStub) daoFactoryStub.getProjectDao()).deletedObject);
+        this.service.delete(p);
+        assertEquals(p, ((LocalProjectDaoStub) this.daoFactoryStub.getProjectDao()).deletedObject);
     }
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
@@ -189,7 +189,7 @@ public class GenericDataServiceTest {
          * @return last 'deleted' object, if any
          */
         public PersistentObject getDeletedObject() {
-            return deletedObject;
+            return this.deletedObject;
         }
 
     }
@@ -215,7 +215,7 @@ public class GenericDataServiceTest {
          */
         @Override
         public List<String> findValuesWithSamePrefix(Class<?> entityClass, String fieldName, String prefix) {
-            if (Project.class.equals(entityClass) && fieldName.equals("name")) {
+            if (Project.class.equals(entityClass) && "name".equals(fieldName)) {
                 if (StringUtils.isEmpty(prefix)) {
                     return Arrays.asList("Name1", "Name4", "Namonce21t");
                 } else if (prefix.equals("Name")) {

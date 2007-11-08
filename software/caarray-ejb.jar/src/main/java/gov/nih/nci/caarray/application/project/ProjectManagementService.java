@@ -132,7 +132,7 @@ public interface ProjectManagementService {
      * @param project project to add the file to
      * @param file the file to add to the project
      * @return the new <code>CaArrayFile</code>.
-     * @throws ProposalWorkflowException if the project cannot currently be modified due to workflow status 
+     * @throws ProposalWorkflowException if the project cannot currently be modified due to workflow status
      */
     CaArrayFile addFile(Project project, File file) throws ProposalWorkflowException;
 
@@ -146,27 +146,27 @@ public interface ProjectManagementService {
      * from the file containing the content. This is useful for adding uploaded temporary files that don't use the
      * original file name.
      * @return the new <code>CaArrayFile</code>.
-     * @throws ProposalWorkflowException if the project cannot currently be modified due to workflow status 
+     * @throws ProposalWorkflowException if the project cannot currently be modified due to workflow status
      */
     CaArrayFile addFile(Project project, File file, String filename) throws ProposalWorkflowException;
 
     /**
      * Saves a project. The project may be new, or be currently in the draft or submitted state,
-     * but it cannot be public. 
+     * but it cannot be public.
      * If the project is new, then it is put into the draft state.
-     * 
-     * @param project the project to save 
+     *
+     * @param project the project to save
      * @throws ProposalWorkflowException if the project cannot currently be saved because it is public
      */
     void saveProject(Project project) throws ProposalWorkflowException;
-        
+
     /**
-     * Moves a project into a new workflow status. 
+     * Moves a project into a new workflow status.
      *
      * @param projectId the id of the project to move to the given status
      * @param newStatus the new workflow status
      * @throws ProposalWorkflowException if the project's current status does not allow
-     * a transition to the given status 
+     * a transition to the given status
      */
     void changeProjectStatus(long projectId, ProposalStatus newStatus) throws ProposalWorkflowException;
 
@@ -193,7 +193,7 @@ public interface ProjectManagementService {
     Project toggleBrowsableStatus(long projectId);
 
     /**
-     * Adds an empty (no access) profile for the given collaborator group to the given project 
+     * Adds an empty (no access) profile for the given collaborator group to the given project
      *
      * @param project the project
      * @param group the group for which to add an access profile
