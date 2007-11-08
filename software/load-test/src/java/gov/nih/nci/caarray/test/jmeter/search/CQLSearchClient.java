@@ -113,7 +113,7 @@ public class CQLSearchClient implements JavaSamplerClient {
     private static final String ORGANISM_PARAM = "organismName";
 
     private static final String DEFAULT_MANUFACTURER = "Affymetrix";
-    private static final String DEFAULT_ORGANISM = "c.mouseful";
+    private static final String DEFAULT_ORGANISM = "Mouse";
 
     private String manufacturer;
     private String organism;
@@ -189,7 +189,7 @@ public class CQLSearchClient implements JavaSamplerClient {
         manufacturer.setName("gov.nih.nci.caarray.domain.contact.Organization");
         CQLAttribute manufacturerName = new CQLAttribute();
         manufacturerName.setName("name");
-        manufacturerName.setValue("Affymetrix");
+        manufacturerName.setValue(manufacturer);
         manufacturerName.setPredicate(CQLPredicate.EQUAL_TO);
         manufacturer.setAttribute(manufacturerName);
 
@@ -197,7 +197,7 @@ public class CQLSearchClient implements JavaSamplerClient {
         organism.setName("edu.georgetown.pir.Organism");
         CQLAttribute organismName = new CQLAttribute();
         organismName.setName("commonName");
-        organismName.setValue("c.mouseful");
+        organismName.setValue(organism);
         organismName.setPredicate(CQLPredicate.EQUAL_TO);
         organism.setAttribute(organismName);
 

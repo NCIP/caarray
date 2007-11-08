@@ -108,7 +108,7 @@ public class SearchByExampleClient implements JavaSamplerClient {
     private static final String ORGANISM_PARAM = "organismName";
 
     private static final String DEFAULT_MANUFACTURER = "Affymetrix";
-    private static final String DEFAULT_ORGANISM = "c.mouseful";
+    private static final String DEFAULT_ORGANISM = "Mouse";
 
     private String manufacturer;
     private String organism;
