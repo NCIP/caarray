@@ -1,5 +1,8 @@
 <project name="test-build" default="setUp" basedir="." xmlns:au="antlib:org.apache.ant.antunit" xmlns="antlib:org.apache.tools.ant">
 
+
+<property name="lib.dir" value="../lib"/>
+<property file="${envpropertyfile}" />
 <property name="antunit.jar" value="ant-antunit-1.0.jar"/>
 <property name="antunit.jar.location" value="${lib.dir}/${antunit.jar}"/>
 
@@ -45,6 +48,7 @@
     testBuildNoTest" />
 
   <target name="testEnvPropertyFile">
+      <echo> antunit.jar.location is ${antunit.jar.location} </echo>
 	<au:assertPropertySet name="envpropertyfile" message="Target environment file not found. 
 	Please set target environment file with -Denvpropertyfile=[FULLY QUALIFIED PATH TO PROPERTY FILE]" />  
   </target>
@@ -78,14 +82,52 @@
 	<au:assertFileExists file="${jsch.jar.location}" message="Unable to find the file: ${jsch.jar.location}." />  
   </target>
 
+  <target name="testServersOnline" depends="display-properties, testEnvPropertyFile, -check-server-availability,testMySQLOnline, testJBossOnline,testGridServiceOnline, 
+  testWebAppOnline "/>
+
+  <target name="-check-server-availability">
+    <condition property="mysql.running">
+      <socket port="${database.port}" server="${database.server}" />
+    </condition>
+    <condition property="jboss.running">
+      <socket port="${jboss.server.port}" server="${jboss.server.hostname}" />
+    </condition>
+    <condition property="globus.running">
+      <socket port="${jboss.server.port}" server="${jboss.server.hostname}" />
+    </condition>
+    <property name="app.url" value="http://${jboss.server.hostname}:${jboss.server.port}/caarray/"/>
+	<condition property="webapp.running">
+	    <http url="${app.url}"/>
+	</condition>
+  </target>
+
+  <target name="testMySQLOnline">
+    <fail message="MySQL is not running at ${database.server}:${database.port}">
+      <condition>
+	    <not>
+		  <isset property="mysql.running"/>
+       </not>
+     </condition>
+    </fail>
+  </target>
+
+  <target name="testJBossOnline">
+    <fail message="JBoss is not running at ${jboss.server.hostname}:${jboss.server.port}">
+      <condition>
+	    <not>
+		  <isset property="jboss.running"/>
+       </not>
+     </condition>
+    </fail>
+  </target>
+
+  <target name="testGridServiceOnline" />
+
   <target name="testWebAppOnline">
     <property name="app.url" value="http://${jboss.server.hostname}:${jboss.server.port}/caarray/"/>
 	<echo>Testing if ${app.url} is Offline...</echo>
-	<condition property="offline">
-	    <http url="${app.url}"/>
-	</condition>
 	<au:assertEquals message="Unable to reach ${app.url}" expected="true"
-                      actual="${offline}" casesensitive="true"/>
+                      actual="${webapp.running}" casesensitive="true"/>
     <echo>${app.url} is Online...</echo>
   </target>
 
