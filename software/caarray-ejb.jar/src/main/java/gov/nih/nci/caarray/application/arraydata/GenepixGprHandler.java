@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.application.arraydata.genepix.GenepixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType;
-import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
