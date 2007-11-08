@@ -5,9 +5,9 @@
         <s:form action="ajax/project/files/saveFiles" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper'); return false;">
             <c:forEach var="file" items="${selectedFiles}" varStatus="status">
                 <s:hidden name="selectedFiles[${status.index}]" value="${file.id}" />
-                <s:select required="true" name="selectedFiles[${status.index}].type" label="${file.name} File Type" tabindex="${status.index}"
-                      list="@gov.nih.nci.caarray.domain.file.FileType@getAllInstances()" listValue="%{getText('experiment.files.filetype.' + name)}"
-                      listKey="name" value="selectedFiles[${status.index}].type.name"/>
+                <s:select required="true" name="selectedFiles[${status.index}].fileType" label="${file.name} File Type" tabindex="${status.index}"
+                      list="@gov.nih.nci.caarray.domain.file.FileType@values()" listValue="%{getText('experiment.files.filetype.' + name)}"
+                      listKey="name" value="selectedFiles[${status.index}].fileType.name"/>
             </c:forEach>
 
             <s:hidden name="project.id" />

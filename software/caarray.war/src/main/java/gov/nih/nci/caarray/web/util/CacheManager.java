@@ -165,8 +165,8 @@ public final class CacheManager {
      */
     protected void cacheFileTypes() {
         fileTypes.add(new LabelValue("", "UNKNOWN"));
-        for (FileType fileType : FileType.getTypes()) {
-            fileTypes.add(new LabelValue(fileType.getName(), fileType.getName()));
+        for (FileType fileType : FileType.values()) {
+            fileTypes.add(new LabelValue(fileType.name(), fileType.name()));
         }
     }
 

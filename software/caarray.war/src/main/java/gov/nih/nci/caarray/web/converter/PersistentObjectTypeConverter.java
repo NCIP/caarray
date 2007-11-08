@@ -123,11 +123,6 @@ public class PersistentObjectTypeConverter extends StrutsTypeConverter {
     @Override
     @SuppressWarnings("unchecked")
     public Object convertFromString(Map context, String[] values, Class toClass) {
-        // TODO - this is a horrid hack, remove when FileType is a real enum.  When this is done,
-        // change the converter registered in xwork-conversion.properties for FileType
-        if (toClass.equals(FileType.class)) {
-            return FileType.getInstance(values[0]);
-        }
         XWorkBasicConverter converter = new XWorkBasicConverter();
         // the check for numeric is needed here to support checkboxes.
         if (StringUtils.isNotBlank(values[0]) && StringUtils.isNumeric(values[0])) {

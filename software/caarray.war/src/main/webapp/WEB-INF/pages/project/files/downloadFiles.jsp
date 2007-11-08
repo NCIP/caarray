@@ -16,14 +16,14 @@
                 <caarray:displayTagProperties/>
                 <display:column title="${addAll}">
                   <script type="text/javascript"><!--
-                  	downloadMgr.populateAll('${row.name}', '${row.id}', ${row.compressedSize});
+                    downloadMgr.populateAll('${row.name}', '${row.id}', ${row.compressedSize});
                   --></script>
                   <a href="#" onclick="downloadMgr.addDownloadRow('${row.name}', '${row.id}', ${row.compressedSize})">
-                  	<img src="<c:url value="/images/ico_add.gif"/>" alt="Add ${row.name}"/>
-                  </a>                	
+                    <img src="<c:url value="/images/ico_add.gif"/>" alt="Add ${row.name}"/>
+                  </a>
                 </display:column>
                 <display:column titleKey="experiment.files.name" property="name" sortable="true"/>
-                <display:column property="type.name" titleKey="experiment.files.type" sortable="true" />
+                <display:column property="fileType.name" titleKey="experiment.files.type" sortable="true" />
                 <display:column titleKey="experiment.files.extension" sortable="true">
                   .${fn:split(row.name, ".")[fn:length(fn:split(row.name, ".")) - 1]}
                 </display:column>

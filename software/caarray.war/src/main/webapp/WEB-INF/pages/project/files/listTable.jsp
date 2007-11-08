@@ -23,10 +23,10 @@
         </c:if>
         <display:column property="name" titleKey="experiment.files.name" sortable="true" />
         <display:column titleKey="experiment.files.type" sortable="true">
-            <c:if test="${row.type != null}">
-                <fmt:message key="experiment.files.filetype.${row.type.name}" />
+            <c:if test="${row.fileType != null}">
+                <fmt:message key="experiment.files.filetype.${row.fileType.name}" />
             </c:if>
-            <c:if test="${row.type == null}">
+            <c:if test="${row.fileType == null}">
                 <fmt:message key="experiment.files.filetype.unknown" />
             </c:if>
         </display:column>
