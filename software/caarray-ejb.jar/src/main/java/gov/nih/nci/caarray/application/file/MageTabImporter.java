@@ -186,10 +186,10 @@ class MageTabImporter {
     }
 
     private boolean isMageTabFile(CaArrayFile file) {
-        return FileType.MAGE_TAB_ADF.equals(file.getType())
-        || FileType.MAGE_TAB_DATA_MATRIX.equals(file.getType())
-        || FileType.MAGE_TAB_IDF.equals(file.getType())
-        || FileType.MAGE_TAB_SDRF.equals(file.getType());
+        return FileType.MAGE_TAB_ADF.equals(file.getFileType())
+        || FileType.MAGE_TAB_DATA_MATRIX.equals(file.getFileType())
+        || FileType.MAGE_TAB_IDF.equals(file.getFileType())
+        || FileType.MAGE_TAB_SDRF.equals(file.getFileType());
     }
 
     private MageTabInputFileSet getInputFileSet(CaArrayFileSet fileSet) {
@@ -201,7 +201,7 @@ class MageTabImporter {
     }
 
     private void addInputFile(MageTabInputFileSet inputFileSet, CaArrayFile caArrayFile) {
-        FileType type = caArrayFile.getType();
+        FileType type = caArrayFile.getFileType();
         if (FileType.MAGE_TAB_IDF.equals(type)) {
             inputFileSet.addIdf(getFile(caArrayFile));
         } else if (FileType.MAGE_TAB_SDRF.equals(type)) {

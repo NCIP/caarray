@@ -107,7 +107,7 @@ final class DataFileValidator {
 
     void validate() {
         AbstractDataFileHandler handler =
-            ArrayDataHandlerFactory.getInstance().getHandler(getArrayDataFile().getType());
+            ArrayDataHandlerFactory.getInstance().getHandler(getArrayDataFile().getFileType());
         File file = getFileAccessService().getFile(arrayDataFile);
         FileValidationResult result = handler.validate(arrayDataFile, file);
         getArrayDataFile().setValidationResult(result);

@@ -556,7 +556,7 @@ public class ArrayDataServiceTest {
     private Hybridization createHybridization(File design, FileType type) {
         ArrayDesign arrayDesign = new ArrayDesign();
         CaArrayFile designFile = fileAccessServiceStub.add(design);
-        designFile.setType(type);
+        designFile.setFileType(type);
         arrayDesign.setDesignFile(designFile);
         Array array = new Array();
         array.setDesign(arrayDesign);
@@ -595,7 +595,7 @@ public class ArrayDataServiceTest {
 
     private CaArrayFile getDataCaArrayFile(File file, FileType type) {
         CaArrayFile caArrayFile = fileAccessServiceStub.add(file);
-        caArrayFile.setType(type);
+        caArrayFile.setFileType(type);
         caArrayFile.setProject(new Project());
         caArrayFile.getProject().setExperiment(new Experiment());
         return caArrayFile;

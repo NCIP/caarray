@@ -125,12 +125,12 @@ public class FileAccessServiceTest {
         file.deleteOnExit();
         CaArrayFile caArrayFile = fileAccessService.add(file);
         assertEquals(file.getName(), caArrayFile.getName());
-        assertNull(caArrayFile.getType());
+        assertNull(caArrayFile.getFileType());
 
         file = File.createTempFile("pre", ".cdf");
         file.deleteOnExit();
         caArrayFile = fileAccessService.add(file);
-        assertEquals(FileType.AFFYMETRIX_CDF, caArrayFile.getType());
+        assertEquals(FileType.AFFYMETRIX_CDF, caArrayFile.getFileType());
     }
 
     /**

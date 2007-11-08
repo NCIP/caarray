@@ -211,13 +211,13 @@ public class ArrayDesignServiceTest {
 
     private CaArrayFile getAffymetrixCaArrayFile(File file) {
         CaArrayFile caArrayFile = fileAccessServiceStub.add(file);
-        caArrayFile.setType(FileType.AFFYMETRIX_CDF);
+        caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
         return caArrayFile;
     }
 
     private CaArrayFile getIlluminaCaArrayFile(File file) {
         CaArrayFile caArrayFile = fileAccessServiceStub.add(file);
-        caArrayFile.setType(FileType.ILLUMINA_DESIGN_CSV);
+        caArrayFile.setFileType(FileType.ILLUMINA_DESIGN_CSV);
         return caArrayFile;
     }
 

@@ -123,7 +123,7 @@ final class ArrayDataImporter {
     }
 
     private boolean isDataFile(CaArrayFile file) {
-        return file.getType().isArrayData();
+        return file.getFileType().isArrayData();
     }
 
     void validateFiles(CaArrayFileSet fileSet) {

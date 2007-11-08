@@ -188,21 +188,21 @@ abstract class AbstractDataSetImporter {
         if (caArrayFile == null) {
             throw new IllegalArgumentException("arrayData was null");
         }
-        FileType fileType = caArrayFile.getType();
+        FileType fileType = caArrayFile.getFileType();
         if (fileType.isRawArrayData()) {
             return new RawArrayDataImporter(caArrayFile, daoFactory, fileAccessService);
         } else if (fileType.isDerivedArrayData()) {
             return new DerivedArrayDataImporter(caArrayFile, daoFactory, fileAccessService);
         } else {
             throw new IllegalArgumentException("The file " + caArrayFile.getName()
-                    + " does not contain array data. The file type is " + caArrayFile.getType().getName());
+                    + " does not contain array data. The file type is " + caArrayFile.getFileType().name());
         }
     }
 
 
     AbstractDataFileHandler getDataFileHandler() {
         if (dataFileHandler == null) {
-            dataFileHandler = ArrayDataHandlerFactory.getInstance().getHandler(getCaArrayFile().getType());
+            dataFileHandler = ArrayDataHandlerFactory.getInstance().getHandler(getCaArrayFile().getFileType());
         }
         return dataFileHandler;
     }

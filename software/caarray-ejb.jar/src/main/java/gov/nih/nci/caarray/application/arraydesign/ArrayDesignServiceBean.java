@@ -176,7 +176,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     }
 
     private AbstractArrayDesignHandler getHandler(CaArrayFile designFile, FileAccessService fileAccessService) {
-        FileType type = designFile.getType();
+        FileType type = designFile.getFileType();
         if (type == null) {
             throw new IllegalArgumentException("FileType was null");
         } else if (FileType.AFFYMETRIX_CDF.equals(type)) {
