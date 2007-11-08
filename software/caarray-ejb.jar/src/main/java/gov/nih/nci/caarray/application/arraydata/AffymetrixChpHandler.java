@@ -99,14 +99,12 @@ import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -340,11 +338,6 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
         default:
             throw new IllegalArgumentException("Unsupported Affymetrix CHP type");
         }
-    }
-
-    @Override
-    List<String> getSampleNamesFromFile(File dataFile) {
-        return Collections.singletonList(FilenameUtils.getBaseName(dataFile.getName()));
     }
 
 }

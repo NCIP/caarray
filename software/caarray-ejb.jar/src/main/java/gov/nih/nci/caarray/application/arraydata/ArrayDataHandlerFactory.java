@@ -101,6 +101,8 @@ final class ArrayDataHandlerFactory {
             return new AffymetrixCelHandler();
         } else if (FileType.AFFYMETRIX_CHP.equals(type)) {
             return new AffymetrixChpHandler();
+        } else if (FileType.GENEPIX_GPR.equals(type)) {
+            return new GenepixGprHandler();
         } else if (FileType.ILLUMINA_DATA_CSV.equals(type)) {
             return new IlluminaDataHandler();
         } else {

@@ -82,15 +82,15 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import java.util.List;
-
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.project.Experiment;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * Provides specialized behavior for importing <code>DerivedArrayData</code>.
@@ -123,22 +123,17 @@ final class DerivedArrayDataImporter extends AbstractDataSetImporter {
     void createArrayData(boolean createAnnnotation) {
         derivedArrayData = new DerivedArrayData();
         derivedArrayData.setDataFile(getCaArrayFile());
-        List<String> sampleNames = getDataFileHandler().getSampleNamesFromFile(getFile());
-        for (String sampleName : sampleNames) {
-            createHybridization(sampleName, createAnnnotation);
+        File dataFile = getFile();
+        List<String> hybridiationNames = getDataFileHandler().getHybridizationNames(dataFile);
+        for (String hybridizationName : hybridiationNames) {
+            Hybridization hybridization = createHybridization(hybridizationName);
+            derivedArrayData.getHybridizations().add(hybridization);
+            hybridization.getDerivedDataCollection().add(derivedArrayData);
+            if (createAnnnotation) {
+                createAnnotation(dataFile, hybridization);
+            }
         }
         getArrayDao().save(derivedArrayData);
-    }
-
-    private void createHybridization(String sampleName, boolean createAnnnotation) {
-        Experiment experiment = getCaArrayFile().getProject().getExperiment();
-        Hybridization hybridization = new Hybridization();
-        derivedArrayData.getHybridizations().add(hybridization);
-        hybridization.getDerivedDataCollection().add(derivedArrayData);
-        experiment.getHybridizations().add(hybridization);
-        if (createAnnnotation) {
-            createAnnotation(experiment, hybridization, sampleName);
-        }
     }
 
     @Override

@@ -98,12 +98,10 @@ import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -234,11 +232,6 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
     @Override
     ArrayDataTypeDescriptor getArrayDataTypeDescriptor(File dataFile) {
         return AffymetrixArrayDataTypes.AFFYMETRIX_CEL;
-    }
-
-    @Override
-    List<String> getSampleNamesFromFile(File dataFile) {
-        return Collections.singletonList(FilenameUtils.getBaseName(dataFile.getName()));
     }
 
 }

@@ -88,8 +88,8 @@ import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.project.Experiment;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -121,27 +121,20 @@ class RawArrayDataImporter extends AbstractDataSetImporter {
     void createArrayData(boolean createAnnnotation) {
         rawArrayData = new RawArrayData();
         rawArrayData.setDataFile(getCaArrayFile());
-        Experiment experiment = getCaArrayFile().getProject().getExperiment();
         AbstractDataFileHandler fileHandler = getDataFileHandler();
-        rawArrayData.setType(getArrayDataType(fileHandler.getArrayDataTypeDescriptor(getFile())));
-        Hybridization hybridization = new Hybridization();
+        File dataFile = getFile();
+        rawArrayData.setType(getArrayDataType(fileHandler.getArrayDataTypeDescriptor(dataFile)));
+        List<String> hybridizationNames = fileHandler.getHybridizationNames(dataFile);
+        if (hybridizationNames.size() != 1) {
+            throw new IllegalStateException("RawArrayData files must specify data for exactly one hybridization");
+        }
+        Hybridization hybridization = createHybridization(hybridizationNames.get(0));
         hybridization.setArrayData(rawArrayData);
-        experiment.getHybridizations().add(hybridization);
         rawArrayData.setHybridization(hybridization);
         if (createAnnnotation) {
-            createAnnotation(hybridization, experiment);
+            createAnnotation(dataFile, hybridization);
         }
         getArrayDao().save(rawArrayData);
-    }
-
-    private void createAnnotation(Hybridization hybridization, Experiment experiment) {
-        List<String> sampleNames = getDataFileHandler().getSampleNamesFromFile(getFile());
-        if (sampleNames.size() != 1) {
-            throw new IllegalStateException("RawArrayData must contain one and only one sample, contained "
-                    + sampleNames.size());
-        }
-        String sampleName = sampleNames.get(0);
-        createAnnotation(experiment, hybridization, sampleName);
     }
 
     @Override

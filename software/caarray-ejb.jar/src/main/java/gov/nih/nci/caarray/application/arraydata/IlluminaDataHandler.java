@@ -241,7 +241,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    List<String> getSampleNamesFromFile(File dataFile) {
+    List<String> getHybridizationNames(File dataFile) {
         DelimitedFileReader reader = getReader(dataFile);
         List<String> headers = getHeaders(reader);
         if (isRowOriented(headers)) {

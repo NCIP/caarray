@@ -183,64 +183,6 @@ public enum GenepixQuantitationType implements QuantitationTypeDescriptor {
     RGN_RATIO_RATIO_2("Rgn Ratio (Ratio/2)", DataType.FLOAT),
     RGN_RATIO_RATIO_3("Rgn Ratio (Ratio/3)", DataType.FLOAT);
 
-    public static final GenepixQuantitationType[] COLOR_635_NM_FIELDS = new GenepixQuantitationType[] {
-        B635,
-        B635_CV,
-        B635_MEAN,
-        B635_MEDIAN,
-        B635_SD,
-        F635_CV,
-        F635_MEAN,
-        F635_MEAN_B635,
-        F635_MEDIAN,
-        F635_MEDIAN_B635,
-        F635_PERCENT_SAT,
-        F635_SD,
-        F635_TOTAL_INTENSITY,
-        SNR_635
-    };
-
-    public static final GenepixQuantitationType[] COLOR_532_NM_FIELDS = new GenepixQuantitationType[] {
-        B532,
-        B532_CV,
-        B532_MEAN,
-        B532_MEDIAN,
-        B532_SD,
-        F532_CV,
-        F532_MEAN,
-        F532_MEAN_B532,
-        F532_MEDIAN,
-        F532_MEDIAN_B532,
-        F532_PERCENT_SAT,
-        F532_SD,
-        F532_TOTAL_INTENSITY,
-        SNR_532
-    };
-
-    public static final GenepixQuantitationType[] COLOR_THREE_FIELDS = new GenepixQuantitationType[] {
-        B3_MEAN,
-        B3_MEDIAN,
-        B3_SD,
-        F3_MEAN,
-        F3_MEAN_B3,
-        F3_MEDIAN,
-        F3_MEDIAN_B3,
-        F3_PERCENT_SAT,
-        F3_SD
-    };
-
-    public static final GenepixQuantitationType[] COLOR_FOUR_FIELDS = new GenepixQuantitationType[] {
-        B4_MEAN,
-        B4_MEDIAN,
-        B4_SD,
-        F4_MEAN,
-        F4_MEAN_B4,
-        F4_MEDIAN,
-        F4_MEDIAN_B4,
-        F4_PERCENT_SAT,
-        F4_SD
-    };
-
     private final String name;
     private final DataType type;
 
