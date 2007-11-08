@@ -3,7 +3,7 @@
 <caarray:tabPane subtab="true">
     <caarray:projectListTabHeader entityName="Extract" isSubtab="true"/>
 
-    <c:url value="/protected/ajax/project/listTab/Extract/load.action" var="sortUrl">
+    <c:url value="/protected/ajax/project/listTab/Extracts/load.action" var="sortUrl">
         <c:param name="project.id" value="${project.id}" />
     </c:url>
 
@@ -24,7 +24,7 @@
             </display:column>
             <display:column titleKey="experiment.extracts.labeledExtracts">
                 <caarray:projectListTabRelatedItemsLinks relatedItems="${row.labeledExtracts}" relatedEntityName="LabeledExtract" nameProperty="name" isSubtab="true"/>
-            </display:column>
+  "src/main/webapp/WEB-INF/pages/project/tabExtracts/list.jsp"          </display:column>
             <caarray:projectListTabActionColumns entityName="Extract" itemId="${row.id}" actions="!edit,!copy,!delete" isSubtab="true"/>
         </display:table>
     </ajax:displayTag>
