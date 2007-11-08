@@ -87,6 +87,7 @@ import static gov.nih.nci.caarray.web.action.ActionHelper.getFileManagementServi
 import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.io.FileClosingInputStream;
 import gov.nih.nci.caarray.web.action.ActionHelper;
@@ -113,7 +114,9 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.validator.annotations.ExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
+import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
  * @author Scott Miller
@@ -202,7 +205,7 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
      * Method to delete files.
      * @return the string representing the UI to display.
      */
-    @SkipValidation
+    @Validations(expressions = @ExpressionValidator(shortCircuit = true, message = "Files must be selected for this operation.", expression = "selectedFiles.size() > 0"))
     public String deleteFiles() {
         int deletedFiles = 0;
         int skippedFiles = 0;
@@ -222,10 +225,39 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
     }
 
     /**
+     * load files for editing.
+     * @return the string matching the result to follow
+     */
+    @Validations(expressions = @ExpressionValidator(shortCircuit = true, message = "Files must be selected for this operation.", expression = "selectedFiles.size() > 0"))
+    public String editFiles() {
+        return Action.SUCCESS;
+    }
+
+
+    /**
+     * Save the selected files.
+     * @return the string matching the result to follow
+     */
+    @Validations(expressions = @ExpressionValidator(shortCircuit = true, message = "Files must be selected for this operation.", expression = "selectedFiles.size() > 0"))
+    public String saveFiles() {
+        if (!getSelectedFiles().isEmpty()) {
+            for (CaArrayFile caArrayFile : getSelectedFiles()) {
+                caArrayFile.setFileStatus(FileStatus.UPLOADED);
+                if (caArrayFile.getValidationResult() != null) {
+                    caArrayFile.getValidationResult().getMessageSet().clear();
+                }
+                getFileAccessService().save(caArrayFile);
+            }
+            ActionHelper.saveMessage(getSelectedFiles().size() + " files updated.");
+        }
+        return prepListUnimportedPage();
+    }
+
+    /**
      * Method to validate the files.
      * @return the string matching the result to follow
      */
-    @SkipValidation
+    @Validations(expressions = @ExpressionValidator(shortCircuit = true, message = "Files must be selected for this operation.", expression = "selectedFiles.size() > 0"))
     public String validateFiles() {
         int validatedFiles = 0;
         int skippedFiles = 0;
@@ -252,7 +284,7 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
      * Method to import the files.
      * @return the string matching the result to follow
      */
-    @SkipValidation
+    @Validations(expressions = @ExpressionValidator(shortCircuit = true, message = "Files must be selected for this operation.", expression = "selectedFiles.size() > 0"))
     public String importFiles() {
         int importedFiles = 0;
         int skippedFiles = 0;
@@ -272,15 +304,21 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
         if (skippedFiles > 0) {
             ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for importing.");
         }
-        HibernateUtil.getCurrentSession().refresh(getProject());
+        refreshProject();
         return prepListUnimportedPage();
+    }
+
+    /**
+     * This method refreshes the project fromt he db.  It is in its own method to allow test cases to overwrite this.
+     */
+    protected void refreshProject() {
+        HibernateUtil.getCurrentSession().refresh(getProject());
     }
 
     /**
      * View the validation messages for the selected files.
      * @return the string matching the result to use.
      */
-    @SkipValidation
     public String validationMessages() {
         return Action.SUCCESS;
     }
@@ -476,5 +514,16 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
      */
     public void setListAction(String listAction) {
         this.listAction = listAction;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void validate() {
+        super.validate();
+        if (hasErrors()) {
+            prepListUnimportedPage();
+        }
     }
 }

@@ -98,6 +98,8 @@ import java.util.Set;
 public class FileAccessServiceStub implements FileAccessService {
 
     private final Map<String, File> nameToFile = new HashMap<String, File>();
+    private int savedFileCount = 0;
+    private int removedFileCount = 0;
 
     public CaArrayFile add(File file) {
         CaArrayFile caArrayFile = new CaArrayFile();
@@ -129,7 +131,7 @@ public class FileAccessServiceStub implements FileAccessService {
     }
 
     public void remove(CaArrayFile caArrayFile) {
-        // do nothing
+        this.removedFileCount++;
     }
 
     public void closeFiles() {
@@ -137,10 +139,30 @@ public class FileAccessServiceStub implements FileAccessService {
     }
 
     public void save(CaArrayFile caArrayFile) {
-        // do nothing
+        this.savedFileCount++;
     }
 
     public void unzipFiles(List<File> uploads, List<String> uploadFileNames) {
         //do nothing
+    }
+
+    public void reset() {
+        this.nameToFile.clear();
+        this.savedFileCount = 0;
+        this.removedFileCount = 0;
+    }
+
+    /**
+     * @return the savedFileCount
+     */
+    public int getSavedFileCount() {
+        return this.savedFileCount;
+    }
+
+    /**
+     * @return the removedFileCount
+     */
+    public int getRemovedFileCount() {
+        return this.removedFileCount;
     }
 }

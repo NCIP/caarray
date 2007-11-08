@@ -137,22 +137,22 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
      * Affymetrix native CHP data format.
      */
     public static final FileType AFFYMETRIX_CHP = new FileType("AFFYMETRIX_CHP");
-    
+
     /**
      * Illumina array design CSV file.
      */
     public static final FileType ILLUMINA_DESIGN_CSV = new FileType("ILLUMINA_DESIGN_CSV");
-    
+
     /**
      * Illumina array data CSV file.
      */
     public static final FileType ILLUMINA_DATA_CSV = new FileType("ILLUMINA_DATA_CSV");
-    
+
     /**
      * Genepix array design GAL file.
      */
     public static final FileType GENEPIX_GAL = new FileType("GENEPIX_GAL");
-    
+
     /**
      * Genepix array data GPR file.
      */
@@ -215,13 +215,21 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
     }
 
     /**
+     * Get all of the file types.
+     * @return all the file types
+     */
+    public static Collection<FileType> getAllInstances() {
+        return INSTANCES.values();
+    }
+
+    /**
      * Returns the name of the file type.
      *
      * @return the name of the file type
      */
     @Override
     public String toString() {
-        return name;
+        return this.name;
     }
 
     /**
@@ -230,7 +238,7 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
      * @return the name of the file type
      */
     public String getName() {
-        return name;
+        return this.name;
     }
 
     /**
@@ -309,7 +317,7 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
             return true;
         } else {
             FileType otherFileType = (FileType) o;
-            return name.equals(otherFileType.name);
+            return this.name.equals(otherFileType.name);
         }
     }
 
@@ -318,10 +326,10 @@ public final class FileType extends AbstractCaArrayObject implements Comparable<
      */
     @Override
     public int hashCode() {
-        if (name == null) {
+        if (this.name == null) {
             return System.identityHashCode(this);
         }
-        return name.hashCode();
+        return this.name.hashCode();
     }
 
 }

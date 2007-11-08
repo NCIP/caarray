@@ -36,6 +36,7 @@
 <c:set var="formDivId" value="theForm"/>
 <div id="${formDivId}">
     <caarray:successMessages />
+    <s:actionerror/>
     <jsp:doBody />
 </div>
 <script type="text/javascript">

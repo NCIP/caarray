@@ -103,6 +103,19 @@ import java.util.Set;
  */
 public class ProjectManagementServiceStub implements ProjectManagementService {
 
+    private int filesAddedCount = 0;
+
+    public void reset() {
+        this.filesAddedCount = 0;
+    }
+
+    /**
+     * @return the filesAdded
+     */
+    public int getFilesAddedCount() {
+        return this.filesAddedCount;
+    }
+
     public Set<CaArrayFile> addFiles(Project project, Set<File> files) {
         return null;
     }
@@ -142,6 +155,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     }
 
     public CaArrayFile addFile(Project project, File file, String filename) {
+        this.filesAddedCount++;
         return null;
     }
 
@@ -173,14 +187,14 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     public Source copySource(Project project, long sourceId) {
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public AccessProfile addGroupProfile(Project project, CollaboratorGroup group) {
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */

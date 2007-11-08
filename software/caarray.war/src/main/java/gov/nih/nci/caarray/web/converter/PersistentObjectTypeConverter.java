@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.web.converter;
 
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
@@ -122,6 +123,11 @@ public class PersistentObjectTypeConverter extends StrutsTypeConverter {
     @Override
     @SuppressWarnings("unchecked")
     public Object convertFromString(Map context, String[] values, Class toClass) {
+        // TODO - this is a horrid hack, remove when FileType is a real enum.  When this is done,
+        // change the converter registered in xwork-conversion.properties for FileType
+        if (toClass.equals(FileType.class)) {
+            return FileType.getInstance(values[0]);
+        }
         XWorkBasicConverter converter = new XWorkBasicConverter();
         // the check for numeric is needed here to support checkboxes.
         if (StringUtils.isNotBlank(values[0]) && StringUtils.isNumeric(values[0])) {

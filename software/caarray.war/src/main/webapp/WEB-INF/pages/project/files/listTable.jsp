@@ -2,8 +2,9 @@
 <c:url value="/protected/ajax/project/files/${listAction}Table.action" var="sortUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
+<c:set var="listingImported" value="${listAction == 'listImported'}"/>
 <c:choose>
-    <c:when test="${listAction == 'listImported'}">
+    <c:when test="${listingImported}">
         <c:set var="pageSize" value="20" />
     </c:when>
     <c:otherwise>
@@ -15,7 +16,7 @@
     <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${files}" pagesize="${pageSize}"
         requestURI="${sortUrl}" sort="list" id="row" excludedParams="project.id">
         <caarray:displayTagProperties/>
-        <c:if test="${project.saveAllowed}">
+        <c:if test="${project.saveAllowed && !listingImported}">
             <display:column title="${checkboxAll}">
                 <s:checkbox name="selectedFiles" fieldValue="${row.id}" value="false" theme="simple" />
             </display:column>

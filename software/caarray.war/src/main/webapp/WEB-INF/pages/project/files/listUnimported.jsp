@@ -16,15 +16,13 @@
 
 <caarray:tabPane subtab="true" submittingPaneMessageKey="experiment.files.processing">
 
-    <caarray:successMessages />
-
     <div class="boxpad2">
         <h3><fmt:message key="project.tabs.unimportedFiles" /></h3>
         <c:if test="${project.saveAllowed}">
             <div class="addlink">
                 <fmt:message key="experiment.data.upload" var="uploadLabel" />
                 <caarray:linkButton actionClass="add" text="${uploadLabel}" onclick="Element.show('uploadFileDiv');"/>
-            </div>        
+            </div>
         </c:if>
     </div>
 
@@ -35,7 +33,7 @@
                     <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
                     <s:file id="upload" name="upload" label="File" />
                 </s:form>
-            
+
                 <caarray:actions>
                     <caarray:linkButton actionClass="cancel" text="Cancel" onclick="Effect.Fade('uploadFileDiv', { duration: 0.1 } );"/>
                     <caarray:linkButton actionClass="add" text="Add More Files" onclick="moreUploads();"/>
@@ -51,11 +49,13 @@
             <%@ include file="/WEB-INF/pages/project/files/listTable.jsp" %>
         </s:form>
     </div>
-    
-    <c:if test="${project.saveAllowed}">    
+
+    <c:if test="${project.saveAllowed}">
         <caarray:actions divclass="actionsthin">
             <c:url value="/protected/ajax/project/files/deleteFiles.action" var="deleteUrl" />
             <caarray:linkButton actionClass="delete" text="Delete" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${deleteUrl}', 'tabboxlevel2wrapper');" />
+            <c:url value="/protected/ajax/project/files/editFiles.action" var="editUrl" />
+            <caarray:linkButton actionClass="edit" text="Change File Type" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${editUrl}', 'tabboxlevel2wrapper');" />
             <c:url value="/protected/ajax/project/files/validateFiles.action" var="validateUrl" />
             <caarray:linkButton actionClass="validate" text="Validate" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${validateUrl}', 'tabboxlevel2wrapper');" />
             <c:url value="/protected/ajax/project/files/importFiles.action" var="importUrl"/>

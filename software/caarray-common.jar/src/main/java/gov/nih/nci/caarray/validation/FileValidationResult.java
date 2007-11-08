@@ -134,7 +134,7 @@ public final class FileValidationResult implements Serializable, Comparable<File
      */
     @Transient
     public File getFile() {
-        return file;
+        return this.file;
     }
 
     @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" }) // NOPMD
@@ -158,7 +158,7 @@ public final class FileValidationResult implements Serializable, Comparable<File
      */
     @Transient
     public boolean isValid() {
-        for (ValidationMessage message : messageSet) {
+        for (ValidationMessage message : this.messageSet) {
             if (ValidationMessage.Type.ERROR.equals(message.getType())) {
                 return false;
             }
@@ -209,13 +209,13 @@ public final class FileValidationResult implements Serializable, Comparable<File
     }
 
     private void add(ValidationMessage validationMessage) {
-        messageSet.add(validationMessage);
+        this.messageSet.add(validationMessage);
     }
 
     @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" }) // NOPMD
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<ValidationMessage> getMessageSet() {
-        return messageSet;
+    public Set<ValidationMessage> getMessageSet() {
+        return this.messageSet;
     }
 
     @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" }) // NOPMD
@@ -227,7 +227,7 @@ public final class FileValidationResult implements Serializable, Comparable<File
     @GeneratedValue(strategy = GenerationType.AUTO)
     @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" }) // NOPMD
     private Long getId() {
-        return id;
+        return this.id;
     }
 
     @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" }) // NOPMD

@@ -14,10 +14,4 @@
             <%@ include file="/WEB-INF/pages/project/files/listTable.jsp" %>
         </s:form>
     </div>
-    <c:if test="${project.saveAllowed}">
-        <caarray:actions divclass="actionsthin">
-            <c:url value="/ajax/notYetImplemented.jsp" var="associationsUrl" />
-            <caarray:linkButton actionClass="manage_associations" text="Manage Associations" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${associationsUrl}', 'tabboxlevel2wrapper');" />
-        </caarray:actions>
-    </c:if>
 </caarray:tabPane>

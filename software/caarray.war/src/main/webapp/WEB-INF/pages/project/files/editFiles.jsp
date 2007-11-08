@@ -1,0 +1,19 @@
+<%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
+<caarray:tabPane subtab="true"  paneTitleKey="file.manage">
+    <div class="boxpad">
+        <p class="instructions">Required fields are marked with <span class="required">*asterisks*</span>.</p>
+        <s:form action="ajax/project/files/saveFiles" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper'); return false;">
+            <c:forEach var="file" items="${selectedFiles}" varStatus="status">
+                <s:hidden name="selectedFiles[${status.index}]" value="${file.id}" />
+                <s:select required="true" name="selectedFiles[${status.index}].type" label="${file.name} File Type" tabindex="${status.index}"
+                      list="@gov.nih.nci.caarray.domain.file.FileType@getAllInstances()" listValue="%{getText('experiment.files.filetype.' + name)}"
+                      listKey="name" value="selectedFiles[${status.index}].type.name"/>
+            </c:forEach>
+
+            <s:hidden name="project.id" />
+        </s:form>
+        <caarray:actions>
+            <caarray:action actionClass="save" text="Save" onclick="TabUtils.submitTabForm('projectForm', 'tabboxlevel2wrapper'); return false;"/>
+        </caarray:actions>
+    </div>
+</caarray:tabPane>
