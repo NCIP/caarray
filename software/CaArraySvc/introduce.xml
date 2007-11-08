@@ -98,7 +98,6 @@
    <ns2:SchemaElement className="ExperimentContact" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="ExperimentContact" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
   <ns2:Namespace location="./gov.nih.nci.caarray.domain.file.xsd" namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.file" packageName="gov.nih.nci.caarray.domain.file" xsi:type="ns2:NamespaceType">
-   <ns2:SchemaElement className="FileType" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="FileType" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="CaArrayFile" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="CaArrayFile" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
   <ns2:Namespace namespace="http://www.w3.org/2001/XMLSchema" xsi:type="ns2:NamespaceType">
