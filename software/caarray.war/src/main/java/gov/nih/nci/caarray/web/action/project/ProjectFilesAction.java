@@ -123,6 +123,7 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
  *
  */
 @Validation
+@Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.", expression = "selectedFiles.size() > 0"))
 public class ProjectFilesAction extends BaseProjectAction implements Preparable {
     private static final long serialVersionUID = 1L;
     private static final String ACTION_UNIMPORTED = "listUnimported";
@@ -205,7 +206,6 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
      * Method to delete files.
      * @return the string representing the UI to display.
      */
-    @Validations(expressions = @ExpressionValidator(shortCircuit = true, message = "Files must be selected for this operation.", expression = "selectedFiles.size() > 0"))
     public String deleteFiles() {
         int deletedFiles = 0;
         int skippedFiles = 0;
@@ -228,7 +228,6 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
      * load files for editing.
      * @return the string matching the result to follow
      */
-    @Validations(expressions = @ExpressionValidator(shortCircuit = true, message = "Files must be selected for this operation.", expression = "selectedFiles.size() > 0"))
     public String editFiles() {
         return Action.SUCCESS;
     }
@@ -238,7 +237,6 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
      * Save the selected files.
      * @return the string matching the result to follow
      */
-    @Validations(expressions = @ExpressionValidator(shortCircuit = true, message = "Files must be selected for this operation.", expression = "selectedFiles.size() > 0"))
     public String saveFiles() {
         if (!getSelectedFiles().isEmpty()) {
             for (CaArrayFile caArrayFile : getSelectedFiles()) {
@@ -257,7 +255,6 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
      * Method to validate the files.
      * @return the string matching the result to follow
      */
-    @Validations(expressions = @ExpressionValidator(shortCircuit = true, message = "Files must be selected for this operation.", expression = "selectedFiles.size() > 0"))
     public String validateFiles() {
         int validatedFiles = 0;
         int skippedFiles = 0;
@@ -284,7 +281,6 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
      * Method to import the files.
      * @return the string matching the result to follow
      */
-    @Validations(expressions = @ExpressionValidator(shortCircuit = true, message = "Files must be selected for this operation.", expression = "selectedFiles.size() > 0"))
     public String importFiles() {
         int importedFiles = 0;
         int skippedFiles = 0;
