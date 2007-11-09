@@ -216,7 +216,7 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         return null;
     }
 
-    @SuppressWarnings("PMD.PositionLiteralsFirstInComparisons")
+    @SuppressWarnings("PMD.PositionLiteralsFirstInComparisons") // PMD check gives false positive
     private boolean areColumnHeaders(List<String> values) {
         return values.size() > REQUIRED_INITIAL_ROW_HEADER_LENGTH
         && BLOCK_HEADER.equals(values.get(0))

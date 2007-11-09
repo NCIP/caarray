@@ -100,13 +100,13 @@ public class EntityConfiguringInterceptor {
 
     /**
      * Ensures that any object returned and its direct associated entities are loaded.
-     *
+     * 
      * @param invContext the method context
      * @return the method result
      * @throws Exception if invoking the method throws an exception.
      */
     @AroundInvoke
-    @SuppressWarnings("PMD")
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException") // method invocation wrapper requires throws Exception
     public Object prepareReturnValue(InvocationContext invContext) throws Exception {
         Object returnValue = invContext.proceed();
         if (returnValue instanceof Collection) {
@@ -124,7 +124,7 @@ public class EntityConfiguringInterceptor {
         }
     }
 
-    private void prepareEntity(Object entity)
+    private void prepareEntity(Object entity) 
     throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         Map<?, ?> properties = BeanUtils.describe(entity);
         for (Object propertyName : properties.keySet()) {

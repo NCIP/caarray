@@ -100,7 +100,7 @@ public class HibernateSessionInterceptor {
      * @throws Exception if invoking the method throws an exception.
      */
     @AroundInvoke
-    @SuppressWarnings("PMD")
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException") // method invocation wrapper requires throws Exception
     public Object manageHibernateSession(InvocationContext invContext) throws Exception {
         HibernateUtil.openAndBindSession();
         Object returnValue = invContext.proceed();
