@@ -103,7 +103,7 @@ public class PaginatedListImpl<T> implements PaginatedList {
     private SortOrderEnum sortDirection;
 
     /**
-     * Constructor for a paginated list
+     * Constructor for a paginated list.
      *
      * @param fullListSize full list size
      * @param list result list
@@ -128,7 +128,7 @@ public class PaginatedListImpl<T> implements PaginatedList {
      * @return the size of the full result set
      */
     public int getFullListSize() {
-        return fullListSize;
+        return this.fullListSize;
     }
     /**
      * @param fullListSize the fullListSize to set
@@ -141,7 +141,7 @@ public class PaginatedListImpl<T> implements PaginatedList {
      * @return the current page of the result set
      */
     public List<T> getList() {
-        return list;
+        return this.list;
     }
     /**
      * @param list the list to set
@@ -154,7 +154,7 @@ public class PaginatedListImpl<T> implements PaginatedList {
      * @return the page size
      */
     public int getObjectsPerPage() {
-        return objectsPerPage;
+        return this.objectsPerPage;
     }
     /**
      * @param objectsPerPage the objectsPerPage to set
@@ -167,7 +167,7 @@ public class PaginatedListImpl<T> implements PaginatedList {
      * @return the current page number
      */
     public int getPageNumber() {
-        return pageNumber;
+        return this.pageNumber;
     }
     /**
      * @param pageNumber the pageNumber to set
@@ -180,7 +180,7 @@ public class PaginatedListImpl<T> implements PaginatedList {
      * @return the search id
      */
     public String getSearchId() {
-        return searchId;
+        return this.searchId;
     }
     /**
      * @param searchId the searchId to set
@@ -193,7 +193,7 @@ public class PaginatedListImpl<T> implements PaginatedList {
      * @return the sort property
      */
     public String getSortCriterion() {
-        return sortCriterion;
+        return this.sortCriterion;
     }
     /**
      * @param sortCriterion the sortCriterion to set
@@ -206,7 +206,7 @@ public class PaginatedListImpl<T> implements PaginatedList {
      * @return the sort direction
      */
     public SortOrderEnum getSortDirection() {
-        return sortDirection;
+        return this.sortDirection;
     }
     /**
      * @param sortDirection the sortDirection to set
