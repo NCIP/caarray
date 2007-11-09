@@ -25,6 +25,7 @@ public final class LDAPUtil {
     static final Logger LOG = Logger.getLogger(LDAPUtil.class);
     private static final String INITCTX = "com.sun.jndi.ldap.LdapCtxFactory";
     private static Map<String, String> configMap = new HashMap<String, String>();
+    @SuppressWarnings("PMD.ReplaceHashtableWithMap")
     private static Hashtable<String, String> env = new Hashtable<String, String>();
 
     private LDAPUtil() {
@@ -123,6 +124,7 @@ public final class LDAPUtil {
     /**
      * @return the env
      */
+    @SuppressWarnings("PMD.ReplaceHashtableWithMap")
     public Hashtable<String, String> getEnv() {
         return env;
     }
@@ -130,6 +132,7 @@ public final class LDAPUtil {
     /**
      * @param env the env to set
      */
+    @SuppressWarnings("PMD.ReplaceHashtableWithMap")
     public void setEnv(Hashtable<String, String> env) {
         LDAPUtil.env = env;
     }

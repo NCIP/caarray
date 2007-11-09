@@ -83,8 +83,11 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.file.FileManagementServiceStub;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
@@ -121,11 +124,12 @@ public class ProjectFilesActionTest {
     ProjectFilesAction action = new ProjectFilesAction();
 
     @BeforeClass
+    @SuppressWarnings("PMD")
     public static void beforeClass() {
         ServiceLocatorStub stub = ServiceLocatorStub.registerEmptyLocator();
-        stub.addLookup(ProjectManagementServiceStub.JNDI_NAME, projectManagementServiceStub);
-        stub.addLookup(FileManagementServiceStub.JNDI_NAME, fileManagementServiceStub);
-        stub.addLookup(FileAccessServiceStub.JNDI_NAME, fileAccessServiceStub);
+        stub.addLookup(ProjectManagementService.JNDI_NAME, projectManagementServiceStub);
+        stub.addLookup(FileManagementService.JNDI_NAME, fileManagementServiceStub);
+        stub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
     }
 
     @Before
@@ -142,6 +146,7 @@ public class ProjectFilesActionTest {
              */
             @Override
             protected void refreshProject() {
+                // empty on purpose
             }
         };
         Project project = new Project();
@@ -184,6 +189,7 @@ public class ProjectFilesActionTest {
     }
 
     @Test
+    @SuppressWarnings("PMD")
     public void testValidate() throws Exception {
         List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
@@ -221,6 +227,7 @@ public class ProjectFilesActionTest {
     }
 
     @Test
+    @SuppressWarnings("PMD")
     public void testImport() throws Exception {
         List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
@@ -258,6 +265,7 @@ public class ProjectFilesActionTest {
     }
 
     @Test
+    @SuppressWarnings("PMD")
     public void testDelete() throws Exception {
         List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
@@ -295,6 +303,7 @@ public class ProjectFilesActionTest {
     }
 
     @Test
+    @SuppressWarnings("PMD")
     public void testSave() throws Exception {
         List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);

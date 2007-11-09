@@ -111,6 +111,7 @@ import org.junit.Test;
  *
  * @author Rashmi Srinivasa
  */
+@SuppressWarnings("PMD")
 public class SearchDaoTest {
     private static final Log LOG = LogFactory.getLog(SearchDaoTest.class);
 

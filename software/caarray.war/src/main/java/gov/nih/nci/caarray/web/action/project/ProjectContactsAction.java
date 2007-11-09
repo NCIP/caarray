@@ -103,6 +103,7 @@ import org.apache.commons.beanutils.PropertyUtils;
  * Action for Contacts tab of Project management.
  * @author Dan Kokotov
  */
+@SuppressWarnings("PMD.CyclomaticComplexity")
 public class ProjectContactsAction extends ProjectTabAction {
     private static final long serialVersionUID = 1L;
 

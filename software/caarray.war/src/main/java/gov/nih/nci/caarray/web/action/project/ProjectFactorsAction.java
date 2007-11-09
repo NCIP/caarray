@@ -96,7 +96,7 @@ import java.util.Collection;
  *
  * @author Dan Kokotov
  */
-public class ProjectFactorsAction extends ProjectListTabAction {
+public class ProjectFactorsAction extends AbstractProjectListTabAction {
     private static final long serialVersionUID = 1L;
 
     private Factor currentFactor = new Factor();

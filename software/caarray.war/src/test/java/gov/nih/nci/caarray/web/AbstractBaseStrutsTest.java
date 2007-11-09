@@ -113,6 +113,7 @@ public abstract class AbstractBaseStrutsTest {
     }
 
     @After
+    @SuppressWarnings("PMD")
     public void tearDownStruts() throws Exception {
         XWorkTestCaseHelper.tearDown(this.configurationManager);
         this.configurationManager = null;

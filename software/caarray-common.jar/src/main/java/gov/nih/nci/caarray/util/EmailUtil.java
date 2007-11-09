@@ -164,7 +164,7 @@ public final class EmailUtil {
         }
 
         MimeMessage message = new MimeMessage(MAILSESSION);
-        message.setRecipients(Message.RecipientType.TO, addresses.toArray(new Address[0]));
+        message.setRecipients(Message.RecipientType.TO, addresses.toArray(new Address[addresses.size()]));
         message.setSender(new InternetAddress(from));
         message.setSubject(mailSubject);
         message.setText(mailBody);

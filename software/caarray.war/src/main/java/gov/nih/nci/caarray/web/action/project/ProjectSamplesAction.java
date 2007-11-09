@@ -95,7 +95,7 @@ import java.util.Collection;
  * Action implementing the samples tab.
  * @author Dan Kokotov
  */
-public class ProjectSamplesAction extends ProjectListTabAction {
+public class ProjectSamplesAction extends AbstractProjectListTabAction {
     private static final long serialVersionUID = 1L;
 
     private Sample currentSample = new Sample();

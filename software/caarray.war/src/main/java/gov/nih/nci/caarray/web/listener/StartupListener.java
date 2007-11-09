@@ -90,7 +90,7 @@ import javax.servlet.ServletContextEvent;
 /**
  * Performs initialization operations required at startup of the caArray application.
  */
-public class StartupListener extends HibernateSessionScopeListener {
+public class StartupListener extends AbstractHibernateSessionScopeListener {
     /**
      * Creates connection to DataService as well as sets configuration in
      * application scope.

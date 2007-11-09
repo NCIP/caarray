@@ -158,7 +158,7 @@ public class PersistentObjectTypeConverterTest {
         @SuppressWarnings({ "unchecked", "deprecation" })
         @Override
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
-            if (Project.class.equals(entityClass) && entityId.equals(1l)) {
+            if (Project.class.equals(entityClass) && Long.valueOf(1L).equals(entityId)) {
                 Project p = new Project();
                 p.setBrowsable(false);
                 p.setId(1l);

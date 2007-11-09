@@ -305,6 +305,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         }
     }
 
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     private void loadValue(String value, String header, DataSet dataSet, Set<QuantitationType> typeSet,
             Map<String, Integer> groupIdToHybridizationDataIndexMap, int rowIndex) {
         String[] headerParts = header.split("-", 2);

@@ -19,7 +19,7 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
  * @author John Hedden, Dan Kokotov, Scott Miller
  */
 @Validation
-public class ProjectAction extends BaseProjectAction {
+public class ProjectAction extends AbstractBaseProjectAction {
     private static final long serialVersionUID = 1L;
 
     private ProposalStatus workflowStatus;

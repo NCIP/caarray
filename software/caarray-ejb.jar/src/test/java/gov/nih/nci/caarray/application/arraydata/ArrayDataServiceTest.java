@@ -82,6 +82,44 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.B532_MEAN;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.B532_MEDIAN;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.B532_SD;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.B635_MEAN;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.B635_MEDIAN;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.B635_SD;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.B_PIXELS;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.DIA;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.F532_MEAN;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.F532_MEAN_B532;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.F532_MEDIAN;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.F532_MEDIAN_B532;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.F532_PERCENT_SAT;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.F532_SD;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.F635_MEAN;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.F635_MEAN_B635;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.F635_MEDIAN;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.F635_MEDIAN_B635;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.F635_PERCENT_SAT;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.F635_SD;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.FLAGS;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.F_PIXELS;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.LOG_RATIO_635_532;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.MEAN_OF_RATIOS_635_532;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.MEDIAN_OF_RATIOS_635_532;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.PERCENT_GT_B532_1SD;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.PERCENT_GT_B532_2SD;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.PERCENT_GT_B635_1SD;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.PERCENT_GT_B635_2SD;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.RATIOS_SD_635_532;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.RATIO_OF_MEANS_635_532;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.RATIO_OF_MEDIANS_635_532;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.RGN_R2_635_532;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.RGN_RATIO_635_532;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.SUM_OF_MEANS_635_532;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.SUM_OF_MEDIANS_635_532;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.X;
+import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.Y;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -147,8 +185,6 @@ import affymetrix.fusion.chp.FusionCHPDataReg;
 import affymetrix.fusion.chp.FusionCHPLegacyData;
 import affymetrix.fusion.chp.FusionExpressionProbeSetResults;
 import affymetrix.fusion.chp.FusionGenotypeProbeSetResults;
-
-import static gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType.*;
 
 /**
  * Tests the ArrayDataService subsystem
@@ -603,13 +639,13 @@ public class ArrayDataServiceTest {
 
     private static final class LocalDaoFactoryStub extends DaoFactoryStub {
 
-        private Map<ArrayDataTypeDescriptor, ArrayDataType> dataTypeMap =
+        private final Map<ArrayDataTypeDescriptor, ArrayDataType> dataTypeMap =
             new HashMap<ArrayDataTypeDescriptor, ArrayDataType>();
 
-        private Map<QuantitationTypeDescriptor, QuantitationType> quantitationTypeMap =
+        private final Map<QuantitationTypeDescriptor, QuantitationType> quantitationTypeMap =
             new HashMap<QuantitationTypeDescriptor, QuantitationType>();
 
-        private Map<CaArrayFile, AbstractArrayData> fileDataMap = new HashMap<CaArrayFile, AbstractArrayData>();
+        private final Map<CaArrayFile, AbstractArrayData> fileDataMap = new HashMap<CaArrayFile, AbstractArrayData>();
 
         @Override
         public ArrayDao getArrayDao() {

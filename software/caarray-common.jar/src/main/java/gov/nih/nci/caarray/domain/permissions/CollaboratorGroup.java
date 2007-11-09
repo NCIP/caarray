@@ -101,6 +101,7 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "CSM_GROUP", "CSM_USER" }) })
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class CollaboratorGroup implements PersistentObject {
     //
     // DEVELOPER NOTE: This class has-a Group, rather than is-a Group,

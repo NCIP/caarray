@@ -116,6 +116,7 @@ public class NullCollectionElementInterceptor implements Interceptor {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("PMD")
     public String intercept(ActionInvocation actionInvocation) throws Exception {
         Map<?, ?> params = actionInvocation.getInvocationContext().getParameters();
         ValueStack stack = actionInvocation.getStack();

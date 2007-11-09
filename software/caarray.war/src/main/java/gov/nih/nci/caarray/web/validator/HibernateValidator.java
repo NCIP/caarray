@@ -103,6 +103,7 @@ import com.opensymphony.xwork2.validator.validators.FieldValidatorSupport;
  *
  * @author Scott Miller
  */
+@SuppressWarnings("PMD.CyclomaticComplexity")
 public class HibernateValidator extends FieldValidatorSupport {
 
     private static final Logger LOG = Logger.getLogger(HibernateValidator.class);
@@ -139,7 +140,7 @@ public class HibernateValidator extends FieldValidatorSupport {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "PMD.ExcessiveMethodLength" })
     private void validateObject(String fieldName, Object o) {
         if (o == null) {
             LOG.warn("The visited object is null, VisitorValidator will not be able to handle validation properly. "

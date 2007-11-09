@@ -95,7 +95,7 @@ import com.opensymphony.xwork2.Preparable;
  *
  * @author Dan Kokotov
  */
-public abstract class BaseProjectAction extends ActionSupport implements Preparable {
+public abstract class AbstractBaseProjectAction extends ActionSupport implements Preparable {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -114,7 +114,7 @@ public abstract class BaseProjectAction extends ActionSupport implements Prepara
     /**
      *
      */
-    public BaseProjectAction() {
+    public AbstractBaseProjectAction() {
         super();
     }
 

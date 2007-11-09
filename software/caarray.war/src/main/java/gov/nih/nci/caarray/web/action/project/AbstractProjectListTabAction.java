@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-war
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-war Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-war Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-war Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-war Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,42 +80,156 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.listener;
+package gov.nih.nci.caarray.web.action.project;
 
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
+import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.web.action.ActionHelper;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.struts2.interceptor.validation.SkipValidation;
+
+import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
- * Base class for ServletContextListeners that perform operations which interact with Hibernate
- * and thus require a current Hibernate Session. Takes care of setting up such a Session and cleaning
- * up after the listener is done. Subclasses should implement doContextInitialized and do their work there.
- * 
+ * Base class for project tab actions that implement list-type tabs, ie Factors, Sources, etc,
+ * that display a list of entities associated with project and allow you to add, edit, remove, copy them.
+ *
  * @author Dan Kokotov
  */
-public abstract class HibernateSessionScopeListener implements ServletContextListener {
+@Validation
+public abstract class AbstractProjectListTabAction extends ProjectTabAction {
+    private static final long serialVersionUID = 1L;
+
+    private final String resourceKey;
+
+    /**
+     * @param resourceKey the resource to display
+     */
+    public AbstractProjectListTabAction(String resourceKey) {
+        super();
+        this.resourceKey = resourceKey;
+    }
+
+    /**
+     * loads the tab with a list of the items.
+     * {@inheritDoc}
+     */
+    @Override
+    @SkipValidation
+    public String load() {
+        return "list";
+    }
+
+    /**
+     * loads the tab with editing a single item.
+     * @return input
+     */
+    @SkipValidation
+    public String edit() {
+        setEditMode(true);
+        return INPUT;
+    }
+
+    /**
+     * loads the tab with viewing a single item.
+     * @return input
+     */
+    @SkipValidation
+    public String view() {
+        setEditMode(false);
+        return INPUT;
+    }
+
+    /**
+     * Saves the item.
+     *
+     * @return the string indicating the result to use.
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public String save() {
+        if (this.getItem().getId() == null) {
+            getCollection().add(getItem());
+            ActionHelper.saveMessage(getText("experiment.items.created", new String[] {getItemName()}));
+        } else {
+            ActionHelper.saveMessage(getText("experiment.items.updated", new String[] {getItemName()}));
+        }
+        return super.save();
+    }
+
+    /**
+     * Gets the label for the item to be used in success messages.
+     * @return
+     */
+    private String getItemName() {
+        return getText("experiment." + this.resourceKey);
+    }
+
+    /**
+     * remove the item with the given id from the set of items.
+     *
+     * @return the string indicating which result to forward to.
+     */
+    @SkipValidation
+    public String delete() {
+        getCollection().remove(getItem());
+        super.save();
+        ActionHelper.saveMessage(getText("experiment.items.deleted", new String[] {getItemName()}));
+        return "list";
+    }
+
+    /**
+     * Copy the item to a new object with a name obtained by adding a counter to the old name,
+     * and return to the list screen.
+     *
+     * @return the string indicating the result to forward to.
+     */
+    @SkipValidation
+    public String copy() {
+        try {
+            doCopyItem();
+            ActionHelper.saveMessage(getText("experiment.items.copied", new String[] {getItemName()}));
+        } catch (ProposalWorkflowException e) {
+            List<String> args = new ArrayList<String>();
+            args.add(getProject().getExperiment().getTitle());
+            ActionHelper.saveMessage(getText("project.saveProblem", args));
+        }
+        return "list";
+    }
+
+    /**
+     * return the project's collection of items to which new items should be added or from which items
+     * should be removed.
+     * DEVELOPER NOTE: this is intentionally ungenericized as there is no way to make this work with genericized
+     * Collections due to limitations of generic type bounds in Java
+     * @return project's collection of objects.
+     */
+    @SuppressWarnings("unchecked")
+    protected abstract Collection getCollection();
+
+    /**
+     * @return  the List item currently being edited, for save/copy/remove methods
+     */
+    protected abstract PersistentObject getItem();
+
+    /**
+     * Subclasses should make the actual call to the appropriate service method to copy the item.
+     * @throws ProposalWorkflowException when the experiment cannot be saved due to workflow restrictions
+     */
+    protected abstract void doCopyItem() throws ProposalWorkflowException;
 
     /**
      * {@inheritDoc}
      */
-    public void contextDestroyed(ServletContextEvent arg0) {
-        // do nothing - subclasses can override if needed
+    @Override
+    public void validate() {
+        super.validate();
+        if (this.hasErrors()) {
+            setEditMode(true);
+        }
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public final void contextInitialized(ServletContextEvent event) {
-        HibernateUtil.openAndBindSession();
-        doContextInitialized(event);
-        HibernateUtil.unbindAndCleanupSession();
-    }
-    
-    /**
-     * Subclasses should implement this method and do their work there. 
-     * @param event the servlet context event
-     * @see ServletContextListener#contextInitialized(ServletContextEvent)
-     */
-    public abstract void doContextInitialized(ServletContextEvent event);
 }

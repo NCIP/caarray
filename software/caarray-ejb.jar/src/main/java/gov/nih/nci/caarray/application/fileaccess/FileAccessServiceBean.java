@@ -300,6 +300,7 @@ public class FileAccessServiceBean implements FileAccessService {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
     public void unzipFiles(List<File> uploads, List<String> uploadFileNames) {
         try {
             Pattern p = Pattern.compile(".zip$");

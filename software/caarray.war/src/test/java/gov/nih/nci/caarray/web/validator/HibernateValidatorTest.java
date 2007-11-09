@@ -106,12 +106,13 @@ import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
  * @author Scott Miller
  *
  */
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class HibernateValidatorTest extends AbstractBaseStrutsTest {
 
     private TestAction action;
 
     @Before
-    public void onSetUp() throws Exception {
+    public void onSetUp() {
         this.action = new TestAction();
         Source s1 = new Source();
         s1.setName("test name 1");
@@ -128,7 +129,7 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
         this.action.setSource(null);
         ActionValidatorManager avm = ActionValidatorManagerFactory.getInstance();
         avm.validate(this.action, null);
-        Map fieldErrors = this.action.getFieldErrors();
+        Map<?, ?> fieldErrors = this.action.getFieldErrors();
 
         assertFalse(this.action.hasErrors());
         assertEquals(0, fieldErrors.size());
@@ -139,7 +140,7 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
         this.action.setSource(new Source());
         ActionValidatorManager avm = ActionValidatorManagerFactory.getInstance();
         avm.validate(this.action, null);
-        Map fieldErrors = this.action.getFieldErrors();
+        Map<?, ?> fieldErrors = this.action.getFieldErrors();
 
         assertTrue(this.action.hasErrors());
         assertEquals(1, fieldErrors.size());
@@ -150,7 +151,7 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
     public void testHibernateValidatorWithValidObject() throws Exception {
         ActionValidatorManager avm = ActionValidatorManagerFactory.getInstance();
         avm.validate(this.action, null);
-        Map fieldErrors = this.action.getFieldErrors();
+        Map<?, ?> fieldErrors = this.action.getFieldErrors();
 
         assertFalse(this.action.hasErrors());
         assertEquals(0, fieldErrors.size());
@@ -173,7 +174,7 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
 
         ActionValidatorManager avm = ActionValidatorManagerFactory.getInstance();
         avm.validate(this.action, null);
-        Map fieldErrors = this.action.getFieldErrors();
+        Map<?, ?> fieldErrors = this.action.getFieldErrors();
 
         assertTrue(this.action.hasErrors());
         assertEquals(1, fieldErrors.size());
@@ -190,7 +191,7 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
 
         ActionValidatorManager avm = ActionValidatorManagerFactory.getInstance();
         avm.validate(this.action, null);
-        Map fieldErrors = this.action.getFieldErrors();
+        Map<?, ?> fieldErrors = this.action.getFieldErrors();
 
         assertTrue(this.action.hasErrors());
         assertEquals(1, fieldErrors.size());
@@ -236,11 +237,13 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
             this.source2 = source2;
         }
 
+        @SuppressWarnings("PMD.MethodReturnsInternalArray")
         @CustomValidator(type = "hibernate", parameters = @ValidationParameter(name = "resourceKeyBase", value = "experiment.sources"))
         public Source[] getSourceArray() {
             return this.sourceArray;
         }
 
+        @SuppressWarnings("PMD.ArrayIsStoredDirectly")
         public void setSourceArray(Source[] sourceArray) {
             this.sourceArray = sourceArray;
         }

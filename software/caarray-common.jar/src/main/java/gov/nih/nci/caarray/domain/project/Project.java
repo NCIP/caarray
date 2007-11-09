@@ -124,6 +124,7 @@ import org.hibernate.validator.NotNull;
   * A microarray project.
   */
 @Entity
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class Project extends AbstractCaArrayEntity implements Comparable<Project>, Protectable {
 
     private static final long serialVersionUID = 1234567890L;

@@ -92,6 +92,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Utility classes for our project.
  */
+@SuppressWarnings("PMD.CyclomaticComplexity")
 public final class CaArrayUtils {
 
     private static final Log LOG = LogFactory.getLog(CaArrayUtils.class);

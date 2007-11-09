@@ -95,7 +95,7 @@ import org.apache.commons.lang.NotImplementedException;
  * Action implementing the samples tab.
  * @author Dan Kokotov
  */
-public class ProjectHybridizationsAction extends ProjectListTabAction {
+public class ProjectHybridizationsAction extends AbstractProjectListTabAction {
     private static final long serialVersionUID = 1L;
 
     private Hybridization currentHybridization = new Hybridization();

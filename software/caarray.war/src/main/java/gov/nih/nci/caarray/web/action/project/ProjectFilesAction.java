@@ -129,7 +129,7 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
 @Validation
 @Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.",
                                                 expression = "selectedFiles.size() > 0"))
-public class ProjectFilesAction extends BaseProjectAction implements Preparable {
+public class ProjectFilesAction extends AbstractBaseProjectAction implements Preparable {
     private static final long serialVersionUID = 1L;
     private static final String ACTION_UNIMPORTED = "listUnimported";
     private static final String ACTION_IMPORTED = "listImported";
@@ -372,10 +372,11 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
      * uploads file.
      *
      * @return the string matching the result to follow
-     * @exception Exception on error
+     * @throws IOException on io error
      */
     @SkipValidation
-    public String upload() throws Exception {
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
+    public String upload() throws IOException {
         unzipFiles();
 
         Set<String> existingFileNameSet = new HashSet<String>();

@@ -155,6 +155,7 @@ public class DataRetrievalServiceTest {
     }
 
     @Test
+    @SuppressWarnings("PMD")
     public void testGetDataSet() {
         DataRetrievalRequest request = new DataRetrievalRequest();
         try {

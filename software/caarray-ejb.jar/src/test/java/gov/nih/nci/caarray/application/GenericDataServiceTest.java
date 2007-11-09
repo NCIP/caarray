@@ -104,6 +104,7 @@ import org.junit.Test;
  *
  * @author Scott Miller
  */
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class GenericDataServiceTest {
 
     GenericDataService service = null;
@@ -202,7 +203,7 @@ public class GenericDataServiceTest {
         @SuppressWarnings("unchecked")
         @Override
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
-            if (Project.class.equals(entityClass) && entityId.equals(1l)) {
+            if (Project.class.equals(entityClass) && Long.valueOf(1L).equals(entityId)) {
                 Project p = new Project();
                 p.setBrowsable(false);
                 return (T) p;
@@ -218,9 +219,9 @@ public class GenericDataServiceTest {
             if (Project.class.equals(entityClass) && "name".equals(fieldName)) {
                 if (StringUtils.isEmpty(prefix)) {
                     return Arrays.asList("Name1", "Name4", "Namonce21t");
-                } else if (prefix.equals("Name")) {
+                } else if ("Name".equals(prefix)) {
                     return Arrays.asList("Name1", "Name4");
-                } else if (prefix.equals("Namonce")) {
+                } else if ("Namonce".equals(prefix)) {
                     return Arrays.asList("Namonce21t");
                 } else {
                     return new ArrayList<String>();

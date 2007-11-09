@@ -96,7 +96,7 @@ import org.apache.commons.lang.NotImplementedException;
  *
  * @author Dan Kokotov
  */
-public class ProjectExtractsAction extends ProjectListTabAction {
+public class ProjectExtractsAction extends AbstractProjectListTabAction {
     private static final long serialVersionUID = 1L;
 
     private Extract currentExtract = new Extract();

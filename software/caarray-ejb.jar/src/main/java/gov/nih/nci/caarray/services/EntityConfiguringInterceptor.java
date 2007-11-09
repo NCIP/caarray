@@ -100,32 +100,33 @@ public class EntityConfiguringInterceptor {
 
     /**
      * Ensures that any object returned and its direct associated entities are loaded.
-     * 
+     *
      * @param invContext the method context
      * @return the method result
      * @throws Exception if invoking the method throws an exception.
      */
     @AroundInvoke
+    @SuppressWarnings("PMD")
     public Object prepareReturnValue(InvocationContext invContext) throws Exception {
         Object returnValue = invContext.proceed();
         if (returnValue instanceof Collection) {
-            prepareEntities((Collection) returnValue);
+            prepareEntities((Collection<?>) returnValue);
         } else {
             prepareEntity(returnValue);
         }
         return returnValue;
     }
 
-    private void prepareEntities(Collection collection) 
+    private void prepareEntities(Collection<?> collection)
     throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         for (Object entity : collection) {
             prepareEntity(entity);
         }
     }
 
-    private void prepareEntity(Object entity) 
+    private void prepareEntity(Object entity)
     throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        Map properties = BeanUtils.describe(entity);
+        Map<?, ?> properties = BeanUtils.describe(entity);
         for (Object propertyName : properties.keySet()) {
             Hibernate.initialize(properties.get(propertyName));
         }

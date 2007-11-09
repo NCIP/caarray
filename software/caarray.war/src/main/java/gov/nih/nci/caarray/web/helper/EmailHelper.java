@@ -148,6 +148,7 @@ public final class EmailHelper {
      * @param registrationRequest request
      * @throws MessagingException on error
      */
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
     public static void registerEmailAdmin(RegistrationRequest registrationRequest) throws MessagingException {
         List<String> mailRecipients = new ArrayList<String>();
         String admin = null;

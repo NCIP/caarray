@@ -101,7 +101,7 @@ import org.apache.commons.lang.NotImplementedException;
  *
  * @author Dan Kokotov
  */
-public class ProjectPublicationsAction extends ProjectListTabAction {
+public class ProjectPublicationsAction extends AbstractProjectListTabAction {
     private static final long serialVersionUID = 1L;
 
     private Publication currentPublication = new Publication();

@@ -184,6 +184,7 @@ public class SessionContextStub implements SessionContext {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("PMD")
     public boolean getRollbackOnly() throws IllegalStateException {
         // no-op
         return false;

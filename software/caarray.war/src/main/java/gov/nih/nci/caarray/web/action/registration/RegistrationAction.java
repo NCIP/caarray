@@ -95,6 +95,8 @@ import gov.nih.nci.security.exceptions.CSException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -163,9 +165,9 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     /**
      * Action to actually save the registration.
      * @return the directive for the next action / page to be directed to
-     * @exception Exception on error
+     * @throws MessagingException on error
      */
-    public String save() throws Exception {
+    public String save() throws MessagingException {
         persist();
         EmailHelper.registerEmail(getRegistrationRequest());
         EmailHelper.registerEmailAdmin(getRegistrationRequest());
@@ -176,7 +178,8 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     /**
      * Action to actually save the registration with authentication.
      * @return the directive for the next action / page to be directed to
-     * @exception Exception on error
+     * @throws CSException on CSM error
+     * @throws MessagingException on messaging error
      */
     @Validations(
             fieldExpressions = {@FieldExpressionValidator(fieldName = "passwordConfirm",
@@ -194,7 +197,8 @@ public class RegistrationAction extends ActionSupport implements Preparable {
                                                 key = "validator.pattern",
                                                 message = "") }
     )
-    public String saveAuthenticate() throws Exception {
+
+    public String saveAuthenticate() throws CSException, MessagingException {
         if (getLdapInstall().equalsIgnoreCase("true")) {
             if (!LDAPUtil.ldapAuthenticateUser(registrationRequest.getLoginName(), getPassword())) {
                 addActionError("LDAP Authentication Failed.");

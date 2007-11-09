@@ -128,8 +128,9 @@ import org.hibernate.annotations.LazyCollectionOption;
  *
  */
 @Entity
-@SuppressWarnings("PMD.TooManyFields") // Experiment is central object -- can't reduce set of linked entities
+@SuppressWarnings({"PMD.TooManyFields", "PMD.ExcessiveClassLength", "PMD.ExcessivePublicCount" })
 public class Experiment extends AbstractCaArrayEntity {
+ // Experiment is central object -- can't reduce set of linked entities
 
     private static final int IDENTIFIER_TOKEN_LENGTH = 5;
     private static final String UNUSED = "unused";
@@ -573,7 +574,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the samples
      */
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "experiment")
+    @JoinColumn(name = EXPERIMENT_REF)
     @ForeignKey(name = "PUBLICATION_EXPR_FK")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
           org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
@@ -855,7 +856,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the factors
      */
     @OneToMany
-    @JoinColumn(name = "experiment")
+    @JoinColumn(name = EXPERIMENT_REF)
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
           org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Factor> getFactors() {
@@ -930,7 +931,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return hybridizations
      */
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "experiment")
+    @JoinColumn(name = EXPERIMENT_REF)
     @ForeignKey(name = "HYBRIDIZATION_EXPR_FK")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
           org.hibernate.annotations.CascadeType.DELETE_ORPHAN })

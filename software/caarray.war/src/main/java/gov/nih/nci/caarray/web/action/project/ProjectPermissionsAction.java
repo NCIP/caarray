@@ -25,7 +25,7 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
  * @author John Hedden, Dan Kokotov, Scott Miller
  */
 @Validation
-public class ProjectPermissionsAction extends BaseProjectAction {
+public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     private static final long serialVersionUID = 1L;
 
     private List<CollaboratorGroup> collaboratorGroupsWithoutProfiles = new ArrayList<CollaboratorGroup>();
@@ -60,7 +60,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
      */
     @SkipValidation
     public String editPermissions() {
-        return "success";
+        return SUCCESS;
     }
 
     /**
@@ -71,7 +71,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
     @SkipValidation
     public String toggleBrowsability() {
         getProjectManagementService().toggleBrowsableStatus(getProject().getId());
-        return "success";
+        return SUCCESS;
     }
 
     /**
@@ -82,7 +82,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
     public String addGroupProfile() {
         getProjectManagementService().addGroupProfile(getProject(), this.collaboratorGroup);
         this.collaboratorGroupsWithoutProfiles.remove(this.collaboratorGroup);
-        return "success";
+        return SUCCESS;
     }
 
     /**
@@ -145,7 +145,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
         saveSamplePermissions();
         getPermissionsManagementService().saveAccessProfile(this.accessProfile);
         ActionHelper.saveMessage(getText("project.permissionsSaved"));
-        return "success";
+        return SUCCESS;
     }
 
     /**

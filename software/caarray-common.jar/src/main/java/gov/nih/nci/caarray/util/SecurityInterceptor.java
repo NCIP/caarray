@@ -118,6 +118,7 @@ import org.hibernate.type.Type;
  * Hibernate interceptor that adds CSM protection elements and other security
  * features as objects are saved.
  */
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.AvoidDuplicateLiterals" })
 public class SecurityInterceptor extends EmptyInterceptor {
     //
     // DEVELOPER NOTE: this class must be thread safe, because we enable it at the
@@ -213,6 +214,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings({"PMD.ExcessiveParameterList", "PMD.AvoidDeeplyNestedIfStmts" })
     public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
             String[] propertyNames, Type[] types) {
         if (entity instanceof Project && previousState != null) {
@@ -280,6 +282,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
         BROWSABLE_CHANGES.set(null);
     }
 
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
     private void handleDeleted(String user) {
         if (DELETEDOBJS.get() == null) {
             return;
@@ -345,6 +348,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
         NEWOBJS.set(null);
     }
 
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
     private ProtectionGroup createProtectionGroup(Protectable p, User csmUser)
         throws CSObjectNotFoundException, CSTransactionException {
 
