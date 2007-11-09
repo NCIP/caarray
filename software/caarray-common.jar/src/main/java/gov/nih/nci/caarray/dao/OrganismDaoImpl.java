@@ -90,7 +90,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * DAO for Organism entities 
+ * DAO for Organism entities .
  *
  * @author Dan Kokotov
  */
@@ -103,7 +103,7 @@ class OrganismDaoImpl extends AbstractCaArrayDaoImpl implements OrganismDao {
     public Organism getOrganism(long id) {
         return (Organism) getCurrentSession().get(Organism.class, id);
     }
-    
+
     /**
      * {@inheritDoc}
      */

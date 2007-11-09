@@ -213,7 +213,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
         return uncompressedSize;
     }
 
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod"})
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private void setUncompressedSize(int uncompressedSize) {
         this.uncompressedSize = uncompressedSize;
     }
@@ -225,7 +225,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
         return compressedSize;
     }
 
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod"})
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private void setCompressedSize(int compressedSize) {
         this.compressedSize = compressedSize;
     }

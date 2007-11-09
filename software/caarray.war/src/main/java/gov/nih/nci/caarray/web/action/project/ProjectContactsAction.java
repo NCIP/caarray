@@ -100,7 +100,7 @@ import java.lang.reflect.InvocationTargetException;
 import org.apache.commons.beanutils.PropertyUtils;
 
 /**
- * Action for Contacts tab of Project management
+ * Action for Contacts tab of Project management.
  * @author Dan Kokotov
  */
 public class ProjectContactsAction extends ProjectTabAction {
@@ -112,10 +112,9 @@ public class ProjectContactsAction extends ProjectTabAction {
     private Person mainPointOfContact;
 
     /**
-     * load a given tab in the submit experiment workflow
+     * load a given tab in the submit experiment workflow.
      *
      * @return name of result to forward to
-     * @throws Exception Exception
      */
     @Override
     public String load() {
@@ -124,10 +123,7 @@ public class ProjectContactsAction extends ProjectTabAction {
     }
 
     /**
-     * setup contacts tab
-     *
-     * @return name of result to forward to
-     * @throws Exception Exception
+     * setup contacts tab.
      */
     public void setup() {
         this.user = getCurrentUser();
@@ -158,7 +154,6 @@ public class ProjectContactsAction extends ProjectTabAction {
      * save a project.
      *
      * @return path String
-     * @throws Exception Exception
      */
     @Override
     @SuppressWarnings("PMD")
@@ -191,7 +186,9 @@ public class ProjectContactsAction extends ProjectTabAction {
             if (this.piIsMainPoc) {
                 pi.getRoles().add(mainPocRole);
             } else {
-                ExperimentContact mainPoc = new ExperimentContact(getExperiment(), this.mainPointOfContact, mainPocRole);
+                ExperimentContact mainPoc = new ExperimentContact(getExperiment(),
+                                                                  this.mainPointOfContact,
+                                                                  mainPocRole);
                 getProject().getExperiment().getExperimentContacts().add(mainPoc);
             }
         }
@@ -207,16 +204,20 @@ public class ProjectContactsAction extends ProjectTabAction {
      * @param source contact to copy from
      * @param dest contact to copy to
      */
+    @SuppressWarnings("deprecation")
     private void copyContact(AbstractContact source, AbstractContact dest) {
         Long id = dest.getId();
         try {
             PropertyUtils.copyProperties(dest, source);
         } catch (IllegalAccessException e) {
             // cannot happen
+            LOG.fatal(e.getMessage(), e);
         } catch (InvocationTargetException e) {
             // cannot happen
+            LOG.fatal(e.getMessage(), e);
         } catch (NoSuchMethodException e) {
             // cannot happen
+            LOG.fatal(e.getMessage(), e);
         }
         dest.setId(id);
     }

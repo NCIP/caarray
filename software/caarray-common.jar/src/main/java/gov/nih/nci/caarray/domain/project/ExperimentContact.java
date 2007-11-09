@@ -117,24 +117,24 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      */
     private static final long serialVersionUID = 1234567890L;
 
-    // value of the Term for the PI Role
+    /** value of the Term for the PI Role. */
     public static final String PI_ROLE = "investigator";
-    // value of the Term for the POC Role
+    /** value of the Term for the POC Role. */
     public static final String MAIN_POC_ROLE = "submitter";
 
     private AbstractContact contact;
     private Set<Term> roles = new HashSet<Term>();
     private Experiment experiment;
-    
+
     /**
-     * Default constructor, mostly for hibernate
+     * Default constructor, mostly for hibernate.
      */
     public ExperimentContact() {
         // intentially blanks
     }
 
     /**
-     * Create a new ExperimentContact for given experiment, contacts, and roles
+     * Create a new ExperimentContact for given experiment, contacts, and roles.
      * @param experiment the experiment for which this is a contact
      * @param contact the contact
      * @param roles the roles this contact has on the experiment
@@ -146,7 +146,7 @@ public class ExperimentContact extends AbstractCaArrayEntity {
     }
 
     /**
-     * Create a new ExperimentContact for given experiment, contacts, and role
+     * Create a new ExperimentContact for given experiment, contacts, and role.
      * @param experiment the experiment for which this is a contact
      * @param contact the contact
      * @param role the role this contact has on the experiment
@@ -220,7 +220,7 @@ public class ExperimentContact extends AbstractCaArrayEntity {
 
     /**
      * Returns whether this contact is the PI for the experiment (based
-     * on whether he has the appropriate role)
+     * on whether he has the appropriate role).
      * @return whether this contact is the PI for the experiment
      */
     @Transient
@@ -230,7 +230,7 @@ public class ExperimentContact extends AbstractCaArrayEntity {
 
     /**
      * Returns whether this contact is the main POC for the experiment (based
-     * on whether he has the appropriate role)
+     * on whether he has the appropriate role).
      * @return whether this contact is the main POC for the experiment
      */
     @Transient
@@ -243,7 +243,7 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      * If it did not have this role, then this is a no-op.
      */
     public void removeMainPointOfContactRole() {
-        for (Iterator<Term> it = roles.iterator(); it.hasNext(); ) {
+        for (Iterator<Term> it = roles.iterator(); it.hasNext();) {
             Term role = it.next();
             if (MAIN_POC_ROLE.equals(role.getValue())) {
                 it.remove();
@@ -261,13 +261,13 @@ public class ExperimentContact extends AbstractCaArrayEntity {
     }
 
     /**
-     * Predicate that matches role Terms having a given value
+     * Predicate that matches role Terms having a given value.
      */
     private static class RolePredicate implements Predicate {
         private final String roleValue;
 
         /**
-         * Create a RolePredicate checking for given value
+         * Create a RolePredicate checking for given value.
          * @param roleValue value to check for
          */
         public RolePredicate(String roleValue) {

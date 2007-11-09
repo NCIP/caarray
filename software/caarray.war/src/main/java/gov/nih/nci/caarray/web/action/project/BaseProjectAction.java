@@ -98,7 +98,13 @@ import com.opensymphony.xwork2.Preparable;
 public abstract class BaseProjectAction extends ActionSupport implements Preparable {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * workspace.
+     */
     public static final String WORKSPACE_RESULT = "workspace";
+    /**
+     * details.
+     */
     public static final String DETAILS_RESULT = "details";
 
     private Project project = new Project();
@@ -134,9 +140,9 @@ public abstract class BaseProjectAction extends ActionSupport implements Prepara
     public void setProject(Project project) {
         this.project = project;
     }
-    
+
     /**
-     * Convenience method for getting the experiment of the current project
+     * Convenience method for getting the experiment of the current project.
      * @return the project's experiment
      */
     protected Experiment getExperiment() {

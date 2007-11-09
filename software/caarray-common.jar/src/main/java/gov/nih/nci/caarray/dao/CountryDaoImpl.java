@@ -96,6 +96,9 @@ import org.apache.commons.logging.LogFactory;
 public class CountryDaoImpl extends AbstractCaArrayDaoImpl implements CountryDao {
     private static final Log LOG = LogFactory.getLog(CountryDaoImpl.class);
 
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     public List<Country> getCountries() {
         String query = "from Country as Country order by name asc";

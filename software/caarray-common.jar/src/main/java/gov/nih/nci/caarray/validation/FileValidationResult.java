@@ -212,29 +212,35 @@ public final class FileValidationResult implements Serializable, Comparable<File
         this.messageSet.add(validationMessage);
     }
 
-    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" }) // NOPMD
+    /**
+     * @return validation messages
+     */
+    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" })
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     public Set<ValidationMessage> getMessageSet() {
         return this.messageSet;
     }
 
-    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" }) // NOPMD
+    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" })
     private void setMessageSet(Set<ValidationMessage> messageSet) {
         this.messageSet = messageSet;
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" }) // NOPMD
+    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" })
     private Long getId() {
         return this.id;
     }
 
-    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" }) // NOPMD
+    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" })
     private void setId(Long id) {
         this.id = id;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuffer stringBuffer = new StringBuffer();

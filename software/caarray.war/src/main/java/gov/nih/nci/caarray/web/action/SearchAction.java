@@ -97,6 +97,7 @@ import com.opensymphony.xwork2.ActionSupport;
  *
  */
 public class SearchAction extends ActionSupport {
+    private static final long serialVersionUID = -6250359716714235444L;
     // search parameters
     private String keyword;
     private SearchCategory category;
@@ -105,7 +106,7 @@ public class SearchAction extends ActionSupport {
     // fields for displaying search results
     private String currentTab;
     private List<Experiment> results;
-    private Map<String,Integer> tabs;
+    private Map<String, Integer> tabs;
 
     /**
      * @return the keyword
@@ -166,7 +167,7 @@ public class SearchAction extends ActionSupport {
     /**
      * This action queries for the result counts of each tab.
      * The tabs call other methods to return the actual data.
-     * @return
+     * @return success
      */
     public String basicSearch() {
         tabs = new LinkedHashMap<String, Integer>();
@@ -177,8 +178,8 @@ public class SearchAction extends ActionSupport {
         return Action.SUCCESS;
     }
     /**
-     * Search action for the experiments tab
-     * @return
+     * Search action for the experiments tab.
+     * @return tab
      */
     public String experiments() {
         currentTab = "experiments";
@@ -187,8 +188,8 @@ public class SearchAction extends ActionSupport {
         return "tab";
     }
     /**
-     * Search action for the arrayDesigns tab
-     * @return
+     * Search action for the arrayDesigns tab.
+     * @return tab
      */
     public String arrayDesigns() {
         currentTab = "arrayDesigns";
@@ -197,8 +198,8 @@ public class SearchAction extends ActionSupport {
         return "tab";
     }
     /**
-     * Search action for the samples tab
-     * @return
+     * Search action for the samples tab.
+     * @return tab
      */
     public String samples() {
         currentTab = "samples";

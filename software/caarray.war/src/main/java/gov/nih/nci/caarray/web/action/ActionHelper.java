@@ -97,13 +97,14 @@ import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.SecurityServiceProvider;
 import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
-import gov.nih.nci.security.exceptions.CSConfigurationException;
 import gov.nih.nci.security.exceptions.CSException;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
@@ -114,7 +115,13 @@ import com.opensymphony.xwork2.ActionContext;
  * @author Scott Miller
  *
  */
-public class ActionHelper {
+public final class ActionHelper {
+
+    private static final Log LOG = LogFactory.getLog(ActionHelper.class);
+
+    private ActionHelper() {
+
+    }
 
     /**
      * Save the message in the session, appending if messages already exist.
@@ -130,21 +137,29 @@ public class ActionHelper {
         ServletActionContext.getRequest().getSession().setAttribute("messages", messages);
     }
 
+    /**
+     * @return whether the SkipValidation annotation is set on the current action
+     */
     public static boolean isSkipValidationSetOnCurrentAction() {
         try {
             String methodName = ActionContext.getContext().getActionInvocation().getProxy().getMethod();
-            Method method = ActionContext.getContext().getActionInvocation().getAction().getClass().getDeclaredMethod(methodName);
+            Method method = ActionContext.getContext()
+                                         .getActionInvocation()
+                                         .getAction()
+                                         .getClass()
+                                         .getDeclaredMethod(methodName);
             if (method.getAnnotation(SkipValidation.class) != null) {
                 return true;
             }
         } catch (NoSuchMethodException e) {
-            // should never happen, as we know the method exists.
+            // Should be impossible
+            LOG.fatal(e.getMessage(), e);
         }
         return false;
     }
-    
+
     /**
-     * Convenience method for getting the CSM User instance for the currently logged in user
+     * Convenience method for getting the CSM User instance for the currently logged in user.
      * @return the logged in user
      */
     public static User getCurrentUser() {
@@ -167,7 +182,8 @@ public class ActionHelper {
      * @return the service
      */
     public static PermissionsManagementService getPermissionsManagementService() {
-        return (PermissionsManagementService) ServiceLocatorFactory.getLocator().lookup(PermissionsManagementService.JNDI_NAME);
+        return (PermissionsManagementService) ServiceLocatorFactory.getLocator()
+                                                                   .lookup(PermissionsManagementService.JNDI_NAME);
     }
 
     /**
@@ -226,15 +242,10 @@ public class ActionHelper {
 
     /**
      * get UserProvisioningManager.
-     * @return UserProvisioningManager
-     * @throws CaArrayException
-     * @throws CaArrayException
-     * @throws CSException
-     * @throws CSConfigurationException
-     * @throws CSException
-     * @throws CSConfigurationException
+     * @return UserProvisioningManager provisioning manager
+     * @throws CSException on CSM error
      */
-    public static UserProvisioningManager getUserProvisioningManager() throws CSConfigurationException, CSException {
+    public static UserProvisioningManager getUserProvisioningManager() throws CSException {
             return SecurityServiceProvider.getUserProvisioningManager("caarray");
     }
 }

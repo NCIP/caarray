@@ -100,6 +100,7 @@ import org.hibernate.validator.Pattern;
  *
  */
 @Entity
+@SuppressWarnings("PMD.TooManyFields")
 public class RegistrationRequest extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = -9198769730580475043L;
@@ -163,7 +164,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      */
      @Column(length = FIRST_NAME_FIELD_LENGTH)
      @NotNull
-     @Length(min=1, max=30)
+     @Length(min = 1, max = FIRST_NAME_FIELD_LENGTH)
     public String getFirstName() {
         return firstName;
     }
@@ -183,7 +184,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      * @return the middleInitial
      */
     @Column(length = MIDDLE_INITIAL_FIELD_LENGTH)
-    @Length(max=1)
+    @Length(max = 1)
     public String getMiddleInitial() {
         return middleInitial;
     }
@@ -204,7 +205,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      */
     @Column(length = LAST_NAME_FIELD_LENGTH)
     @NotNull
-    @Length(min=1, max=50)
+    @Length(min = 1, max = LAST_NAME_FIELD_LENGTH)
     public String getLastName() {
         return lastName;
     }
@@ -226,7 +227,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
     @Column(length = EMAIL_FIELD_LENGTH)
     @NotNull
     @Email
-    @Length(min=1, max=50)
+    @Length(min = 1, max = EMAIL_FIELD_LENGTH)
     public String getEmail() {
         return email;
     }
@@ -234,7 +235,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
 
 
     /**
-     * @param emailId the emailId to set
+     * @param email the email to set
      */
     public void setEmail(String email) {
         this.email = email;
@@ -246,8 +247,8 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      */
     @Column(length = PHONE_NUMBER_FIELD_LENGTH)
     @NotNull
-    @Length(min=1, max=25)
-    @Pattern(regex="(\\+)?([-\\._\\(\\) ]?[\\d]{3,20}[-\\._\\(\\) ]?){2,10}")
+    @Length(min = 1, max = PHONE_NUMBER_FIELD_LENGTH)
+    @Pattern(regex = "(\\+)?([-\\._\\(\\) ]?[\\d]{3,20}[-\\._\\(\\) ]?){2,10}")
     public String getPhone() {
         return phone;
     }
@@ -267,8 +268,8 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      * @return the fax
      */
     @Column(length = FAX_FIELD_LENGTH)
-    @Length(max=25)
-    @Pattern(regex="(\\+)?([-\\._\\(\\) ]?[\\d]{3,20}[-\\._\\(\\) ]?){2,10}||^$")
+    @Length(max = FAX_FIELD_LENGTH)
+    @Pattern(regex = "(\\+)?([-\\._\\(\\) ]?[\\d]{3,20}[-\\._\\(\\) ]?){2,10}||^$")
     public String getFax() {
         return fax;
     }
@@ -289,7 +290,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      */
     @Column(length = ORGANIZATION_FIELD_LENGTH)
     @NotNull
-    @Length(min=1, max=200)
+    @Length(min = 1, max = ORGANIZATION_FIELD_LENGTH)
     public String getOrganization() {
         return organization;
     }
@@ -310,7 +311,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      */
     @Column(length = ADDRESS1_FIELD_LENGTH)
     @NotNull
-    @Length(min=1, max=200)
+    @Length(min = 1, max = ADDRESS1_FIELD_LENGTH)
     public String getAddress1() {
         return address1;
     }
@@ -330,7 +331,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      * @return the address2
      */
     @Column(length = ADDRESS2_FIELD_LENGTH)
-    @Length(max=200)
+    @Length(max = ADDRESS2_FIELD_LENGTH)
     public String getAddress2() {
         return address2;
     }
@@ -351,7 +352,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      */
     @Column(length = CITY_FIELD_LENGTH)
     @NotNull
-    @Length(min=1, max=50)
+    @Length(min = 1, max = CITY_FIELD_LENGTH)
     public String getCity() {
         return city;
     }
@@ -371,7 +372,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      * @return the state
      */
     @Column(length = STATE_FIELD_LENGTH)
-    @Length(max=2)
+    @Length(max = 2)
     public String getState() {
         return state;
     }
@@ -391,7 +392,7 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      * @return the province
      */
     @Column(length = PROVINCE_FIELD_LENGTH)
-    @Length(max=50)
+    @Length(max = PROVINCE_FIELD_LENGTH)
     public String getProvince() {
         return province;
     }
@@ -412,8 +413,8 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
      */
     @Column(length = ZIP_FIELD_LENGTH)
     @NotNull
-    @Length(min=1, max=10)
-    @Pattern(regex="^\\d{5}-\\d{4}|\\d{5}|[A-Z]\\d[A-Z] \\d[A-Z]\\d$")
+    @Length(min = 1, max = ZIP_FIELD_LENGTH)
+    @Pattern(regex = "^\\d{5}-\\d{4}|\\d{5}|[A-Z]\\d[A-Z] \\d[A-Z]\\d$")
     public String getZip() {
         return zip;
     }

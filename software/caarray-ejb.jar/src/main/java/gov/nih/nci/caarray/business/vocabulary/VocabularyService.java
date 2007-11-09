@@ -84,8 +84,8 @@ package gov.nih.nci.caarray.business.vocabulary;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
 import java.util.List;
 
@@ -112,9 +112,9 @@ public interface VocabularyService {
     List<Term> getTerms(String categoryName) throws VocabularyServiceException;
 
     /**
-     * Returns all Organisms
+     * Returns all Organisms.
      *
-     * @return the List<Organism> in the system
+     * @return the organisms in the system
      */
     List<Organism> getOrganisms();
 

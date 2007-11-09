@@ -89,6 +89,9 @@ import com.opensymphony.xwork2.Action;
  *
  */
 public class LoginAction {
+    /**
+     * @return input
+     */
     public String execute() {
         return Action.INPUT;
     }

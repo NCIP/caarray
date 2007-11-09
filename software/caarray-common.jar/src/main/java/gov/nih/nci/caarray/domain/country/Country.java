@@ -104,7 +104,7 @@ public class Country extends AbstractCaArrayEntity {
     /**
      * @return the code
      */
-    @Column(unique=true)
+    @Column(unique = true)
     public String getCode() {
         return code;
     }
@@ -133,7 +133,7 @@ public class Country extends AbstractCaArrayEntity {
         return printableName;
     }
     /**
-     * @param printable_name the printable_name to set
+     * @param printableName the printable_name to set
      */
     public void setPrintableName(String printableName) {
         this.printableName = printableName;
@@ -141,7 +141,7 @@ public class Country extends AbstractCaArrayEntity {
     /**
      * @return the iso3
      */
-    @Column(unique=true)
+    @Column(unique = true)
     public String getIso3() {
         return iso3;
     }

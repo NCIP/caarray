@@ -90,7 +90,6 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.naming.InitialContext;
@@ -108,73 +107,70 @@ import org.apache.log4j.Logger;
  * @author John Hedden (Amentra, Inc.)
  * @author Akhil Bhaskar (Amentra, Inc.)
  */
-public class EmailUtil {
+public final class EmailUtil {
 
-    private static final Logger log = Logger.getLogger(EmailUtil.class);
-    private static final Session mailSession;
+    private static final Logger LOG = Logger.getLogger(EmailUtil.class);
+    private static final Session MAILSESSION;
     private static final String JNDI_NAME = "java:/Mail";
 
     static {
         try {
             InitialContext ctx = new InitialContext();
-            mailSession = (Session) ctx.lookup(JNDI_NAME);
-        }
-        catch (Exception e) {
-            log.error(e.getMessage(), e);
+            MAILSESSION = (Session) ctx.lookup(JNDI_NAME);
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
             throw new ExceptionInInitializerError(e);
         }
     }
 
     /**
-     * No instantiation is allowed, hence the private constructor
+     * No instantiation is allowed, hence the private constructor.
      */
     private EmailUtil() {
         // nothing here
     }
 
     /**
-     * Returns a handle on the populated mail session object
+     * Returns a handle on the populated mail session object.
      *
-     * @return
+     * @return the populate mail session object.
      */
     public Session getMailSession() {
-        return mailSession;
+        return MAILSESSION;
     }
 
     /**
-     * Sends mail based upon input parameters
+     * Sends mail based upon input parameters.
      *
      * @param mailRecipients List of strings that are the recipient email addresses
      * @param from the from of the email
      * @param mailSubject the subject of the email
      * @param mailBody the body of the email
-     * @throws AddressException thrown if there is a bad email address
      * @throws MessagingException thrown if there is a problem sending the message
      */
     public static void sendMail(List<String> mailRecipients, String from, String mailSubject, String mailBody)
-    throws AddressException, MessagingException {
+    throws MessagingException {
         Validate.notEmpty(mailRecipients, "No email recipients are specified");
         if (StringUtils.isEmpty(mailSubject)) {
-            log.info("No email subject specified");
+            LOG.info("No email subject specified");
         }
         if (StringUtils.isEmpty(mailBody)) {
-            log.info("No email body specified");
+            LOG.info("No email body specified");
         }
 
         List<Address> addresses = new ArrayList<Address>();
-        for (String recipient : mailRecipients)
-        {
+        for (String recipient : mailRecipients) {
             addresses.add(new InternetAddress(recipient));
         }
 
-        MimeMessage message = new MimeMessage(mailSession);
+        MimeMessage message = new MimeMessage(MAILSESSION);
         message.setRecipients(Message.RecipientType.TO, addresses.toArray(new Address[0]));
         message.setSender(new InternetAddress(from));
         message.setSubject(mailSubject);
         message.setText(mailBody);
 
-        log.debug("sending email");
+        LOG.debug("sending email");
         Transport.send(message);
-        log.debug("email successfully sent");
+        LOG.debug("email successfully sent");
     }
 }

@@ -88,22 +88,34 @@ package gov.nih.nci.caarray.domain.project;
  */
 public enum ProposalStatus {
     /** draft - visible only to owner, still gathering data.*/
-    DRAFT("proposalStatus.draft") { 
+    DRAFT("proposalStatus.draft") {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public boolean canTransitionTo(ProposalStatus status) {
             return status == SUBMITTED;
         }
     },
-    /** submitted - permissions can now be set for other people */
-    SUBMITTED("proposalStatus.submitted") { 
+    /** submitted - permissions can now be set for other people. */
+    SUBMITTED("proposalStatus.submitted") {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public boolean canTransitionTo(ProposalStatus status) {
             return status == PUBLIC;
         }
     },
-    /** public - the experiment is finalized and locked down */
+    /** public - the experiment is finalized and locked down. */
     PUBLIC("proposalStatus.public") {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public boolean canTransitionTo(ProposalStatus status) {
             return status == SUBMITTED;
-        }        
+        }
     };
 
     private final String resourceKey;
@@ -121,7 +133,7 @@ public enum ProposalStatus {
     }
 
     /**
-     * Returns whether the given status is a legal transition from this one
+     * Returns whether the given status is a legal transition from this one.
      * @param status the status to check for
      * @return whether the given status is a legal transition from this one
      */

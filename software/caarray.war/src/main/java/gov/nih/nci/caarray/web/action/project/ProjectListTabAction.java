@@ -96,7 +96,7 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
  * Base class for project tab actions that implement list-type tabs, ie Factors, Sources, etc,
- * that display a list of entities associated with project and allow you to add, edit, remove, copy them
+ * that display a list of entities associated with project and allow you to add, edit, remove, copy them.
  *
  * @author Dan Kokotov
  */
@@ -105,9 +105,9 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
     private static final long serialVersionUID = 1L;
 
     private final String resourceKey;
-    
+
     /**
-     * @param resourceKey
+     * @param resourceKey the resource to display
      */
     public ProjectListTabAction(String resourceKey) {
         super();
@@ -115,7 +115,7 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
     }
 
     /**
-     * loads the tab with a list of the items
+     * loads the tab with a list of the items.
      * {@inheritDoc}
      */
     @Override
@@ -125,8 +125,8 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
     }
 
     /**
-     * loads the tab with editing a single item
-     * @return
+     * loads the tab with editing a single item.
+     * @return input
      */
     @SkipValidation
     public String edit() {
@@ -135,8 +135,8 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
     }
 
     /**
-     * loads the tab with viewing a single item
-     * @return
+     * loads the tab with viewing a single item.
+     * @return input
      */
     @SkipValidation
     public String view() {
@@ -145,7 +145,7 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
     }
 
     /**
-     * Saves the item
+     * Saves the item.
      *
      * @return the string indicating the result to use.
      */
@@ -154,15 +154,15 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
     public String save() {
         if (this.getItem().getId() == null) {
             getCollection().add(getItem());
-            ActionHelper.saveMessage(getText("experiment.items.created", new String[] { getItemName()}));
+            ActionHelper.saveMessage(getText("experiment.items.created", new String[] {getItemName()}));
         } else {
-            ActionHelper.saveMessage(getText("experiment.items.updated", new String[] { getItemName()}));
+            ActionHelper.saveMessage(getText("experiment.items.updated", new String[] {getItemName()}));
         }
         return super.save();
     }
 
     /**
-     * Gets the label for the item to be used in success messages
+     * Gets the label for the item to be used in success messages.
      * @return
      */
     private String getItemName() {
@@ -178,13 +178,13 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
     public String delete() {
         getCollection().remove(getItem());
         super.save();
-        ActionHelper.saveMessage(getText("experiment.items.deleted", new String[] { getItemName()}));
+        ActionHelper.saveMessage(getText("experiment.items.deleted", new String[] {getItemName()}));
         return "list";
     }
 
     /**
      * Copy the item to a new object with a name obtained by adding a counter to the old name,
-     * and return to the list screen
+     * and return to the list screen.
      *
      * @return the string indicating the result to forward to.
      */
@@ -192,7 +192,7 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
     public String copy() {
         try {
             doCopyItem();
-            ActionHelper.saveMessage(getText("experiment.items.copied", new String[] { getItemName()}));
+            ActionHelper.saveMessage(getText("experiment.items.copied", new String[] {getItemName()}));
         } catch (ProposalWorkflowException e) {
             List<String> args = new ArrayList<String>();
             args.add(getProject().getExperiment().getTitle());
@@ -206,19 +206,18 @@ public abstract class ProjectListTabAction extends ProjectTabAction {
      * should be removed.
      * DEVELOPER NOTE: this is intentionally ungenericized as there is no way to make this work with genericized
      * Collections due to limitations of generic type bounds in Java
-     * @return
+     * @return project's collection of objects.
      */
     @SuppressWarnings("unchecked")
     protected abstract Collection getCollection();
 
     /**
-     * return the List item currently being edited, for save/copy/remove methods
-     * @return
+     * @return  the List item currently being edited, for save/copy/remove methods
      */
     protected abstract PersistentObject getItem();
 
     /**
-     * Subclasses should make the actual call to the appropriate service method to copy the item
+     * Subclasses should make the actual call to the appropriate service method to copy the item.
      * @throws ProposalWorkflowException when the experiment cannot be saved due to workflow restrictions
      */
     protected abstract void doCopyItem() throws ProposalWorkflowException;

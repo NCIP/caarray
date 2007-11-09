@@ -127,7 +127,7 @@ public class CollaboratorGroup implements PersistentObject {
     }
 
     /**
-     * For UI / Hibernate Usage only
+     * For UI / Hibernate Usage only.
      */
     public CollaboratorGroup() {
         // intentionally empty

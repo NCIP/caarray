@@ -88,15 +88,15 @@ package gov.nih.nci.caarray.domain.project;
  */
 public enum ExperimentOntology {
     /**
-     * MGED Ontology
+     * MGED Ontology.
      */
     MGED("MGED"),
-    
+
     /**
-     * CAArray Local Ontology
+     * CAArray Local Ontology.
      */
     CAARRAY("caarray");
-    
+
 
     private final String ontologyName;
 

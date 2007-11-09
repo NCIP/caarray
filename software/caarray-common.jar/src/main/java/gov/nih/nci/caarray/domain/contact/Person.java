@@ -101,7 +101,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
 /**
- * 
+ *
  */
 @Entity
 @DiscriminatorValue("P")
@@ -113,16 +113,16 @@ public class Person extends AbstractContact {
     private String middleInitials;
     private String lastName;
     private Set<Organization> affiliations = new HashSet<Organization>();
-    
+
     /**
-     * Default constructor
+     * Default constructor.
      */
     public Person() {
         // intentially empty
     }
-    
+
     /**
-     * Constructor for a Person based on a CSM User instance
+     * Constructor for a Person based on a CSM User instance.
      * @param user the user from which to copy name and contact properties
      */
     public Person(User user) {
@@ -130,7 +130,7 @@ public class Person extends AbstractContact {
         this.lastName = user.getLastName();
         setEmail(user.getEmailId());
     }
-    
+
 
     /**
      * Gets the firstName.

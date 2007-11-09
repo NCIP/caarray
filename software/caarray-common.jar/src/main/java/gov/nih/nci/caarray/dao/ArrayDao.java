@@ -109,24 +109,24 @@ public interface ArrayDao extends CaArrayDao {
      * @return the <code>ArrayDesign</code>.
      */
     ArrayDesign getArrayDesign(long id);
-    
+
     /**
-     * Returns the list of ArrayDesigns with the given provider
-     * @param provider the provider 
+     * Returns the list of ArrayDesigns with the given provider.
+     * @param provider the provider
      * @return the List&lt;ArrayDesign&gt; of the array designs whose
      * provider is the given provider
      */
     List<ArrayDesign> getArrayDesignsForProvider(Organization provider);
-    
+
     /**
-     * Returns the list of Organizations that are a provider for at least 
-     * one ArrayDesign in the system
+     * Returns the list of Organizations that are a provider for at least
+     * one ArrayDesign in the system.
      * @return the List&lt;Organization&gt; of Organizations where for each
      * organization in the list there exists at least one ArrayDesign for which
      * that Organization is the provider
      */
     List<Organization> getArrayDesignProviders();
-    
+
     /**
      * Returns the array data object for the id given.
      *
@@ -170,7 +170,7 @@ public interface ArrayDao extends CaArrayDao {
     QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor);
     /**
      * Returns the hybridization matching the given id.
-     * 
+     *
      * @param id id to retrieve
      * @return the matching hybridization.
      */

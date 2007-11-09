@@ -91,71 +91,85 @@ import java.util.List;
 import java.util.Map;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-
 import org.apache.log4j.Logger;
 
 /**
  * @author John Hedden (Amentra, Inc.)
  *
  */
-public class EmailHelper {
+public final class EmailHelper {
 
-    private static final Logger log = Logger.getLogger(EmailHelper.class);
+    private static final Logger LOG = Logger.getLogger(EmailHelper.class);
 
     private static final String REGISTRATION_SUBJECT = "mail.registration.subject";
     private static final String REGISTRATION_FROM = "mail.registration.from";
     private static final String ADMIN_EMAIL_ADDRESS = "mail.registration.admin";
 
     /**
-     * No instantiation is allowed, hence the private constructor
+     * No instantiation is allowed, hence the private constructor.
      */
     private EmailHelper() {
         // nothing here.
     }
 
-    public static void registerEmail (RegistrationRequest registrationRequest) throws AddressException, MessagingException {
+    /**
+     * @param registrationRequest request
+     * @throws MessagingException on other error
+     */
+    public static void registerEmail(RegistrationRequest registrationRequest) throws MessagingException {
         List<String> mailRecipients = new ArrayList<String>();
         mailRecipients.add(registrationRequest.getEmail());
         String subject = null;
         String from = null;
 
-        String mailBody = "Dear CBIIT_Customer\n" +
-            "Thank you for your submission concerning caArray registration request.  It has\n" +
-            "been logged in our SupportWizard database with an ID of " + registrationRequest.getLoginName() + ".\n" +
-            "Your questions and suggestions are very important to us. You will receive a followup call or email shortly.\n" +
-            "Thank you,\n" +
-            "CBIIT Application Support Group";
+        String mailBody = "Dear CBIIT_Customer\n"
+            + "Thank you for your submission concerning caArray registration request.  It has\n"
+            + "been logged in our SupportWizard database with an ID of " + registrationRequest.getLoginName() + ".\n"
+            + "Your questions and suggestions are very important to us. You will receive a followup call or "
+            + "email shortly.\n"
+            + "Thank you,\n"
+            + "CBIIT Application Support Group";
 
         try {
             subject = getRegistrationProperties().get("subject");
             from = getRegistrationProperties().get("from");
         } catch (ConfigurationException e) {
-            log.error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
         }
 
         EmailUtil.sendMail(mailRecipients, from, subject, mailBody);
     }
 
-    public static void registerEmailAdmin (RegistrationRequest registrationRequest) throws AddressException, MessagingException {
+    /**
+     * @param registrationRequest request
+     * @throws MessagingException on error
+     */
+    public static void registerEmailAdmin(RegistrationRequest registrationRequest) throws MessagingException {
         List<String> mailRecipients = new ArrayList<String>();
         String admin = null;
         String subject = null;
         String from = null;
 
-        String mailBody = "Registration Request:\n" +
-            "First Name: " + registrationRequest.getFirstName() + "\n" + "Middle Initial: " + registrationRequest.getMiddleInitial() + "\n" +
-            "Last Name: " + registrationRequest.getLastName() + "\n" + "Email: " + registrationRequest.getEmail() + "\n" +
-            "Phone: " + registrationRequest.getPhone() + "\n" + "Fax: " + registrationRequest.getFax() + "\n" +
-            "Organization: " + registrationRequest.getOrganization() + "\n" + "Address1: " + registrationRequest.getAddress1() + "\n" +
-            "Address2: " + registrationRequest.getAddress2() + "\n" +  "City: " + registrationRequest.getCity() + "\n" +
-            "State: " + registrationRequest.getState() + "\n" + "Province: " + registrationRequest.getProvince() + "\n" +
-            "Country: " + registrationRequest.getCountry().getPrintableName() + "\n" + "Zip: " + registrationRequest.getZip() + "\n" +
-            "Role: " + registrationRequest.getRole();
+        String mailBody = "Registration Request:\n"
+            + "First Name: " + registrationRequest.getFirstName() + "\n"
+            + "Middle Initial: " + registrationRequest.getMiddleInitial() + "\n"
+            + "Last Name: " + registrationRequest.getLastName() + "\n"
+            + "Email: " + registrationRequest.getEmail() + "\n"
+            + "Phone: " + registrationRequest.getPhone() + "\n"
+            + "Fax: " + registrationRequest.getFax() + "\n"
+            + "Organization: " + registrationRequest.getOrganization() + "\n"
+            + "Address1: " + registrationRequest.getAddress1() + "\n"
+            + "Address2: " + registrationRequest.getAddress2() + "\n"
+            +  "City: " + registrationRequest.getCity() + "\n"
+            + "State: " + registrationRequest.getState() + "\n"
+            + "Province: " + registrationRequest.getProvince() + "\n"
+            + "Country: " + registrationRequest.getCountry().getPrintableName() + "\n"
+            + "Zip: " + registrationRequest.getZip() + "\n"
+            + "Role: " + registrationRequest.getRole();
 
         try {
             subject = getRegistrationProperties().get("subject");
@@ -163,11 +177,15 @@ public class EmailHelper {
             admin = getRegistrationProperties().get("admin");
             mailRecipients.add(admin);
         } catch (ConfigurationException e) {
-            log.error(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
         }
         EmailUtil.sendMail(mailRecipients, from, subject, mailBody);
     }
 
+    /**
+     * @return reg props
+     * @throws ConfigurationException on error
+     */
     public static Map<String, String> getRegistrationProperties() throws ConfigurationException {
         Map<String, String> propertiesMap = new HashMap<String, String>();
 

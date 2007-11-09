@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.web.converter;
 
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.domain.PersistentObject;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
@@ -111,10 +110,10 @@ public class PersistentObjectTypeConverter extends StrutsTypeConverter {
     }
 
     /**
-     * @param locator the ServiceLocator to set
+     * @param loc the ServiceLocator to set
      */
-    public static void setServiceLocator(ServiceLocator locator) {
-        PersistentObjectTypeConverter.locator = locator;
+    public static void setServiceLocator(ServiceLocator loc) {
+        PersistentObjectTypeConverter.locator = loc;
     }
 
     /**

@@ -21,8 +21,8 @@ import java.util.List;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
- * Base Action for implementing a single tab of the Project management ui
- * 
+ * Base Action for implementing a single tab of the Project management ui.
+ *
  * @author John Hedden, Dan Kokotov, Scott Miller
  */
 @Validation
@@ -30,10 +30,9 @@ public class ProjectTabAction extends BaseProjectAction {
     private static final long serialVersionUID = 1L;
 
     /**
-     * load a given tab in the submit experiment workflow
-     * 
+     * load a given tab in the submit experiment workflow.
+     *
      * @return name of result to forward to
-     * @throws Exception Exception
      */
     public String load() {
         return INPUT;
@@ -41,9 +40,8 @@ public class ProjectTabAction extends BaseProjectAction {
 
     /**
      * save a tab and possibly submit the project.
-     * 
+     *
      * @return path String
-     * @throws Exception Exception
      */
     public String save() {
         boolean initialSave = getProject().getId() == null;

@@ -89,13 +89,37 @@ import gov.nih.nci.caarray.domain.ResourceBasedEnum;
  *
  */
 public enum SearchCategory implements ResourceBasedEnum {
+    /**
+     * Experiment ID.
+     */
     EXPERIMENT_ID("search.category.experimentId"),
+    /**
+     * Experiment title.
+     */
     EXPERIMENT_TITLE("search.category.experimentTitle"),
+    /**
+     * Array provider.
+     */
     ARRAY_PROVIDER("search.category.arrayProvider"),
+    /**
+     * Array design.
+     */
     ARRAY_DESIGN("search.category.arrayDesign"),
+    /**
+     * Organism.
+     */
     ORGANISM("search.category.organism"),
+    /**
+     * Sample.
+     */
     SAMPLE("search.category.sample"),
+    /**
+     * Sample ID.
+     */
     SAMPLE_ID("search.category.sampleId"),
+    /**
+     * Disease State.
+     */
     DISEASE_STATE("search.category.diseaseState");
 
     private final String resourceKey;

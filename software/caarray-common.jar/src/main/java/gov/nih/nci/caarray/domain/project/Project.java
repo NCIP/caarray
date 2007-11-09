@@ -138,13 +138,16 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private Map<CollaboratorGroup, AccessProfile> groupProfiles = new HashMap<CollaboratorGroup, AccessProfile>();
     private boolean browsable = true;
 
+    /**
+     * Hibernate and castor constructor.
+     */
     public Project() {
         // hibernate & castor-only constructor
         this.hostProfile.setSecurityLevel(SecurityLevel.READ_WRITE_SELECTIVE);
     }
 
     /**
-     * Gets the workflow status of this project
+     * Gets the workflow status of this project.
      *
      * @return the status
      */
@@ -155,7 +158,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     }
 
     /**
-     * Sets the workflow status of this project
+     * Sets the workflow status of this project.
      *
      * @param status the status to set
      */

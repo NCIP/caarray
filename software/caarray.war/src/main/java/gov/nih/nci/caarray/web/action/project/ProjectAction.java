@@ -14,19 +14,19 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
  * Action class for performing actions on project as a whole (ie create, edit, etc) Actions for individual tabs in
- * editing a project should subclass ProjectTabAction
- * 
+ * editing a project should subclass ProjectTabAction.
+ *
  * @author John Hedden, Dan Kokotov, Scott Miller
  */
 @Validation
 public class ProjectAction extends BaseProjectAction {
     private static final long serialVersionUID = 1L;
-    
+
     private ProposalStatus workflowStatus;
 
     /**
-     * create new project
-     * 
+     * create new project.
+     *
      * @return path String
      */
     @SkipValidation
@@ -36,8 +36,8 @@ public class ProjectAction extends BaseProjectAction {
     }
 
     /**
-     * edit existing project
-     * 
+     * edit existing project.
+     *
      * @return path String
      */
     @SkipValidation
@@ -47,8 +47,8 @@ public class ProjectAction extends BaseProjectAction {
     }
 
     /**
-     * show details for a project
-     * 
+     * show details for a project.
+     *
      * @return path String
      */
     @SkipValidation
@@ -58,10 +58,9 @@ public class ProjectAction extends BaseProjectAction {
     }
 
     /**
-     * change the workflow status of a project
-     * 
+     * change the workflow status of a project.
+     *
      * @return path String
-     * @throws Exception Exception
      */
     public String changeWorkflowStatus() {
         try {

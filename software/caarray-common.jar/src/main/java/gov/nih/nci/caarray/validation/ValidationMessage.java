@@ -202,6 +202,9 @@ public final class ValidationMessage implements Serializable, Comparable<Validat
         this.type = type;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuffer stringBuffer = new StringBuffer();
@@ -218,7 +221,7 @@ public final class ValidationMessage implements Serializable, Comparable<Validat
         }
         return stringBuffer.toString();
     }
-    
+
     /**
      * Indicates the type/level of the message.
      */

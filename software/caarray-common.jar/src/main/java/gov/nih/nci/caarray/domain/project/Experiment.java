@@ -314,7 +314,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * exists, removes it from the set of contacts.
      */
     public void removeSeparateMainPointOfContact() {
-        for (Iterator<ExperimentContact> it = this.experimentContacts.iterator(); it.hasNext(); ) {
+        for (Iterator<ExperimentContact> it = this.experimentContacts.iterator(); it.hasNext();) {
             ExperimentContact contact = it.next();
             if (contact.isMainPointOfContact() && !contact.isPrimaryInvestigator()) {
                 contact.setExperiment(null);
@@ -573,7 +573,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the samples
      */
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name="experiment")
+    @JoinColumn(name = "experiment")
     @ForeignKey(name = "PUBLICATION_EXPR_FK")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
           org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
@@ -663,7 +663,7 @@ public class Experiment extends AbstractCaArrayEntity {
     public Set<Sample> getSamples() {
         return this.samples;
     }
-    
+
     /**
      * @return the number of samples in this experiment
      */
@@ -855,7 +855,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the factors
      */
     @OneToMany
-    @JoinColumn(name="experiment")
+    @JoinColumn(name = "experiment")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
           org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Factor> getFactors() {
@@ -930,7 +930,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return hybridizations
      */
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name="experiment")
+    @JoinColumn(name = "experiment")
     @ForeignKey(name = "HYBRIDIZATION_EXPR_FK")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE,
           org.hibernate.annotations.CascadeType.DELETE_ORPHAN })

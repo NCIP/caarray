@@ -90,7 +90,6 @@ import gov.nih.nci.caarray.web.util.CacheManager;
 import gov.nih.nci.caarray.web.util.LDAPUtil;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.dao.UserSearchCriteria;
-import gov.nih.nci.security.exceptions.CSConfigurationException;
 import gov.nih.nci.security.exceptions.CSException;
 
 import java.util.ArrayList;
@@ -126,7 +125,10 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     private String ldapAuthenticate;
     private List<Country> countryList = new ArrayList<Country>();
 
-    public void prepare() throws Exception {
+    /**
+     * {@inheritDoc}
+     */
+    public void prepare() {
         if (getCountryList().size() < 1) {
             setCountryList(CacheManager.getInstance().getCountries());
         }
@@ -161,6 +163,7 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     /**
      * Action to actually save the registration.
      * @return the directive for the next action / page to be directed to
+     * @exception Exception on error
      */
     public String save() throws Exception {
         persist();
@@ -173,12 +176,13 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     /**
      * Action to actually save the registration with authentication.
      * @return the directive for the next action / page to be directed to
+     * @exception Exception on error
      */
     @Validations(
             fieldExpressions = {@FieldExpressionValidator(fieldName = "passwordConfirm",
                                     expression = "password == passwordConfirm",
                                     key = "passwordConfirmation.mustBeEqual",
-                                    message = "")},
+                                    message = "") },
             regexFields = {@RegexFieldValidator(fieldName = "password",
                                                 expression = "(?=^.{7,30}$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])"
                                                     + "(?=.*[!@#$%^&amp;*()_+}{&quot;&quot;:;'?/&gt;.&lt;,]).*$",
@@ -188,7 +192,7 @@ public class RegistrationAction extends ActionSupport implements Preparable {
                                                 expression = "(?=^.{7,30}$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])"
                                                     + "(?=.*[!@#$%^&amp;*()_+}{&quot;&quot;:;'?/&gt;.&lt;,]).*$",
                                                 key = "validator.pattern",
-                                                message = "")}
+                                                message = "") }
     )
     public String saveAuthenticate() throws Exception {
         if (getLdapInstall().equalsIgnoreCase("true")) {
@@ -210,18 +214,20 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     }
 
 
-    private boolean validateDBUniqueFields() throws CSConfigurationException, CSException {
+    private boolean validateDBUniqueFields() throws CSException {
         boolean retval = true;
         if (getRegistrationRequest() != null) {
-            if (StringUtils.isNotBlank(getRegistrationRequest().getLoginName()) &&
-                    (ActionHelper.getUserProvisioningManager().getUser(getRegistrationRequest().getLoginName())!= null)) {
+            if (StringUtils.isNotBlank(getRegistrationRequest().getLoginName())
+                    && (ActionHelper.getUserProvisioningManager()
+                                    .getUser(getRegistrationRequest().getLoginName()) != null)) {
                 addActionError("Username is already in use.");
                 retval = false;
             }
             if (StringUtils.isNotBlank(getRegistrationRequest().getEmail())) {
                 User searchUser = new User();
                 searchUser.setEmailId(getRegistrationRequest().getEmail());
-                if (!ActionHelper.getUserProvisioningManager().getObjects(new UserSearchCriteria(searchUser)).isEmpty()) {
+                if (!ActionHelper.getUserProvisioningManager()
+                                 .getObjects(new UserSearchCriteria(searchUser)).isEmpty()) {
                     addActionError("Email Address is already in use.");
                     retval = false;
                 }
@@ -230,7 +236,7 @@ public class RegistrationAction extends ActionSupport implements Preparable {
         return retval;
     }
 
-    private void persist(){
+    private void persist() {
         ActionHelper.getRegistrationService().register(getRegistrationRequest());
     }
 
@@ -254,7 +260,7 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     }
 
     /**
-     * @param user the user to set
+     * @param registrationRequest the request to set
      */
     public void setRegistrationRequest(RegistrationRequest registrationRequest) {
         this.registrationRequest = registrationRequest;
@@ -296,7 +302,7 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     }
 
     /**
-     * @param passwordConfirmation the passwordConfirmation to set
+     * @param passwordConfirm the passwordConfirmation to set
      */
     public void setPasswordConfirm(String passwordConfirm) {
         this.passwordConfirm = passwordConfirm;
@@ -323,6 +329,9 @@ public class RegistrationAction extends ActionSupport implements Preparable {
         return ldapInstall;
     }
 
+    /**
+     * Configures for LDAP.
+     */
     public void setLdapInstall() {
         try {
             Configuration config = new PropertiesConfiguration("default.properties");

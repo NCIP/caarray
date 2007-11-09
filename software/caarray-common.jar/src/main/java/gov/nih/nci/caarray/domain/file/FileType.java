@@ -190,7 +190,7 @@ public enum FileType implements Comparable<FileType>  {
     }
 
     /**
-     * Returns the enum name -- necessary for bean property access.
+     * @return the enum name -- necessary for bean property access.
      */
     public String getName() {
         return name();

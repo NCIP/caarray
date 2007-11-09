@@ -105,7 +105,7 @@ import java.util.List;
 import org.ajaxtags.xml.AjaxXmlBuilder;
 
 /**
- * Action implementing the overview tab
+ * Action implementing the overview tab.
  * @author Dan Kokotov
  */
 public class ProjectOverviewAction extends ProjectTabAction {
@@ -138,10 +138,9 @@ public class ProjectOverviewAction extends ProjectTabAction {
     }
 
     /**
-     * load the overview tab
+     * load the overview tab.
      *
      * @return name of result to forward to
-     * @throws Exception Exception
      */
     @Override
     public String load() {
@@ -150,16 +149,14 @@ public class ProjectOverviewAction extends ProjectTabAction {
     }
 
     /**
-     * set up the array designs
-     *
-     * @return name of result to forward to
-     * @throws Exception Exception
+     * set up the array designs.
      */
     public void setup() {
         ArrayDesignService arrayDesignService = getArrayDesignService();
         this.manufacturers = arrayDesignService.getArrayDesignProviders();
         if (getProject().getExperiment().getManufacturer() != null) {
-            this.arrayDesigns = getArrayDesignService().getArrayDesignsForProvider(getProject().getExperiment().getManufacturer());
+            this.arrayDesigns = getArrayDesignService().getArrayDesignsForProvider(getProject().getExperiment()
+                                                                                               .getManufacturer());
         }
     }
 
@@ -167,8 +164,6 @@ public class ProjectOverviewAction extends ProjectTabAction {
      * save a project.
      *
      * @return path String
-     * @throws VocabularyServiceException if there is an error retrieving terms
-     * @throws Exception Exception
      */
     @Override
     public String save() {
@@ -177,6 +172,9 @@ public class ProjectOverviewAction extends ProjectTabAction {
         return result;
     }
 
+    /**
+     * @return xmlArrayDesigns
+     */
     public String retrieveArrayDesigns() {
         if (this.manufacturerId != null) {
             Organization provider = getProjectManagementService().getOrganization(this.manufacturerId);
@@ -313,7 +311,7 @@ public class ProjectOverviewAction extends ProjectTabAction {
     }
 
     /**
-     * Get the set of retrieved array designs encoded in XML for use by AjaxTags
+     * Get the set of retrieved array designs encoded in XML for use by AjaxTags.
      * @return the stream containing the XML encoding the set of array designs
      * @throws IllegalAccessException on error
      * @throws NoSuchMethodException on error

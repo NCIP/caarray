@@ -20,9 +20,9 @@ import org.apache.log4j.Logger;
  * @author John Hedden
  *
  */
-public class LDAPUtil {
+public final class LDAPUtil {
 
-    static final Logger logger = Logger.getLogger(LDAPUtil.class);
+    static final Logger LOG = Logger.getLogger(LDAPUtil.class);
     private static final String INITCTX = "com.sun.jndi.ldap.LdapCtxFactory";
     private static Map<String, String> configMap = new HashMap<String, String>();
     private static Hashtable<String, String> env = new Hashtable<String, String>();
@@ -44,7 +44,7 @@ public class LDAPUtil {
             configMap.put("ldapHost", config.getString("ldap.host"));
             configMap.put("ldapSearchbase", config.getString("ldap.searchbase"));
         } catch (ConfigurationException ce) {
-            logger.error("An IO error occured. Please check the path or filename.");
+            LOG.error("An IO error occured. Please check the path or filename.");
         }
     }
 
@@ -60,7 +60,7 @@ public class LDAPUtil {
 
 
     private static String getFDN(String loginName) {
-        String[] attrIDs = { "cn" };
+        String[] attrIDs = {"cn" };
         String searchFilter = "(cn=" + loginName + "*)";
 
         try {
@@ -71,17 +71,19 @@ public class LDAPUtil {
             ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
             String fdn = null;
-            NamingEnumeration<SearchResult> searchEnum = ctx.search(configMap.get("ldapSearchbase"), searchFilter, ctls);
+            NamingEnumeration<SearchResult> searchEnum = ctx.search(configMap.get("ldapSearchbase"),
+                                                                    searchFilter,
+                                                                    ctls);
             ctx.close();
 
             while (searchEnum.hasMore()) {
                 SearchResult sr = searchEnum.next();
                 fdn = sr.getName() + "," + configMap.get("ldapSearchbase");
-                logger.debug("sr.getName() = " + sr.getName() + " " + "Dn = " + fdn);
+                LOG.debug("sr.getName() = " + sr.getName() + " " + "Dn = " + fdn);
                 return fdn;
             }
         } catch (Exception ex) {
-            logger.error("Connect ldap attempt failed");
+            LOG.error("Connect ldap attempt failed");
             return null;
         }
         return null;
@@ -89,7 +91,7 @@ public class LDAPUtil {
 
 
     /**
-     * Return the result of user authentication with LDAP server
+     * Return the result of user authentication with LDAP server.
      *
      * @param loginName the login name of the user
      * @param passwd the password of the user
@@ -107,13 +109,13 @@ public class LDAPUtil {
             env.put(Context.SECURITY_PRINCIPAL, fdn);
             env.put(Context.SECURITY_CREDENTIALS, passwd);
             DirContext ctx = new InitialDirContext(env);
-            logger.debug("User authentication successful");
+            LOG.debug("User authentication successful");
             ctx.close();
             setLDAPEnv();
             return true;
         } catch (Exception ex) {
             setLDAPEnv();
-            logger.error("User authentication failed", ex);
+            LOG.error("User authentication failed", ex);
             return false;
         }
     }

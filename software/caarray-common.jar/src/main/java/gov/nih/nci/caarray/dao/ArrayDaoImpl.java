@@ -142,7 +142,8 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      */
     public RawArrayData getRawArrayData(CaArrayFile file) {
         Session session = HibernateUtil.getCurrentSession();
-        Query query = session.createQuery("from " + RawArrayData.class.getName() + " arrayData where arrayData.dataFile = :file");
+        Query query = session.createQuery("from " + RawArrayData.class.getName()
+                + " arrayData where arrayData.dataFile = :file");
         query.setEntity("file", file);
         return (RawArrayData) query.uniqueResult();
     }
@@ -152,7 +153,8 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      */
     public DerivedArrayData getDerivedArrayData(CaArrayFile file) {
         Session session = HibernateUtil.getCurrentSession();
-        Query query = session.createQuery("from " + DerivedArrayData.class.getName() + " arrayData where arrayData.dataFile = :file");
+        Query query = session.createQuery("from " + DerivedArrayData.class.getName()
+                + " arrayData where arrayData.dataFile = :file");
         query.setEntity("file", file);
         return (DerivedArrayData) query.uniqueResult();
     }

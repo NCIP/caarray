@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.domain.permissions;
 
+import gov.nih.nci.caarray.domain.ResourceBasedEnum;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -89,15 +91,13 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 
-import gov.nih.nci.caarray.domain.ResourceBasedEnum;
-
 /**
- * Enum of access types for sample-level security 
+ * Enum of access types for sample-level security.
  */
 public enum SampleSecurityLevel implements ResourceBasedEnum {
     /** No access to the sample. */
     NONE(true, "SampleSecurityLevel.none"),
-    /** Read access to the sample */
+    /** Read access to the sample. */
     READ(true, "SampleSecurityLevel.read"),
     /** Read / write access to the sample. */
     READ_WRITE(false, "SampleSecurityLevel.readWrite");
@@ -128,11 +128,12 @@ public enum SampleSecurityLevel implements ResourceBasedEnum {
      * @return the list of SecurityLevels that are available to the public access profile
      */
     public static List<SampleSecurityLevel> publicLevels() {
-        List<SampleSecurityLevel> levels = new ArrayList<SampleSecurityLevel>(Arrays.asList(SampleSecurityLevel.values()));
+        List<SampleSecurityLevel> levels =
+            new ArrayList<SampleSecurityLevel>(Arrays.asList(SampleSecurityLevel.values()));
         CollectionUtils.filter(levels, new Predicate() {
             public boolean evaluate(Object o) {
                 return ((SampleSecurityLevel) o).isAvailableToPublic();
-            } 
+            }
         });
         return levels;
     }

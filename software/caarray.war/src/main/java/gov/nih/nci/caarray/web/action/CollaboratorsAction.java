@@ -181,7 +181,7 @@ public class CollaboratorsAction extends ActionSupport {
      * @throws CSTransactionException on CSM error
      * @throws CSObjectNotFoundException on CSM error
      */
-    @SuppressWarnings({"unchecked", "PMD"})
+    @SuppressWarnings({"unchecked", "PMD" })
     @SkipValidation
     public String addUsers() throws CSTransactionException, CSObjectNotFoundException {
         if (CollectionUtils.isNotEmpty(getUsers())) {
@@ -193,6 +193,9 @@ public class CollaboratorsAction extends ActionSupport {
         return Action.SUCCESS;
     }
 
+    /**
+     * @return addUsers
+     */
     @SkipValidation
     public String preAdd() {
         return "addUsers";
@@ -209,6 +212,9 @@ public class CollaboratorsAction extends ActionSupport {
         return Action.INPUT;
     }
 
+    /**
+     * @return editTable
+     */
     @SkipValidation
     public String editTable() {
         return "editTable";
@@ -281,6 +287,10 @@ public class CollaboratorsAction extends ActionSupport {
         return this.targetUser.getUserId();
     }
 
+    /**
+     * @param id CSM user id
+     * @throws CSObjectNotFoundException if not in CSM
+     */
     public void setTargetUserId(Long id) throws CSObjectNotFoundException {
         this.targetUser = SecurityInterceptor.getAuthorizationManager().getUserById(id.toString());
     }

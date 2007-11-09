@@ -128,7 +128,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
     private static final long serialVersionUID = -2071964672876972370L;
 
     /**
-     * Key for looking up the authorization manager instance from CSM
+     * Key for looking up the authorization manager instance from CSM.
      */
     public static final String AUTHORIZATION_MANAGER_KEY = "caarray";
 

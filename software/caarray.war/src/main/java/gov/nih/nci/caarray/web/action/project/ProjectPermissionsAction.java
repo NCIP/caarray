@@ -20,7 +20,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
- * Base Action for implementing a single tab of the Project management ui
+ * Base Action for implementing a single tab of the Project management ui.
  *
  * @author John Hedden, Dan Kokotov, Scott Miller
  */
@@ -45,7 +45,8 @@ public class ProjectPermissionsAction extends BaseProjectAction {
         this.collaboratorGroupsWithoutProfiles.removeAll(getProject().getGroupProfiles().keySet());
 
         if (this.collaboratorGroup.getId() != null) {
-            this.collaboratorGroup = getGenericDataService().retrieveEnity(CollaboratorGroup.class, this.collaboratorGroup.getId());
+            this.collaboratorGroup = getGenericDataService().retrieveEnity(CollaboratorGroup.class,
+                                                                           this.collaboratorGroup.getId());
         }
         if (this.accessProfile.getId() != null) {
             this.accessProfile = getGenericDataService().retrieveEnity(AccessProfile.class, this.accessProfile.getId());
@@ -53,7 +54,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
     }
 
     /**
-     * edit existing project permissions
+     * edit existing project permissions.
      *
      * @return path String
      */
@@ -74,7 +75,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
     }
 
     /**
-     * Creates an access profile for a new collaboration group
+     * Creates an access profile for a new collaboration group.
      *
      * @return success
      */
@@ -85,7 +86,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
     }
 
     /**
-     * loads the public access profile for editing
+     * loads the public access profile for editing.
      *
      * @return success
      */
@@ -99,7 +100,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
     }
 
     /**
-     * loads the access profile of given collaboration group for editing
+     * loads the access profile of given collaboration group for editing.
      *
      * @return success
      */
@@ -107,14 +108,15 @@ public class ProjectPermissionsAction extends BaseProjectAction {
     public String loadGroupProfile() {
         this.accessProfile = getProject().getGroupProfiles().get(this.collaboratorGroup);
         this.publicProfile = false;
-        this.profileOwnerName = getText("project.permissions.groupProfile", new String[] { this.collaboratorGroup
+        this.profileOwnerName = getText("project.permissions.groupProfile", new String[] {this.collaboratorGroup
                 .getGroup().getGroupName() });
         setupSamplePermissions();
         return "accessProfile";
     }
 
     private void setupSamplePermissions() {
-        for (Map.Entry<Sample, SampleSecurityLevel> sampleEntry : this.accessProfile.getSampleSecurityLevels().entrySet()) {
+        for (Map.Entry<Sample, SampleSecurityLevel> sampleEntry : this.accessProfile.getSampleSecurityLevels()
+                                                                                    .entrySet()) {
             this.sampleSecurityLevels.put(sampleEntry.getKey().getId(), sampleEntry.getValue());
         }
     }
@@ -134,7 +136,7 @@ public class ProjectPermissionsAction extends BaseProjectAction {
     }
 
     /**
-     * Saves an access profile
+     * Saves an access profile.
      *
      * @return success
      */

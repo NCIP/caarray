@@ -96,7 +96,7 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
 
 /**
- * Action implementing the sources tab
+ * Action implementing the sources tab.
  * @author Dan Kokotov
  */
 @Validation
@@ -106,7 +106,7 @@ public class ProjectSourcesAction extends ProjectListTabAction {
     private Source currentSource = new Source();
 
     /**
-     * Default constructor
+     * Default constructor.
      */
     public ProjectSourcesAction() {
         super("source");
@@ -127,7 +127,7 @@ public class ProjectSourcesAction extends ProjectListTabAction {
 
     /**
      * {@inheritDoc}
-     * @throws ProposalWorkflowException 
+     * @throws ProposalWorkflowException
      */
     @Override
     protected void doCopyItem() throws ProposalWorkflowException {
@@ -153,7 +153,8 @@ public class ProjectSourcesAction extends ProjectListTabAction {
     /**
      * @return the currentSource
      */
-    @CustomValidator(type = "hibernate", parameters = @ValidationParameter(name = "resourceKeyBase", value = "experiment.sources"))
+    @CustomValidator(type = "hibernate",
+                     parameters = @ValidationParameter(name = "resourceKeyBase", value = "experiment.sources"))
     public Source getCurrentSource() {
         return this.currentSource;
     }

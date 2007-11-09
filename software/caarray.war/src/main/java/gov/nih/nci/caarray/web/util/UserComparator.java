@@ -111,7 +111,7 @@ public class UserComparator implements Comparator<Cell> {
     }
 
     /**
-     * Extracts last and first name from a string like <code><a href="...">last, first</a>
+     * Extracts last and first name from a string like <code>&lt;a href="..."&gt;last, first&lt;/a&gt;</code>.
      * @param s the html to extrat names from
      * @return UPPER(last), UPPER(first)
      */

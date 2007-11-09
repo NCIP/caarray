@@ -118,6 +118,7 @@ public interface SearchDao {
 
     /**
      * Retrieves the object from the database.
+     * @param <T> the class to retreieve
      * @param entityClass the class of the object to retrieve
      * @param entityId the id of the enity to retrieve
      * @return the entity.
@@ -126,11 +127,11 @@ public interface SearchDao {
 
     /**
      * Retrieve the list of values of the given field of the given entity that
-     * start with the given prefix
+     * start with the given prefix.
      * @param entityClass the entity class
      * @param fieldName the field name. This must be a String-valued field
      * @param prefix the string that the values should begin with
-     * @return the List<String> of values of the given field of the given entity
+     * @return the List of values of the given field of the given entity
      * that start with the given value
      */
     List<String> findValuesWithSamePrefix(Class<?> entityClass, String fieldName, String prefix);

@@ -92,7 +92,6 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.io.FileClosingInputStream;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -128,7 +127,8 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
  */
 @SuppressWarnings("unchecked")
 @Validation
-@Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.", expression = "selectedFiles.size() > 0"))
+@Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.",
+                                                expression = "selectedFiles.size() > 0"))
 public class ProjectFilesAction extends BaseProjectAction implements Preparable {
     private static final long serialVersionUID = 1L;
     private static final String ACTION_UNIMPORTED = "listUnimported";
@@ -308,7 +308,7 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
         int validatedFiles = 0;
         int skippedFiles = 0;
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
-        for (CaArrayFile file: getSelectedFiles()) {
+        for (CaArrayFile file : getSelectedFiles()) {
             if (file.getFileStatus().isValidatable()) {
                 fileSet.add(file);
                 validatedFiles++;
@@ -334,7 +334,7 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
         int importedFiles = 0;
         int skippedFiles = 0;
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
-        for (CaArrayFile file: getSelectedFiles()) {
+        for (CaArrayFile file : getSelectedFiles()) {
             if (file.getFileStatus().isImportable()) {
                 fileSet.add(file);
                 importedFiles++;
@@ -372,13 +372,14 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
      * uploads file.
      *
      * @return the string matching the result to follow
+     * @exception Exception on error
      */
     @SkipValidation
     public String upload() throws Exception {
         unzipFiles();
 
         Set<String> existingFileNameSet = new HashSet<String>();
-        for (CaArrayFile file: getProject().getFiles()) {
+        for (CaArrayFile file : getProject().getFiles()) {
             existingFileNameSet.add(file.getName());
         }
 
@@ -389,7 +390,8 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
                 String fileName = getUploadFileName().get(index);
                 if (StringUtils.isNotBlank(fileName)) {
                     if (existingFileNameSet.contains(fileName)) {
-                        ActionHelper.saveMessage(getText("experiment.files.upload.filename.exists", new String[] { fileName }));
+                        ActionHelper.saveMessage(getText("experiment.files.upload.filename.exists",
+                                                 new String[] {fileName }));
                     } else {
                         getProjectManagementService().addFile(getProject(), uploadedFile, fileName);
                         existingFileNameSet.add(fileName);
@@ -431,7 +433,7 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
                     ZipEntry entry = entries.nextElement();
 
                     File entryFile = new File(directoryPath + "/" + entry.getName());
-                    StreamUtils.copy(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(entryFile)), 1024);
+                    StreamUtils.copy(zipFile.getInputStream(entry), new FileOutputStream(entryFile));
 
                     this.uploads.add(entryFile);
                     this.uploadFileNames.add(entry.getName());
@@ -447,7 +449,6 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
     /**
      * Prepares for download by zipping selected files and setting the internal InputStream.
      *
-     * @param selectedFiles the files to download
      * @return SUCCESS
      * @throws IOException if
      */
@@ -561,18 +562,30 @@ public class ProjectFilesAction extends BaseProjectAction implements Preparable 
         this.listAction = listAction;
     }
 
+    /**
+     * @return all extensions for the project files
+     */
     public Set<String> getAllExtensions() {
         return allExtensions;
     }
 
+    /**
+     * @param allExtensions all extensions for the project
+     */
     public void setAllExtensions(Set<String> allExtensions) {
         this.allExtensions = allExtensions;
     }
 
+    /**
+     * @return extensions to filter for
+     */
     public String getExtensionFilter() {
         return extensionFilter;
     }
 
+    /**
+     * @param extensionFilter extensions to filter for
+     */
     public void setExtensionFilter(String extensionFilter) {
         this.extensionFilter = extensionFilter;
     }

@@ -208,7 +208,8 @@ public class Sample extends AbstractBioMaterial {
     @Transient
     public Term getTissueSite() {
         for (AbstractCharacteristic characteristic : getCharacteristics()) {
-            if (characteristic.getCategory().getName().equals(ExperimentOntologyCategory.ORGANISM_PART.getCategoryName())) {
+            if (characteristic.getCategory().getName()
+                                            .equals(ExperimentOntologyCategory.ORGANISM_PART.getCategoryName())) {
                 return ((TermBasedCharacteristic) characteristic).getTerm();
             }
         }

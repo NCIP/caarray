@@ -87,7 +87,7 @@ import edu.georgetown.pir.Organism;
 import java.util.List;
 
 /**
- * DAO for Organism entities 
+ * DAO for Organism entities.
  *
  * @author Dan Kokotov
  */
@@ -99,10 +99,10 @@ public interface OrganismDao extends CaArrayDao {
      * @return the <code>Organism</code>.
      */
     Organism getOrganism(long id);
-    
+
     /**
-     * Returns the list of all Organisms in the system
-     * @return List<Organism> of the array designs
+     * Returns the list of all Organisms in the system.
+     * @return List of the array designs
      */
     List<Organism> getAllOrganisms();
 }

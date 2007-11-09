@@ -94,5 +94,5 @@ public interface CollaboratorGroupDao extends CaArrayDao {
     /**
      * @return all CollaboratorGroups in system.
      */
-    public List<CollaboratorGroup> getAll();
+    List<CollaboratorGroup> getAll();
 }

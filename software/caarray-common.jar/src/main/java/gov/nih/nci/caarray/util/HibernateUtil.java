@@ -113,7 +113,10 @@ public final class HibernateUtil {
 
     private static final Configuration HIBERNATE_CONFIG;
     private static final SessionFactory SESSION_FACTORY;
-    public static final Class<?>[] CSM_CLASSES = { gov.nih.nci.security.authorization.domainobjects.Application.class,
+    /**
+     * All CSM hibernate classes.
+     */
+    public static final Class<?>[] CSM_CLASSES = {gov.nih.nci.security.authorization.domainobjects.Application.class,
             gov.nih.nci.security.authorization.domainobjects.Group.class,
             gov.nih.nci.security.authorization.domainobjects.Privilege.class,
             gov.nih.nci.security.authorization.domainobjects.ProtectionElement.class,
@@ -233,6 +236,9 @@ public final class HibernateUtil {
         currentSession.close();
     }
 
+    /**
+     * @return hibernate session factory
+     */
     public static SessionFactory getSessionFactory() {
         return SESSION_FACTORY;
     }
