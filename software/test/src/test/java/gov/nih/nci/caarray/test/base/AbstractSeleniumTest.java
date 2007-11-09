@@ -100,7 +100,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     @Override
     public void setUp() throws Exception {
-        System.setProperty("selenium.port", TestProperties.getSeleniumServerPort());
+        System.setProperty("selenium.port", "" + TestProperties.getSeleniumServerPort());
         String hostname = TestProperties.getServerHostname();
         int port = TestProperties.getServerPort();
         String browser = System.getProperty("test.browser", "*chrome");
