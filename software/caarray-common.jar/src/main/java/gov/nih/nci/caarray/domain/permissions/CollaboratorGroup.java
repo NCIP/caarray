@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.domain.permissions;
 
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.Protectable;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -102,7 +103,7 @@ import javax.persistence.UniqueConstraint;
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "CSM_GROUP", "CSM_USER" }) })
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-public class CollaboratorGroup implements PersistentObject {
+public class CollaboratorGroup implements PersistentObject, Protectable {
     //
     // DEVELOPER NOTE: This class has-a Group, rather than is-a Group,
     // to be fully compatible with whatever CSM changes may come down
