@@ -898,7 +898,7 @@
 
     <target name="check" unless="nocheck" depends="check:checkstyle,check:pmd">
         <fail if="checkstyle.failure" message="There were Checkstyle failures." />
-        <!-- fail if="pmd.failure" message="There were PMD failures." / -->
+        <fail if="pmd.failure" message="There were PMD failures." />
     </target>
 
     <target name="check:checkstyle" depends="build:caarray-common.jar,build:caarray-ejb.jar,compile:caarray.war">
@@ -933,6 +933,7 @@
             <formatter type="xml" toFile="${site.dir}/pmd/pmd-report.xml" toConsole="false" />
             <fileset dir="${caarray-common.src.dir}">
                 <include name="**/*.java" />
+                <exclude name="**/gov/nih/nci/caarray/domain/project/Experiment.java" />
             </fileset>
             <fileset dir="${caarray-war.src.dir}">
                 <include name="**/*.java" />
