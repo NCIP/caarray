@@ -408,7 +408,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
         return getRoleByName(READ_ROLE);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
     private static Role getWriteRole() {
         return getRoleByName(WRITE_ROLE);
     }
