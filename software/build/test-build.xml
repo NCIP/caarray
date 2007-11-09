@@ -108,28 +108,28 @@
   </target>
 
   <target name="testMySQLOnline">
-    <echo>Checking MySQL Availability...</echo>
+    <echo>Checking ${database.server}:${database.port} (MySQL) availability...</echo>
 	<au:assertEquals message="Unable to reach ${database.server}:${database.port}" expected="true"
                       actual="${mysql.running}" casesensitive="true"/>
     <echo>${database.server}:${database.port} is Online...</echo>
   </target>
 
   <target name="testJBossOnline">
-    <echo>Checking JBoss Availability...</echo>
+    <echo>Checking ${jboss.server.hostname}:${jboss.server.port} (JBoss) availability...</echo>
 	<au:assertEquals message="Unable to reach ${jboss.server.hostname}:${jboss.server.port}" expected="true"
                       actual="${jboss.running}" casesensitive="true"/>
     <echo>${jboss.server.hostname}:${jboss.server.port} is Online...</echo>
   </target>
 
   <target name="testGridServiceOnline">
-	<echo>Testing if ${globus.url} is Offline...</echo>
+	<echo>Testing if ${globus.url} (Globus) availability...</echo>
 	<au:assertEquals message="Unable to reach ${globus.url}" expected="true"
                       actual="${globus.running}" casesensitive="true"/>
     <echo>${globus.url} is Online...</echo>
   </target>
 
   <target name="testWebAppOnline">
-    <echo>Checking Web Application Availability...</echo>    
+    <echo>Checking ${app.url} (Web Application) availability...</echo>    
     <property name="app.url" value="http://${jboss.server.hostname}:${jboss.server.port}/caarray/"/>
 	<echo>Testing if ${app.url} is Offline...</echo>
 	<au:assertEquals message="Unable to reach ${app.url}" expected="true"
