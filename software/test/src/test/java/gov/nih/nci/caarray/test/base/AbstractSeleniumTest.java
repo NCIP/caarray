@@ -154,19 +154,23 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         }
     }
 
-    protected void upload(File file) throws IOException, InterruptedException {
+    protected void  upload(File file) throws IOException, InterruptedException {
+        upload(file, Integer.valueOf(RECORD_TIMEOUT));
+    }
+    
+    protected void upload(File file, int timeOut) throws IOException, InterruptedException {
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
         selenium.type("upload", filePath);
         selenium.click("link=Upload");
         for (int second = 0;; second++) {
-            if (second >= Integer.valueOf(PAGE_TIMEOUT))
+            if (second >= Integer.valueOf(timeOut))
                 fail("timeout");
             try {
                 if (file.getName().equals(selenium.getTable("row." + (rowCount) + ".1")))
                     break;
             } catch (Exception e) {
             }
-            Thread.sleep(200);
+            Thread.sleep(1000);
 
         }
         rowCount++;
