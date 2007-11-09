@@ -142,6 +142,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     public List<Project> searchByCategory(int maxResults, int firstResult,
             String keyword, SearchCategory... categories) {
         Query q = getSearchQuery(false, keyword, categories);

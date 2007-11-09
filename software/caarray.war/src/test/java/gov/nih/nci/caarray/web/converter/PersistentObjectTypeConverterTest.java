@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.web.converter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceBean;
 import gov.nih.nci.caarray.dao.SearchDao;
@@ -116,6 +117,11 @@ public class PersistentObjectTypeConverterTest {
 
         idString = converter.convertToString(null, new Project());
         assertEquals(null, idString);
+
+        assertNull(converter.convertFromString(null, new String[] {null }, Project.class));
+        assertNull(converter.convertFromString(null, new String[] {" " }, Project.class));
+        assertNull(converter.convertFromString(null, new String[] {"foo" }, Project.class));
+        assertNull(converter.convertToString(null, String.class));
     }
 
     private final class MockServiceLocator implements ServiceLocator {

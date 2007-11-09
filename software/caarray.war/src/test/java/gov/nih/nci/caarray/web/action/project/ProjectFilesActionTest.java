@@ -83,6 +83,8 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.file.FileManagementServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
@@ -91,6 +93,7 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -98,6 +101,7 @@ import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.struts2.ServletActionContext;
@@ -370,5 +374,25 @@ public class ProjectFilesActionTest {
         assertEquals(LIST_IMPORTED, this.action.getListAction());
         assertEquals("table", this.action.listImportedTable());
         assertEquals(LIST_IMPORTED, this.action.getListAction());
+    }
+
+    @Test
+    public void testFilterActions() {
+        assertEquals(Action.SUCCESS, action.downloadFilesList());
+        assertEquals(Action.SUCCESS, action.downloadFilesListTable());
+        assertTrue(action.getUploadContentType().isEmpty());
+        action.getUploadContentType().add("Test");
+        assertTrue(!action.getUploadContentType().isEmpty());
+        action.setUploadContentType(new ArrayList<String>());
+        assertTrue(action.getUploadContentType().isEmpty());
+
+        assertTrue(!action.getAllExtensions().isEmpty());
+        action.setAllExtensions(new HashSet<String>());
+        assertTrue(action.getAllExtensions().isEmpty());
+
+        assertNull(action.getFileType());
+        action.setFileType(FileType.AFFYMETRIX_CDF);
+        assertEquals(FileType.AFFYMETRIX_CDF, action.getFileType());
+
     }
 }

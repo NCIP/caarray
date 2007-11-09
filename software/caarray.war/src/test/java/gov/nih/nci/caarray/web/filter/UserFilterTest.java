@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-ejb-jar
+ * source code form and machine readable, binary, object code form. The caarray-war
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
+ * This caarray-war Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
+ * its rights in the caarray-war Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-ejb-jar Software and any
+ * and prepare derivative works of the caarray-war Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-war Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,51 +80,34 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.country;
+package gov.nih.nci.caarray.web.filter;
 
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.CountryDao;
-import gov.nih.nci.caarray.domain.country.Country;
-import gov.nih.nci.caarray.util.io.logging.LogUtil;
+import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.util.UsernameHolder;
 
-import java.util.List;
+import java.io.IOException;
 
-import javax.ejb.Local;
-import javax.ejb.Stateless;
+import javax.servlet.ServletException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.tuckey.web.MockChain;
 
 /**
- * @author John Hedden
- *
+ * Tests for web user filter.
  */
-@Local
-@Stateless
-public class CountryServiceBean implements CountryService {
+public class UserFilterTest {
 
-    private static final Log LOG = LogFactory.getLog(CountryServiceBean.class);
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<Country> getCountries() {
-        LogUtil.logSubsystemEntry(LOG);
-        List<Country> result = getCountryDao().getCountries();
-        LogUtil.logSubsystemExit(LOG);
-        return result;
-    }
-
-    CaArrayDaoFactory getDaoFactory() {
-        return this.daoFactory;
-    }
-
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
-    }
-
-    private CountryDao getCountryDao() {
-        return getDaoFactory().getCountryDao();
+    @Test
+    public void testFilter() throws IOException, ServletException {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRemoteUser("test");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        MockChain chain = new MockChain();
+        UserFilter uf = new UserFilter();
+        uf.init(null);
+        uf.doFilter(request, response, chain);
+        assertEquals("test", UsernameHolder.getUser());
     }
 }

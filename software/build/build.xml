@@ -133,6 +133,7 @@
     <property name="xwork-2.0.4.jar" value="${lib.dir}/xwork-2.0.4.jar" />
     <property name="ognl-2.6.11.jar" value="${lib.dir}/ognl-2.6.11.jar" />
     <property name="displaytag.jar" value="${lib.dir}/displaytag-1.1.1.jar"/>
+    <property name="urlrewrite.jar" value="${lib.dir}/urlrewrite-2.6.0.jar"/>
 
     <!-- Test-related properties -->
     <property name="test.dir" value="${basedir}/test" />
@@ -793,12 +794,13 @@
               <pathelement location="${commons-configuration.jar}"/>
                 <pathelement location="${displaytag.jar}"/>
                 <pathelement location="${hibernate.jar}"/>
+                <pathelement location="${urlrewrite.jar}"/>
             </classpath>
         </javac>
     </target>
 
     <target name="test:junit-caarray.war" depends="test:compile:caarray-war.test.classes,test:instrument:caarray.war,compile:caarray-ejb.jar,compile:caarray-common.jar,test:compile:caarray-ejb.test.classes,test:unpack-test-data">
-        <run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-logging.jar};${caarray-common.test.classes.dir};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate.jar}:${hibernate-annotations.jar}:${commons-configuration.jar}:${commons-collections.jar};${displaytag.jar}" />
+        <run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-logging.jar};${caarray-common.test.classes.dir};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate.jar}:${hibernate-annotations.jar}:${commons-configuration.jar}:${commons-collections.jar};${displaytag.jar};${urlrewrite.jar}" />
     </target>
 
     <target name="test:junit-report">
