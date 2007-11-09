@@ -90,7 +90,7 @@ import com.thoughtworks.selenium.SeleneseTestCase;
 /**
  * Base class for all functional tests that use Selenium Remote Control. Provides proper set up in order to be called by
  * caArray's ant script.
- * 
+ *
  * @author tavelae
  */
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
@@ -100,7 +100,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     @Override
     public void setUp() throws Exception {
-        System.setProperty("selenium.port", "8081");
+        System.setProperty("selenium.port", TestProperties.getSeleniumServerPort());
         String hostname = TestProperties.getServerHostname();
         int port = TestProperties.getServerPort();
         String browser = System.getProperty("test.browser", "*chrome");
@@ -168,5 +168,5 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         assertTrue(selenium.isTextPresent(file.getName()));
     }
 
- 
+
 }

@@ -14,6 +14,8 @@
                 <sysproperty key="server.hostname" value="${jboss.server.hostname}"/>
                 <sysproperty key="server.port" value="${jboss.server.port}"/>
                 <sysproperty key="server.jndi.port" value="${jboss.server.jndi.port}"/>
+                <sysproperty key="selenium.server.port" value="${selenium.server.port}"/>
+
                 <classpath>
                     <pathelement path="@{instrumented.classes}" />
                     <pathelement path="@{classpath}" />
