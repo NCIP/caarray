@@ -2,7 +2,7 @@
 
 <caarray:tabPane subtab="true">
     <caarray:projectListTabHeader entityName="Sample" isSubtab="true"/>
-    
+
     <c:url value="/protected/ajax/project/listTab/Samples/load.action" var="sortUrl">
         <c:param name="project.id" value="${project.id}" />
     </c:url>
@@ -12,7 +12,7 @@
         <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${project.experiment.samples}"
             requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="project.id">
             <caarray:displayTagProperties/>
-            <display:column titleKey="experiment.samples.name" sortable="true">
+            <display:column titleKey="experiment.samples.name" sortable="true" sortProperty="name">
                 <caarray:projectListTabActionLink linkContent="${row.name}" entityName="Sample" action="view" itemId="${row.id}" isSubtab="true"/>
             </display:column>
             <display:column property="description" titleKey="experiment.samples.description" sortable="true" />
