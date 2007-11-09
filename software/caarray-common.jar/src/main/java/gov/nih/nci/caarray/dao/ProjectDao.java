@@ -126,4 +126,12 @@ public interface ProjectDao extends CaArrayDao {
      * @return a list of matching experiments
      */
     List<Project> searchByCategory(int maxResults, int firstResult, String keyword, SearchCategory... categories);
+
+    /**
+     * Gets the count of search results matching the given keyword.
+     * @param keyword keyword to search for
+     * @param categories categories to search
+     * @return number of results
+     */
+    int searchCount(String keyword, SearchCategory... categories);
 }

@@ -142,10 +142,38 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     public List<Project> searchByCategory(int maxResults, int firstResult,
             String keyword, SearchCategory... categories) {
+        Query q = getSearchQuery(false, keyword, categories);
+        q.setFirstResult(firstResult);
+        q.setMaxResults(maxResults);
+        return q.list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public int searchCount(String keyword, SearchCategory... categories) {
+        Query q = getSearchQuery(true, keyword, categories);
+        return (Integer) q.uniqueResult();
+    }
+
+    private Query getSearchQuery(boolean count, String keyword, SearchCategory... categories) {
         StringBuffer sb = new StringBuffer();
+        if (count) {
+            sb.append("SELECT COUNT(DISTINCT p)");
+        } else {
+            sb.append("SELECT DISTINCT p");
+        }
+        sb.append(" FROM ").append(Project.class.getName()).append(" p");
+        sb.append(getJoinClause(categories));
+        sb.append(getWhereClause(categories));
+        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+        q.setString("keyword", "%" + keyword + "%");
+        return q;
+    }
+
+    private String getJoinClause(SearchCategory... categories) {
         LinkedHashSet<String> joins = new LinkedHashSet<String>();
         for (SearchCategory category : categories) {
             if (category.getJoins() != null) {
@@ -154,11 +182,14 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
                 }
             }
         }
-
-        sb.append("SELECT DISTINCT p FROM ").append(Project.class.getName()).append(" p");
+        StringBuffer sb = new StringBuffer();
         for (String table : joins) {
             sb.append(" LEFT JOIN ").append(table);
         }
+        return sb.toString();
+    }
+    private String getWhereClause(SearchCategory... categories) {
+        StringBuffer sb = new StringBuffer();
         int i = 0;
         for (SearchCategory category : categories) {
             sb.append(i++ == 0 ? " WHERE (" : " OR (");
@@ -170,10 +201,6 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             }
             sb.append(')');
         }
-        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
-        q.setString("keyword", "%" + keyword + "%");
-        q.setFirstResult(firstResult);
-        q.setMaxResults(maxResults);
-        return q.list();
+        return sb.toString();
     }
 }

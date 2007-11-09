@@ -123,4 +123,11 @@ public class ProjectDaoStub extends AbstractDaoStub implements ProjectDao {
     public List<Project> searchByCategory(int maxResults, int firstResult, String keyword, SearchCategory... categories) {
         return Collections.emptyList();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public int searchCount(String keyword, SearchCategory... categories) {
+        return 0;
+    }
 }

@@ -88,6 +88,8 @@ import gov.nih.nci.caarray.domain.ResourceBasedEnum;
  * @author Winston Cheng
  *
  */
+// cannot define as constants because this is an enum
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public enum SearchCategory implements ResourceBasedEnum {
     /**
      * Experiment ID.
@@ -136,6 +138,7 @@ public enum SearchCategory implements ResourceBasedEnum {
     private final String[] join;
     private final String[] searchFields;
 
+    @SuppressWarnings("PMD.ArrayIsStoredDirectly")
     SearchCategory(String resourceKey, String[] join, String... searchFields) {
         this.resourceKey = resourceKey;
         this.join = join;
@@ -155,6 +158,7 @@ public enum SearchCategory implements ResourceBasedEnum {
      * Is null if no join is necessary.
      * @return the fields to join against
      */
+    @SuppressWarnings("PMD.MethodReturnsInternalArray")
     public String[] getJoins() {
         return this.join;
     }
@@ -162,6 +166,7 @@ public enum SearchCategory implements ResourceBasedEnum {
     /**
      * @return the fields to search against in the HQL query.
      */
+    @SuppressWarnings("PMD.MethodReturnsInternalArray")
     public String[] getSearchFields() {
         return this.searchFields;
     }

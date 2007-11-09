@@ -113,6 +113,7 @@ public class PaginatedListImpl<T> implements PaginatedList {
      * @param sortCriterion sort criterion
      * @param sortDirection sort direction
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public PaginatedListImpl(int fullListSize, List<T> list, int objectsPerPage, int pageNumber, String searchId,
             String sortCriterion, SortOrderEnum sortDirection) {
         this.fullListSize = fullListSize;
