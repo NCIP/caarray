@@ -120,7 +120,7 @@ public interface ArrayDataService {
      * Imports array data from the file given, creating annotation if necessary and requested
      * by the client.
      * 
-     * @param caArrayFile the data file to import.
+     * @param file the data file to import.
      * @param createAnnotation if no annotation is associated with the file, create a complete set of
      * annotation from <code>Source</code> through to <code>AbstractArrayData</code>. 
      * @throws InvalidDataFileException if the file is not a valid data file.

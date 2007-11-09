@@ -251,7 +251,7 @@ public class FileManagementServiceBean implements FileManagementService {
         return (MageTabTranslator) ServiceLocatorFactory.getLocator().lookup(MageTabTranslator.JNDI_NAME);
     }
 
-    private final ArrayDataService getArrayDataService() {
+    private ArrayDataService getArrayDataService() {
         return (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);
     }
 

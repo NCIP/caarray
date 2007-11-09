@@ -245,7 +245,8 @@ public class FileAccessServiceBean implements FileAccessService {
         this.sessionWorkingDirectory = new File(getWorkingDirectory(), sessionSubdirectoryName);
         if (!this.sessionWorkingDirectory.mkdirs()) {
             LOG.error("Couldn't create directory: " + this.sessionWorkingDirectory.getAbsolutePath());
-            throw new IllegalStateException("Couldn't create directory: " + this.sessionWorkingDirectory.getAbsolutePath());
+            throw new IllegalStateException("Couldn't create directory: " 
+                    + this.sessionWorkingDirectory.getAbsolutePath());
         }
     }
 
@@ -297,7 +298,7 @@ public class FileAccessServiceBean implements FileAccessService {
     }
 
     /**
-     * @see gov.nih.nci.caarray.application.fileaccess.FileAccessService#unzipFiles(java.util.List, java.util.List)
+     * {@inheritDoc}
      */
     public void unzipFiles(List<File> uploads, List<String> uploadFileNames) {
         try {

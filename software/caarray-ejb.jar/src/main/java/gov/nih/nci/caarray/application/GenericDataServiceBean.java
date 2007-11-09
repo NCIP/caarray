@@ -120,7 +120,8 @@ public class GenericDataServiceBean implements GenericDataService {
         String numericSuffix = StringUtils.substringAfter(name, alphaPrefix);
         int maxSuffix = StringUtils.isEmpty(numericSuffix) ? 1 : Integer.parseInt(numericSuffix);
 
-        List<String> currentNames = this.daoFactory.getSearchDao().findValuesWithSamePrefix(entityClass, fieldName, alphaPrefix);
+        List<String> currentNames = 
+            this.daoFactory.getSearchDao().findValuesWithSamePrefix(entityClass, fieldName, alphaPrefix);
         for (String currentName : currentNames) {
             String suffix = StringUtils.substringAfter(currentName, alphaPrefix);
             if (!StringUtils.isNumeric(suffix) || StringUtils.isEmpty(suffix)) {

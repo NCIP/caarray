@@ -116,7 +116,8 @@ abstract class AbstractDataSetImporter {
     private final FileAccessService fileAccessService;
     private final CaArrayFile caArrayFile;
 
-    AbstractDataSetImporter(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory, FileAccessService fileAccessService) {
+    AbstractDataSetImporter(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory, 
+            FileAccessService fileAccessService) {
         this.caArrayFile = caArrayFile;
         this.daoFactory = daoFactory;
         this.fileAccessService = fileAccessService;
@@ -184,7 +185,8 @@ abstract class AbstractDataSetImporter {
         return getDaoFactory().getArrayDao();
     }
 
-    static AbstractDataSetImporter create(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory, FileAccessService fileAccessService) {
+    static AbstractDataSetImporter create(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory, 
+            FileAccessService fileAccessService) {
         if (caArrayFile == null) {
             throw new IllegalArgumentException("arrayData was null");
         }

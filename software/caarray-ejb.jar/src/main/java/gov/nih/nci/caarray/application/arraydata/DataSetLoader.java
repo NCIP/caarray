@@ -191,7 +191,8 @@ final class DataSetLoader {
 
     AbstractDataFileHandler getDataFileHandler() {
         if (dataFileHandler == null) {
-            dataFileHandler = ArrayDataHandlerFactory.getInstance().getHandler(getArrayData().getDataFile().getFileType());
+            dataFileHandler = 
+                ArrayDataHandlerFactory.getInstance().getHandler(getArrayData().getDataFile().getFileType());
         }
         return dataFileHandler;
     }

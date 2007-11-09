@@ -173,7 +173,8 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void loadExpressionData(HybridizationData hybridizationData, Set<QuantitationType> typeSet, FusionCHPLegacyData chpData) {
+    private void loadExpressionData(HybridizationData hybridizationData, Set<QuantitationType> typeSet, 
+            FusionCHPLegacyData chpData) {
         int numberOfProbeSets = chpData.getHeader().getNumProbeSets();
         FusionExpressionProbeSetResults entry = new FusionExpressionProbeSetResults();
         for (int probeSetIndex = 0; probeSetIndex < numberOfProbeSets; probeSetIndex++) {
@@ -230,7 +231,8 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
             ((FloatColumn) column).getValues()[index] = entry.getSignalLogRatioLow();
             break;
         default:
-            throw new IllegalArgumentException("Unsupported QuantitationType for expression CHP data: " + quantitationType);
+            throw new IllegalArgumentException("Unsupported QuantitationType for expression CHP data: " 
+                    + quantitationType);
         }
     }
 
@@ -254,7 +256,8 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
         return SNP_TYPE_MAP.get(quantitationType.getName());
     }
 
-    private void loadSnpData(HybridizationData hybridizationData, Set<QuantitationType> typeSet, FusionCHPLegacyData chpData) {
+    private void loadSnpData(HybridizationData hybridizationData, Set<QuantitationType> typeSet, 
+            FusionCHPLegacyData chpData) {
         int numberOfProbeSets = chpData.getHeader().getNumProbeSets();
         FusionGenotypeProbeSetResults entry = new FusionGenotypeProbeSetResults();
         for (int probeSetIndex = 0; probeSetIndex < numberOfProbeSets; probeSetIndex++) {

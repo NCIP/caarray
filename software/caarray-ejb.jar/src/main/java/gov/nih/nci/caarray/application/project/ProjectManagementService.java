@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.application.project;
 
-import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
@@ -178,7 +177,7 @@ public interface ProjectManagementService {
     List<Project> getMyNonPublicProjects();
 
     /**
-     * Gets all public projects
+     * Gets all public projects.
      *
      * @return allpublic projects
      */
@@ -193,7 +192,7 @@ public interface ProjectManagementService {
     Project toggleBrowsableStatus(long projectId);
 
     /**
-     * Adds an empty (no access) profile for the given collaborator group to the given project
+     * Adds an empty (no access) profile for the given collaborator group to the given project.
      *
      * @param project the project
      * @param group the group for which to add an access profile

@@ -214,7 +214,7 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
         return hybridizations;
     }
 
-    private final ArrayDataService getArrayDataService() {
+    private ArrayDataService getArrayDataService() {
         return (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);
     }
 

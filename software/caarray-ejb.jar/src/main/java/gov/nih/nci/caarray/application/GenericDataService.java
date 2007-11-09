@@ -97,6 +97,7 @@ public interface GenericDataService {
 
     /**
      * Retrieves the object from the database.
+     * @param <T> the type of entity to retrieve
      * @param entityClass the class of the object to retrieve
      * @param entityId the id of the enity to retrieve
      * @return the entity.

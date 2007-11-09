@@ -90,16 +90,59 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
  */
 public enum AffymetrixExpressionChpQuantitationType implements QuantitationTypeDescriptor {
 
+    /**
+     * CHPDetection.
+     */
     CHP_DETECTION("CHPDetection", DataType.STRING),
+
+    /**
+     * CHPDetectionPvalue.
+     */
     CHP_DETECTION_PVALUE("CHPDetectionPvalue", DataType.FLOAT),
+
+    /**
+     * CHPPairs.
+     */
     CHP_PAIRS("CHPPairs", DataType.SHORT),
+
+    /**
+     * CHPPairsUsed.
+     */
     CHP_PAIRS_USED("CHPPairsUsed", DataType.SHORT),
+
+    /**
+     * CHPSignal.
+     */
     CHP_SIGNAL("CHPSignal", DataType.FLOAT),
+
+    /**
+     * CHPChange.
+     */
     CHP_CHANGE("CHPChange", DataType.STRING),
+
+    /**
+     * CHPChangePvalue.
+     */
     CHP_CHANGE_PVALUE("CHPChangePvalue", DataType.FLOAT),
+
+    /**
+     * CHPSignalLogRatio.
+     */
     CHP_SIGNAL_LOG_RATIO("CHPSignalLogRatio", DataType.FLOAT),
+
+    /**
+     * CHPSignalLogRatioHigh.
+     */
     CHP_SIGNAL_LOG_RATIO_HIGH("CHPSignalLogRatioHigh", DataType.FLOAT),
+
+    /**
+     * CHPSignalLogRatioLow.
+     */
     CHP_SIGNAL_LOG_RATIO_LOW("CHPSignalLogRatioLow", DataType.FLOAT),
+
+    /**
+     * CHPCommonPairs.
+     */
     CHP_COMMON_PAIRS("CHPCommonPairs", DataType.SHORT);
 
     private final String name;

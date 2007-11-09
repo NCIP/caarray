@@ -133,7 +133,8 @@ public interface PermissionsManagementService {
      * @throws CSTransactionException  on CSM error
      * @throws CSObjectNotFoundException on CSM error
      */
-    void addUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException, CSObjectNotFoundException;
+    void addUsers(CollaboratorGroup targetGroup, List<String> users) 
+    throws CSTransactionException, CSObjectNotFoundException;
 
     /**
      * Removes users from the target group.
@@ -152,16 +153,20 @@ public interface PermissionsManagementService {
      * @throws CSTransactionException on CSM error
      * @throws CSObjectNotFoundException on CSM error
      */
-    void rename(CollaboratorGroup targetGroup, String groupName) throws CSTransactionException, CSObjectNotFoundException;
+    void rename(CollaboratorGroup targetGroup, String groupName) 
+    throws CSTransactionException, CSObjectNotFoundException;
 
     /**
-     * @param example object (may be null)
+     * Returs users matching the given example user.
+     * 
+     * @param u example user (may be null)
      * @return users in the system meeting the criteria
      */
     List<User> getUsers(User u);
 
     /**
-     * Creates or updates an access profile
+     * Creates or updates an access profile.
+     * 
      * @param profile the profile to create or update
      */
     void saveAccessProfile(AccessProfile profile);

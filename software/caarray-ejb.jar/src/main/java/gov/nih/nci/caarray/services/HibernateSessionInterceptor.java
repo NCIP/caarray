@@ -92,6 +92,13 @@ import javax.interceptor.InvocationContext;
  */
 public class HibernateSessionInterceptor {
 
+    /**
+     * Opens a closes a Hibernate session around any remote EJB method invoked.
+     * 
+     * @param invContext the method context
+     * @return the method result
+     * @throws Exception if invoking the method throws an exception.
+     */
     @AroundInvoke
     public Object manageHibernateSession(InvocationContext invContext) throws Exception {
         HibernateUtil.openAndBindSession();

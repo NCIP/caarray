@@ -98,6 +98,13 @@ import org.hibernate.Hibernate;
  */
 public class EntityConfiguringInterceptor {
 
+    /**
+     * Ensures that any object returned and its direct associated entities are loaded.
+     * 
+     * @param invContext the method context
+     * @return the method result
+     * @throws Exception if invoking the method throws an exception.
+     */
     @AroundInvoke
     public Object prepareReturnValue(InvocationContext invContext) throws Exception {
         Object returnValue = invContext.proceed();
@@ -109,13 +116,15 @@ public class EntityConfiguringInterceptor {
         return returnValue;
     }
 
-    private void prepareEntities(Collection collection) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    private void prepareEntities(Collection collection) 
+    throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         for (Object entity : collection) {
             prepareEntity(entity);
         }
     }
 
-    private void prepareEntity(Object entity) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    private void prepareEntity(Object entity) 
+    throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         Map properties = BeanUtils.describe(entity);
         for (Object propertyName : properties.keySet()) {
             Hibernate.initialize(properties.get(propertyName));

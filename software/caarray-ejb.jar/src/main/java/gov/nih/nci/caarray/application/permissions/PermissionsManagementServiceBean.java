@@ -209,7 +209,8 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public void addUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException, CSObjectNotFoundException {
+    public void addUsers(CollaboratorGroup targetGroup, List<String> users) 
+    throws CSTransactionException, CSObjectNotFoundException {
         LogUtil.logSubsystemEntry(LOG, targetGroup, users);
 
         // This is a hack.  We should simply call am.assignUserToGroup, but that method appears to be buggy.
@@ -241,7 +242,8 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     /**
      * {@inheritDoc}
      */
-    public void rename(CollaboratorGroup targetGroup, String groupName) throws CSTransactionException, CSObjectNotFoundException {
+    public void rename(CollaboratorGroup targetGroup, String groupName) 
+    throws CSTransactionException, CSObjectNotFoundException {
         LogUtil.logSubsystemEntry(LOG, targetGroup, groupName);
         AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
         Group g = am.getGroupById(targetGroup.getGroup().getGroupId().toString());

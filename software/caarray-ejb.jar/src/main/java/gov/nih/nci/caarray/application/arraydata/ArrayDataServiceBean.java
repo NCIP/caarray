@@ -157,7 +157,8 @@ public class ArrayDataServiceBean implements ArrayDataService {
         return arrayData.getDataSet();
     }
 
-    private void loadDataSet(AbstractArrayData arrayData, List<QuantitationType> types, FileAccessService fileAccessService) {
+    private void loadDataSet(AbstractArrayData arrayData, List<QuantitationType> types, 
+            FileAccessService fileAccessService) {
         DataSetLoader loader =
             new DataSetLoader(arrayData, getDaoFactory(), fileAccessService);
         loader.load(types);

@@ -287,7 +287,8 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         loadData(headers, reader, dataSet, types);
     }
 
-    private void loadData(List<String> headers, DelimitedFileReader reader, DataSet dataSet, List<QuantitationType> types) {
+    private void loadData(List<String> headers, DelimitedFileReader reader, DataSet dataSet, 
+            List<QuantitationType> types) {
         prepareColumns(dataSet, types, getNumberOfDataRows(reader));
         Map<String, Integer> groupIdToHybridizationDataIndexMap = getGroupIdToHybridizationDataIndexMap(headers);
         Set<QuantitationType> typeSet = new HashSet<QuantitationType>();
@@ -297,7 +298,8 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
             for (int i = 0; i < values.size(); i++) {
-                loadValue(values.get(i), headers.get(i), dataSet, typeSet, groupIdToHybridizationDataIndexMap, rowIndex);
+                loadValue(values.get(i), headers.get(i), dataSet, typeSet, groupIdToHybridizationDataIndexMap, 
+                        rowIndex);
             }
             rowIndex++;
         }
@@ -325,7 +327,8 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private AbstractDataColumn getColumn(HybridizationData hybridizationData, QuantitationTypeDescriptor typeDescriptor) {
+    private AbstractDataColumn getColumn(HybridizationData hybridizationData, 
+            QuantitationTypeDescriptor typeDescriptor) {
         for (AbstractDataColumn column : hybridizationData.getColumns()) {
             if (column.getQuantitationType().getName().equals(typeDescriptor.getName())) {
                 return column;

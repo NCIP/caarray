@@ -115,6 +115,10 @@ import org.apache.commons.logging.LogFactory;
 @SuppressWarnings("PMD.CyclomaticComplexity")
 final class GenepixGprHandler extends AbstractDataFileHandler {
 
+    /**
+     * 
+     */
+    private static final int REQUIRED_INITIAL_ROW_HEADER_LENGTH = 3;
     private static final String WAVELENGTHS_HEADER = "Wavelengths";
     private static final String IMAGE_NAME_HEADER = "ImageName";
     private static final String ROW_HEADER = "Row";
@@ -127,8 +131,8 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     private static final String DIA_HEADER = "Dia.";
     private static final String ERROR_INDICATOR = "Error";
 
-    private final static Log LOG = LogFactory.getLog(GenepixGprHandler.class);
-    private final static Map<String, QuantitationTypeDescriptor> NAME_TO_TYPE_MAP;
+    private static final Log LOG = LogFactory.getLog(GenepixGprHandler.class);
+    private static final Map<String, QuantitationTypeDescriptor> NAME_TO_TYPE_MAP;
     private static final Set<String> STANDARD_HEADERS;
 
     static {
@@ -213,7 +217,7 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     }
 
     private boolean areColumnHeaders(List<String> values) {
-        return values.size() > 3
+        return values.size() > REQUIRED_INITIAL_ROW_HEADER_LENGTH
         && BLOCK_HEADER.equals(values.get(0))
         && COLUMN_HEADER.equals(values.get(1))
         && ROW_HEADER.equals(values.get(2));
@@ -362,7 +366,8 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
                 validateQuantitation(values.get(columnIndex),
                         headerToDescriptorMap.get(headers.get(columnIndex)), result, line, columnIndex + 1);
             } else if (isStandardColumn(headers.get(columnIndex))) {
-                validateStandardColumn(values.get(columnIndex), headers.get(columnIndex), result, line, columnIndex + 1);
+                validateStandardColumn(values.get(columnIndex), headers.get(columnIndex), result, line, 
+                        columnIndex + 1);
             }
         }
     }
@@ -404,13 +409,15 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
 
     private void validateBoolean(String value, FileValidationResult result, int line, int column) {
         if (!"0".equals(value) && !"1".equals(value)) {
-            result.addMessage(Type.ERROR, "Invalid boolean value: " + value + ". Legal values are 0 or 1.", line, column);
+            result.addMessage(Type.ERROR, 
+                    "Invalid boolean value: " + value + ". Legal values are 0 or 1.", line, column);
         }
     }
 
     private void validateCharacter(String value, FileValidationResult result, int line, int column) {
         if (value.length() != 1) {
-            result.addMessage(Type.ERROR, "Invalid character value: " + value + ". Must be exactly one character.", line, column);
+            result.addMessage(
+                    Type.ERROR, "Invalid character value: " + value + ". Must be exactly one character.", line, column);
         }
     }
 
@@ -419,7 +426,8 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
             try {
                 Double.parseDouble(value);
             } catch (NumberFormatException e) {
-                result.addMessage(Type.ERROR, "Invalid double value: " + value + ". Must be a valid floating point number.", line, column);
+                result.addMessage(Type.ERROR, "Invalid double value: " + value 
+                        + ". Must be a valid floating point number.", line, column);
             }
         }
     }
@@ -429,7 +437,8 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
             try {
                 Float.parseFloat(value);
             } catch (NumberFormatException e) {
-                result.addMessage(Type.ERROR, "Invalid float value: " + value + ". Must be a valid floating point number.", line, column);
+                result.addMessage(Type.ERROR, "Invalid float value: " + value 
+                        + ". Must be a valid floating point number.", line, column);
             }
         }
     }
@@ -438,7 +447,8 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         try {
             Integer.parseInt(value);
         } catch (NumberFormatException e) {
-            result.addMessage(Type.ERROR, "Invalid integer value: " + value + ". Must be a valid integer.", line, column);
+            result.addMessage(Type.ERROR, "Invalid integer value: " + value 
+                    + ". Must be a valid integer.", line, column);
         }
     }
 
@@ -446,7 +456,8 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         try {
             Integer.parseInt(value);
         } catch (NumberFormatException e) {
-            result.addMessage(Type.ERROR, "Invalid integer value: " + value + ". Must be a valid integer.", line, column);
+            result.addMessage(Type.ERROR, "Invalid integer value: " + value 
+                    + ". Must be a valid integer.", line, column);
         }
     }
 
@@ -454,7 +465,8 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         try {
             Integer.parseInt(value);
         } catch (NumberFormatException e) {
-            result.addMessage(Type.ERROR, "Invalid integer value: " + value + ". Must be a valid integer.", line, column);
+            result.addMessage(Type.ERROR, "Invalid integer value: " + value 
+                    + ". Must be a valid integer.", line, column);
         }
     }
 
@@ -463,7 +475,8 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     }
 
     @SuppressWarnings("PMD.CyclomaticComplexity")
-    private void validateStandardColumn(String value, String header, FileValidationResult result, int line, int column) {
+    private void validateStandardColumn(String value, String header, FileValidationResult result, int line, 
+            int column) {
         if (BLOCK_HEADER.equals(header)) {
             validateInteger(value, result, line, column);
         } else if (COLUMN_HEADER.equals(header)) {

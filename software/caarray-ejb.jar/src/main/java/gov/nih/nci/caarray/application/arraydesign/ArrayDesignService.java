@@ -135,10 +135,10 @@ public interface ArrayDesignService {
     List<Organization> getArrayDesignProviders();
 
     /**
-     * Returns the list of ArrayDesigns with the given provider
+     * Returns the list of ArrayDesigns with the given provider.
+     * 
      * @param provider the provider
-     * @return the List&lt;ArrayDesign&gt; of the array designs whose
-     * provider is the given provider
+     * @return the List&lt;ArrayDesign&gt; of the array designs whose provider is the given provider
      */
     List<ArrayDesign> getArrayDesignsForProvider(Organization provider);
 

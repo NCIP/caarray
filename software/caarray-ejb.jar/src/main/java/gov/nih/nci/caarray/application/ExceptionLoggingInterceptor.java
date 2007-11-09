@@ -93,6 +93,13 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ExceptionLoggingInterceptor {
     
+    /**
+     * Logs any exceptions thrown by the EJB method invoked.
+     * 
+     * @param invContext the method context
+     * @return the method result
+     * @throws Exception if invoking the method throws an exception.
+     */
     @AroundInvoke
     public Object logException(InvocationContext invContext) throws Exception {
         try {

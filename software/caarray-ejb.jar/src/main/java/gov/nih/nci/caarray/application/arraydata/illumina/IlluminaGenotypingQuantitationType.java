@@ -93,9 +93,24 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
  */
 public enum IlluminaGenotypingQuantitationType implements QuantitationTypeDescriptor {
 
+    /**
+     * AA_Freq.
+     */
     AA_FREQ("AA_Freq", DataType.FLOAT),
+
+    /**
+     * AB_Freq.
+     */
     AB_FREQ("AB_Freq", DataType.FLOAT),
+
+    /**
+     * BB_Freq.
+     */
     BB_FREQ("BB_Freq", DataType.FLOAT),
+
+    /**
+     * Call_Freq.
+     */
     CALL_FREQ("Call_Freq", DataType.FLOAT);
 
 
@@ -121,6 +136,11 @@ public enum IlluminaGenotypingQuantitationType implements QuantitationTypeDescri
         return name;
     }
 
+    /**
+     * Returns all of the quantitation type names.
+     * 
+     * @return the list of names.
+     */
     public static List<String> getTypeNames() {
         List<String> names = new ArrayList<String>(values().length);
         for (IlluminaGenotypingQuantitationType type : values()) {

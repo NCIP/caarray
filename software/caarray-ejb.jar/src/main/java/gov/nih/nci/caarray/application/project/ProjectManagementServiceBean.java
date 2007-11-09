@@ -339,7 +339,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Factor copyFactor(Project project, long factorId) throws ProposalWorkflowException{
+    public Factor copyFactor(Project project, long factorId) throws ProposalWorkflowException {
         checkIfProjectSaveAllowed(project);
         Factor factor = getDaoFactory().getSearchDao().retrieve(Factor.class, factorId);
         Factor copy = new Factor();

@@ -106,7 +106,9 @@ public class CountryServiceBean implements CountryService {
     private static final Log LOG = LogFactory.getLog(CountryServiceBean.class);
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
-
+    /**
+     * {@inheritDoc}
+     */
     public List<Country> getCountries() {
         LogUtil.logSubsystemEntry(LOG);
         List<Country> result = getCountryDao().getCountries();

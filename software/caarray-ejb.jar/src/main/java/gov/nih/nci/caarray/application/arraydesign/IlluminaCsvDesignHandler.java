@@ -110,7 +110,8 @@ class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
     private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
     private static final Log LOG = LogFactory.getLog(IlluminaCsvDesignHandler.class);
 
-    IlluminaCsvDesignHandler(CaArrayFile designFile, VocabularyService vocabularyService, FileAccessService fileAccessService) {
+    IlluminaCsvDesignHandler(CaArrayFile designFile, VocabularyService vocabularyService, 
+            FileAccessService fileAccessService) {
         super(designFile, vocabularyService, fileAccessService);
     }
 
@@ -182,10 +183,11 @@ class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
 
     private void validateContent(DelimitedFileReader reader, FileValidationResult result) {
         int expectedNumberOfFields = IlluminaDesignCsvHeader.values().length;
-        while(reader.hasNextLine()) {
+        while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
             if (values.size() != expectedNumberOfFields) {
-                ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR, "Invalid number of fields. Expected "
+                ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR, 
+                        "Invalid number of fields. Expected "
                         + expectedNumberOfFields + " but contained " + values.size());
                 error.setLine(reader.getCurrentLineNumber());
             }
@@ -197,7 +199,8 @@ class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
         validateIntegerField(values, IlluminaDesignCsvHeader.PROBEID, result, lineNumber);
     }
 
-    private void validateIntegerField(List<String> values, IlluminaDesignCsvHeader header, FileValidationResult result, int lineNumber) {
+    private void validateIntegerField(List<String> values, IlluminaDesignCsvHeader header, FileValidationResult result, 
+            int lineNumber) {
         if (!isInteger(values.get(header.ordinal()))) {
             ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR,
                     "Expected integer value for " + header.name() + ", but was " +  values.get(header.ordinal()));
@@ -218,7 +221,8 @@ class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
     private void validateHeader(List<String> headers, FileValidationResult result) {
         IlluminaDesignCsvHeader[] expectedHeaders = IlluminaDesignCsvHeader.values();
         if (headers.size() != expectedHeaders.length) {
-            result.addMessage(ValidationMessage.Type.ERROR, "Illumina CSV file didn't contain the expected number of columns");
+            result.addMessage(ValidationMessage.Type.ERROR, 
+                    "Illumina CSV file didn't contain the expected number of columns");
             return;
         }
         for (int i = 0; i < expectedHeaders.length; i++) {

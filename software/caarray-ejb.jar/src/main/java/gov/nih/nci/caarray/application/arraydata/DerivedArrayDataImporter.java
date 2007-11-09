@@ -99,7 +99,8 @@ final class DerivedArrayDataImporter extends AbstractDataSetImporter {
 
     private DerivedArrayData derivedArrayData;
 
-    DerivedArrayDataImporter(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory, FileAccessService fileAccessService) {
+    DerivedArrayDataImporter(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory, 
+            FileAccessService fileAccessService) {
         super(caArrayFile, daoFactory, fileAccessService);
     }
 
