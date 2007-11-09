@@ -88,12 +88,15 @@ import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.system.query.cql.CQLQuery;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
  *
  */
 public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
+
+    int callsToFiltercollection = 0;
 
     /**
      * {@inheritDoc}
@@ -122,5 +125,24 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
      */
     public List<String> findValuesWithSamePrefix(Class<?> entityClass, String fieldName, String prefix) {
         return new ArrayList<String>();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property, String value) {
+        this.callsToFiltercollection++;
+        return null;
+    }
+
+    /**
+     * @return the callsToFiltercollection
+     */
+    public int getCallsToFiltercollection() {
+        return this.callsToFiltercollection;
+    }
+
+    public void reset() {
+        this.callsToFiltercollection = 0;
     }
 }

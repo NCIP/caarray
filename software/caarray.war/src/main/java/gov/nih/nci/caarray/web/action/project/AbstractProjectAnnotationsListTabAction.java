@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-ejb-jar
+ * source code form and machine readable, binary, object code form. The caarray-war
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
+ * This caarray-war Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
+ * its rights in the caarray-war Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-ejb-jar Software and any
+ * and prepare derivative works of the caarray-war Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-war Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,52 +80,91 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application;
+package gov.nih.nci.caarray.web.action.project;
 
-import java.util.Collection;
-import java.util.List;
-
+import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
 import gov.nih.nci.caarray.domain.PersistentObject;
 
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+
 /**
- * @author dkokotov
- *
+ * Class that manages the annotation tabs.
+ * @author Scott Miller
+ * @param <T> the class of the annotations are being managed.
  */
-public class GenericDataServiceStub implements GenericDataService {
-    private PersistentObject deletedObject = null;
+public abstract class AbstractProjectAnnotationsListTabAction<T extends PersistentObject> extends
+    AbstractProjectListTabAction {
+
+    private String associatedValueName;
+    private Collection<T> unassociatedValues;
 
     /**
-     * {@inheritDoc}
+     * default constructor.
+     * @param resourceKey the base resouce key.
      */
-    public String getIncrementingCopyName(Class<?> entityClass, String fieldName, String name) {
-        return name + "2";
+    public AbstractProjectAnnotationsListTabAction(String resourceKey) {
+        super(resourceKey);
     }
 
     /**
-     * {@inheritDoc}
+     * Action to search for associated annotations.
+     * @return the string matching the result to follow
+     * @throws NoSuchMethodException on error
+     * @throws IllegalAccessException on error
+     * @throws InvocationTargetException on error
+     * @throws UnsupportedEncodingException on error
      */
-    public <T extends PersistentObject> T retrieveEnity(Class<T> entityClass, Long entityId) {
-        return null;
+    public String searchForAssociationValues() throws NoSuchMethodException, IllegalAccessException,
+        InvocationTargetException, UnsupportedEncodingException {
+        if (getAssociatedValueName() ==  null) {
+            setAssociatedValueName("");
+        }
+        Collection<T> possibleValues = getGenericDataService().filterCollection(getPossibleAssociationsCollection(),
+                "name", getAssociatedValueName());
+        possibleValues.removeAll(getCurrentAssociationsCollection());
+        setUnassociatedValues(possibleValues);
+        return "associationValues";
     }
 
     /**
-     * {@inheritDoc}
+     * Return the collection to filter when searching for associated values.
+     * @return the collection to filter
      */
-    public void delete(PersistentObject object) {
-        this.deletedObject = object;
+    protected abstract Collection<T> getPossibleAssociationsCollection();
+
+    /**
+     * Retrieve the collection that contains the current Associations.
+     * @return the collection of the current associations.
+     */
+    public abstract Collection<T> getCurrentAssociationsCollection();
+
+    /**
+     * @return the associatedValueName
+     */
+    public String getAssociatedValueName() {
+        return this.associatedValueName;
     }
 
     /**
-     * @return the last object passed to delete, if any.
+     * @param associatedValueName the associatedValueName to set
      */
-    public PersistentObject getDeletedObject() {
-        return this.deletedObject;
+    public void setAssociatedValueName(String associatedValueName) {
+        this.associatedValueName = associatedValueName;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the unassociatedValues
      */
-    public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property, String value) {
-        return null;
+    public Collection<T> getUnassociatedValues() {
+        return this.unassociatedValues;
+    }
+
+    /**
+     * @param unassociatedValues the unassociatedValues to set
+     */
+    public void setUnassociatedValues(Collection<T> unassociatedValues) {
+        this.unassociatedValues = unassociatedValues;
     }
 }

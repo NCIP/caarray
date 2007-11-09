@@ -88,17 +88,21 @@ import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Action implementing the samples tab.
  * @author Dan Kokotov
  */
-public class ProjectSamplesAction extends AbstractProjectListTabAction {
+public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabAction<Source> {
     private static final long serialVersionUID = 1L;
 
     private Sample currentSample = new Sample();
+    private List<Source> itemsToAssociate = new ArrayList<Source>();
 
     /**
      * Default constructor.
@@ -130,6 +134,20 @@ public class ProjectSamplesAction extends AbstractProjectListTabAction {
 
     /**
      * {@inheritDoc}
+     */
+    @Override
+    public String save() {
+        // ideally this logic, along with the itemsToAssociate collection would be int he base class, but the
+        // struts 2 type converter for persistent entity wasn't liking the generic collection.
+        getCurrentAssociationsCollection().addAll(this.itemsToAssociate);
+        for (Source source : this.itemsToAssociate) {
+            source.getSamples().add(getCurrentSample());
+        }
+        return super.save();
+    }
+
+    /**
+     * {@inheritDoc}
      * @throws ProposalWorkflowException
      */
     @Override
@@ -157,7 +175,7 @@ public class ProjectSamplesAction extends AbstractProjectListTabAction {
      * @return the currentSample
      */
     public Sample getCurrentSample() {
-        return currentSample;
+        return this.currentSample;
     }
 
     /**
@@ -165,5 +183,35 @@ public class ProjectSamplesAction extends AbstractProjectListTabAction {
      */
     public void setCurrentSample(Sample currentSample) {
         this.currentSample = currentSample;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Collection<Source> getPossibleAssociationsCollection() {
+        return getExperiment().getSources();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection<Source> getCurrentAssociationsCollection() {
+        return getCurrentSample().getSources();
+    }
+
+    /**
+     * @return the itemsToAssociate
+     */
+    public List<Source> getItemsToAssociate() {
+        return this.itemsToAssociate;
+    }
+
+    /**
+     * @param itemsToAssociate the itemsToAssociate to set
+     */
+    public void setItemsToAssociate(List<Source> itemsToAssociate) {
+        this.itemsToAssociate = itemsToAssociate;
     }
 }

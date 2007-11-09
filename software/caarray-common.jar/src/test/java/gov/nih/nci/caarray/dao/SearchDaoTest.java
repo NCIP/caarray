@@ -87,8 +87,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.protocol.Parameter;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.util.HibernateUtil;
@@ -102,6 +104,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
@@ -337,6 +340,43 @@ public class SearchDaoTest {
             obj = SEARCH_DAO.retrieve(Protocol.class, DUMMY_PROTOCOL_1.getId());
             assertEquals(DUMMY_PROTOCOL_1, obj);
             tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during search by example: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testCollectionFilter() {
+        Transaction tx = null;
+        try {
+            // set up dummy data
+            Session s = HibernateUtil.getCurrentSession();
+            tx = s.beginTransaction();
+            Experiment experiment = new Experiment();
+            experiment.setTitle("test experiment.");
+            Source source = new Source();
+            source.setName("Source 1 Name");
+            experiment.getSources().add(source);
+            source = new Source();
+            source.setName("Source 2 Name");
+            experiment.getSources().add(source);
+            s.save(experiment);
+            s.flush();
+            s.clear();
+
+            Experiment retrievedExperiment = SEARCH_DAO.retrieve(Experiment.class, experiment.getId());
+            List<Source> filteredList = SEARCH_DAO.filterCollection(retrievedExperiment.getSources(), "name", "");
+            assertEquals(2, filteredList.size());
+
+            filteredList = SEARCH_DAO.filterCollection(retrievedExperiment.getSources(), "name", "SoUrce ");
+            assertEquals(2, filteredList.size());
+
+            filteredList = SEARCH_DAO.filterCollection(retrievedExperiment.getSources(), "name", "SoUrce 2");
+            assertEquals(1, filteredList.size());
+
+            filteredList = SEARCH_DAO.filterCollection(retrievedExperiment.getSources(), "name", "SoUrce 3");
+            assertEquals(0, filteredList.size());
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during search by example: " + e.getMessage());

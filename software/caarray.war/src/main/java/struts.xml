@@ -128,6 +128,7 @@
             <result name="list">/WEB-INF/pages/project/tab{1}/list.jsp</result>
             <result name="workspace">/WEB-INF/pages/project/backToWorkspace.jsp</result>
             <result name="initial-save">/WEB-INF/pages/project/reloadProject.jsp</result>
+            <result name="associationValues">/WEB-INF/pages/project/annotationAssociatedValues.jsp</result>
         </action>
 
         <action name="project/permissions/*" class="gov.nih.nci.caarray.web.action.project.ProjectPermissionsAction" method="{1}">

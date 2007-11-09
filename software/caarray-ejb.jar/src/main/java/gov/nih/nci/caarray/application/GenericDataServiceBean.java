@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.PersistentObject;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.Local;
@@ -120,7 +121,7 @@ public class GenericDataServiceBean implements GenericDataService {
         String numericSuffix = StringUtils.substringAfter(name, alphaPrefix);
         int maxSuffix = StringUtils.isEmpty(numericSuffix) ? 1 : Integer.parseInt(numericSuffix);
 
-        List<String> currentNames = 
+        List<String> currentNames =
             this.daoFactory.getSearchDao().findValuesWithSamePrefix(entityClass, fieldName, alphaPrefix);
         for (String currentName : currentNames) {
             String suffix = StringUtils.substringAfter(currentName, alphaPrefix);
@@ -145,6 +146,16 @@ public class GenericDataServiceBean implements GenericDataService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void delete(PersistentObject object) {
-        daoFactory.getProjectDao().remove(object);
+        this.daoFactory.getProjectDao().remove(object);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property,
+            String value) {
+        return this.daoFactory.getSearchDao().filterCollection(collection, property, value);
+    }
+
+
 }

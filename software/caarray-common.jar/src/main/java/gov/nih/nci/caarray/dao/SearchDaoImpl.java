@@ -90,8 +90,11 @@ import gov.nih.nci.common.util.HibernateQueryWrapper;
 import gov.nih.nci.system.dao.QueryException;
 import gov.nih.nci.system.query.cql.CQLQuery;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -108,6 +111,7 @@ import org.hibernate.Session;
  */
 class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     private static final Log LOG = LogFactory.getLog(SearchDaoImpl.class);
+    private static final String UNCHECKED = "unchecked";
 
     /**
      * {@inheritDoc}
@@ -137,7 +141,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         return (runHqlQuery(hqlString, params));
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings(UNCHECKED)
     private List<AbstractCaArrayObject> runHqlQuery(final String hqlString, final List<?> params) {
         Session mySession = HibernateUtil.getCurrentSession();
         List<AbstractCaArrayObject> matchingEntities = new ArrayList<AbstractCaArrayObject>();
@@ -163,7 +167,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings(UNCHECKED)
     public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
         Query q = HibernateUtil.getCurrentSession().createQuery("from " + entityClass.getName() + " where id = :id");
         q.setLong("id", entityId);
@@ -173,7 +177,19 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings(UNCHECKED)
+    public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property,
+            String value) {
+        String hql = MessageFormat.format("where lower({0}) like :value order by {0}", property);
+        Query q = HibernateUtil.getCurrentSession().createFilter(collection, hql);
+        q.setParameter("value", value.toLowerCase(Locale.ENGLISH) + "%");
+        return q.list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
     public List<String> findValuesWithSamePrefix(Class<?> entityClass, String fieldName, String namePrefix) {
         String queryStr = "select " + fieldName + " from " + entityClass.getName()
                           + " where " + fieldName + " like :prefix";

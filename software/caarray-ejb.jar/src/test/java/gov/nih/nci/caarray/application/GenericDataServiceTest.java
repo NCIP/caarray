@@ -116,6 +116,7 @@ public class GenericDataServiceTest {
         GenericDataServiceBean serviceBean = new GenericDataServiceBean();
         serviceBean.setDaoFactory(this.daoFactoryStub);
         this.service = serviceBean;
+        ((SearchDaoStub)this.daoFactoryStub.getSearchDao()).reset();
     }
 
     @Test
@@ -142,6 +143,12 @@ public class GenericDataServiceTest {
         Project p = new Project();
         this.service.delete(p);
         assertEquals(p, ((LocalProjectDaoStub) this.daoFactoryStub.getProjectDao()).deletedObject);
+    }
+
+    @Test
+    public void testFilterCollection() {
+        this.service.filterCollection(null, null, null);
+        assertEquals(1, ((SearchDaoStub)this.daoFactoryStub.getSearchDao()).getCallsToFiltercollection());
     }
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {

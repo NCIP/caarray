@@ -463,14 +463,14 @@ var PermissionUtils = {
     PROFILE_INSTRUCTIONS_ID: 'access_profile_instructions',
     PROFILE_DETAILS_ID: 'access_profile_details',
     PROFILE_FORM_ID: 'profileForm',
-    
+
     changeExperimentAccess: function(theselect) {
         var selectVal = $F(theselect);
         var sampleSecLevels = SecurityLevel.sampleSecurityLevels[selectVal];
         if (sampleSecLevels.length == 0) {
             $(PermissionUtils.SAMPLE_LIST_ID).hide();
         } else {
-            $(PermissionUtils.SAMPLE_LIST_ID).show();      
+            $(PermissionUtils.SAMPLE_LIST_ID).show();
             var sampleSelects = $(PermissionUtils.SAMPLE_LIST_ID).getElementsBySelector(PermissionUtils.SAMPLE_DROPDOWN_SELECTOR);
             sampleSelects.each(function(sampleSelect) {
                 var currentValue = $F(sampleSelect);
@@ -482,7 +482,7 @@ var PermissionUtils = {
             });
         }
     },
-    
+
     loadProfile: function(url) {
         $(PermissionUtils.PROFILE_INSTRUCTIONS_ID).hide();
         $(PermissionUtils.PROFILE_LOADING_ID).show();
@@ -490,16 +490,16 @@ var PermissionUtils = {
               {evalScripts: true, onComplete: function() { $(PermissionUtils.PROFILE_LOADING_ID).hide();}});
         return false;
     },
-        
+
     cancelEditProfile: function() {
-        $(PermissionUtils.PROFILE_DETAILS_ID).update(''); 
-        $(PermissionUtils.PROFILE_INSTRUCTIONS_ID).show(); 
+        $(PermissionUtils.PROFILE_DETAILS_ID).update('');
+        $(PermissionUtils.PROFILE_INSTRUCTIONS_ID).show();
     },
-    
+
     saveProfile: function() {
-        $(PermissionUtils.PROFILE_SAVING_ID).show(); 
+        $(PermissionUtils.PROFILE_SAVING_ID).show();
         Caarray.submitAjaxForm(PermissionUtils.PROFILE_FORM_ID, PermissionUtils.PROFILE_DETAILS_ID);
-    }            
+    }
 }
 
 //

@@ -82,6 +82,9 @@
  */
 package gov.nih.nci.caarray.application;
 
+import java.util.Collection;
+import java.util.List;
+
 import gov.nih.nci.caarray.domain.PersistentObject;
 
 /**
@@ -136,4 +139,14 @@ public interface GenericDataService {
      * @return the copy name, as calculated according to the above algorithm
      */
     String getIncrementingCopyName(Class<?> entityClass, String fieldName, String name);
+
+    /**
+     * Filters the given collection where the given property = the given value.
+     * @param <T> the class of objects to expext in return.
+     * @param collection the collection to filter.
+     * @param property the property to filter on.
+     * @param value the value of the property.
+     * @return the list of objects representing the filtered set.
+     */
+    <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property, String value);
 }

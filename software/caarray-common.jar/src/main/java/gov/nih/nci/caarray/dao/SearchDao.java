@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.system.query.cql.CQLQuery;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -124,6 +125,17 @@ public interface SearchDao {
      * @return the entity.
      */
     <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId);
+
+    /**
+     * Filters the given collection where the given property = the given value.
+     * @param <T> the class of objects to expext in return.
+     * @param collection the collection to filter.
+     * @param property the property to filter on.
+     * @param value the value of the property.
+     * @return the list of objects representing the filtered set.
+     */
+     <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property,
+            String value);
 
     /**
      * Retrieve the list of values of the given field of the given entity that
