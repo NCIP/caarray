@@ -96,6 +96,7 @@ import com.thoughtworks.selenium.SeleneseTestCase;
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     private static final String PAGE_TIMEOUT = "180000";
+    protected  String RECORD_TIMEOUT = "240";
     protected int rowCount = 1;
 
     @Override
@@ -133,8 +134,12 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     protected void waitForText(String id) {
+        waitForText(id, Integer.valueOf(RECORD_TIMEOUT));
+    }
+    
+    protected void waitForText(String id, int waitTime) {
         for (int second = 0;; second++) {
-            if (second >= Integer.valueOf(PAGE_TIMEOUT))
+            if (second >= Integer.valueOf(waitTime))
                 fail("timeout");
             try {
                 if (selenium.isTextPresent(id))
@@ -142,7 +147,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
             } catch (Exception e) {
             }
             try {
-                Thread.sleep(200);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
