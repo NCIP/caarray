@@ -88,6 +88,7 @@ import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementSe
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.io.FileClosingInputStream;
 import gov.nih.nci.caarray.web.action.ActionHelper;
@@ -125,7 +126,7 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
  * @author Scott Miller
  *
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "PMD.ExcessiveClassLength" })
 @Validation
 @Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.",
                                                 expression = "selectedFiles.size() > 0"))
@@ -157,10 +158,16 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private String listAction;
     private String extensionFilter;
     private Set<String> allExtensions = new TreeSet<String>();
+    private FileType fileType;
 
     private String prepListUnimportedPage() {
         setListAction(ACTION_UNIMPORTED);
-        setFiles(getProject().getUnImportedFiles());
+        setFiles(new HashSet<CaArrayFile>());
+        for (CaArrayFile f : getProject().getUnImportedFiles()) {
+            if (getFileType() == null || getFileType().equals(f.getFileType())) {
+                getFiles().add(f);
+            }
+        }
         return ACTION_UNIMPORTED;
     }
 
@@ -178,6 +185,17 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     @SkipValidation
     public String listUnimported() {
         return prepListUnimportedPage();
+    }
+
+    /**
+     * Method to get the list of files.
+     *
+     * @return the string matching the result to follow
+     */
+    @SkipValidation
+    public String listUnimportedForm() {
+        prepListUnimportedPage();
+        return "listUnimportedForm";
     }
 
     /**
@@ -589,6 +607,20 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     public void setExtensionFilter(String extensionFilter) {
         this.extensionFilter = extensionFilter;
+    }
+
+    /**
+     * @return currently selected file type to filter for
+     */
+    public FileType getFileType() {
+        return fileType;
+    }
+
+    /**
+     * @param fileType file type to filter for
+     */
+    public void setFileType(FileType fileType) {
+        this.fileType = fileType;
     }
 
     /**

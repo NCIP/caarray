@@ -1,5 +1,7 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
+<c:url value="/protected/ajax/project/files/listUnimportedForm.action" var="listUnimportedFormUrl" />
+
 <script type="text/javascript">
     moreUploads = function() {
         formTable = $('uploadFileDiv').getElementsByTagName('table')[0];
@@ -11,6 +13,11 @@
         formTableTbody = formTable.getElementsByTagName('tbody')[0];
         formTableTbody.appendChild(newRow);
     }
+    
+    doFilter = function() {
+    	Caarray.submitAjaxForm('selectFilesForm', 'unimportedForm', {url: '${listUnimportedFormUrl}'});
+    }
+    
     setExperimentTitleHeader('${project.experiment.title}');
 </script>
 
@@ -43,19 +50,10 @@
         </div>
     </div>
 
-    <div class="tableboxpad">
-        <s:form action="protected/ajax/project/files/process" id="selectFilesForm" method="post" theme="simple">
-        	<s:select label="Filter By"
-        			  name="filter"
-        			  list="@gov.nih.nci.caarray.domain.file.FileType@values()"
-        			  headerKey=" "
-        			  headerValue="(All)"
-        			  onclick="FIXME()"/> 
-            <s:hidden name="project.id" value="${project.id}" />
-            <%@ include file="/WEB-INF/pages/project/files/listTable.jsp" %>
-        </s:form>
+	<div class="tableboxpad" id="unimportedForm">
+    	<%@ include file="/WEB-INF/pages/project/files/listUnimportedForm.jsp" %>
     </div>
-
+    
     <c:if test="${project.saveAllowed}">
         <caarray:actions divclass="actionsthin">
             <c:url value="/protected/ajax/project/files/deleteFiles.action" var="deleteUrl" />
