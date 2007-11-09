@@ -102,31 +102,31 @@ public enum SearchCategory implements ResourceBasedEnum {
                       new String[]{"p.experiment e"},
                       "e.title"),
     /**
-     * Array provider
+     * Array provider.
      */
     ARRAY_PROVIDER   ("search.category.arrayProvider",
                       new String[]{"p.experiment e", "e.arrayDesigns a"},
                       "a.provider.name"),
     /**
-     * Array design
+     * Array design.
      */
     ARRAY_DESIGN     ("search.category.arrayDesign",
                       new String[]{"p.experiment e", "e.arrayDesigns a"},
                       "a.name"),
     /**
-     * Organism
+     * Organism.
      */
     ORGANISM         ("search.category.organism",
                       new String[]{"p.experiment e"},
                       new String[]{"e.organism.commonName", "e.organism.scientificName"}),
     /**
-     * Sample
+     * Sample.
      */
     SAMPLE           ("search.category.sample",
                       new String[]{"p.experiment e", "e.samples s"},
                       "s.name"),
     /**
-     * Disease state
+     * Disease state.
      */
     DISEASE_STATE    ("search.category.diseaseState",
                       new String[]{"p.experiment e", "e.conditions c"},
@@ -147,7 +147,7 @@ public enum SearchCategory implements ResourceBasedEnum {
      * for this SearchCategory in the UI
      */
     public String getResourceKey() {
-        return resourceKey;
+        return this.resourceKey;
     }
 
     /**
@@ -156,13 +156,13 @@ public enum SearchCategory implements ResourceBasedEnum {
      * @return the fields to join against
      */
     public String[] getJoins() {
-        return join;
+        return this.join;
     }
 
     /**
      * @return the fields to search against in the HQL query.
      */
     public String[] getSearchFields() {
-        return searchFields;
+        return this.searchFields;
     }
 }
