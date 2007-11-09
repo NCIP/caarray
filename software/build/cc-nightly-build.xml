@@ -45,4 +45,20 @@
         <antcall target="test:functional:run-tests"/>
     </target>
 
+    <target name="test:selenium:start-server">
+        <echo message="Starting Selenium RC server on port ${selenium.server.port}" />
+		<exec executable="${psexec.exe.cmd}" dir=".">
+		   <arg line="-u ${psexec.system.username} -p ${psexec.system.password} -d -i -w . java -jar ${selenium-server.jar} -port ${selenium.server.port}" />
+		</exec>
+    </target>
+
+    <target name="deploy:stop-jboss">
+        <java classname="org.jboss.Shutdown" fork="true" spawn="false">
+            <arg line="-s ${jboss.server.hostname}:${jboss.server.jndi.port} -S" />
+            <classpath>
+                <pathelement location="${jboss.home}/bin/shutdown.jar" />
+            </classpath>
+        </java>
+        <sleep seconds="60"/>
+    </target>
 </project>
