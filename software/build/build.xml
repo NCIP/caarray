@@ -95,7 +95,7 @@
     <property name="commons-collections.jar" value="${lib.dir}/commons-collections-3.2.jar" />
     <property name="commons-io.jar" value="${lib.dir}/commons-io-1.3.2.jar" />
     <property name="commons-lang.jar" value="${lib.dir}/commons-lang-2.3.jar" />
-  <property name="commons-configuration.jar" value="${lib.dir}/commons-configuration-1.4.jar" />
+    <property name="commons-configuration.jar" value="${lib.dir}/commons-configuration-1.4.jar" />
     <property name="commons-logging.jar" value="${lib.dir}/commons-logging-1.1.jar" />
     <property name="dom4j.jar" value="${lib.dir}/dom4j-1.6.1.jar" />
     <property name="hibernate.jar" value="${lib.dir}/hibernate3.jar" />
@@ -896,11 +896,9 @@
     <!-- ** CHECK TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
 
-    <target name="check" unless="nocheck">
-        <antcall target="check:checkstyle" />
-        <antcall target="check:pmd" />
+    <target name="check" unless="nocheck" depends="check:checkstyle,check:pmd">
         <fail if="checkstyle.failure" message="There were Checkstyle failures." />
-        <fail if="pmd.failure" message="There were PMD failures." />
+        <!-- fail if="pmd.failure" message="There were PMD failures." / -->
     </target>
 
     <target name="check:checkstyle" depends="build:caarray-common.jar,build:caarray-ejb.jar,compile:caarray.war">
@@ -912,7 +910,10 @@
                 <pathelement location="${caarray-war.classes.dir}" />
                 <pathelement location="${cacore32-client.jar}" />
                 <pathelement location="${csmapi.jar}" />
+                <pathelement location="${commons-configuration.jar}" />
+                <pathelement location="${commons-lang.jar}" />
                 <pathelement location="${javaee.jar}" />
+                <pathelement location="${xwork-2.0.4.jar}" />
             </classpath>
             <formatter type="xml" tofile="${site.dir}/checkstyle/checkstyle.xml" />
             <fileset dir="${caarray-common.src.dir}" includes="**/*.java" />
