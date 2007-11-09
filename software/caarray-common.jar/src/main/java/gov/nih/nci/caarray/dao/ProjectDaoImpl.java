@@ -84,7 +84,10 @@ package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
+import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.caarray.util.HibernateUtil;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -134,5 +137,43 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         Query query = getCurrentSession().createQuery(hql);
         query.setParameter("status", ProposalStatus.PUBLIC);
         return query.list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public List<Project> searchByCategory(int maxResults, int firstResult,
+            String keyword, SearchCategory... categories) {
+        StringBuffer sb = new StringBuffer();
+        LinkedHashSet<String> joins = new LinkedHashSet<String>();
+        for (SearchCategory category : categories) {
+            if (category.getJoins() != null) {
+                for (String join : category.getJoins()) {
+                    joins.add(join);
+                }
+            }
+        }
+
+        sb.append("SELECT DISTINCT p FROM ").append(Project.class.getName()).append(" p");
+        for (String table : joins) {
+            sb.append(" LEFT JOIN ").append(table);
+        }
+        int i = 0;
+        for (SearchCategory category : categories) {
+            sb.append(i++ == 0 ? " WHERE (" : " OR (");
+            String[] fields = category.getSearchFields();
+            int j = 0;
+            for (String field : fields) {
+                if (j++ > 0) { sb.append(" OR "); }
+                sb.append(field).append(" LIKE :keyword");
+            }
+            sb.append(')');
+        }
+        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+        q.setString("keyword", "%" + keyword + "%");
+        q.setFirstResult(firstResult);
+        q.setMaxResults(maxResults);
+        return q.list();
     }
 }

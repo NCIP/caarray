@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.search.SearchCategory;
 
 import java.util.List;
 
@@ -113,4 +114,16 @@ public interface ProjectDao extends CaArrayDao {
      * @return the public projects
      */
     List<Project> getPublicProjects();
+
+    /**
+     * Performs a query for experiments by text matching for the given keyword.
+     *
+     * @param maxResults maximum number of results to return
+     * @param firstResult index of the first result to return
+     * @param keyword text to search for
+     * @param categories Indicates which categories to search.
+     *                   Passing null will search all categories.
+     * @return a list of matching experiments
+     */
+    List<Project> searchByCategory(int maxResults, int firstResult, String keyword, SearchCategory... categories);
 }

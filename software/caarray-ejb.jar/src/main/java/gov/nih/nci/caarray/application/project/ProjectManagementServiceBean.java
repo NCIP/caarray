@@ -97,6 +97,7 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
@@ -212,7 +213,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             throw new ProposalWorkflowException("Cannot transition project to status " + newStatus);
         }
         project.setStatus(newStatus);
-        
+
         // in progress projects get automatically set to browsable, if they weren't before
         if (newStatus == ProposalStatus.SUBMITTED) {
             project.setBrowsable(true);
@@ -220,7 +221,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         getProjectDao().save(project);
         LogUtil.logSubsystemExit(LOG);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -241,7 +242,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         if (!project.isSaveAllowed()) {
             LogUtil.logSubsystemExit(LOG);
             throw new ProposalWorkflowException("Cannot save project in current state");
-        }        
+        }
     }
 
 
@@ -392,5 +393,13 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
 
     private GenericDataService getGenericDataService() {
         return (GenericDataService) ServiceLocatorFactory.getLocator().lookup(GenericDataService.JNDI_NAME);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Project> searchByCategory(int maxResults, int firstResult,
+            String keyword, SearchCategory... categories) {
+        return getProjectDao().searchByCategory(maxResults, firstResult, keyword, categories);
     }
 }

@@ -1,30 +1,31 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
-    <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${results}" requestURI="${sortUrl}"
-        sort="list" id="row" pagesize="20" style="clear: none;">
+    <display:table class="searchresults" cellspacing="0" list="${results}" requestURI="${sortUrl}" id="row" style="clear: none;">
         <caarray:displayTagProperties/>
-        <display:column sortProperty="title" titleKey="search.result.experimentTitle" sortable="true">
-            <a href="#">${row.title}</a>
+        <display:setProperty name="pagination.sort.param" value="results.sortCriterion" />
+        <display:setProperty name="pagination.sortdirection.param" value="results.sortDirection" />
+        <display:setProperty name="pagination.pagenumber.param" value="results.pageNumber" />
+        <display:column property="experiment.title" titleKey="search.result.experimentTitle" sortable="true"
+                        url="/protected/project/details.action" paramId="project.id" paramProperty="id"/>
+        <display:column property="experiment.publicIdentifier" titleKey="search.result.experimentId" sortable="true"/>
+        <display:column property="experiment.assayType" titleKey="search.result.assayType" sortable="true" />
+        <display:column sortProperty="experiment.mainPointOfContact.contact.lastName" titleKey="search.result.pi" sortable="true">
+            <a href="mailto:${row.experiment.mainPointOfContact.contact.email}" class="email">${row.experiment.mainPointOfContact.contact.lastName}<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a>
         </display:column>
-        <display:column property="publicIdentifier" titleKey="search.result.experimentId" sortable="true"/>
-        <display:column property="assayType" titleKey="search.result.assayType" sortable="true" />
-        <display:column sortProperty="mainPointOfContact.contact.email" titleKey="search.result.pi" sortable="true">
-            <a href="mailto:${row.mainPointOfContact.contact.email}" class="email">${row.mainPointOfContact.contact.lastName}<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a>
-        </display:column>
-        <display:column property="organism.commonName" titleKey="search.result.organism" sortable="true"/>
+        <display:column property="experiment.organism.commonName" titleKey="search.result.organism" sortable="true"/>
         <display:column titleKey="search.result.diseaseState" sortable="true">
-            <c:forEach var="condition" items="${row.conditions}" varStatus="status">
+            <c:forEach var="condition" items="${row.experiment.conditions}" varStatus="status">
                 ${condition.value}<c:if test="${!status.last}">,</c:if>
             </c:forEach>
         </display:column>
-        <display:column sortProperty="sampleCount" titleKey="search.result.numSamples" sortable="true">
+        <display:column sortProperty="experiment.sampleCount" titleKey="search.result.numSamples" sortable="true">
             <c:url value="/protected/project/edit.action" var="editSamplesUrl">
                 <c:param name="project.id" value="${row.id}" />
                 <c:param name="initialTab" value="annotations" />
                 <c:param name="initialTab2" value="samples" />
             </c:url>
-            <a href="${editSamplesUrl}">${row.sampleCount}</a>
+            <a href="${editSamplesUrl}">${row.experiment.sampleCount}</a>
         </display:column>
-        <display:column property="publicReleaseDate" titleKey="search.result.updated" sortable="true"/>
+        <display:column property="experiment.publicReleaseDate" titleKey="search.result.updated" sortable="true"/>
     </display:table>
 </ajax:displayTag>

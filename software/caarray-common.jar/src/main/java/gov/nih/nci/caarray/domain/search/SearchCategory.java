@@ -92,40 +92,54 @@ public enum SearchCategory implements ResourceBasedEnum {
     /**
      * Experiment ID.
      */
-    EXPERIMENT_ID("search.category.experimentId"),
+    EXPERIMENT_ID    ("search.category.experimentId",
+                      new String[]{"p.experiment e"},
+                      "e.id"),
     /**
      * Experiment title.
      */
-    EXPERIMENT_TITLE("search.category.experimentTitle"),
+    EXPERIMENT_TITLE ("search.category.experimentTitle",
+                      new String[]{"p.experiment e"},
+                      "e.title"),
     /**
-     * Array provider.
+     * Array provider
      */
-    ARRAY_PROVIDER("search.category.arrayProvider"),
+    ARRAY_PROVIDER   ("search.category.arrayProvider",
+                      new String[]{"p.experiment e", "e.arrayDesigns a"},
+                      "a.provider.name"),
     /**
-     * Array design.
+     * Array design
      */
-    ARRAY_DESIGN("search.category.arrayDesign"),
+    ARRAY_DESIGN     ("search.category.arrayDesign",
+                      new String[]{"p.experiment e", "e.arrayDesigns a"},
+                      "a.name"),
     /**
-     * Organism.
+     * Organism
      */
-    ORGANISM("search.category.organism"),
+    ORGANISM         ("search.category.organism",
+                      new String[]{"p.experiment e"},
+                      new String[]{"e.organism.commonName", "e.organism.scientificName"}),
     /**
-     * Sample.
+     * Sample
      */
-    SAMPLE("search.category.sample"),
+    SAMPLE           ("search.category.sample",
+                      new String[]{"p.experiment e", "e.samples s"},
+                      "s.name"),
     /**
-     * Sample ID.
+     * Disease state
      */
-    SAMPLE_ID("search.category.sampleId"),
-    /**
-     * Disease State.
-     */
-    DISEASE_STATE("search.category.diseaseState");
+    DISEASE_STATE    ("search.category.diseaseState",
+                      new String[]{"p.experiment e", "e.conditions c"},
+                      "c.value");
 
     private final String resourceKey;
+    private final String[] join;
+    private final String[] searchFields;
 
-    SearchCategory(String resourceKey) {
+    SearchCategory(String resourceKey, String[] join, String... searchFields) {
         this.resourceKey = resourceKey;
+        this.join = join;
+        this.searchFields = searchFields;
     }
 
     /**
@@ -134,5 +148,21 @@ public enum SearchCategory implements ResourceBasedEnum {
      */
     public String getResourceKey() {
         return resourceKey;
+    }
+
+    /**
+     * These are the fields to join against in the HQL query.
+     * Is null if no join is necessary.
+     * @return the fields to join against
+     */
+    public String[] getJoins() {
+        return join;
+    }
+
+    /**
+     * @return the fields to search against in the HQL query.
+     */
+    public String[] getSearchFields() {
+        return searchFields;
     }
 }

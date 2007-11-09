@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-war
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-war Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-war Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-war Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-war Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,133 +80,138 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.project;
+package gov.nih.nci.caarray.web.ui;
 
-import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.permissions.AccessProfile;
-import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
-import gov.nih.nci.caarray.domain.project.Factor;
-import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.ProposalStatus;
-import gov.nih.nci.caarray.domain.sample.Sample;
-import gov.nih.nci.caarray.domain.sample.Source;
-import gov.nih.nci.caarray.domain.search.SearchCategory;
-
-import java.io.File;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+
+import org.displaytag.pagination.PaginatedList;
+import org.displaytag.properties.SortOrderEnum;
 
 /**
- * Basic sintub -- returns null for all methods returning objects. Subclass and override
- * to provide desired functionality in tests.
+ *
+ * @author Winston Cheng
+ *
+ * @param <T>
  */
-public class ProjectManagementServiceStub implements ProjectManagementService {
+public class PaginatedListImpl<T> implements PaginatedList {
+    private int fullListSize;
+    private List<T> list;
+    private int objectsPerPage;
+    private int pageNumber;
+    private String searchId;
+    private String sortCriterion;
+    private SortOrderEnum sortDirection;
 
-    private int filesAddedCount = 0;
-
-    public void reset() {
-        this.filesAddedCount = 0;
+    /**
+     * Constructor for a paginated list
+     *
+     * @param fullListSize full list size
+     * @param list result list
+     * @param objectsPerPage page size
+     * @param pageNumber page number
+     * @param searchId search id
+     * @param sortCriterion sort criterion
+     * @param sortDirection sort direction
+     */
+    public PaginatedListImpl(int fullListSize, List<T> list, int objectsPerPage, int pageNumber, String searchId,
+            String sortCriterion, SortOrderEnum sortDirection) {
+        this.fullListSize = fullListSize;
+        this.list = list;
+        this.objectsPerPage = objectsPerPage;
+        this.pageNumber = pageNumber;
+        this.searchId = searchId;
+        this.sortCriterion = sortCriterion;
+        this.sortDirection = sortDirection;
     }
 
     /**
-     * @return the filesAdded
+     * @return the size of the full result set
      */
-    public int getFilesAddedCount() {
-        return this.filesAddedCount;
+    public int getFullListSize() {
+        return fullListSize;
     }
-
-    public Set<CaArrayFile> addFiles(Project project, Set<File> files) {
-        return null;
+    /**
+     * @param fullListSize the fullListSize to set
+     */
+    public void setFullListSize(int fullListSize) {
+        this.fullListSize = fullListSize;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the current page of the result set
      */
-    public List<Project> getMyNonPublicProjects() {
-        return null;
+    public List<T> getList() {
+        return list;
+    }
+    /**
+     * @param list the list to set
+     */
+    public void setList(List<T> list) {
+        this.list = list;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the page size
      */
-    public List<Project> getPublicProjects() {
-        return null;
+    public int getObjectsPerPage() {
+        return objectsPerPage;
     }
-
-    public Project getProject(long id) {
-        return null;
-    }
-
-    public Organization getOrganization(long id) {
-        return null;
-    }
-
-    public void submitProject(Project project) {
-        // no-op
-    }
-
-    public void saveProject(Project project) throws ProposalWorkflowException {
-        // no-op
-    }
-
-    public CaArrayFile addFile(Project project, File file) {
-        return null;
-    }
-
-    public CaArrayFile addFile(Project project, File file, String filename) {
-        this.filesAddedCount++;
-        return null;
-    }
-
-    public Project toggleBrowsableStatus(long projectId) {
-        return null;
-    }
-
-    public File prepareForDownload(Collection<CaArrayFile> ids) {
-        return null;
+    /**
+     * @param objectsPerPage the objectsPerPage to set
+     */
+    public void setObjectsPerPage(int objectsPerPage) {
+        this.objectsPerPage = objectsPerPage;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the current page number
      */
-    public Factor copyFactor(Project project, long factorId) {
-        return null;
+    public int getPageNumber() {
+        return pageNumber;
+    }
+    /**
+     * @param pageNumber the pageNumber to set
+     */
+    public void setPageNumber(int pageNumber) {
+        this.pageNumber = pageNumber;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the search id
      */
-    public Sample copySample(Project project, long sampleId) {
-        return null;
+    public String getSearchId() {
+        return searchId;
+    }
+    /**
+     * @param searchId the searchId to set
+     */
+    public void setSearchId(String searchId) {
+        this.searchId = searchId;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the sort property
      */
-    public Source copySource(Project project, long sourceId) {
-        return null;
+    public String getSortCriterion() {
+        return sortCriterion;
+    }
+    /**
+     * @param sortCriterion the sortCriterion to set
+     */
+    public void setSortCriterion(String sortCriterion) {
+        this.sortCriterion = sortCriterion;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the sort direction
      */
-    public AccessProfile addGroupProfile(Project project, CollaboratorGroup group) {
-        return null;
+    public SortOrderEnum getSortDirection() {
+        return sortDirection;
     }
-
     /**
-     * {@inheritDoc}
+     * @param sortDirection the sortDirection to set
      */
-    public void changeProjectStatus(long projectId, ProposalStatus newStatus) throws ProposalWorkflowException {
-        // does nothing
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<Project> searchByCategory(int maxResults, int firstResult, String keyword, SearchCategory... categories) {
-        return null;
+    public void setSortDirection(SortOrderEnum sortDirection) {
+        this.sortDirection = sortDirection;
     }
 }

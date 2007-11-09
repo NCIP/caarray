@@ -82,12 +82,16 @@
  */
 package gov.nih.nci.caarray.web.action;
 
-import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.application.project.ProjectManagementService;
+import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.displaytag.properties.SortOrderEnum;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
@@ -98,6 +102,7 @@ import com.opensymphony.xwork2.ActionSupport;
  */
 public class SearchAction extends ActionSupport {
     private static final long serialVersionUID = -6250359716714235444L;
+    private static final int SEARCH_PAGE_SIZE = 20;
     // search parameters
     private String keyword;
     private SearchCategory category;
@@ -105,7 +110,8 @@ public class SearchAction extends ActionSupport {
 
     // fields for displaying search results
     private String currentTab;
-    private List<Experiment> results;
+    private PaginatedListImpl<Project> results =
+        new PaginatedListImpl<Project>(0, null, SEARCH_PAGE_SIZE, 1, null, "experiment.title", SortOrderEnum.ASCENDING);
     private Map<String, Integer> tabs;
 
     /**
@@ -160,7 +166,7 @@ public class SearchAction extends ActionSupport {
     /**
      * @return the experiments
      */
-    public List<Experiment> getResults() {
+    public PaginatedListImpl<Project> getResults() {
         return results;
     }
 
@@ -183,8 +189,13 @@ public class SearchAction extends ActionSupport {
      */
     public String experiments() {
         currentTab = "experiments";
-        // TODO get results for experiments
-        results = null;
+        ProjectManagementService pms = ActionHelper.getProjectManagementService();
+        SearchCategory[] categories = (category == null) ? SearchCategory.values() : new SearchCategory[]{category};
+        int batchSize = results.getObjectsPerPage();
+        List<Project> projects = pms.searchByCategory(batchSize,
+                batchSize * (results.getPageNumber() - 1), keyword, categories);
+        results.setFullListSize(projects.size());
+        results.setList(projects);
         return "tab";
     }
     /**
