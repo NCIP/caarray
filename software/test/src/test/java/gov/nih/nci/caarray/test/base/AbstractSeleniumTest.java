@@ -82,17 +82,21 @@
  */
 package gov.nih.nci.caarray.test.base;
 
+import java.io.File;
+import java.io.IOException;
+
 import com.thoughtworks.selenium.SeleneseTestCase;
 
 /**
- * Base class for all functional tests that use Selenium Remote Control. Provides
- * proper set up in order to be called by caArray's ant script.
- *
+ * Base class for all functional tests that use Selenium Remote Control. Provides proper set up in order to be called by
+ * caArray's ant script.
+ * 
  * @author tavelae
  */
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     private static final String PAGE_TIMEOUT = "180000";
+    protected int rowCount = 1;
 
     @Override
     public void setUp() throws Exception {
@@ -115,28 +119,54 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     protected void loginAsPrincipalInvestigator() {
         selenium.open("/caarray/");
-        
+
         selenium.type("j_username", "caarrayadmin");
         selenium.type("j_password", "caArray2!");
         clickAndWait("//span/span");
-        //selenium.click("link=Login");
-        
-        
+        // selenium.click("link=Login");
+
     }
 
     protected void waitForElementWithId(String id) {
-        selenium.waitForCondition("selenium.browserbot.getCurrentWindow().document.getElementById('" + id + "') != null", PAGE_TIMEOUT);
+        selenium.waitForCondition("selenium.browserbot.getCurrentWindow().document.getElementById('" + id
+                + "') != null", PAGE_TIMEOUT);
     }
+
     protected void waitForText(String id) {
         for (int second = 0;; second++) {
-            if (second >= Integer.valueOf(PAGE_TIMEOUT)) fail("timeout");
-            try { if (selenium.isTextPresent(id)) break; } catch (Exception e) {}
+            if (second >= Integer.valueOf(PAGE_TIMEOUT))
+                fail("timeout");
             try {
-                Thread.sleep(1000);
+                if (selenium.isTextPresent(id))
+                    break;
+            } catch (Exception e) {
+            }
+            try {
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
 
+    protected void upload(File file) throws IOException, InterruptedException {
+        String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
+        selenium.type("upload", filePath);
+        selenium.click("link=Upload");
+        for (int second = 0;; second++) {
+            if (second >= Integer.valueOf(PAGE_TIMEOUT))
+                fail("timeout");
+            try {
+                if (file.getName().equals(selenium.getTable("row." + (rowCount) + ".1")))
+                    break;
+            } catch (Exception e) {
+            }
+            Thread.sleep(200);
+
+        }
+        rowCount++;
+        assertTrue(selenium.isTextPresent(file.getName()));
+    }
+
+ 
 }

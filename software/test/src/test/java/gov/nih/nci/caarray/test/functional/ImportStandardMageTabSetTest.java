@@ -98,7 +98,6 @@ import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -107,35 +106,33 @@ import org.junit.Test;
 
 /**
  * Test case #7959.
- *
+ * 
  * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
  */
 public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 30;
-    private static final String TITLE =
-        "test" + System.currentTimeMillis();
-    private int cnt = 1;
+    private static final int PAGE_SIZE = 20;
+    private static final String TITLE = "TCGA Analysis of Gene Expression for Glioblastoma Multiforme Using Affymetrix HT_HG-U133A";
+
     @Test
     public void testImportAndRetrieval() throws Exception {
         loginAsPrincipalInvestigator();
 
-        // Create project
-        //String title = "test" + System.currentTimeMillis();
-        // Create project
+        // - Create project
         selenium.click("link=Create/Propose Experiment");
         waitForElementWithId("projectForm_project_experiment_title");
-        // type in the Experiment anme
+        // - type in the Experiment name
         selenium.type("projectForm_project_experiment_title", TITLE);
-        // save
+        // - save
         selenium.click("link=Save");
         waitForText("has been successfully saved");
-        // go to the data tab
+        // - go to the data tab
         selenium.click("link=Data");
-
         waitForText("Upload New File(s)");
-        selenium.click("link=Upload New File(s)");
 
+        // - start the upload
+        selenium.click("link=Upload New File(s)");
 
         // Upload the following files:
         // - MAGE-TAB IDF
@@ -154,19 +151,24 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         for (File celFile : MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY.listFiles(celFilter)) {
             upload(celFile);
         }
-        checkFileStatus("Uploaded");
+        checkUploadedFileStatus("Uploaded");
         waitForText("files uploaded");
         selenium.click("selectAllCheckbox");
-        // import button
+
+        // - import files
         selenium.click("link=Import");
         waitForText("files imported");
 
-        checkFileStatus("Imported");
-
+        // - switch to the "Imported" data tab
+        selenium.click("link=Imported Data");
+        waitForText("Imported Data");
+        Thread.sleep(1000);
+        //checkImportedFileStatus("Imported");
+        
+        // - back to the workspace
         clickAndWait("link=My Experiment Workspace");
         waitForText("Permissions");
-
-
+        
         // Using the Java remote API, verify:
         // - Expected entities exist
         // - Permissions are correct
@@ -175,31 +177,25 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         verifyDataViaJavaApi();
     }
 
-    private void checkFileStatus(String status) {
-        // first status are hyperlinks for this file set.
-        for (int i = 3; i < NUMBER_OF_FILES; i++) {
-            assertEquals(status, selenium.getText("//tr[" + i + "]/td[4]"));
-        }
+    // the imported page is paginated
+    private void checkImportedFileStatus(String status) {
+        
+        for (int i = 1; i < NUMBER_OF_FILES; i++) {
 
+            if (i % PAGE_SIZE == 0) {
+                // - switch to next page
+                System.out.println("Switched to next page");
+                selenium.click("link=Next");
+                waitForText("Imported Data");
+            }
+            assertEquals(status, selenium.getTable("row."+i+".2"));
+        }
     }
 
-    private void upload(File file) throws IOException, InterruptedException {
-        String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
-        selenium.type("upload", filePath);
-        selenium.click("link=Upload");
-        for (int second = 0;; second++) {
-            if (second >= 60)
-                fail("timeout");
-            try {
-                if (file.getName().equals(selenium.getTable("row." + (cnt) + ".1")))
-                    break;
-            } catch (Exception e) {
-            }
-            Thread.sleep(1000);
-
+    private void checkUploadedFileStatus(String status) {
+        for (int i = 1; i < NUMBER_OF_FILES; i++) {
+            assertEquals(status, selenium.getTable("row."+i+".3"));
         }
-        cnt++;
-        assertTrue(selenium.isTextPresent(file.getName()));
     }
 
     private void verifyDataViaJavaApi() throws ServerConnectionException {
@@ -239,6 +235,5 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         }
         return hybridizations;
     }
-
 
 }

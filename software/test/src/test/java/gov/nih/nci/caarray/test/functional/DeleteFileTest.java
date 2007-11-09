@@ -85,9 +85,6 @@ package gov.nih.nci.caarray.test.functional;
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.junit.Test;
 
 /**
@@ -99,39 +96,35 @@ public class DeleteFileTest extends AbstractSeleniumTest {
 
     @Test
     public void testNew() throws Exception {
-
+        String title = "test" + System.currentTimeMillis();
         loginAsPrincipalInvestigator();
 
-        String title = "test" + System.currentTimeMillis();
         // Create project
-        clickAndWait("link=Propose Project");
-        Thread.sleep(1000);
+        selenium.click("link=Create/Propose Experiment");
+        waitForElementWithId("projectForm_project_experiment_title");
+        // type in the Experiment anme
         selenium.type("projectForm_project_experiment_title", title);
-        selenium.click("//img[@alt='Save Draft']");
+        // save
+        selenium.click("link=Save");
+        waitForText("has been successfully saved");
+        // go to the data tab
+        selenium.click("link=Data");
 
-        clickAndWait("link=Return to Workspace");
-        clickAndWait("link=Propose Project");
-        clickAndWait("link=Return to Workspace");
-        clickAndWait("link=" + title);
-        selenium.click("link=Manage Files");
-        selenium.waitForPageToLoad("30000");
+        waitForText("Upload New File(s)");
+        selenium.click("link=Upload New File(s)");
+
         upload(MageTabDataFiles.TCGA_BROAD_IDF);
-        upload(MageTabDataFiles.TCGA_BROAD_SDRF);
-        selenium.click("File_import_file:0:selected");        
-        selenium.click("removeFile");
-        selenium.waitForPageToLoad("30000");
+        // - file is present
+        assertTrue(selenium.isTextPresent(MageTabDataFiles.TCGA_BROAD_IDF.getName()));
+        selenium.click("selectFilesForm_selectedFiles");      
+        selenium.click("link=Delete");
+        waitForText("files deleted");
+        // - File is deleted
         assertFalse(selenium.isTextPresent(MageTabDataFiles.TCGA_BROAD_IDF.getName()));
-        assertTrue(selenium.isTextPresent(MageTabDataFiles.TCGA_BROAD_SDRF.getName()));
     }
 
 
-    private void upload(File file) throws IOException {
-        String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
-        filePath = filePath.replaceAll("%20", " ");
-        selenium.type("document.File_upload.upload", filePath);
-        clickAndWait("uploadFile");
-        assertTrue(selenium.isTextPresent(file.getName()));
-    }
+
 
 
 

@@ -87,7 +87,6 @@ import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
 
 import org.junit.Test;
 
@@ -99,7 +98,6 @@ import org.junit.Test;
 public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 10;
-    private int cnt = 1;
 
     @Override
     public void tearDown() throws Exception {
@@ -114,12 +112,12 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         // Create project
         selenium.click("link=Create/Propose Experiment");
         waitForElementWithId("projectForm_project_experiment_title");
-        // type in the Experiment anme
+        // - type in the Experiment name
         selenium.type("projectForm_project_experiment_title", title);
-        // save
+        // - save
         selenium.click("link=Save");
         waitForText("has been successfully saved");
-        // go to the data tab
+        // - go to the data tab
         selenium.click("link=Data");
 
         waitForText("Upload New File(s)");
@@ -142,46 +140,30 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         for (File celFile : MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY.listFiles(celFilter)) {
             upload(celFile);
         }
-        checkFileStatus("Uploaded");
+        checkFileStatus("Uploaded", 3);
         waitForText("files uploaded");
         selenium.click("selectAllCheckbox");
-        // import button
+        // - import files
         selenium.click("link=Import");
         waitForText("files imported");
 
-        checkFileStatus("Imported");
+        // - click on the Imported data tab
+         selenium.click("link=Imported Data");
+        waitForText("Imported Data");
+        // - validate the status
+         checkFileStatus("Imported", 2);
 
         clickAndWait("link=My Experiment Workspace");
         waitForElementWithId("theForm");
         // Cannot assert the title because it changes (bug in software)
         // assertTrue(selenium.isTextPresent(title));
-    }
-
-    private void checkFileStatus(String status) {
-        // first status are hyperlinks for this file set.
-        for (int i = 3; i < NUMBER_OF_FILES; i++) {
-            assertEquals(status, selenium.getText("//tr[" + i + "]/td[4]"));
-        }
 
     }
 
-    private void upload(File file) throws IOException, InterruptedException {
-        String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
-        selenium.type("upload", filePath);
-        selenium.click("link=Upload");
-        for (int second = 0;; second++) {
-            if (second >= 60)
-                fail("timeout");
-            try {
-                if (file.getName().equals(selenium.getTable("row." + (cnt) + ".1")))
-                    break;
-            } catch (Exception e) {
-            }
-            Thread.sleep(1000);
-
+    private void checkFileStatus(String status, int column) {
+        for (int i = 1; i < NUMBER_OF_FILES; i++) {
+            assertEquals(status, selenium.getTable("row."+i+"."+column));
         }
-        cnt++;
-        assertTrue(selenium.isTextPresent(file.getName()));
     }
 
 }

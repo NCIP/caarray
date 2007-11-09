@@ -110,41 +110,47 @@ public class MultipleCelFileImporter extends AbstractSeleniumTest {
     private void importArrayDesign() throws IOException, InterruptedException {
         String title = "HG-U133 Plus 2 Array Design";
         // Create project
-        clickAndWait("link=Propose Project");
-        Thread.sleep(2000);
+        selenium.click("link=Create/Propose Experiment");
+        waitForElementWithId("projectForm_project_experiment_title");
+        // type in the Experiment anme
         selenium.type("projectForm_project_experiment_title", title);
-        selenium.click("//img[@alt='Save Draft']");
+        // save
+        selenium.click("link=Save");
+        waitForText("has been successfully saved");
+        // go to the data tab
+        selenium.click("link=Data");
 
-        clickAndWait("link=Return to Workspace");
-        clickAndWait("link=Propose Project");
-        clickAndWait("link=Return to Workspace");
+        waitForText("Upload New File(s)");
+        selenium.click("link=Upload New File(s)");
 
-        clickAndWait("link=" + title);
-        selenium.click("link=Manage Files");
-        selenium.waitForPageToLoad("30000");
         upload(AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF);
 
         // Import the files.
-        selectAllFiles(1);
-        clickAndWait("importFile");
-        clickAndWait("link=Return to Workspace");
+        selenium.click("selectAllCheckbox");
+        // import button
+        selenium.click("link=Import");
+        waitForText("files imported");
+        
+        clickAndWait("link=My Experiment Workspace");
     }
 
     public void importTenFiles() throws Exception {
+        rowCount = 1;
         String title = "test" + System.currentTimeMillis();
         // Create project
-        clickAndWait("link=Propose Project");
-        Thread.sleep(2000);
+        selenium.click("link=Create/Propose Experiment");
+        waitForElementWithId("projectForm_project_experiment_title");
+        // type in the Experiment anme
         selenium.type("projectForm_project_experiment_title", title);
-        selenium.click("//img[@alt='Save Draft']");
+        // save
+        selenium.click("link=Save");
+        waitForText("has been successfully saved");
+        // go to the data tab
+        selenium.click("link=Data");
 
-        clickAndWait("link=Return to Workspace");
-        clickAndWait("link=Propose Project");
-        clickAndWait("link=Return to Workspace");
-
-        clickAndWait("link=" + title);
-        selenium.click("link=Manage Files");
-        selenium.waitForPageToLoad("30000");
+        waitForText("Upload New File(s)");
+        selenium.click("link=Upload New File(s)");
+        
         upload(MageTabDataFiles.PERFORMANCE_10_IDF);
         upload(MageTabDataFiles.PERFORMANCE_10_SDRF);
         upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file1.CEL"));
@@ -159,25 +165,12 @@ public class MultipleCelFileImporter extends AbstractSeleniumTest {
         upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file10.CEL"));
 
         // Import the files.
-        selectAllFiles(12);
-        clickAndWait("importFile");
-        clickAndWait("link=Return to Workspace");
+        selenium.click("selectAllCheckbox");
+        // import button
+        selenium.click("link=Import");
+        waitForText("files imported");
+        clickAndWait("link=My Experiment Workspace");
     }
-
-    private void selectAllFiles(int numberOfFiles) {
-        for (int i = 0; i < numberOfFiles; i++) {
-            selenium.click("File_import_file:" + i + ":selected");
-        }
-    }
-    private void upload(File file) throws IOException {
-        String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
-        filePath = filePath.replaceAll("%20", " ");
-        selenium.type("document.File_upload.upload", filePath);
-        clickAndWait("uploadFile");
-        assertTrue(selenium.isTextPresent(file.getName()));
-    }
-
-
 
 
 }

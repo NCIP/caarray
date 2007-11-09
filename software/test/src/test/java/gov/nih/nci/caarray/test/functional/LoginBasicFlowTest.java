@@ -85,9 +85,6 @@ package gov.nih.nci.caarray.test.functional;
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.junit.Test;
 
 public class LoginBasicFlowTest extends AbstractSeleniumTest {
@@ -95,9 +92,7 @@ public class LoginBasicFlowTest extends AbstractSeleniumTest {
     /**
      *
      */
-    private static final String PROPOSE_PROJECT = "Propose Project";
     private static final String EXPERIMENT_WORKSPACE = "Experiment Workspace";
-    private static final String PROPOSE_EXPERIMENT = "Propose Experiment";
 
     @Test
     /*
@@ -108,8 +103,6 @@ public class LoginBasicFlowTest extends AbstractSeleniumTest {
         selenium.waitForPageToLoad("30000");
         // page after login is Experiment Workspace
         assertTrue(selenium.isTextPresent(EXPERIMENT_WORKSPACE));
-        // provided access is Propose Project
-        assertTrue(selenium.isTextPresent(PROPOSE_PROJECT));
    }
 
     /*
@@ -120,49 +113,53 @@ public class LoginBasicFlowTest extends AbstractSeleniumTest {
         String title = "empty Upload" + System.currentTimeMillis();
         loginAsPrincipalInvestigator();
 
-        selenium.waitForPageToLoad("30000");
-        clickAndWait("Propose Project");
-        assertTrue(selenium.isTextPresent(PROPOSE_EXPERIMENT));
-        selenium.type("title", title);
-        clickAndWait("submit");
-        assertTrue(selenium.isTextPresent(EXPERIMENT_WORKSPACE));
-        clickAndWait("link=" + title);
-        selenium.click("Manage Files");
-        selenium.waitForPageToLoad("30000");
-        selenium.click("uploadFile");
-        assertTrue(selenium.isTextPresent("required field."));
+        // Create project
+        selenium.click("link=Create/Propose Experiment");
+        waitForElementWithId("projectForm_project_experiment_title");
+        // type in the Experiment anme
+        selenium.type("projectForm_project_experiment_title", title);
+        // save
+        selenium.click("link=Save");
+        waitForText("has been successfully saved");
+        // go to the data tab
+        selenium.click("link=Data");
+
+        waitForText("Upload New File(s)");
+        selenium.click("link=Upload New File(s)");
+        selenium.click("link=Upload");
+               
+        waitForText("0 files uploaded");
+        assertTrue(selenium.isTextPresent("0 files uploaded"));
     }
     /*
      * login, create a project, import a file with validation errors, validate the error page
      */
     @Test
     public void testImportIDFWithValidationErrors() throws Exception {
-        String title = "validation errors" + System.currentTimeMillis();
         loginAsPrincipalInvestigator();
-        selenium.waitForPageToLoad("30000");
-        clickAndWait("Propose Project");
-        assertTrue(selenium.isTextPresent(PROPOSE_EXPERIMENT));
-        selenium.type("title", title);
-        clickAndWait("submit");
-        assertTrue(selenium.isTextPresent(EXPERIMENT_WORKSPACE));
-        clickAndWait("link=" + title);
-        selenium.click("Manage Files");
-        selenium.waitForPageToLoad("30000");
+
+        // Create project
+        String title = "test" + System.currentTimeMillis();
+        // Create project
+        selenium.click("link=Create/Propose Experiment");
+        waitForElementWithId("projectForm_project_experiment_title");
+        // type in the Experiment anme
+        selenium.type("projectForm_project_experiment_title", title);
+        // save
+        selenium.click("link=Save");
+        waitForText("has been successfully saved");
+        // go to the data tab
+        selenium.click("link=Data");
+
+        waitForText("Upload New File(s)");
+        selenium.click("link=Upload New File(s)");
         upload(MageTabDataFiles.TCGA_BROAD_IDF);
-        selenium.click("fileEntries:0:selected");
-        selenium.click("validateFile");
-        selenium.waitForPageToLoad("30000");
-        assertTrue(selenium.isTextPresent("VALIDATION_ERRORS"));
-        // click to show the validation errors
-        selenium.click("fileEntries:0:status");
-        selenium.waitForPageToLoad("30000");
+        selenium.click("selectFilesForm_selectedFiles");
+        selenium.click("link=Validate");
+        waitForText("files validated");
+        selenium.click("link=Failed Validation");
+        waitForText("Validation Messages");
         assertTrue(selenium.isTextPresent("Publication Title value is missing"));
-    }
-    private void upload(File file) throws IOException {
-        String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
-        selenium.type("upload", filePath);
-        clickAndWait("uploadFile");
-        assertTrue(selenium.isTextPresent(file.getName()));
     }
 
 }
