@@ -5,7 +5,7 @@ Prereqs: It is assumed you have Ant 1.7.0 and a JDK installed and in your System
    1. Perform a clean checkout from a different directory than your current caArray 2 development directory (if this exists)
          a) https://gforge.nci.nih.gov/svnroot/caarray2/trunk/ 
    2. Extract the ZIP file to your newly checked out [caarray2]/software/build directory. Files contained in this zip file are: DEV.properties, local.properties, QA.properties and id_dsa
-   3. Modify the ssh.key.file attribute in your [caarray2]/software/build/[DEV/QA].properties file to point to the location of your id_dsa file (SSH private key). The path must be fully qualified.
+   3. Modify the ssh.key.file attribute in your [DEV/QA].properties file to point to the location of your id_dsa file (SSH private key). The path must be fully qualified.
    4. For the DEV environment and from the command line in your [caarray2]/software/build directory, type: 
 
    (Without Tag)
