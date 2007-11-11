@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-war
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-war Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-war Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-war Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-war Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,141 +80,69 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.project;
+package gov.nih.nci.caarray.web.action;
 
-import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.permissions.AccessProfile;
-import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
-import gov.nih.nci.caarray.domain.project.Factor;
+import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.application.project.ProjectManagementService;
+import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.ProposalStatus;
-import gov.nih.nci.caarray.domain.sample.Sample;
-import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
-import java.io.File;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.opensymphony.xwork2.Action;
 
 /**
- * Basic sintub -- returns null for all methods returning objects. Subclass and override
- * to provide desired functionality in tests.
+ * @author Winston Cheng
+ *
  */
-public class ProjectManagementServiceStub implements ProjectManagementService {
+@SuppressWarnings("PMD")
+public class SearchActionTest {
+    private final SearchAction searchAction = new SearchAction();
+    private final LocalProjectManagementServiceStub projectServiceStub = new LocalProjectManagementServiceStub();
+    private static final int NUM_PROJECTS = 2;
 
-    private int filesAddedCount = 0;
-
-    public void reset() {
-        this.filesAddedCount = 0;
+    @Before
+    public void setUp() throws Exception {
+        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        locatorStub.addLookup(ProjectManagementService.JNDI_NAME, this.projectServiceStub);
     }
 
-    /**
-     * @return the filesAdded
-     */
-    public int getFilesAddedCount() {
-        return this.filesAddedCount;
+    @Test
+    public void testBasicSearch() throws Exception {
+        String result = this.searchAction.basicSearch();
+        assertEquals(NUM_PROJECTS, searchAction.getTabs().get(SearchAction.EXPERIMENTS_TAB));
+        assertEquals(Action.SUCCESS, result);
     }
 
-    public Set<CaArrayFile> addFiles(Project project, Set<File> files) {
-        return null;
+    @Test
+    public void testExperiments() throws Exception {
+        String result = this.searchAction.experiments();
+        PaginatedListImpl<Project> results = searchAction.getResults();
+        assertEquals(SearchAction.EXPERIMENTS_TAB, searchAction.getCurrentTab());
+        assertEquals(NUM_PROJECTS, results.getFullListSize());
+        assertEquals(NUM_PROJECTS, results.getList().size());
+        assertEquals("tab", result);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public List<Project> getMyNonPublicProjects() {
-        return null;
-    }
+    private static class LocalProjectManagementServiceStub extends ProjectManagementServiceStub {
+        public List<Project> searchByCategory(int maxResults, int firstResult, String keyword, SearchCategory... categories) {
+            List<Project> projects= new ArrayList<Project>();
+            for (int i = 0; i < NUM_PROJECTS; i++) {
+                projects.add(new Project());
+            }
+            return projects;
+        }
 
-    /**
-     * {@inheritDoc}
-     */
-    public List<Project> getPublicProjects() {
-        return null;
-    }
-
-    public Project getProject(long id) {
-        return null;
-    }
-
-    public Organization getOrganization(long id) {
-        return null;
-    }
-
-    public void submitProject(Project project) {
-        // no-op
-    }
-
-    public void saveProject(Project project) throws ProposalWorkflowException {
-        // no-op
-    }
-
-    public CaArrayFile addFile(Project project, File file) {
-        return null;
-    }
-
-    public CaArrayFile addFile(Project project, File file, String filename) {
-        this.filesAddedCount++;
-        return null;
-    }
-
-    public Project toggleBrowsableStatus(long projectId) {
-        return null;
-    }
-
-    public File prepareForDownload(Collection<CaArrayFile> ids) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Factor copyFactor(Project project, long factorId) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Sample copySample(Project project, long sampleId) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Source copySource(Project project, long sourceId) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public AccessProfile addGroupProfile(Project project, CollaboratorGroup group) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void changeProjectStatus(long projectId, ProposalStatus newStatus) throws ProposalWorkflowException {
-        // does nothing
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<Project> searchByCategory(int maxResults, int firstResult, String keyword, SearchCategory... categories) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public int searchCount(String keyword, SearchCategory... categories) {
-        return 0;
+        public int searchCount(String keyword, SearchCategory... categories) {
+            return NUM_PROJECTS;
+        }
     }
 
 }

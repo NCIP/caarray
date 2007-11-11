@@ -402,4 +402,11 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             String keyword, SearchCategory... categories) {
         return getProjectDao().searchByCategory(maxResults, firstResult, keyword, categories);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public int searchCount(String keyword, SearchCategory... categories) {
+        return getProjectDao().searchCount(keyword, categories);
+    }
 }

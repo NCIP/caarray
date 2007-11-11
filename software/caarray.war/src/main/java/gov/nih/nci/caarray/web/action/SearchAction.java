@@ -103,6 +103,11 @@ import com.opensymphony.xwork2.ActionSupport;
 public class SearchAction extends ActionSupport {
     private static final long serialVersionUID = -6250359716714235444L;
     private static final int SEARCH_PAGE_SIZE = 20;
+    /**
+     * name of the experiments tab, should have a method of the same name.
+     */
+    protected static final String EXPERIMENTS_TAB = "experiments";
+
     // search parameters
     private String keyword;
     private SearchCategory category;
@@ -110,7 +115,7 @@ public class SearchAction extends ActionSupport {
 
     // fields for displaying search results
     private String currentTab;
-    private PaginatedListImpl<Project> results =
+    private final PaginatedListImpl<Project> results =
         new PaginatedListImpl<Project>(0, null, SEARCH_PAGE_SIZE, 1, null, "experiment.title", SortOrderEnum.ASCENDING);
     private Map<String, Integer> tabs;
 
@@ -176,11 +181,11 @@ public class SearchAction extends ActionSupport {
      * @return success
      */
     public String basicSearch() {
+        SearchCategory[] categories = (category == null) ? SearchCategory.values() : new SearchCategory[]{category};
+        ProjectManagementService pms = ActionHelper.getProjectManagementService();
+        int projectCount = pms.searchCount(keyword, categories);
         tabs = new LinkedHashMap<String, Integer>();
-        // TODO get count for each tab
-        tabs.put("experiments", 0);
-        tabs.put("arrayDesigns", 0);
-        tabs.put("samples", 0);
+        tabs.put(EXPERIMENTS_TAB, projectCount);
         return Action.SUCCESS;
     }
     /**
@@ -188,34 +193,15 @@ public class SearchAction extends ActionSupport {
      * @return tab
      */
     public String experiments() {
-        currentTab = "experiments";
+        currentTab = EXPERIMENTS_TAB;
         ProjectManagementService pms = ActionHelper.getProjectManagementService();
         SearchCategory[] categories = (category == null) ? SearchCategory.values() : new SearchCategory[]{category};
         int batchSize = results.getObjectsPerPage();
         List<Project> projects = pms.searchByCategory(batchSize,
                 batchSize * (results.getPageNumber() - 1), keyword, categories);
-        results.setFullListSize(projects.size());
+        int projectCount = pms.searchCount(keyword, categories);
+        results.setFullListSize(projectCount);
         results.setList(projects);
-        return "tab";
-    }
-    /**
-     * Search action for the arrayDesigns tab.
-     * @return tab
-     */
-    public String arrayDesigns() {
-        currentTab = "arrayDesigns";
-        // TODO get results for array designs
-        results = null;
-        return "tab";
-    }
-    /**
-     * Search action for the samples tab.
-     * @return tab
-     */
-    public String samples() {
-        currentTab = "samples";
-        // TODO get results for samples
-        results = null;
         return "tab";
     }
 }
