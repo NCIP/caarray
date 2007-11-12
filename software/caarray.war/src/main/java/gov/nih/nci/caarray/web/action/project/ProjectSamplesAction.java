@@ -103,6 +103,7 @@ public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabActio
 
     private Sample currentSample = new Sample();
     private List<Source> itemsToAssociate = new ArrayList<Source>();
+    private List<Source> itemsToRemove = new ArrayList<Source>();
 
     /**
      * Default constructor.
@@ -139,8 +140,14 @@ public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabActio
     public String save() {
         // ideally this logic, along with the itemsToAssociate collection would be int he base class, but the
         // struts 2 type converter for persistent entity wasn't liking the generic collection.
-        getCurrentAssociationsCollection().addAll(this.itemsToAssociate);
-        for (Source source : this.itemsToAssociate) {
+        getCurrentAssociationsCollection().removeAll(getItemsToRemove());
+        for (Source source : getItemsToRemove()) {
+            source.getSamples().remove(getCurrentSample());
+            getGenericDataService().save(source);
+        }
+
+        getCurrentAssociationsCollection().addAll(getItemsToAssociate());
+        for (Source source : getItemsToAssociate()) {
             source.getSamples().add(getCurrentSample());
         }
         return super.save();
@@ -213,5 +220,19 @@ public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabActio
      */
     public void setItemsToAssociate(List<Source> itemsToAssociate) {
         this.itemsToAssociate = itemsToAssociate;
+    }
+
+    /**
+     * @return the itemsToRemove
+     */
+    public List<Source> getItemsToRemove() {
+        return this.itemsToRemove;
+    }
+
+    /**
+     * @param itemsToRemove the itemsToRemove to set
+     */
+    public void setItemsToRemove(List<Source> itemsToRemove) {
+        this.itemsToRemove = itemsToRemove;
     }
 }

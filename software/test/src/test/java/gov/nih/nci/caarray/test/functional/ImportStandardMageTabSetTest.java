@@ -106,13 +106,12 @@ import org.junit.Test;
 
 /**
  * Test case #7959.
- * 
+ *
  * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
  */
 public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 30;
-    private static final int PAGE_SIZE = 20;
     private static final String TITLE = "TCGA Analysis of Gene Expression for Glioblastoma Multiforme Using Affymetrix HT_HG-U133A";
 
     @Test
@@ -120,19 +119,19 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         loginAsPrincipalInvestigator();
 
         // - Create project
-        selenium.click("link=Create/Propose Experiment");
+        this.selenium.click("link=Create/Propose Experiment");
         waitForElementWithId("projectForm_project_experiment_title");
         // - type in the Experiment name
-        selenium.type("projectForm_project_experiment_title", TITLE);
+        this.selenium.type("projectForm_project_experiment_title", TITLE);
         // - save
-        selenium.click("link=Save");
+        this.selenium.click("link=Save");
         waitForText("has been successfully saved");
         // - go to the data tab
-        selenium.click("link=Data");
+        this.selenium.click("link=Data");
         waitForText("Upload New File(s)");
 
         // - start the upload
-        selenium.click("link=Upload New File(s)");
+        this.selenium.click("link=Upload New File(s)");
 
         // Upload the following files:
         // - MAGE-TAB IDF
@@ -153,22 +152,22 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         }
         checkUploadedFileStatus("Uploaded");
         waitForText("files uploaded");
-        selenium.click("selectAllCheckbox");
+        this.selenium.click("selectAllCheckbox");
 
         // - import files
-        selenium.click("link=Import");
+        this.selenium.click("link=Import");
         waitForText("files imported");
 
         // - switch to the "Imported" data tab
-        selenium.click("link=Imported Data");
+        this.selenium.click("link=Imported Data");
         waitForText("Imported Data");
         Thread.sleep(1000);
         //checkImportedFileStatus("Imported");
-        
+
         // - back to the workspace
         clickAndWait("link=My Experiment Workspace");
         waitForText("Permissions");
-        
+
         // Using the Java remote API, verify:
         // - Expected entities exist
         // - Permissions are correct
@@ -177,24 +176,9 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         verifyDataViaJavaApi();
     }
 
-    // the imported page is paginated
-    private void checkImportedFileStatus(String status) {
-        
-        for (int i = 1; i < NUMBER_OF_FILES; i++) {
-
-            if (i % PAGE_SIZE == 0) {
-                // - switch to next page
-                System.out.println("Switched to next page");
-                selenium.click("link=Next");
-                waitForText("Imported Data");
-            }
-            assertEquals(status, selenium.getTable("row."+i+".2"));
-        }
-    }
-
     private void checkUploadedFileStatus(String status) {
         for (int i = 1; i < NUMBER_OF_FILES; i++) {
-            assertEquals(status, selenium.getTable("row."+i+".3"));
+            assertEquals(status, this.selenium.getTable("row."+i+".3"));
         }
     }
 

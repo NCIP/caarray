@@ -157,5 +157,11 @@ public class GenericDataServiceBean implements GenericDataService {
         return this.daoFactory.getSearchDao().filterCollection(collection, property, value);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void save(PersistentObject object) {
+        this.daoFactory.getProjectDao().save(object);
+    }
 }

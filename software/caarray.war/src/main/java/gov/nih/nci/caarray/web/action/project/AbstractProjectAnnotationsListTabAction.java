@@ -123,7 +123,6 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
         }
         Collection<T> possibleValues = getGenericDataService().filterCollection(getPossibleAssociationsCollection(),
                 "name", getAssociatedValueName());
-        possibleValues.removeAll(getCurrentAssociationsCollection());
         setUnassociatedValues(possibleValues);
         return "associationValues";
     }

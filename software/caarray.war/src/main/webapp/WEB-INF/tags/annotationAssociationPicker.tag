@@ -3,12 +3,12 @@
         body-content="empty"%>
 
 <%@ attribute name="entityName" required="true"%>
+<%@ attribute name="associatedEntityName" required="true"%>
 <%@ attribute name="itemId" required="true"%>
 <%@ attribute name="baseId" required="true"%>
 <%@ include file="projectListTabCommon.tagf"%>
-
 <tr>
-    <td class="tdLabel"><label class="label">${plural}:</label></td>
+    <td class="tdLabel"><label class="label">${associatedEntityName}s:</label></td>
     <td>
         <s:if test="${editMode}">
             <div class="selectListWrapper">
@@ -20,27 +20,59 @@
                     <div id="${baseId}AutocompleteDiv"></div>
                 </div>
                 <div class="selectionside">
-                    <h4>Selected ${plural}</h4>
+                    <h4>Selected ${associatedEntityName}s</h4>
                     <div class="scrolltable2">
-                        <ul id="${baseId}SelectedItemDiv">
+                        <ul id="${baseId}SelectedItemDiv" class="selectedItemList">
                             <c:forEach items="${currentAssociationsCollection}" var="currentItem">
-                                <li>${currentItem.name}</li>
+                                <li onclick="removeSelection(this); "><input type="hidden" value="${currentItem.id}"/>${currentItem.name}</li>
                             </c:forEach>
                         </ul>
                     </div>
+                    <span id="${baseId}ItemsToRemove"></span>
                 </div>
             </div>
             <c:url value="/protected/ajax/project/listTab/${plural}/searchForAssociationValues.action" var="autocompleteUrl" />
             <script type="text/javascript">
-
                 processSelection = function(selectedItem) {
+                    var id = selectedItem.firstChild.value;
+                    if (id == null || id == '') {
+                        return;
+                    }
+                    var selectedItems = document.getElementById('${baseId}SelectedItemDiv').getElementsByTagName('input');
+                    for (i = 0; i < selectedItems.length; ++i) {
+                        if (selectedItems[i].value == id) {
+                            alert('${associatedEntityName} already selected.');
+                            return;
+                        }
+                    }
+
+                    var itemsToRemove = document.getElementById('${baseId}ItemsToRemove').getElementsByTagName('input');
+                    var found = false;
+                    for (i = 0; i < itemsToRemove.length && !found; ++i) {
+                        if (itemsToRemove[i].value == id) {
+                            Element.remove(itemsToRemove[i]);
+                            found = true;
+                        }
+                    }
+
                     var newItem = selectedItem.cloneNode(true);
-                    newItem.firstChild.name = 'itemsToAssociate';
+                    newItem.firstChild.name = (found) ? '' : 'itemsToAssociate';
+                    newItem.onclick = function() {removeSelection(this);}
                     $('${baseId}SelectedItemDiv').appendChild(newItem);
                 }
 
-                doNothing = function() {
+                removeSelection = function(selectedItem) {
+                    var inputName = selectedItem.firstChild.name;
+                    var id = selectedItem.firstChild.value;
+                    if (inputName != 'itemsToAssociate') {
+                        var newItem = selectedItem.firstChild.cloneNode(true);
+                        newItem.name = 'itemsToRemove';
+                        $('${baseId}ItemsToRemove').appendChild(newItem);
+                    }
+                    Element.remove(selectedItem);
                 }
+
+                doNothing = function() { }
 
                 var ${baseId}Autoupdater = new Ajax.Autocompleter("${baseId}AssociatedValueName", "${baseId}AutocompleteDiv", "${autocompleteUrl}",
                         {paramName: "associatedValueName", minChars: '0', indicator: '${baseId}ProgressMsg', frequency: 0.75,
@@ -52,11 +84,11 @@
         </s:if>
         <s:else>
             <div class="selectionside">
-                <h4>Associated ${plural}</h4>
+                <h4>Associated ${associatedEntityName}s</h4>
                 <div class="scrolltable2">
                     <ul id="${baseId}SelectedItemDiv">
-                        <c:forEach items="${currentAssociationsCollection}" var="currentItm">
-                            <li>${item.name}</li>
+                        <c:forEach items="${currentAssociationsCollection}" var="currentItem">
+                            <li>${currentItem.name}</li>
                         </c:forEach>
                     </ul>
                 </div>

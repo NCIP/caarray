@@ -116,6 +116,12 @@ public interface GenericDataService {
     void delete(PersistentObject object);
 
     /**
+     * Save the given object.
+     * @param object the object to save
+     */
+    void save(PersistentObject object);
+
+    /**
      * Generate a name suitable for assignment to a copy of an entity with the given name.
      * The idea is to add a numeric prefix to the end of the name, so that if the current
      * entity name is "Baz", the copy becomes "Baz2", then "Baz3", and so forth.

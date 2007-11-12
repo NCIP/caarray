@@ -113,12 +113,17 @@ UL.selectList
 UL.selectList
 { background-attachment:scroll }
 UL.selectList LI
-{ border-bottom:1px solid #eee; padding:0; }
-:lang(en) UL.selectList LI
-{ padding:2px; }
+{ border-bottom:1px solid #eee; background: transparent url("../images/ico_add.gif") no-repeat scroll 0%; padding: 2px 2px 2px 20px; cursor: pointer; }
 .selectListHeader
 { text-align: left; padding-left: 4px; border:1px solid #999; border-top:1px solid #ccc; background:#e5e5e5 url("../images/bg_grad3d.gif") repeat-x 0 -5px; width:251px; height: 25px; }
 table.form td .selectListHeader input
 {margin-bottom: 1px; margin-top: 3px;}
 .selectListFilterLabel
 {font-size:100%; line-height:1.4em; padding-bottom:6px; font-weight: bold;}
+
+UL.selectedItemList
+{ background:url("../images/bg_shadow.gif") repeat-x fixed top ; clear:both; text-align:left; overflow:auto; }
+UL.selectedItemList
+{ background-attachment:scroll }
+UL.selectedItemList li
+{ border-bottom:1px solid #eee; background: transparent url("../images/ico_cancel.gif") no-repeat scroll 0%; padding: 2px 2px 2px 20px; cursor: pointer; }
