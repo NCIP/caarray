@@ -84,14 +84,26 @@ package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
+import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.util.io.FileClosingInputStream;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -104,6 +116,8 @@ public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabActio
     private Sample currentSample = new Sample();
     private List<Source> itemsToAssociate = new ArrayList<Source>();
     private List<Source> itemsToRemove = new ArrayList<Source>();
+
+    private InputStream downloadStream;
 
     /**
      * Default constructor.
@@ -127,10 +141,31 @@ public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabActio
 
     /**
      * download the data for this sample.
-     * @return NYI
+     * @return download
+     * @throws IOException on file error
      */
-    public String download() {
-        return "notYetImplemented";
+    public String download() throws IOException {
+        ProjectManagementService pms = (ProjectManagementService)
+            ServiceLocatorFactory.getLocator().lookup(ProjectManagementService.JNDI_NAME);
+        Collection<CaArrayFile> files = new HashSet<CaArrayFile>();
+        for (Extract e : getCurrentSample().getExtracts()) {
+            for (LabeledExtract le : e.getLabeledExtracts()) {
+                for (Hybridization h : le.getHybridizations()) {
+                    files.add(h.getArrayData().getDataFile());
+                }
+            }
+        }
+
+        File zipFile = pms.prepareForDownload(files);
+        this.downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
+        return "download";
+    }
+
+    /**
+     * @return the stream containing the zip file download
+     */
+    public InputStream getDownloadStream() {
+        return this.downloadStream;
     }
 
     /**
