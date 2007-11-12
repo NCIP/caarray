@@ -143,7 +143,6 @@ public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabActio
         getCurrentAssociationsCollection().removeAll(getItemsToRemove());
         for (Source source : getItemsToRemove()) {
             source.getSamples().remove(getCurrentSample());
-            getGenericDataService().save(source);
         }
 
         getCurrentAssociationsCollection().addAll(getItemsToAssociate());

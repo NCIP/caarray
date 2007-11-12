@@ -128,12 +128,4 @@ public class GenericDataServiceStub implements GenericDataService {
     public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property, String value) {
         return null;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void save(PersistentObject object) {
-        // TODO Auto-generated method stub
-
-    }
 }
