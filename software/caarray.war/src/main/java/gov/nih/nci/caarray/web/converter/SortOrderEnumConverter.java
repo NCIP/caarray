@@ -96,6 +96,7 @@ public class SortOrderEnumConverter extends StrutsTypeConverter {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object convertFromString(Map context, String[] values, Class toClass) {
         if (values.length > 0 && toClass.equals(SortOrderEnum.class)) {
             if ("asc".equals(values[0])) { return SortOrderEnum.ASCENDING; }
@@ -108,6 +109,7 @@ public class SortOrderEnumConverter extends StrutsTypeConverter {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String convertToString(Map context, Object sortOrder) {
         if (sortOrder instanceof SortOrderEnum) {
             return ((SortOrderEnum) sortOrder).getName();

@@ -85,8 +85,6 @@ package gov.nih.nci.caarray.web.action.project;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
 import gov.nih.nci.caarray.domain.PersistentObject;
 
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
 /**
@@ -111,13 +109,8 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
     /**
      * Action to search for associated annotations.
      * @return the string matching the result to follow
-     * @throws NoSuchMethodException on error
-     * @throws IllegalAccessException on error
-     * @throws InvocationTargetException on error
-     * @throws UnsupportedEncodingException on error
      */
-    public String searchForAssociationValues() throws NoSuchMethodException, IllegalAccessException,
-        InvocationTargetException, UnsupportedEncodingException {
+    public String searchForAssociationValues() {
         if (getAssociatedValueName() ==  null) {
             setAssociatedValueName("");
         }

@@ -132,6 +132,7 @@ public class SearchActionTest {
     }
 
     private static class LocalProjectManagementServiceStub extends ProjectManagementServiceStub {
+        @Override
         public List<Project> searchByCategory(int maxResults, int firstResult, String keyword, SearchCategory... categories) {
             List<Project> projects= new ArrayList<Project>();
             for (int i = 0; i < NUM_PROJECTS; i++) {
@@ -140,6 +141,7 @@ public class SearchActionTest {
             return projects;
         }
 
+        @Override
         public int searchCount(String keyword, SearchCategory... categories) {
             return NUM_PROJECTS;
         }
