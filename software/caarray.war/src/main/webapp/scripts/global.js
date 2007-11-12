@@ -630,3 +630,63 @@ DownloadMgr.prototype.resetAddAll = function() {
   this.allNames = new Array();
   this.allSizes = new Array();
 }
+
+
+function AssociationPicker(baseId, associatedEntityName, entityName, projectId, itemId, url) {
+  this.baseId = baseId;
+  this.associatedEntityName = associatedEntityName;
+  this.entityName = entityName;
+  this.projectId = projectId;
+  this.itemId = itemId;
+  this.url = url;
+}
+
+
+var AssociationPickerUtils = {
+    processSelection : function(selectedItem, baseId, associatedEntityName) {
+        var id = selectedItem.firstChild.value;
+        if (id == null || id == '') {
+            return;
+        }
+        if ($(baseId + 'SelectedItemDiv').getElementsBySelector('input[value="' + id + '"]').length  > 0) {
+            alert(associatedEntityName + ' already selected.');
+            return;
+        }
+
+        var itemsToRemove = $(baseId + 'ItemsToRemove').getElementsBySelector('input[value="' + id + '"]');
+        var found = false;
+        if (itemsToRemove.length  > 0) {
+            Element.remove(itemsToRemove[0]);
+            found = true;
+        }
+
+        var newItem = selectedItem.cloneNode(true);
+        newItem.firstChild.name = (found) ? '' : 'itemsToAssociate';
+        newItem.onclick = function() {AssociationPickerUtils.removeSelection(this, baseId);}
+        $(baseId + 'SelectedItemDiv').appendChild(newItem);
+    },
+
+    removeSelection : function(selectedItem, baseId) {
+        var inputName = selectedItem.firstChild.name;
+        var id = selectedItem.firstChild.value;
+        if (inputName != 'itemsToAssociate') {
+            var newItem = selectedItem.firstChild.cloneNode(true);
+            newItem.name = 'itemsToRemove';
+            $(baseId + 'ItemsToRemove').appendChild(newItem);
+        }
+        Element.remove(selectedItem);
+    },
+
+    doNothing : function() { },
+
+    createAutoUpdater : function(baseId, url, projectId, entityName, itemId, associatedEntityName) {
+        autoUpdater =  new Ajax.Autocompleter(baseId + "AssociatedValueName", baseId +"AutocompleteDiv", url,
+            {paramName: "associatedValueName", minChars: '0', indicator: baseId + 'ProgressMsg', frequency: 0.75,
+             updateElement: function(selectedItem) {AssociationPickerUtils.processSelection(selectedItem, baseId, associatedEntityName);},
+             onHide: AssociationPickerUtils.doNothing, onShow: AssociationPickerUtils.doNothing,
+             parameters: 'project.id=' + projectId + '&current' + entityName + '.id=' + itemId });
+        Element.show(autoUpdater.update);
+        autoUpdater.activate();
+        return autoUpdater;
+    }
+}
