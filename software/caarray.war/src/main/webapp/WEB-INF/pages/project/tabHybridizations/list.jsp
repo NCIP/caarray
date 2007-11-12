@@ -18,10 +18,19 @@
             <display:column titleKey="experiment.hybridizations.relatedLabeledExtract">
                 <caarray:projectListTabRelatedItemsLinks relatedItems="${row.labeledExtracts}" relatedEntityName="LabeledExtract" nameProperty="name" isSubtab="true"/>
             </display:column>
-            <display:column titleKey="experiment.hybridizations.fileSize" sortable="true">
-                TODO
+            <display:column titleKey="experiment.files.uncompressedSize" sortable="true" sortProperty="arrayData.dataFile.uncompressedSize">
+                <fmt:formatNumber value="${row.arrayData.dataFile.uncompressedSize / 1024}" maxFractionDigits="0"/>
             </display:column>
-            <caarray:projectListTabActionColumns entityName="Hybridization" itemId="${row.id}" actions="!edit,download,!delete" isSubtab="true"/>
+            <caarray:projectListTabActionColumns entityName="Hybridization" itemId="${row.id}" actions="!edit,!delete" isSubtab="true"/>
+            <display:column titleKey="button.download">
+				<c:url value="/protected/ajax/project/listTab/Hybridizations/download.action" var="actionUrl">
+				    <c:param name="project.id" value="${project.id}" />
+				    <c:param name="currentHybridization.id" value="${row.id}" />
+				</c:url>
+		        <a href="${actionUrl}">
+	            	<img src="<c:url value="/images/ico_download.gif"/>" alt="<fmt:message key="button.download"/>">
+		        </a>
+            </display:column>
         </display:table>
     </ajax:displayTag>
 

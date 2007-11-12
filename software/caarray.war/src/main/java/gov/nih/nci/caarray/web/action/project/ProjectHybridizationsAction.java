@@ -83,11 +83,19 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
+import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.util.io.FileClosingInputStream;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.apache.commons.lang.NotImplementedException;
 
@@ -99,6 +107,8 @@ public class ProjectHybridizationsAction extends AbstractProjectListTabAction {
     private static final long serialVersionUID = 1L;
 
     private Hybridization currentHybridization = new Hybridization();
+
+    private InputStream downloadStream;
 
     /**
      * Default constructor.
@@ -131,10 +141,23 @@ public class ProjectHybridizationsAction extends AbstractProjectListTabAction {
 
     /**
      * download the data for the hyb.
-     * @return NYI
+     * @return download
+     * @throws IOException on file error
      */
-    public String download() {
-        return "notYetImplemented";
+    public String download() throws IOException {
+        ProjectManagementService pms = (ProjectManagementService)
+            ServiceLocatorFactory.getLocator().lookup(ProjectManagementService.JNDI_NAME);
+        File zipFile = pms.prepareForDownload(Collections.singleton(getCurrentHybridization().getArrayData()
+                                                                                             .getDataFile()));
+        this.downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
+        return "download";
+    }
+
+    /**
+     * @return the stream containing the zip file download
+     */
+    public InputStream getDownloadStream() {
+        return this.downloadStream;
     }
 
     /**
