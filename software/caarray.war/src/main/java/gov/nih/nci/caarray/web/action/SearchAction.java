@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.web.action;
 
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
@@ -198,7 +199,9 @@ public class SearchAction extends ActionSupport {
         SearchCategory[] categories = (category == null) ? SearchCategory.values() : new SearchCategory[]{category};
         int pageSize = results.getObjectsPerPage();
         int index = pageSize * (results.getPageNumber() - 1);
-        List<Project> projects = pms.searchByCategory(pageSize, index, keyword, categories);
+        String dir = SortOrderEnum.DESCENDING.getName().equals(results.getSortDirection()) ? "desc" : "asc";
+        PageSortParams psp = new PageSortParams(pageSize, index, results.getSortCriterion(), dir);
+        List<Project> projects = pms.searchByCategory(psp, keyword, categories);
         int projectCount = pms.searchCount(keyword, categories);
         results.setFullListSize(projectCount);
         results.setList(projects);

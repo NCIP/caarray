@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 
 import java.util.Collections;
@@ -120,7 +121,7 @@ public class ProjectDaoStub extends AbstractDaoStub implements ProjectDao {
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public List<Project> searchByCategory(int maxResults, int firstResult, String keyword, SearchCategory... categories) {
+    public List<Project> searchByCategory(PageSortParams params, String keyword, SearchCategory... categories) {
         return Collections.emptyList();
     }
 

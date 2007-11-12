@@ -97,6 +97,7 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
@@ -398,9 +399,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public List<Project> searchByCategory(int maxResults, int firstResult,
-            String keyword, SearchCategory... categories) {
-        return getProjectDao().searchByCategory(maxResults, firstResult, keyword, categories);
+    public List<Project> searchByCategory(PageSortParams params, String keyword, SearchCategory... categories) {
+        return getProjectDao().searchByCategory(params, keyword, categories);
     }
 
     /**

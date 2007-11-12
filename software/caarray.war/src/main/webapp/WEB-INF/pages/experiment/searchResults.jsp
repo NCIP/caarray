@@ -7,11 +7,6 @@
     <h1>Search Results</h1>
     <div class="padme">
         <h2>Results for: "<strong>${keyword}</strong>"</h2>
-        <p class="small">
-            <strong>X items</strong> found in <strong>X categories</strong> across <strong>X locations</strong>.
-            Display in list:
-            <s:select name="location" list="#{'NCICB':'NCICB'}" headerKey="" headerValue="(All Locations)"/>
-        </p>
         <ajax:tabPanel panelStyleId="tabs" panelStyleClass="tabs2" currentStyleClass="active" contentStyleId="tabboxwrapper" contentStyleClass="tabboxwrapper"
                 postFunction="TabUtils.setSelectedTab" preFunction="TabUtils.showLoadingText">
             <s:iterator value="tabs.entrySet()" status="myStatus">

@@ -98,9 +98,7 @@ public class SortOrderEnumConverter extends StrutsTypeConverter {
      */
     @Override
     public Object convertFromString(Map context, String[] values, Class toClass) {
-        if (values.length > 0 && toClass.equals(SortOrderEnum.class)) {
-            if ("asc".equals(values[0])) { return SortOrderEnum.ASCENDING; }
-            if ("desc".equals(values[0])) { return SortOrderEnum.DESCENDING; }
+        if (values != null && values.length > 0 && toClass.equals(SortOrderEnum.class)) {
             return SortOrderEnum.fromName(values[0]);
         }
         return null;

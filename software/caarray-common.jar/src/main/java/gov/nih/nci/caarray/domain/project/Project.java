@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.util.Protectable;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
@@ -108,6 +109,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -138,6 +141,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private AccessProfile hostProfile = new AccessProfile();
     private Map<CollaboratorGroup, AccessProfile> groupProfiles = new HashMap<CollaboratorGroup, AccessProfile>();
     private boolean browsable = true;
+    private Date lastUpdated = new Date();
 
     /**
      * Hibernate and castor constructor.
@@ -359,6 +363,25 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     public void setBrowsable(boolean browsable) {
         this.browsable = browsable;
+    }
+
+    /**
+     * Gets the last updated date.
+     *
+     * @return the last date this experiment was updated
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getLastUpdated() {
+        return this.lastUpdated;
+    }
+
+    /**
+     * Sets the last updated date.
+     *
+     * @param lastUpdated the last date this experiment was updated
+     */
+    public void setLastUpdated(final Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 
     /**

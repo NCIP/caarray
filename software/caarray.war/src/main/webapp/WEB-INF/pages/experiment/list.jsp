@@ -9,16 +9,16 @@
                         url="/protected/project/details.action" paramId="project.id" paramProperty="id"/>
         <display:column property="experiment.publicIdentifier" titleKey="search.result.experimentId" sortable="true"/>
         <display:column property="experiment.assayType" titleKey="search.result.assayType" sortable="true" />
-        <display:column sortProperty="experiment.mainPointOfContact.contact.lastName" titleKey="search.result.pi" sortable="true">
+        <display:column titleKey="search.result.pi">
             <a href="mailto:${row.experiment.mainPointOfContact.contact.email}" class="email">${row.experiment.mainPointOfContact.contact.lastName}<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a>
         </display:column>
         <display:column property="experiment.organism.commonName" titleKey="search.result.organism" sortable="true"/>
-        <display:column titleKey="search.result.diseaseState" sortable="true">
+        <display:column titleKey="search.result.diseaseState">
             <c:forEach var="condition" items="${row.experiment.conditions}" varStatus="status">
                 ${condition.value}<c:if test="${!status.last}">,</c:if>
             </c:forEach>
         </display:column>
-        <display:column sortProperty="experiment.sampleCount" titleKey="search.result.numSamples" sortable="true">
+        <display:column titleKey="search.result.numSamples">
             <c:url value="/protected/project/edit.action" var="editSamplesUrl">
                 <c:param name="project.id" value="${row.id}" />
                 <c:param name="initialTab" value="annotations" />
@@ -26,6 +26,8 @@
             </c:url>
             <a href="${editSamplesUrl}">${row.experiment.sampleCount}</a>
         </display:column>
-        <display:column property="experiment.publicReleaseDate" titleKey="search.result.updated" sortable="true"/>
+        <display:column sortProperty="lastUpdated" titleKey="search.result.updated" sortable="true">
+            <fmt:formatDate value="${row.lastUpdated}" pattern="M/d/yyyy"/>
+        </display:column>
     </display:table>
 </ajax:displayTag>

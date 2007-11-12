@@ -82,11 +82,14 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
+import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -101,6 +104,20 @@ import org.hibernate.Query;
  */
 class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     private static final Log LOG = LogFactory.getLog(ProjectDaoImpl.class);
+
+    /**
+     * Saves a project by first updating the lastUpdated field, and then
+     * saves the entity to persistent storage, updating or inserting
+     * as necessary.
+     *
+     * @param persistentObject the entity to save
+     */
+    public void save(PersistentObject persistentObject) {
+        if (persistentObject instanceof Project) {
+            ((Project) persistentObject).setLastUpdated(new Date());
+        }
+        super.save(persistentObject);
+    }
 
     /**
      * Returns the <code>Project</code> with the id given, or null if none exists.
@@ -143,11 +160,10 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public List<Project> searchByCategory(int maxResults, int firstResult,
-            String keyword, SearchCategory... categories) {
-        Query q = getSearchQuery(false, keyword, categories);
-        q.setFirstResult(firstResult);
-        q.setMaxResults(maxResults);
+    public List<Project> searchByCategory(PageSortParams params, String keyword, SearchCategory... categories) {
+        Query q = getSearchQuery(false, params, keyword, categories);
+        q.setFirstResult(params.getIndex());
+        q.setMaxResults(params.getPageSize());
         return q.list();
     }
 
@@ -155,11 +171,11 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      * {@inheritDoc}
      */
     public int searchCount(String keyword, SearchCategory... categories) {
-        Query q = getSearchQuery(true, keyword, categories);
+        Query q = getSearchQuery(true, null, keyword, categories);
         return ((Long) q.uniqueResult()).intValue();
     }
 
-    private Query getSearchQuery(boolean count, String keyword, SearchCategory... categories) {
+    private Query getSearchQuery(boolean count, PageSortParams params, String keyword, SearchCategory... categories) {
         StringBuffer sb = new StringBuffer();
         if (count) {
             sb.append("SELECT COUNT(DISTINCT p)");
@@ -169,6 +185,9 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         sb.append(" FROM ").append(Project.class.getName()).append(" p");
         sb.append(getJoinClause(categories));
         sb.append(getWhereClause(categories));
+        if (!count) {
+            sb.append(getOrderByClause(params));
+        }
         Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
         q.setString("keyword", "%" + keyword + "%");
         return q;
@@ -203,5 +222,12 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             sb.append(')');
         }
         return sb.toString();
+    }
+    private String getOrderByClause(PageSortParams params) {
+        if (params.getSortCriterion() != null) {
+            return " ORDER BY p." + params.getSortCriterion() + " " + params.getSortDirection();
+        } else {
+            return "";
+        }
     }
 }

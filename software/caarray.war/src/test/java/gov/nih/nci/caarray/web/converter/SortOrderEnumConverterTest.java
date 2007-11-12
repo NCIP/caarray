@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common.jar
+ * source code form and machine readable, binary, object code form. The caarray-war
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-common.jar Software License (the License) is between NCI and You. You (or
+ * This caarray-war Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-common.jar Software to (i) use, install, access, operate,
+ * its rights in the caarray-war Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common.jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-common.jar Software and any
+ * and prepare derivative works of the caarray-war Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-war Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,58 +80,59 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.dao;
+package gov.nih.nci.caarray.web.converter;
 
-import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.search.PageSortParams;
-import gov.nih.nci.caarray.domain.search.SearchCategory;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-import java.util.List;
+import org.displaytag.properties.SortOrderEnum;
+import org.junit.Test;
 
 /**
- * DAO for entities in the <code>gov.nih.nci.caarray.domain.project</code> package.
+ * @author Winston Cheng
  *
- * @author Rashmi Srinivasa
  */
-public interface ProjectDao extends CaArrayDao {
-    /**
-     * Returns the <code>Project</code> with the id given.
-     *
-     * @param id get <code>Project</code> matching this id
-     * @return the <code>Project</code>.
-     */
-    Project getProject(long id);
+@SuppressWarnings("PMD")
+public class SortOrderEnumConverterTest {
+    private static final String ASCENDING = "ascending";
+    private static final String DESCENDING = "descending";
 
-    /**
-     * Returns all projects.
-     *
-     * @return all projects for the given user.
-     */
-    List<Project> getNonPublicProjectsForUser();
+    @Test
+    public void testFromString() {
+        SortOrderEnumConverter converter = new SortOrderEnumConverter();
 
+        String[] str = null;
+        SortOrderEnum soe = (SortOrderEnum) converter.convertFromString(null, str, SortOrderEnum.class);
+        assertNull(soe);
 
-    /**
-     * Get all public projects.
-     * @return the public projects
-     */
-    List<Project> getPublicProjects();
+        str = new String[]{};
+        soe = (SortOrderEnum) converter.convertFromString(null, str, SortOrderEnum.class);
+        assertNull(soe);
 
-    /**
-     * Performs a query for experiments by text matching for the given keyword.
-     *
-     * @param params paging and sorting parameters
-     * @param keyword text to search for
-     * @param categories Indicates which categories to search.
-     *                   Passing null will search all categories.
-     * @return a list of matching experiments
-     */
-    List<Project> searchByCategory(PageSortParams params, String keyword, SearchCategory... categories);
+        str = new String[]{""};
+        soe = (SortOrderEnum) converter.convertFromString(null, str, SortOrderEnum.class);
+        assertNull(soe);
 
-    /**
-     * Gets the count of search results matching the given keyword.
-     * @param keyword keyword to search for
-     * @param categories categories to search
-     * @return number of results
-     */
-    int searchCount(String keyword, SearchCategory... categories);
+        str[0] = DESCENDING;
+        soe = (SortOrderEnum) converter.convertFromString(null, str, SortOrderEnum.class);
+        assertEquals(SortOrderEnum.DESCENDING, soe);
+
+        str[0] = ASCENDING;
+        soe = (SortOrderEnum) converter.convertFromString(null, str, SortOrderEnum.class);
+        assertEquals(SortOrderEnum.ASCENDING, soe);
+    }
+
+    @Test
+    public void testToString() {
+        SortOrderEnumConverter converter = new SortOrderEnumConverter();
+
+        String str = converter.convertToString(null, null);
+        assertNull(str);
+
+        str = converter.convertToString(null, SortOrderEnum.ASCENDING);
+        assertEquals(ASCENDING,str);
+
+        str = converter.convertToString(null, SortOrderEnum.DESCENDING);
+        assertEquals(DESCENDING,str);
+    }
 }

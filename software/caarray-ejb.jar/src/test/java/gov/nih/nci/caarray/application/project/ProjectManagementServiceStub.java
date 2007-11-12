@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 
 import java.io.File;
@@ -206,7 +207,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public List<Project> searchByCategory(int maxResults, int firstResult, String keyword, SearchCategory... categories) {
+    public List<Project> searchByCategory(PageSortParams params, String keyword, SearchCategory... categories) {
         return null;
     }
 

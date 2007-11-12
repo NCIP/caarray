@@ -86,6 +86,7 @@ import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
@@ -133,7 +134,7 @@ public class SearchActionTest {
 
     private static class LocalProjectManagementServiceStub extends ProjectManagementServiceStub {
         @Override
-        public List<Project> searchByCategory(int maxResults, int firstResult, String keyword, SearchCategory... categories) {
+        public List<Project> searchByCategory(PageSortParams params, String keyword, SearchCategory... categories) {
             List<Project> projects= new ArrayList<Project>();
             for (int i = 0; i < NUM_PROJECTS; i++) {
                 projects.add(new Project());
