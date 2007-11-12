@@ -660,8 +660,12 @@ var AssociationPickerUtils = {
             found = true;
         }
 
-        var newItem = selectedItem.cloneNode(true);
-        newItem.firstChild.name = (found) ? '' : 'itemsToAssociate';
+        var newItem = document.createElement("li");
+        var newInput = selectedItem.childNodes[0].cloneNode(false);
+        newInput.name = (found) ? '' : 'itemsToAssociate';
+        newItem.appendChild(newInput);
+        var newText = selectedItem.childNodes[1].cloneNode(false);
+        newItem.appendChild(newText);
         newItem.onclick = function() {AssociationPickerUtils.removeSelection(this, baseId);}
         $(baseId + 'SelectedItemDiv').appendChild(newItem);
     },
