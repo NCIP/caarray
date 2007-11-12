@@ -80,128 +80,38 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.action;
+package gov.nih.nci.caarray.web.converter;
 
-import gov.nih.nci.caarray.application.project.ProjectManagementService;
-import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.search.SearchCategory;
-import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
-
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
+import org.apache.struts2.util.StrutsTypeConverter;
 import org.displaytag.properties.SortOrderEnum;
-
-import com.opensymphony.xwork2.Action;
-import com.opensymphony.xwork2.ActionSupport;
 
 /**
  * @author Winston Cheng
  *
  */
-public class SearchAction extends ActionSupport {
-    private static final long serialVersionUID = -6250359716714235444L;
-    private static final int SEARCH_PAGE_SIZE = 20;
-    /**
-     * name of the experiments tab, should have a method of the same name.
-     */
-    protected static final String EXPERIMENTS_TAB = "experiments";
-
-    // search parameters
-    private String keyword;
-    private SearchCategory category;
-    private String location;
-
-    // fields for displaying search results
-    private String currentTab;
-    private final PaginatedListImpl<Project> results =
-        new PaginatedListImpl<Project>(0, null, SEARCH_PAGE_SIZE, 1, null, "experiment.title", SortOrderEnum.ASCENDING);
-    private Map<String, Integer> tabs;
+public class SortOrderEnumConverter extends StrutsTypeConverter {
 
     /**
-     * @return the keyword
+     * {@inheritDoc}
      */
-    public String getKeyword() {
-        return keyword;
-    }
-    /**
-     * @param keyword the keyword to set
-     */
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
-    }
-    /**
-     * @return the category
-     */
-    public SearchCategory getCategory() {
-        return category;
-    }
-    /**
-     * @param category the category to set
-     */
-    public void setCategory(SearchCategory category) {
-        this.category = category;
-    }
-    /**
-     * @return the location
-     */
-    public String getLocation() {
-        return location;
-    }
-    /**
-     * @param location the location to set
-     */
-    public void setLocation(String location) {
-        this.location = location;
-    }
-    /**
-     * @return the current tab
-     */
-    public String getCurrentTab() {
-        return currentTab;
-    }
-    /**
-     * Returns a map of tabs to #results in that tab.
-     * @return the tabs
-     */
-    public Map<String, Integer> getTabs() {
-        return tabs;
-    }
-    /**
-     * @return the experiments
-     */
-    public PaginatedListImpl<Project> getResults() {
-        return results;
+    public Object convertFromString(Map context, String[] values, Class toClass) {
+        if (values.length > 0 && toClass.equals(SortOrderEnum.class)) {
+            if ("asc".equals(values[0])) { return SortOrderEnum.ASCENDING; }
+            if ("desc".equals(values[0])) { return SortOrderEnum.DESCENDING; }
+            return SortOrderEnum.fromName(values[0]);
+        }
+        return null;
     }
 
     /**
-     * This action queries for the result counts of each tab.
-     * The tabs call other methods to return the actual data.
-     * @return success
+     * {@inheritDoc}
      */
-    public String basicSearch() {
-        SearchCategory[] categories = (category == null) ? SearchCategory.values() : new SearchCategory[]{category};
-        ProjectManagementService pms = ActionHelper.getProjectManagementService();
-        int projectCount = pms.searchCount(keyword, categories);
-        tabs = new LinkedHashMap<String, Integer>();
-        tabs.put(EXPERIMENTS_TAB, projectCount);
-        return Action.SUCCESS;
-    }
-    /**
-     * Search action for the experiments tab.
-     * @return tab
-     */
-    public String experiments() {
-        currentTab = EXPERIMENTS_TAB;
-        ProjectManagementService pms = ActionHelper.getProjectManagementService();
-        SearchCategory[] categories = (category == null) ? SearchCategory.values() : new SearchCategory[]{category};
-        int pageSize = results.getObjectsPerPage();
-        int index = pageSize * (results.getPageNumber() - 1);
-        List<Project> projects = pms.searchByCategory(pageSize, index, keyword, categories);
-        int projectCount = pms.searchCount(keyword, categories);
-        results.setFullListSize(projectCount);
-        results.setList(projects);
-        return "tab";
+    public String convertToString(Map context, Object sortOrder) {
+        if (sortOrder instanceof SortOrderEnum) {
+            return ((SortOrderEnum) sortOrder).getName();
+        }
+        return null;
     }
 }

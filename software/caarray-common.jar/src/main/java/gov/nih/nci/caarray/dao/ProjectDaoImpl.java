@@ -156,7 +156,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      */
     public int searchCount(String keyword, SearchCategory... categories) {
         Query q = getSearchQuery(true, keyword, categories);
-        return (Integer) q.uniqueResult();
+        return ((Long) q.uniqueResult()).intValue();
     }
 
     private Query getSearchQuery(boolean count, String keyword, SearchCategory... categories) {
