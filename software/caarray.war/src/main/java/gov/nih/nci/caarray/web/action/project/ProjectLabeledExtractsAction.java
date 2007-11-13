@@ -85,9 +85,12 @@ package gov.nih.nci.caarray.web.action.project;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
 
@@ -95,10 +98,12 @@ import org.apache.commons.lang.NotImplementedException;
  * Action implementing the samples tab.
  * @author Dan Kokotov
  */
-public class ProjectLabeledExtractsAction extends AbstractProjectListTabAction {
+public class ProjectLabeledExtractsAction extends AbstractProjectAnnotationsListTabAction<Extract> {
     private static final long serialVersionUID = 1L;
 
     private LabeledExtract currentLabeledExtract = new LabeledExtract();
+    private List<Extract> itemsToAssociate = new ArrayList<Extract>();
+    private List<Extract> itemsToRemove = new ArrayList<Extract>();
 
     /**
      * Default constructor.
@@ -157,7 +162,7 @@ public class ProjectLabeledExtractsAction extends AbstractProjectListTabAction {
      * @return the currentLabeledExtract
      */
     public LabeledExtract getCurrentLabeledExtract() {
-        return currentLabeledExtract;
+        return this.currentLabeledExtract;
     }
 
     /**
@@ -165,5 +170,59 @@ public class ProjectLabeledExtractsAction extends AbstractProjectListTabAction {
      */
     public void setCurrentLabeledExtract(LabeledExtract currentLabeledExtract) {
         this.currentLabeledExtract = currentLabeledExtract;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection getAnnotationCollectionToUpdate(Extract item) {
+        return item.getLabeledExtracts();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection<Extract> getCurrentAssociationsCollection() {
+        return getCurrentLabeledExtract().getExtracts();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Collection<Extract> getPossibleAssociationsCollection() {
+        return getExperiment().getExtracts();
+    }
+
+    /**
+     * @return the itemsToAssociate
+     */
+    @Override
+    public List<Extract> getItemsToAssociate() {
+        return this.itemsToAssociate;
+    }
+
+    /**
+     * @param itemsToAssociate the itemsToAssociate to set
+     */
+    public void setItemsToAssociate(List<Extract> itemsToAssociate) {
+        this.itemsToAssociate = itemsToAssociate;
+    }
+
+    /**
+     * @return the itemsToRemove
+     */
+    @Override
+    public List<Extract> getItemsToRemove() {
+        return this.itemsToRemove;
+    }
+
+    /**
+     * @param itemsToRemove the itemsToRemove to set
+     */
+    public void setItemsToRemove(List<Extract> itemsToRemove) {
+        this.itemsToRemove = itemsToRemove;
     }
 }

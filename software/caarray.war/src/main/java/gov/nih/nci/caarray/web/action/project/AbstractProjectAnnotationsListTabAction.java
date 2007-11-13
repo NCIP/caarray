@@ -86,6 +86,7 @@ import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
 import gov.nih.nci.caarray.domain.PersistentObject;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Class that manages the annotation tabs.
@@ -104,6 +105,26 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
      */
     public AbstractProjectAnnotationsListTabAction(String resourceKey) {
         super(resourceKey);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public String save() {
+        // ideally this logic, along with the itemsToAssociate collection would be int he base class, but the
+        // struts 2 type converter for persistent entity wasn't liking the generic collection.
+        getCurrentAssociationsCollection().removeAll(getItemsToRemove());
+        for (T item : getItemsToRemove()) {
+            getAnnotationCollectionToUpdate(item).remove(getItem());
+        }
+
+        getCurrentAssociationsCollection().addAll(getItemsToAssociate());
+        for (T item : getItemsToAssociate()) {
+            getAnnotationCollectionToUpdate(item).add(getItem());
+        }
+        return super.save();
     }
 
     /**
@@ -131,6 +152,24 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
      * @return the collection of the current associations.
      */
     public abstract Collection<T> getCurrentAssociationsCollection();
+
+    /**
+     * MEthod to get the collection of annotations on the association to update when changes are persisted.
+     * @param item the item to retrieve the collection from.
+     * @return the collection to update
+     */
+    public abstract Collection getAnnotationCollectionToUpdate(T item);
+
+    /**
+     * @return the itemsToAssociate
+     */
+    public abstract List<T> getItemsToAssociate();
+
+    /**
+     * @return the itemsToRemove
+     */
+    public abstract List<T> getItemsToRemove();
+
 
     /**
      * @return the associatedValueName

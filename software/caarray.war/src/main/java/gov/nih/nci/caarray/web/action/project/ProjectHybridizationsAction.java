@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.util.io.FileClosingInputStream;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
@@ -94,8 +95,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
 
@@ -103,10 +106,12 @@ import org.apache.commons.lang.NotImplementedException;
  * Action implementing the samples tab.
  * @author Dan Kokotov
  */
-public class ProjectHybridizationsAction extends AbstractProjectListTabAction {
+public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListTabAction<LabeledExtract> {
     private static final long serialVersionUID = 1L;
 
     private Hybridization currentHybridization = new Hybridization();
+    private List<LabeledExtract> itemsToAssociate = new ArrayList<LabeledExtract>();
+    private List<LabeledExtract> itemsToRemove = new ArrayList<LabeledExtract>();
 
     private InputStream downloadStream;
 
@@ -188,7 +193,7 @@ public class ProjectHybridizationsAction extends AbstractProjectListTabAction {
      * @return the currentHybridization
      */
     public Hybridization getCurrentHybridization() {
-        return currentHybridization;
+        return this.currentHybridization;
     }
 
     /**
@@ -196,5 +201,59 @@ public class ProjectHybridizationsAction extends AbstractProjectListTabAction {
      */
     public void setCurrentHybridization(Hybridization currentHybridization) {
         this.currentHybridization = currentHybridization;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection getAnnotationCollectionToUpdate(LabeledExtract item) {
+        return item.getHybridizations();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection<LabeledExtract> getCurrentAssociationsCollection() {
+        return getCurrentHybridization().getLabeledExtracts();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Collection<LabeledExtract> getPossibleAssociationsCollection() {
+        return getExperiment().getLabeledExtracts();
+    }
+
+    /**
+     * @return the itemsToAssociate
+     */
+    @Override
+    public List<LabeledExtract> getItemsToAssociate() {
+        return this.itemsToAssociate;
+    }
+
+    /**
+     * @param itemsToAssociate the itemsToAssociate to set
+     */
+    public void setItemsToAssociate(List<LabeledExtract> itemsToAssociate) {
+        this.itemsToAssociate = itemsToAssociate;
+    }
+
+    /**
+     * @return the itemsToRemove
+     */
+    @Override
+    public List<LabeledExtract> getItemsToRemove() {
+        return this.itemsToRemove;
+    }
+
+    /**
+     * @param itemsToRemove the itemsToRemove to set
+     */
+    public void setItemsToRemove(List<LabeledExtract> itemsToRemove) {
+        this.itemsToRemove = itemsToRemove;
     }
 }

@@ -86,8 +86,11 @@ import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.Sample;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
 
@@ -96,10 +99,12 @@ import org.apache.commons.lang.NotImplementedException;
  *
  * @author Dan Kokotov
  */
-public class ProjectExtractsAction extends AbstractProjectListTabAction {
+public class ProjectExtractsAction extends AbstractProjectAnnotationsListTabAction<Sample> {
     private static final long serialVersionUID = 1L;
 
     private Extract currentExtract = new Extract();
+    private List<Sample> itemsToAssociate = new ArrayList<Sample>();
+    private List<Sample> itemsToRemove = new ArrayList<Sample>();
 
     /**
      * Default constructor.
@@ -158,7 +163,7 @@ public class ProjectExtractsAction extends AbstractProjectListTabAction {
      * @return the currentExtract
      */
     public Extract getCurrentExtract() {
-        return currentExtract;
+        return this.currentExtract;
     }
 
     /**
@@ -166,5 +171,59 @@ public class ProjectExtractsAction extends AbstractProjectListTabAction {
      */
     public void setCurrentExtract(Extract currentExtract) {
         this.currentExtract = currentExtract;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection getAnnotationCollectionToUpdate(Sample item) {
+        return item.getExtracts();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection<Sample> getCurrentAssociationsCollection() {
+        return getCurrentExtract().getSamples();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Collection<Sample> getPossibleAssociationsCollection() {
+        return getExperiment().getSamples();
+    }
+
+    /**
+     * @return the itemsToAssociate
+     */
+    @Override
+    public List<Sample> getItemsToAssociate() {
+        return this.itemsToAssociate;
+    }
+
+    /**
+     * @param itemsToAssociate the itemsToAssociate to set
+     */
+    public void setItemsToAssociate(List<Sample> itemsToAssociate) {
+        this.itemsToAssociate = itemsToAssociate;
+    }
+
+    /**
+     * @return the itemsToRemove
+     */
+    @Override
+    public List<Sample> getItemsToRemove() {
+        return this.itemsToRemove;
+    }
+
+    /**
+     * @param itemsToRemove the itemsToRemove to set
+     */
+    public void setItemsToRemove(List<Sample> itemsToRemove) {
+        this.itemsToRemove = itemsToRemove;
     }
 }

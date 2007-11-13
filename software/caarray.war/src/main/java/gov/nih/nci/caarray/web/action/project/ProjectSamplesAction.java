@@ -114,10 +114,9 @@ public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabActio
     private static final long serialVersionUID = 1L;
 
     private Sample currentSample = new Sample();
+    private InputStream downloadStream;
     private List<Source> itemsToAssociate = new ArrayList<Source>();
     private List<Source> itemsToRemove = new ArrayList<Source>();
-
-    private InputStream downloadStream;
 
     /**
      * Default constructor.
@@ -166,25 +165,6 @@ public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabActio
      */
     public InputStream getDownloadStream() {
         return this.downloadStream;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String save() {
-        // ideally this logic, along with the itemsToAssociate collection would be int he base class, but the
-        // struts 2 type converter for persistent entity wasn't liking the generic collection.
-        getCurrentAssociationsCollection().removeAll(getItemsToRemove());
-        for (Source source : getItemsToRemove()) {
-            source.getSamples().remove(getCurrentSample());
-        }
-
-        getCurrentAssociationsCollection().addAll(getItemsToAssociate());
-        for (Source source : getItemsToAssociate()) {
-            source.getSamples().add(getCurrentSample());
-        }
-        return super.save();
     }
 
     /**
@@ -243,8 +223,18 @@ public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabActio
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Collection getAnnotationCollectionToUpdate(Source item) {
+        return item.getSamples();
+    }
+
+    /**
      * @return the itemsToAssociate
      */
+    @Override
     public List<Source> getItemsToAssociate() {
         return this.itemsToAssociate;
     }
@@ -259,6 +249,7 @@ public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabActio
     /**
      * @return the itemsToRemove
      */
+    @Override
     public List<Source> getItemsToRemove() {
         return this.itemsToRemove;
     }
