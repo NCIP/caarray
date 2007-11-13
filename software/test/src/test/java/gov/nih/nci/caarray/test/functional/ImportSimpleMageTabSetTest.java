@@ -151,6 +151,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
          selenium.click("link=Imported Data");
         waitForText("Imported Data");
         // - validate the status
+        Thread.sleep(3000);
          checkFileStatus("Imported", 2);
 
         clickAndWait("link=My Experiment Workspace");

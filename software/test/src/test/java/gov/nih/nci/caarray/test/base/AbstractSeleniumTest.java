@@ -166,8 +166,9 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
             if (second >= Integer.valueOf(timeOut))
                 fail("timeout");
             try {
-                if (file.getName().equals(selenium.getTable("row." + (rowCount) + ".1")))
+                if ("Uploaded".equalsIgnoreCase(selenium.getTable("row." + (rowCount) + ".3"))){
                     break;
+                }
             } catch (Exception e) {
             }
             Thread.sleep(1000);
