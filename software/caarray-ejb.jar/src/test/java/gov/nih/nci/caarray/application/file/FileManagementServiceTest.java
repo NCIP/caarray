@@ -62,6 +62,7 @@ import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorStub
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
@@ -97,6 +98,7 @@ public class FileManagementServiceTest {
             assertEquals(FileStatus.VALIDATED, file.getFileStatus());
         }
     }
+    
     @Test
     public void testImportFiles() {
         Project project = getTgaBroadTestProject();
@@ -104,6 +106,17 @@ public class FileManagementServiceTest {
         for (CaArrayFile file : project.getFiles()) {
             assertEquals(FileStatus.IMPORTED, file.getFileStatus());
         }
+    }
+    
+    @Test
+    public void testImportDoesntOverwriteExistingExperiment() {
+        Project project = getTgaBroadTestProject();
+        Experiment experiment = new Experiment();
+        String title = "title" + System.currentTimeMillis();
+        experiment.setTitle(title);
+        project.setExperiment(experiment);
+        fileManagementService.importFiles(project, project.getFileSet());
+        assertEquals(title, project.getExperiment().getTitle());
     }
 
     private Project getTgaBroadTestProject() {

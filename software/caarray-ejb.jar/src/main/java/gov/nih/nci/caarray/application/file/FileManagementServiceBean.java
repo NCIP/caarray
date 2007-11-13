@@ -169,7 +169,7 @@ public class FileManagementServiceBean implements FileManagementService {
         doValidate(fileAccessService, fileSet);
         if (fileSet.getStatus().equals(FileStatus.VALIDATED)) {
             importArrayDesigns(fileSet);
-            importAnnontation(fileAccessService, targetProject, fileSet);
+            importAnnotation(fileAccessService, targetProject, fileSet);
             importArrayData(fileSet);
         }
     }
@@ -182,7 +182,7 @@ public class FileManagementServiceBean implements FileManagementService {
         return new ArrayDesignImporter(fileSet, getArrayDesignService());
     }
 
-    private void importAnnontation(FileAccessService fileAccessService, Project targetProject, CaArrayFileSet fileSet) {
+    private void importAnnotation(FileAccessService fileAccessService, Project targetProject, CaArrayFileSet fileSet) {
         try {
             getMageTabImporter(fileAccessService).importFiles(targetProject, fileSet);
         } catch (MageTabParsingException e) {
