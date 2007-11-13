@@ -96,7 +96,9 @@ import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.ProjectDaoStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -107,12 +109,14 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -247,7 +251,7 @@ public class ProjectManagementServiceTest {
     }
 
     @Test
-    public void testDownload() throws IOException {
+    public void testDownload() throws IOException, ProposalWorkflowException {
         try {
             this.projectManagementService.prepareForDownload(null);
             fail();
@@ -271,6 +275,40 @@ public class ProjectManagementServiceTest {
         }
 
         File f = this.projectManagementService.prepareForDownload(Collections.singleton(file));
+        checkFile(file, f);
+
+        try {
+            this.projectManagementService.prepareHybsForDownload(null, null);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+
+        try {
+            this.projectManagementService.prepareHybsForDownload(null, new ArrayList<Hybridization>());
+            fail();
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+
+        Hybridization h = new Hybridization();
+        h.setArrayData(new RawArrayData());
+        h.getArrayData().setDataFile(file);
+        f = this.projectManagementService.prepareHybsForDownload(null, Collections.singleton(h));
+        checkFile(file, f);
+
+        f = this.projectManagementService.prepareHybsForDownload(project, Collections.singleton(h));
+        checkFile(file, f);
+
+        Hybridization h2 = new Hybridization();
+        h2.setArrayData(new RawArrayData());
+        CaArrayFile file2 = this.projectManagementService.addFile(new Project(), MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
+        h2.getArrayData().setDataFile(file2);
+        f = this.projectManagementService.prepareHybsForDownload(project, Arrays.asList(h, h2));
+        checkFile(file, f);
+    }
+
+    private void checkFile(CaArrayFile file, File f) throws FileNotFoundException, IOException {
         assertNotNull(f);
 
         // make sure it's a zip file

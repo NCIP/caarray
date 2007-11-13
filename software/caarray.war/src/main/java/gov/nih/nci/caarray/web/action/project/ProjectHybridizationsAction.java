@@ -152,8 +152,8 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
     public String download() throws IOException {
         ProjectManagementService pms = (ProjectManagementService)
             ServiceLocatorFactory.getLocator().lookup(ProjectManagementService.JNDI_NAME);
-        File zipFile = pms.prepareForDownload(Collections.singleton(getCurrentHybridization().getArrayData()
-                                                                                             .getDataFile()));
+        File zipFile = pms.prepareHybsForDownload(getProject(),
+                                                  Collections.singleton(getCurrentHybridization()));
         this.downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
         return "download";
     }

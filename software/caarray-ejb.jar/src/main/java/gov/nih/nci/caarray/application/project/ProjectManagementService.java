@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.project;
 
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.project.Factor;
@@ -212,9 +213,20 @@ public interface ProjectManagementService {
     File prepareForDownload(Collection<CaArrayFile> files) throws IOException;
 
     /**
+     * Prepares a collection of hybridizations for file download.
+     *
+     * @param p the project to restrict files to
+     * @param hybridizations the hybridizations to download files for
+     * @return the single zip archive with all files
+     * @throws IOException on I/O error
+     */
+    File prepareHybsForDownload(Project p, Collection<Hybridization> hybridizations) throws IOException;
+
+    /**
      * Make a copy of a sample belonging to given project, and add it to the new project.
      * The new sample's name will be derived from the original sample's name
-     * according to the scheme described in {@link GenericDataService#getIncrementingCopyName(Class, String, String)}
+     * according to the scheme described in
+     * {@link gov.nih.nci.caarray.application.GenericDataService#getIncrementingCopyName(Class, String, String)}
      * @param project the project to which the sample belongs
      * @param sampleId the id of the sample to copy
      * @return the new sample
@@ -225,7 +237,8 @@ public interface ProjectManagementService {
     /**
      * Make a copy of a source belonging to given project, and add it to the new project.
      * The new source's name will be derived from the original source's name
-     * according to the scheme described in {@link GenericDataService#getIncrementingCopyName(Class, String, String)}
+     * according to the scheme described in
+     * {@link gov.nih.nci.caarray.application.GenericDataService#getIncrementingCopyName(Class, String, String)}
      * @param project the project to which the source belongs
      * @param sourceId the id of the source to copy
      * @return the new source
@@ -236,7 +249,8 @@ public interface ProjectManagementService {
     /**
      * Make a copy of a factor belonging to given project, and add it to the new project.
      * The new factor's name will be derived from the original factor's name
-     * according to the scheme described in {@link GenericDataService#getIncrementingCopyName(Class, String, String)}
+     * according to the scheme described in
+     * {@link gov.nih.nci.caarray.application.GenericDataService#getIncrementingCopyName(Class, String, String)}
      * @param project the project to which the factor belongs
      * @param factorId the id of the factor to copy
      * @return the new factor

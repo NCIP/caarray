@@ -89,7 +89,9 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ContactDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.project.Factor;
@@ -109,6 +111,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -292,7 +295,13 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      */
     public File prepareForDownload(Collection<CaArrayFile> files) throws IOException {
         LogUtil.logSubsystemEntry(LOG, files);
+        File result = prepareForDownload(null, files);
+        LogUtil.logSubsystemExit(LOG);
 
+        return result;
+    }
+
+    private File prepareForDownload(Project p, Collection<CaArrayFile> files) throws IOException {
         if (files == null || files.isEmpty()) {
             throw new IllegalArgumentException("Files cannot be null or empty!");
         }
@@ -302,19 +311,20 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(result));
         FileAccessService svc = getFileAccessService();
         for (CaArrayFile caf : files) {
-            File f = svc.getFile(caf);
-            InputStream is = new BufferedInputStream(new FileInputStream(f));
+            if (p == null || p.equals(caf.getProject())) {
+                File f = svc.getFile(caf);
+                InputStream is = new BufferedInputStream(new FileInputStream(f));
 
-            ZipEntry ze = new ZipEntry(f.getName());
-            zos.putNextEntry(ze);
-            IOUtils.copy(is, zos);
-            zos.closeEntry();
-            is.close();
+                ZipEntry ze = new ZipEntry(f.getName());
+                zos.putNextEntry(ze);
+                IOUtils.copy(is, zos);
+                zos.closeEntry();
+                is.close();
+            }
         }
         zos.close();
 
         svc.closeFiles();
-        LogUtil.logSubsystemExit(LOG);
         return result;
     }
 
@@ -408,5 +418,26 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      */
     public int searchCount(String keyword, SearchCategory... categories) {
         return getProjectDao().searchCount(keyword, categories);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public File prepareHybsForDownload(Project p, Collection<Hybridization> hybridizations) throws IOException {
+        LogUtil.logSubsystemEntry(LOG, p, hybridizations);
+        Collection<CaArrayFile> files = new HashSet<CaArrayFile>();
+        if (hybridizations != null && !hybridizations.isEmpty()) {
+            for (Hybridization h : hybridizations) {
+                if (h.getArrayData() != null) {
+                    files.add(h.getArrayData().getDataFile());
+                }
+                for (DerivedArrayData dad : h.getDerivedDataCollection()) {
+                    files.add(dad.getDataFile());
+                }
+            }
+        }
+        File result = prepareForDownload(p, files);
+        LogUtil.logSubsystemExit(LOG);
+        return result;
     }
 }

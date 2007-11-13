@@ -88,7 +88,6 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.PersistentObject;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
@@ -146,16 +145,14 @@ public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabActio
     public String download() throws IOException {
         ProjectManagementService pms = (ProjectManagementService)
             ServiceLocatorFactory.getLocator().lookup(ProjectManagementService.JNDI_NAME);
-        Collection<CaArrayFile> files = new HashSet<CaArrayFile>();
+        Collection<Hybridization> hibs = new HashSet<Hybridization>();
         for (Extract e : getCurrentSample().getExtracts()) {
             for (LabeledExtract le : e.getLabeledExtracts()) {
-                for (Hybridization h : le.getHybridizations()) {
-                    files.add(h.getArrayData().getDataFile());
-                }
+                hibs.addAll(le.getHybridizations());
             }
         }
 
-        File zipFile = pms.prepareForDownload(files);
+        File zipFile = pms.prepareHybsForDownload(getProject(), hibs);
         this.downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
         return "download";
     }

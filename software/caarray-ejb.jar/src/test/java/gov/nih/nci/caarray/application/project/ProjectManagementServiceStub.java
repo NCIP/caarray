@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.project;
 
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.project.Factor;
@@ -95,6 +96,7 @@ import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -216,6 +218,13 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
      */
     public int searchCount(String keyword, SearchCategory... categories) {
         return 0;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public File prepareHybsForDownload(Project p, Collection<Hybridization> hybridizations) throws IOException {
+        return null;
     }
 
 }
