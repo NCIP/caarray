@@ -113,23 +113,23 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 30;
     private static final int PAGE_SIZE = 20;
-    private static final String TITLE = "test" + System.currentTimeMillis(); 
 
     @Test
     public void testImportAndRetrieval() throws Exception {
         loginAsPrincipalInvestigator();
+        String title = "test" + System.currentTimeMillis();
 
         // - Create project
         this.selenium.click("link=Create/Propose Experiment");
         waitForElementWithId("projectForm_project_experiment_title");
         // - type in the Experiment name
-        this.selenium.type("projectForm_project_experiment_title", TITLE);
+        this.selenium.type("projectForm_project_experiment_title", title);
         // - save
         this.selenium.click("link=Save");
-        waitForText("has been successfully saved");
+        waitForAction();
         // - go to the data tab
         this.selenium.click("link=Data");
-        waitForText("Upload New File(s)");
+        waitForTab();
 
         // - start the upload
         this.selenium.click("link=Upload New File(s)");
@@ -152,33 +152,28 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
             upload(celFile);
         }
         checkUploadedFileStatus("Uploaded");
-        waitForText("files uploaded");
         this.selenium.click("selectAllCheckbox");
 
         // - import files
         this.selenium.click("link=Import");
-        waitForText("files imported");
+        waitForAction();
 
         // - switch to the "Imported" data tab
         this.selenium.click("link=Imported Data");
-        waitForText("Imported Data");
-        Thread.sleep(3000);
+        waitForSecondLevelTab();
         checkImportedFileStatus("Imported");
 
         // - back to the workspace
         clickAndWait("link=My Experiment Workspace");
-        waitForText("Permissions");
+        waitForTab();
 
         // Using the Java remote API, verify:
         // - Expected entities exist
         // - Permissions are correct
         // - Files can be downloaded through API
         // - Raw and derived data are available and accurate
-        
-       // Cannot run this because the experiment changes names (bug in software)
-       // verifyDataViaJavaApi();
+        verifyDataViaJavaApi(title);
     }
-
 
     // the imported page is paginated
     private void checkImportedFileStatus(String status) {
@@ -187,7 +182,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
             if (i % PAGE_SIZE == 0) {
                 // - switch to next page
                 selenium.click("link=Next");
-                waitForText("Imported Data");
+                waitForAction();
                 column = 1;
             }
             assertEquals(status, selenium.getTable("row."+(column++)+".2"));
@@ -200,12 +195,12 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         }
     }
 
-    private void verifyDataViaJavaApi() throws ServerConnectionException {
+    private void verifyDataViaJavaApi(String title) throws ServerConnectionException {
         CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties.getServerJndiPort());
         server.connect();
         CaArraySearchService searchService = server.getSearchService();
         Experiment searchExperiment = new Experiment();
-        searchExperiment.setTitle(TITLE);
+        searchExperiment.setTitle(title);
         List<Experiment> matches = searchService.search(searchExperiment);
         assertEquals(1, matches.size());
         Experiment experiment = matches.get(0);

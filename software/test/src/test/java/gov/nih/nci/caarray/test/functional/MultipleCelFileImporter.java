@@ -116,11 +116,11 @@ public class MultipleCelFileImporter extends AbstractSeleniumTest {
         selenium.type("projectForm_project_experiment_title", title);
         // save
         selenium.click("link=Save");
-        waitForText("has been successfully saved");
+        waitForAction();
         // go to the data tab
         selenium.click("link=Data");
 
-        waitForText("Upload New File(s)");
+        waitForTab();
         selenium.click("link=Upload New File(s)");
 
         upload(AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF);
@@ -129,13 +129,12 @@ public class MultipleCelFileImporter extends AbstractSeleniumTest {
         selenium.click("selectAllCheckbox");
         // import button
         selenium.click("link=Import");
-        waitForText("files imported");
+        waitForAction();
         
         clickAndWait("link=My Experiment Workspace");
     }
 
     public void importTenFiles() throws Exception {
-        rowCount = 1;
         String title = "test" + System.currentTimeMillis();
         // Create project
         selenium.click("link=Create/Propose Experiment");
@@ -144,11 +143,11 @@ public class MultipleCelFileImporter extends AbstractSeleniumTest {
         selenium.type("projectForm_project_experiment_title", title);
         // save
         selenium.click("link=Save");
-        waitForText("has been successfully saved");
+        waitForAction();
         // go to the data tab
         selenium.click("link=Data");
+        waitForTab();
 
-        waitForText("Upload New File(s)");
         selenium.click("link=Upload New File(s)");
         
         upload(MageTabDataFiles.PERFORMANCE_10_IDF);
@@ -168,7 +167,7 @@ public class MultipleCelFileImporter extends AbstractSeleniumTest {
         selenium.click("selectAllCheckbox");
         // import button
         selenium.click("link=Import");
-        waitForText("files imported");
+        waitForAction();
         clickAndWait("link=My Experiment Workspace");
     }
 

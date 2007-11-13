@@ -89,15 +89,12 @@ import org.junit.Test;
 
 public class LoginBasicFlowTest extends AbstractSeleniumTest {
 
-    /**
-     *
-     */
     private static final String EXPERIMENT_WORKSPACE = "Experiment Workspace";
 
-    @Test
     /*
      * Login use case basic flow.  user logs in and has the provided access
      */
+    @Test
     public void testBasicFlow() throws Exception {
         loginAsPrincipalInvestigator();
         selenium.waitForPageToLoad("30000");
@@ -120,15 +117,15 @@ public class LoginBasicFlowTest extends AbstractSeleniumTest {
         selenium.type("projectForm_project_experiment_title", title);
         // save
         selenium.click("link=Save");
-        waitForText("has been successfully saved");
+        waitForAction();
         // go to the data tab
         selenium.click("link=Data");
+        waitForTab();
 
-        waitForText("Upload New File(s)");
         selenium.click("link=Upload New File(s)");
         selenium.click("link=Upload");
-               
-        waitForText("0 files uploaded");
+        waitForAction();
+        
         assertTrue(selenium.isTextPresent("0 files uploaded"));
     }
     /*
@@ -147,18 +144,20 @@ public class LoginBasicFlowTest extends AbstractSeleniumTest {
         selenium.type("projectForm_project_experiment_title", title);
         // save
         selenium.click("link=Save");
-        waitForText("has been successfully saved");
+        waitForAction();
         // go to the data tab
         selenium.click("link=Data");
+        waitForTab();
 
-        waitForText("Upload New File(s)");
         selenium.click("link=Upload New File(s)");
         upload(MageTabDataFiles.TCGA_BROAD_IDF);
         selenium.click("selectFilesForm_selectedFiles");
         selenium.click("link=Validate");
-        waitForText("files validated");
+        waitForAction();
+        
         selenium.click("link=Failed Validation");
-        waitForText("Validation Messages");
+        waitForSecondLevelTab();
+        
         assertTrue(selenium.isTextPresent("Publication Title value is missing"));
     }
 

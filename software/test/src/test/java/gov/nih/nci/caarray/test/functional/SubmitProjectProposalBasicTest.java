@@ -104,11 +104,11 @@ public class SubmitProjectProposalBasicTest extends AbstractSeleniumTest {
 
         // - Submit the proposal
         selenium.click("link=Save");
-        waitForText("has been successfully saved");
+        waitForAction();
 
         // - The system returns to the workspace page (verify)
         clickAndWait("link=My Experiment Workspace");
-        waitForText("Permissions");
+        waitForTab();
         // - Verify that the new project is listed in the workspace
         // - Page thru the experiments till is found
         findTitleAcrossMultiPages(title);
@@ -121,7 +121,7 @@ public class SubmitProjectProposalBasicTest extends AbstractSeleniumTest {
             } else {
                 // Moving to next page
                 selenium.click("link=Next");
-                waitForText("Permissions");
+                waitForAction();
             }
         }
     }

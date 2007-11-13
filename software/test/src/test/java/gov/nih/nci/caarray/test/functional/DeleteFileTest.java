@@ -106,11 +106,11 @@ public class DeleteFileTest extends AbstractSeleniumTest {
         selenium.type("projectForm_project_experiment_title", title);
         // save
         selenium.click("link=Save");
-        waitForText("has been successfully saved");
+        waitForAction();
         // go to the data tab
         selenium.click("link=Data");
 
-        waitForText("Upload New File(s)");
+        waitForTab();
         selenium.click("link=Upload New File(s)");
 
         upload(MageTabDataFiles.TCGA_BROAD_IDF);
@@ -118,7 +118,7 @@ public class DeleteFileTest extends AbstractSeleniumTest {
         assertTrue(selenium.isTextPresent(MageTabDataFiles.TCGA_BROAD_IDF.getName()));
         selenium.click("selectFilesForm_selectedFiles");      
         selenium.click("link=Delete");
-        waitForText("files deleted");
+        waitForAction();
         // - File is deleted
         assertFalse(selenium.isTextPresent(MageTabDataFiles.TCGA_BROAD_IDF.getName()));
     }

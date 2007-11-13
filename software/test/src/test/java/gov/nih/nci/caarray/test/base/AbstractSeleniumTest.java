@@ -95,9 +95,8 @@ import com.thoughtworks.selenium.SeleneseTestCase;
  */
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
-    private static final String PAGE_TIMEOUT = "180000";
-    protected  String RECORD_TIMEOUT = "240";
-    protected int rowCount = 1;
+    private static final int PAGE_TIMEOUT_SECONDS = 180;
+    protected static int RECORD_TIMEOUT_SECONDS = 240;
 
     @Override
     public void setUp() throws Exception {
@@ -106,11 +105,15 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         int port = TestProperties.getServerPort();
         String browser = System.getProperty("test.browser", "*chrome");
         super.setUp("http://" + hostname + ":" + port, browser);
-        selenium.setTimeout(PAGE_TIMEOUT);
+        selenium.setTimeout(toMillisecondsString(PAGE_TIMEOUT_SECONDS));
+    }
+
+    private String toMillisecondsString(int seconds) {
+        return String.valueOf(seconds * 1000);
     }
 
     protected void waitForPageToLoad() {
-        selenium.waitForPageToLoad(PAGE_TIMEOUT);
+        selenium.waitForPageToLoad(toMillisecondsString(PAGE_TIMEOUT_SECONDS));
     }
 
     protected void clickAndWait(String linkOrButton) {
@@ -124,58 +127,65 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.type("j_username", "caarrayadmin");
         selenium.type("j_password", "caArray2!");
         clickAndWait("//span/span");
-        // selenium.click("link=Login");
-
-    }
-
-    protected void waitForElementWithId(String id) {
-        selenium.waitForCondition("selenium.browserbot.getCurrentWindow().document.getElementById('" + id
-                + "') != null", PAGE_TIMEOUT);
-    }
-
-    protected void waitForText(String id) {
-        waitForText(id, Integer.valueOf(RECORD_TIMEOUT));
-    }
-    
-    protected void waitForText(String id, int waitTime) {
-        for (int second = 0;; second++) {
-            if (second >= Integer.valueOf(waitTime))
-                fail("timeout");
-            try {
-                if (selenium.isTextPresent(id))
-                    break;
-            } catch (Exception e) {
-            }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     protected void  upload(File file) throws IOException, InterruptedException {
-        upload(file, Integer.valueOf(RECORD_TIMEOUT));
+        upload(file, RECORD_TIMEOUT_SECONDS);
     }
     
-    protected void upload(File file, int timeOut) throws IOException, InterruptedException {
+    protected void upload(File file, int timeoutSeconds) throws IOException, InterruptedException {
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
         selenium.type("upload", filePath);
         selenium.click("link=Upload");
-        for (int second = 0;; second++) {
-            if (second >= Integer.valueOf(timeOut))
-                fail("timeout");
-            try {
-                if ("Uploaded".equalsIgnoreCase(selenium.getTable("row." + (rowCount) + ".3"))){
-                    break;
-                }
-            } catch (Exception e) {
-            }
-            Thread.sleep(1000);
-
-        }
-        rowCount++;
+        waitForAction(timeoutSeconds);
         assertTrue(selenium.isTextPresent(file.getName()));
+    }
+
+    protected void waitForElementWithId(String id, int timeoutSeconds) {
+        selenium.waitForCondition("selenium.browserbot.getCurrentWindow().document.getElementById('" + id
+                + "') != null", toMillisecondsString(timeoutSeconds));
+    }
+
+    protected void waitForElementWithId(String id) {
+        waitForElementWithId(id, PAGE_TIMEOUT_SECONDS);
+    }
+    
+    protected void waitForAction() {
+        waitForAction(PAGE_TIMEOUT_SECONDS);
+    }
+    
+    protected void waitForAction(int timeoutSeconds) {
+        waitForDiv("submittingText", timeoutSeconds);
+    }
+
+    protected void waitForTab() {
+        waitForTab(PAGE_TIMEOUT_SECONDS);
+    }
+    
+    protected void waitForTab(int timeoutSeconds) {
+        waitForDiv("loadingText", timeoutSeconds);
+    }
+
+    protected void waitForDiv(String divId) {
+        waitForDiv(divId, PAGE_TIMEOUT_SECONDS);
+    }
+
+    protected void waitForDiv(String divId, int timeoutSeconds) {
+        selenium.waitForCondition("element = selenium.browserbot.getCurrentWindow().document.getElementById('" + 
+                divId + "'); element != null && element.style.display == 'none';", toMillisecondsString(timeoutSeconds));
+    }
+
+    protected void waitForSecondLevelTab() {
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        waitForSecondLevelTab(PAGE_TIMEOUT_SECONDS);
+    }
+
+    protected void waitForSecondLevelTab(int timeoutSeconds) {
+        waitForElementWithId("tabboxlevel2wrapper", timeoutSeconds);
     }
 
 

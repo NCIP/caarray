@@ -99,11 +99,6 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 10;
 
-    @Override
-    public void tearDown() throws Exception {
-        // no-op
-    }
-
     @Test
     public void testImportAndRetrieval() throws Exception {
         loginAsPrincipalInvestigator();
@@ -116,11 +111,12 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         selenium.type("projectForm_project_experiment_title", title);
         // - save
         selenium.click("link=Save");
-        waitForText("has been successfully saved");
+        waitForAction();
+        assertTrue(selenium.isTextPresent("has been successfully saved"));
         // - go to the data tab
         selenium.click("link=Data");
-
-        waitForText("Upload New File(s)");
+        waitForTab();
+        
         selenium.click("link=Upload New File(s)");
         // Upload the following files:
         // - MAGE-TAB IDF
@@ -141,23 +137,23 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
             upload(celFile);
         }
         checkFileStatus("Uploaded", 3);
-        waitForText("files uploaded");
+        waitForAction();
+        assertTrue(selenium.isTextPresent("files uploaded"));
         selenium.click("selectAllCheckbox");
         // - import files
         selenium.click("link=Import");
-        waitForText("files imported");
+        waitForAction();
+        assertTrue(selenium.isTextPresent("files imported"));
 
         // - click on the Imported data tab
-         selenium.click("link=Imported Data");
-        waitForText("Imported Data");
+        selenium.click("link=Imported Data");
+        waitForSecondLevelTab();
         // - validate the status
-        Thread.sleep(3000);
-         checkFileStatus("Imported", 2);
+        checkFileStatus("Imported", 2);
 
         clickAndWait("link=My Experiment Workspace");
-        waitForElementWithId("theForm");
-        // Cannot assert the title because it changes (bug in software)
-        // assertTrue(selenium.isTextPresent(title));
+        waitForTab();
+        assertTrue(selenium.isTextPresent(title));
 
     }
 
