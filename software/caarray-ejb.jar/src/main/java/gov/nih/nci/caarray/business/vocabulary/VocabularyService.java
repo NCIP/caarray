@@ -84,10 +84,11 @@ package gov.nih.nci.caarray.business.vocabulary;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Interface to the controlled vocabulary lookup service.
@@ -107,9 +108,8 @@ public interface VocabularyService {
      *
      * @param categoryName find entries that match this category.
      * @return the matching Terms.
-     * @throws VocabularyServiceException exception
      */
-    List<Term> getTerms(String categoryName) throws VocabularyServiceException;
+    Set<Term> getTerms(String categoryName);
 
     /**
      * Returns all Organisms.
@@ -127,14 +127,6 @@ public interface VocabularyService {
     TermSource getSource(String name);
 
     /**
-     * Creates a new term source with the given name.
-     *
-     * @param name name of the new source
-     * @return the new source.
-     */
-    TermSource createSource(String name);
-
-    /**
      * Returns the category with the matching name for the given source.
      *
      * @param source the source
@@ -142,15 +134,6 @@ public interface VocabularyService {
      * @return the category
      */
     Category getCategory(TermSource source, String categoryName);
-
-    /**
-     * Registers a new category with the vocabulary service.
-     *
-     * @param source the source to add the category to
-     * @param categoryName the name of the new category
-     * @return the new category
-     */
-    Category createCategory(TermSource source, String categoryName);
 
     /**
      * Returns the term that matches the given criteria.
@@ -177,14 +160,4 @@ public interface VocabularyService {
      * @return the organism with given id or null if none found.
      */
     Organism getOrganism(Long id);
-
-    /**
-     * Adds a new term to the vocabulary service.
-     *
-     * @param source the source to add the term to
-     * @param category the category the term belongs to
-     * @param value the value of the new term
-     * @return the new term
-     */
-    Term createTerm(TermSource source, Category category, String value);
 }

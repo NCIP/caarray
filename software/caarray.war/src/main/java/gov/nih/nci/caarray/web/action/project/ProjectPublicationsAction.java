@@ -92,7 +92,7 @@ import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
 
@@ -106,8 +106,8 @@ public class ProjectPublicationsAction extends AbstractProjectListTabAction {
 
     private Publication currentPublication = new Publication();
 
-    private List<Term> publicationTypes;
-    private List<Term> publicationStatuses;
+    private Set<Term> publicationTypes;
+    private Set<Term> publicationStatuses;
 
     /**
      * Default constructor.
@@ -162,7 +162,7 @@ public class ProjectPublicationsAction extends AbstractProjectListTabAction {
      * @return the currentPublication
      */
     public Publication getCurrentPublication() {
-        return currentPublication;
+        return this.currentPublication;
     }
 
     /**
@@ -175,28 +175,28 @@ public class ProjectPublicationsAction extends AbstractProjectListTabAction {
     /**
      * @return the publicationTypes
      */
-    public List<Term> getPublicationTypes() {
-        return publicationTypes;
+    public Set<Term> getPublicationTypes() {
+        return this.publicationTypes;
     }
 
     /**
      * @param publicationTypes the publicationTypes to set
      */
-    public void setPublicationTypes(List<Term> publicationTypes) {
+    public void setPublicationTypes(Set<Term> publicationTypes) {
         this.publicationTypes = publicationTypes;
     }
 
     /**
      * @return the publicationStatuses
      */
-    public List<Term> getPublicationStatuses() {
-        return publicationStatuses;
+    public Set<Term> getPublicationStatuses() {
+        return this.publicationStatuses;
     }
 
     /**
      * @param publicationStatuses the publicationStatuses to set
      */
-    public void setPublicationStatuses(List<Term> publicationStatuses) {
+    public void setPublicationStatuses(Set<Term> publicationStatuses) {
         this.publicationStatuses = publicationStatuses;
     }
 }

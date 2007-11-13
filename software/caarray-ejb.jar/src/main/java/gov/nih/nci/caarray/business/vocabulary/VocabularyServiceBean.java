@@ -85,15 +85,13 @@ package gov.nih.nci.caarray.business.vocabulary;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.OrganismDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -103,9 +101,6 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Entry point into implementation of the vocabulary service subsystem.
  */
@@ -114,8 +109,6 @@ import org.apache.commons.logging.LogFactory;
 @Interceptors(ExceptionLoggingInterceptor.class)
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class VocabularyServiceBean implements VocabularyService {
-
-    private static final Log LOG = LogFactory.getLog(VocabularyServiceBean.class);
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
@@ -127,200 +120,99 @@ public class VocabularyServiceBean implements VocabularyService {
     }
 
     /**
-     *
-     * @return VocabularyDao
-     */
-    public VocabularyDao getVocabularyDao() {
-        return daoFactory.getVocabularyDao();
-    }
-
-    /**
-     * @return OrganismDao
-     */
-    private OrganismDao getOrganismDao() {
-        return daoFactory.getOrganismDao();
-    }
-
-    /**
      * Returns all terms that belong to the category for the name given (including all subcategories).
      *
      * @param categoryName find entries that match this category.
      * @return the matching Terms. Empty list if no term found.
-     * @throws VocabularyServiceException exception from EVS svc
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public List<Term> getTerms(final String categoryName) throws VocabularyServiceException {
-        LogUtil.logSubsystemEntry(LOG, categoryName);
+    public Set<Term> getTerms(final String categoryName) {
         if (categoryName == null) {
             throw new IllegalArgumentException("CategoryName is null");
         }
-        List<Term> termList = new ArrayList<Term>(getTermsFromDao(categoryName));
-        if (termList.isEmpty()) {
-            termList = getEVSTerms(categoryName);
-            if (!termList.isEmpty()) {
-                saveTermsLocally(termList);
-            }
-        }
-        LogUtil.logSubsystemExit(LOG);
-        return termList;
+        return getVocabularyDao().getTermsRecursive(categoryName);
     }
 
     /**
      * {@inheritDoc}
      */
     public List<Organism> getOrganisms() {
-        LogUtil.logSubsystemEntry(LOG);
-        List<Organism> result = getOrganismDao().getAllOrganisms();
-        LogUtil.logSubsystemExit(LOG);
-        return result;
-    }
-
-    private Set<Term> getTermsFromDao(String categoryName) throws VocabularyServiceException {
-        try {
-            return getVocabularyDao().getTermsRecursive(categoryName);
-        } catch (DAOException e) {
-            LOG.debug("Error calling getTerms(): " + e.getMessage());
-            throw new VocabularyServiceException(e);
-        }
-    }
-
-    private void saveTermsLocally(List<Term> termList) throws VocabularyServiceException {
-        if (termList == null || termList.isEmpty()) {
-            throw new IllegalArgumentException("TermList is null or emptylist");
-        }
-        VocabularyDao vocabDao = getVocabularyDao();
-        try {
-            vocabDao.save(termList);
-        } catch (DAOException de) {
-            throw new VocabularyServiceException(de);
-        }
-    }
-
-    /**
-     * Returns all terms that belong to the category for the name given from the EVS vocab service.
-     *
-     * @param categoryName find entries that match this category.
-     * @return the matching Terms.
-     */
-    private List<Term> getEVSTerms(final String categoryName) throws VocabularyServiceException {
-        EVSUtility evsUtil = getEVSUtility();
-        List<Term> evsTerms = new ArrayList<Term>();
-        try {
-            evsTerms = evsUtil.getConcepts(categoryName);
-        } catch (Exception e) {
-            throw new VocabularyServiceException(e);
-        }
-        return evsTerms;
-    }
-
-    EVSUtility getEVSUtility() {
-        return new EVSUtility(getDaoFactory());
+        return getOrganismDao().getAllOrganisms();
     }
 
     /**
      * {@inheritDoc}
      */
     public TermSource getSource(String name) {
-        LogUtil.logSubsystemEntry(LOG, name);
         TermSource querySource = new TermSource();
         querySource.setName(name);
-        List<TermSource> result = getVocabularyDao().queryEntityByExample(querySource);
-        LogUtil.logSubsystemExit(LOG);
-        return result.isEmpty() ? null : result.iterator().next();
-
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public TermSource createSource(String name) {
-        LogUtil.logSubsystemEntry(LOG, name);
-        TermSource source = new TermSource();
-        source.setName(name);
-        LogUtil.logSubsystemExit(LOG);
-        return source;
+        return uniqueResult(getVocabularyDao().queryEntityByExample(querySource));
     }
 
     /**
      * {@inheritDoc}
      */
     public Category getCategory(TermSource source, String categoryName) {
-        LogUtil.logSubsystemEntry(LOG, source, categoryName);
         Category queryCategory = new Category();
         queryCategory.setName(categoryName);
-        List<Category> result = getVocabularyDao().queryEntityByExample(queryCategory);
-        LogUtil.logSubsystemExit(LOG);
-        return result.isEmpty() ? null : result.iterator().next();
-
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Category createCategory(TermSource source, String categoryName) {
-        LogUtil.logSubsystemEntry(LOG, source, categoryName);
-        Category category = new Category();
-        category.setName(categoryName);
-        LogUtil.logSubsystemExit(LOG);
-        return category;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Term createTerm(TermSource source, Category category, String value) {
-        LogUtil.logSubsystemEntry(LOG, source, category, value);
-        Term term = new Term();
-        term.setSource(source);
-        term.setCategory(category);
-        term.setValue(value);
-        LogUtil.logSubsystemExit(LOG);
-        return term;
+        return uniqueResult(getVocabularyDao().queryEntityByExample(queryCategory));
     }
 
     /**
      * {@inheritDoc}
      */
     public Term getTerm(TermSource source, Category category, String value) {
-        LogUtil.logSubsystemEntry(LOG, source, category, value);
         Term queryTerm = new Term();
         queryTerm.setCategory(category);
         queryTerm.setSource(source);
         queryTerm.setValue(value);
-        List<Term> result = getVocabularyDao().queryEntityAndAssociationsByExample(queryTerm);
-        LogUtil.logSubsystemExit(LOG);
-        return result.isEmpty() ? null : result.iterator().next();
+        return uniqueResult(getVocabularyDao().queryEntityAndAssociationsByExample(queryTerm));
     }
 
     /**
      * {@inheritDoc}
      */
     public Term getTerm(Long id) {
-        LogUtil.logSubsystemEntry(LOG, id);
-        Term result = getVocabularyDao().getTermById(id);
-        LogUtil.logSubsystemExit(LOG);
-        return result;
+        return getVocabularyDao().getTermById(id);
     }
 
     /**
      * {@inheritDoc}
      */
     public Organism getOrganism(Long id) {
-        LogUtil.logSubsystemEntry(LOG, id);
-        Organism result = getOrganismDao().getOrganism(id);
-        LogUtil.logSubsystemExit(LOG);
-        return result;
+        return getOrganismDao().getOrganism(id);
+    }
+
+    /**
+     * Method to take a get a unique result from a set and return it or null.
+     * @param <T> the type of the returned object
+     * @param results the set of results returned from a query
+     * @return the first result in the set or null
+     */
+    private <T> T uniqueResult(Collection<T> results) {
+        return results.isEmpty() ? null : results.iterator().next();
+    }
+
+    /**
+     *
+     * @return VocabularyDao
+     */
+    protected VocabularyDao getVocabularyDao() {
+        return this.daoFactory.getVocabularyDao();
+    }
+
+    /**
+     * @return OrganismDao
+     */
+    private OrganismDao getOrganismDao() {
+        return this.daoFactory.getOrganismDao();
     }
 
     final CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
+        return this.daoFactory;
     }
 
     final void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
-
 }

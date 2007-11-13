@@ -54,13 +54,12 @@ import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dao.stub.AbstractDaoStub;
-import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.system.applicationservice.ApplicationService;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -86,7 +85,7 @@ public class VocabularyServiceTest {
     @Test
     public void getTermsProtocolType() {
         VocabularyService vocab = new MockVocabularyServiceBean();
-        List<Term> terms = new ArrayList<Term>();
+        Set<Term> terms = new HashSet<Term>();
         try {
              terms =  vocab.getTerms("ProtocolType");
              assertTrue(!terms.isEmpty());
@@ -107,31 +106,13 @@ public class VocabularyServiceTest {
         vocab.getTerms(null);
     }
 
-
-    /**  Test to ensure that no results are found for the category "Foo",
-     *   and that this will return an empty list.
-     * Test method for {@link gov.nih.nci.caarray.business.vocabulary.VocabularyServiceBean#getTerms
-     * (java.lang.String)}.
-     */
-    @Test
-    public void getTermsBadTerm() {
-        VocabularyService vocab = new MockVocabularyServiceBean();
-        List<Term> terms = new ArrayList<Term>();
-        try {
-             terms =  vocab.getTerms("Foo");
-        } catch (VocabularyServiceException e) {
-
-        }
-        assertTrue(terms.isEmpty());
-    }
-
     /**
      * Test to ensure that when the EVS service goes haywire, the getTerms() method will create
      * a VocabServiceException
      * Test method for {@link gov.nih.nci.caarray.business.vocabulary.VocabularyServiceBean#getTerms
      * (java.lang.String)}.
      */
-    @Test(expected=VocabularyServiceException.class)
+    @Test(expected=DAOException.class)
     public void getTermsEVSException() throws VocabularyServiceException {
         VocabularyService vocab = new MockVSBeanForEVSException();
         vocab.getTerms("ProtocolType");
@@ -146,36 +127,16 @@ public class VocabularyServiceTest {
 
 
 //////// INNER CLASS TEST STUBS///////////////////////
-    /**
-     * Put all of my inner stub classes here
-     * @author John Pike
-     *
-     */
-    class MockEVSUtility extends EVSUtility {
-
-        MockEVSUtility() {
-            super(new DaoFactoryStub());
-        }
-
-        @Override
-        public ApplicationService getApplicationInstance() {
-            return ApplicationService.getRemoteInstance("http://yahoo.com");
-        }
-    }
 
     class MockVSBeanForEVSException extends VocabularyServiceBean {
         @Override
-        public VocabularyDao getVocabularyDao() {
+        protected VocabularyDao getVocabularyDao() {
             return new MockVocabularyDao();
-        }
-        @Override
-        EVSUtility getEVSUtility() {
-            return new MockEVSUtility();
         }
     }
     class MockVocabularyServiceBean extends VocabularyServiceBean {
         @Override
-        public VocabularyDao getVocabularyDao() {
+        protected VocabularyDao getVocabularyDao() {
             return new MockVocabularyDao();
         }
     }

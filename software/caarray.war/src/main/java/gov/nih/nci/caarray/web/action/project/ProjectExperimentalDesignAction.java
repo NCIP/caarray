@@ -88,7 +88,7 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Action implementing the experimental design tab.
@@ -97,9 +97,9 @@ import java.util.List;
 public class ProjectExperimentalDesignAction extends ProjectTabAction {
     private static final long serialVersionUID = 1L;
 
-    private List<Term> experimentDesignTypes;
-    private List<Term> qualityControlTypes;
-    private List<Term> replicateTypes;
+    private Set<Term> experimentDesignTypes;
+    private Set<Term> qualityControlTypes;
+    private Set<Term> replicateTypes;
 
     /**
      * {@inheritDoc}
@@ -119,42 +119,42 @@ public class ProjectExperimentalDesignAction extends ProjectTabAction {
     /**
      * @return the experimentDesignTypes
      */
-    public List<Term> getExperimentDesignTypes() {
+    public Set<Term> getExperimentDesignTypes() {
         return this.experimentDesignTypes;
     }
 
     /**
      * @param experimentDesignTypes the experimentDesignTypes to set
      */
-    public void setExperimentDesignTypes(List<Term> experimentDesignTypes) {
+    public void setExperimentDesignTypes(Set<Term> experimentDesignTypes) {
         this.experimentDesignTypes = experimentDesignTypes;
     }
 
     /**
      * @return the qualityControlTypes
      */
-    public List<Term> getQualityControlTypes() {
+    public Set<Term> getQualityControlTypes() {
         return this.qualityControlTypes;
     }
 
     /**
      * @param qualityControlTypes the qualityControlTypes to set
      */
-    public void setQualityControlTypes(List<Term> qualityControlTypes) {
+    public void setQualityControlTypes(Set<Term> qualityControlTypes) {
         this.qualityControlTypes = qualityControlTypes;
     }
 
     /**
      * @return the replicateTypes
      */
-    public List<Term> getReplicateTypes() {
+    public Set<Term> getReplicateTypes() {
         return this.replicateTypes;
     }
 
     /**
      * @param replicateTypes the replicateTypes to set
      */
-    public void setReplicateTypes(List<Term> replicateTypes) {
+    public void setReplicateTypes(Set<Term> replicateTypes) {
         this.replicateTypes = replicateTypes;
     }
 }

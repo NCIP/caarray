@@ -101,6 +101,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.ajaxtags.xml.AjaxXmlBuilder;
 
@@ -117,10 +118,10 @@ public class ProjectOverviewAction extends ProjectTabAction {
     private List<Organization> manufacturers = new ArrayList<Organization>();
     private List<ArrayDesign> arrayDesigns = new ArrayList<ArrayDesign>();
     private List<PaymentMechanism> paymentMechanisms = new ArrayList<PaymentMechanism>();
-    private List<Term> tissueSites;
-    private List<Term> tissueTypes;
-    private List<Term> cellTypes;
-    private List<Term> conditions;
+    private Set<Term> tissueSites;
+    private Set<Term> tissueTypes;
+    private Set<Term> cellTypes;
+    private Set<Term> conditions;
 
     /**
      * {@inheritDoc}
@@ -201,56 +202,56 @@ public class ProjectOverviewAction extends ProjectTabAction {
     /**
      * @return the tissueSites
      */
-    public List<Term> getTissueSites() {
+    public Set<Term> getTissueSites() {
         return this.tissueSites;
     }
 
     /**
      * @param tissueSites the tissueSites to set
      */
-    public void setTissueSites(List<Term> tissueSites) {
+    public void setTissueSites(Set<Term> tissueSites) {
         this.tissueSites = tissueSites;
     }
 
     /**
      * @return the tissueTypes
      */
-    public List<Term> getTissueTypes() {
+    public Set<Term> getTissueTypes() {
         return this.tissueTypes;
     }
 
     /**
      * @param tissueTypes the tissueTypes to set
      */
-    public void setTissueTypes(List<Term> tissueTypes) {
+    public void setTissueTypes(Set<Term> tissueTypes) {
         this.tissueTypes = tissueTypes;
     }
 
     /**
      * @return the cellTypes
      */
-    public List<Term> getCellTypes() {
+    public Set<Term> getCellTypes() {
         return this.cellTypes;
     }
 
     /**
      * @param cellTypes the cellTypes to set
      */
-    public void setCellTypes(List<Term> cellTypes) {
+    public void setCellTypes(Set<Term> cellTypes) {
         this.cellTypes = cellTypes;
     }
 
     /**
      * @return the conditions
      */
-    public List<Term> getConditions() {
+    public Set<Term> getConditions() {
         return this.conditions;
     }
 
     /**
      * @param conditions the conditions to set
      */
-    public void setConditions(List<Term> conditions) {
+    public void setConditions(Set<Term> conditions) {
         this.conditions = conditions;
     }
 
@@ -286,7 +287,7 @@ public class ProjectOverviewAction extends ProjectTabAction {
      * @return the manufacturerId
      */
     public Long getManufacturerId() {
-        return manufacturerId;
+        return this.manufacturerId;
     }
 
     /**
@@ -300,7 +301,7 @@ public class ProjectOverviewAction extends ProjectTabAction {
      * @return the arrayDesigns
      */
     public List<ArrayDesign> getArrayDesigns() {
-        return arrayDesigns;
+        return this.arrayDesigns;
     }
 
     /**

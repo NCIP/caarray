@@ -101,7 +101,7 @@ import gov.nih.nci.caarray.magetab.OntologyTerm;
 final class TermTranslator extends AbstractTranslator {
 
     private static final Log LOG = LogFactory.getLog(TermTranslator.class);
-    
+
     private final VocabularyService service;
 
     TermTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
@@ -132,25 +132,30 @@ final class TermTranslator extends AbstractTranslator {
     }
 
     private TermSource getOrCreateSource(String name) {
-        TermSource source = service.getSource(name);
+        TermSource source = this.service.getSource(name);
         if (source == null) {
-            source = service.createSource(name);
+            source = new TermSource();
+            source.setName(name);
         }
         return source;
     }
 
     private Category getOrCreateCategory(TermSource source, String categoryName) {
-        Category category = service.getCategory(source, categoryName);
+        Category category = this.service.getCategory(source, categoryName);
         if (category == null) {
-            category = service.createCategory(source, categoryName);
+            category =  new Category();
+            category.setName(categoryName);
         }
         return category;
     }
 
     private Term getOrCreateTerm(TermSource source, Category category, String value) {
-        Term term = service.getTerm(source, category, value);
+        Term term = this.service.getTerm(source, category, value);
         if (term == null) {
-            term = service.createTerm(source, category, value);
+            term = new Term();
+            term.setSource(source);
+            term.setCategory(category);
+            term.setValue(value);
         }
         return term;
     }

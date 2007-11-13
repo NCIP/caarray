@@ -88,7 +88,9 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Basic stub for tests.
@@ -98,8 +100,8 @@ public class VocabularyServiceStub implements VocabularyService {
     /* (non-Javadoc)
      * @see gov.nih.nci.caarray.application.vocabulary.VocabularyService#getTerms(java.lang.String)
      */
-    public List<Term> getTerms(String categoryName) throws VocabularyServiceException {
-        ArrayList<Term> terms = new ArrayList<Term>();
+    public Set<Term> getTerms(String categoryName) {
+        Set<Term> terms = new HashSet<Term>();
         TermSource source = getSource("MO");
         for (int i = 0; i < 10; i++) {
             Term term = getTerm(source, getCategory(source, categoryName), "term" + i);
