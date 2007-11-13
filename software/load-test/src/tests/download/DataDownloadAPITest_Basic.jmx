@@ -16,7 +16,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">2</stringProp>
+        <stringProp name="ThreadGroup.num_threads">5</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1193253269000</longProp>
         <longProp name="ThreadGroup.end_time">1193253269000</longProp>
@@ -29,7 +29,7 @@
         <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Experiments CSV Data Set Config" enabled="true">
           <stringProp name="delimiter">\t</stringProp>
           <stringProp name="fileEncoding"></stringProp>
-          <stringProp name="filename">experiments.csv</stringProp>
+          <stringProp name="filename">API_experiments_100M.csv</stringProp>
           <boolProp name="recycle">true</boolProp>
           <boolProp name="stopThread">false</boolProp>
           <stringProp name="variableNames">experimentNamesCsv,quantitationTypesCsv</stringProp>

@@ -178,7 +178,6 @@ public class DataDownloadClient implements JavaSamplerClient {
         } catch (RuntimeException e) {
             results.setSuccessful(false);
             results.setResponseCode("Runtime exception: " + e);
-        e.printStackTrace();
         } catch (Throwable t) {
             // Catches things like out-of-memory errors and logs them in the test output.
             results.setSuccessful(false);

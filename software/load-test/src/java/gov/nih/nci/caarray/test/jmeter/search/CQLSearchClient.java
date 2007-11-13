@@ -185,25 +185,25 @@ public class CQLSearchClient implements JavaSamplerClient {
         CQLObject target = new CQLObject();
         target.setName("gov.nih.nci.caarray.domain.project.Experiment");
 
-        CQLAssociation manufacturer = new CQLAssociation();
-        manufacturer.setName("gov.nih.nci.caarray.domain.contact.Organization");
+        CQLAssociation manufacturerAssociation = new CQLAssociation();
+        manufacturerAssociation.setName("gov.nih.nci.caarray.domain.contact.Organization");
         CQLAttribute manufacturerName = new CQLAttribute();
         manufacturerName.setName("name");
         manufacturerName.setValue(manufacturer);
         manufacturerName.setPredicate(CQLPredicate.EQUAL_TO);
-        manufacturer.setAttribute(manufacturerName);
+        manufacturerAssociation.setAttribute(manufacturerName);
 
-        CQLAssociation organism = new CQLAssociation();
-        organism.setName("edu.georgetown.pir.Organism");
+        CQLAssociation organismAssociation = new CQLAssociation();
+        organismAssociation.setName("edu.georgetown.pir.Organism");
         CQLAttribute organismName = new CQLAttribute();
         organismName.setName("commonName");
         organismName.setValue(organism);
         organismName.setPredicate(CQLPredicate.EQUAL_TO);
-        organism.setAttribute(organismName);
+        organismAssociation.setAttribute(organismName);
 
         CQLGroup associations = new CQLGroup();
-        associations.addAssociation(manufacturer);
-        associations.addAssociation(organism);
+        associations.addAssociation(manufacturerAssociation);
+        associations.addAssociation(organismAssociation);
         associations.setLogicOperator(CQLLogicalOperator.AND);
         target.setGroup(associations);
 
