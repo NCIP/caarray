@@ -82,17 +82,24 @@
  */
 package gov.nih.nci.caarray.test.functional;
 
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.services.CaArrayServer;
+import gov.nih.nci.caarray.services.ServerConnectionException;
+import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
+import gov.nih.nci.caarray.test.base.TestProperties;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.List;
 
 import org.junit.Test;
 
 /**
  * Test case #7959.
- * 
+ *
  * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
  */
 public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
@@ -116,7 +123,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         // - go to the data tab
         selenium.click("link=Data");
         waitForTab();
-        
+
         selenium.click("link=Upload New File(s)");
         // Upload the following files:
         // - MAGE-TAB IDF
@@ -154,7 +161,26 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         clickAndWait("link=My Experiment Workspace");
         waitForTab();
         assertTrue(selenium.isTextPresent(title));
+        verifyDataViaApi(title);
+    }
 
+    private void verifyDataViaApi(String experimentTitle) throws ServerConnectionException {
+        CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties.getServerJndiPort());
+        server.connect();
+        CaArraySearchService searchService = server.getSearchService();
+        Experiment searchExperiment = new Experiment();
+        searchExperiment.setTitle(experimentTitle);
+        List<Experiment> matches = searchService.search(searchExperiment);
+        Experiment experiment = matches.get(0);
+        assertEquals(6, experiment.getSources().size());
+        assertEquals(6, experiment.getSamples().size());
+        assertEquals(6, experiment.getExtracts().size());
+        assertEquals(6, experiment.getLabeledExtracts().size());
+        assertEquals(6, experiment.getHybridizations().size());
+        for (Hybridization hybridization : experiment.getHybridizations()) {
+            assertNotNull(hybridization.getArrayData());
+            assertNotNull(hybridization.getArrayData().getDataSet());
+        }
     }
 
     private void checkFileStatus(String status, int column) {
