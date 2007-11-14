@@ -142,6 +142,7 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      */
     public RawArrayData getRawArrayData(CaArrayFile file) {
         Session session = HibernateUtil.getCurrentSession();
+        session.flush();
         Query query = session.createQuery("from " + RawArrayData.class.getName()
                 + " arrayData where arrayData.dataFile = :file");
         query.setEntity("file", file);

@@ -109,7 +109,7 @@ import org.junit.Test;
 
 /**
  * Unit tests for the Array DAO.
- * 
+ *
  * @author Rashmi Srinivasa
  */
 @SuppressWarnings("PMD")
@@ -225,9 +225,11 @@ public class ArrayDaoTest extends AbstractDaoTest {
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
             DAO_OBJECT.save(rawData);
+            RawArrayData retrievedArrayData = DAO_OBJECT.getRawArrayData(file);
+            assertEquals(rawData, retrievedArrayData);
             tx.commit();
             tx = HibernateUtil.getCurrentSession().beginTransaction();
-            RawArrayData retrievedArrayData = DAO_OBJECT.getRawArrayData(file);
+            retrievedArrayData = DAO_OBJECT.getRawArrayData(file);
             assertEquals(rawData, retrievedArrayData);
             file = new CaArrayFile();
             DAO_OBJECT.save(file);
@@ -239,7 +241,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
             fail("DAO exception during save and retrieve of array data: " + e.getMessage());
         }
     }
-    
+
     @Test
     public void testGetDerivedArrayData() {
         Transaction tx = null;
@@ -304,7 +306,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
                 public boolean isEquivalent(ArrayDataType arrayDataType) {
                     return false;
                 }
-                
+
             };
             retrievedArrayDataType = DAO_OBJECT.getArrayDataType(testDescriptor);
             assertNull(retrievedArrayDataType);
@@ -360,7 +362,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
                 public String getName() {
                     return "not in db";
                 }
-                
+
             };
             retrievedQuantitationType = DAO_OBJECT.getQuantitationType(testDescriptor);
             assertNull(retrievedQuantitationType);
