@@ -140,7 +140,19 @@ public class MageTabTranslatorTest {
      */
     @Test
     public void testTranslate() {
+        testSpecificationDocuments();
         testTcgaBroadDocuments();
+    }
+
+    private void testSpecificationDocuments() {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
+        CaArrayTranslationResult result = translator.translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET, fileSet);
+        Experiment experiment = result.getInvestigations().iterator().next();
+        assertEquals(6, experiment.getSources().size());
+        assertEquals(6, experiment.getSamples().size());
+        assertEquals(6, experiment.getExtracts().size());
+        assertEquals(6, experiment.getLabeledExtracts().size());
+        assertEquals(6, experiment.getHybridizations().size());
     }
 
     private void testTcgaBroadDocuments() {

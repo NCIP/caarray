@@ -229,6 +229,20 @@ public class ArrayDataServiceTest {
         testCreateAnnotationCel();
         testCreateAnnotationChp();
         testCreateAnnotationIllumina();
+        testExistingAnnotationNotOverwritten();
+    }
+
+    private void testExistingAnnotationNotOverwritten() throws InvalidDataFileException {
+        CaArrayFile celFile = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL);
+        RawArrayData celData = new RawArrayData();
+        Hybridization hybridization = new Hybridization();
+        celData.setHybridization(hybridization);
+        hybridization.setArrayData(celData);
+        celData.setDataFile(celFile);
+        daoFactoryStub.getArrayDao().save(celData);
+        arrayDataService.importData(celFile, true);
+        assertEquals(celData, daoFactoryStub.getArrayDao().getRawArrayData(celFile));
+        assertEquals(hybridization, celData.getHybridization());
     }
 
     private void testCreateAnnotationIllumina() throws InvalidDataFileException {
