@@ -24,7 +24,7 @@ public class login_test_2 extends TestCase {
 		selenium.open("/caarray/protected/project/workspace.action");
 		selenium.type("j_username", "caarrayadmin");
 		selenium.type("j_password", "abcd");
-		Thread.sleep(5000);
+//		Thread.sleep(5000);
 		selenium.click("//span/span");
 		selenium.waitForPageToLoad("30000");
 		for (int second = 0;; second++) {
