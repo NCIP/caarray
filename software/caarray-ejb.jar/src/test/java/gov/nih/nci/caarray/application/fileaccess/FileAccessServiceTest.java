@@ -89,6 +89,7 @@ import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import java.io.File;
@@ -131,6 +132,9 @@ public class FileAccessServiceTest {
         file.deleteOnExit();
         caArrayFile = fileAccessService.add(file);
         assertEquals(FileType.AFFYMETRIX_CDF, caArrayFile.getFileType());
+
+        caArrayFile = fileAccessService.add(GenepixArrayDataFiles.GPR_3_0_6);
+        assertEquals(FileType.GENEPIX_GPR, caArrayFile.getFileType());
     }
 
     /**
