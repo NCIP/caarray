@@ -120,17 +120,21 @@ public class VocabularyServiceBean implements VocabularyService {
     }
 
     /**
-     * Returns all terms that belong to the category for the name given (including all subcategories).
      *
-     * @param categoryName find entries that match this category.
-     * @return the matching Terms. Empty list if no term found.
+     * {@inheritDoc}
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Set<Term> getTerms(final String categoryName) {
+        return getTerms(categoryName, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Set<Term> getTerms(final String categoryName, String value) {
         if (categoryName == null) {
             throw new IllegalArgumentException("CategoryName is null");
         }
-        return getVocabularyDao().getTermsRecursive(categoryName);
+        return getVocabularyDao().getTermsRecursive(categoryName, value);
     }
 
     /**
@@ -147,6 +151,14 @@ public class VocabularyServiceBean implements VocabularyService {
         TermSource querySource = new TermSource();
         querySource.setName(name);
         return uniqueResult(getVocabularyDao().queryEntityByExample(querySource));
+    }
+
+    /**
+     *
+     * {@inheritDoc}
+     */
+    public List<TermSource> getAllSources() {
+        return getVocabularyDao().queryEntityByExample(new TermSource());
     }
 
     /**
@@ -181,6 +193,14 @@ public class VocabularyServiceBean implements VocabularyService {
      */
     public Organism getOrganism(Long id) {
         return getOrganismDao().getOrganism(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void saveTerm(Term term) {
+        getVocabularyDao().save(term);
     }
 
     /**

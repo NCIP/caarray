@@ -112,6 +112,18 @@ public interface VocabularyService {
     Set<Term> getTerms(String categoryName);
 
     /**
+     * Returns all terms that belong to the category for the name given (including all
+     * subcategories) and whose value starts with the given value.
+     *
+     * TODO getTerms should take Source as argument
+     *
+     * @param categoryName find entries that match this category.
+     * @param value the value to search on
+     * @return the matching Terms.
+     */
+    Set<Term> getTerms(String categoryName, String value);
+
+    /**
      * Returns all Organisms.
      *
      * @return the List&lt;Organism&gt; in the system
@@ -160,4 +172,16 @@ public interface VocabularyService {
      * @return the organism with given id or null if none found.
      */
     Organism getOrganism(Long id);
+
+    /**
+     * Method to save the term.
+     * @param term the term
+     */
+    void saveTerm(Term term);
+
+    /**
+     * Retrieve all term sources.
+     * @return the sources.
+     */
+    List<TermSource> getAllSources();
 }

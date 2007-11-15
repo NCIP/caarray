@@ -113,7 +113,7 @@ public class VocabularyDaoStub extends AbstractDaoStub implements VocabularyDao 
     /**
      * {@inheritDoc}
      */
-    public Set<Term> getTermsRecursive(String categoryName) {
+    public Set<Term> getTermsRecursive(String categoryName, String value) {
         return new HashSet<Term>();
     }
 

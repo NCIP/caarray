@@ -145,7 +145,7 @@ public class VocabularyDaoTestStub implements VocabularyDao {
     /** (non-Javadoc)
      * @see gov.nih.nci.caarray.dao.VocabularyDao#getTermsRecursive(java.lang.String)
      */
-    public Set<Term> getTermsRecursive(String categoryName) throws DAOException {
+    public Set<Term> getTermsRecursive(String categoryName, String value) throws DAOException {
         return null;
     }
 

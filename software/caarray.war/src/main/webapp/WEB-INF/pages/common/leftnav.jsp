@@ -15,6 +15,7 @@
 
                 <li class="liheader">Curation</li>
                 <li><a href="<c:url value="/notYetImplemented.jsp" />">Import Array Designs</a></li>
+                <li><a href="<c:url value="/protected/vocabulary/manage.action" />">Manage Vocabularies</a></li>
             </ul>
 
             <ul class="welcomemenu">

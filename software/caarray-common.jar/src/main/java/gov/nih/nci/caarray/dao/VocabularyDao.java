@@ -115,9 +115,10 @@ public interface VocabularyDao extends CaArrayDao {
      * Gets all the <code>Terms</code> in the given category and all sub-categories.
      *
      * @param categoryName get terms for this category and all sub-categories.
+     * @param value the value to search on
      * @return all matching terms or an empty <code>Set</code> if no matches.
      */
-    Set<Term> getTermsRecursive(String categoryName);
+    Set<Term> getTermsRecursive(String categoryName, String value);
 
     /**
      * Returns the <code>Category</code> with the given name or null if none exists.

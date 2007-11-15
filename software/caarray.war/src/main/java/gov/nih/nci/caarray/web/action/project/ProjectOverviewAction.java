@@ -91,9 +91,7 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.PaymentMechanism;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -101,7 +99,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.ajaxtags.xml.AjaxXmlBuilder;
 
@@ -118,10 +115,6 @@ public class ProjectOverviewAction extends ProjectTabAction {
     private List<Organization> manufacturers = new ArrayList<Organization>();
     private List<ArrayDesign> arrayDesigns = new ArrayList<ArrayDesign>();
     private List<PaymentMechanism> paymentMechanisms = new ArrayList<PaymentMechanism>();
-    private Set<Term> tissueSites;
-    private Set<Term> tissueTypes;
-    private Set<Term> cellTypes;
-    private Set<Term> conditions;
 
     /**
      * {@inheritDoc}
@@ -129,12 +122,7 @@ public class ProjectOverviewAction extends ProjectTabAction {
     @Override
     public void prepare() throws VocabularyServiceException {
         super.prepare();
-
         VocabularyService vocabService = getVocabularyService();
-        this.tissueSites = vocabService.getTerms(ExperimentOntologyCategory.ORGANISM_PART.getCategoryName());
-        this.tissueTypes = vocabService.getTerms(ExperimentOntologyCategory.MATERIAL_TYPE.getCategoryName());
-        this.cellTypes = vocabService.getTerms(ExperimentOntologyCategory.CELL_TYPE.getCategoryName());
-        this.conditions = vocabService.getTerms(ExperimentOntologyCategory.DISEASE_STATE.getCategoryName());
         this.organisms = vocabService.getOrganisms();
     }
 
@@ -197,62 +185,6 @@ public class ProjectOverviewAction extends ProjectTabAction {
      */
     public void setOrganisms(List<Organism> organisms) {
         this.organisms = organisms;
-    }
-
-    /**
-     * @return the tissueSites
-     */
-    public Set<Term> getTissueSites() {
-        return this.tissueSites;
-    }
-
-    /**
-     * @param tissueSites the tissueSites to set
-     */
-    public void setTissueSites(Set<Term> tissueSites) {
-        this.tissueSites = tissueSites;
-    }
-
-    /**
-     * @return the tissueTypes
-     */
-    public Set<Term> getTissueTypes() {
-        return this.tissueTypes;
-    }
-
-    /**
-     * @param tissueTypes the tissueTypes to set
-     */
-    public void setTissueTypes(Set<Term> tissueTypes) {
-        this.tissueTypes = tissueTypes;
-    }
-
-    /**
-     * @return the cellTypes
-     */
-    public Set<Term> getCellTypes() {
-        return this.cellTypes;
-    }
-
-    /**
-     * @param cellTypes the cellTypes to set
-     */
-    public void setCellTypes(Set<Term> cellTypes) {
-        this.cellTypes = cellTypes;
-    }
-
-    /**
-     * @return the conditions
-     */
-    public Set<Term> getConditions() {
-        return this.conditions;
-    }
-
-    /**
-     * @param conditions the conditions to set
-     */
-    public void setConditions(Set<Term> conditions) {
-        this.conditions = conditions;
     }
 
     /**

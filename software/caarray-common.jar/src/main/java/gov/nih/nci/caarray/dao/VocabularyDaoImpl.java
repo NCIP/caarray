@@ -63,8 +63,10 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 
 /**
@@ -129,27 +131,22 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
      * @param categoryName get terms for this category and all sub-categories.
      * @return all matching terms or an empty <code>Set</code> if no matches.
      */
-    public Set<Term> getTermsRecursive(String categoryName) {
+    public Set<Term> getTermsRecursive(String categoryName, String value) {
         Session mySession = HibernateUtil.getCurrentSession();
         Set<Term> matchingTerms = new HashSet<Term>();
 
-        try {
-            // Get the parent category. Add it along with its children to a set of ids.
-            Category category = getCategoryByName(categoryName, mySession);
-            if (category != null) {
-                Set<Long> categoryIdList = new HashSet<Long>();
-                addCategoryAndChildren(categoryIdList, category);
+        // Get the parent category. Add it along with its children to a set of ids.
+        Category category = getCategoryByName(categoryName, mySession);
+        if (category != null) {
+            Set<Long> categoryIdList = new HashSet<Long>();
+            addCategoryAndChildren(categoryIdList, category);
 
-                // Find all terms in the set of categories we just created.
-                Iterator<Long> iterator = categoryIdList.iterator();
-                while (iterator.hasNext()) {
-                    Long categoryId = iterator.next();
-                    getTermsByCategoryId(mySession, matchingTerms, categoryId);
-                }
+            // Find all terms in the set of categories we just created.
+            Iterator<Long> iterator = categoryIdList.iterator();
+            while (iterator.hasNext()) {
+                Long categoryId = iterator.next();
+                getTermsByCategoryId(mySession, matchingTerms, categoryId, value);
             }
-        } catch (HibernateException he) {
-            getLog().error("Unable to retrieve terms recursively", he);
-            throw new DAOException("Unable to retrieve terms recursively", he);
         }
 
         return matchingTerms;
@@ -201,13 +198,19 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
      * @param mySession the Hibernate Session to use.
      * @param matchingTerms the set of terms to add to.
      * @param categoryId the category id to search for.
+     * @param value the value of the term.
      */
     @SuppressWarnings(UNCHECKED)
-    private void getTermsByCategoryId(Session mySession, Set<Term> matchingTerms, Long categoryId) {
+    private void getTermsByCategoryId(Session mySession, Set<Term> matchingTerms, Long categoryId, String value) {
         List hibernateReturnedTerms = null;
 
-        hibernateReturnedTerms = mySession.createCriteria(Term.class).createCriteria(
-            "category").add(Restrictions.eq("id", categoryId)).list();
+        Criteria criteria = mySession.createCriteria(Term.class);
+        if (value != null) {
+            criteria.add(Restrictions.like("value", value, MatchMode.START).ignoreCase());
+        }
+        criteria.createCriteria("category").add(Restrictions.eq("id", categoryId));
+
+        hibernateReturnedTerms = criteria.list();
         if (hibernateReturnedTerms != null) {
             matchingTerms.addAll(hibernateReturnedTerms);
         }
@@ -230,7 +233,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
             }
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */

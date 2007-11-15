@@ -97,10 +97,11 @@ import java.util.Set;
  */
 public class VocabularyServiceStub implements VocabularyService {
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.application.vocabulary.VocabularyService#getTerms(java.lang.String)
-     */
     public Set<Term> getTerms(String categoryName) {
+        return getTerms(categoryName, null);
+    }
+
+    public Set<Term> getTerms(String categoryName, String value) {
         Set<Term> terms = new HashSet<Term>();
         TermSource source = getSource("MO");
         for (int i = 0; i < 10; i++) {
@@ -164,6 +165,14 @@ public class VocabularyServiceStub implements VocabularyService {
 
     public TermSource createSource(String name) {
         return getSource(name);
+    }
+
+    public void saveTerm(Term term) {
+        // do nothing
+    }
+
+    public List<TermSource> getAllSources() {
+        return null;
     }
 
 }

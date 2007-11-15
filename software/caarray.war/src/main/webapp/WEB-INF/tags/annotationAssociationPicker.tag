@@ -37,16 +37,9 @@
             </script>
         </s:if>
         <s:else>
-            <div class="selectionside">
-                <h4>Associated ${associatedEntityName}s</h4>
-                <div class="scrolltable2">
-                    <ul id="${baseId}SelectedItemDiv">
-                        <c:forEach items="${currentAssociationsCollection}" var="currentItem">
-                            <li>${currentItem.name}</li>
-                        </c:forEach>
-                    </ul>
-                </div>
-            </div>
+            <c:forEach items="${currentAssociationsCollection}" var="currentItem" varStatus="status">
+                <c:if test="${!status.first}">, </c:if>${currentItem.name}
+            </c:forEach>
         </s:else>
     </td>
 </tr>

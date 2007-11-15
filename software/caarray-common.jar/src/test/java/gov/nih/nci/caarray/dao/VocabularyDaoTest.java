@@ -82,8 +82,9 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.domain.vocabulary.Accession;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -215,19 +216,19 @@ public class VocabularyDaoTest extends AbstractDaoTest {
             setupTestGetTermsRecursive();
             tx.commit();
             tx = HibernateUtil.getCurrentSession().beginTransaction();
-            Set<Term> retrievedTerms = DAO_OBJECT.getTermsRecursive(DUMMY_CATEGORY_4.getName());
+            Set<Term> retrievedTerms = DAO_OBJECT.getTermsRecursive(DUMMY_CATEGORY_4.getName(), null);
             if (retrievedTerms.size() != NUM_DUMMY_TERMS) {
                 fail("Did not retrieve the expected number of terms.");
             }
             // Check if we got the expected terms, and accordingly pass or fail the test.
             checkIfExpectedTermsRecursive(retrievedTerms);
             tx.commit();
-        } catch (DAOException e) {
+        } catch (Exception e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception while getting terms in a category: " + e.getMessage());
         }
     }
-    
+
     /**
      * Tests retrieving terms by id recursively.
      */
@@ -236,7 +237,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         Transaction tx = null;
         try {
             tx = HibernateUtil.getCurrentSession().beginTransaction();
-            setupTestGetTermsRecursive();            
+            setupTestGetTermsRecursive();
             Term retrievedTerm1 = DAO_OBJECT.getTermById(DUMMY_TERM_1.getId());
             Term retrievedTerm2 = DAO_OBJECT.getTermById(DUMMY_TERM_2.getId());
             Term retrievedTerm3 = DAO_OBJECT.getTermById(DUMMY_TERM_3.getId());

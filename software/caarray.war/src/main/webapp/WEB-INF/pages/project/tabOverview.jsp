@@ -1,5 +1,6 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
+<%@page import="gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory"%>
 <script type="text/javascript">
 setExperimentTitleHeader('${project.experiment.title}');
 </script>
@@ -7,7 +8,6 @@ setExperimentTitleHeader('${project.experiment.title}');
 <c:if test="${!editMode}">
     <c:set var="theme" value="readonly" scope="request"/>
 </c:if>
-
 <caarray:tabPane paneTitleKey="experiment.overview">
     <div class="boxpad">
         <p class="instructions">
@@ -38,14 +38,14 @@ setExperimentTitleHeader('${project.experiment.title}');
             <s:select required="true" name="project.experiment.organism" label="Organism" tabindex="7"
                       list="organisms" listKey="id" listValue="commonName" value="project.experiment.organism.id"
                       headerKey="" headerValue="--Select an Organism--"/>
-            <s:select multiple="true" name="project.experiment.tissueSites" label="Tissue Sites" tabindex="8"
-                      list="tissueSites" listKey="id" listValue="value" value="%{project.experiment.tissueSites.{id}}" />
-            <s:select multiple="true" name="project.experiment.tissueTypes" label="Tissue Types" tabindex="9"
-                      list="tissueTypes" listKey="id" listValue="value" value="%{project.experiment.tissueTypes.{id}}" />
-            <s:select multiple="true" name="project.experiment.cellTypes" label="Cell Types" tabindex="10"
-                      list="cellTypes" listKey="id" listValue="value" value="%{project.experiment.cellTypes.{id}}" />
-            <s:select multiple="true" name="project.experiment.conditions" label="Conditions" tabindex="11"
-                      list="conditions" listKey="id" listValue="value" value="%{project.experiment.conditions.{id}}" />
+            <caarray:termSelector baseId="tissueSite" category="<%= ExperimentOntologyCategory.ORGANISM_PART %>" initialTerms="${project.experiment.tissueSites}"
+                tabIndex="8" termFieldName="project.experiment.tissueSites" termLabel="Tissue Site"/>
+            <caarray:termSelector baseId="tissueType" category="<%= ExperimentOntologyCategory.MATERIAL_TYPE %>" initialTerms="${project.experiment.tissueTypes}"
+                tabIndex="9" termFieldName="project.experiment.tissueTypes" termLabel="Tissue Type"/>
+            <caarray:termSelector baseId="cellType" category="<%= ExperimentOntologyCategory.CELL_TYPE %>" initialTerms="${project.experiment.cellTypes}"
+                tabIndex="10" termFieldName="project.experiment.cellTypes" termLabel="Cell Type"/>
+            <caarray:termSelector baseId="conditions" category="<%= ExperimentOntologyCategory.DISEASE_STATE %>" initialTerms="${project.experiment.conditions}"
+                tabIndex="11" termFieldName="project.experiment.conditions" termLabel="Condition"/>
             <s:hidden name="project.id" />
         </s:form>
 

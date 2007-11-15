@@ -148,7 +148,7 @@ public class VocabularyServiceTest {
             return new ArrayList<Term>();
         }
         @Override
-        public Set<Term> getTermsRecursive(String categoryName) throws DAOException {
+        public Set<Term> getTermsRecursive(String categoryName, String value) {
             throw new DAOException("This is a test exception");
         }
 
@@ -169,7 +169,7 @@ public class VocabularyServiceTest {
         public List<Term> getTerms(String categoryName) throws DAOException {
             throw new DAOException("This is a test exception");
         }
-        public Set<Term> getTermsRecursive(String categoryName) throws DAOException {
+        public Set<Term> getTermsRecursive(String categoryName, String value) throws DAOException {
             throw new DAOException("This is a test exception");
         }
         public Category getCategory(String name) throws DAOException {

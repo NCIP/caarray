@@ -681,14 +681,49 @@ var AssociationPickerUtils = {
         Element.remove(selectedItem);
     },
 
-    doNothing : function() { },
-
     createAutoUpdater : function(baseId, url, projectId, entityName, itemId, associatedEntityName) {
         autoUpdater =  new Ajax.Autocompleter(baseId + "AssociatedValueName", baseId +"AutocompleteDiv", url,
             {paramName: "associatedValueName", minChars: '0', indicator: baseId + 'ProgressMsg', frequency: 0.75,
              updateElement: function(selectedItem) {AssociationPickerUtils.processSelection(selectedItem, baseId, associatedEntityName);},
-             onHide: AssociationPickerUtils.doNothing, onShow: AssociationPickerUtils.doNothing,
+             onHide: function() {}, onShow: function() {},
              parameters: 'project.id=' + projectId + '&current' + entityName + '.id=' + itemId });
+        Element.show(autoUpdater.update);
+        autoUpdater.activate();
+        return autoUpdater;
+    }
+}
+
+var TermPickerUtils = {
+    processSelection : function(selectedItem, baseId, termLabel, termFieldName) {
+        var id = selectedItem.firstChild.value;
+        if (id == null || id == '') {
+            return;
+        }
+        if ($(baseId + 'SelectedItemDiv').getElementsBySelector('input[value="' + id + '"]').length  > 0) {
+            alert(termLabel + ' already selected.');
+            return;
+        }
+
+        var newItem = document.createElement("li");
+        var newInput = selectedItem.childNodes[0].cloneNode(false);
+        newInput.name = termFieldName;
+        newItem.appendChild(newInput);
+        var newText = selectedItem.childNodes[1].cloneNode(false);
+        newItem.appendChild(newText);
+        newItem.onclick = TermPickerUtils.removeSelection
+        $(baseId + 'SelectedItemDiv').appendChild(newItem);
+    },
+
+    removeSelection : function(selectedItem) {
+        Element.remove(selectedItem);
+    },
+
+    createAutoUpdater : function(baseId, url, termLabel, category, termFieldName) {
+        autoUpdater =  new Ajax.Autocompleter(baseId + "SearchInput", baseId +"AutocompleteDiv", url,
+            {paramName: "currentTerm.value", minChars: '0', indicator: baseId + 'ProgressMsg', frequency: 0.75,
+             updateElement: function(selectedItem) {TermPickerUtils.processSelection(selectedItem, baseId, termLabel, termFieldName);},
+             onHide: function() {}, onShow: function() {},
+             parameters: 'category=' + category});
         Element.show(autoUpdater.update);
         autoUpdater.activate();
         return autoUpdater;

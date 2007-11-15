@@ -186,6 +186,17 @@
             <result name="success">/WEB-INF/pages/collaborators/addTable.jsp</result>
         </action>
 
+        <action name="vocabulary/manage">
+            <result>/WEB-INF/pages/vocabulary/manage.jsp</result>
+        </action>
+
+        <action name="ajax/vocabulary/*" class="gov.nih.nci.caarray.web.action.vocabulary.VocabularyAction" method="{1}">
+            <result name="input">/WEB-INF/pages/vocabulary/edit.jsp</result>
+            <result name="success">/WEB-INF/pages/vocabulary/list.jsp</result>
+            <result name="termAutoCompleterValues">/WEB-INF/pages/vocabulary/termAutoCompleterValues.jsp</result>
+            <result name="projectEdit">/WEB-INF/pages/vocabulary/reloadProject.jsp</result>
+        </action>
+
     </package>
 
     <package name="registration" namespace="/registration" extends="default">
