@@ -77,8 +77,8 @@
 
         <log dir="logs\${project.name}">
             <merge dir="projects\${project.name}\software\build\site\junit" />
-            <gzip every="1" unit="MONTH"/>
-            <delete every="3" unit="MONTH" ignoreSuffix="true"/>
+            <gzip every="1" unit="WEEK"/>
+            <delete every="2" unit="WEEK" ignoreSuffix="true"/>
         </log>
 
         <publishers>
