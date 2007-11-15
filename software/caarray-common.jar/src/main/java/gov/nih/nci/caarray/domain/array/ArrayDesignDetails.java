@@ -91,6 +91,8 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 /**
  * Contains the low-level array design details (Features, PhysicalProbes, and LogicalProbes) for a
@@ -112,6 +114,7 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
     /**
      * @return the features
      */
+    @Cascade(CascadeType.ALL)
     @OneToMany(mappedBy = MAPPED_BY)
     public Set<Feature> getFeatures() {
         return features;
@@ -126,6 +129,7 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
      * @return the pysicalProbes
      */
     @OneToMany(mappedBy = MAPPED_BY)
+    @Cascade(CascadeType.ALL)
     public Set<PhysicalProbe> getProbes() {
         return probes;
     }
@@ -138,8 +142,9 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
     /**
      * @return the logicalProbes
      */
-   @OneToMany(mappedBy = MAPPED_BY)
-   public Set<LogicalProbe> getLogicalProbes() {
+    @OneToMany(mappedBy = MAPPED_BY)
+    @Cascade(CascadeType.ALL)
+    public Set<LogicalProbe> getLogicalProbes() {
         return logicalProbes;
     }
 
@@ -152,6 +157,7 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
      * @return the probeGroups
      */
     @OneToMany(mappedBy = MAPPED_BY)
+    @Cascade(CascadeType.ALL)
     public Set<ProbeGroup> getProbeGroups() {
         return probeGroups;
     }

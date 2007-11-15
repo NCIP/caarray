@@ -94,6 +94,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
 /**
@@ -140,6 +141,7 @@ public class PhysicalProbe extends AbstractProbe {
     @ManyToOne
     @JoinColumn(updatable = false, nullable = false)
     @ForeignKey(name = "PROBE_GROUP_FK")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public ProbeGroup getProbeGroup() {
         return probeGroup;
     }

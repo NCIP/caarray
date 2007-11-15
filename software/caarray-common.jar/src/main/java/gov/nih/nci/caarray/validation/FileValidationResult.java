@@ -251,4 +251,41 @@ public final class FileValidationResult implements Serializable, Comparable<File
         return stringBuffer.toString();
     }
 
+    /**
+     * The default comparison uses the id.
+     * @param o other object
+     * @return equal or not
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (!(o instanceof FileValidationResult)) {
+            return false;
+        }
+        if (o == this) {
+            return true;
+        }
+        if (id == null) {
+            // by default, two transient instances cannot ever be equal
+            return false;
+        }
+
+        FileValidationResult e = (FileValidationResult) o;
+        return id.equals(e.id);
+    }
+
+    /**
+     * Default hashCode goes off of id.
+     * @return hashCode
+     */
+    @Override
+    public int hashCode() {
+        if (id == null) {
+            return System.identityHashCode(this);
+        }
+
+        return id.hashCode();
+    }
 }

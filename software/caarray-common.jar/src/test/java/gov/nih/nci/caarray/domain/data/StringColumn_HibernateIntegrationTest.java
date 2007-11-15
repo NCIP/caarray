@@ -82,20 +82,17 @@
  */
 package gov.nih.nci.caarray.domain.data;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject_HibernateIntegrationTest;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
 import org.junit.Before;
 import org.junit.Test;
 
-public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_HibernateIntegrationTest {
+public class StringColumn_HibernateIntegrationTest extends AbstractCaArrayObject_HibernateIntegrationTest {
 
     private static final int NUMBER_OF_DATA_ROWS = 100;
     private QuantitationType stringType;
-    private QuantitationType floatType;
 
     @Before
     @Override
@@ -104,9 +101,6 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
         stringType = new QuantitationType();
         stringType.setName("string");
         stringType.setTypeClass(String.class);
-        floatType = new QuantitationType();
-        floatType.setName("float");
-        floatType.setTypeClass(Float.class);
     }
 
     @Test
@@ -118,13 +112,9 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
 
     @Override
     protected void setValues(AbstractCaArrayObject caArrayObject) {
-        DataSet dataSet = (DataSet) caArrayObject;
-        StringColumn stringColumn = (StringColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(0);
+        StringColumn stringColumn = (StringColumn) caArrayObject;
         stringColumn.initializeArray(NUMBER_OF_DATA_ROWS);
         setValues(stringColumn.getValues());
-        FloatColumn floatColumn = (FloatColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(1);
-        floatColumn.initializeArray(NUMBER_OF_DATA_ROWS);
-        setValues(floatColumn.getValues());
     }
 
     private void setValues(String[] values) {
@@ -133,53 +123,30 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
         }
     }
 
-    private void setValues(float[] values) {
-        for (int i = 0; i < values.length; i++) {
-            values[i] = getUniqueIntValue() + 0.1f;
-        }
-    }
-
     @Override
     protected void compareValues(AbstractCaArrayObject caArrayObject, AbstractCaArrayObject retrievedCaArrayObject) {
-        DataSet original = (DataSet) caArrayObject;
-        DataSet retrieved = (DataSet) retrievedCaArrayObject;
-        assertEquals(original.getQuantitationTypes().get(0).getName(), retrieved.getQuantitationTypes().get(0).getName());
-        StringColumn originalColumn1 = (StringColumn) original.getHybridizationDataList().get(0).getColumns().get(0);
-        StringColumn retrievedColumn1 = (StringColumn) retrieved.getHybridizationDataList().get(0).getColumns().get(0);
-        assertArrayEquals(originalColumn1.getValues(), retrievedColumn1.getValues());
-        assertEquals(original.getQuantitationTypes().get(1).getName(), retrieved.getQuantitationTypes().get(1).getName());
-        FloatColumn originalColumn2 = (FloatColumn) original.getHybridizationDataList().get(0).getColumns().get(1);
-        FloatColumn retrievedColumn2 = (FloatColumn) retrieved.getHybridizationDataList().get(0).getColumns().get(1);
-        assertFloatArrayEquals(originalColumn2.getValues(), retrievedColumn2.getValues());
-    }
-
-    private void assertFloatArrayEquals(float[] expected, float[] actual) {
-        if (expected == null && actual == null) {
-            return;
-        }
-        assertEquals(expected.length, actual.length);
-        for (int i = 0; i < expected.length; i++) {
-            assertEquals(expected[i], actual[i]);
-        }
+        StringColumn original = (StringColumn) caArrayObject;
+        StringColumn retrieved = (StringColumn) retrievedCaArrayObject;
+        assertArrayEquals(original.getValues(), retrieved.getValues());
     }
 
     @Override
     protected AbstractCaArrayObject createTestObject() {
-        Hybridization hybridization = new Hybridization();
-        DataSet dataSet = new DataSet();
-        dataSet.addHybridizationData(hybridization);
-        dataSet.addQuantitationType(stringType);
-        dataSet.addQuantitationType(floatType);
-        return dataSet;
+        StringColumn stringColumn = new StringColumn();
+        HybridizationData hybridizationData = new HybridizationData();
+        stringColumn.setHybridizationData(hybridizationData);
+        hybridizationData.setDataSet(new DataSet());
+        save(hybridizationData.getDataSet());
+        save(hybridizationData);
+        save(stringType);
+        stringColumn.setQuantitationType(stringType);
+        return stringColumn;
     }
 
     @Override
     protected void setNullableValuesToNull(AbstractCaArrayObject caArrayObject) {
-        DataSet dataSet = (DataSet) caArrayObject;
-        StringColumn stringColumn = (StringColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(0);
-        FloatColumn floatColumn = (FloatColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(1);
-        stringColumn.setValues(null);
-        floatColumn.setValues(null);
+        StringColumn column = (StringColumn) caArrayObject;
+        column.setValues(null);
     }
 
 }

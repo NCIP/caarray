@@ -150,7 +150,6 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @return the numberOfFeatures
      */
-    @Transient
     public Integer getNumberOfFeatures() {
         return numberOfFeatures;
     }
@@ -290,6 +289,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      * @return the printing
      */
     @ManyToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "ARRAYDESIGN_PRINTING_FK")
     public ProtocolApplication getPrinting() {
         return printing;

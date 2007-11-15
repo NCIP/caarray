@@ -101,7 +101,7 @@ public abstract class AbstractCaArrayObject_HibernateIntegrationTest {
     public void setUp() {
         HibernateUtil.enableFilters(false);
     }
-    
+
     @After
     public void tearDown() {
         HibernateIntegrationTestCleanUpUtility.cleanUp();
@@ -109,27 +109,39 @@ public abstract class AbstractCaArrayObject_HibernateIntegrationTest {
 
     @Test
     public void testSave() {
-        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
         AbstractCaArrayObject caArrayObject = createTestObject();
         // Test once for insert
+        setValues(caArrayObject);
         saveAndCheckRetrieved(caArrayObject);
         // ...and again for update
+        setValues(caArrayObject);
         saveAndCheckRetrieved(caArrayObject);
         // ...and check that nullable fields work
         setNullableValuesToNull(caArrayObject);
-        tx.commit();
+        saveAndCheckRetrieved(caArrayObject);
+        // ...and add values again to previously nulled fields
+        setValues(caArrayObject);
+        saveAndCheckRetrieved(caArrayObject);
     }
 
     abstract protected void setNullableValuesToNull(AbstractCaArrayObject caArrayObject);
 
     protected final void saveAndCheckRetrieved(AbstractCaArrayObject caArrayObject) {
-        setValues(caArrayObject);
-        HibernateUtil.getCurrentSession().saveOrUpdate(caArrayObject);
+        save(caArrayObject);
         assertNotNull(caArrayObject.getId());
         assertTrue(caArrayObject.getId() > 0L);
+        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+        HibernateUtil.getCurrentSession().evict(caArrayObject);
         AbstractCaArrayObject retrievedCaArrayObject =
             (AbstractCaArrayObject) HibernateUtil.getCurrentSession().get(caArrayObject.getClass(), caArrayObject.getId());
         compareCaArrayObjectValues(caArrayObject, retrievedCaArrayObject);
+        tx.commit();
+    }
+
+    protected final void save(AbstractCaArrayObject caArrayObject) {
+        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+        HibernateUtil.getCurrentSession().saveOrUpdate(caArrayObject);
+        tx.commit();
     }
 
     abstract protected void setValues(AbstractCaArrayObject caArrayObject);
