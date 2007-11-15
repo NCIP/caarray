@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.web.action.project;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
-import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.util.io.FileClosingInputStream;
@@ -185,7 +185,7 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
      * {@inheritDoc}
      */
     @Override
-    protected PersistentObject getItem() {
+    protected AbstractCaArrayEntity getItem() {
         return getCurrentHybridization();
     }
 
@@ -255,5 +255,15 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
      */
     public void setItemsToRemove(List<LabeledExtract> itemsToRemove) {
         this.itemsToRemove = itemsToRemove;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void handleDelete() {
+        for (LabeledExtract le : getCurrentAssociationsCollection()) {
+            le.getHybridizations().remove(getCurrentHybridization());
+        }
     }
 }

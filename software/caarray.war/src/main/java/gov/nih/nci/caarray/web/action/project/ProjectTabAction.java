@@ -5,6 +5,7 @@ import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementSe
 import static gov.nih.nci.caarray.web.action.ActionHelper.getVocabularyService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
@@ -28,6 +29,7 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 @Validation
 public class ProjectTabAction extends AbstractBaseProjectAction {
     private static final long serialVersionUID = 1L;
+    private PersistentObject orphan;
 
     /**
      * load a given tab in the submit experiment workflow.
@@ -59,7 +61,7 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
             getExperiment().getExperimentContacts().add(pi);
         }
         try {
-            getProjectManagementService().saveProject((getProject()));
+            getProjectManagementService().saveProject(getProject(), orphan);
             List<String> args = new ArrayList<String>();
             args.add(getProject().getExperiment().getTitle());
             ActionHelper.saveMessage(getText("project.saved", args));
@@ -71,5 +73,12 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
             ActionHelper.saveMessage(getText("project.saveProblem", args));
             return INPUT;
         }
+    }
+
+    /**
+     * @param orphan object orphaned during this operation
+     */
+    public void setOrphan(PersistentObject orphan) {
+        this.orphan = orphan;
     }
 }

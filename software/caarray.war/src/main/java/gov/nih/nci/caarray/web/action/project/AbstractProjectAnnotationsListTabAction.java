@@ -128,6 +128,16 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String delete() {
+        setOrphan(getItem());
+        handleDelete();
+        return super.delete();
+    }
+
+    /**
      * Action to search for associated annotations.
      * @return the string matching the result to follow
      */
@@ -159,6 +169,12 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
      * @return the collection to update
      */
     public abstract Collection getAnnotationCollectionToUpdate(T item);
+
+    /**
+     * Handles deletion of the current item.  Implementations should remove the current T
+     * from the left association class.
+     */
+    protected abstract void handleDelete();
 
     /**
      * @return the itemsToAssociate

@@ -87,7 +87,7 @@ import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementSe
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
-import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
@@ -166,7 +166,6 @@ public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabActio
 
     /**
      * {@inheritDoc}
-     * @throws ProposalWorkflowException
      */
     @Override
     protected void doCopyItem() throws ProposalWorkflowException {
@@ -185,7 +184,7 @@ public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabActio
      * {@inheritDoc}
      */
     @Override
-    protected PersistentObject getItem() {
+    protected AbstractCaArrayEntity getItem() {
         return getCurrentSample();
     }
 
@@ -256,5 +255,15 @@ public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabActio
      */
     public void setItemsToRemove(List<Source> itemsToRemove) {
         this.itemsToRemove = itemsToRemove;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void handleDelete() {
+        for (Source s : getCurrentAssociationsCollection()) {
+            s.getSamples().remove(getCurrentSample());
+        }
     }
 }

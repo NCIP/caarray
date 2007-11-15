@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.project;
 
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
@@ -90,6 +91,8 @@ import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
@@ -158,9 +161,10 @@ public interface ProjectManagementService {
      * If the project is new, then it is put into the draft state.
      *
      * @param project the project to save
+     * @param orphansToDelete any objects orphaned by this save that should be deleted
      * @throws ProposalWorkflowException if the project cannot currently be saved because it is public
      */
-    void saveProject(Project project) throws ProposalWorkflowException;
+    void saveProject(Project project, PersistentObject... orphansToDelete) throws ProposalWorkflowException;
 
     /**
      * Moves a project into a new workflow status.
@@ -257,6 +261,30 @@ public interface ProjectManagementService {
      * @throws ProposalWorkflowException if the project cannot currently be modified because it is public
      */
     Factor copyFactor(Project project, long factorId) throws ProposalWorkflowException;
+
+    /**
+     * Make a copy of an extract belonging to given project, and add it to the new project.
+     * The new extract's name will be derived from the original extract's name
+     * according to the scheme described in
+     * {@link gov.nih.nci.caarray.application.GenericDataService#getIncrementingCopyName(Class, String, String)}
+     * @param project the project to which the extract belongs
+     * @param extractId the id of the extract to copy
+     * @return the new extract
+     * @throws ProposalWorkflowException if the project cannot currently be modified because it is public
+     */
+    Extract copyExtract(Project project, long extractId) throws ProposalWorkflowException;
+
+    /**
+     * Make a copy of a labeled extract belonging to given project, and add it to the new project.
+     * The new labeled extract's name will be derived from the original labeled extract's name
+     * according to the scheme described in
+     * {@link gov.nih.nci.caarray.application.GenericDataService#getIncrementingCopyName(Class, String, String)}
+     * @param project the project to which the labeled extract belongs
+     * @param extractId the id of the extract to copy
+     * @return the new labeled extract
+     * @throws ProposalWorkflowException if the project cannot currently be modified because it is public
+     */
+    LabeledExtract copyLabeledExtract(Project project, long extractId) throws ProposalWorkflowException;
 
     /**
      * Performs a query for experiments by text matching for the given keyword.

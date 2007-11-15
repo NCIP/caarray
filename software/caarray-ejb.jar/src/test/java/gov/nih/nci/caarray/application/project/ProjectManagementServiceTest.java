@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.project;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
@@ -95,12 +96,15 @@ import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.ProjectDaoStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
+import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
@@ -190,8 +194,10 @@ public class ProjectManagementServiceTest {
     public void testSaveProject() {
         Project project = new Project();
         try {
-            this.projectManagementService.saveProject(project);
+            AbstractCaArrayEntity e = new Sample();
+            this.projectManagementService.saveProject(project, e);
             assertEquals(project, this.daoFactoryStub.projectDao.lastSaved);
+            assertEquals(e, this.daoFactoryStub.projectDao.lastDeleted);
         } catch (ProposalWorkflowException e) {
             fail("Unexpected exception: " + e);
         }
@@ -241,13 +247,28 @@ public class ProjectManagementServiceTest {
         try {
             this.projectManagementService.saveProject(project);
             Sample sample = this.projectManagementService.copySample(project, 1);
-            assertNotNull(sample);
-            assertEquals("Test2", sample.getName());
-            assertEquals("Test", sample.getDescription());
+            assertOnAbstractBioMaterialCopy(sample);
             assertEquals(1, project.getExperiment().getSamples().size());
+            assertTrue(!sample.getSources().isEmpty());
         } catch (ProposalWorkflowException e) {
             fail("Unexpected exception: " + e);
         }
+    }
+
+    @Test
+    public void testCopyExtract() throws ProposalWorkflowException {
+        Project project = new Project();
+        this.projectManagementService.saveProject(project);
+        Extract e = this.projectManagementService.copyExtract(project, 1);
+        assertOnAbstractBioMaterialCopy(e);
+        assertEquals(1, project.getExperiment().getExtracts().size());
+        assertTrue(!e.getSamples().isEmpty());
+    }
+
+    private void assertOnAbstractBioMaterialCopy(AbstractBioMaterial abm) {
+        assertNotNull(abm);
+        assertEquals("Test2", abm.getName());
+        assertEquals("Test", abm.getDescription());
     }
 
     @Test
@@ -356,6 +377,7 @@ public class ProjectManagementServiceTest {
 
         private final HashMap<Long, PersistentObject> savedObjects = new HashMap<Long, PersistentObject>();
         private PersistentObject lastSaved;
+        private PersistentObject lastDeleted;
 
         @Override
         public void save(PersistentObject caArrayObject) {
@@ -369,6 +391,11 @@ public class ProjectManagementServiceTest {
         @Override
         public List<Project> getNonPublicProjectsForUser() {
             return new ArrayList<Project>();
+        }
+
+        @Override
+        public void remove(PersistentObject caArrayEntity) {
+            lastDeleted = caArrayEntity;
         }
 
         /**
@@ -406,6 +433,10 @@ public class ProjectManagementServiceTest {
             return project;
         }
 
+        public PersistentObject getLastDeleted() {
+            return lastDeleted;
+        }
+
     }
 
     private static class LocalSearchDaoStub extends SearchDaoStub {
@@ -416,26 +447,58 @@ public class ProjectManagementServiceTest {
         @Override
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
             if (Sample.class.equals(entityClass)) {
-                Sample s = new Sample();
-                s.setName("Test");
-                s.setDescription("Test");
-                s.setId(entityId);
+                Sample s = getSample(entityId);
                 return (T) s;
             }
             else if (Source.class.equals(entityClass)) {
-                Source s = new Source();
-                s.setName("Test");
-                s.setDescription("Test");
-                s.setId(entityId);
+                Source s = getSource(entityId);
                 return (T) s;
             }
             else if (Factor.class.equals(entityClass)) {
-                Factor f = new Factor();
-                f.setName("Test");
-                f.setId(entityId);
+                Factor f = getFactor(entityId);
                 return (T) f;
+            } else if (Extract.class.equals(entityClass)) {
+                Extract e = getExtract(entityId);
+                return (T) e;
             }
             return null;
+        }
+
+        private Extract getExtract(Long entityId) {
+            Extract e = new Extract();
+            setABM(e, entityId);
+            Sample s = getSample(entityId++);
+            e.getSamples().add(s);
+            s.getExtracts().add(e);
+            return e;
+        }
+
+        private Sample getSample(Long entityId) {
+            Sample s = new Sample();
+            setABM(s, entityId);
+            Source source = getSource(entityId++);
+            s.getSources().add(source);
+            source.getSamples().add(s);
+            return s;
+        }
+
+        private Source getSource(Long entityId) {
+            Source s = new Source();
+            setABM(s, entityId);
+            return s;
+        }
+
+        private Factor getFactor(Long entityId) {
+            Factor f = new Factor();
+            f.setName("Test");
+            f.setId(entityId);
+            return f;
+        }
+
+        private void setABM(AbstractBioMaterial abm, Long entityId) {
+            abm.setName("Test");
+            abm.setDescription("Test");
+            abm.setId(entityId);
         }
     }
 

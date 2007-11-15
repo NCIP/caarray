@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.project;
 
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
@@ -90,6 +91,8 @@ import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
@@ -150,7 +153,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         // no-op
     }
 
-    public void saveProject(Project project) throws ProposalWorkflowException {
+    public void saveProject(Project project, PersistentObject... orphans) throws ProposalWorkflowException {
         // no-op
     }
 
@@ -224,6 +227,20 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
      * {@inheritDoc}
      */
     public File prepareHybsForDownload(Project p, Collection<Hybridization> hybridizations) throws IOException {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Extract copyExtract(Project project, long extractId) throws ProposalWorkflowException {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public LabeledExtract copyLabeledExtract(Project project, long extractId) throws ProposalWorkflowException {
         return null;
     }
 

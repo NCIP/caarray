@@ -83,16 +83,16 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
+import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
-import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.apache.commons.lang.NotImplementedException;
 
 /**
  * Action implementing the extracts tab.
@@ -131,16 +131,8 @@ public class ProjectExtractsAction extends AbstractProjectAnnotationsListTabActi
      * {@inheritDoc}
      */
     @Override
-    public String copy() {
-        return "notYetImplemented";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doCopyItem() {
-        throw new NotImplementedException("Copying not supported for extracts");
+    protected void doCopyItem() throws ProposalWorkflowException {
+        ActionHelper.getProjectManagementService().copyExtract(getProject(), this.currentExtract.getId());
     }
 
     /**
@@ -155,7 +147,7 @@ public class ProjectExtractsAction extends AbstractProjectAnnotationsListTabActi
      * {@inheritDoc}
      */
     @Override
-    protected PersistentObject getItem() {
+    protected AbstractCaArrayEntity getItem() {
         return getCurrentExtract();
     }
 
@@ -225,5 +217,15 @@ public class ProjectExtractsAction extends AbstractProjectAnnotationsListTabActi
      */
     public void setItemsToRemove(List<Sample> itemsToRemove) {
         this.itemsToRemove = itemsToRemove;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void handleDelete() {
+        for (Sample s : getCurrentAssociationsCollection()) {
+            s.getExtracts().remove(getCurrentExtract());
+        }
     }
 }

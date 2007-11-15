@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ContactDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -97,6 +98,9 @@ import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
@@ -230,10 +234,17 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void saveProject(Project project) throws ProposalWorkflowException {
+    public void saveProject(Project project, PersistentObject... orphansToDelete)
+        throws ProposalWorkflowException {
+
         LogUtil.logSubsystemEntry(LOG, project);
         checkIfProjectSaveAllowed(project);
         getProjectDao().save(project);
+        for (PersistentObject obj : orphansToDelete) {
+            if (obj != null) {
+                getProjectDao().remove(obj);
+            }
+        }
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -333,18 +344,70 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Sample copySample(Project project, long sampleId) throws ProposalWorkflowException {
+        LogUtil.logSubsystemEntry(LOG, project, sampleId);
         checkIfProjectSaveAllowed(project);
         Sample sample = getDaoFactory().getSearchDao().retrieve(Sample.class, sampleId);
         Sample copy = new Sample();
-        String copyName = getGenericDataService().getIncrementingCopyName(Sample.class, "name", sample.getName());
-        copy.setName(copyName);
-        copy.setDescription(sample.getDescription());
-        copy.setMaterialType(sample.getMaterialType());
-        copy.setOrganism(sample.getOrganism());
+        copyInto(Sample.class, copy, sample);
         copy.setSpecimen(sample.getSpecimen());
+        for (Source source : sample.getSources()) {
+            source.getSamples().add(copy);
+            copy.getSources().add(source);
+        }
         project.getExperiment().getSamples().add(copy);
         getDaoFactory().getProjectDao().save(project);
+        LogUtil.logSubsystemExit(LOG);
         return copy;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public Extract copyExtract(Project project, long extractId) throws ProposalWorkflowException {
+        LogUtil.logSubsystemEntry(LOG, project, extractId);
+        checkIfProjectSaveAllowed(project);
+        Extract extract = getDaoFactory().getSearchDao().retrieve(Extract.class, extractId);
+        Extract copy = new Extract();
+        copyInto(Extract.class, copy, extract);
+        copy.setMolecularSpecimen(extract.getMolecularSpecimen());
+        project.getExperiment().getExtracts().add(copy);
+        for (Sample sample : extract.getSamples()) {
+            sample.getExtracts().add(copy);
+            copy.getSamples().add(sample);
+        }
+        getDaoFactory().getProjectDao().save(project);
+        LogUtil.logSubsystemExit(LOG);
+        return copy;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public LabeledExtract copyLabeledExtract(Project project, long extractId) throws ProposalWorkflowException {
+        LogUtil.logSubsystemEntry(LOG, project, extractId);
+        checkIfProjectSaveAllowed(project);
+        LabeledExtract le = getDaoFactory().getSearchDao().retrieve(LabeledExtract.class, extractId);
+        LabeledExtract copy = new LabeledExtract();
+        copyInto(LabeledExtract.class, copy, le);
+        copy.setLabel(le.getLabel());
+        project.getExperiment().getLabeledExtracts().add(copy);
+        for (Extract e : le.getExtracts()) {
+            e.getLabeledExtracts().add(copy);
+            copy.getExtracts().add(e);
+        }
+        getDaoFactory().getProjectDao().save(project);
+        LogUtil.logSubsystemExit(LOG);
+        return copy;
+    }
+
+    private <T extends AbstractBioMaterial> void copyInto(Class<T> clazz, T to, T from) {
+        String copyName = getGenericDataService().getIncrementingCopyName(clazz, "name", from.getName());
+        to.setName(copyName);
+        to.setDescription(from.getDescription());
+        to.setMaterialType(from.getMaterialType());
+        to.setOrganism(from.getOrganism());
     }
 
     /**
@@ -371,11 +434,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         checkIfProjectSaveAllowed(project);
         Source source = getDaoFactory().getSearchDao().retrieve(Source.class, sourceId);
         Source copy = new Source();
-        String copyName = getGenericDataService().getIncrementingCopyName(Source.class, "name", source.getName());
-        copy.setName(copyName);
-        copy.setDescription(source.getDescription());
-        copy.setMaterialType(source.getMaterialType());
-        copy.setOrganism(source.getOrganism());
+        copyInto(Source.class, copy, source);
         copy.setTissueSite(source.getTissueSite());
         project.getExperiment().getSources().add(copy);
         getDaoFactory().getProjectDao().save(project);

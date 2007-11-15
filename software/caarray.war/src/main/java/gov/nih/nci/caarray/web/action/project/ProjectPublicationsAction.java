@@ -86,7 +86,7 @@ import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getVocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
-import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -154,7 +154,7 @@ public class ProjectPublicationsAction extends AbstractProjectListTabAction {
      * {@inheritDoc}
      */
     @Override
-    protected PersistentObject getItem() {
+    protected AbstractCaArrayEntity getItem() {
         return getCurrentPublication();
     }
 

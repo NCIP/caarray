@@ -86,7 +86,7 @@ import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
-import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.Factor;
 
 import java.util.Collection;
@@ -142,7 +142,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
      * {@inheritDoc}
      */
     @Override
-    protected PersistentObject getItem() {
+    protected AbstractCaArrayEntity getItem() {
         return getCurrentFactor();
     }
 
