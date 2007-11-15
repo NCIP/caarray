@@ -80,127 +80,83 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.ui;
+package gov.nih.nci.caarray.web.action;
 
+import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.application.browse.BrowseService;
+import gov.nih.nci.caarray.application.browse.BrowseServiceStub;
+import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.search.BrowseCategory;
+import gov.nih.nci.caarray.domain.search.PageSortParams;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.web.ui.BrowseTab;
+import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
 
-import org.displaytag.pagination.PaginatedList;
-import org.displaytag.properties.SortOrderEnum;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.opensymphony.xwork2.Action;
 
 /**
- *
  * @author Winston Cheng
  *
- * @param <T>
  */
-public class PaginatedListImpl<T> implements PaginatedList {
-    private int fullListSize;
-    private List<T> list;
-    private int objectsPerPage;
-    private int pageNumber = 1;
-    private String searchId;
-    private String sortCriterion;
-    private SortOrderEnum sortDirection = SortOrderEnum.ASCENDING;
+public class BrowseActionTest {
+    private final BrowseAction browseAction = new BrowseAction();
+    private final LocalBrowseServiceStub projectServiceStub = new LocalBrowseServiceStub();
+    private static final int NUM_TABS = 3;
+    private static final int NUM_PROJECTS = 5;
 
-    /**
-     * Constructor for a paginated list.
-     *
-     * @param objectsPerPage page size
-     * @param sortCriterion sort criterion
-     */
-    public PaginatedListImpl(int objectsPerPage, String sortCriterion) {
-        this.objectsPerPage = objectsPerPage;
-        this.sortCriterion = sortCriterion;
+    @Before
+    public void setUp() throws Exception {
+        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        locatorStub.addLookup(BrowseService.JNDI_NAME, this.projectServiceStub);
     }
 
-    /**
-     * @return the size of the full result set
-     */
-    public int getFullListSize() {
-        return this.fullListSize;
-    }
-    /**
-     * @param fullListSize the fullListSize to set
-     */
-    public void setFullListSize(int fullListSize) {
-        this.fullListSize = fullListSize;
-    }
-
-    /**
-     * @return the current page of the result set
-     */
-    public List<T> getList() {
-        return this.list;
-    }
-    /**
-     * @param list the list to set
-     */
-    public void setList(List<T> list) {
-        this.list = list;
+    @Test
+    public void testExecute() throws Exception {
+        String result = this.browseAction.execute();
+        SortedSet<BrowseTab> tabs = browseAction.getTabs();
+        BrowseTab lastTab = tabs.last();
+        assertEquals(NUM_TABS, tabs.size());
+        assertEquals("Tab"+NUM_TABS,lastTab.getName());
+        assertEquals(NUM_TABS,lastTab.getId().intValue());
+        assertEquals(NUM_TABS,lastTab.getCount());
+        assertEquals(Action.SUCCESS, result);
     }
 
-    /**
-     * @return the page size
-     */
-    public int getObjectsPerPage() {
-        return this.objectsPerPage;
+    @Test
+    public void testList() throws Exception {
+        String result = this.browseAction.list();
+        PaginatedListImpl<Project> asdf = browseAction.getResults();
+        assertEquals(NUM_PROJECTS, asdf.getList().size());
+        assertEquals("tab", result);
     }
-    /**
-     * @param objectsPerPage the objectsPerPage to set
-     */
-    public void setObjectsPerPage(int objectsPerPage) {
-        this.objectsPerPage = objectsPerPage;
-    }
-
-    /**
-     * @return the current page number
-     */
-    public int getPageNumber() {
-        return this.pageNumber;
-    }
-    /**
-     * @param pageNumber the pageNumber to set
-     */
-    public void setPageNumber(int pageNumber) {
-        this.pageNumber = pageNumber;
-    }
-
-    /**
-     * @return the search id
-     */
-    public String getSearchId() {
-        return this.searchId;
-    }
-    /**
-     * @param searchId the searchId to set
-     */
-    public void setSearchId(String searchId) {
-        this.searchId = searchId;
-    }
-
-    /**
-     * @return the sort property
-     */
-    public String getSortCriterion() {
-        return this.sortCriterion;
-    }
-    /**
-     * @param sortCriterion the sortCriterion to set
-     */
-    public void setSortCriterion(String sortCriterion) {
-        this.sortCriterion = sortCriterion;
-    }
-
-    /**
-     * @return the sort direction
-     */
-    public SortOrderEnum getSortDirection() {
-        return this.sortDirection;
-    }
-    /**
-     * @param sortDirection the sortDirection to set
-     */
-    public void setSortDirection(SortOrderEnum sortDirection) {
-        this.sortDirection = sortDirection;
+    private static class LocalBrowseServiceStub extends BrowseServiceStub {
+        public List<Object[]> tabList(BrowseCategory cat) {
+            List<Object[]> tabs = new ArrayList<Object[]>();
+            for (int i=1; i<=NUM_TABS; i++) {
+                Object[] tab = new Object[3];
+                tab[0] = "Tab"+i;
+                tab[1] = i;
+                tab[2] = i;
+                tabs.add(tab);
+            }
+            return tabs;
+        }
+        public int browseCount(BrowseCategory cat, Number fieldId) {
+            return NUM_PROJECTS;
+        }
+        public List<Project> browseList(PageSortParams params, BrowseCategory cat, Number fieldId) {
+            List<Project> projects = new ArrayList<Project>();
+            for (int i=0; i<NUM_PROJECTS; i++) {
+                projects.add(new Project());
+            }
+            return projects;
+        }
     }
 }

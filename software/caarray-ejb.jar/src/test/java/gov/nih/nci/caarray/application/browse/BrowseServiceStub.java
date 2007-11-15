@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-war
+ * source code form and machine readable, binary, object code form. The caarray-ejb-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-war Software License (the License) is between NCI and You. You (or
+ * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-war Software to (i) use, install, access, operate,
+ * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-war Software; (ii) distribute and
- * have distributed to and by third parties the caarray-war Software and any
+ * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-ejb-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,127 +80,65 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.ui;
+package gov.nih.nci.caarray.application.browse;
+
+import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.search.BrowseCategory;
+import gov.nih.nci.caarray.domain.search.PageSortParams;
 
 import java.util.List;
 
-import org.displaytag.pagination.PaginatedList;
-import org.displaytag.properties.SortOrderEnum;
-
 /**
- *
  * @author Winston Cheng
  *
- * @param <T>
  */
-public class PaginatedListImpl<T> implements PaginatedList {
-    private int fullListSize;
-    private List<T> list;
-    private int objectsPerPage;
-    private int pageNumber = 1;
-    private String searchId;
-    private String sortCriterion;
-    private SortOrderEnum sortDirection = SortOrderEnum.ASCENDING;
-
+public class BrowseServiceStub implements BrowseService {
     /**
-     * Constructor for a paginated list.
-     *
-     * @param objectsPerPage page size
-     * @param sortCriterion sort criterion
+     * {@inheritDoc}
      */
-    public PaginatedListImpl(int objectsPerPage, String sortCriterion) {
-        this.objectsPerPage = objectsPerPage;
-        this.sortCriterion = sortCriterion;
+    public int browseCount(BrowseCategory cat, Number fieldId) {
+        return 0;
     }
 
     /**
-     * @return the size of the full result set
+     * {@inheritDoc}
      */
-    public int getFullListSize() {
-        return this.fullListSize;
-    }
-    /**
-     * @param fullListSize the fullListSize to set
-     */
-    public void setFullListSize(int fullListSize) {
-        this.fullListSize = fullListSize;
+    public List<Project> browseList(PageSortParams params, BrowseCategory cat, Number fieldId) {
+        return null;
     }
 
     /**
-     * @return the current page of the result set
+     * {@inheritDoc}
      */
-    public List<T> getList() {
-        return this.list;
-    }
-    /**
-     * @param list the list to set
-     */
-    public void setList(List<T> list) {
-        this.list = list;
+    public int countByBrowseCategory(BrowseCategory cat) {
+        return 0;
     }
 
     /**
-     * @return the page size
+     * {@inheritDoc}
      */
-    public int getObjectsPerPage() {
-        return this.objectsPerPage;
-    }
-    /**
-     * @param objectsPerPage the objectsPerPage to set
-     */
-    public void setObjectsPerPage(int objectsPerPage) {
-        this.objectsPerPage = objectsPerPage;
+    public int hybridizationCount() {
+        return 0;
     }
 
     /**
-     * @return the current page number
+     * {@inheritDoc}
      */
-    public int getPageNumber() {
-        return this.pageNumber;
-    }
-    /**
-     * @param pageNumber the pageNumber to set
-     */
-    public void setPageNumber(int pageNumber) {
-        this.pageNumber = pageNumber;
+    public int institutionCount() {
+        return 0;
     }
 
     /**
-     * @return the search id
+     * {@inheritDoc}
      */
-    public String getSearchId() {
-        return this.searchId;
-    }
-    /**
-     * @param searchId the searchId to set
-     */
-    public void setSearchId(String searchId) {
-        this.searchId = searchId;
+    public List<Object[]> tabList(BrowseCategory cat) {
+        return null;
     }
 
     /**
-     * @return the sort property
+     * {@inheritDoc}
      */
-    public String getSortCriterion() {
-        return this.sortCriterion;
-    }
-    /**
-     * @param sortCriterion the sortCriterion to set
-     */
-    public void setSortCriterion(String sortCriterion) {
-        this.sortCriterion = sortCriterion;
-    }
-
-    /**
-     * @return the sort direction
-     */
-    public SortOrderEnum getSortDirection() {
-        return this.sortDirection;
-    }
-    /**
-     * @param sortDirection the sortDirection to set
-     */
-    public void setSortDirection(SortOrderEnum sortDirection) {
-        this.sortDirection = sortDirection;
+    public int userCount() {
+        return 0;
     }
 }

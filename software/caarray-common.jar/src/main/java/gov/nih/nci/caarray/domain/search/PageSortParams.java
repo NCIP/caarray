@@ -91,20 +91,20 @@ public class PageSortParams {
     private int pageSize;
     private int index;
     private String sortCriterion;
-    private String sortDirection;
+    private boolean desc;
 
     /**
      * Constructor.
      * @param pageSize page size
      * @param index start index
      * @param sortCriterion sort property
-     * @param sortDirection sort direction
+     * @param desc true for descending sort
      */
-    public PageSortParams(int pageSize, int index, String sortCriterion, String sortDirection) {
+    public PageSortParams(int pageSize, int index, String sortCriterion, boolean desc) {
         this.pageSize = pageSize;
         this.index = index;
         this.sortCriterion = sortCriterion;
-        this.sortDirection = sortDirection;
+        this.desc = desc;
     }
 
     /**
@@ -143,16 +143,18 @@ public class PageSortParams {
     public void setSortCriterion(String sortCriterion) {
         this.sortCriterion = sortCriterion;
     }
+
     /**
-     * @return the sortDirection
+     * @return true to sort in descending order
      */
-    public String getSortDirection() {
-        return sortDirection;
+    public boolean isDesc() {
+        return desc;
     }
+
     /**
-     * @param sortDirection the sortDirection to set
+     * @param desc true to sort in descending order
      */
-    public void setSortDirection(String sortDirection) {
-        this.sortDirection = sortDirection;
+    public void setDesc(boolean desc) {
+        this.desc = desc;
     }
 }

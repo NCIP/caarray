@@ -172,7 +172,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      */
     public int searchCount(String keyword, SearchCategory... categories) {
         Query q = getSearchQuery(true, null, keyword, categories);
-        return ((Long) q.uniqueResult()).intValue();
+        return ((Number) q.uniqueResult()).intValue();
     }
 
     private Query getSearchQuery(boolean count, PageSortParams params, String keyword, SearchCategory... categories) {
@@ -185,8 +185,9 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         sb.append(" FROM ").append(Project.class.getName()).append(" p");
         sb.append(getJoinClause(categories));
         sb.append(getWhereClause(categories));
-        if (!count) {
-            sb.append(getOrderByClause(params));
+        if (!count && params.getSortCriterion() != null) {
+            sb.append(" ORDER BY p.").append(params.getSortCriterion());
+            if (params.isDesc()) { sb.append(" desc"); }
         }
         Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
         q.setString("keyword", "%" + keyword + "%");
@@ -222,12 +223,5 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             sb.append(')');
         }
         return sb.toString();
-    }
-    private String getOrderByClause(PageSortParams params) {
-        if (params.getSortCriterion() != null) {
-            return " ORDER BY p." + params.getSortCriterion() + " " + params.getSortDirection();
-        } else {
-            return "";
-        }
     }
 }

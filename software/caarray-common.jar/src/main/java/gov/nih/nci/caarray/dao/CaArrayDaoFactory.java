@@ -175,4 +175,8 @@ public interface CaArrayDaoFactory {
      * @return a <code>CollaboratorGroupDao</code>.
      */
     CollaboratorGroupDao getCollaboratorGroupDao();
+    /**
+     * @return a <code>BrowseDao</code>.
+     */
+    BrowseDao getBrowseDao();
 }

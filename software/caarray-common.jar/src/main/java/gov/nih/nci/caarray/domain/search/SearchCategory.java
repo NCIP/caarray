@@ -135,13 +135,13 @@ public enum SearchCategory implements ResourceBasedEnum {
                       "c.value");
 
     private final String resourceKey;
-    private final String[] join;
+    private final String[] joins;
     private final String[] searchFields;
 
     @SuppressWarnings("PMD.ArrayIsStoredDirectly")
-    SearchCategory(String resourceKey, String[] join, String... searchFields) {
+    SearchCategory(String resourceKey, String[] joins, String... searchFields) {
         this.resourceKey = resourceKey;
-        this.join = join;
+        this.joins = joins;
         this.searchFields = searchFields;
     }
 
@@ -160,7 +160,7 @@ public enum SearchCategory implements ResourceBasedEnum {
      */
     @SuppressWarnings("PMD.MethodReturnsInternalArray")
     public String[] getJoins() {
-        return this.join;
+        return this.joins;
     }
 
     /**

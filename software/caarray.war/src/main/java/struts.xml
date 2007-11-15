@@ -85,10 +85,16 @@
             <result name="input">/WEB-INF/pages/login.jsp</result>
         </action>
         <action name="search/*" class="gov.nih.nci.caarray.web.action.SearchAction" method="{1}">
-            <result name="success">/WEB-INF/pages/experiment/searchResults.jsp</result>
+            <result name="success">/WEB-INF/pages/project/search/searchResults.jsp</result>
         </action>
         <action name="ajax/search/*" class="gov.nih.nci.caarray.web.action.SearchAction" method="{1}">
-            <result name="tab">/WEB-INF/pages/experiment/searchTab.jsp</result>
+            <result name="tab">/WEB-INF/pages/project/search/searchTab.jsp</result>
+        </action>
+        <action name="browse" class="gov.nih.nci.caarray.web.action.BrowseAction">
+            <result name="success">/WEB-INF/pages/project/search/browseResults.jsp</result>
+        </action>
+        <action name="ajax/browse/*" class="gov.nih.nci.caarray.web.action.BrowseAction" method="{1}">
+            <result name="tab">/WEB-INF/pages/project/search/browseTab.jsp</result>
         </action>
     </package>
 

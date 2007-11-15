@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,111 +80,140 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.dao.stub;
+package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.dao.BrowseDao;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.CollaboratorGroupDao;
-import gov.nih.nci.caarray.dao.ContactDao;
-import gov.nih.nci.caarray.dao.CountryDao;
-import gov.nih.nci.caarray.dao.FileDao;
-import gov.nih.nci.caarray.dao.OrganismDao;
-import gov.nih.nci.caarray.dao.ProjectDao;
-import gov.nih.nci.caarray.dao.ProtocolDao;
-import gov.nih.nci.caarray.dao.RegistrationDao;
-import gov.nih.nci.caarray.dao.SampleDao;
-import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.search.BrowseCategory;
+import gov.nih.nci.caarray.domain.search.PageSortParams;
+import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.security.authorization.domainobjects.User;
+
+import java.util.List;
+
+import org.hibernate.Query;
 
 /**
- * Base adapter for DAO Stubs.
+ * @author Winston Cheng
+ *
  */
-public class DaoFactoryStub implements CaArrayDaoFactory {
+@SuppressWarnings("PMD.CyclomaticComplexity")
+public class BrowseDaoImpl implements BrowseDao {
 
     /**
      * {@inheritDoc}
      */
-    public ArrayDao getArrayDao() {
-        return new ArrayDaoStub();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ProjectDao getProjectDao() {
-        return new ProjectDaoStub();
+    public int browseCount(BrowseCategory cat, Number fieldId) {
+        Query q = browseQuery(true, null, cat, fieldId);
+        return ((Number) q.uniqueResult()).intValue();
     }
 
     /**
      * {@inheritDoc}
      */
-    public ProtocolDao getProtocolDao() {
-        return new ProtocolDaoStub();
+    public List<Project> browseList(PageSortParams params, BrowseCategory cat, Number fieldId) {
+        Query q = browseQuery(false, params, cat, fieldId);
+        q.setFirstResult(params.getIndex());
+        q.setMaxResults(params.getPageSize());
+        return q.list();
     }
 
     /**
      * {@inheritDoc}
      */
-    public SearchDao getSearchDao() {
-        return new SearchDaoStub();
+    public int countByBrowseCategory(BrowseCategory cat) {
+        // The query is built dynamically, but is not vulnerable to SQL injection
+        // because the fields are pulled from an enum.
+        StringBuffer sb = new StringBuffer();
+        sb.append("SELECT COUNT(DISTINCT ")
+          .append(cat.getField())
+          .append(") FROM ")
+          .append(Project.class.getName())
+          .append(" p");
+        if (cat.getJoin() != null) {
+            sb.append(" JOIN ").append(cat.getJoin());
+        }
+        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+        return ((Number) q.uniqueResult()).intValue();
     }
 
     /**
      * {@inheritDoc}
      */
-    public VocabularyDao getVocabularyDao() {
-        return new VocabularyDaoStub();
+    public int hybridizationCount() {
+        String queryStr = "SELECT COUNT(DISTINCT h) FROM " + Hybridization.class.getName() + " h";
+        Query q = HibernateUtil.getCurrentSession().createQuery(queryStr);
+        return ((Number) q.uniqueResult()).intValue();
     }
 
     /**
      * {@inheritDoc}
      */
-    public SampleDao getSampleDao() {
-        return new SampleDaoStub();
+    public int institutionCount() {
+        // TODO fill in once institutions are implemented
+        return 0;
     }
 
     /**
      * {@inheritDoc}
      */
-    public FileDao getFileDao() {
-        return new FileDaoStub();
+    public List<Object[]> tabList(BrowseCategory cat) {
+        // The query is built dynamically, but is not vulnerable to SQL injection because
+        // the fields are pulled from an enum.
+        String queryStr = null;
+        if (BrowseCategory.EXPERIMENTS.equals(cat)) {
+            queryStr = "SELECT 'Experiments',0,COUNT(p) FROM " + Project.class.getName() + " p";
+        } else if (BrowseCategory.ORGANISMS.equals(cat)) {
+            queryStr = "SELECT o.commonName, o.id, COUNT(p) FROM " + Project.class.getName()
+            + " p JOIN p.experiment.organism o GROUP BY o";
+        } else if (BrowseCategory.ARRAY_PROVIDERS.equals(cat)) {
+            queryStr = "SELECT pr.name, pr.id, count(p) FROM " + Project.class.getName()
+            + " p JOIN p.experiment.arrayDesigns a JOIN a.provider pr GROUP BY pr";
+        } else if (BrowseCategory.ARRAY_DESIGNS.equals(cat)) {
+            queryStr = "SELECT a.name, a.id, count(p) FROM " + Project.class.getName()
+            + " p JOIN p.experiment.arrayDesigns a GROUP BY a";
+        } else {
+            return null;
+        }
+        return HibernateUtil.getCurrentSession().createQuery(queryStr).list();
     }
 
     /**
      * {@inheritDoc}
      */
-    public ContactDao getContactDao() {
-        return new ContactDaoStub();
+    public int userCount() {
+        String queryStr = "SELECT COUNT(DISTINCT u) FROM " + User.class.getName() + " u";
+        Query q = HibernateUtil.getCurrentSession().createQuery(queryStr);
+        return ((Number) q.uniqueResult()).intValue();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public OrganismDao getOrganismDao() {
-        return new OrganismDaoStub();
+    @SuppressWarnings("PMD.CyclomaticComplexity")
+    private Query browseQuery(boolean count, PageSortParams params, BrowseCategory cat, Number fieldId) {
+        // The query is built dynamically, but is not vulnerable to SQL injection
+        // because the fields are pulled from an enum.
+        boolean allProjects = BrowseCategory.EXPERIMENTS.equals(cat);
+        StringBuffer sb = new StringBuffer();
+        if (count) {
+            sb.append("SELECT COUNT(DISTINCT p)");
+        } else {
+            sb.append("SELECT DISTINCT p");
+        }
+        sb.append(" FROM ").append(Project.class.getName()).append(" p");
+        if (cat.getJoin() != null) {
+            sb.append(" JOIN ").append(cat.getJoin());
+        }
+        if (!allProjects) {
+            sb.append(" WHERE ").append(cat.getField()).append(".id = :id");
+        }
+        if (!count && params.getSortCriterion() != null) {
+            sb.append(" ORDER BY p.").append(params.getSortCriterion());
+            if (params.isDesc()) { sb.append(" desc"); }
+        }
+        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+        if (!allProjects) {
+            q.setParameter("id", fieldId);
+        }
+        return q;
     }
 
-
-    public RegistrationDao getRegistrationDao() {
-        return new RegistrationDaoStub();
-    }
-
-    public CountryDao getCountryDao() {
-        return new CountryDaoStub();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public CollaboratorGroupDao getCollaboratorGroupDao() {
-        return new CollaboratorGroupDaoStub();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public BrowseDao getBrowseDao() {
-        return new BrowseDaoStub();
-    }
 }

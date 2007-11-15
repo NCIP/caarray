@@ -80,127 +80,109 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.ui;
+package gov.nih.nci.caarray.web.action;
+
+import gov.nih.nci.caarray.application.browse.BrowseService;
+import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.search.BrowseCategory;
+import gov.nih.nci.caarray.domain.search.PageSortParams;
+import gov.nih.nci.caarray.web.ui.BrowseTab;
+import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-import org.displaytag.pagination.PaginatedList;
 import org.displaytag.properties.SortOrderEnum;
 
+import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionSupport;
+
 /**
- *
  * @author Winston Cheng
  *
- * @param <T>
  */
-public class PaginatedListImpl<T> implements PaginatedList {
-    private int fullListSize;
-    private List<T> list;
-    private int objectsPerPage;
-    private int pageNumber = 1;
-    private String searchId;
-    private String sortCriterion;
-    private SortOrderEnum sortDirection = SortOrderEnum.ASCENDING;
+public class BrowseAction extends ActionSupport {
+    private static final int BROWSE_PAGE_SIZE = 20;
+
+    // browse parameters
+    private BrowseCategory category;
+    private Long id;
+
+    // browse results
+    private SortedSet<BrowseTab> tabs;
+    private final PaginatedListImpl<Project> results =
+        new PaginatedListImpl<Project>(BROWSE_PAGE_SIZE, "experiment.title");
 
     /**
-     * Constructor for a paginated list.
-     *
-     * @param objectsPerPage page size
-     * @param sortCriterion sort criterion
+     * @return the category
      */
-    public PaginatedListImpl(int objectsPerPage, String sortCriterion) {
-        this.objectsPerPage = objectsPerPage;
-        this.sortCriterion = sortCriterion;
-    }
-
-    /**
-     * @return the size of the full result set
-     */
-    public int getFullListSize() {
-        return this.fullListSize;
-    }
-    /**
-     * @param fullListSize the fullListSize to set
-     */
-    public void setFullListSize(int fullListSize) {
-        this.fullListSize = fullListSize;
+    public BrowseCategory getCategory() {
+        return category;
     }
 
     /**
-     * @return the current page of the result set
+     * @param category the category to set
      */
-    public List<T> getList() {
-        return this.list;
-    }
-    /**
-     * @param list the list to set
-     */
-    public void setList(List<T> list) {
-        this.list = list;
+    public void setCategory(BrowseCategory category) {
+        this.category = category;
     }
 
     /**
-     * @return the page size
+     * @return the id
      */
-    public int getObjectsPerPage() {
-        return this.objectsPerPage;
-    }
-    /**
-     * @param objectsPerPage the objectsPerPage to set
-     */
-    public void setObjectsPerPage(int objectsPerPage) {
-        this.objectsPerPage = objectsPerPage;
+    public Long getId() {
+        return id;
     }
 
     /**
-     * @return the current page number
+     * @param id the id to set
      */
-    public int getPageNumber() {
-        return this.pageNumber;
-    }
-    /**
-     * @param pageNumber the pageNumber to set
-     */
-    public void setPageNumber(int pageNumber) {
-        this.pageNumber = pageNumber;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     /**
-     * @return the search id
+     * @return the tabs
      */
-    public String getSearchId() {
-        return this.searchId;
-    }
-    /**
-     * @param searchId the searchId to set
-     */
-    public void setSearchId(String searchId) {
-        this.searchId = searchId;
+    public SortedSet<BrowseTab> getTabs() {
+        return tabs;
     }
 
     /**
-     * @return the sort property
+     * @return the results
      */
-    public String getSortCriterion() {
-        return this.sortCriterion;
-    }
-    /**
-     * @param sortCriterion the sortCriterion to set
-     */
-    public void setSortCriterion(String sortCriterion) {
-        this.sortCriterion = sortCriterion;
+    public PaginatedListImpl<Project> getResults() {
+        return results;
     }
 
     /**
-     * @return the sort direction
+     * Retrieves tab headers for the given category.
+     * @return success
      */
-    public SortOrderEnum getSortDirection() {
-        return this.sortDirection;
+    public String execute() {
+        BrowseService bs = ActionHelper.getBrowseService();
+        List<Object[]> resultList = bs.tabList(category);
+        tabs = new TreeSet<BrowseTab>();
+        for (Object[] tab : resultList) {
+            tabs.add(new BrowseTab((String) tab[0], (Number) tab[1], ((Number) tab[2]).intValue()));
+        }
+        return Action.SUCCESS;
     }
+
     /**
-     * @param sortDirection the sortDirection to set
+     * Retrieves the result list for an individual tab.
+     * @return tab
      */
-    public void setSortDirection(SortOrderEnum sortDirection) {
-        this.sortDirection = sortDirection;
+    public String list() {
+        int pageSize = results.getObjectsPerPage();
+        int index = pageSize * (results.getPageNumber() - 1);
+        boolean desc = SortOrderEnum.DESCENDING.equals(results.getSortDirection());
+        PageSortParams psp = new PageSortParams(pageSize, index, results.getSortCriterion(), desc);
+
+        BrowseService bs = ActionHelper.getBrowseService();
+        results.setFullListSize(bs.browseCount(category, id));
+        results.setList(bs.browseList(psp, category, id));
+        return "tab";
     }
 }

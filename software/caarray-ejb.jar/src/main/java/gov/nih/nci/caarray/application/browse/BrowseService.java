@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-war
+ * source code form and machine readable, binary, object code form. The caarray-ejb-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-war Software License (the License) is between NCI and You. You (or
+ * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-war Software to (i) use, install, access, operate,
+ * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-war Software; (ii) distribute and
- * have distributed to and by third parties the caarray-war Software and any
+ * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-ejb-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,127 +80,61 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.ui;
+package gov.nih.nci.caarray.application.browse;
 
 import java.util.List;
 
-import org.displaytag.pagination.PaginatedList;
-import org.displaytag.properties.SortOrderEnum;
+import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.search.BrowseCategory;
+import gov.nih.nci.caarray.domain.search.PageSortParams;
 
 /**
- *
  * @author Winston Cheng
  *
- * @param <T>
  */
-public class PaginatedListImpl<T> implements PaginatedList {
-    private int fullListSize;
-    private List<T> list;
-    private int objectsPerPage;
-    private int pageNumber = 1;
-    private String searchId;
-    private String sortCriterion;
-    private SortOrderEnum sortDirection = SortOrderEnum.ASCENDING;
-
+public interface BrowseService {
     /**
-     * Constructor for a paginated list.
-     *
-     * @param objectsPerPage page size
-     * @param sortCriterion sort criterion
+     * The default JNDI name to use to lookup <code>BrowseService</code>.
      */
-    public PaginatedListImpl(int objectsPerPage, String sortCriterion) {
-        this.objectsPerPage = objectsPerPage;
-        this.sortCriterion = sortCriterion;
-    }
-
+    String JNDI_NAME = "caarray/BrowseServiceBean/local";
     /**
-     * @return the size of the full result set
+     * @param cat browse category
+     * @return number of items in the given category
      */
-    public int getFullListSize() {
-        return this.fullListSize;
-    }
+    int countByBrowseCategory(BrowseCategory cat);
     /**
-     * @param fullListSize the fullListSize to set
+     * @return the total number of hybridizations
      */
-    public void setFullListSize(int fullListSize) {
-        this.fullListSize = fullListSize;
-    }
-
+    int hybridizationCount();
     /**
-     * @return the current page of the result set
+     * @return the total number of registered institutions
      */
-    public List<T> getList() {
-        return this.list;
-    }
+    int institutionCount();
     /**
-     * @param list the list to set
+     * @return the total number of registered users
      */
-    public void setList(List<T> list) {
-        this.list = list;
-    }
-
+    int userCount();
     /**
-     * @return the page size
+     * Finds the breakdown of groups within a given category and returns
+     * a list of [name, id, projectCount] objects, which can be used
+     * to populate browse tabs.
+     * @param cat category
+     * @return tabs
      */
-    public int getObjectsPerPage() {
-        return this.objectsPerPage;
-    }
+    List<Object[]> tabList(BrowseCategory cat);
     /**
-     * @param objectsPerPage the objectsPerPage to set
+     * Returns a list of projects constrained by a browse category and id.
+     * @param params paging and sorting parameters
+     * @param cat browse category
+     * @param fieldId id for the field specified by the category
+     * @return a list of matching projects
      */
-    public void setObjectsPerPage(int objectsPerPage) {
-        this.objectsPerPage = objectsPerPage;
-    }
-
+    List<Project> browseList(PageSortParams params, BrowseCategory cat, Number fieldId);
     /**
-     * @return the current page number
+     * Returns the count of projects constrained by a browse category and id.
+     * @param cat browse category
+     * @param fieldId id for the field specified by the category
+     * @return number of results
      */
-    public int getPageNumber() {
-        return this.pageNumber;
-    }
-    /**
-     * @param pageNumber the pageNumber to set
-     */
-    public void setPageNumber(int pageNumber) {
-        this.pageNumber = pageNumber;
-    }
-
-    /**
-     * @return the search id
-     */
-    public String getSearchId() {
-        return this.searchId;
-    }
-    /**
-     * @param searchId the searchId to set
-     */
-    public void setSearchId(String searchId) {
-        this.searchId = searchId;
-    }
-
-    /**
-     * @return the sort property
-     */
-    public String getSortCriterion() {
-        return this.sortCriterion;
-    }
-    /**
-     * @param sortCriterion the sortCriterion to set
-     */
-    public void setSortCriterion(String sortCriterion) {
-        this.sortCriterion = sortCriterion;
-    }
-
-    /**
-     * @return the sort direction
-     */
-    public SortOrderEnum getSortDirection() {
-        return this.sortDirection;
-    }
-    /**
-     * @param sortDirection the sortDirection to set
-     */
-    public void setSortDirection(SortOrderEnum sortDirection) {
-        this.sortDirection = sortDirection;
-    }
+    int browseCount(BrowseCategory cat, Number fieldId);
 }

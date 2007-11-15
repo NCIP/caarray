@@ -82,125 +82,50 @@
  */
 package gov.nih.nci.caarray.web.ui;
 
-import java.util.List;
-
-import org.displaytag.pagination.PaginatedList;
-import org.displaytag.properties.SortOrderEnum;
 
 /**
- *
  * @author Winston Cheng
  *
- * @param <T>
  */
-public class PaginatedListImpl<T> implements PaginatedList {
-    private int fullListSize;
-    private List<T> list;
-    private int objectsPerPage;
-    private int pageNumber = 1;
-    private String searchId;
-    private String sortCriterion;
-    private SortOrderEnum sortDirection = SortOrderEnum.ASCENDING;
+public class BrowseTab implements Comparable<BrowseTab> {
+    private final String name;
+    private final Number id;
+    private final int count;
 
     /**
-     * Constructor for a paginated list.
-     *
-     * @param objectsPerPage page size
-     * @param sortCriterion sort criterion
+     * Construct a browse tab.
+     * @param name name of the tab
+     * @param count count of results
+     * @param id id
      */
-    public PaginatedListImpl(int objectsPerPage, String sortCriterion) {
-        this.objectsPerPage = objectsPerPage;
-        this.sortCriterion = sortCriterion;
-    }
-
-    /**
-     * @return the size of the full result set
-     */
-    public int getFullListSize() {
-        return this.fullListSize;
+    public BrowseTab(String name, Number id, int count) {
+        this.name = name;
+        this.id = id;
+        this.count = count;
     }
     /**
-     * @param fullListSize the fullListSize to set
+     * Sorts the tabs by name.
+     * {@inheritDoc}
      */
-    public void setFullListSize(int fullListSize) {
-        this.fullListSize = fullListSize;
-    }
-
-    /**
-     * @return the current page of the result set
-     */
-    public List<T> getList() {
-        return this.list;
+    public int compareTo(BrowseTab tab) {
+        return name.compareToIgnoreCase(tab.getName());
     }
     /**
-     * @param list the list to set
+     * @return the name
      */
-    public void setList(List<T> list) {
-        this.list = list;
-    }
-
-    /**
-     * @return the page size
-     */
-    public int getObjectsPerPage() {
-        return this.objectsPerPage;
+    public String getName() {
+        return name;
     }
     /**
-     * @param objectsPerPage the objectsPerPage to set
+     * @return the id
      */
-    public void setObjectsPerPage(int objectsPerPage) {
-        this.objectsPerPage = objectsPerPage;
-    }
-
-    /**
-     * @return the current page number
-     */
-    public int getPageNumber() {
-        return this.pageNumber;
+    public Number getId() {
+        return id;
     }
     /**
-     * @param pageNumber the pageNumber to set
+     * @return the count
      */
-    public void setPageNumber(int pageNumber) {
-        this.pageNumber = pageNumber;
-    }
-
-    /**
-     * @return the search id
-     */
-    public String getSearchId() {
-        return this.searchId;
-    }
-    /**
-     * @param searchId the searchId to set
-     */
-    public void setSearchId(String searchId) {
-        this.searchId = searchId;
-    }
-
-    /**
-     * @return the sort property
-     */
-    public String getSortCriterion() {
-        return this.sortCriterion;
-    }
-    /**
-     * @param sortCriterion the sortCriterion to set
-     */
-    public void setSortCriterion(String sortCriterion) {
-        this.sortCriterion = sortCriterion;
-    }
-
-    /**
-     * @return the sort direction
-     */
-    public SortOrderEnum getSortDirection() {
-        return this.sortDirection;
-    }
-    /**
-     * @param sortDirection the sortDirection to set
-     */
-    public void setSortDirection(SortOrderEnum sortDirection) {
-        this.sortDirection = sortDirection;
+    public int getCount() {
+        return count;
     }
 }

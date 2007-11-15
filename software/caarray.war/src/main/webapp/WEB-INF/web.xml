@@ -49,6 +49,8 @@
     <filter-mapping>
         <filter-name>openSessionFilter</filter-name>
         <url-pattern>*.action</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
     <filter-mapping>
         <filter-name>userFilter</filter-name>

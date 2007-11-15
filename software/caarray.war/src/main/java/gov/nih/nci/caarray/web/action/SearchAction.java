@@ -117,7 +117,7 @@ public class SearchAction extends ActionSupport {
     // fields for displaying search results
     private String currentTab;
     private final PaginatedListImpl<Project> results =
-        new PaginatedListImpl<Project>(0, null, SEARCH_PAGE_SIZE, 1, null, "experiment.title", SortOrderEnum.ASCENDING);
+        new PaginatedListImpl<Project>(SEARCH_PAGE_SIZE, "experiment.title");
     private Map<String, Integer> tabs;
 
     /**
@@ -199,8 +199,8 @@ public class SearchAction extends ActionSupport {
         SearchCategory[] categories = (category == null) ? SearchCategory.values() : new SearchCategory[]{category};
         int pageSize = results.getObjectsPerPage();
         int index = pageSize * (results.getPageNumber() - 1);
-        String dir = SortOrderEnum.DESCENDING.equals(results.getSortDirection()) ? "desc" : "asc";
-        PageSortParams psp = new PageSortParams(pageSize, index, results.getSortCriterion(), dir);
+        boolean desc = SortOrderEnum.DESCENDING.equals(results.getSortDirection());
+        PageSortParams psp = new PageSortParams(pageSize, index, results.getSortCriterion(), desc);
         List<Project> projects = pms.searchByCategory(psp, keyword, categories);
         int projectCount = pms.searchCount(keyword, categories);
         results.setFullListSize(projectCount);

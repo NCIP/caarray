@@ -193,5 +193,12 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
     public CollaboratorGroupDao getCollaboratorGroupDao() {
         return new CollaboratorGroupDaoImpl();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public BrowseDao getBrowseDao() {
+        return new BrowseDaoImpl();
+    }
 }
 

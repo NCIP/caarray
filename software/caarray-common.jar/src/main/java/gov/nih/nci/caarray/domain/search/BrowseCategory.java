@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-war
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-war Software License (the License) is between NCI and You. You (or
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-war Software to (i) use, install, access, operate,
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-war Software; (ii) distribute and
- * have distributed to and by third parties the caarray-war Software and any
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,127 +80,61 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.ui;
+package gov.nih.nci.caarray.domain.search;
 
-import java.util.List;
-
-import org.displaytag.pagination.PaginatedList;
-import org.displaytag.properties.SortOrderEnum;
+import gov.nih.nci.caarray.domain.ResourceBasedEnum;
 
 /**
- *
  * @author Winston Cheng
  *
- * @param <T>
  */
-public class PaginatedListImpl<T> implements PaginatedList {
-    private int fullListSize;
-    private List<T> list;
-    private int objectsPerPage;
-    private int pageNumber = 1;
-    private String searchId;
-    private String sortCriterion;
-    private SortOrderEnum sortDirection = SortOrderEnum.ASCENDING;
+public enum BrowseCategory implements ResourceBasedEnum {
+    /**
+     * Experiments.
+     */
+    EXPERIMENTS("browse.category.experiments", null, "p"),
+    /**
+     * Organisms.
+     */
+    ORGANISMS("browse.category.organisms", null, "p.experiment.organism"),
+    /**
+     * Array providers.
+     */
+    ARRAY_PROVIDERS("browse.category.arrayProviders", "p.experiment.arrayDesigns a", "a.provider"),
+    /**
+     * Array designs.
+     */
+    ARRAY_DESIGNS("browse.category.arrayDesigns", "p.experiment.arrayDesigns a", "a");
 
-    /**
-     * Constructor for a paginated list.
-     *
-     * @param objectsPerPage page size
-     * @param sortCriterion sort criterion
-     */
-    public PaginatedListImpl(int objectsPerPage, String sortCriterion) {
-        this.objectsPerPage = objectsPerPage;
-        this.sortCriterion = sortCriterion;
-    }
+    private final String resourceKey;
+    private String join;
+    private String field;
 
-    /**
-     * @return the size of the full result set
-     */
-    public int getFullListSize() {
-        return this.fullListSize;
-    }
-    /**
-     * @param fullListSize the fullListSize to set
-     */
-    public void setFullListSize(int fullListSize) {
-        this.fullListSize = fullListSize;
+    private BrowseCategory(String resourceKey, String join, String field) {
+        this.resourceKey = resourceKey;
+        this.field = field;
+        this.join = join;
     }
 
     /**
-     * @return the current page of the result set
+     * @return the resource key that should be used to retrieve a label
+     * for this BrowseCategory in the UI
      */
-    public List<T> getList() {
-        return this.list;
-    }
-    /**
-     * @param list the list to set
-     */
-    public void setList(List<T> list) {
-        this.list = list;
+    public String getResourceKey() {
+        return this.resourceKey;
     }
 
     /**
-     * @return the page size
+     * @return the join table
      */
-    public int getObjectsPerPage() {
-        return this.objectsPerPage;
-    }
-    /**
-     * @param objectsPerPage the objectsPerPage to set
-     */
-    public void setObjectsPerPage(int objectsPerPage) {
-        this.objectsPerPage = objectsPerPage;
+    public String getJoin() {
+        return join;
     }
 
     /**
-     * @return the current page number
+     * @return the field that represents this category
      */
-    public int getPageNumber() {
-        return this.pageNumber;
-    }
-    /**
-     * @param pageNumber the pageNumber to set
-     */
-    public void setPageNumber(int pageNumber) {
-        this.pageNumber = pageNumber;
-    }
-
-    /**
-     * @return the search id
-     */
-    public String getSearchId() {
-        return this.searchId;
-    }
-    /**
-     * @param searchId the searchId to set
-     */
-    public void setSearchId(String searchId) {
-        this.searchId = searchId;
-    }
-
-    /**
-     * @return the sort property
-     */
-    public String getSortCriterion() {
-        return this.sortCriterion;
-    }
-    /**
-     * @param sortCriterion the sortCriterion to set
-     */
-    public void setSortCriterion(String sortCriterion) {
-        this.sortCriterion = sortCriterion;
-    }
-
-    /**
-     * @return the sort direction
-     */
-    public SortOrderEnum getSortDirection() {
-        return this.sortDirection;
-    }
-    /**
-     * @param sortDirection the sortDirection to set
-     */
-    public void setSortDirection(SortOrderEnum sortDirection) {
-        this.sortDirection = sortDirection;
+    public String getField() {
+        return field;
     }
 }

@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.web.action;
 
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.application.browse.BrowseService;
 import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
@@ -248,4 +249,14 @@ public final class ActionHelper {
     public static UserProvisioningManager getUserProvisioningManager() throws CSException {
             return SecurityServiceProvider.getUserProvisioningManager("caarray");
     }
+
+    /**
+     * Convenience method for obtaining the singleton service. Intended to mixed in to action classes
+     * via static import
+     * @return the service
+     */
+    public static BrowseService getBrowseService() {
+        return (BrowseService) ServiceLocatorFactory.getLocator().lookup(BrowseService.JNDI_NAME);
+    }
+
 }
