@@ -91,6 +91,7 @@ import java.util.Map;
 import javax.interceptor.InvocationContext;
 
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -105,7 +106,9 @@ public class HibernateSessionInterceptorTest {
     public void testManageHibernateSession() throws Exception {
         TestInvocationContext testContext = new TestInvocationContext();
         HibernateSessionInterceptor interceptor = new HibernateSessionInterceptor();
+        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
         interceptor.manageHibernateSession(testContext);
+        tx.commit();
         assertTrue(testContext.getHibernateSession() != null);
         assertTrue(testContext.hibernateSessionOpenInCall);
     }

@@ -99,6 +99,8 @@ import java.util.List;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
 /**
@@ -106,6 +108,10 @@ import javax.interceptor.Interceptors;
  */
 @Remote(DataRetrievalService.class)
 @Stateless
+/*
+ * Transaction required for these "getter" methods because database changes may occur as a side effect.
+ */
+@TransactionAttribute(TransactionAttributeType.REQUIRED)
 @Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
 public class DataRetrievalServiceBean implements DataRetrievalService {
 
