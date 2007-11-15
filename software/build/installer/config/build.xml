@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<project name="UpdateUtilityAntBuildFile" default="" basedir="${basedir}">
+	<description>
+         This is the build.xml run by AntInstaller for the Update/Updgrade Utility
+     </description>
+
+	<tstamp>
+		<format property="touch.time" pattern="yyyy-MM-dd-HH-mm" />
+	</tstamp>
+
+	<!-- this is required to pick up the properties generated during the install pages -->
+	<property file="${basedir}/ant.install.properties" />
+	
+	<target name="auto-update">
+		<echoproperties />
+		<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+		<echo />
+		<echo />
+		<echo />
+		<echo />
+		<echo />
+		<echo>Installed ${application.name} Application</echo>
+		<echo />
+		<echo />
+		<echo />
+		<echo />
+		<echo />
+		<unzip dest="${temp.dir}" overwrite="true" src="${basedir}/installpack.zip" />
+		<unzip dest="${temp.dir}" overwrite="true" src="${temp.dir}/jboss-bin/jboss-4.0.5.GA.zip" />
+		<copy file="${temp.dir}/ear/caarray.ear" todir="${temp.dir}/jboss-4.0.5.GA/server/default/deploy" />
+		<copy file="${temp.dir}/config/caarray-mysql-ds.xml" todir="${temp.dir}/jboss-4.0.5.GA/server/default/deploy" />
+		<copy file="${temp.dir}/jars/mysql-connector-java-5.0.5-bin.jar" todir="${temp.dir}/jboss-4.0.5.GA/server/default/lib" />
+		<exec spawn="yes" command="${temp.dir}/jboss-4.0.5.GA/bin/run.bat" />
+	</target>
+	
+	
+
+	<target name="cleanuptarget" />
+
+</project>
