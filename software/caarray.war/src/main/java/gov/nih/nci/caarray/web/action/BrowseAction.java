@@ -103,6 +103,9 @@ import com.opensymphony.xwork2.ActionSupport;
  *
  */
 public class BrowseAction extends ActionSupport {
+
+    private static final long serialVersionUID = 1L;
+
     private static final int BROWSE_PAGE_SIZE = 20;
 
     // browse parameters
@@ -118,7 +121,7 @@ public class BrowseAction extends ActionSupport {
      * @return the category
      */
     public BrowseCategory getCategory() {
-        return category;
+        return this.category;
     }
 
     /**
@@ -132,7 +135,7 @@ public class BrowseAction extends ActionSupport {
      * @return the id
      */
     public Long getId() {
-        return id;
+        return this.id;
     }
 
     /**
@@ -146,26 +149,27 @@ public class BrowseAction extends ActionSupport {
      * @return the tabs
      */
     public SortedSet<BrowseTab> getTabs() {
-        return tabs;
+        return this.tabs;
     }
 
     /**
      * @return the results
      */
     public PaginatedListImpl<Project> getResults() {
-        return results;
+        return this.results;
     }
 
     /**
      * Retrieves tab headers for the given category.
      * @return success
      */
+    @Override
     public String execute() {
         BrowseService bs = ActionHelper.getBrowseService();
-        List<Object[]> resultList = bs.tabList(category);
-        tabs = new TreeSet<BrowseTab>();
+        List<Object[]> resultList = bs.tabList(this.category);
+        this.tabs = new TreeSet<BrowseTab>();
         for (Object[] tab : resultList) {
-            tabs.add(new BrowseTab((String) tab[0], (Number) tab[1], ((Number) tab[2]).intValue()));
+            this.tabs.add(new BrowseTab((String) tab[0], (Number) tab[1], ((Number) tab[2]).intValue()));
         }
         return Action.SUCCESS;
     }
@@ -175,14 +179,14 @@ public class BrowseAction extends ActionSupport {
      * @return tab
      */
     public String list() {
-        int pageSize = results.getObjectsPerPage();
-        int index = pageSize * (results.getPageNumber() - 1);
-        boolean desc = SortOrderEnum.DESCENDING.equals(results.getSortDirection());
-        PageSortParams psp = new PageSortParams(pageSize, index, results.getSortCriterion(), desc);
+        int pageSize = this.results.getObjectsPerPage();
+        int index = pageSize * (this.results.getPageNumber() - 1);
+        boolean desc = SortOrderEnum.DESCENDING.equals(this.results.getSortDirection());
+        PageSortParams psp = new PageSortParams(pageSize, index, this.results.getSortCriterion(), desc);
 
         BrowseService bs = ActionHelper.getBrowseService();
-        results.setFullListSize(bs.browseCount(category, id));
-        results.setList(bs.browseList(psp, category, id));
+        this.results.setFullListSize(bs.browseCount(this.category, this.id));
+        this.results.setList(bs.browseList(psp, this.category, this.id));
         return "tab";
     }
 }

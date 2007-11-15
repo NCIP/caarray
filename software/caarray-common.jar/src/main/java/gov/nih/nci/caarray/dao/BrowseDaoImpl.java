@@ -111,6 +111,7 @@ public class BrowseDaoImpl implements BrowseDao {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     public List<Project> browseList(PageSortParams params, BrowseCategory cat, Number fieldId) {
         Query q = browseQuery(false, params, cat, fieldId);
         q.setFirstResult(params.getIndex());
@@ -157,6 +158,7 @@ public class BrowseDaoImpl implements BrowseDao {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     public List<Object[]> tabList(BrowseCategory cat) {
         // The query is built dynamically, but is not vulnerable to SQL injection because
         // the fields are pulled from an enum.
