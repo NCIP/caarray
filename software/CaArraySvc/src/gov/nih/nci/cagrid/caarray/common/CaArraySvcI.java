@@ -12,6 +12,8 @@ import java.rmi.RemoteException;
  */
 public interface CaArraySvcI {
 
+  public gov.nih.nci.caarray.domain.data.DataSet getDataSetByDataRetrievalRequest(gov.nih.nci.caarray.domain.data.DataRetrievalRequest dataRetrievalRequest) throws RemoteException ;
+
   /**
    * The standard caGrid Data Service query method.
    *

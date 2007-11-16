@@ -43,6 +43,7 @@
    <ns2:SchemaElement className="QuantitationType" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="QuantitationType" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="DoubleColumn" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="DoubleColumn" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="IntegerColumn" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="IntegerColumn" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement className="DataRetrievalRequest" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="DataRetrievalRequest" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
   <ns2:Namespace location="./gov.nih.nci.caarray.domain.protocol.xsd" namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.protocol" packageName="gov.nih.nci.caarray.domain.protocol" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="Parameter" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Parameter" xsi:type="ns2:SchemaElementType"/>
@@ -228,34 +229,45 @@
      <ns4:Output qName="xsd:byte" description="" isArray="true" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
      <ns4:Exceptions/>
     </ns4:Method>
+    <ns4:Method description="" isImported="false" isProvided="false" name="getDataSetByDataRetrievalRequest" xsi:type="ns4:MethodType">
+     <ns4:Inputs>
+      <ns4:Input qName="ns16:DataRetrievalRequest" description="" isArray="false" name="dataRetrievalRequest" xmlns:ns16="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.data"/>
+     </ns4:Inputs>
+     <ns4:Output qName="ns17:DataSet" description="" isArray="false" xmlns:ns17="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.data"/>
+     <ns4:Exceptions/>
+    </ns4:Method>
    </ns4:Methods>
-   <ns16:ResourcePropertiesList xsi:type="ns16:ResourcePropertiesListType" xmlns:ns16="gme://gov.nih.nci.cagrid.introduce/1/Resources">
-    <ns16:ResourceProperty qName="ns17:ServiceMetadata" description="" fileLocation="serviceMetadata.xml" populateFromFile="true" register="true" xsi:type="ns16:ResourcePropertyType" xmlns:ns17="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata"/>
-    <ns16:ResourceProperty qName="ns18:DomainModel" description="" fileLocation="domainModel.xml" populateFromFile="false" register="true" xsi:type="ns16:ResourcePropertyType" xmlns:ns18="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice"/>
-   </ns16:ResourcePropertiesList>
+   <ns18:ResourcePropertiesList xsi:type="ns18:ResourcePropertiesListType" xmlns:ns18="gme://gov.nih.nci.cagrid.introduce/1/Resources">
+    <ns18:ResourceProperty qName="ns19:ServiceMetadata" description="" fileLocation="serviceMetadata.xml" populateFromFile="true" register="true" xsi:type="ns18:ResourcePropertyType" xmlns:ns19="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata"/>
+    <ns18:ResourceProperty qName="ns20:DomainModel" description="" fileLocation="domainModel.xml" populateFromFile="false" register="true" xsi:type="ns18:ResourcePropertyType" xmlns:ns20="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice"/>
+   </ns18:ResourcePropertiesList>
    <ns3:description xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"></ns3:description>
   </ns3:Service>
  </ns3:Services>
- <ns19:Extensions xsi:type="ns19:ExtensionsType" xmlns:ns19="gme://gov.nih.nci.cagrid.introduce/1/Extension" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <ns19:Extension name="cagrid_metadata" version="1.1" xsi:type="ns19:ExtensionType"/>
-  <ns19:Extension name="data" version="1.1" xsi:type="ns19:ExtensionType">
-   <ns19:ExtensionData>
+ <ns21:Extensions xsi:type="ns21:ExtensionsType" xmlns:ns21="gme://gov.nih.nci.cagrid.introduce/1/Extension" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ns21:Extension name="cagrid_metadata" version="1.1" xsi:type="ns21:ExtensionType"/>
+  <ns21:Extension name="data" version="1.1" xsi:type="ns21:ExtensionType">
+   <ns21:ExtensionData>
     <ns20:Data xsi:type="ns20:Data" xmlns:ns20="http://CQL.caBIG/1/gov.nih.nci.cagrid.data.extension">
-         <ns20:CadsrInformation noDomainModel="false" serviceUrl="http://cagrid05.bmi.ohio-state.edu:8080/wsrf/services/cagrid/CaDSRService" useSuppliedModel="false" xsi:type="ns20:CadsrInformation"/>
+                 <ns20:CadsrInformation noDomainModel="false" serviceUrl="http://cagrid05.bmi.ohio-state.edu:8080/wsrf/services/cagrid/CaDSRService" useSuppliedModel="false" xsi:type="ns20:CadsrInformation"/>
 
-         <ns20:ServiceFeatures useBdt="false" useGridIdeitifiers="false" useWsEnumeration="false" xsi:type="ns20:ServiceFeatures"/>
+
+
+                 <ns20:ServiceFeatures useBdt="false" useGridIdeitifiers="false" useSdkDataSource="false" useWsEnumeration="false" xsi:type="ns20:ServiceFeatures"/>
+
+
 
     </ns20:Data>
-   </ns19:ExtensionData>
-  </ns19:Extension>
- </ns19:Extensions>
- <ns20:ServiceProperties xmlns:ns20="gme://gov.nih.nci.cagrid.introduce/1/Property">
-  <ns20:Property description="" isFromETC="false" key="queryProcessorClass" value="gov.nih.nci.cagrid.caarray.stubs.cql.CaArrayCQLQueryProcessor"/>
-  <ns20:Property description="The location of the server-config.wsdd file" isFromETC="true" key="serverConfigLocation" value="server-config.wsdd"/>
-  <ns20:Property description="The name of the class to use for CQL query structure validation" isFromETC="false" key="dataService_cqlValidatorClass" value="gov.nih.nci.cagrid.data.cql.validation.ObjectWalkingCQLValidator"/>
-  <ns20:Property description="The name of the class to use for CQL validation against a domain model" isFromETC="false" key="dataService_domainModelValidatorClass" value="gov.nih.nci.cagrid.data.cql.validation.DomainModelValidator"/>
-  <ns20:Property description="A flag to indicate that CQL should be validated for structural correctness" isFromETC="false" key="dataService_validateCqlFlag" value="false"/>
-  <ns20:Property description="A flag to indicate that CQL should be validated for correctness against the domain model" isFromETC="false" key="dataService_validateDomainModelFlag" value="false"/>
-  <ns20:Property description="The name of the file containing the class name to QName mapping" isFromETC="true" key="dataService_classMappingsFilename" value="classToQname.xml"/>
- </ns20:ServiceProperties>
+   </ns21:ExtensionData>
+  </ns21:Extension>
+ </ns21:Extensions>
+ <ns22:ServiceProperties xmlns:ns22="gme://gov.nih.nci.cagrid.introduce/1/Property">
+  <ns22:Property description="" isFromETC="false" key="queryProcessorClass" value="gov.nih.nci.cagrid.caarray.stubs.cql.CaArrayCQLQueryProcessor"/>
+  <ns22:Property description="The location of the server-config.wsdd file" isFromETC="true" key="serverConfigLocation" value="server-config.wsdd"/>
+  <ns22:Property description="The name of the class to use for CQL query structure validation" isFromETC="false" key="dataService_cqlValidatorClass" value="gov.nih.nci.cagrid.data.cql.validation.ObjectWalkingCQLValidator"/>
+  <ns22:Property description="The name of the class to use for CQL validation against a domain model" isFromETC="false" key="dataService_domainModelValidatorClass" value="gov.nih.nci.cagrid.data.cql.validation.DomainModelValidator"/>
+  <ns22:Property description="A flag to indicate that CQL should be validated for structural correctness" isFromETC="false" key="dataService_validateCqlFlag" value="false"/>
+  <ns22:Property description="A flag to indicate that CQL should be validated for correctness against the domain model" isFromETC="false" key="dataService_validateDomainModelFlag" value="false"/>
+  <ns22:Property description="The name of the file containing the class name to QName mapping" isFromETC="true" key="dataService_classMappingsFilename" value="classToQname.xml"/>
+ </ns22:ServiceProperties>
 </ns1:ServiceDescription>

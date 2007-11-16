@@ -191,5 +191,13 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:element name="DataRetrievalRequest" type="DataRetrievalRequest"/>
+  <xs:complexType name="DataRetrievalRequest">
+    <xs:sequence>
+        <xs:element name="designElements" minOccurs="0" maxOccurs="unbounded" type="gov.nih.nci.caarray.domain.array:AbstractDesignElement"/>
+        <xs:element name="hybridizations" minOccurs="0" maxOccurs="unbounded" type="gov.nih.nci.caarray.domain.hybridization:Hybridization"/>
+        <xs:element name="quantitationTypes" minOccurs="0" maxOccurs="unbounded" type="QuantitationType"/>
+    </xs:sequence>
+  </xs:complexType>
 </xs:schema>
 

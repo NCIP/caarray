@@ -72,6 +72,11 @@ public class CaArraySvcAuthorization implements PDP {
 		
 		
 	}
+					
+	public static void authorizeGetDataSetByDataRetrievalRequest() throws RemoteException {
+		
+		
+	}
 	
 	
 	public boolean isPermitted(Subject peerSubject, MessageContext context, QName operation)
@@ -115,6 +120,14 @@ public class CaArraySvcAuthorization implements PDP {
 		} else if(operation.getLocalPart().equals("readFile")){
 			try{
 				authorizeReadFile();
+				return true;
+			} catch (Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		} else if(operation.getLocalPart().equals("getDataSetByDataRetrievalRequest")){
+			try{
+				authorizeGetDataSetByDataRetrievalRequest();
 				return true;
 			} catch (Exception e){
 				e.printStackTrace();

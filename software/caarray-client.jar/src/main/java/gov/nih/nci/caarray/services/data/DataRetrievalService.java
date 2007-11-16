@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.services.data;
 
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
 import gov.nih.nci.caarray.domain.data.DataSet;
 
 /**

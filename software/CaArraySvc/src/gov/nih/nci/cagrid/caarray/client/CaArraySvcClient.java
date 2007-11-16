@@ -144,6 +144,18 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
 		}
 	}
 
+  public gov.nih.nci.caarray.domain.data.DataSet getDataSetByDataRetrievalRequest(gov.nih.nci.caarray.domain.data.DataRetrievalRequest dataRetrievalRequest) throws RemoteException {
+    synchronized(portTypeMutex){
+      configureStubSecurity((Stub)portType,"getDataSetByDataRetrievalRequest");
+    gov.nih.nci.cagrid.caarray.stubs.GetDataSetByDataRetrievalRequestRequest params = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetByDataRetrievalRequestRequest();
+    gov.nih.nci.cagrid.caarray.stubs.GetDataSetByDataRetrievalRequestRequestDataRetrievalRequest dataRetrievalRequestContainer = new gov.nih.nci.cagrid.caarray.stubs.GetDataSetByDataRetrievalRequestRequestDataRetrievalRequest();
+    dataRetrievalRequestContainer.setDataRetrievalRequest(dataRetrievalRequest);
+    params.setDataRetrievalRequest(dataRetrievalRequestContainer);
+    gov.nih.nci.cagrid.caarray.stubs.GetDataSetByDataRetrievalRequestResponse boxedResult = portType.getDataSetByDataRetrievalRequest(params);
+    return boxedResult.getDataSet();
+    }
+  }
+
   public gov.nih.nci.cagrid.cqlresultset.CQLQueryResults query(gov.nih.nci.cagrid.cqlquery.CQLQuery cqlQuery) throws RemoteException, gov.nih.nci.cagrid.data.faults.QueryProcessingExceptionType, gov.nih.nci.cagrid.data.faults.MalformedQueryExceptionType {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"query");
