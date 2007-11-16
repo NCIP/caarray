@@ -260,6 +260,7 @@ public class UtilsTest {
         /**
          * @param otherCollection the otherCollection to set
          */
+        @SuppressWarnings("unused")
         private void setOtherCollection(Collection<A> otherCollection) {
             // private on purpose, to test setAccessable
             this.otherCollection = otherCollection;

@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.domain.data;
 
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 
 import java.io.Serializable;

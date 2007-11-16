@@ -106,8 +106,8 @@ public class MultipleCelFileImporter extends AbstractSeleniumTest {
             importTenFiles();
         }
     }
- 
-    private void importArrayDesign() throws IOException, InterruptedException {
+
+    private void importArrayDesign() throws IOException {
         String title = "HG-U133 Plus 2 Array Design";
         // Create project
         selenium.click("link=Create/Propose Experiment");
@@ -130,7 +130,7 @@ public class MultipleCelFileImporter extends AbstractSeleniumTest {
         // import button
         selenium.click("link=Import");
         waitForAction();
-        
+
         clickAndWait("link=My Experiment Workspace");
     }
 
@@ -149,7 +149,7 @@ public class MultipleCelFileImporter extends AbstractSeleniumTest {
         waitForTab();
 
         selenium.click("link=Upload New File(s)");
-        
+
         upload(MageTabDataFiles.PERFORMANCE_10_IDF);
         upload(MageTabDataFiles.PERFORMANCE_10_SDRF);
         upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file1.CEL"));

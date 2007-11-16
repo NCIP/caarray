@@ -137,6 +137,7 @@ public class BrowseActionTest {
         assertEquals("tab", result);
     }
     private static class LocalBrowseServiceStub extends BrowseServiceStub {
+        @Override
         public List<Object[]> tabList(BrowseCategory cat) {
             List<Object[]> tabs = new ArrayList<Object[]>();
             for (int i=1; i<=NUM_TABS; i++) {
@@ -148,9 +149,11 @@ public class BrowseActionTest {
             }
             return tabs;
         }
+        @Override
         public int browseCount(BrowseCategory cat, Number fieldId) {
             return NUM_PROJECTS;
         }
+        @Override
         public List<Project> browseList(PageSortParams params, BrowseCategory cat, Number fieldId) {
             List<Project> projects = new ArrayList<Project>();
             for (int i=0; i<NUM_PROJECTS; i++) {

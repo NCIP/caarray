@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.util.HibernateUtil;
 
-import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -99,7 +98,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.metadata.ClassMetadata;
-import org.hibernate.type.Type;
 
 /**
  * Provides methods to remove objects created during Hibernate integration tests.
@@ -137,7 +135,7 @@ public final class HibernateIntegrationTestCleanUpUtility {
         }
         return done;
     }
-    
+
     private static boolean doCleanUp(Class<?> c) {
         Transaction tx = null;
         boolean removed = false;
@@ -164,7 +162,7 @@ public final class HibernateIntegrationTestCleanUpUtility {
         }
         return removed;
     }
-    
+
     @SuppressWarnings("unchecked")
     private static void retrieveClassMetadata() {
         Map<String, ClassMetadata> classMetadataMap = HibernateUtil.getSessionFactory().getAllClassMetadata();
@@ -173,16 +171,18 @@ public final class HibernateIntegrationTestCleanUpUtility {
             Class<?> persistentClass = classMetadata.getMappedClass(EntityMode.POJO);
             if (!ArrayUtils.contains(HibernateUtil.CSM_CLASSES, persistentClass)) {
                 classesToRemove.add(persistentClass);
-            } 
-        }        
+            }
+        }
     }
-    
+
     private static Session getSession() {
         // we need a session that bypasses security, so override the security interceptor here
         return HibernateUtil.getSessionFactory().openSession(new EmptyInterceptor() {
+
+            private static final long serialVersionUID = 1L;
         });
     }
-    
+
     private static void disableForeignKeyChecks(Session s) {
         // this may be database-specific. for now, we know it works in mysql
         s.createSQLQuery("set foreign_key_checks = 0").executeUpdate();

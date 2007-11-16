@@ -129,11 +129,11 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         clickAndWait("//span/span");
     }
 
-    protected void  upload(File file) throws IOException, InterruptedException {
+    protected void  upload(File file) throws IOException {
         upload(file, RECORD_TIMEOUT_SECONDS);
     }
-    
-    protected void upload(File file, int timeoutSeconds) throws IOException, InterruptedException {
+
+    protected void upload(File file, int timeoutSeconds) throws IOException {
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
         selenium.type("upload", filePath);
         selenium.click("link=Upload");
@@ -149,11 +149,11 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected void waitForElementWithId(String id) {
         waitForElementWithId(id, PAGE_TIMEOUT_SECONDS);
     }
-    
+
     protected void waitForAction() {
         waitForAction(PAGE_TIMEOUT_SECONDS);
     }
-    
+
     protected void waitForAction(int timeoutSeconds) {
         waitForDiv("submittingText", timeoutSeconds);
     }
@@ -161,7 +161,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected void waitForTab() {
         waitForTab(PAGE_TIMEOUT_SECONDS);
     }
-    
+
     protected void waitForTab(int timeoutSeconds) {
         waitForDiv("loadingText", timeoutSeconds);
     }
@@ -171,7 +171,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     protected void waitForDiv(String divId, int timeoutSeconds) {
-        selenium.waitForCondition("element = selenium.browserbot.getCurrentWindow().document.getElementById('" + 
+        selenium.waitForCondition("element = selenium.browserbot.getCurrentWindow().document.getElementById('" +
                 divId + "'); element != null && element.style.display == 'none';", toMillisecondsString(timeoutSeconds));
     }
 

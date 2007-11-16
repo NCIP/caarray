@@ -98,10 +98,9 @@ public class VocabularyServiceTest {
     /**
      * Test to ensure IllegalArgumentException is thrown if a null arg
      * is passed to "getTerms()" method
-     * @throws VocabularyServiceException
      */
     @Test(expected=IllegalArgumentException.class)
-    public void getTermsNullCategory() throws VocabularyServiceException {
+    public void getTermsNullCategory() {
         VocabularyService vocab = new MockVocabularyServiceBean();
         vocab.getTerms(null);
     }
@@ -113,7 +112,7 @@ public class VocabularyServiceTest {
      * (java.lang.String)}.
      */
     @Test(expected=DAOException.class)
-    public void getTermsEVSException() throws VocabularyServiceException {
+    public void getTermsEVSException() {
         VocabularyService vocab = new MockVSBeanForEVSException();
         vocab.getTerms("ProtocolType");
 

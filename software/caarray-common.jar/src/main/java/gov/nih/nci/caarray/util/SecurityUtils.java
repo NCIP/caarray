@@ -249,7 +249,7 @@ public final class SecurityUtils {
         }
     }
 
-    @SuppressWarnings("PMD.ExcessiveMethodLength")
+    @SuppressWarnings({ "PMD.ExcessiveMethodLength", "unchecked" })
     static void handleDeleted(Collection<Protectable> deletedInstances) {
         if (deletedInstances == null) {
             return;
@@ -546,7 +546,7 @@ public final class SecurityUtils {
 
     /**
      * Returns the owner for the given protectable.
-     * 
+     *
      * @param p the protectable to get the owner for
      * @return the User who owns the given Protectable instance
      */
@@ -559,7 +559,7 @@ public final class SecurityUtils {
 
     /**
      * Checks whether a given user is an owner of the given protectable.
-     * 
+     *
      * @param p protectable to check
      * @param user user to check
      * @return whether the given user is an owner of the protectable
@@ -570,7 +570,7 @@ public final class SecurityUtils {
 
     /**
      * Returns whether the given user has READ privilege for the given Protectable.
-     * 
+     *
      * @param p the protectable to check
      * @param user the user to check
      * @return whether the given user has READ privilege for the given Protectable
@@ -582,16 +582,16 @@ public final class SecurityUtils {
     /**
      * Returns whether the given user has WRITE privilege for a given entity. this is determined
      * by either checking whether the user has the privilege for that entity directly (if it's a
-     * Protectable) or by checking whether the user has the privilege for any of the related 
+     * Protectable) or by checking whether the user has the privilege for any of the related
      * Protectables (if it's a ProtectableDescendent). If it is neither of those, then return true.
-     * 
+     *
      * @param o the entity to check
      * @param user the user to check
      * @return whether the given user has WRITE privilege for the given entity
      */
     public static boolean canWrite(PersistentObject o, User user) {
         if (o instanceof Protectable) {
-            return hasPrivilege((Protectable) o, user, WRITE_PRIVILEGE);            
+            return hasPrivilege((Protectable) o, user, WRITE_PRIVILEGE);
         }
         if (o instanceof ProtectableDescendent) {
             Collection<? extends Protectable> protectables = ((ProtectableDescendent) o).relatedProtectables();
@@ -610,7 +610,7 @@ public final class SecurityUtils {
 
     /**
      * Returns whether the given user has PERMISSIONS privilege for the given Protectable.
-     * 
+     *
      * @param p the protectable to check
      * @param user the user to check
      * @return whether the given user has PERMISSIONS privilege for the given Protectable

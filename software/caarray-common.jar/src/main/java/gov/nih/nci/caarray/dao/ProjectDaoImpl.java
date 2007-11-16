@@ -112,6 +112,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      *
      * @param persistentObject the entity to save
      */
+    @Override
     public void save(PersistentObject persistentObject) {
         if (persistentObject instanceof Project) {
             ((Project) persistentObject).setLastUpdated(new Date());

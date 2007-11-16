@@ -183,6 +183,7 @@ public class EntityConfiguringInterceptorTest {
 
     public static class A implements PersistentObject {
 
+        private static final long serialVersionUID = 1L;
         public B b = new B();
 
         public Long getId() {
@@ -200,6 +201,8 @@ public class EntityConfiguringInterceptorTest {
     }
 
     public static class B implements PersistentObject {
+
+        private static final long serialVersionUID = 1L;
 
         public Long getId() {
             return null;

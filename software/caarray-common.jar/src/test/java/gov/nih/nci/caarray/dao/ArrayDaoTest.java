@@ -83,9 +83,9 @@
 package gov.nih.nci.caarray.dao;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
@@ -218,7 +218,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
     @Test
     public void testGetRawArrayData() {
         // normally arraydata would be associated with samples, but in this it is not
-        // so disable the security filters 
+        // so disable the security filters
         HibernateUtil.enableFilters(false);
         Transaction tx = null;
         CaArrayFile file = new CaArrayFile();
@@ -248,7 +248,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
     @Test
     public void testGetDerivedArrayData() {
         // normally arraydata would be associated with samples, but in this it is not
-        // so disable the security filters 
+        // so disable the security filters
         HibernateUtil.enableFilters(false);
         Transaction tx = null;
         CaArrayFile file = new CaArrayFile();
@@ -309,7 +309,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
                     return null;
                 }
 
-                public boolean isEquivalent(ArrayDataType arrayDataType) {
+                public boolean isEquivalent(ArrayDataType type) {
                     return false;
                 }
 
@@ -327,7 +327,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
 
     private ArrayDataTypeDescriptor createTestArrayDataTypeDescriptor() {
         return new ArrayDataTypeDescriptor() {
-            private String name = "name" + System.currentTimeMillis() + ":" + uniqueInt++;
+            private final String name = "name" + System.currentTimeMillis() + ":" + uniqueInt++;
 
             public String getName() {
                 return name;
@@ -383,7 +383,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
 
     private QuantitationTypeDescriptor createTestQuantitationTypeDescriptor() {
         return new QuantitationTypeDescriptor() {
-            private String name = "name" + System.currentTimeMillis() + ":" + uniqueInt++;
+            private final String name = "name" + System.currentTimeMillis() + ":" + uniqueInt++;
 
             public String getName() {
                 return name;
