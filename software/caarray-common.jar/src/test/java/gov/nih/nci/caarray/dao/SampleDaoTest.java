@@ -125,6 +125,7 @@ public class SampleDaoTest  extends AbstractDaoTest {
 
         DUMMY_SOURCE = new TermSource();
         DUMMY_SOURCE.setName("Dummy Source");
+        DUMMY_SOURCE.setUrl("Dummy URL");
 
         DUMMY_CATEGORY = new Category();
         DUMMY_CATEGORY.setName("Dummy Category");

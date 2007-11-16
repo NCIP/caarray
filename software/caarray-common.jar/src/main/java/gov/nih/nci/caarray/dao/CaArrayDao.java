@@ -88,6 +88,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 
 /**
  * Base interface for all caArray domain DAOs.
@@ -125,9 +126,10 @@ public interface CaArrayDao {
      *
      * @param <T> entity type
      * @param entityToMatch get objects matching this entity
+     * @param order list or order by clauses to add
      * @return the List of objects, or an empty List.
      */
-    <T> List<T> queryEntityByExample(T entityToMatch);
+    <T> List<T> queryEntityByExample(T entityToMatch, Order... order);
 
     /**
      * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity,
@@ -136,9 +138,10 @@ public interface CaArrayDao {
      * @param <T> entity type
      * @param mode string comparison mode
      * @param entityToMatch get objects matching this entity
+     * @param order list or order by clauses to add
      * @return the List of objects, or an empty List.
      */
-    <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode);
+    <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, Order... order);
 
     /**
      * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity

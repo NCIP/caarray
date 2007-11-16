@@ -152,10 +152,13 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         DUMMY_CATEGORY_3.setParent(DUMMY_CATEGORY_4);
         DUMMY_CATEGORY_4.getChildren().add(DUMMY_CATEGORY_3);
 
+        DUMMY_TERM_1.setValue("DammyValue1");
         DUMMY_TERM_1.setDescription("DummyTestTerm1");
         DUMMY_TERM_1.setCategory(DUMMY_CATEGORY_3);
+        DUMMY_TERM_2.setValue("DammyValue2");
         DUMMY_TERM_2.setDescription("DummyTestTerm2");
         DUMMY_TERM_2.setCategory(DUMMY_CATEGORY_3);
+        DUMMY_TERM_3.setValue("DammyValue3");
         DUMMY_TERM_3.setDescription("DummyTestTerm3");
         DUMMY_TERM_3.setCategory(DUMMY_CATEGORY_4);
     }

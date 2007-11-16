@@ -145,7 +145,7 @@ import org.junit.Test;
 
 /**
  * Unit tests for the Project DAO.
- * 
+ *
  * @author Rashmi Srinivasa
  */
 @SuppressWarnings("PMD")
@@ -251,6 +251,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         setExperimentSummary();
         setExperimentContacts();
         DUMMY_TERM_SOURCE.setName("Dummy MGED Ontology");
+        DUMMY_TERM_SOURCE.setUrl("test url");
         DUMMY_CATEGORY.setName("Dummy Category");
         setExperimentAnnotations();
         setExperimentalFactors();
@@ -275,7 +276,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DUMMY_EXTRACT.setName("DummyExtract");
         DUMMY_LABELED_EXTRACT.setName("DummyLabeledExtract");
         DUMMY_EXPERIMENT_1.getSources().add(DUMMY_SOURCE);
-        DUMMY_EXPERIMENT_1.getSamples().add(DUMMY_SAMPLE);        
+        DUMMY_EXPERIMENT_1.getSamples().add(DUMMY_SAMPLE);
         DUMMY_EXPERIMENT_1.getExtracts().add(DUMMY_EXTRACT);
         DUMMY_EXPERIMENT_1.getLabeledExtracts().add(DUMMY_LABELED_EXTRACT);
         DUMMY_SOURCE.getSamples().add(DUMMY_SAMPLE);
@@ -365,6 +366,21 @@ public class ProjectDaoTest extends AbstractDaoTest {
     }
 
     private static void saveSupportingObjects() {
+        DUMMY_REPLICATE_TYPE.setValue("Dummy Replicate Type");
+        DUMMY_REPLICATE_TYPE.setSource(DUMMY_TERM_SOURCE);
+        DUMMY_REPLICATE_TYPE.setCategory(DUMMY_CATEGORY);
+        DUMMY_NORMALIZATION_TYPE.setValue("Dummy Normalization Type");
+        DUMMY_NORMALIZATION_TYPE.setSource(DUMMY_TERM_SOURCE);
+        DUMMY_NORMALIZATION_TYPE.setCategory(DUMMY_CATEGORY);
+        DUMMY_QUALITY_CTRL_TYPE.setValue("Dummy Quality Control Type");
+        DUMMY_QUALITY_CTRL_TYPE.setSource(DUMMY_TERM_SOURCE);
+        DUMMY_QUALITY_CTRL_TYPE.setCategory(DUMMY_CATEGORY);
+        DUMMY_FACTOR_TYPE_1.setCategory(DUMMY_CATEGORY);
+        DUMMY_FACTOR_TYPE_1.setSource(DUMMY_TERM_SOURCE);
+        DUMMY_FACTOR_TYPE_1.setValue("Dummy Factor Type 1");
+        DUMMY_FACTOR_TYPE_2.setCategory(DUMMY_CATEGORY);
+        DUMMY_FACTOR_TYPE_2.setSource(DUMMY_TERM_SOURCE);
+        DUMMY_FACTOR_TYPE_2.setValue("Dummy Factor Type 2");
         VOCABULARY_DAO.save(DUMMY_REPLICATE_TYPE);
         VOCABULARY_DAO.save(DUMMY_QUALITY_CTRL_TYPE);
         VOCABULARY_DAO.save(DUMMY_NORMALIZATION_TYPE);
@@ -415,7 +431,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
     /**
      * Compare 2 experiments to check if they are the same.
-     * 
+     *
      * @return true if the 2 experiments are the same and false otherwise.
      */
     @SuppressWarnings("PMD")
@@ -606,7 +622,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
                 SecurityUtils.PERMISSIONS_ROLE))));
         assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
                 SecurityUtils.BROWSE_ROLE))));
-        
+
         assertTrue(SecurityUtils.canRead(p, UsernameHolder.getCsmUser()));
         assertTrue(SecurityUtils.canWrite(p, UsernameHolder.getCsmUser()));
         assertTrue(SecurityUtils.canModifyPermissions(p, UsernameHolder.getCsmUser()));
@@ -619,7 +635,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         UsernameHolder.setUser("caarrayadmin");
         p.setBrowsable(true);
         tx.commit();
-        
+
         tx = HibernateUtil.beginTransaction();
         UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
         p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
@@ -630,17 +646,17 @@ public class ProjectDaoTest extends AbstractDaoTest {
         assertFalse(SecurityUtils.canModifyPermissions(p, UsernameHolder.getCsmUser()));
         HibernateUtil.getCurrentSession().clear();
         tx.commit();
-        
-        
+
+
         tx = HibernateUtil.beginTransaction();
         UsernameHolder.setUser("caarrayadmin");
-        p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());        
+        p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
         p.getPublicProfile().setSecurityLevel(SecurityLevel.READ);
         tx.commit();
-        
+
         tx = HibernateUtil.beginTransaction();
         UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
-        p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());        
+        p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
         assertNotNull(p);
         assertEquals(p.getPublicProfile().getSecurityLevel(), SecurityLevel.READ);
         assertTrue(p.isBrowsable());
@@ -663,17 +679,17 @@ public class ProjectDaoTest extends AbstractDaoTest {
                 SecurityUtils.BROWSE_ROLE))));
 
         tx.commit();
-        
+
         tx = HibernateUtil.beginTransaction();
         UsernameHolder.setUser("caarrayadmin");
-        p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());        
+        p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
         p.getPublicProfile().setSecurityLevel(SecurityLevel.READ_SELECTIVE);
-        p.getPublicProfile().getSampleSecurityLevels().put(DUMMY_SAMPLE, SampleSecurityLevel.NONE);        
+        p.getPublicProfile().getSampleSecurityLevels().put(DUMMY_SAMPLE, SampleSecurityLevel.NONE);
         tx.commit();
 
         tx = HibernateUtil.beginTransaction();
         UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
-        p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());        
+        p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
         assertNotNull(p);
         assertEquals(SecurityLevel.READ_SELECTIVE, p.getPublicProfile().getSecurityLevel());
         assertTrue(p.isBrowsable());
@@ -685,14 +701,14 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
         tx = HibernateUtil.beginTransaction();
         UsernameHolder.setUser("caarrayadmin");
-        p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());        
+        p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
         p.getPublicProfile().setSecurityLevel(SecurityLevel.READ_SELECTIVE);
-        p.getPublicProfile().getSampleSecurityLevels().put(DUMMY_SAMPLE, SampleSecurityLevel.READ);        
+        p.getPublicProfile().getSampleSecurityLevels().put(DUMMY_SAMPLE, SampleSecurityLevel.READ);
         tx.commit();
 
         tx = HibernateUtil.beginTransaction();
         UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
-        p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());        
+        p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
         assertNotNull(p);
         assertEquals(SecurityLevel.READ_SELECTIVE, p.getPublicProfile().getSecurityLevel());
         assertTrue(p.isBrowsable());
@@ -725,7 +741,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
         p.setBrowsable(true);
         tx.commit();
-        
+
         tx = HibernateUtil.beginTransaction();
         list = SecurityUtils.getUserGroupRoleProtectionGroups(p);
         assertEquals(5, list.size()); // expect the user-only ones and the anonymous access one
@@ -742,7 +758,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
         tx.commit();
     }
-    
+
     @Test
     public void testProjectWorkflow() {
         Transaction tx = HibernateUtil.beginTransaction();
@@ -755,24 +771,24 @@ public class ProjectDaoTest extends AbstractDaoTest {
         assertFalse(p.isBrowsable());
         p.setStatus(ProposalStatus.IN_PROGRESS);
         tx.commit();
-        
+
         tx = HibernateUtil.beginTransaction();
         p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
         assertTrue(p.isBrowsable());
         p.setBrowsable(false);
-        tx.commit();        
+        tx.commit();
 
         tx = HibernateUtil.beginTransaction();
         p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
         assertFalse(p.isBrowsable());
         p.setStatus(ProposalStatus.PUBLIC);
-        tx.commit();        
-        
+        tx.commit();
+
         tx = HibernateUtil.beginTransaction();
         p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
         assertTrue(p.isBrowsable());
         assertEquals(SecurityLevel.READ, p.getPublicProfile().getSecurityLevel());
-        tx.commit();                
+        tx.commit();
 }
 
     @Test
@@ -788,7 +804,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
     }
 
     private static class HasRolePredicate implements Predicate {
-        private String role;
+        private final String role;
 
         /**
          * @param role
@@ -803,7 +819,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
          */
         public boolean evaluate(Object o) {
             UserGroupRoleProtectionGroup ugrpg = (UserGroupRoleProtectionGroup) o;
-            return role.equals(ugrpg.getRole().getName());
+            return this.role.equals(ugrpg.getRole().getName());
         }
     }
 

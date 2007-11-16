@@ -98,7 +98,9 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
+import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
 
 /**
  * Action class for managing a vocabulary.
@@ -107,7 +109,6 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
  */
 @Validation
 public class VocabularyAction extends ActionSupport implements Preparable {
-
     private static final long serialVersionUID = 1L;
     private Set<Term> terms = new HashSet<Term>();
     private Term currentTerm;
@@ -116,6 +117,8 @@ public class VocabularyAction extends ActionSupport implements Preparable {
     private Long returnProjectId;
     private boolean returnToProjectOnCompletion = false;
     private String returnInitialTab = "overview";
+    private boolean createNewSource = false;
+    private TermSource newSource;
 
     /**
      * {@inheritDoc}
@@ -144,7 +147,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
             setReturnToProjectOnCompletion(true);
             ServletActionContext.getRequest().getSession().removeAttribute("startWithCreate");
             ServletActionContext.getRequest().getSession().removeAttribute("returnProjectId");
-            return INPUT;
+            return edit();
         }
         this.setTerms(ActionHelper.getVocabularyService().getTerms(this.getCategory().getCategoryName()));
         return SUCCESS;
@@ -183,6 +186,9 @@ public class VocabularyAction extends ActionSupport implements Preparable {
             getCurrentTerm().setCategory(
                     ActionHelper.getVocabularyService().getCategory(null, getCategory().getCategoryName()));
         }
+        if (isCreateNewSource()) {
+            getCurrentTerm().setSource(getNewSource());
+        }
         ActionHelper.getVocabularyService().saveTerm(getCurrentTerm());
         if (getCurrentTerm().getId() == null) {
             ActionHelper.saveMessage(getText("vocabulary.term.created", new String[] {getCurrentTerm().getValue()}));
@@ -192,7 +198,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
         if (isReturnToProjectOnCompletion()) {
             return "projectEdit";
         }
-        return SUCCESS;
+        return list();
     }
 
     /**
@@ -201,8 +207,13 @@ public class VocabularyAction extends ActionSupport implements Preparable {
     @Override
     public void validate() {
         super.validate();
+        if (!ActionHelper.isSkipValidationSetOnCurrentAction() && !isCreateNewSource()
+                && getCurrentTerm().getSource() == null) {
+            addFieldError("currentTerm.source", "You must select a term source or create a new source.");
+        }
+
         if (hasErrors()) {
-            this.setTerms(ActionHelper.getVocabularyService().getTerms(this.getCategory().getCategoryName()));
+            setSources(ActionHelper.getVocabularyService().getAllSources());
         }
     }
 
@@ -237,6 +248,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
     /**
      * @return the currentTerm
      */
+    @CustomValidator(type = "hibernate")
     public Term getCurrentTerm() {
         return this.currentTerm;
     }
@@ -302,5 +314,35 @@ public class VocabularyAction extends ActionSupport implements Preparable {
      */
     public void setReturnInitialTab(String returnInitialTab) {
         this.returnInitialTab = returnInitialTab;
+    }
+
+    /**
+     * @return the createNewSource
+     */
+    public boolean isCreateNewSource() {
+        return this.createNewSource;
+    }
+
+    /**
+     * @param createNewSource the createNewSource to set
+     */
+    public void setCreateNewSource(boolean createNewSource) {
+        this.createNewSource = createNewSource;
+    }
+
+    /**
+     * @return the newSource
+     */
+    @CustomValidator(type = "hibernate",
+            parameters = @ValidationParameter(name = "conditionalExpression", value = "createNewSource == true"))
+    public TermSource getNewSource() {
+        return this.newSource;
+    }
+
+    /**
+     * @param newSource the newSource to set
+     */
+    public void setNewSource(TermSource newSource) {
+        this.newSource = newSource;
     }
 }

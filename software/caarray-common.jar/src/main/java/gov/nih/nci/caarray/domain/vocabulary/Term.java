@@ -83,13 +83,16 @@
 
 package gov.nih.nci.caarray.domain.vocabulary;
 
-import javax.persistence.Column;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import org.hibernate.validator.Length;
+import org.hibernate.validator.NotNull;
 
   /**
 
@@ -100,7 +103,7 @@ public class Term extends AbstractCaArrayEntity {
      * The serial version UID for serialization.
      */
     private static final long serialVersionUID = 1234567890L;
-    
+
     /**
      * The description String.
      */
@@ -111,9 +114,9 @@ public class Term extends AbstractCaArrayEntity {
      *
      * @return the description
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     /**
@@ -134,9 +137,10 @@ public class Term extends AbstractCaArrayEntity {
      *
      * @return the value
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @NotNull
+    @Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
     public String getValue() {
-        return value;
+        return this.value;
     }
 
     /**
@@ -162,7 +166,7 @@ public class Term extends AbstractCaArrayEntity {
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "TERM_ACCESSION_FK")
     public Accession getAccession() {
-        return accession;
+        return this.accession;
     }
 
     /**
@@ -188,7 +192,7 @@ public class Term extends AbstractCaArrayEntity {
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "TERM_CATEGORY_FK")
     public Category getCategory() {
-        return category;
+        return this.category;
     }
 
     /**
@@ -214,7 +218,7 @@ public class Term extends AbstractCaArrayEntity {
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "TERM_SOURCE_FK")
     public TermSource getSource() {
-        return source;
+        return this.source;
     }
 
     /**
@@ -232,10 +236,10 @@ public class Term extends AbstractCaArrayEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-            .append("source", source)
-            .append("category", category)
-            .append("value", value)
-            .append("description", description)
+            .append("source", this.source)
+            .append("category", this.category)
+            .append("value", this.value)
+            .append("description", this.description)
             .toString();
     }
 }

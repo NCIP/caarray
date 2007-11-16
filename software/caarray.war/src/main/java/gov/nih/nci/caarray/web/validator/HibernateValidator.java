@@ -111,14 +111,21 @@ public class HibernateValidator extends FieldValidatorSupport {
         new HashMap<Class<?>, ClassValidator<?>>();
 
     private String resourceKeyBase;
+    private String conditionalExpression;
 
     /**
      * {@inheritDoc}
      */
     public void validate(Object object) throws ValidationException {
+        ValueStack stack = ActionContext.getContext().getValueStack();
+        if (StringUtils.isNotBlank(getConditionalExpression())) {
+            Boolean ret = (Boolean) stack.findValue(getConditionalExpression());
+            if (!ret) {
+                return;
+            }
+        }
         String fieldName = getFieldName();
         Object value = getFieldValue(fieldName, object);
-        ValueStack stack = ActionContext.getContext().getValueStack();
         stack.push(object);
         if (value instanceof Collection) {
             Collection<?> coll = (Collection<?>) value;
@@ -185,5 +192,19 @@ public class HibernateValidator extends FieldValidatorSupport {
      */
     public void setResourceKeyBase(String resourceKeyBase) {
         this.resourceKeyBase = resourceKeyBase;
+    }
+
+    /**
+     * @return the conditionalExpression
+     */
+    public String getConditionalExpression() {
+        return this.conditionalExpression;
+    }
+
+    /**
+     * @param conditionalExpression the conditionalExpression to set
+     */
+    public void setConditionalExpression(String conditionalExpression) {
+        this.conditionalExpression = conditionalExpression;
     }
 }

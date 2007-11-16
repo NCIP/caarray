@@ -109,6 +109,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.criterion.Order;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -128,10 +129,10 @@ public class MageTabTranslatorTest {
     @Before
     public void setupTranslator() {
         MageTabTranslatorBean mageTabTranslatorBean = new MageTabTranslatorBean();
-        mageTabTranslatorBean.setDaoFactory(daoFactoryStub);
+        mageTabTranslatorBean.setDaoFactory(this.daoFactoryStub);
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
-        locatorStub.addLookup(VocabularyService.JNDI_NAME, vocabularyServiceStub);
-        translator = mageTabTranslatorBean;
+        locatorStub.addLookup(VocabularyService.JNDI_NAME, this.vocabularyServiceStub);
+        this.translator = mageTabTranslatorBean;
     }
 
     /**
@@ -146,7 +147,7 @@ public class MageTabTranslatorTest {
 
     private void testSpecificationDocuments() {
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
-        CaArrayTranslationResult result = translator.translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET, fileSet);
+        CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         assertEquals(6, experiment.getSources().size());
         assertEquals(6, experiment.getSamples().size());
@@ -157,7 +158,7 @@ public class MageTabTranslatorTest {
 
     private void testTcgaBroadDocuments() {
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_SET);
-        CaArrayTranslationResult result = translator.translate(TestMageTabSets.TCGA_BROAD_SET, fileSet);
+        CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.TCGA_BROAD_SET, fileSet);
         assertEquals(10, result.getTerms().size());
         assertEquals(1, result.getInvestigations().size());
         Experiment investigation = result.getInvestigations().iterator().next();
@@ -195,7 +196,7 @@ public class MageTabTranslatorTest {
     @Test
     public void testTranslateRawArrayDataWithoutDerivedData() {
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.PERFORMANCE_TEST_10_SET);
-        CaArrayTranslationResult result = translator.translate(TestMageTabSets.PERFORMANCE_TEST_10_SET, fileSet);
+        CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.PERFORMANCE_TEST_10_SET, fileSet);
         assertEquals(1, result.getInvestigations().size());
         Experiment investigation = result.getInvestigations().iterator().next();
         assertEquals(10, investigation.getHybridizations().size());
@@ -221,7 +222,7 @@ public class MageTabTranslatorTest {
     private static class LocalVocabularyDaoStub extends VocabularyDaoStub {
 
         @Override
-        public <T> List<T> queryEntityByExample(T entityToMatch) {
+        public <T> List<T> queryEntityByExample(T entityToMatch, Order... order) {
             return new ArrayList<T>();
         }
 

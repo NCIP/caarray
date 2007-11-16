@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.domain.array;
 
+import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity_HibernateIntegrationTest;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.contact.Organization;
@@ -89,8 +90,6 @@ import gov.nih.nci.caarray.domain.file.ArrayType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-
-import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -110,11 +109,15 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         arrayDesign.setName(getUniqueStringValue());
         arrayDesign.setNumberOfFeatures(getUniqueIntValue());
         arrayDesign.setPolymerType(new Term());
+        arrayDesign.getPolymerType().setValue("testval1");
         arrayDesign.setPrinting(new ProtocolApplication());
         arrayDesign.setProvider(new Organization());
         arrayDesign.setSubstrateType(new Term());
+        arrayDesign.getSubstrateType().setValue("testval2");
         arrayDesign.setSurfaceType(new Term());
+        arrayDesign.getSurfaceType().setValue("testval3");
         arrayDesign.setTechnologyType(new Term());
+        arrayDesign.getTechnologyType().setValue("testval4");
         arrayDesign.setType(getNextValue(ArrayType.values(), arrayDesign.getArrayType()).name());
         arrayDesign.setVersion(getUniqueStringValue());
         ArrayDesignDetails designDetails = new ArrayDesignDetails();

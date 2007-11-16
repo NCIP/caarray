@@ -4,6 +4,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.hibernate.validator.Length;
+import org.hibernate.validator.NotNull;
+
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
 /**
@@ -107,9 +110,10 @@ public class TermSource extends AbstractCaArrayEntity {
      *
      * @return the name
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @NotNull
+    @Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
-        return name;
+        return this.name;
     }
 
     /**
@@ -130,9 +134,10 @@ public class TermSource extends AbstractCaArrayEntity {
      *
      * @return the url
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @NotNull
+    @Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
     public String getUrl() {
-        return url;
+        return this.url;
     }
 
     /**
@@ -155,7 +160,7 @@ public class TermSource extends AbstractCaArrayEntity {
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getVersion() {
-        return version;
+        return this.version;
     }
 
     /**

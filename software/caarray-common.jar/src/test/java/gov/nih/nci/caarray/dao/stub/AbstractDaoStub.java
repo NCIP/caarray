@@ -91,6 +91,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 
 /**
  * Base class for all dao stubs.
@@ -107,14 +108,14 @@ public class AbstractDaoStub implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
-    public <T> List<T> queryEntityByExample(T entityToMatch) {
-        return queryEntityByExample(entityToMatch, MatchMode.EXACT);
+    public <T> List<T> queryEntityByExample(T entityToMatch, Order... order) {
+        return queryEntityByExample(entityToMatch, MatchMode.EXACT, order);
     }
 
     /**
      * {@inheritDoc}
      */
-    public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode) {
+    public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, Order... order) {
         return new ArrayList<T>();
     }
 

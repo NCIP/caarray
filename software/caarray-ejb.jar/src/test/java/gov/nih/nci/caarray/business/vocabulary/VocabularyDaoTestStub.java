@@ -62,6 +62,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 
 /**
  * @author John Pike
@@ -105,14 +106,14 @@ public class VocabularyDaoTestStub implements VocabularyDao {
     /**
      * {@inheritDoc}
      */
-    public <T> List<T> queryEntityByExample(T entityToMatch) throws DAOException {
+    public <T> List<T> queryEntityByExample(T entityToMatch, Order... order) throws DAOException {
         return queryEntityByExample(entityToMatch, MatchMode.EXACT);
     }
 
     /**
      * {@inheritDoc}
      */
-    public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode) throws DAOException {
+    public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, Order... order) throws DAOException {
         return new ArrayList<T>();
     }
 

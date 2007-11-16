@@ -98,6 +98,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 
 /**
  * Base DAO implementation for all caArray domain DAOs.
@@ -172,15 +173,15 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
-    public <T> List<T> queryEntityByExample(T entityToMatch) {
-        return queryEntityByExample(entityToMatch, MatchMode.EXACT);
+    public <T> List<T> queryEntityByExample(T entityToMatch, Order... order) {
+        return queryEntityByExample(entityToMatch, MatchMode.EXACT, order);
     }
 
     /**
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode) {
+    public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, Order... order) {
         List<T> resultList = new ArrayList<T>();
         List hibernateReturnedEntities = null;
         if (entityToMatch == null) {
@@ -197,6 +198,9 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
                                  .enableLike(mode)
                                  .ignoreCase()
                     );
+            for (Order curretOrder : order) {
+                criteria.addOrder(curretOrder);
+            }
             hibernateReturnedEntities = criteria.list();
         } catch (HibernateException he) {
             getLog().error(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);

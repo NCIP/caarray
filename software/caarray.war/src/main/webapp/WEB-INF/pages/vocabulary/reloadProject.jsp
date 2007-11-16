@@ -1,9 +1,14 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
-<c:url var="editProjectUrl" value="/protected/project/edit.action">
-    <c:param name="project.id" value="${returnProjectId}"/>
-    <c:param name="initialTab" value="${returnInitialTab}" />
-</c:url>
+<s:if test="returnProjectId == null">
+    <c:url value="/protected/project/create.action" var="editProjectUrl" />
+</s:if>
+<s:else>
+    <c:url value="/protected/project/edit.action" var="editProjectUrl" >
+        <c:param name="project.id" value="${returnProjectId}"/>
+        <c:param name="initialTab" value="${returnInitialTab}" />
+    </c:url>
+</s:else>
 <script type="text/javascript">
 window.location='${editProjectUrl}';
 </script>

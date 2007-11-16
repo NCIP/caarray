@@ -63,6 +63,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.criterion.Order;
 import org.junit.Test;
 
 /**
@@ -152,7 +153,7 @@ public class VocabularyServiceTest {
         }
 
         @Override
-        public <T> List<T> queryEntityByExample(T entityToMatch) throws DAOException {
+        public <T> List<T> queryEntityByExample(T entityToMatch, Order... order) throws DAOException {
             return new ArrayList<T>();
         }
         @Override

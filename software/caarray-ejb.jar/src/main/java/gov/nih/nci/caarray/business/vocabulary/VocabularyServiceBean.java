@@ -101,6 +101,8 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
+import org.hibernate.criterion.Order;
+
 /**
  * Entry point into implementation of the vocabulary service subsystem.
  */
@@ -158,7 +160,7 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     public List<TermSource> getAllSources() {
-        return getVocabularyDao().queryEntityByExample(new TermSource());
+        return getVocabularyDao().queryEntityByExample(new TermSource(), Order.asc("name"));
     }
 
     /**
