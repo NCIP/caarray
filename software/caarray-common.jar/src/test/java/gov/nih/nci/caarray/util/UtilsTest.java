@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,131 +80,188 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.services;
+package gov.nih.nci.caarray.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.domain.PersistentObject;
 
-import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.interceptor.InvocationContext;
 
 import org.junit.Test;
 
 /**
- *
+ * Test cases for utility classes.
  */
-public class EntityConfiguringInterceptorTest {
+public class UtilsTest {
 
     @Test
-    public void testPrepareReturnValue() throws Exception {
-        EntityConfiguringInterceptor interceptor = new EntityConfiguringInterceptor();
-        TestInvocationContext testContext = new TestInvocationContext();
-        TestEntity entity = new TestEntity();
-        testContext.returnValue = entity;
-        interceptor.prepareReturnValue(testContext);
-        checkEntity(entity);
-        Set<TestEntity> entitySet = new HashSet<TestEntity>();
-        entitySet.add(new TestEntity());
-        entitySet.add(new TestEntity());
-        testContext.returnValue = entitySet;
-        interceptor.prepareReturnValue(testContext);
-        for (TestEntity nextEntity : entitySet) {
-            checkEntity(nextEntity);
-        }
+    public void testMakeLeaf() {
+        B b = new B();
+        CaArrayUtils.makeLeaf(b);
+
+        assertEquals(b.getId(), 1L);
+        assertNull(b.getA());
+        assertNull(b.getOther());
+        assertTrue(b.getOtherList().isEmpty());
+        assertTrue(b.getOtherSet().isEmpty());
+        assertTrue(b.getOtherMap().entrySet().isEmpty());
+        assertTrue(b.getOtherCollection().isEmpty());
     }
 
-    private void checkEntity(TestEntity entity) {
-        assertTrue(entity.attributeRetrieved);
-        assertTrue(entity.collectionRetrieved);
-        assertNull(entity.a.getB());
-    }
+    @Test
+    public void testMakeChildrenLeaves() {
+        B b = new B();
+        CaArrayUtils.makeChildrenLeaves(b);
 
-    private static class TestInvocationContext implements InvocationContext {
+        assertEquals(b.getId(), 1L);
+        assertNotNull(b.getA());
+        assertNotNull(b.getOther());
+        assertFalse(b.getOtherList().isEmpty());
+        assertFalse(b.getOtherSet().isEmpty());
+        assertFalse(b.getOtherMap().entrySet().isEmpty());
+        assertFalse(b.getOtherCollection().isEmpty());
 
-        private Object returnValue;
-
-        public Map<String, Object> getContextData() {
-            return null;
-        }
-
-        public Method getMethod() {
-            return null;
-        }
-
-        public Object[] getParameters() {
-            return null;
-        }
-
-        public Object getTarget() {
-            return null;
-        }
-
-        public Object proceed() {
-            return this.returnValue;
-        }
-
-        public void setParameters(Object[] arg0) {
-            // empty on purpose
-        }
-
-    }
-
-    public static class TestEntity {
-
-        boolean attributeRetrieved;
-        boolean collectionRetrieved;
-        A a = new A();
-
-        public Object getAttribute() {
-            this.attributeRetrieved = true;
-            return null;
-        }
-
-        public Collection<?> getCollection() {
-            this.collectionRetrieved = true;
-            return null;
-        }
-
-        public A getA() {
-            return a;
-        }
-
-        public void setA(A a) {
-            this.a = a;
-        }
-
+        assertEquals(1L, b.getA().getId());
+        assertNull(b.getA().getA());
+        assertNull(b.getOther().getA());
+        assertNull(b.getOtherList().iterator().next().getA());
+        assertNull(b.getOtherSet().iterator().next().getA());
+        assertNull(b.getOtherCollection().iterator().next().getA());
     }
 
     public static class A implements PersistentObject {
+        private static final long serialVersionUID = 1L;
+        private Long id = 1L;
+        private A aToo;
 
-        public B b = new B();
+        public A() {
+            this(true);
+        }
+
+        private A(boolean recurse) {
+            if (recurse) {
+                aToo = new A(false);
+            }
+        }
 
         public Long getId() {
-            return null;
+            return id;
         }
 
-        public B getB() {
-            return b;
+        public void setId(Long id) {
+            this.id = id;
         }
 
-        public void setB(B b) {
-            this.b = b;
+        /**
+         * @return the a
+         */
+        public A getA() {
+            return aToo;
         }
 
+        /**
+         * @param a the a to set
+         */
+        public void setA(A a) {
+            this.aToo = a;
+        }
     }
 
-    public static class B implements PersistentObject {
+    public static class B extends A {
+        private static final long serialVersionUID = 1L;
+        private A other;
+        private List<A> otherList = new ArrayList<A>();
+        private Set<A> otherSet = new HashSet<A>();
+        private Map<Integer, A> otherMap = new HashMap<Integer, A>();
+        private Collection<A> otherCollection = new HashSet<A>();
 
-        public Long getId() {
-            return null;
+
+        public B() {
+            other = new A();
+            otherList.add(new A());
+            otherSet.add(new A());
+            otherMap.put(1, new A());
+            otherCollection.add(new A());
         }
 
-    }
+        /**
+         * @return the other
+         */
+        public A getOther() {
+            return other;
+        }
 
+        /**
+         * @param other the other to set
+         */
+        public void setOther(A other) {
+            this.other = other;
+        }
+
+        /**
+         * @return the otherList
+         */
+        public List<A> getOtherList() {
+            return otherList;
+        }
+
+        /**
+         * @param otherList the otherList to set
+         */
+        public void setOtherList(List<A> otherList) {
+            this.otherList = otherList;
+        }
+
+        /**
+         * @return the otherSet
+         */
+        public Set<A> getOtherSet() {
+            return otherSet;
+        }
+
+        /**
+         * @param otherSet the otherSet to set
+         */
+        public void setOtherSet(Set<A> otherSet) {
+            this.otherSet = otherSet;
+        }
+
+        /**
+         * @return the otherMap
+         */
+        public Map<Integer, A> getOtherMap() {
+            return otherMap;
+        }
+
+        /**
+         * @param otherMap the otherMap to set
+         */
+        public void setOtherMap(Map<Integer, A> otherMap) {
+            this.otherMap = otherMap;
+        }
+
+        /**
+         * @return the otherCollection
+         */
+        public Collection<A> getOtherCollection() {
+            return otherCollection;
+        }
+
+        /**
+         * @param otherCollection the otherCollection to set
+         */
+        public void setOtherCollection(Collection<A> otherCollection) {
+            this.otherCollection = otherCollection;
+        }
+    }
 }

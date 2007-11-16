@@ -82,116 +82,32 @@
  */
 package gov.nih.nci.cagrid.caarray.util;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.exolab.castor.mapping.GeneralizedFieldHandler;
 
 /**
- * Field handler that implements the standard grid idiom of cutting
- * object graphs.  This handler takes arbitrary objects and sets (to null) subobjects
- * that are in the domain model.  Specifically, for each bean property (get* / set*):
- * <ul>
- * <li>For collection properties (ie, List, Set, or Map), an empty (List, Set, Map) is
- *     substituted for the current value.
- * <li>For non-collection domain properties (ie, gov.nih.nci.caarray.domain.*), the
- *     null value is substituted for the current value.
- * <li>All other properties are unmodified.
- * </ul>
- *
- * <p>As an example, consider domain classes A, B, and C that each have a single property,
- * id, accessable via getId and setId methods.  If we have:
- * <pre>
- * public class A {
- *   private B b;
- *   private Set&lt;C&gt; c;
- *   private int id;
- * }
- * </pre>
- *
- * <p>After a call to convertUponGet, A.B will be <code>null</code>, A.C will be an empty
- * <code>Set</code>, and id will retain the value it had prior to the call.
+ * Field handler that implements the standard grid idiom of cutting object graphs.
  *
  * <p><b>Important note:</b> This class handles <em>both</em> collection and non-collection
- * type fields.  For non-collection relationships, the cutting behavior described above is
- * implemented directly.  For collection relationships, castor automatically iterates over
+ * type fields.  For non-collection relationships, the cutting behavior described in
+ * makeLeaf is the behaivor of this handler.
+ *
+ * <p>For collection relationships, castor automatically iterates over
  * the collection elements calling the handler directly.  This is in contrast to the grid
  * handlers that come with the core sdk that do the iteration directly.
+ *
+ * @see CaArrayUtils#makeLeaf(Object) for additional discussion
  */
 public class CaArrayFieldHandler extends GeneralizedFieldHandler {
-
-    private static final Log LOG = LogFactory.getLog(CaArrayFieldHandler.class);
 
     /**
      * {@inheritDoc}
      */
     @Override
     public Object convertUponGet(Object val) {
-        // Set all references to other domain classes to null.
-        // Set all collection types to empty.
-        if (val == null) {
-            return null;
-        }
-
-        // Go up the entire inheritance chain
-        Class<?> clazz = val.getClass();
-        while (clazz != null) {
-            Method[] methods = clazz.getDeclaredMethods();
-            // find get/set pairs
-            for (Method getter : methods) {
-                if (getter.getName().startsWith("get") && getter.getParameterTypes().length == 0) {
-                    for (Method setter : methods) {
-                        if (setter.getName().equals('s' + getter.getName().substring(1))
-                                && setter.getParameterTypes().length == 1
-                                && Void.TYPE.equals(setter.getReturnType())
-                                && getter.getReturnType().equals(setter.getParameterTypes()[0])) {
-                            this.handleSetter(setter, val);
-                        }
-                    }
-                }
-            }
-
-            // handle superclass methods
-            clazz = clazz.getSuperclass();
-        }
-
+        CaArrayUtils.makeLeaf(val);
         return val;
-    }
-
-    private void handleSetter(Method setter, Object val) {
-        // TODO: maybe check if the set/list/map was to a PersistentObject, and only
-        // set to empty in that case?
-
-        // TODO: array types
-        Class<?> type = setter.getParameterTypes()[0];
-        Object param = null;
-        if (Set.class.isAssignableFrom(type)) {
-            param = Collections.EMPTY_SET;
-        } else if (List.class.isAssignableFrom(type)) {
-            param = Collections.EMPTY_LIST;
-        } else if (Map.class.isAssignableFrom(type)) {
-            param = Collections.EMPTY_MAP;
-        } else if (Collection.class.isAssignableFrom(type)) {
-            // if type is Collection itself
-            param = Collections.EMPTY_LIST;
-        } else if (!PersistentObject.class.isAssignableFrom(type)) {
-            // Don't call setting for primitive types, or non-domain model objects
-            return;
-        }
-
-        try {
-            setter.invoke(val, new Object[] {param});
-        } catch (Exception e) {
-            LOG.error("Unable to call a setter: " + e.getMessage(), e);
-        }
     }
 
     /**

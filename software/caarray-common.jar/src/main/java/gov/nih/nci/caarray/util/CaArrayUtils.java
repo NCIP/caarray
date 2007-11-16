@@ -82,8 +82,16 @@
  */
 package gov.nih.nci.caarray.util;
 
+import gov.nih.nci.caarray.domain.PersistentObject;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -107,32 +115,151 @@ public final class CaArrayUtils {
      *
      * @param o object to convert properties on.
      */
-    @SuppressWarnings("PMD")
     public static void blankStringPropsToNull(Object o) {
-        Method[] methods = o.getClass().getMethods();
-        for (Method getter : methods) {
-            if (getter.getReturnType().equals(String.class)
-                    && getter.getParameterTypes().length == 0
-                    && getter.getName().startsWith("get")) {
-                for (Method setter : methods) {
-                    if (setter.getReturnType().equals(Void.TYPE)
-                            && setter.getParameterTypes().length == 1
-                            && setter.getParameterTypes()[0].equals(String.class)
-                            && setter.getName().equals("s" + getter.getName().substring(1))) {
-                        try {
-                            if (StringUtils.isBlank((String) getter.invoke(o))) {
-                                setter.invoke(o, (String) null);
-                            }
-                        } catch (IllegalArgumentException e) {
-                            LOG.debug(e.getMessage(), e);
-                        } catch (IllegalAccessException e) {
-                            LOG.debug(e.getMessage(), e);
-                        } catch (InvocationTargetException e) {
-                            LOG.debug(e.getMessage(), e);
+        List<Method[]> l = findGettersAndSetters(o);
+        for (Method[] m : l) {
+            if (m[1].getParameterTypes()[0].equals(String.class)) {
+                try {
+                    if (StringUtils.isBlank((String) m[0].invoke(o))) {
+                        m[1].invoke(o, (String) null);
+                    }
+                } catch (IllegalArgumentException e) {
+                    LOG.debug(e.getMessage(), e);
+                } catch (IllegalAccessException e) {
+                    LOG.debug(e.getMessage(), e);
+                } catch (InvocationTargetException e) {
+                    LOG.debug(e.getMessage(), e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Helper method that performs object graph cutting.  This method takes arbitrary
+     * objects and sets (to null) subobjects that are in the domain model.  Specifically,
+     * for each bean property (get* / set*):
+     * <ul>
+     * <li>For collection properties (ie, List, Set, or Map), an empty (List, Set, Map) is
+     *     substituted for the current value.
+     * <li>For non-collection domain properties (ie, gov.nih.nci.caarray.domain.*), the
+     *     null value is substituted for the current value.
+     * <li>All other properties are unmodified.
+     * </ul>
+     *
+     * <p>As an example, consider domain classes A, B, and C that each have a single property,
+     * id, accessable via getId and setId methods.  If we have:
+     * <pre>
+     * public class A {
+     *   private B b;
+     *   private Set&lt;C&gt; c;
+     *   private int id;
+     * }
+     * </pre>
+     *
+     * <p>After a call to convertUponGet, A.B will be <code>null</code>, A.C will be an empty
+     * <code>Set</code>, and id will retain the value it had prior to the call.  Null values
+     * are handled gracefully.
+     *
+     * <em>Limitations ande exclusions:</em> Cutting does not occur for array types.  And
+     * we set <em>all</em> collections to empty, not just collections of domain objects.
+     *
+     * @param val object to perform cutting on
+     */
+    @SuppressWarnings("PMD.ExcessiveMethodLength") // Big comment causes us to go over
+    public static void makeLeaf(Object val) {
+        if (val == null) {
+            return;
+        }
+
+        for (Method[] m : findGettersAndSetters(val)) {
+            Class<?> type = m[1].getParameterTypes()[0];
+            Object param = null;
+            if (Set.class.isAssignableFrom(type)) {
+                param = Collections.EMPTY_SET;
+            } else if (List.class.isAssignableFrom(type)) {
+                param = Collections.EMPTY_LIST;
+            } else if (Map.class.isAssignableFrom(type)) {
+                param = Collections.EMPTY_MAP;
+            } else if (Collection.class.isAssignableFrom(type)) {
+                param = Collections.EMPTY_LIST;
+            } else if (!PersistentObject.class.isAssignableFrom(type)) {
+                // Don't call setting for primitive types, or non-domain model objects
+                continue;
+            }
+
+            try {
+                m[1].invoke(val, new Object[] {param});
+            } catch (Exception e) {
+                // We catch here, rather than re-throwing.  This is a violation of our standard
+                // practice, but it's done for good reason.  If invoking fails, that means
+                // the value was unchanged.  Grid or API users that follow the standard idiom
+                // of requering for child objects will likely never notice that the object
+                // was not null.  If we re-throw, clients will get an error.  This makes
+                // the system more robust for Java API users.
+                LOG.error("Unable to call a setter: " + e.getMessage(), e);
+            }
+        }
+    }
+
+    /**
+     * Calls the makeLeaf method on all bean properties for T.  This has the effect of making
+     * val the root of an object graph with exactly one level of domain objects.
+     *
+     * @param val object to perform cutting on
+     */
+    public static void makeChildrenLeaves(Object val) {
+        if (val == null) {
+            return;
+        }
+
+        for (Method[] m : findGettersAndSetters(val)) {
+            try {
+                Object curObj = m[0].invoke(val);
+                if (curObj instanceof Collection) {
+                    for (Object o : (Collection<?>) curObj) {
+                        makeLeaf(o);
+                    }
+                } else {
+                    makeLeaf(m[0].invoke(val));
+                }
+            } catch (Exception e) {
+                // See comment above for reasoning on catching without rethrow
+                LOG.error("Unable to call a getter: " + e.getMessage(), e);
+            }
+        }
+    }
+
+    /**
+     * Finds getter/setter pairs.
+     * @param o object to inspect
+     * @return getter / setter pairs, as list
+     */
+    private static List<Method[]> findGettersAndSetters(Object o) {
+        List<Method[]> result = new ArrayList<Method[]>();
+        if (o == null) {
+            return result;
+        }
+
+        Class<?> clazz = o.getClass();
+        while (clazz != null) {
+            Method[] methods = clazz.getDeclaredMethods();
+            for (Method getter : methods) {
+                if (getter.getName().startsWith("get") && getter.getParameterTypes().length == 0) {
+                    for (Method setter : methods) {
+                        if (setter.getName().equals('s' + getter.getName().substring(1))
+                                && setter.getParameterTypes().length == 1
+                                && Void.TYPE.equals(setter.getReturnType())
+                                && getter.getReturnType().equals(setter.getParameterTypes()[0])) {
+                            Method[] array = new Method[] {getter, setter};
+                            result.add(array);
                         }
                     }
                 }
             }
+
+            clazz = clazz.getSuperclass();
         }
+
+        return result;
     }
 }
