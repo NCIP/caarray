@@ -3,8 +3,8 @@
     displayCorrectSourceEditingUi = function() {
         $('selectSource')[$('termForm_createNewSourcetrue').checked ? 'hide' : 'show']();
         $('newSource')[$('termForm_createNewSourcetrue').checked ? 'show' : 'hide']();
-        if ($('termForm_createNewSource').checked)
-             $('termForm_currentTerm_source').selected = null;
+        if ($('termForm_createNewSourcetrue').checked)
+             $('termForm_currentTerm_source').selectedIndex = 0;
     }
 </script>
 <caarray:tabPane>
