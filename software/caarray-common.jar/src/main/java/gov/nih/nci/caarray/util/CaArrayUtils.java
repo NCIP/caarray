@@ -121,6 +121,7 @@ public final class CaArrayUtils {
             if (m[1].getParameterTypes()[0].equals(String.class)) {
                 try {
                     if (StringUtils.isBlank((String) m[0].invoke(o))) {
+                        m[1].setAccessible(true);
                         m[1].invoke(o, (String) null);
                     }
                 } catch (IllegalArgumentException e) {
@@ -188,6 +189,7 @@ public final class CaArrayUtils {
             }
 
             try {
+                m[1].setAccessible(true);
                 m[1].invoke(val, new Object[] {param});
             } catch (Exception e) {
                 // We catch here, rather than re-throwing.  This is a violation of our standard
@@ -220,6 +222,7 @@ public final class CaArrayUtils {
                         makeLeaf(o);
                     }
                 } else {
+                    m[1].setAccessible(true);
                     makeLeaf(m[0].invoke(val));
                 }
             } catch (Exception e) {
