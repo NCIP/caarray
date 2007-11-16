@@ -1300,6 +1300,11 @@
     <echo> caarray.version=${caarray.version}</echo>
     </target>
 
+  <target name="display-properties">
+  	  <echo> Diagnostics...</echo>
+	  <echoproperties/>
+  </target>
+
   <target name="remote-deploy" depends="clean">
       <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/test-build.xml" target="pre-build-checks" />
         <antcall target="validate-properties" />
