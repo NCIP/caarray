@@ -29,7 +29,7 @@
             <display:column titleKey="experiment.labeledExtracts.relatedHybridizations">
                 <caarray:projectListTabRelatedItemsLinks relatedItems="${row.hybridizations}" relatedEntityName="Hybridization" nameProperty="name" isSubtab="true"/>
             </display:column>
-            <caarray:projectListTabActionColumns entityName="LabeledExtract" itemId="${row.id}" actions="!edit,!copy,!delete" isSubtab="true"/>
+            <caarray:projectListTabActionColumns entityName="LabeledExtract" item="${row}" actions="!edit,!copy,!delete" isSubtab="true"/>
         </display:table>
     </ajax:displayTag>
 

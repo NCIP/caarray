@@ -24,6 +24,7 @@
         <span title="Subversion URL: <c:out value='${initParam["svnUrl"]}'/>, revision: <c:out value='${initParam["svnRevision"]}'/>">caArray <c:out value='${initParam["caarrayVersion"]}'/></span>
         <span class="bar">|</span>  Node: <span>NCICB</span>
         <c:if test="${pageContext.request.remoteUser != null}">
+            <span class="bar">|</span> Welcome, <s:property value="@gov.nih.nci.caarray.util.UsernameHolder@getCsmUser().name"/>
             <span class="bar">|</span> <a href="<c:url value="/logout.action" />"><span>Logout</span></a>
         </c:if>
     </div>

@@ -34,7 +34,7 @@
                   </c:if>
                 </display:column>
                 <display:column titleKey="button.edit">
-                  <c:if test="${row.owner.loginName eq pageContext.request.remoteUser}">
+                  <c:if test="${row.owner.loginName eq caarrayfn:currentUsername()}">
                       <c:url value="/protected/collaborators/edit.action" var="editUrl">
                         <c:param name="targetGroup" value="${row.id}"/>
                       </c:url>
@@ -42,7 +42,7 @@
                   </c:if>
                 </display:column>
                 <display:column titleKey="button.delete">
-                  <c:if test="${row.owner.loginName eq pageContext.request.remoteUser}">
+                  <c:if test="${row.owner.loginName eq caarrayfn:currentUsername()}">
                     <c:url value="/protected/collaborators/delete.action" var="deleteUrl">
                       <c:param name="targetGroup" value="${row.id}"/>
                     </c:url>

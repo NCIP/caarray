@@ -3,7 +3,7 @@
         body-content="scriptless"%>
 
 <%@ attribute name="entityName" required="true"%>
-<%@ attribute name="itemId" required="true"%>
+<%@ attribute name="item" required="true" type="gov.nih.nci.caarray.domain.PersistentObject"%>
 <%@ attribute name="itemName" required="true"%>
 <%@ attribute name="instructions" required="false"%>
 <%@ attribute name="isSubtab" required="false"%>
@@ -20,12 +20,13 @@
     <c:set var="isSubtab" value="${false}"/>
 </c:if>
 
-<caarray:projectListTabItemHeader entityName="${entityName}" itemId="${itemId}" itemName="${itemName}" isSubtab="${isSubtab}"/>
+<caarray:projectListTabItemHeader entityName="${entityName}" itemId="${item.id}" itemName="${itemName}" isSubtab="${isSubtab}"/>
 
 <div class="boxpad">
+    <p class="instructions"><c:out value="${instructions}" escapeXml="false"/></p>
     <s:form action="ajax/project/listTab/${plural}/save" cssClass="form" id="projectForm"
             onsubmit="TabUtils.submitTabForm('projectForm', '${tabAnchor}'); return false;">
         <jsp:doBody/>
     </s:form>
-    <caarray:projectListTabItemButtons entityName="${entityName}" itemId="${itemId}" isSubtab="${isSubtab}"/>
+    <caarray:projectListTabItemButtons entityName="${entityName}" item="${item}" isSubtab="${isSubtab}"/>
 </div>

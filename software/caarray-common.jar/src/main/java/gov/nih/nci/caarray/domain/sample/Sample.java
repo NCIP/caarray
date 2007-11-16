@@ -86,6 +86,7 @@ package gov.nih.nci.caarray.domain.sample;
 import edu.wustl.catissuecore.domain.Specimen;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.util.Protectable;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -107,7 +108,7 @@ import org.hibernate.annotations.ForeignKey;
    */
 @Entity
 @DiscriminatorValue("SA")
-public class Sample extends AbstractBioMaterial {
+public class Sample extends AbstractBioMaterial implements Protectable {
     /**
      * The serial version UID for serialization.
      */
@@ -214,5 +215,5 @@ public class Sample extends AbstractBioMaterial {
             }
         }
         return null;
-    }
+    }    
 }

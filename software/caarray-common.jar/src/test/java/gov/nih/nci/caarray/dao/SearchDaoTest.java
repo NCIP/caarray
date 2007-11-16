@@ -88,6 +88,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.protocol.Parameter;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.sample.Source;
@@ -140,7 +141,7 @@ public class SearchDaoTest {
 
         // Save dummy objects to database.
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             PROTOCOL_DAO.save(DUMMY_PROTOCOL_1);
             tx.commit();
         } catch (DAOException e) {
@@ -182,7 +183,7 @@ public class SearchDaoTest {
     public void testSearchByExample() {
         Transaction tx = null;
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             Protocol exampleProtocol = setUpExampleProtocol();
             Protocol retrievedProtocol = null;
             List<Protocol> matchingProtocols = SEARCH_DAO.query(exampleProtocol);
@@ -209,7 +210,7 @@ public class SearchDaoTest {
     public void testFindValuesByPrefix() {
         Transaction tx = null;
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             List<String> values = SEARCH_DAO.findValuesWithSamePrefix(Parameter.class, "name", "DummyTest");
             assertNotNull(values);
             assertEquals(2, values.size());
@@ -238,7 +239,7 @@ public class SearchDaoTest {
 
         Transaction tx = null;
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             Protocol retrievedProtocol = null;
             List<? extends AbstractCaArrayObject> matchingProtocols = SEARCH_DAO.query(cqlQuery);
             if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
@@ -266,7 +267,7 @@ public class SearchDaoTest {
 
         Transaction tx = null;
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             Protocol retrievedProtocol = null;
             List<? extends AbstractCaArrayObject> matchingProtocols = SEARCH_DAO.query(cqlQuery);
             if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
@@ -333,7 +334,7 @@ public class SearchDaoTest {
     public void testLoadById() {
         Transaction tx = null;
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             Object obj = SEARCH_DAO.retrieve(Protocol.class, 999l);
             assertEquals(null, obj);
 
@@ -345,27 +346,26 @@ public class SearchDaoTest {
             fail("DAO exception during search by example: " + e.getMessage());
         }
     }
-
     @Test
     public void testCollectionFilter() {
         Transaction tx = null;
         try {
             // set up dummy data
+            tx = HibernateUtil.beginTransaction();
             Session s = HibernateUtil.getCurrentSession();
-            tx = s.beginTransaction();
-            Experiment experiment = new Experiment();
-            experiment.setTitle("test experiment.");
+            Project project = new Project();
+            project.getExperiment().setTitle("test experiment.");
             Source source = new Source();
             source.setName("Source 1 Name");
-            experiment.getSources().add(source);
+            project.getExperiment().getSources().add(source);
             source = new Source();
             source.setName("Source 2 Name");
-            experiment.getSources().add(source);
-            s.save(experiment);
+            project.getExperiment().getSources().add(source);
+            s.save(project);
             s.flush();
             s.clear();
 
-            Experiment retrievedExperiment = SEARCH_DAO.retrieve(Experiment.class, experiment.getId());
+            Experiment retrievedExperiment = SEARCH_DAO.retrieve(Experiment.class, project.getExperiment().getId());
             List<Source> filteredList = SEARCH_DAO.filterCollection(retrievedExperiment.getSources(), "name", "");
             assertEquals(2, filteredList.size());
 

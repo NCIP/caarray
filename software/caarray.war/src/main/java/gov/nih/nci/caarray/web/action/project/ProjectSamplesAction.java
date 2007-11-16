@@ -130,8 +130,7 @@ public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabActio
      */
     @Override
     public void prepare() throws VocabularyServiceException {
-        super.prepare();
-
+        super.prepare();        
         if (this.currentSample.getId() != null) {
             this.currentSample = getGenericDataService().retrieveEnity(Sample.class, this.currentSample.getId());
         }

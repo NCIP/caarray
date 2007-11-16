@@ -104,7 +104,6 @@ import org.hibernate.annotations.ForeignKey;
 @Entity
 @DiscriminatorValue("SO")
 public class Source extends AbstractBioMaterial {
-
     private static final long serialVersionUID = 1234567890L;
     private static final String DEFAULT_FK_ID = "SOURCE_ID";
 

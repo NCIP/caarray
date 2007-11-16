@@ -13,7 +13,7 @@
 
 <div class="boxpad2">
     <h3><fmt:message key="${resourceKeyPrefix}" /></h3>
-    <c:if test="${project.saveAllowed}">
+    <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
         <div class="addlink">
             <fmt:message key="experiment.items.add" var="addCaption">
                 <fmt:param><fmt:message key="experiment.${entityNameLower}"/></fmt:param>

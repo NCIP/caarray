@@ -92,6 +92,8 @@ import java.util.List;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 /**
  * @author Winston Cheng
@@ -99,6 +101,7 @@ import javax.ejb.Stateless;
  */
 @Local
 @Stateless
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class BrowseServiceBean implements BrowseService {
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 

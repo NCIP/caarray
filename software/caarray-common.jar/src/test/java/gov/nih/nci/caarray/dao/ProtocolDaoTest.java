@@ -213,7 +213,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(DUMMY_PROTOCOL_1);
             Protocol retrievedProtocol = DAO_OBJECT.getProtocol(DUMMY_PROTOCOL_1.getId());
             tx.commit();
@@ -239,7 +239,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         protocolList.add(DUMMY_PROTOCOL_1);
         protocolList.add(DUMMY_PROTOCOL_2);
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(protocolList);
             tx.commit();
         } catch (DAOException e) {
@@ -257,7 +257,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(DUMMY_PROTOCOL_APPLICATION_1);
             ProtocolApplication retrievedProtocolApp =
                 (ProtocolApplication) HibernateUtil.getCurrentSession().get(ProtocolApplication.class,
@@ -285,7 +285,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         protocolAppList.add(DUMMY_PROTOCOL_APPLICATION_1);
         protocolAppList.add(DUMMY_PROTOCOL_APPLICATION_2);
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(protocolAppList);
             tx.commit();
         } catch (DAOException e) {
@@ -303,10 +303,10 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(DUMMY_PROTOCOL_1);
             tx.commit();
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             Protocol exampleProtocol = new Protocol();
             exampleProtocol.setDescription(DUMMY_PROTOCOL_1.getDescription());
             Protocol retrievedProtocol = null;
@@ -333,11 +333,11 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(DUMMY_PROTOCOL_2);
             DAO_OBJECT.save(DUMMY_PROTOCOL_3);
             tx.commit();
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             Protocol exampleProtocol = setupDeepSearchExample();
             Protocol retrievedProtocol = null;
             List<Protocol> matchingProtocols =

@@ -99,7 +99,7 @@ public abstract class AbstractCaArrayObject_HibernateIntegrationTest {
 
     @Before
     public void setUp() {
-        HibernateUtil.enableFilters(false);
+        HibernateUtil.enableFilters(true);
     }
 
     @After
@@ -109,6 +109,7 @@ public abstract class AbstractCaArrayObject_HibernateIntegrationTest {
 
     @Test
     public void testSave() {
+        Transaction tx = HibernateUtil.beginTransaction();
         AbstractCaArrayObject caArrayObject = createTestObject();
         // Test once for insert
         setValues(caArrayObject);
@@ -130,7 +131,7 @@ public abstract class AbstractCaArrayObject_HibernateIntegrationTest {
         save(caArrayObject);
         assertNotNull(caArrayObject.getId());
         assertTrue(caArrayObject.getId() > 0L);
-        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+        Transaction tx = HibernateUtil.beginTransaction();
         HibernateUtil.getCurrentSession().evict(caArrayObject);
         AbstractCaArrayObject retrievedCaArrayObject =
             (AbstractCaArrayObject) HibernateUtil.getCurrentSession().get(caArrayObject.getClass(), caArrayObject.getId());
@@ -139,7 +140,7 @@ public abstract class AbstractCaArrayObject_HibernateIntegrationTest {
     }
 
     protected final void save(AbstractCaArrayObject caArrayObject) {
-        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+        Transaction tx = HibernateUtil.beginTransaction();
         HibernateUtil.getCurrentSession().saveOrUpdate(caArrayObject);
         tx.commit();
     }

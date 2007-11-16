@@ -20,7 +20,7 @@
             <display:column titleKey="experiment.sources.relatedSamples">
                 <caarray:projectListTabRelatedItemsLinks relatedItems="${row.samples}" relatedEntityName="Sample" nameProperty="name" isSubtab="true"/>
             </display:column>
-            <caarray:projectListTabActionColumns entityName="Source" itemId="${row.id}" actions="!edit,!copy,!delete" isSubtab="true"/>
+            <caarray:projectListTabActionColumns entityName="Source" item="${row}" actions="!edit,!copy,!delete" isSubtab="true"/>
         </display:table>
     </ajax:displayTag>
 

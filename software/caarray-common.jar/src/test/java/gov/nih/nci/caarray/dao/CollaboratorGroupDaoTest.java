@@ -101,15 +101,14 @@ public class CollaboratorGroupDaoTest extends AbstractDaoTest {
 
     @Test
     public void testGetAll() {
-        Transaction tx = null;
+        Transaction tx = HibernateUtil.beginTransaction();
         Session s = HibernateUtil.getCurrentSession();
 
-        tx = s.beginTransaction();
         assertEquals(0, DAO_OBJECT.getAll().size());
         tx.commit();
 
+        tx = HibernateUtil.beginTransaction();
         s = HibernateUtil.getCurrentSession();
-        tx = s.beginTransaction();
         User owner = (User) s.load(User.class, 1L);
         Group group = (Group) s.load(Group.class, 1L);
         CollaboratorGroup cg = new CollaboratorGroup(group, owner);
@@ -117,8 +116,8 @@ public class CollaboratorGroupDaoTest extends AbstractDaoTest {
         tx.commit();
 
 
+        tx = HibernateUtil.beginTransaction();
         s = HibernateUtil.getCurrentSession();
-        tx = s.beginTransaction();
         assertEquals(1, DAO_OBJECT.getAll().size());
         tx.commit();
     }

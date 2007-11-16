@@ -144,7 +144,13 @@ public enum FileType implements Comparable<FileType>  {
     /**
      * The MAGE_TAB Sample and Data Relationship Format file type.
      */
-    MAGE_TAB_SDRF;
+    MAGE_TAB_SDRF,
+    
+    /**
+     * The Supplemental file type - for non-data files such as supporting documentation.
+     */
+    SUPPLEMENTAL;
+
 
     private static final Set<FileType> ARRAY_DESIGN_FILE_TYPES = new HashSet<FileType>();
     private static final Set<FileType> RAW_ARRAY_DATA_FILE_TYPES = new HashSet<FileType>();

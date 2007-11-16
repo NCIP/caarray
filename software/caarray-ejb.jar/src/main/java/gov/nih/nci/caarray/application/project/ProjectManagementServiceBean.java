@@ -105,6 +105,9 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.caarray.util.PermissionDeniedException;
+import gov.nih.nci.caarray.util.SecurityUtils;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
@@ -160,7 +163,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      */
     public Project getProject(long id) {
         LogUtil.logSubsystemEntry(LOG, id);
-        Project project = getProjectDao().getProject(id);
+        Project project = getDaoFactory().getSearchDao().retrieve(Project.class, id);
         LogUtil.logSubsystemExit(LOG);
         return project;
     }
@@ -215,17 +218,17 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void changeProjectStatus(long projectId, ProposalStatus newStatus) throws ProposalWorkflowException {
         LogUtil.logSubsystemEntry(LOG, projectId);
-        Project project = getProjectDao().getProject(projectId);
+        Project project = getDaoFactory().getSearchDao().retrieve(Project.class, projectId);
+        if (!project.isOwner(UsernameHolder.getCsmUser())) {
+            LogUtil.logSubsystemExit(LOG);
+            throw new PermissionDeniedException(project, "WORKFLOW_CHANGE", UsernameHolder.getUser());
+        }
         if (!project.getStatus().canTransitionTo(newStatus)) {
             LogUtil.logSubsystemExit(LOG);
             throw new ProposalWorkflowException("Cannot transition project to status " + newStatus);
         }
         project.setStatus(newStatus);
 
-        // in progress projects get automatically set to browsable, if they weren't before
-        if (newStatus == ProposalStatus.SUBMITTED) {
-            project.setBrowsable(true);
-        }
         getProjectDao().save(project);
         LogUtil.logSubsystemExit(LOG);
     }
@@ -250,6 +253,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
 
     /**
      * Checks whether the project can be saved. if it can, does nothing, otherwise throws an exception
+     * 
      * @param project project to check for being able to save
      * @throws ProposalWorkflowException if the project can't be saved due to workflow state
      */
@@ -259,7 +263,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             throw new ProposalWorkflowException("Cannot save project in current state");
         }
     }
-
 
     /**
      * {@inheritDoc}
@@ -279,9 +282,13 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Project toggleBrowsableStatus(long projectId) {
+    public Project toggleBrowsableStatus(long projectId) throws ProposalWorkflowException {
         LogUtil.logSubsystemEntry(LOG, projectId);
         Project p = getProject(projectId);
+        if (!p.isBrowsabilityEditingAllowed()) {
+            LogUtil.logSubsystemExit(LOG);
+            throw new ProposalWorkflowException("Cannot change browsability of project in current state");
+        }
         p.setBrowsable(!p.isBrowsable());
         getProjectDao().save(p);
         LogUtil.logSubsystemExit(LOG);
@@ -292,10 +299,18 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public AccessProfile addGroupProfile(Project project, CollaboratorGroup group) {
+    public AccessProfile addGroupProfile(Project project, CollaboratorGroup group) throws ProposalWorkflowException {
         LogUtil.logSubsystemEntry(LOG, project, group);
-        AccessProfile profile = new AccessProfile();
-        project.getGroupProfiles().put(group, profile);
+        if (!project.canModifyPermissions(UsernameHolder.getCsmUser())) {
+            LogUtil.logSubsystemExit(LOG);
+            throw new PermissionDeniedException(project, SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder
+                    .getUser());
+        }
+        if (!project.isPermissionsEditingAllowed()) {
+            LogUtil.logSubsystemExit(LOG);
+            throw new ProposalWorkflowException("Cannot edit project permissions in current state");
+        }
+        AccessProfile profile = project.addGroupProfile(group);
         getProjectDao().save(project);
         LogUtil.logSubsystemExit(LOG);
         return profile;

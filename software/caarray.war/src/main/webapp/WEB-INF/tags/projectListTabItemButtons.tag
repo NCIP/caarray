@@ -3,7 +3,7 @@
         body-content="empty"%>
 
 <%@ attribute name="entityName" required="true"%>
-<%@ attribute name="itemId" required="true"%>
+<%@ attribute name="item" required="true" type="gov.nih.nci.caarray.domain.PersistentObject"%>
 <%@ attribute name="isSubtab" required="false" %>
 
 <%@ include file="projectListTabCommon.tagf"%>
@@ -12,19 +12,21 @@
     <c:set var="isSubtab" value="${false}"/>
 </c:if>
 <caarray:actions>
-    <s:if test="editMode">
-        <caarray:projectListTabActionLink entityName="${entityName}" action="load" itemId="${row.id}" isSubtab="${isSubtab}">
-            <jsp:attribute name="linkRenderer">
-                <caarray:action actionClass="cancel" text="Cancel" onclick="TabUtils.updateSavedFormData(); TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}'); return false;"/>
-            </jsp:attribute>
-        </caarray:projectListTabActionLink>
-        <caarray:action actionClass="save" text="Save" onclick="TabUtils.submitTabForm('projectForm', '${tabAnchor}'); return false;"/>
-    </s:if>
-    <s:elseif test="project.saveAllowed">
-        <caarray:projectListTabActionLink entityName="${entityName}" action="edit" itemId="${itemId}" isSubtab="true">
-            <jsp:attribute name="linkRenderer">
-                <caarray:action actionClass="edit" text="Edit" onclick="TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}'); return false;"/>
-            </jsp:attribute>
-        </caarray:projectListTabActionLink>
-    </s:elseif>
+    <c:choose>
+        <c:when test="${editMode}">
+            <caarray:projectListTabActionLink entityName="${entityName}" action="load" itemId="${item.id}" isSubtab="${isSubtab}">
+                <jsp:attribute name="linkRenderer">
+                    <caarray:action actionClass="cancel" text="Cancel" onclick="TabUtils.updateSavedFormData(); TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}'); return false;"/>
+                </jsp:attribute>
+            </caarray:projectListTabActionLink>
+            <caarray:action actionClass="save" text="Save" onclick="TabUtils.submitTabForm('projectForm', '${tabAnchor}'); return false;"/>
+        </c:when>
+        <c:when test="${project.saveAllowed && caarrayfn:canWrite(item, caarrayfn:currentUser()) && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
+            <caarray:projectListTabActionLink entityName="${entityName}" action="edit" itemId="${item.id}" isSubtab="true">
+                <jsp:attribute name="linkRenderer">
+                    <caarray:action actionClass="edit" text="Edit" onclick="TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}'); return false;"/>
+                </jsp:attribute>
+            </caarray:projectListTabActionLink>
+        </c:when> 
+    </c:choose>
 </caarray:actions>

@@ -24,8 +24,8 @@
             </display:column>
             <display:column titleKey="experiment.extracts.labeledExtracts">
                 <caarray:projectListTabRelatedItemsLinks relatedItems="${row.labeledExtracts}" relatedEntityName="LabeledExtract" nameProperty="name" isSubtab="true"/>
-  "src/main/webapp/WEB-INF/pages/project/tabExtracts/list.jsp"          </display:column>
-            <caarray:projectListTabActionColumns entityName="Extract" itemId="${row.id}" actions="!edit,!copy,!delete" isSubtab="true"/>
+            </display:column>
+            <caarray:projectListTabActionColumns entityName="Extract" item="${row}" actions="!edit,!copy,!delete" isSubtab="true"/>
         </display:table>
     </ajax:displayTag>
 

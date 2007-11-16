@@ -89,12 +89,21 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
+import gov.nih.nci.caarray.util.BrowseableProperty;
 import gov.nih.nci.caarray.util.Protectable;
+import gov.nih.nci.caarray.util.SecurityUtils;
+import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -105,8 +114,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
@@ -123,9 +130,9 @@ import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Where;
 import org.hibernate.validator.NotNull;
 
- /**
-  * A microarray project.
-  */
+/**
+ * A microarray project.
+ */
 @Entity
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class Project extends AbstractCaArrayEntity implements Comparable<Project>, Protectable {
@@ -140,7 +147,8 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private AccessProfile publicProfile = new AccessProfile();
     private AccessProfile hostProfile = new AccessProfile();
     private Map<CollaboratorGroup, AccessProfile> groupProfiles = new HashMap<CollaboratorGroup, AccessProfile>();
-    private boolean browsable = true;
+    private boolean browsable = false;
+    private Set<User> owners;
     private Date lastUpdated = new Date();
 
     /**
@@ -149,26 +157,61 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     public Project() {
         // hibernate & castor-only constructor
         this.hostProfile.setSecurityLevel(SecurityLevel.READ_WRITE_SELECTIVE);
+        this.publicProfile.setProjectForPublicProfile(this);
+        this.hostProfile.setProjectForHostProfile(this);
     }
 
     /**
-     * Gets the workflow status of this project.
-     *
+     * Gets the workflow status of this project. Hibernate use only
+     * 
      * @return the status
      */
     @Enumerated(EnumType.STRING)
     @NotNull
-    public ProposalStatus getStatus() {
+    @Column(name = "STATUS")
+    @BrowseableProperty
+    private ProposalStatus getStatusInternal() {
         return this.status;
     }
 
     /**
+     * Sets the workflow status of this project. Hibernate use only
+     * 
+     * @param status the status to set
+     */
+    private void setStatusInternal(ProposalStatus statusInternal) {
+        this.status = statusInternal;
+    }
+
+    /**
+     * Gets the workflow status of this project.
+     * 
+     * @return the status
+     */
+    @Transient
+    public ProposalStatus getStatus() {
+        return getStatusInternal();
+    }
+
+    /**
      * Sets the workflow status of this project.
-     *
+     * 
      * @param status the status to set
      */
     public void setStatus(ProposalStatus status) {
-        this.status = status;
+        setStatusInternal(status);
+        // in progress projects get automatically set to browsable, if they weren't before
+        if (status == ProposalStatus.IN_PROGRESS) {
+            setBrowsable(true);
+        }
+
+        // public projects are effectively read rights to all and write rights to no one
+        if (status == ProposalStatus.PUBLIC) {
+            setBrowsable(true);
+            getPublicProfile().setSecurityLevel(SecurityLevel.READ);
+            getHostProfile().setSecurityLevel(SecurityLevel.NONE);
+            getGroupProfilesMap().clear();
+        }
     }
 
     /**
@@ -184,7 +227,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @Transient
     public boolean isSubmissionAllowed() {
-        return getStatus() != ProposalStatus.PUBLIC && getStatus().canTransitionTo(ProposalStatus.SUBMITTED);
+        return getStatus() != ProposalStatus.PUBLIC && getStatus().canTransitionTo(ProposalStatus.IN_PROGRESS);
     }
 
     /**
@@ -193,6 +236,22 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @Transient
     public boolean isMakingPublicAllowed() {
         return getStatus().canTransitionTo(ProposalStatus.PUBLIC);
+    }
+
+    /**
+     * @return whether the project's permissions can be edited in its current state
+     */
+    @Transient
+    public boolean isPermissionsEditingAllowed() {
+        return getStatus() == ProposalStatus.IN_PROGRESS;
+    }
+
+    /**
+     * @return whether the project's browsability status can be changed in its current state
+     */
+    @Transient
+    public boolean isBrowsabilityEditingAllowed() {
+        return getStatus() != ProposalStatus.PUBLIC;
     }
 
     /**
@@ -205,19 +264,21 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Gets the experiment.
-     *
+     * 
      * @return the experiment
      */
     @ManyToOne
+    @JoinColumn(unique = true)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "PROJECT_EXPERIMENT_FK")
+    @BrowseableProperty
     public Experiment getExperiment() {
         return this.experiment;
     }
 
     /**
      * Sets the experiment.
-     *
+     * 
      * @param experimentVal the experiment
      */
     public void setExperiment(final Experiment experimentVal) {
@@ -226,11 +287,12 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Gets the files.
-     *
+     * 
      * @return the files
      */
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Sort(type = SortType.NATURAL)
+    @Where(clause = Experiment.FILES_FILTER)
     public SortedSet<CaArrayFile> getFiles() {
         return this.files;
     }
@@ -242,6 +304,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Get the files.
+     * 
      * @return the files.
      */
     @Transient
@@ -251,12 +314,12 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Gets the files.
-     *
+     * 
      * @return the files
      */
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     @Sort(type = SortType.NATURAL)
-    @Where(clause = "status = 'IMPORTED'")
+    @Where(clause = "status = 'IMPORTED' and " + Experiment.FILES_FILTER)
     private SortedSet<CaArrayFile> getImportedFileSet() {
         return this.importedFiles;
     }
@@ -268,6 +331,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Get the files.
+     * 
      * @return the files.
      */
     @Transient
@@ -277,12 +341,12 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Gets the files.
-     *
+     * 
      * @return the files
      */
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     @Sort(type = SortType.NATURAL)
-    @Where(clause = "status != 'IMPORTED'")
+    @Where(clause = "status != 'IMPORTED' and " + Experiment.FILES_FILTER)
     private SortedSet<CaArrayFile> getUnImportedFileSet() {
         return this.unImportedFiles;
     }
@@ -305,7 +369,8 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     /**
      * @return public access profile
      */
-    @ManyToOne(cascade = { CascadeType.ALL })
+    @ManyToOne(cascade = {CascadeType.ALL })
+    @JoinColumn(unique = true)
     @ForeignKey(name = "PROJECT_PUBLICACCESS_FK")
     public AccessProfile getPublicProfile() {
         return this.publicProfile;
@@ -319,7 +384,8 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     /**
      * @return host institution access profile
      */
-    @ManyToOne(cascade = { CascadeType.ALL })
+    @ManyToOne(cascade = {CascadeType.ALL })
+    @JoinColumn(unique = true)
     @ForeignKey(name = "PROJECT_HOSTACCESS_FK")
     public AccessProfile getHostProfile() {
         return this.hostProfile;
@@ -333,27 +399,57 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     /**
      * @return collaborator access profiles
      */
-    @ManyToMany(fetch = FetchType.LAZY)
-    @MapKeyManyToMany(joinColumns = @JoinColumn(name = "GROUP_ID", nullable = false))
-    @JoinTable(
-            name = "PROJECT_GROUPS",
-            joinColumns = @JoinColumn(name = "PROJECT_ID"),
-            inverseJoinColumns = @JoinColumn(name = "PROFILE_ID")
-    )
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    @MapKeyManyToMany(joinColumns = @JoinColumn(name = "GROUP_ID"))
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    public Map<CollaboratorGroup, AccessProfile> getGroupProfiles() {
+    private Map<CollaboratorGroup, AccessProfile> getGroupProfilesMap() {
         return this.groupProfiles;
     }
 
     @SuppressWarnings("unused")
-    private void setGroupProfiles(Map<CollaboratorGroup, AccessProfile> profiles) { // NOPMD
+    private void setGroupProfilesMap(Map<CollaboratorGroup, AccessProfile> profiles) { // NOPMD
         this.groupProfiles = profiles;
+    }
+
+    /**
+     * @return collaborator access profiles
+     */
+    @Transient
+    public Map<CollaboratorGroup, AccessProfile> getGroupProfiles() {
+        return Collections.unmodifiableMap(getGroupProfilesMap());
+    }
+
+    /**
+     * Add a new AccessProfile for a collaborator group unless the project already has a profile for this
+     * group.
+     * @param group to add profile for
+     * @return if there already existed a profile for that group, then it is returned, otherwise a 
+     * new profile is added and returned
+     */
+    public AccessProfile addGroupProfile(CollaboratorGroup group) {
+        AccessProfile profile = new AccessProfile();
+        this.groupProfiles.put(group, profile);
+        profile.setProjectForGroupProfile(this);
+        return profile;
+    }
+
+    /**
+     * @return all the access profiles associated with this project (public, host, and the various group ones)
+     */
+    @Transient
+    public Collection<AccessProfile> getAllAccessProfiles() {
+        List<AccessProfile> profiles =
+                new ArrayList<AccessProfile>(Arrays.asList(this.publicProfile, this.hostProfile));
+        profiles.addAll(this.groupProfiles.values());
+        return profiles;
     }
 
     /**
      * @return whether this project is browsable to any user in the system, including anonymous users
      */
     @Column(nullable = false)
+    @BrowseableProperty
     public boolean isBrowsable() {
         return this.browsable;
     }
@@ -366,8 +462,62 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     }
 
     /**
+     * @return the data owner of this project
+     */
+    @Transient
+    public Set<User> getOwners() {
+        if (getId() == null) {
+            return Collections.singleton(UsernameHolder.getCsmUser());
+        }
+        if (this.owners == null) {
+            this.owners = SecurityUtils.getOwners(this);
+        }
+        return Collections.unmodifiableSet(this.owners);
+    }
+
+    /**
+     * Checks whether a given user is an owner of this project.
+     * 
+     * @param user user to check
+     * @return whether the given user is an owner of this project
+     */
+    public boolean isOwner(User user) {
+        return getOwners().contains(user);
+    }
+
+    /**
+     * Returns whether the given user has read permissions to this project.
+     * 
+     * @param user the user (can be the synthetic "anonymous" permission)
+     * @return whether the user has read permissions to this project
+     */
+    public boolean hasReadPermission(User user) {
+        return SecurityUtils.canRead(this, user);
+    }
+
+    /**
+     * Returns whether the given user has write permissions to this project.
+     * 
+     * @param user the user (can be the synthetic "anonymous" permission)
+     * @return whether the user has write permissions to this project
+     */
+    public boolean hasWritePermission(User user) {
+        return SecurityUtils.canWrite(this, user);
+    }
+
+    /**
+     * Returns whether the given user has permission to modify permissions for this project.
+     * 
+     * @param user the user (can be the synthetic "anonymous" permission)
+     * @return whether the user has permissions to modify permissions for this project
+     */
+    public boolean canModifyPermissions(User user) {
+        return SecurityUtils.canModifyPermissions(this, user);
+    }
+
+    /**
      * Gets the last updated date.
-     *
+     * 
      * @return the last date this experiment was updated
      */
     @Temporal(TemporalType.TIMESTAMP)
@@ -377,7 +527,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Sets the last updated date.
-     *
+     * 
      * @param lastUpdated the last date this experiment was updated
      */
     public void setLastUpdated(final Date lastUpdated) {
@@ -388,9 +538,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      * {@inheritDoc}
      */
     public int compareTo(Project o) {
-        return new CompareToBuilder()
-            .append(getId(), o.getId())
-            .toComparison();
+        return new CompareToBuilder().append(getId(), o.getId()).toComparison();
     }
 
     /**

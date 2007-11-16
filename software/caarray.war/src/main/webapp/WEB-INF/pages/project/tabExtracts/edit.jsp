@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
 <caarray:tabPane subtab="true">
-    <caarray:projectListTabItemForm entityName="Extract" itemId="${currentExtract.id}" itemName="${currentExtract.name}"
+    <caarray:projectListTabItemForm entityName="Extract" item="${currentExtract}" itemName="${currentExtract.name}"
         isSubtab="true">
         <s:textfield name="currentExtract.name" key="experiment.extracts.name" size="80" tabindex="1" />
         <s:textarea name="currentExtract.description" key="experiment.extracts.description" rows="3" cols="80"

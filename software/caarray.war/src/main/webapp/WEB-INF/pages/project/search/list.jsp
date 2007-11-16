@@ -5,8 +5,21 @@
         <display:setProperty name="pagination.sort.param" value="results.sortCriterion" />
         <display:setProperty name="pagination.sortdirection.param" value="results.sortDirection" />
         <display:setProperty name="pagination.pagenumber.param" value="results.pageNumber" />
-        <display:column property="experiment.title" titleKey="search.result.experimentTitle" sortable="true"
-                        url="/protected/project/details.action" paramId="project.id" paramProperty="id"/>
+        <display:column sortProperty="experiment.title" title="Experiment ID" sortable="true">
+            <c:choose>
+                <c:when test="${caarrayfn:canRead(row, caarrayfn:currentUser())}">
+                    <c:url var="viewUrl" value="/protected/project/details.action">
+                        <c:param name="project.id" value="${row.id}"/>
+                    </c:url>                
+                </c:when>
+                <c:otherwise>
+                    <c:url var="viewUrl" value="/protected/project/browse.action">
+                        <c:param name="project.id" value="${row.id}"/>
+                    </c:url>                                
+                </c:otherwise>
+            </c:choose>        
+            <a href="${viewUrl}">${row.experiment.publicIdentifier}</a>
+        </display:column>
         <display:column property="experiment.publicIdentifier" titleKey="search.result.experimentId" sortable="true"/>
         <display:column property="experiment.assayType" titleKey="search.result.assayType" sortable="true" />
         <display:column titleKey="search.result.pi">

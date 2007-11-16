@@ -118,7 +118,6 @@ import org.hibernate.validator.NotNull;
         discriminatorType = DiscriminatorType.STRING
 )
 public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
-
     private static final long serialVersionUID = 1234567890L;
 
     private Term tissueSite;

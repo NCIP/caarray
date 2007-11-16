@@ -115,8 +115,8 @@ public class DerivedArrayData extends AbstractArrayData {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "DERIVEDARRAYDATA_HYBRIDIZATIONS",
-            joinColumns = { @javax.persistence.JoinColumn(name = "HYBRIDIZATION_ID") },
-            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "DERIVEDARRAYDATA_ID") }
+            joinColumns = { @javax.persistence.JoinColumn(name = "DERIVEDARRAYDATA_ID") },
+            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "HYBRIDIZATION_ID") }
     )
     @ForeignKey(name = "DERIVEDARRAYDATA_HYBRIDIZATIONS_HYBRIDIZATION_FK",
             inverseName = "DERIVEDARRAYDATA_HYBRIDIZATIONS_DERIVEDARRAYDATA_FK")

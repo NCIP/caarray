@@ -21,7 +21,7 @@
             <display:column titleKey="experiment.files.uncompressedSize" sortable="true" sortProperty="arrayData.dataFile.uncompressedSize">
                 <fmt:formatNumber value="${row.arrayData.dataFile.uncompressedSize / 1024}" maxFractionDigits="0"/>
             </display:column>
-            <caarray:projectListTabActionColumns entityName="Hybridization" itemId="${row.id}" actions="!edit,!delete" isSubtab="true"/>
+            <caarray:projectListTabActionColumns entityName="Hybridization" item="${row}" actions="!edit,!delete" isSubtab="true"/>
             <display:column titleKey="button.download">
 				<c:url value="/protected/ajax/project/listTab/Hybridizations/download.action" var="actionUrl">
 				    <c:param name="project.id" value="${project.id}" />

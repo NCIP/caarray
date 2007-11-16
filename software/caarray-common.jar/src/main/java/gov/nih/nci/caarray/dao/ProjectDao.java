@@ -95,14 +95,6 @@ import java.util.List;
  */
 public interface ProjectDao extends CaArrayDao {
     /**
-     * Returns the <code>Project</code> with the id given.
-     *
-     * @param id get <code>Project</code> matching this id
-     * @return the <code>Project</code>.
-     */
-    Project getProject(long id);
-
-    /**
      * Returns all projects.
      *
      * @return all projects for the given user.

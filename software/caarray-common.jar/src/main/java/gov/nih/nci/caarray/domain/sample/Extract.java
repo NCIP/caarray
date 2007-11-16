@@ -83,6 +83,13 @@
 
 package gov.nih.nci.caarray.domain.sample;
 
+import edu.wustl.catissuecore.domain.MolecularSpecimen;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.util.Protectable;
+import gov.nih.nci.caarray.util.ProtectableDescendent;
+
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -96,15 +103,14 @@ import javax.persistence.OneToOne;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
-
-import edu.wustl.catissuecore.domain.MolecularSpecimen;
+import org.hibernate.annotations.Where;
 
   /**
 
    */
 @Entity
 @DiscriminatorValue("EX")
-public class Extract extends AbstractBioMaterial {
+public class Extract extends AbstractBioMaterial implements ProtectableDescendent {
     /**
      * The serial version UID for serialization.
      */
@@ -123,6 +129,7 @@ public class Extract extends AbstractBioMaterial {
      * @return the samples
      */
     @ManyToMany(mappedBy = "extracts")
+    @Where(clause = Experiment.SAMPLES_FILTER)
     public Set<Sample> getSamples() {
         return samples;
     }
@@ -193,5 +200,12 @@ public class Extract extends AbstractBioMaterial {
      */
     public void setMolecularSpecimen(MolecularSpecimen molecularSpecimen) {
         this.molecularSpecimen = molecularSpecimen;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Collection<? extends Protectable> relatedProtectables() {
+        return Collections.unmodifiableCollection(getSamples());
     }
 }

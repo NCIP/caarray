@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.util;
 
+import gov.nih.nci.security.authorization.domainobjects.User;
+
 import org.apache.commons.lang.StringUtils;
 
 
@@ -113,9 +115,16 @@ public final class UsernameHolder {
     public static String getUser() {
         String val = tlocal.get();
         if (StringUtils.isBlank(val)) {
-            return SecurityInterceptor.ANONYMOUS_USER;
+            return SecurityUtils.ANONYMOUS_USER;
         }
         return val;
     }
-
+    
+    /**
+     * @return the User instance for the logged in user for this thread, or the anonymous user
+     *         if no user is logged in
+     */
+    public static User getCsmUser() {
+        return SecurityUtils.getAuthorizationManager().getUser(getUser());
+    }    
 }

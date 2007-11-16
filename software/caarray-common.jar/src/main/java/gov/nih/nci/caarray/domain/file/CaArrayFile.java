@@ -85,6 +85,8 @@ package gov.nih.nci.caarray.domain.file;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.util.Protectable;
+import gov.nih.nci.caarray.util.ProtectableDescendent;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.ByteArrayInputStream;
@@ -94,6 +96,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -118,8 +122,7 @@ import org.hibernate.annotations.ForeignKey;
  */
 @Entity
 @Table(name = "CAARRAYFILE")
-public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaArrayFile> {
-
+public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaArrayFile>, ProtectableDescendent {
     private static final long serialVersionUID = 1234567890L;
 
     private String name;
@@ -383,4 +386,15 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
         this.contents = contents;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public Collection<? extends Protectable> relatedProtectables() {
+        // we cheat a little bit here - we know the only modification operations allowed on files
+        // are deleting and changing file type, and those are only allowed in the unimported status
+        // therefore it is sufficient to only rely on the Project to which it belongs as the related
+        // Protectable. If it does not belong to a project, then protections do not apply to it at all
+        // (ie it is an array design file or some such)
+        return getProject() != null ? Collections.singleton(getProject()) : null;
+    }
 }

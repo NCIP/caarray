@@ -94,7 +94,7 @@ public class UsernameHolderTest {
     @Test
     public void testHolder() {
         UsernameHolder.setUser(null);
-        assertEquals(SecurityInterceptor.ANONYMOUS_USER, UsernameHolder.getUser());
+        assertEquals(SecurityUtils.ANONYMOUS_USER, UsernameHolder.getUser());
         UsernameHolder.setUser("test");
         assertEquals("test", UsernameHolder.getUser());
     }

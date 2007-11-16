@@ -25,7 +25,7 @@
 
     <div class="boxpad2">
         <h3><fmt:message key="project.tabs.unimportedFiles" /></h3>
-        <c:if test="${project.saveAllowed}">
+        <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
             <div class="addlink">
                 <fmt:message key="experiment.data.upload" var="uploadLabel" />
                 <caarray:linkButton actionClass="add" text="${uploadLabel}" onclick="Element.show('uploadFileDiv');"/>
@@ -35,7 +35,7 @@
 
     <div id="uploadFileDiv" style="display: none;">
         <div class="boxpad2extend">
-            <c:if test="${project.saveAllowed}">
+            <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
                 <s:form action="project/files/upload" id="uploadForm" enctype="multipart/form-data" method="post">
                     <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
                     <s:file id="upload" name="upload" label="File" />
@@ -54,7 +54,7 @@
     	<%@ include file="/WEB-INF/pages/project/files/listUnimportedForm.jsp" %>
     </div>
     
-    <c:if test="${project.saveAllowed}">
+    <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
         <caarray:actions divclass="actionsthin">
             <c:url value="/protected/ajax/project/files/deleteFiles.action" var="deleteUrl" />
             <caarray:linkButton actionClass="delete" text="Delete" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${deleteUrl}', 'tabboxlevel2wrapper');" />

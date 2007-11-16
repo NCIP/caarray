@@ -5,6 +5,7 @@
 <%@ taglib uri="/struts-tags" prefix="s" %>
 <%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="caarray" %>
+<%@ taglib uri="/WEB-INF/caarray-functions.tld" prefix="caarrayfn" %>
 
 <c:set var="entityNameLower" value="${fn:toLowerCase(fn:substring(entityName, 0, 1))}${fn:substring(entityName, 1, fn:length(entityName))}"/>
 <c:set var="plural" value="${entityName}s"/>

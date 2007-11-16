@@ -91,7 +91,7 @@ import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.registration.RegistrationService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
-import gov.nih.nci.caarray.util.SecurityInterceptor;
+import gov.nih.nci.caarray.util.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import gov.nih.nci.security.AuthorizationManager;
@@ -164,7 +164,7 @@ public final class ActionHelper {
      * @return the logged in user
      */
     public static User getCurrentUser() {
-        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
+        AuthorizationManager am = SecurityUtils.getAuthorizationManager();
         return am.getUser(UsernameHolder.getUser());
     }
 

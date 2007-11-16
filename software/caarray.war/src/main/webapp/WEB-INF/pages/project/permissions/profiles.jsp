@@ -56,7 +56,7 @@
                     </table>
                 </div>                    
 
-                <c:if test="${project.browsable}">
+                <c:if test="${project.browsable && project.permissionsEditingAllowed}">
                     <div class="line" style="margin-bottom: 10px"></div>
                     <div style="padding-bottom: 20px; min-height: 500px;">
                             <div class="leftsidetable" style="width: 305px; float: left">

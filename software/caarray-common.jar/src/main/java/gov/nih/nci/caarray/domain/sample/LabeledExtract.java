@@ -84,8 +84,12 @@
 package gov.nih.nci.caarray.domain.sample;
 
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.util.Protectable;
+import gov.nih.nci.caarray.util.ProtectableDescendent;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -99,13 +103,14 @@ import javax.persistence.ManyToOne;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Where;
 
 /**
  * 
  */
 @Entity
 @DiscriminatorValue("LA")
-public class LabeledExtract extends AbstractBioMaterial {
+public class LabeledExtract extends AbstractBioMaterial implements ProtectableDescendent {
     private static final long serialVersionUID = 1234567890L;
 
 
@@ -140,6 +145,7 @@ public class LabeledExtract extends AbstractBioMaterial {
      * @return the extracts
      */
     @ManyToMany(mappedBy = "labeledExtracts")
+    @Where(clause = Experiment.EXTRACTS_FILTER)
     public Set<Extract> getExtracts() {
         return extracts;
     }
@@ -180,6 +186,17 @@ public class LabeledExtract extends AbstractBioMaterial {
     @SuppressWarnings("unused")
     private void setHybridizations(final Set<Hybridization> hybridizationsVal) { // NOPMD
         this.hybridizations = hybridizationsVal;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Collection<? extends Protectable> relatedProtectables() {
+        Set<Protectable> protectables = new HashSet<Protectable>();
+        for (Extract e : getExtracts()) {
+            protectables.addAll(e.relatedProtectables());
+        }
+        return protectables;
     }
 
     /**

@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.domain.ResourceBasedEnum;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -96,23 +97,29 @@ import org.apache.commons.collections.Predicate;
  */
 public enum SecurityLevel implements ResourceBasedEnum {
     /** No access to project or any samples. */
-    NONE("SecurityLevel.none", true),
+    NONE("SecurityLevel.none", true, false, false),
     /** Read access to project and all samples. */
-    READ("SecurityLevel.read", true),
+    READ("SecurityLevel.read", true, true, false),
     /** Read access to project and specified samples. */
-    READ_SELECTIVE("SecurityLevel.readSelective", true, SampleSecurityLevel.NONE, SampleSecurityLevel.READ),
+    READ_SELECTIVE("SecurityLevel.readSelective", true, true, false, SampleSecurityLevel.NONE,
+            SampleSecurityLevel.READ),
     /** Write access to project and all samples. */
-    WRITE("SecurityLevel.write", false),
+    WRITE("SecurityLevel.write", false, true, true),
     /** Write access to project. Read access and/or write access to specificed samples. */
-    READ_WRITE_SELECTIVE("SecurityLevel.readWriteSelective", false, SampleSecurityLevel.NONE, SampleSecurityLevel.READ,
-            SampleSecurityLevel.READ_WRITE);
+    READ_WRITE_SELECTIVE("SecurityLevel.readWriteSelective", false, true, true, SampleSecurityLevel.NONE,
+            SampleSecurityLevel.READ, SampleSecurityLevel.READ_WRITE);
 
     private final boolean availableToPublic;
     private final String resourceKey;
+    private final boolean allowsRead;
+    private final boolean allowsWrite;
     private final List<SampleSecurityLevel> sampleSecurityLevels = new ArrayList<SampleSecurityLevel>();
 
-    private SecurityLevel(String resourceKey, boolean availableToPublic, SampleSecurityLevel... sampleSecurityLevels) {
+    private SecurityLevel(String resourceKey, boolean availableToPublic, boolean allowsRead, boolean allowsWrite,
+            SampleSecurityLevel... sampleSecurityLevels) {
         this.availableToPublic = availableToPublic;
+        this.allowsRead = allowsRead;
+        this.allowsWrite = allowsWrite;
         this.resourceKey = resourceKey;
         this.sampleSecurityLevels.addAll(Arrays.asList(sampleSecurityLevels));
     }
@@ -135,7 +142,7 @@ public enum SecurityLevel implements ResourceBasedEnum {
      * @return the set of security levels that can be assigned to samples given this project security level
      */
     public List<SampleSecurityLevel> getSampleSecurityLevels() {
-        return this.sampleSecurityLevels;
+        return Collections.unmodifiableList(this.sampleSecurityLevels);
     }
 
     /**
@@ -156,5 +163,19 @@ public enum SecurityLevel implements ResourceBasedEnum {
             }
         });
         return levels;
+    }
+
+    /**
+     * @return whether this security level allows read access
+     */
+    public boolean isAllowsRead() {
+        return allowsRead;
+    }
+
+    /**
+     * @return whether this security level allows write access
+     */
+    public boolean isAllowsWrite() {
+        return allowsWrite;
     }
 }

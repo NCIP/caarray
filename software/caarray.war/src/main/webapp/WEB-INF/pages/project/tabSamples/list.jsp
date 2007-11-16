@@ -26,7 +26,7 @@
             <display:column titleKey="experiment.samples.extracts">
                 <caarray:projectListTabRelatedItemsLinks relatedItems="${row.extracts}" relatedEntityName="Extract" nameProperty="name" isSubtab="true"/>
             </display:column>
-            <caarray:projectListTabActionColumns entityName="Sample" itemId="${row.id}" actions="!edit,!copy,!delete" isSubtab="true"/>
+            <caarray:projectListTabActionColumns entityName="Sample" item="${row}" actions="!edit,!copy,!delete" isSubtab="true"/>
             <display:column titleKey="button.download">
 				<c:url value="/protected/ajax/project/listTab/Samples/download.action" var="actionUrl">
 				    <c:param name="project.id" value="${project.id}" />

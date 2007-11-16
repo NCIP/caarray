@@ -119,16 +119,6 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         super.save(persistentObject);
     }
 
-    /**
-     * Returns the <code>Project</code> with the id given, or null if none exists.
-     *
-     * @param id get <code>Project</code> matching this id
-     * @return the <code>Project</code> or null.
-     */
-    public Project getProject(long id) {
-        return (Project) getCurrentSession().get(Project.class, id);
-    }
-
     @Override
     Log getLog() {
         return LOG;
@@ -139,7 +129,8 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      */
     @SuppressWarnings("unchecked")
     public List<Project> getNonPublicProjectsForUser() {
-        String hql = "from " + Project.class.getName() + " p where p.status != :status order by experiment.title";
+        String hql = "from " + Project.class.getName()
+                + " p where p.statusInternal != :status order by experiment.title";
         Query query = getCurrentSession().createQuery(hql);
         query.setParameter("status", ProposalStatus.PUBLIC);
         return query.list();
@@ -150,7 +141,8 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      */
     @SuppressWarnings("unchecked")
     public List<Project> getPublicProjects() {
-        String hql = "from " + Project.class.getName() + " p where p.status = :status order by experiment.title";
+        String hql = "from " + Project.class.getName()
+                + " p where p.statusInternal = :status order by experiment.title";
         Query query = getCurrentSession().createQuery(hql);
         query.setParameter("status", ProposalStatus.PUBLIC);
         return query.list();

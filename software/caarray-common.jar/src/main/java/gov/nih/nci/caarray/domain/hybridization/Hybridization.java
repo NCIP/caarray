@@ -88,11 +88,15 @@ import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.util.Protectable;
+import gov.nih.nci.caarray.util.ProtectableDescendent;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -108,13 +112,13 @@ import javax.persistence.OneToOne;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Where;
 
 /**
  * The act of hybridizing extracted genetic material to the probes on a microarray.
  */
 @Entity
-public class Hybridization extends AbstractCaArrayEntity {
-
+public class Hybridization extends AbstractCaArrayEntity implements ProtectableDescendent {
     private static final String UNUSED = "unused";
     private static final long serialVersionUID = 1234567890L;
     private static final String MAPPED_BY = "hybridization";
@@ -284,6 +288,7 @@ public class Hybridization extends AbstractCaArrayEntity {
      * @return the labeledExtract
      */
     @ManyToMany(mappedBy = "hybridizations", fetch = FetchType.LAZY)
+    @Where(clause = Experiment.LABELED_EXTRACTS_FILTER)
     public Set<LabeledExtract> getLabeledExtracts() {
         return labeledExtract;
     }
@@ -354,5 +359,16 @@ public class Hybridization extends AbstractCaArrayEntity {
      */
     public void setLabel(Term label) {
         this.label = label;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Collection<? extends Protectable> relatedProtectables() {
+        Set<Protectable> protectables = new HashSet<Protectable>();
+        for (LabeledExtract le : getLabeledExtracts()) {
+            protectables.addAll(le.relatedProtectables());
+        }
+        return protectables;
     }
 }

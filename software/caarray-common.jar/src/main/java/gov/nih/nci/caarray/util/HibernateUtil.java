@@ -142,7 +142,7 @@ public final class HibernateUtil {
             // be present, so we throw away the first factory and use the second. If this is
             // removed, you'll likely see a NoClassDefFoundError in the unit tests
             HIBERNATE_CONFIG.buildSessionFactory();
-            InstanceLevelSecurityHelper.addFilters(SecurityInterceptor.getAuthorizationManager(), tmpConfig);
+            InstanceLevelSecurityHelper.addFilters(SecurityUtils.getAuthorizationManager(), tmpConfig);
             Iterator<Collection> it = HIBERNATE_CONFIG.getCollectionMappings();
             final String role = Group.class.getName() + ".users";
             while (it.hasNext()) {
@@ -184,10 +184,21 @@ public final class HibernateUtil {
     public static Session getCurrentSession() {
         Session result = SESSION_FACTORY.getCurrentSession();
         if (filtersEnabled) {
-            InstanceLevelSecurityHelper.initializeFilters(UsernameHolder.getUser(), result, SecurityInterceptor
+            InstanceLevelSecurityHelper.initializeFilters(UsernameHolder.getUser(), result, SecurityUtils
                     .getAuthorizationManager());
         }
         return result;
+    }
+
+    /**
+     * Starts a transaction on the current Hibernate session. Intended for use in
+     * unit tests - DAO / Service layer logic should rely on container-managed transactions
+     *
+     * @return a Hibernate session.
+     */
+    public static Transaction beginTransaction() {
+        Session result = SESSION_FACTORY.getCurrentSession();
+        return result.beginTransaction();
     }
 
     /**

@@ -190,7 +190,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
     public void testGetTerms() {
         Transaction tx = null;
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             setupTestGetTerms();
             List<Term> retrievedTerms = DAO_OBJECT.getTerms(DUMMY_CATEGORY_3.getName());
             if (retrievedTerms.size() != 2) {
@@ -199,8 +199,9 @@ public class VocabularyDaoTest extends AbstractDaoTest {
             // Check if we got the expected terms, and accordingly pass or fail the test.
             checkIfExpectedTerms(retrievedTerms);
             tx.commit();
-        } catch (DAOException e) {
+        } catch (DAOException   e) {
             HibernateUtil.rollbackTransaction(tx);
+            e.printStackTrace();
             fail("DAO exception while getting terms in a category: " + e.getMessage());
         }
     }
@@ -212,13 +213,13 @@ public class VocabularyDaoTest extends AbstractDaoTest {
     public void testGetTermsRecursive() {
         Transaction tx = null;
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             setupTestGetTermsRecursive();
             tx.commit();
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             Set<Term> retrievedTerms = DAO_OBJECT.getTermsRecursive(DUMMY_CATEGORY_4.getName(), null);
             if (retrievedTerms.size() != NUM_DUMMY_TERMS) {
-                fail("Did not retrieve the expected number of terms.");
+                assertEquals("Did not retrieve the expected number of terms.", NUM_DUMMY_TERMS, retrievedTerms.size());
             }
             // Check if we got the expected terms, and accordingly pass or fail the test.
             checkIfExpectedTermsRecursive(retrievedTerms);
@@ -236,7 +237,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
     public void testGetTermsById() {
         Transaction tx = null;
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             setupTestGetTermsRecursive();
             Term retrievedTerm1 = DAO_OBJECT.getTermById(DUMMY_TERM_1.getId());
             Term retrievedTerm2 = DAO_OBJECT.getTermById(DUMMY_TERM_2.getId());
@@ -258,7 +259,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
     public void testGetCategory() {
         Transaction tx = null;
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(DUMMY_CATEGORY_1);
             String categoryName = DUMMY_CATEGORY_1.getName();
             Category retrievedCategory = DAO_OBJECT.getCategory(categoryName);
@@ -283,7 +284,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
 
         // Try saving the dummy category and then retrieving it.
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(DUMMY_CATEGORY_1);
             // Check if we got the expected category, and accordingly pass or fail the test.
             checkIfExpectedCategory(DUMMY_CATEGORY_1.getId());
@@ -304,7 +305,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         categoryList.add(DUMMY_CATEGORY_1);
         categoryList.add(DUMMY_CATEGORY_2);
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(categoryList);
             tx.commit();
         } catch (DAOException e) {
@@ -322,7 +323,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         Transaction tx = null;
         // Try saving the dummy term and then retrieving it.
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(DUMMY_TERM_1);
             // Check if we got the expected term, and accordingly pass or fail the test.
             checkIfExpectedTerm(DUMMY_TERM_1.getId());
@@ -343,7 +344,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         termList.add(DUMMY_TERM_1);
         termList.add(DUMMY_TERM_2);
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(termList);
             tx.commit();
         } catch (DAOException e) {
@@ -361,7 +362,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         Transaction tx = null;
         // Try saving the dummy source and then retrieving it.
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(DUMMY_SOURCE_1);
             // Check if we got the expected source, and accordingly pass or fail the test.
             checkIfExpectedSource(DUMMY_SOURCE_1.getId());
@@ -382,7 +383,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         sourceList.add(DUMMY_SOURCE_1);
         sourceList.add(DUMMY_SOURCE_2);
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(sourceList);
             tx.commit();
         } catch (DAOException e) {
@@ -401,7 +402,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         Transaction tx = null;
         // Try saving the dummy accession and then retrieving it.
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(DUMMY_ACCESSION_1);
             // Check if we got the expected accession, and accordingly pass or fail the test.
             checkIfExpectedAccession(DUMMY_ACCESSION_1.getId());
@@ -423,7 +424,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         accessionList.add(DUMMY_ACCESSION_1);
         accessionList.add(DUMMY_ACCESSION_2);
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(accessionList);
             tx.commit();
         } catch (DAOException e) {
@@ -453,7 +454,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
             Term term = iterator.next();
             if (!(DUMMY_TERM_1.equals(term) || DUMMY_TERM_2.equals(term)
                     || DUMMY_TERM_3.equals(term))) {
-                fail("Did not retrieve the expected terms.");
+                fail("Did not retrieve the expected terms, actual term: " + term);
             }
         }
         // Test passed.

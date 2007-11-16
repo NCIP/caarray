@@ -4,7 +4,7 @@
 
 <%@ attribute name="entityName" required="true"%>
 <%@ attribute name="actions" required="true"%>
-<%@ attribute name="itemId" required="true"%>
+<%@ attribute name="item" required="true" type="gov.nih.nci.caarray.domain.PersistentObject"%>
 <%@ attribute name="isSubtab" required="false"%>
 
 <%@ include file="projectListTabCommon.tagf"%>
@@ -14,9 +14,9 @@
     <c:if test="${editableOnly}">
         <c:set var="action" value="${fn:substring(action, 1, fn:length(action))}"/>        
     </c:if>
-    <c:if test="${!editableOnly || project.saveAllowed}">
-        <display:column titleKey="button.${action}">
-            <caarray:projectListTabActionLink entityName="${entityName}" action="${action}" itemId="${itemId}" isSubtab="${isSubtab}"/>            
-        </display:column>    
-    </c:if>
+    <display:column titleKey="button.${action}">
+        <c:if test="${!editableOnly || project.saveAllowed && caarrayfn:canWrite(item, caarrayfn:currentUser()) && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
+            <caarray:projectListTabActionLink entityName="${entityName}" action="${action}" itemId="${item.id}" isSubtab="${isSubtab}"/>            
+        </c:if>
+    </display:column>    
 </c:forTokens>

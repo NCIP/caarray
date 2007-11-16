@@ -4,6 +4,11 @@
     <description>5AM PMD Rules</description>
 
     <rule ref="rulesets/basic.xml" />
+    <rule ref="rulesets/basic.xml/EmptyCatchBlock">
+        <properties>
+            <property name="allowCommentedBlocks" value="true" />
+        </properties>
+    </rule>
 
     <rule ref="rulesets/braces.xml" />
 
@@ -13,7 +18,7 @@
 
     <rule ref="rulesets/codesize.xml/ExcessiveMethodLength">
         <properties>
-            <property name="minimum" value="30" />
+            <property name="minimum" value="50" />
         </properties>
     </rule>
     <rule ref="rulesets/codesize.xml/ExcessiveClassLength">

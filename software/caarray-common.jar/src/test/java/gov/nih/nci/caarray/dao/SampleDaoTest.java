@@ -138,7 +138,7 @@ public class SampleDaoTest  extends AbstractDaoTest {
         DUMMY_CHARACTERISTIC.setValue("Dummy Characteristic");
         Transaction tx = null;
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(DUMMY_SAMPLE_1);
             tx.commit();
         } catch (DAOException e) {
@@ -156,7 +156,7 @@ public class SampleDaoTest  extends AbstractDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(DUMMY_SAMPLE_1);
             Sample retrievedSample = DAO_OBJECT.getSample(DUMMY_SAMPLE_1.getId());
             tx.commit();

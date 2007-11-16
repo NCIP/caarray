@@ -94,11 +94,11 @@ public enum ProposalStatus {
          */
         @Override
         public boolean canTransitionTo(ProposalStatus status) {
-            return status == SUBMITTED;
+            return status == IN_PROGRESS;
         }
     },
     /** submitted - permissions can now be set for other people. */
-    SUBMITTED("proposalStatus.submitted") {
+    IN_PROGRESS("proposalStatus.inProgress") { 
         /**
          * {@inheritDoc}
          */
@@ -114,7 +114,7 @@ public enum ProposalStatus {
          */
         @Override
         public boolean canTransitionTo(ProposalStatus status) {
-            return status == SUBMITTED;
+            return status == IN_PROGRESS;
         }
     };
 

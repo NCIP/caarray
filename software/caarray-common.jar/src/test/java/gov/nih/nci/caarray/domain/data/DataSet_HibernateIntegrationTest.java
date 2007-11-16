@@ -87,7 +87,12 @@ import static org.junit.Assert.assertArrayEquals;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject_HibernateIntegrationTest;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.util.HibernateUtil;
 
+import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -165,7 +170,22 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
 
     @Override
     protected AbstractCaArrayObject createTestObject() {
+        Sample sample = new Sample();
+        sample.setName("Foo");
+        Extract extract = new Extract();
+        extract.setName("Foobar");
+        sample.getExtracts().add(extract);
+        extract.getSamples().add(sample);
+        LabeledExtract le = new LabeledExtract();
+        le.setName("Foofoo");
+        extract.getLabeledExtracts().add(le);
+        le.getExtracts().add(extract);
         Hybridization hybridization = new Hybridization();
+        le.getHybridizations().add(hybridization);
+        hybridization.getLabeledExtracts().add(le);
+        Transaction tx = HibernateUtil.beginTransaction();
+        HibernateUtil.getCurrentSession().saveOrUpdate(sample);
+        tx.commit();
         DataSet dataSet = new DataSet();
         dataSet.addHybridizationData(hybridization);
         dataSet.addQuantitationType(stringType);

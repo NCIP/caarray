@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.util.HibernateUtil;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -91,11 +92,14 @@ import java.util.Map;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.EmptyInterceptor;
 import org.hibernate.EntityMode;
+import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.type.Type;
 
 /**
  * Provides methods to remove objects created during Hibernate integration tests.
@@ -122,7 +126,7 @@ public final class HibernateIntegrationTestCleanUpUtility {
         if (classesToRemove == null) {
             retrieveClassMetadata();
         }
-        int numIterations = classesToRemove.size();
+        int numIterations = classesToRemove.size() + 1;
         boolean done = false;
         for (int i = 0; i < numIterations && !done; i++) {
             done = true;
@@ -135,18 +139,19 @@ public final class HibernateIntegrationTestCleanUpUtility {
     }
     
     private static boolean doCleanUp(Class<?> c) {
-        Session s = getSession();
         Transaction tx = null;
         boolean removed = false;
+        Session s = null;
         try {
+            s = getSession();
+            s.setFlushMode(FlushMode.MANUAL);
+            disableForeignKeyChecks(s);
             tx = s.beginTransaction();
-            List<?> allObjs = s.createQuery("FROM " + c.getName()).list();
-            if (!allObjs.isEmpty()) {
+            int deletedObjs = s.createQuery("DELETE FROM " + c.getName()).executeUpdate();
+            if (deletedObjs > 0) {
                 removed = true;
-                for (Object o : allObjs) {
-                    s.delete(o);
-                }                        
             }
+            s.flush();
             tx.commit();
         } catch (DAOException deleteException) {
             HibernateUtil.rollbackTransaction(tx);
@@ -154,13 +159,15 @@ public final class HibernateIntegrationTestCleanUpUtility {
         } catch (HibernateException he) {
             HibernateUtil.rollbackTransaction(tx);
             LOG.warn("Error cleaning up test objects.", he);
-        }        
+        } finally {
+            s.close();
+        }
         return removed;
     }
     
     @SuppressWarnings("unchecked")
     private static void retrieveClassMetadata() {
-        Map<String, ClassMetadata> classMetadataMap = getSession().getSessionFactory().getAllClassMetadata();
+        Map<String, ClassMetadata> classMetadataMap = HibernateUtil.getSessionFactory().getAllClassMetadata();
         classesToRemove = new LinkedList<Class<?>>();
         for (ClassMetadata classMetadata : classMetadataMap.values()) {
             Class<?> persistentClass = classMetadata.getMappedClass(EntityMode.POJO);
@@ -171,6 +178,13 @@ public final class HibernateIntegrationTestCleanUpUtility {
     }
     
     private static Session getSession() {
-        return HibernateUtil.getCurrentSession();
+        // we need a session that bypasses security, so override the security interceptor here
+        return HibernateUtil.getSessionFactory().openSession(new EmptyInterceptor() {
+        });
+    }
+    
+    private static void disableForeignKeyChecks(Session s) {
+        // this may be database-specific. for now, we know it works in mysql
+        s.createSQLQuery("set foreign_key_checks = 0").executeUpdate();
     }
 }

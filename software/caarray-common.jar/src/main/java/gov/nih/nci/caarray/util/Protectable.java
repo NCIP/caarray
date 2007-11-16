@@ -82,14 +82,11 @@
  */
 package gov.nih.nci.caarray.util;
 
+import gov.nih.nci.caarray.domain.PersistentObject;
+
 /**
- * Marker interface to indicate objects that should have CSM protection elements
+ * Marker interface to indicate entities that should have CSM protection elements
  * created upon save to the db.
  */
-public interface Protectable {
-
-    /**
-     * @return identifier
-     */
-    Long getId();
+public interface Protectable extends PersistentObject {
 }

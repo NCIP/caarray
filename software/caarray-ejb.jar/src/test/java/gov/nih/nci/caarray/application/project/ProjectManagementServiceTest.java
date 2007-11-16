@@ -108,6 +108,7 @@ import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import java.io.BufferedInputStream;
@@ -142,6 +143,7 @@ public class ProjectManagementServiceTest {
 
     @Before
     public void setUpService() {
+        UsernameHolder.setUser("caarrayadmin");
         ProjectManagementServiceBean projectManagementServiceBean = new ProjectManagementServiceBean();
         projectManagementServiceBean.setDaoFactory(this.daoFactoryStub);
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
@@ -354,13 +356,10 @@ public class ProjectManagementServiceTest {
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
 
-        LocalProjectDaoStub projectDao;
+        LocalProjectDaoStub projectDao = new LocalProjectDaoStub();
 
         @Override
         public ProjectDao getProjectDao() {
-            if (this.projectDao == null) {
-                this.projectDao = new LocalProjectDaoStub();
-            }
             return this.projectDao;
         }
 
@@ -369,15 +368,15 @@ public class ProjectManagementServiceTest {
          */
         @Override
         public SearchDao getSearchDao() {
-            return new LocalSearchDaoStub();
+            return new LocalSearchDaoStub(this.projectDao);
         }
     }
-
+    
     private static class LocalProjectDaoStub extends ProjectDaoStub {
 
-        private final HashMap<Long, PersistentObject> savedObjects = new HashMap<Long, PersistentObject>();
-        private PersistentObject lastSaved;
-        private PersistentObject lastDeleted;
+        final HashMap<Long, PersistentObject> savedObjects = new HashMap<Long, PersistentObject>();
+        PersistentObject lastSaved;
+        PersistentObject lastDeleted;
 
         @Override
         public void save(PersistentObject caArrayObject) {
@@ -406,33 +405,6 @@ public class ProjectManagementServiceTest {
             return new ArrayList<Project>();
         }
 
-        @Override
-        @SuppressWarnings("PMD")
-        public Project getProject(long id) {
-            if (this.savedObjects.containsKey(id)) {
-                return (Project) this.savedObjects.get(id);
-            }
-            Project project = new Project();;
-            // Perform voodoo magic
-            try {
-                Method m = project.getClass().getSuperclass().getSuperclass().getDeclaredMethod("setId", Long.class);
-                m.setAccessible(true);
-                m.invoke(project, id);
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
-            save(project);
-            return project;
-        }
-
         public PersistentObject getLastDeleted() {
             return lastDeleted;
         }
@@ -440,6 +412,15 @@ public class ProjectManagementServiceTest {
     }
 
     private static class LocalSearchDaoStub extends SearchDaoStub {
+        private LocalProjectDaoStub projectDao;
+        
+        /**
+         * @param projectDao
+         */
+        public LocalSearchDaoStub(LocalProjectDaoStub projectDao) {
+            this.projectDao = projectDao;
+        }
+
         /**
          * {@inheritDoc}
          */
@@ -460,8 +441,38 @@ public class ProjectManagementServiceTest {
             } else if (Extract.class.equals(entityClass)) {
                 Extract e = getExtract(entityId);
                 return (T) e;
+            } else if (Project.class.equals(entityClass)) {
+                return (T) getProject(entityId);
             }
             return null;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        private Project getProject(Long id) {
+            if (projectDao.savedObjects.containsKey(id)) {
+                return (Project) projectDao.savedObjects.get(id);
+            }
+            Project project = new Project();
+            // Perform voodoo magic
+            try {
+                Method m = project.getClass().getSuperclass().getSuperclass().getDeclaredMethod("setId", Long.class);
+                m.setAccessible(true);
+                m.invoke(project, id);
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+            projectDao.save(project);
+            return project;
         }
 
         private Extract getExtract(Long entityId) {

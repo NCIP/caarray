@@ -136,7 +136,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
         Transaction tx = null;
         // Save dummy objects to database.
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(DUMMY_ARRAYDESIGN_1);
             DAO_OBJECT.save(DUMMY_ARRAYDESIGN_2);
             DAO_OBJECT.save(DUMMY_ARRAYDESIGN_3);
@@ -177,7 +177,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             ArrayDesign retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getId());
             tx.commit();
             assertEquals(DUMMY_ARRAYDESIGN_1, retrievedArrayDesign);
@@ -195,7 +195,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             List<Organization> providers = DAO_OBJECT.getArrayDesignProviders();
             List<ArrayDesign> org1Designs = DAO_OBJECT.getArrayDesignsForProvider(DUMMY_ORGANIZATION);
             List<ArrayDesign> org2Designs = DAO_OBJECT.getArrayDesignsForProvider(DUMMY_ORGANIZATION2);
@@ -217,18 +217,21 @@ public class ArrayDaoTest extends AbstractDaoTest {
 
     @Test
     public void testGetRawArrayData() {
+        // normally arraydata would be associated with samples, but in this it is not
+        // so disable the security filters 
+        HibernateUtil.enableFilters(false);
         Transaction tx = null;
         CaArrayFile file = new CaArrayFile();
         RawArrayData rawData = new RawArrayData();
         rawData.setDataFile(file);
         rawData.setName("test" + System.currentTimeMillis());
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(rawData);
             RawArrayData retrievedArrayData = DAO_OBJECT.getRawArrayData(file);
             assertEquals(rawData, retrievedArrayData);
             tx.commit();
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             retrievedArrayData = DAO_OBJECT.getRawArrayData(file);
             assertEquals(rawData, retrievedArrayData);
             file = new CaArrayFile();
@@ -244,16 +247,19 @@ public class ArrayDaoTest extends AbstractDaoTest {
 
     @Test
     public void testGetDerivedArrayData() {
+        // normally arraydata would be associated with samples, but in this it is not
+        // so disable the security filters 
+        HibernateUtil.enableFilters(false);
         Transaction tx = null;
         CaArrayFile file = new CaArrayFile();
         DerivedArrayData derivedArrayData = new DerivedArrayData();
         derivedArrayData.setDataFile(file);
         derivedArrayData.setName("test" + System.currentTimeMillis());
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(derivedArrayData);
             tx.commit();
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DerivedArrayData retrievedArrayData = DAO_OBJECT.getDerivedArrayData(file);
             assertEquals(derivedArrayData, retrievedArrayData);
             file = new CaArrayFile();
@@ -275,7 +281,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
         arrayDataType.setName(testDescriptor.getName());
         arrayDataType.setVersion(testDescriptor.getVersion());
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             QuantitationType quantitationType1 = createTestQuantitationType(createTestQuantitationTypeDescriptor());
             QuantitationType quantitationType2 = createTestQuantitationType(createTestQuantitationTypeDescriptor());
             DAO_OBJECT.save(quantitationType1);
@@ -285,7 +291,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
             arrayDataType.getQuantitationTypes().add(quantitationType2);
             DAO_OBJECT.save(arrayDataType);
             tx.commit();
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             HibernateUtil.getCurrentSession().clear();
             ArrayDataType retrievedArrayDataType = DAO_OBJECT.getArrayDataType(testDescriptor);
             assertEquals(arrayDataType, retrievedArrayDataType);
@@ -347,10 +353,10 @@ public class ArrayDaoTest extends AbstractDaoTest {
         QuantitationTypeDescriptor testDescriptor = createTestQuantitationTypeDescriptor();
         QuantitationType quantitationType = createTestQuantitationType(testDescriptor);
         try {
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(quantitationType);
             tx.commit();
-            tx = HibernateUtil.getCurrentSession().beginTransaction();
+            tx = HibernateUtil.beginTransaction();
             QuantitationType retrievedQuantitationType = DAO_OBJECT.getQuantitationType(testDescriptor);
             assertEquals(quantitationType, retrievedQuantitationType);
             testDescriptor = new QuantitationTypeDescriptor() {

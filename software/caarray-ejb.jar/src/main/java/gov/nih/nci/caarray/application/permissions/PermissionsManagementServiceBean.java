@@ -88,7 +88,7 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.caarray.util.SecurityInterceptor;
+import gov.nih.nci.caarray.util.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.security.AuthorizationManager;
@@ -137,7 +137,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
                                   UsernameHolder.getUser(), group.getGroup().getGroupName()));
         }
         getGenericDataService().delete(group);
-        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
+        AuthorizationManager am = SecurityUtils.getAuthorizationManager();
         am.removeGroup(group.getGroup().getGroupId().toString());
 
         LogUtil.logSubsystemExit(LOG);
@@ -188,7 +188,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
      */
     public CollaboratorGroup create(String name) throws CSTransactionException, CSObjectNotFoundException {
         LogUtil.logSubsystemEntry(LOG, name);
-        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
+        AuthorizationManager am = SecurityUtils.getAuthorizationManager();
         Group group = new Group();
         group.setGroupName(name);
         group.setGroupDesc("Collaborator Group");
@@ -214,7 +214,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
         LogUtil.logSubsystemEntry(LOG, targetGroup, users);
 
         // This is a hack.  We should simply call am.assignUserToGroup, but that method appears to be buggy.
-        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
+        AuthorizationManager am = SecurityUtils.getAuthorizationManager();
         String groupId = targetGroup.getGroup().getGroupId().toString();
         Set<User> curUsers = am.getUsers(groupId);
         Set<String> newUsers = new HashSet(curUsers.size() + users.size());
@@ -232,7 +232,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
      */
     public void removeUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException {
         LogUtil.logSubsystemEntry(LOG, targetGroup, users);
-        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
+        AuthorizationManager am = SecurityUtils.getAuthorizationManager();
         for (String u : users) {
             am.removeUserFromGroup(targetGroup.getGroup().getGroupId().toString(), u);
         }
@@ -245,7 +245,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     public void rename(CollaboratorGroup targetGroup, String groupName) 
     throws CSTransactionException, CSObjectNotFoundException {
         LogUtil.logSubsystemEntry(LOG, targetGroup, groupName);
-        AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
+        AuthorizationManager am = SecurityUtils.getAuthorizationManager();
         Group g = am.getGroupById(targetGroup.getGroup().getGroupId().toString());
         g.setGroupName(groupName);
         am.modifyGroup(g);

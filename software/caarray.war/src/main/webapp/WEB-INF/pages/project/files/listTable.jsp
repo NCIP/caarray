@@ -16,7 +16,7 @@
     <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${files}" pagesize="${pageSize}"
         requestURI="${sortUrl}" sort="list" id="row" excludedParams="project.id">
         <caarray:displayTagProperties/>
-        <c:if test="${project.saveAllowed && !listingImported}">
+        <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser()) && !listingImported}">
             <display:column title="${checkboxAll}">
                 <s:checkbox name="selectedFiles" fieldValue="${row.id}" value="false" theme="simple" />
             </display:column>

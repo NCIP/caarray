@@ -17,7 +17,7 @@
             </display:column>
             <display:column property="authors" titleKey="experiment.publications.authors" sortable="true" />
             <display:column property="uri" titleKey="experiment.publications.uri" sortable="true" />
-            <caarray:projectListTabActionColumns entityName="Publication" itemId="${row.id}" actions="!edit,!delete"/>
+            <caarray:projectListTabActionColumns entityName="Publication" item="${row}" actions="!edit,!delete"/>
         </display:table>
     </ajax:displayTag>
 

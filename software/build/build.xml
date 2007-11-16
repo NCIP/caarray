@@ -375,6 +375,7 @@
                 <pathelement location="${ejb3-persistence.jar}" />
                 <pathelement location="${hibernate-annotations.jar}" />
                 <pathelement location="${javaee.jar}" />
+                <pathelement location="${commons-beanutils.jar}" />
                 <pathelement location="${commons-collections.jar}" />
                 <pathelement location="${commons-io.jar}" />
                 <pathelement location="${commons-lang.jar}" />
@@ -384,6 +385,7 @@
                 <pathelement location="${caarray-common.resources.dir}" />
                 <pathelement location="${caarray-common.test.files.dir}" />
                 <pathelement location="${csmapi.jar}" />
+                <pathelement location="${clm.jar}" />
                 <pathelement location="${cacore32-client.jar}"/>
               <pathelement location="${commons-configuration.jar}" />
               <pathelement location="${log4j.jar}" />
@@ -709,6 +711,7 @@
                 <pathelement location="${commons-io.jar}" />
                 <pathelement location="${commons-logging.jar}" />
                 <pathelement location="${commons-lang.jar}" />
+                <pathelement location="${commons-collections.jar}" />
                 <pathelement location="${junit.jar}" />
                 <pathelement location="${hibernate.jar}" />
                 <pathelement location="${netcdf.jar}" />
@@ -818,9 +821,6 @@
             </fileset>
             <fileset dir="${caarray-war.target.dir}/junit">
                 <include name="TEST-*.xml" />
-            </fileset>
-            <fileset dir="${test.target.dir}/junit">
-              <include name="TEST-*.xml" />
             </fileset>
             <report format="frames" todir="${site.dir}/junit" />
         </junitreport>
@@ -1037,7 +1037,8 @@
     <target name="database:initialize-schema" depends="database:drop-schema,database:create-schema" description="Drop &amp; Create DB schema" />
 
     <target name="database:populate" description="populates db with initial data">
-        <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-csm.sql" />
+        <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-csm.sql" /> 
+        <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-csm2.sql" /> 
         <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-caarray.sql" />
     </target>
 

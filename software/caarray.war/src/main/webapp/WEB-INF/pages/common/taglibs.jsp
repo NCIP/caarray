@@ -10,5 +10,6 @@
 <%@ taglib uri="/struts-tags" prefix="s" %>
 <%@ taglib uri="http://ajaxtags.org/tags/ajax" prefix="ajax" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="caarray" %>
+<%@ taglib uri="/WEB-INF/caarray-functions.tld" prefix="caarrayfn" %>
 
 <c:set var="datePattern"><fmt:message key="date.format"/></c:set>

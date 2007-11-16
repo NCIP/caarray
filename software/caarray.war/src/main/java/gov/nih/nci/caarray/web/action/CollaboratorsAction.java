@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.web.action;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getPermissionsManagementService;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
-import gov.nih.nci.caarray.util.SecurityInterceptor;
+import gov.nih.nci.caarray.util.SecurityUtils;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -292,7 +292,7 @@ public class CollaboratorsAction extends ActionSupport {
      * @throws CSObjectNotFoundException if not in CSM
      */
     public void setTargetUserId(Long id) throws CSObjectNotFoundException {
-        this.targetUser = SecurityInterceptor.getAuthorizationManager().getUserById(id.toString());
+        this.targetUser = SecurityUtils.getAuthorizationManager().getUserById(id.toString());
     }
 
     /**
@@ -337,7 +337,7 @@ public class CollaboratorsAction extends ActionSupport {
                 // Nothing to be done in this case
                 return;
             }
-            AuthorizationManager am = SecurityInterceptor.getAuthorizationManager();
+            AuthorizationManager am = SecurityUtils.getAuthorizationManager();
             Group g = new Group();
             g.setGroupName(getGroupName());
             GroupSearchCriteria gsc = new GroupSearchCriteria(g);

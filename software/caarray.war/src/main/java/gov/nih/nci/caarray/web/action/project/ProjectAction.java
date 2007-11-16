@@ -3,6 +3,7 @@ package gov.nih.nci.caarray.web.action.project;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.util.ArrayList;
@@ -42,6 +43,12 @@ public class ProjectAction extends AbstractBaseProjectAction {
      */
     @SkipValidation
     public String edit() {
+        if (getProject().getId() == null) {
+            return projectNotFound();
+        }
+        if (!getProject().hasWritePermission(UsernameHolder.getCsmUser())) {
+            return permissionDenied("role.write");
+        }
         setEditMode(true);
         return INPUT;
     }
@@ -53,13 +60,54 @@ public class ProjectAction extends AbstractBaseProjectAction {
      */
     @SkipValidation
     public String details() {
+        if (getProject().getId() == null) {
+            return projectNotFound();
+        }
+        if (!getProject().hasReadPermission(UsernameHolder.getCsmUser())) {
+            return permissionDenied("role.read");
+        }
         setEditMode(false);
         return INPUT;
     }
 
     /**
+     * show browse view for a project.
+     * 
+     * @return path String
+     */
+    @SkipValidation
+    public String browse() {
+        if (getProject().getId() == null) {
+            return projectNotFound();
+        }
+        setEditMode(false);
+        return "browse";
+    }
+    
+    /**
+     * handles the case where an attempt is made to view/edit a non-existent project.
+     * @return the result name
+     */
+    private String projectNotFound() {
+        ActionHelper.saveMessage(getText("project.notFound"));
+        return WORKSPACE_RESULT;
+    }
+
+    /**
+     * handles the case where an attempt is made to view/edit a project to which
+     * the user does not have the appropriate permission.
+     * @return the result name
+     */
+    private String permissionDenied(String roleKey) {
+        List<String> args = new ArrayList<String>();
+        args.add(getText(roleKey));
+        ActionHelper.saveMessage(getText("project.permissionDenied", args));
+        return WORKSPACE_RESULT;
+    }
+
+    /**
      * change the workflow status of a project.
-     *
+     * 
      * @return path String
      */
     public String changeWorkflowStatus() {

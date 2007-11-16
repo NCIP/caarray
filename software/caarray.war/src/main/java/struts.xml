@@ -110,7 +110,7 @@
         <action name="project/*" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="{1}">
             <result name="workspace" type="redirect-action">project/workspace</result>
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
-            <result name="details">/WEB-INF/pages/project/details.jsp</result>
+            <result name="browse">/WEB-INF/pages/project/browse.jsp</result>
             <result name="permissions">/WEB-INF/pages/project/permissions.jsp</result>
         </action>
 

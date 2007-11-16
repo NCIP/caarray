@@ -104,8 +104,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Provides project access and management functionality to the application. Interface to the
- * ProjectManagement subsystem.
+ * Provides project access and management functionality to the application. Interface to the ProjectManagement
+ * subsystem.
  */
 public interface ProjectManagementService {
 
@@ -116,7 +116,7 @@ public interface ProjectManagementService {
 
     /**
      * Returns the project corresponding to the id given.
-     *
+     * 
      * @param id the project id
      * @return the corresponding project.
      */
@@ -124,7 +124,7 @@ public interface ProjectManagementService {
 
     /**
      * Returns the organization corresponding to the id given.
-     *
+     * 
      * @param id the organization id
      * @return the corresponding organization.
      */
@@ -133,7 +133,7 @@ public interface ProjectManagementService {
     /**
      * Associates a single file with a project. After calling this method, clients can expect a new
      * <code>CaArrayFile</code> to be associated with the project.
-     *
+     * 
      * @param project project to add the file to
      * @param file the file to add to the project
      * @return the new <code>CaArrayFile</code>.
@@ -144,22 +144,22 @@ public interface ProjectManagementService {
     /**
      * Associates a single file with a project. After calling this method, clients can expect a new
      * <code>CaArrayFile</code> to be associated with the project.
-     *
+     * 
      * @param project project to add the file to
      * @param file the file to add to the project
-     * @param filename the filename to use for the file. Allows the created CaArrayFile to have a different name
-     * from the file containing the content. This is useful for adding uploaded temporary files that don't use the
-     * original file name.
+     * @param filename the filename to use for the file. Allows the created CaArrayFile to have a different name from
+     *            the file containing the content. This is useful for adding uploaded temporary files that don't use the
+     *            original file name.
      * @return the new <code>CaArrayFile</code>.
      * @throws ProposalWorkflowException if the project cannot currently be modified due to workflow status
      */
     CaArrayFile addFile(Project project, File file, String filename) throws ProposalWorkflowException;
 
     /**
-     * Saves a project. The project may be new, or be currently in the draft or submitted state,
+     * Saves a project. The project may be new, or be currently in the draft or in progress state,
      * but it cannot be public.
      * If the project is new, then it is put into the draft state.
-     *
+     * 
      * @param project the project to save
      * @param orphansToDelete any objects orphaned by this save that should be deleted
      * @throws ProposalWorkflowException if the project cannot currently be saved because it is public
@@ -168,7 +168,7 @@ public interface ProjectManagementService {
 
     /**
      * Moves a project into a new workflow status.
-     *
+     * 
      * @param projectId the id of the project to move to the given status
      * @param newStatus the new workflow status
      * @throws ProposalWorkflowException if the project's current status does not allow
@@ -178,38 +178,40 @@ public interface ProjectManagementService {
 
     /**
      * Gets all projects belonging to the current user.
-     *
+     * 
      * @return all projects belonging to the user.
      */
     List<Project> getMyNonPublicProjects();
 
     /**
      * Gets all public projects.
-     *
+     * 
      * @return allpublic projects
      */
     List<Project> getPublicProjects();
 
     /**
      * Toggles the browsable status for the given project.
-     *
+     * 
      * @param projectId the id of the project
      * @return the modified project
+     * @throws ProposalWorkflowException if the browsability status cannot be modified in the project's current state
      */
-    Project toggleBrowsableStatus(long projectId);
+    Project toggleBrowsableStatus(long projectId) throws ProposalWorkflowException;
 
     /**
      * Adds an empty (no access) profile for the given collaborator group to the given project.
-     *
+     * 
      * @param project the project
      * @param group the group for which to add an access profile
      * @return the new access profile
+     * @throws ProposalWorkflowException if the project permissions cannot be modified in the project's current state
      */
-    AccessProfile addGroupProfile(Project project, CollaboratorGroup group);
+    AccessProfile addGroupProfile(Project project, CollaboratorGroup group) throws ProposalWorkflowException;
 
     /**
      * Prepares files for download.
-     *
+     * 
      * @param files the files to download
      * @return the single zip archive with all files
      * @throws IOException on I/O error
@@ -239,10 +241,10 @@ public interface ProjectManagementService {
     Sample copySample(Project project, long sampleId) throws ProposalWorkflowException;
 
     /**
-     * Make a copy of a source belonging to given project, and add it to the new project.
-     * The new source's name will be derived from the original source's name
-     * according to the scheme described in
-     * {@link gov.nih.nci.caarray.application.GenericDataService#getIncrementingCopyName(Class, String, String)}
+     * Make a copy of a source belonging to given project, and add it to the new project. The new source's name will be
+     * derived from the original source's name according to the scheme described in
+     * {@link GenericDataService#getIncrementingCopyName(Class, String, String)}
+     * 
      * @param project the project to which the source belongs
      * @param sourceId the id of the source to copy
      * @return the new source
@@ -251,10 +253,10 @@ public interface ProjectManagementService {
     Source copySource(Project project, long sourceId) throws ProposalWorkflowException;
 
     /**
-     * Make a copy of a factor belonging to given project, and add it to the new project.
-     * The new factor's name will be derived from the original factor's name
-     * according to the scheme described in
-     * {@link gov.nih.nci.caarray.application.GenericDataService#getIncrementingCopyName(Class, String, String)}
+     * Make a copy of a factor belonging to given project, and add it to the new project. The new factor's name will be
+     * derived from the original factor's name according to the scheme described in
+     * {@link GenericDataService#getIncrementingCopyName(Class, String, String)}
+     * 
      * @param project the project to which the factor belongs
      * @param factorId the id of the factor to copy
      * @return the new factor
@@ -304,5 +306,4 @@ public interface ProjectManagementService {
      * @return number of results
      */
     int searchCount(String keyword, SearchCategory... categories);
-
 }

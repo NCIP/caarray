@@ -3,6 +3,7 @@ package gov.nih.nci.caarray.web.action.project;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getPermissionsManagementService;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
+import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
@@ -70,8 +71,15 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
      */
     @SkipValidation
     public String toggleBrowsability() {
-        getProjectManagementService().toggleBrowsableStatus(getProject().getId());
-        return SUCCESS;
+        try {
+            getProjectManagementService().toggleBrowsableStatus(getProject().getId());
+            return SUCCESS;
+        } catch (ProposalWorkflowException e) {
+            List<String> args = new ArrayList<String>();
+            args.add(getProject().getExperiment().getTitle());
+            ActionHelper.saveMessage(getText("project.permissionsSaveProblem", args));
+            return INPUT;
+        }
     }
 
     /**
@@ -80,9 +88,16 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
      * @return success
      */
     public String addGroupProfile() {
-        getProjectManagementService().addGroupProfile(getProject(), this.collaboratorGroup);
-        this.collaboratorGroupsWithoutProfiles.remove(this.collaboratorGroup);
-        return SUCCESS;
+        try {
+            getProjectManagementService().addGroupProfile(getProject(), this.collaboratorGroup);
+            this.collaboratorGroupsWithoutProfiles.remove(this.collaboratorGroup);
+            return SUCCESS;
+        } catch (ProposalWorkflowException e) {
+            List<String> args = new ArrayList<String>();
+            args.add(getProject().getExperiment().getTitle());
+            ActionHelper.saveMessage(getText("project.permissionsSaveProblem", args));
+            return INPUT;
+        }
     }
 
     /**

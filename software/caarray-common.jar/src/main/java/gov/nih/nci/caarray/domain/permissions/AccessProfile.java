@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.domain.permissions;
 
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
 
 import java.io.Serializable;
@@ -99,6 +100,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CollectionOfElements;
@@ -108,6 +112,7 @@ import org.hibernate.annotations.MapKeyManyToMany;
  * Container class that models the read and write permissions to samples.
  */
 @Entity
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class AccessProfile implements PersistentObject, Serializable {
 
     private static final long serialVersionUID = -7994016784349522735L;
@@ -115,6 +120,10 @@ public class AccessProfile implements PersistentObject, Serializable {
     private Long id;
     private SecurityLevel securityLevel = SecurityLevel.NONE;
     private Map<Sample, SampleSecurityLevel> sampleSecurityLevels = new HashMap<Sample, SampleSecurityLevel>();
+    private Project projectForPublicProfile;
+    private Project projectForHostProfile;
+    private Project projectForGroupProfile;
+    private CollaboratorGroup group;
 
     /**
      * @return database identifier
@@ -127,7 +136,7 @@ public class AccessProfile implements PersistentObject, Serializable {
 
     /**
      * Sets the id.
-     *
+     * 
      * @param id the id to set
      * @deprecated should only be used by castor, hibernate and struts
      */
@@ -137,19 +146,45 @@ public class AccessProfile implements PersistentObject, Serializable {
     }
 
     /**
+     * Hibernate use only.
      * @return the securityLevel
      */
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    public SecurityLevel getSecurityLevel() {
+    @Column(nullable = false, name = "SECURITY_LEVEL")
+    private SecurityLevel getSecurityLevelInternal() {
         return this.securityLevel;
+    }
+
+    /**
+     * Hibernate use only.
+     * @param securityLevel the securityLevel to set
+     */
+    private void setSecurityLevelInternal(SecurityLevel securityLevelInternal) {
+        this.securityLevel = securityLevelInternal;
+    }
+
+    /**
+     * @return the securityLevel
+     */
+    @Transient
+    public SecurityLevel getSecurityLevel() {
+        return getSecurityLevelInternal();
     }
 
     /**
      * @param securityLevel the securityLevel to set
      */
     public void setSecurityLevel(SecurityLevel securityLevel) {
-        this.securityLevel = securityLevel;
+        setSecurityLevelInternal(securityLevel);
+        if (!securityLevel.isSampleLevelPermissionsAllowed()) {
+            this.sampleSecurityLevels.clear();
+        } else if (securityLevel == SecurityLevel.READ_SELECTIVE) {
+            for (Map.Entry<Sample, SampleSecurityLevel> sampleEntry : this.sampleSecurityLevels.entrySet()) {
+                if (sampleEntry.getValue() == SampleSecurityLevel.READ_WRITE) {
+                    sampleEntry.setValue(SampleSecurityLevel.READ);
+                }
+            }
+        }
     }
 
     /**
@@ -157,10 +192,7 @@ public class AccessProfile implements PersistentObject, Serializable {
      */
     @CollectionOfElements(fetch = FetchType.LAZY)
     @MapKeyManyToMany(joinColumns = @JoinColumn(name = "SAMPLE_ID", nullable = false))
-    @JoinTable(
-            name = "ACCESS_PROFILE_SAMPLES",
-            joinColumns = @JoinColumn(name = "ACCESS_PROFILE_ID")
-    )
+    @JoinTable(name = "ACCESS_PROFILE_SAMPLES", joinColumns = @JoinColumn(name = "ACCESS_PROFILE_ID"))
     @Column(name = "security_level")
     @Enumerated(EnumType.STRING)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
@@ -173,5 +205,120 @@ public class AccessProfile implements PersistentObject, Serializable {
      */
     public void setSampleSecurityLevels(Map<Sample, SampleSecurityLevel> sampleSecurityLevels) {
         this.sampleSecurityLevels = sampleSecurityLevels;
+    }
+
+    /**
+     * @return the projectForPublicProfile
+     */
+    @OneToOne(mappedBy = "publicProfile")
+    @SuppressWarnings("unused")
+    private Project getProjectForPublicProfile() {
+        return projectForPublicProfile;
+    }
+
+    /**
+     * @param projectForPublicProfile the projectForPublicProfile to set
+     * DEVELOPER NOTE:
+     * This method should not generally never be called. It needs to remain public
+     * as it must be called by Project to establish the symmetric link
+     */
+    @SuppressWarnings("unused")
+    public void setProjectForPublicProfile(Project projectForPublicProfile) {
+        this.projectForPublicProfile = projectForPublicProfile;
+    }
+
+    /**
+     * @return the projectForHostProfile
+     */
+    @OneToOne(mappedBy = "hostProfile")
+    @SuppressWarnings("unused")
+    private Project getProjectForHostProfile() {
+        return projectForHostProfile;
+    }
+
+    /**
+     * @param projectForHostProfile the projectForHostProfile to set
+     * DEVELOPER NOTE:
+     * This method should not generally never be called. It needs to remain public
+     * as it must be called by Project to establish the symmetric link
+     */
+    @SuppressWarnings("unused")
+    public void setProjectForHostProfile(Project projectForHostProfile) {
+        this.projectForHostProfile = projectForHostProfile;
+    }
+
+    /**
+     * @return the projectForGroupProfile
+     */
+    @ManyToOne
+    @JoinColumn(name = "project_id", insertable = false, updatable = false)
+    @SuppressWarnings("unused")
+    private Project getProjectForGroupProfile() {
+        return projectForGroupProfile;
+    }
+
+    /**
+     * @param projectForGroupProfile the projectForGroupProfile to set
+     * DEVELOPER NOTE:
+     * This method should not generally never be called. It needs to remain public
+     * as it must be called by Project to establish the symmetric link
+     */
+    public void setProjectForGroupProfile(Project projectForGroupProfile) {
+        this.projectForGroupProfile = projectForGroupProfile;
+    }
+
+    /**
+     * @return whether this is a public profile 
+     */
+    @Transient
+    public boolean isPublicProfile() {
+        return this.projectForPublicProfile != null;
+    }
+    
+    /**
+     * @return whether this is a host profile 
+     */
+    @Transient
+    public boolean isHostProfile() {
+        return this.projectForHostProfile != null;
+    }    
+
+    /**
+     * @return whether this is a group profile 
+     */
+    @Transient
+    public boolean isGroupProfile() {
+        return this.projectForGroupProfile != null;
+    }    
+ 
+    /**
+     * @return the project to which this access profile belongs
+     */
+    @Transient
+    public Project getProject() {
+        if (isPublicProfile()) {
+            return getProjectForPublicProfile();
+        } else if (isHostProfile()) {
+            return getProjectForHostProfile();
+        } else {
+            return getProjectForGroupProfile();
+        }
+    }
+
+    /**
+     * @return the group
+     */
+    @ManyToOne
+    @JoinColumn(name = "group_id", insertable = false, updatable = false)
+    public CollaboratorGroup getGroup() {
+        return this.group;
+    }
+
+    /**
+     * @param group the group to set
+     */
+    @SuppressWarnings("unused")
+    private void setGroup(CollaboratorGroup group) { // NOPMD
+        this.group = group;
     }
 }

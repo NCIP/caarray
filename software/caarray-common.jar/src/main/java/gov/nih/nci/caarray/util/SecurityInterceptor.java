@@ -82,110 +82,168 @@
  */
 package gov.nih.nci.caarray.util;
 
+import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.permissions.AccessProfile;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.security.AuthorizationManager;
-import gov.nih.nci.security.SecurityServiceProvider;
-import gov.nih.nci.security.authorization.domainobjects.Application;
-import gov.nih.nci.security.authorization.domainobjects.Group;
-import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
-import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
-import gov.nih.nci.security.authorization.domainobjects.Role;
 import gov.nih.nci.security.authorization.domainobjects.User;
-import gov.nih.nci.security.authorization.domainobjects.UserGroupRoleProtectionGroup;
-import gov.nih.nci.security.dao.GroupSearchCriteria;
-import gov.nih.nci.security.dao.RoleSearchCriteria;
-import gov.nih.nci.security.exceptions.CSConfigurationException;
-import gov.nih.nci.security.exceptions.CSException;
-import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
-import gov.nih.nci.security.exceptions.CSTransactionException;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
-import org.hibernate.Query;
+import org.hibernate.collection.PersistentCollection;
+import org.hibernate.type.CollectionType;
 import org.hibernate.type.Type;
+import org.hibernate.util.ReflectHelper;
 
 /**
- * Hibernate interceptor that adds CSM protection elements and other security
- * features as objects are saved.
+ * Hibernate interceptor that keeps track of object changes and queues up lists of interesting objects that will require
+ * appropriate synchronization with CSM. on post-flush, the appopriate CSM operations are then performed. The actual CSM
+ * logic is in SecurityUtils
  */
-@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.AvoidDuplicateLiterals" })
+@SuppressWarnings("PMD.CyclomaticComplexity")
 public class SecurityInterceptor extends EmptyInterceptor {
     //
     // DEVELOPER NOTE: this class must be thread safe, because we enable it at the
-    //                 SessionFactory level in hibernate.
+    // SessionFactory level in hibernate.
     //
 
     private static final Log LOG = LogFactory.getLog(SecurityInterceptor.class);
     private static final long serialVersionUID = -2071964672876972370L;
 
-    /**
-     * Key for looking up the authorization manager instance from CSM.
-     */
-    public static final String AUTHORIZATION_MANAGER_KEY = "caarray";
-
-    /** The synthetic user for anonymous access permissions. */
-    public static final String ANONYMOUS_USER = "__anonymous__";
-    /** The synthetic group for anonymous access permissions. */
-    public static final String ANONYMOUS_GROUP = "__anonymous__";
-    private static final String READ_ROLE = "Read";
-    private static final String WRITE_ROLE = "Write";
-
-    private static final AuthorizationManager AUTH_MGR;
-    private static final String APPLICATION_NAME = "caarray";
     // Indicates that some activity of interest occurred
     private static final ThreadLocal<Object> MARKER = new ThreadLocal<Object>();
     // New objects being saved
     private static final ThreadLocal<Collection<Protectable>> NEWOBJS = new ThreadLocal<Collection<Protectable>>();
     // Objects being deleted
-    private static final ThreadLocal<Collection<Protectable>> DELETEDOBJS = new ThreadLocal<Collection<Protectable>>();
+    private static final ThreadLocal<Collection<Protectable>> DELETEDOBJS =
+            new ThreadLocal<Collection<Protectable>>();
     // Projects whose browsable status changed
     private static final ThreadLocal<Collection<Project>> BROWSABLE_CHANGES = new ThreadLocal<Collection<Project>>();
+    // Projects whose biomaterial collections have changed
+    private static final ThreadLocal<Collection<Project>> BIOMATERIAL_CHANGES =
+            new ThreadLocal<Collection<Project>>();
+    // new, changed or otherwise needing processing access profiles
+    private static final ThreadLocal<Collection<AccessProfile>> PROFILES =
+            new ThreadLocal<Collection<AccessProfile>>();
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
+        boolean modified = false;
+        // apply attribute-level security - project/experiment only
+        // DEVELOPER NOTE: any attempt to flush this object will likely result in
+        // errors as it has the effect of dissociating collections from the entity.
+        // This is correct anyways as the user will not have WRITE access to the project,
+        // but care must be taken not to cause phantom flushes
+        if (entity instanceof Experiment || entity instanceof Project) {
+            Protectable p = null;
+            if (entity instanceof Project) {
+                p = (Protectable) entity;
+            } else {
+                p = (Protectable) state[ArrayUtils.indexOf(propertyNames, "project")];
+            }
 
-    static {
-        AuthorizationManager am = null;
-        try {
-            am = SecurityServiceProvider.getAuthorizationManager(AUTHORIZATION_MANAGER_KEY);
-        } catch (CSConfigurationException e) {
-            LOG.error("Unable to initialize CSM: " + e.getMessage(), e);
-        } catch (CSException e) {
-            LOG.error("Unable to initialize CSM: " + e.getMessage(), e);
+            for (int i = 0; i < propertyNames.length; i++) {
+                if (requiresReadPrivilege(entity, propertyNames[i])
+                        && !SecurityUtils.canRead(p, UsernameHolder.getCsmUser())) {
+                    if (types[i] instanceof CollectionType) {
+                        CollectionType ct = (CollectionType) types[i];
+                        state[i] = ct.instantiate(0);
+                    } else if (!isPrimitiveProperty(entity, propertyNames[i])) {
+                        state[i] = null;
+                    } else {
+                        LOG.warn("Could not null out primitive property " + propertyNames[i]);
+                    }
+                    modified = true;
+                }
+            }
         }
+        return modified;
+    }
 
-        AUTH_MGR = am;
-        LOG.debug("Set up new authManager: " + AUTH_MGR);
+    private static boolean requiresReadPrivilege(Object entity, String property) {
+        // read privilege is required unless the Browseable property is present
+        Method getterMethod = ReflectHelper.getGetter(entity.getClass(), property).getMethod();
+        return !getterMethod.isAnnotationPresent(BrowseableProperty.class);
+    }
+
+    private static boolean isPrimitiveProperty(Object entity, String property) {
+        return ReflectHelper.getGetter(entity.getClass(), property).getReturnType().isPrimitive();
     }
 
     /**
-     * @return the configured authorization manager
+     * {@inheritDoc}
      */
-    public static AuthorizationManager getAuthorizationManager() {
-        return AUTH_MGR;
+    @Override
+    public void onCollectionRecreate(Object collection, Serializable key) {
+        onCollectionChange(collection);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onCollectionRemove(Object collection, Serializable key) {
+        onCollectionChange(collection);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onCollectionUpdate(Object collection, Serializable key) {
+        onCollectionChange(collection);
+    }
+
+    private void onCollectionChange(Object collection) {
+        if (collection instanceof PersistentCollection) {
+            PersistentCollection pc = (PersistentCollection) collection;
+
+            if (pc.getOwner() instanceof AccessProfile) {
+                saveEntityForProcessing(PROFILES, new ArrayList<AccessProfile>(), (AccessProfile) pc.getOwner());
+            }
+            if (pc.getOwner() instanceof Experiment && pc.getRole() != null
+                    && StringUtils.substringAfterLast(pc.getRole(), ".").equals("samples")) {
+                // inefficient but seems to be the cleanest way possible: force an update of all the
+                // access profiles associated with the project to make sure new or removed samples
+                // are appropriately updated for
+                Experiment experiment = (Experiment) pc.getOwner();
+                Collection<AccessProfile> allProfiles = experiment.getProject().getAllAccessProfiles();
+                for (AccessProfile ap : allProfiles) {
+                    saveEntityForProcessing(PROFILES, new ArrayList<AccessProfile>(), ap);
+                }
+                saveEntityForProcessing(BIOMATERIAL_CHANGES, new ArrayList<Project>(), experiment.getProject());
+            }
+        }
     }
 
     /**
      * Finds protectables and queues them to have protection elements assigned.
-     *
+     * 
      * {@inheritDoc}
      */
     @Override
     public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 
         if (entity instanceof Protectable) {
-            if (NEWOBJS.get() == null) {
-                NEWOBJS.set(new ArrayList<Protectable>());
-                MARKER.set(new Object());
-            }
-            NEWOBJS.get().add((Protectable) entity);
+            saveEntityForProcessing(NEWOBJS, new ArrayList<Protectable>(), (Protectable) entity);
+        }
+
+        if (entity instanceof AccessProfile) {
+            saveEntityForProcessing(PROFILES, new ArrayList<AccessProfile>(), (AccessProfile) entity);
         }
 
         return false;
@@ -193,46 +251,80 @@ public class SecurityInterceptor extends EmptyInterceptor {
 
     /**
      * Finds deleted protectables and queues them to have associated protection elements removed.
-     *
+     * 
      * {@inheritDoc}
      */
     @Override
     public void onDelete(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
-
         if (entity instanceof Protectable) {
-            if (DELETEDOBJS.get() == null) {
-                DELETEDOBJS.set(new ArrayList<Protectable>());
-                MARKER.set(new Object());
-            }
-            DELETEDOBJS.get().add((Protectable) entity);
+            verifyWritePrivilege((Protectable) entity, UsernameHolder.getCsmUser());
+            saveEntityForProcessing(DELETEDOBJS, new ArrayList<Protectable>(), (Protectable) entity);
+        }
+        if (entity instanceof ProtectableDescendent) {
+            verifyWritePrivilege((ProtectableDescendent) entity, UsernameHolder.getCsmUser());
         }
     }
 
     /**
      * Finds modified protectables and queues them for sync with CSM.
-     *
+     * 
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings({"PMD.ExcessiveParameterList", "PMD.AvoidDeeplyNestedIfStmts" })
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
             String[] propertyNames, Type[] types) {
+        if (entity instanceof Protectable) {
+            verifyWritePrivilege((Protectable) entity, UsernameHolder.getCsmUser());
+        }
+        if (entity instanceof ProtectableDescendent) {
+            verifyWritePrivilege((ProtectableDescendent) entity, UsernameHolder.getCsmUser());
+        }
+
         if (entity instanceof Project && previousState != null) {
             // figure out if browsable changed
             for (int i = 0; i < propertyNames.length; ++i) {
-                if (propertyNames[i].equals("browsable")
-                        && !ObjectUtils.equals(currentState[i], previousState[i])) {
-                    Project p = (Project) entity;
-                    if (BROWSABLE_CHANGES.get() == null) {
-                        BROWSABLE_CHANGES.set(new ArrayList<Project>());
-                        MARKER.set(new Object());
-                    }
-                    BROWSABLE_CHANGES.get().add(p);
+                if (propertyNames[i].equals("browsable") && !ObjectUtils.equals(currentState[i], previousState[i])) {
+                    saveEntityForProcessing(BROWSABLE_CHANGES, new ArrayList<Project>(), (Project) entity);
                 }
             }
         }
+        if (entity instanceof AccessProfile) {
+            saveEntityForProcessing(PROFILES, new ArrayList<AccessProfile>(), (AccessProfile) entity);
+        }
 
         return false;
+    }
+
+    /**
+     * Helper method for handling a matched entity from any of the lifecycle listener methods, and placing it in the
+     * appropriate ThreadLocal holder for later processing.
+     * 
+     * @param threadLocal the holder for the appropriate list of entities
+     * @param emptyCollection empty collection for initializing the holder
+     * @param entity the entity
+     */
+    private <T> void saveEntityForProcessing(ThreadLocal<Collection<T>> threadLocal, Collection<T> emptyCollection,
+            T entity) {
+        if (threadLocal.get() == null) {
+            threadLocal.set(emptyCollection);
+            MARKER.set(new Object());
+        }
+        threadLocal.get().add(entity);
+    }
+
+    /**
+     * Checks whether the given user has WRITE privilege to given object, and if not, throws a
+     * PermissionDeniedException.
+     * 
+     * @param o the Object to check
+     * @param user the user to check
+     */
+    private static void verifyWritePrivilege(PersistentObject o, User user) {
+        if (!SecurityUtils.canWrite(o, user)) {
+            throw new CallbackException("Attempted operation not allowed by security", new PermissionDeniedException(
+                    o, SecurityUtils.WRITE_PRIVILEGE, user.getLoginName()));
+        }
     }
 
     /**
@@ -246,227 +338,18 @@ public class SecurityInterceptor extends EmptyInterceptor {
             return;
         }
 
-        String user = UsernameHolder.getUser();
-        User csmUser = AUTH_MGR.getUser(user);
-        handleNew(user, csmUser);
-        handleBrowsableChanges();
-        handleDeleted(user);
-    }
-
-    private void handleBrowsableChanges() {
-        if (BROWSABLE_CHANGES.get() == null) {
-            return;
+        try {
+            SecurityUtils.handleNewProtectables(NEWOBJS.get());
+            SecurityUtils.handleBrowsableChanges(BROWSABLE_CHANGES.get());
+            SecurityUtils.handleBiomaterialChanges(BIOMATERIAL_CHANGES.get());
+            SecurityUtils.handleDeleted(DELETEDOBJS.get());
+            SecurityUtils.handleAccessProfiles(PROFILES.get());
+        } finally {
+            NEWOBJS.set(null);
+            BROWSABLE_CHANGES.set(null);
+            BIOMATERIAL_CHANGES.set(null);
+            DELETEDOBJS.set(null);
+            PROFILES.set(null);
         }
-
-        for (Project p : BROWSABLE_CHANGES.get()) {
-            LOG.debug("Modifying browsable status for project: " + p.getId());
-            try {
-                if (p.isBrowsable()) {
-                    assignAnonymousAccess(getProtectionGroup(p));
-                } else {
-                    List<UserGroupRoleProtectionGroup> l = getUserGroupRoleProtectionGroups(p);
-                    for (UserGroupRoleProtectionGroup ugrp : l) {
-                        if (ugrp.getGroup() != null) {
-                        AUTH_MGR.removeGroupRoleFromProtectionGroup(
-                                ugrp.getProtectionGroup().getProtectionGroupId().toString(),
-                                ugrp.getGroup().getGroupId().toString(),
-                                new String[] {ugrp.getRole().getId().toString() });
-                    }
-                }
-                }
-            } catch (CSTransactionException e) {
-                LOG.warn("Unable to change browsable status: " + e.getMessage(), e);
-            }
-        }
-
-        BROWSABLE_CHANGES.set(null);
-    }
-
-    @SuppressWarnings("PMD.ExcessiveMethodLength")
-    private void handleDeleted(String user) {
-        if (DELETEDOBJS.get() == null) {
-            return;
-        }
-        for (Protectable p : DELETEDOBJS.get()) {
-            LOG.debug("Deleting records for obj of type: " + p.getClass().getName() + " for user "
-                      + user);
-            try {
-                List<UserGroupRoleProtectionGroup> l = getUserGroupRoleProtectionGroups(p);
-                for (UserGroupRoleProtectionGroup ugrpg : l) {
-                    if (ugrpg.getGroup() != null) {
-                    AUTH_MGR.removeGroupRoleFromProtectionGroup(
-                            ugrpg.getProtectionGroup().getProtectionGroupId().toString(),
-                            ugrpg.getGroup().getGroupId().toString(),
-                            new String[] {ugrpg.getRole().getId().toString() });
-                    } else {
-                        AUTH_MGR.removeUserRoleFromProtectionGroup(
-                                ugrpg.getProtectionGroup().getProtectionGroupId().toString(),
-                                ugrpg.getUser().getUserId().toString(),
-                                new String[] {ugrpg.getRole().getId().toString() });
-                }
-                }
-                ProtectionGroup pg = getProtectionGroup(p);
-                ProtectionElement pe = (ProtectionElement) pg.getProtectionElements().iterator().next();
-                AUTH_MGR.removeProtectionGroup(pg.getProtectionGroupId().toString());
-                AUTH_MGR.removeProtectionElement(pe.getProtectionElementId().toString());
-
-            } catch (CSTransactionException e) {
-                LOG.warn("Unable to remove CSM elements from deleted object: " + e.getMessage(), e);
-            }
-        }
-
-        DELETEDOBJS.set(null);
-    }
-
-    /**
-     * @param user
-     * @param csmUser
-     */
-    private void handleNew(String user, User csmUser) {
-        if (NEWOBJS.get() == null) {
-            return;
-        }
-
-        for (Protectable p : NEWOBJS.get()) {
-            LOG.debug("Creating access record for obj of type: " + p.getClass().getName() + " for user "
-                    + user);
-
-            try {
-                ProtectionGroup pg = createProtectionGroup(p, csmUser);
-
-                if (p instanceof Project) {
-                    handleNewProject((Project) p, pg);
-                }
-
-            } catch (CSObjectNotFoundException e) {
-                LOG.warn("Could not find the " + APPLICATION_NAME + " application: " + e.getMessage(), e);
-            } catch (CSTransactionException e) {
-                LOG.warn("Could not save new protection element: " + e.getMessage(), e);
-            }
-        }
-
-        NEWOBJS.set(null);
-    }
-
-    @SuppressWarnings("PMD.ExcessiveMethodLength")
-    private ProtectionGroup createProtectionGroup(Protectable p, User csmUser)
-        throws CSObjectNotFoundException, CSTransactionException {
-
-        ProtectionElement pe = new ProtectionElement();
-        Application application = AUTH_MGR.getApplication(APPLICATION_NAME);
-        pe.setApplication(application);
-        pe.setObjectId(p.getClass().getName());
-        pe.setAttribute("id");
-        pe.setValue(p.getId().toString());
-        pe.setUpdateDate(new Date());
-        AUTH_MGR.createProtectionElement(pe);
-        AUTH_MGR.assignOwners(pe.getProtectionElementId().toString(),
-                              new String[] {csmUser.getUserId().toString()});
-
-        ProtectionGroup pg = new ProtectionGroup();
-        pg.setApplication(application);
-        pg.setProtectionElements(Collections.singleton(pe));
-        pg.setProtectionGroupName("PE(" + pe.getProtectionElementId() + ") group");
-        pg.setUpdateDate(new Date());
-        AUTH_MGR.createProtectionGroup(pg);
-
-        // This shouldn't be necessary, because the filter should take into account
-        // the ownership status (set above.)  However, such a filter uses a UNION
-        // mechanism and this runs into a hibernate bug:
-        // http://opensource.atlassian.com/projects/hibernate/browse/HHH-2593
-        // Thus, we do an extra association here.  Yuck!
-        AUTH_MGR.assignUserRoleToProtectionGroup(
-                csmUser.getUserId().toString(),
-                new String[] {getReadRole().getId().toString() },
-                pg.getProtectionGroupId().toString());
-        return pg;
-    }
-
-    private void handleNewProject(Project p, ProtectionGroup pg) throws CSTransactionException {
-        if (p.isBrowsable()) {
-            assignAnonymousAccess(pg);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static void assignAnonymousAccess(ProtectionGroup pg) throws CSTransactionException {
-        // We could cache the ids for the group and role
-        Group group = new Group();
-        group.setGroupName(ANONYMOUS_GROUP);
-        GroupSearchCriteria gsc = new GroupSearchCriteria(group);
-        List<Group> groupList = AUTH_MGR.getObjects(gsc);
-        group = groupList.get(0);
-
-        AUTH_MGR.assignGroupRoleToProtectionGroup(
-                pg.getProtectionGroupId().toString(),
-                group.getGroupId().toString(),
-                new String[] {getReadRole().getId().toString() });
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Role getReadRole() {
-        return getRoleByName(READ_ROLE);
-    }
-
-    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
-    private static Role getWriteRole() {
-        return getRoleByName(WRITE_ROLE);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Role getRoleByName(String roleName) {
-        Role role = new Role();
-        role.setName(roleName);
-        RoleSearchCriteria rsc = new RoleSearchCriteria(role);
-        List<Role> roleList = AUTH_MGR.getObjects(rsc);
-        role = roleList.get(0);
-        return role;
-    }
-
-    /**
-     * @param p the protectable to get the protection group for
-     * @return the UserGroupRoleProtectionGroup.  <b>This object is NOT associated with the current
-     *         hibernate session.</b>
-     */
-    @SuppressWarnings("unchecked")
-    public static List<UserGroupRoleProtectionGroup> getUserGroupRoleProtectionGroups(Protectable p) {
-        // Unfortunately, CSM doesn't provide a way to find out if the UserGroupRoleProtectionGroup
-        // has been created (down to attribute level).  So we need to query for it,
-        // using the known values for various ids from the csm script
-        String queryString = "SELECT ugrpg FROM " + UserGroupRoleProtectionGroup.class.getName() + " ugrpg, "
-                             + ProtectionElement.class.getName() + " pe "
-                             + "WHERE pe in elements(ugrpg.protectionGroup.protectionElements) "
-                             + "  AND size(ugrpg.protectionGroup.protectionElements) = 1"
-                             + "  AND pe.attribute = 'id' "
-                             + "  AND pe.objectId = :objectId "
-                             + "  AND pe.value = :value "
-                             + "  AND ugrpg.role.name = :roleName";
-        Query q = HibernateUtil.getCurrentSession().createQuery(queryString);
-        q.setString("roleName", "Read");
-        q.setString("objectId", getNonGLIBClass(p).getName());
-        q.setString("value", p.getId().toString());
-        return q.list();
-    }
-
-    private static ProtectionGroup getProtectionGroup(Protectable p) {
-        String queryString = "SELECT pg FROM " + ProtectionGroup.class.getName() + " pg, "
-                             + ProtectionElement.class.getName() + " pe "
-                             + "WHERE pe in elements(pg.protectionElements) "
-                             + "  AND pe.objectId = :objectId "
-                             + "  AND pe.attribute = 'id' "
-                             + "  AND pe.value = :value "
-                             + "  AND pg.protectionGroupName LIKE 'PE(%) group'";
-        Query q = HibernateUtil.getCurrentSession().createQuery(queryString);
-        q.setString("objectId", getNonGLIBClass(p).getName());
-        q.setString("value", p.getId().toString());
-        return (ProtectionGroup) q.uniqueResult();
-    }
-
-    private static Class<?> getNonGLIBClass(Object o) {
-        Class<?> result = o.getClass();
-        if (result.getName().contains("$$EnhancerByCGLIB$$")) {
-            result = result.getSuperclass();
-        }
-        return result;
     }
 }
