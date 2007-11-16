@@ -87,7 +87,25 @@ package gov.nih.nci.caarray.test.jmeter.base;
  *
  * @author Rashmi Srinivasa
  */
-public final class TestProperties {
-    public static final String CAARRAY_SERVER_HOSTNAME = System.getProperty("server.host.name", "localhost");
-    public static final int CAARRAY_SERVER_JNDI_PORT = Integer.parseInt(System.getProperty("server.jndi.port", "1099"));
+public class CaArrayJmeterSampler {
+    private static final String HOST_NAME_PARAM = "host.name";
+    private static final String JNDI_PORT_PARAM = "jndi.port";
+    private static final String DEFAULT_HOST_NAME = "localhost";
+    private static final String DEFAULT_JNDI_PORT = "1099";
+
+    protected static String getHostNameParam() {
+        return HOST_NAME_PARAM;
+    }
+
+    protected static String getJndiPortParam() {
+        return JNDI_PORT_PARAM;
+    }
+
+    protected static String getDefaultHostName() {
+        return DEFAULT_HOST_NAME;
+    }
+
+    protected static String getDefaultJndiPort() {
+        return DEFAULT_JNDI_PORT;
+    }
 }

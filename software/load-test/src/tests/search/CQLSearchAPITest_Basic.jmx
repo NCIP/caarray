@@ -48,6 +48,16 @@
                 <stringProp name="Argument.value">${organismName}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
+              <elementProp name="host.name" elementType="Argument">
+                <stringProp name="Argument.name">host.name</stringProp>
+                <stringProp name="Argument.value">${__property(server.host.name)}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="jndi.port" elementType="Argument">
+                <stringProp name="Argument.name">jndi.port</stringProp>
+                <stringProp name="Argument.value">${__property(server.jndi.port)}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
             </collectionProp>
           </elementProp>
           <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.search.CQLSearchClient</stringProp>

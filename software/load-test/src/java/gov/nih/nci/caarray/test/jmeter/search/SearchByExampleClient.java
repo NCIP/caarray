@@ -88,7 +88,7 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
-import gov.nih.nci.caarray.test.jmeter.base.TestProperties;
+import gov.nih.nci.caarray.test.jmeter.base.CaArrayJmeterSampler;
 
 import java.util.Iterator;
 import java.util.List;
@@ -103,7 +103,7 @@ import org.apache.jmeter.samplers.SampleResult;
  *
  * @author Rashmi Srinivasa
  */
-public class SearchByExampleClient implements JavaSamplerClient {
+public class SearchByExampleClient extends CaArrayJmeterSampler implements JavaSamplerClient {
     private static final String MANUFACTURER_PARAM = "manufacturerName";
     private static final String ORGANISM_PARAM = "organismName";
 
@@ -112,6 +112,8 @@ public class SearchByExampleClient implements JavaSamplerClient {
 
     private String manufacturer;
     private String organism;
+    private String hostName;
+    private int jndiPort;
 
     /**
      * Sets up the search-by-example test by initializing the search criteria to use.
@@ -121,6 +123,8 @@ public class SearchByExampleClient implements JavaSamplerClient {
     public void setupTest(JavaSamplerContext context) {
         manufacturer = context.getParameter(MANUFACTURER_PARAM, DEFAULT_MANUFACTURER);
         organism = context.getParameter(ORGANISM_PARAM, DEFAULT_ORGANISM);
+        hostName = context.getParameter(getHostNameParam(), getDefaultHostName());
+        jndiPort = Integer.parseInt(context.getParameter(getJndiPortParam(), getDefaultJndiPort()));
     }
 
     /**
@@ -132,6 +136,8 @@ public class SearchByExampleClient implements JavaSamplerClient {
         Arguments params = new Arguments();
         params.addArgument(MANUFACTURER_PARAM, DEFAULT_MANUFACTURER);
         params.addArgument(ORGANISM_PARAM, DEFAULT_ORGANISM);
+        params.addArgument(getHostNameParam(), getDefaultHostName());
+        params.addArgument(getJndiPortParam(), getDefaultJndiPort());
         return params;
     }
 
@@ -146,8 +152,7 @@ public class SearchByExampleClient implements JavaSamplerClient {
 
         Experiment exampleExperiment = createExampleExperiment();
         try {
-            CaArrayServer server = new CaArrayServer(TestProperties.CAARRAY_SERVER_HOSTNAME,
-                    TestProperties.CAARRAY_SERVER_JNDI_PORT);
+            CaArrayServer server = new CaArrayServer(hostName, jndiPort);
             server.connect();
             CaArraySearchService searchService = server.getSearchService();
             results.sampleStart();

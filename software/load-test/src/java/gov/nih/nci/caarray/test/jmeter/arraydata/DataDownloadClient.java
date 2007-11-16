@@ -96,7 +96,7 @@ import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.services.data.DataRetrievalService;
 import gov.nih.nci.caarray.services.data.DataRetrievalRequest;
-import gov.nih.nci.caarray.test.jmeter.base.TestProperties;
+import gov.nih.nci.caarray.test.jmeter.base.CaArrayJmeterSampler;
 
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
@@ -108,7 +108,7 @@ import org.apache.jmeter.config.Arguments;
  *
  * @author Rashmi Srinivasa
  */
-public class DataDownloadClient implements JavaSamplerClient {
+public class DataDownloadClient extends CaArrayJmeterSampler implements JavaSamplerClient {
     private static final String EXPERIMENT_NAMES_PARAM = "experimentNamesCsv";
     private static final String QUANTITATION_TYPES_PARAM = "quantitationTypesCsv";
 
@@ -117,6 +117,8 @@ public class DataDownloadClient implements JavaSamplerClient {
 
     private String experimentTitlesCsv;
     private String quantitationTypesCsv;
+    private String hostName;
+    private int jndiPort;
 
     /**
      * Sets up the data download test by initializing the <code>Experiment</code>s to download array data from, and
@@ -127,6 +129,8 @@ public class DataDownloadClient implements JavaSamplerClient {
     public void setupTest(JavaSamplerContext context) {
         experimentTitlesCsv = context.getParameter(EXPERIMENT_NAMES_PARAM, DEFAULT_EXPERIMENT_NAME);
         quantitationTypesCsv = context.getParameter(QUANTITATION_TYPES_PARAM, DEFAULT_QUANTITATION_TYPE);
+        hostName = context.getParameter(getHostNameParam(), getDefaultHostName());
+        jndiPort = Integer.parseInt(context.getParameter(getJndiPortParam(), getDefaultJndiPort()));
     }
 
     /**
@@ -138,6 +142,8 @@ public class DataDownloadClient implements JavaSamplerClient {
         Arguments params = new Arguments();
         params.addArgument(EXPERIMENT_NAMES_PARAM, DEFAULT_EXPERIMENT_NAME);
         params.addArgument(QUANTITATION_TYPES_PARAM, DEFAULT_QUANTITATION_TYPE);
+        params.addArgument(getHostNameParam(), getDefaultHostName());
+        params.addArgument(getJndiPortParam(), getDefaultJndiPort());
         return params;
     }
 
@@ -152,7 +158,7 @@ public class DataDownloadClient implements JavaSamplerClient {
 
         DataRetrievalRequest request = new DataRetrievalRequest();
         try {
-            CaArrayServer server = new CaArrayServer(TestProperties.CAARRAY_SERVER_HOSTNAME, TestProperties.CAARRAY_SERVER_JNDI_PORT);
+            CaArrayServer server = new CaArrayServer(hostName, jndiPort);
             server.connect();
             CaArraySearchService searchService = server.getSearchService();
             lookupExperiments(searchService, request);
