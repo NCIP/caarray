@@ -208,14 +208,20 @@ public final class CQL2CQL {
         Collection<CQLAttribute> attributeCollection = new HashSet<CQLAttribute>();
         Collection<CQLGroup> groupCollection = new HashSet<CQLGroup>();
 
-        for (Association assoc : from.getAssociation()) {
-            associationCollection.add(convertAssociation(assoc));
+        if (from.getAssociation() != null) {
+            for (Association assoc : from.getAssociation()) {
+                associationCollection.add(convertAssociation(assoc));
+            }
         }
-        for (Attribute att : from.getAttribute()) {
-            attributeCollection.add(convertAttribute(att));
+        if (from.getAttribute() != null) {
+            for (Attribute att : from.getAttribute()) {
+                attributeCollection.add(convertAttribute(att));
+            }
         }
-        for (Group grp : from.getGroup()) {
-            groupCollection.add(convertGroup(grp));
+        if (from.getGroup() != null) {
+            for (Group grp : from.getGroup()) {
+                groupCollection.add(convertGroup(grp));
+            }
         }
 
         result.setAssociationCollection(associationCollection);
