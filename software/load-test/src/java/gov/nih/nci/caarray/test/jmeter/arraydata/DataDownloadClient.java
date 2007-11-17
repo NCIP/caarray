@@ -95,7 +95,7 @@ import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.services.data.DataRetrievalService;
-import gov.nih.nci.caarray.services.data.DataRetrievalRequest;
+import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
 import gov.nih.nci.caarray.test.jmeter.base.CaArrayJmeterSampler;
 
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerClient;
