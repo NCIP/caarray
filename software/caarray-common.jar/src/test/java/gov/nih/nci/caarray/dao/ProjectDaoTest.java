@@ -270,6 +270,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DUMMY_LABELED_EXTRACT.getHybridizations().add(DUMMY_HYBRIDIZATION);
         DUMMY_HYBRIDIZATION.getLabeledExtracts().add(DUMMY_LABELED_EXTRACT);
         DUMMY_HYBRIDIZATION.setArrayData(DUMMY_RAW_ARRAY_DATA);
+        DUMMY_HYBRIDIZATION.setName("Dummy Hyb");
         DUMMY_RAW_ARRAY_DATA.setHybridization(DUMMY_HYBRIDIZATION);
         DUMMY_RAW_ARRAY_DATA.setDataFile(DUMMY_DATA_FILE);
     }

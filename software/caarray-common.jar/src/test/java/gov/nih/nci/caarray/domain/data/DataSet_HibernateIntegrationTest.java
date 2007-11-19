@@ -82,8 +82,8 @@
  */
 package gov.nih.nci.caarray.domain.data;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject_HibernateIntegrationTest;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
@@ -181,6 +181,7 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
         extract.getLabeledExtracts().add(le);
         le.getExtracts().add(extract);
         Hybridization hybridization = new Hybridization();
+        hybridization.setName("Test Hyb");
         le.getHybridizations().add(hybridization);
         hybridization.getLabeledExtracts().add(le);
         Transaction tx = HibernateUtil.beginTransaction();

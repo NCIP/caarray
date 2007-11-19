@@ -100,7 +100,7 @@ values(2,10,sysdate());
 -- Groups
 -- This group corresponds to a security group
 insert into CSM_GROUP (group_name, update_date, application_id)
-values('PrincipalInvestigator', sysdate(), 1);
+values('PrincipalInvestigator', sysdate(), 2);
 
 -- The Public group corresponds to public access profiles - everyone (except the anonymous user)
 -- should be in this group
@@ -114,27 +114,27 @@ values('__anonymous__', sysdate(), 2);
 
 -- This group corresponds to a security group
 insert into CSM_GROUP (group_name, update_date, application_id)
-values('ResearchScientist', sysdate(), 1);
+values('ResearchScientist', sysdate(), 2);
 
 -- This group corresponds to a security group
 insert into CSM_GROUP (group_name, update_date, application_id)
-values('LabAdministrator', sysdate(), 1);
+values('LabAdministrator', sysdate(), 2);
 
 -- This group corresponds to a security group
 insert into CSM_GROUP (group_name, update_date, application_id)
-values('LabScientist', sysdate(), 1);
+values('LabScientist', sysdate(), 2);
 
 -- This group corresponds to a security group
 insert into CSM_GROUP (group_name, update_date, application_id)
-values('Biostatistician', sysdate(), 1);
+values('Biostatistician', sysdate(), 2);
 
 -- This group corresponds to a security group
 insert into CSM_GROUP (group_name, update_date, application_id)
-values('SystemAdministrator', sysdate(), 1);
+values('SystemAdministrator', sysdate(), 2);
 
 -- This group corresponds to a security group
 insert into CSM_GROUP (group_name, update_date, application_id)
-values('Collaborator', sysdate(), 1);
+values('Collaborator', sysdate(), 2);
 
 -- all three real users belong to all groups
 insert into CSM_USER_GROUP (user_id, group_id)
