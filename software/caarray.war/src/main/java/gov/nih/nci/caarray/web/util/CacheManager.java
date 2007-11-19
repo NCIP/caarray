@@ -113,10 +113,10 @@ public final class CacheManager {
     private ServiceLocator locator = ServiceLocatorFactory.getLocator();
 
     // instance variables that serve as cache
-    private List<LabelValue> fileTypes = new ArrayList<LabelValue>();
-    private List<Country> countryList = new ArrayList<Country>();
-    private List<State> stateList = new ArrayList<State>();
-    private List<UserRole> roleList = new ArrayList<UserRole>();
+    private static List<LabelValue> fileTypes = new ArrayList<LabelValue>();
+    private static List<Country> countryList = new ArrayList<Country>();
+    private static List<State> stateList = new ArrayList<State>();
+    private static List<UserRole> roleList = new ArrayList<UserRole>();
 
     /**
      * Default constructor made private so that no other object can instantiate
