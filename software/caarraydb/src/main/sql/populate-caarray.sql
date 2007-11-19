@@ -9,6 +9,7 @@ insert into category (name) value ('ReplicateDescriptionType');
 insert into category (name) value ('Roles');
 insert into category (name) value ('PublicationType');
 insert into category (name) value ('PublicationStatus');
+insert into category (name) value ('TechnologyType');
 
 insert into termsource (name, url, version) values ('MGED', 'http://mged.sourceforge.net/ontologies/MGEDontology.php', '1.3.1.1');
 insert into termsource (name, url, version) values ('Caarray', 'http://caarray.nci.nih.gov/ontologies/UserDefined.html', '0.1');
@@ -40,6 +41,15 @@ insert into term (value, source, category) select 'Submitted', termsource.id, ca
 insert into term (value, source, category) select 'In Preparation', termsource.id, category.id from termsource, category where termsource.name='Caarray' and category.name='PublicationStatus';
 insert into term (value, source, category) select 'Published', termsource.id, category.id from termsource, category where termsource.name='Caarray' and category.name='PublicationStatus';
 
+-- TechnologyTypes
+insert into term (value, source, category) select 'in_situ_oligo_features', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='TechnologyType';
+insert into term (value, source, category) select 'spotted_antibody_features', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='TechnologyType';
+insert into term (value, source, category) select 'spotted_colony_features', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='TechnologyType';
+insert into term (value, source, category) select 'spotted_ds_DNA_features', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='TechnologyType';
+insert into term (value, source, category) select 'spotted_protein_features', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='TechnologyType';
+insert into term (value, source, category) select 'spotted_ss_PCR_amplicon_features', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='TechnologyType';
+insert into term (value, source, category) select 'spotted_ss_oligo_features', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='TechnologyType';
+
 insert into organism (common_name, scientific_name, taxonomy_rank, ethnicity_strain) values ('Bovine', '', '', '');
 insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Canine', '', '', '');
 insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Chicken', '', '', '');
@@ -55,7 +65,7 @@ insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Str
 insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Yeast', '', '', '');
 insert into organism (common_name, scientific_name, taxonomy_rank, ethnicity_strain) values ('Zebra finch', '', '', '');
 insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Zebrafish', '', '', '');
-
+ 
 insert into contact(discriminator, name) values ('O', 'Affymetrix');
 insert into contact(discriminator, name) values ('O', 'Illumina');
 
@@ -304,7 +314,6 @@ insert into country (code, name, printable_name, iso3, numcode) values ('EH','WE
 insert into country (code, name, printable_name, iso3, numcode) values ('YE','YEMEN','Yemen','YEM','887');
 insert into country (code, name, printable_name, iso3, numcode) values ('ZM','ZAMBIA','Zambia','ZMB','894');
 insert into country (code, name, printable_name, iso3, numcode) values ('ZW','ZIMBABWE','Zimbabwe','ZWE','716');
-
 insert into state (name, code) values ('Alaska', 'AK');
 insert into state (name, code) values ('Alabama', 'AL');
 insert into state (name, code) values ('American Samoa', 'AS');
