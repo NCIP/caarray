@@ -51,6 +51,7 @@
 package gov.nih.nci.caarray.application.file;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceStub;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
@@ -60,11 +61,13 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
+import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -77,15 +80,17 @@ import org.junit.Test;
 public class FileManagementServiceTest {
 
     private FileManagementService fileManagementService;
+    private final LocalFileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
+    private final LocalArrayDesignServiceStub arrayDesignServiceStub = new LocalArrayDesignServiceStub();
 
     @Before
     public void setUp() {
         FileManagementServiceBean fileManagementServiceBean = new FileManagementServiceBean();
         fileManagementServiceBean.setDaoFactory(new DaoFactoryStub());
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
-        locatorStub.addLookup(FileAccessService.JNDI_NAME, new LocalFileAccessServiceStub());
+        locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
         locatorStub.addLookup(ArrayDataService.JNDI_NAME, new LocalArrayDataServiceStub());
-        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, new LocalArrayDesignServiceStub());
+        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, arrayDesignServiceStub);
         locatorStub.addLookup(MageTabTranslator.JNDI_NAME, new MageTabTranslatorStub());
         fileManagementService = fileManagementServiceBean;
     }
@@ -125,6 +130,26 @@ public class FileManagementServiceTest {
         assertEquals(29, project.getFiles().size());
         return project;
     }
+    
+    @Test
+    public void testAddSupplementalFiles() {
+        Project project = getTgaBroadTestProject();
+        fileManagementService.addSupplementalFiles(project, project.getFileSet());
+        for (CaArrayFile file : project.getFiles()) {
+            assertEquals(FileStatus.SUPPLEMENTAL, file.getFileStatus());
+        }
+    }
+
+    @Test
+    public void testImportArrayDesignFile() {
+        ArrayDesign design = new ArrayDesign();
+        design.setName("design name");
+        CaArrayFile caArrayFile = fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
+        design.setDesignFile(caArrayFile);
+        fileManagementService.importArrayDesignFile(design, caArrayFile);
+        assertTrue(arrayDesignServiceStub.importCalled);
+    }
+
 
     private static class LocalArrayDataServiceStub extends ArrayDataServiceStub {
 
@@ -137,10 +162,17 @@ public class FileManagementServiceTest {
 
     private static class LocalArrayDesignServiceStub extends ArrayDesignServiceStub {
 
+        private boolean importCalled;
+
         @Override
         public FileValidationResult validateDesign(CaArrayFile designFile) {
             designFile.setFileStatus(FileStatus.VALIDATED);
             return new FileValidationResult(new File(designFile.getName()));
+        }
+
+        @Override
+        public void importDesign(ArrayDesign arrayDesign) {
+            importCalled = true;
         }
 
     }

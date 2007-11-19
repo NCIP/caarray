@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
@@ -175,11 +176,11 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private void importArrayDesigns(CaArrayFileSet fileSet) {
-        getArrayDesignImporter(fileSet).importArrayDesigns();
+        getArrayDesignImporter().importArrayDesigns(fileSet);
     }
 
-    private ArrayDesignImporter getArrayDesignImporter(CaArrayFileSet fileSet) {
-        return new ArrayDesignImporter(fileSet, getArrayDesignService());
+    private ArrayDesignImporter getArrayDesignImporter() {
+        return new ArrayDesignImporter(getArrayDesignService());
     }
 
     private void importAnnotation(FileAccessService fileAccessService, Project targetProject, CaArrayFileSet fileSet) {
@@ -220,7 +221,7 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private void validateArrayDesigns(CaArrayFileSet fileSet) {
-        getArrayDesignImporter(fileSet).validateFiles(fileSet);
+        getArrayDesignImporter().validateFiles(fileSet);
     }
 
     private void validateAnnotation(FileAccessService fileAccessService, CaArrayFileSet fileSet) {
@@ -253,6 +254,30 @@ public class FileManagementServiceBean implements FileManagementService {
 
     private ArrayDataService getArrayDataService() {
         return (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void addSupplementalFiles(Project targetProject, CaArrayFileSet fileSet) {
+        if (targetProject == null) {
+            throw new IllegalArgumentException("targetProject was null");
+        }
+        for (CaArrayFile caArrayFile : fileSet.getFiles()) {
+            caArrayFile.setFileStatus(FileStatus.SUPPLEMENTAL);
+            caArrayFile.setProject(targetProject);
+            getDaoFactory().getFileDao().save(caArrayFile);
+            targetProject.getFiles().add(caArrayFile);
+        }
+        getDaoFactory().getProjectDao().save(targetProject);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void importArrayDesignFile(ArrayDesign arrayDesign, CaArrayFile designFile) {
+        arrayDesign.setDesignFile(designFile);
+        getArrayDesignImporter().importArrayDesign(arrayDesign);
     }
 
 

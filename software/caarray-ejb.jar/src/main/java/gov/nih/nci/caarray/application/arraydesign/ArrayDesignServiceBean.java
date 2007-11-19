@@ -154,6 +154,31 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         return design;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void importDesign(ArrayDesign arrayDesign) {
+        LogUtil.logSubsystemEntry(LOG, arrayDesign);
+        if (arrayDesign.getDesignFile() == null) {
+            LOG.warn("importDesign called, but no design file provided. No updates made.");
+            return;
+        }
+        FileAccessService fileAccessService = getFileAccessService();
+        if (validateDesign(arrayDesign.getDesignFile()).isValid()) {
+            doImport(arrayDesign, fileAccessService);
+        }
+        fileAccessService.closeFiles();
+        LogUtil.logSubsystemExit(LOG);
+    }
+
+    private void doImport(ArrayDesign arrayDesign, FileAccessService fileAccessService) {
+        AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile(), fileAccessService);
+        handler.loadDesignDetails(arrayDesign);
+        arrayDesign.getDesignFile().setFileStatus(FileStatus.IMPORTED);
+        getArrayDao().save(arrayDesign);
+    }
+
     private ArrayDesign doImport(CaArrayFile designFile, FileAccessService fileAccessService) {
         AbstractArrayDesignHandler handler = getHandler(designFile, fileAccessService);
         ArrayDesign design = handler.getArrayDesign();

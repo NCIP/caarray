@@ -122,4 +122,8 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
     public List<ArrayDesign> getArrayDesignsForProvider(Organization provider) {
         return new ArrayList<ArrayDesign>();
     }
+
+    public void importDesign(ArrayDesign arrayDesign) {
+        // no-op
+    }
 }

@@ -119,6 +119,10 @@ abstract class AbstractArrayDesignHandler {
         return vocabularyService;
     }
 
+    final void loadDesignDetails(ArrayDesign arrayDesign) {
+        load(arrayDesign);
+    }
+
     final ArrayDesign getArrayDesign() {
         ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.setDesignFile(getDesignFile());

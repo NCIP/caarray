@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.project.Project;
 
@@ -122,5 +124,17 @@ public class FileManagementServiceStub implements FileManagementService {
     public void reset() {
         this.validatedFileCount = 0;
         this.importedFilecCount = 0;
+    }
+
+    public void importArrayDesignFile(ArrayDesign arrayDesign, CaArrayFile caArrayFile) {
+        arrayDesign.setDesignFile(caArrayFile);
+    }
+
+    public void addSupplementalFiles(Project targetProject, CaArrayFileSet fileSet) {
+        // no-op
+    }
+
+    public void importArrayDesignAnnotationFile(ArrayDesign arrayDesign, CaArrayFile annotationFile) {
+        arrayDesign.setAnnotationFile(annotationFile);
     }
 }

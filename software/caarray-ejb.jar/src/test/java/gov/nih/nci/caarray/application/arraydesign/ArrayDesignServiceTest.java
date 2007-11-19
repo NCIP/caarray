@@ -100,6 +100,7 @@ import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
 
@@ -131,6 +132,17 @@ public class ArrayDesignServiceTest {
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
         return bean;
+    }
+
+    @Test
+    public void testImportDesign_ArrayDesign() throws InvalidDataFileException {
+        ArrayDesign design = new ArrayDesign();
+        design.setDesignFile(getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
+        arrayDesignService.importDesign(design);
+        assertEquals("Test3", design.getName());
+        assertEquals("Affymetrix.com", design.getLsidAuthority());
+        assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
+        assertEquals("Test3", design.getLsidObjectId());
     }
 
     @Test

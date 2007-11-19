@@ -117,6 +117,14 @@ public interface ArrayDesignService {
     ArrayDesign importDesign(CaArrayFile designFile);
 
     /**
+     * Imports details for an existing array design from associated files(s) including
+     * <code>designFile</code> and <code>annotationFile</code>.
+     * 
+     * @param arrayDesign the design to import details for.
+     */
+    void importDesign(ArrayDesign arrayDesign);
+
+    /**
      * Returns the element-level details (features, probes, and logical probes) for
      * an array design.
      *

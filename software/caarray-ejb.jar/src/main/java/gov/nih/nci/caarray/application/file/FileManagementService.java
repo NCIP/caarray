@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.project.Project;
 
@@ -118,5 +120,21 @@ public interface FileManagementService {
      * @param targetProject entities will be added to this project (if appropriate).
      */
     void importFiles(Project targetProject, CaArrayFileSet fileSet);
+
+    /**
+     * Associates files with the project as supplemental data or informational files.
+     *
+     * @param fileSet the files to add as supplemental.
+     * @param targetProject files will be added to this project.
+     */
+    void addSupplementalFiles(Project targetProject, CaArrayFileSet fileSet);
+
+    /**
+     * Imports array design information from the file provided into an <code>ArrayDesign</code>.
+     * 
+     * @param arrayDesign the array design object
+     * @param designFile the file containing the array design annotation.
+     */
+    void importArrayDesignFile(ArrayDesign arrayDesign, CaArrayFile designFile);
 
 }
