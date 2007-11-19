@@ -92,6 +92,7 @@
     </project>
 
     <!--
+    -->
     <project name="caarray2-docs_end-user-doco" buildafterfailed="false">
 
 	        <modificationset quietperiod="0">
@@ -114,6 +115,6 @@
 	        </publishers>
 
     </project>
-    -->
+
 
 </cruisecontrol>
