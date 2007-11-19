@@ -10,7 +10,9 @@
                 <li><a href="<c:url value="/protected/project/create.action" />">Create/Propose Experiment</a></li>
 
                 <li class="liheader">Users &amp; Groups</li>
-                <li><a href="<c:url value="/notYetImplemented.jsp" />">Manage Users</a></li>
+                <c:if test="${isSystemAdministrator}">
+	                <li><a href="<c:out value='${initParam["uptLocation"]}'/>">Manage Users</a></li>                
+                </c:if>
                 <li><a href="<c:url value="/protected/collaborators/listGroups.action" />">Manage Collaboration Groups</a></li>
 
                 <li class="liheader">Curation</li>

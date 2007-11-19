@@ -505,6 +505,7 @@
             <filter token="caarray.version" value="${caarray.version}"/>
             <filter token="svn.url" value="${svn.url}"/>
             <filter token="svn.revision" value="${svn.revision}"/>
+            <filter token="upt.location" value="${upt.location}"/>
           </filterset>
         </copy>
         <copy todir="${caarray-war.classes.dir}">

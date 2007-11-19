@@ -24,6 +24,10 @@
         <param-name>svnRevision</param-name>
         <param-value>@svn.revision@</param-value>
     </context-param>
+    <context-param>
+        <param-name>uptLocation</param-name>
+        <param-value>@upt.location@</param-value>
+    </context-param>
 
     <filter>
         <filter-name>openSessionFilter</filter-name>

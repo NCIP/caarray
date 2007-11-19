@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.web.filter;
 
 import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.web.action.registration.UserRole;
 
 import java.io.IOException;
 
@@ -96,7 +97,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * Request filter that places the currently logged in user credentials into
- * the UsernameHolder.
+ * the UsernameHolder and adds app scoped params to support JSTL role checking.
  *
  * @see UsernameHolder
  */
@@ -119,7 +120,13 @@ public class UserFilter implements Filter {
             chain.doFilter(request, response);
             return;
         }
-        UsernameHolder.setUser(((HttpServletRequest) request).getRemoteUser());
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        UsernameHolder.setUser(httpRequest.getRemoteUser());
+        for (UserRole ur : UserRole.values()) {
+            if (httpRequest.isUserInRole(ur.getRoleName())) {
+                httpRequest.getSession().setAttribute(ur.getSessionVar(), true);
+            }
+        }
         chain.doFilter(request, response);
     }
 
