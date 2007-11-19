@@ -2,21 +2,13 @@
 
 <script type=text/javascript>
 <!--
-function showMe(id) {
-    var obj = document.getElementById(id);
-    if (obj.style.visibility=="visible") {
-        obj.style.visibility = "hidden";
-    } else {
-        obj.style.visibility = "visible";
-    }
-}
 function authenticate() {
-    box = eval(document.forms[0].elements["ldapAuthenticate"]);
-    if (box.checked == false) {
-        document.getElementById('regForm').action = "save.action";
+    if(document.forms[0].ldapAuthenticate[0].checked == true) {
+        document.getElementById('regForm').action = "saveAuthenticate.action";
     } else {
-       document.getElementById('regForm').action = "saveAuthenticate.action";
+        document.getElementById('regForm').action = "save.action";
     }
+    document.forms[0].submit();
 }
 //-->
 </script>
@@ -24,186 +16,129 @@ function authenticate() {
 <head>
 </head>
 <body>
-        <h1>Registration</h1>
+    <h1>Register</h1>
+    <div class="padme">
+    <div id="tabboxwrapper_notabs">
+    <div class="boxpad2"><h3>Become a caArray User</h3></div>
+    <div class="boxpad">
+        <p class="instructions">Welcome to caArray. Submit the form to below to request access to caArray. Required fields are highlighted and have <span class="required"><span class="asterisk">*</span>asterisks<span class="asterisk">*</span></span>.</p>
+
         <caarray:successMessages />
         <s:actionerror/>
-        <s:form action="save" method="post" id="regForm" theme="simple">
-            <c:if test="${ldapInstall == 'true'}">
-                <div style="text-align: left">
-                    <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"><span></span>LDAP Account ?:</div>
-                    <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
+        <s:form action="save" method="post" id="regForm">
+            <table class="form">
+                <tr><th colspan="2">Security Information</th></tr>
+                <c:if test="${ldapInstall == 'true'}">
+                    <s:radio
+                        name="ldapAuthenticate"
+                        key="registrationRequest.ldap"
+                        list="#{true: 'Yes', false:'No'}"
+                        tabindex="1"
+                        onchange="javascript:new Effect.toggle($('loginName'),'blind'); new Effect.toggle($('password'),'blind'); new Effect.toggle($('passwordConfirm'),'blind')"
+                    />
+                </c:if>
+
+                <s:textfield name="registrationRequest.loginName"
+                     key="registrationRequest.loginName"
+                     cssStyle="width:30%;"
+                     id="loginName"
+                     tabindex="2"
+                     required="true"
+                     template="text_display"
+                     templateDir="WEB-INF/classes/template"
+                     theme="freemarker"
+                />
+                <s:password name="password"
+                    key="registrationRequest.password"
+                    cssStyle="width:30%;"
+                    id="password"
+                    tabindex="3"
+                    required="true"
+                    template="password_display"
+                    templateDir="WEB-INF/classes/template"
+                    theme="freemarker"
+                />
+                <c:if test="${ldapInstall == 'false'}">
+                    <s:password name="passwordConfirm"
+                        key="registrationRequest.passwordConfirm"
+                        cssStyle="width:30%;"
+                        id="passwordConfirm"
+                        tabindex="4"
+                        required="true"
+                        template="password_display"
+                        templateDir="WEB-INF/classes/template"
+                        theme="freemarker"
+                    />
+                </c:if>
+                <s:checkboxlist name="registrationRequest.role"
+                    key="registrationRequest.role"
+                    list="roleList"
+                    listKey="name"
+                    listValue="name"
+                    template="registration_checkboxlist"
+                    templateDir="WEB-INF/classes/template"
+                    theme="freemarker"
+                    tabindex="5"
+                    required="true"
+                />
+                <tr><th colspan="2">Account Details</th></tr>
+                <s:textfield name="registrationRequest.firstName" key="registrationRequest.firstName" cssStyle="width:50%;" tabindex="6" required="true" />
+                <s:textfield name="registrationRequest.middleInitial" key="registrationRequest.middleInitial" cssStyle="width:5%;" tabindex="7" />
+                <s:textfield name="registrationRequest.lastName" key="registrationRequest.lastName" cssStyle="width:50%;" tabindex="8" required="true" />
+                <s:textfield name="registrationRequest.email" key="registrationRequest.email" cssStyle="width:50%;" tabindex="9" required="true" />
+                <s:textfield name="registrationRequest.organization" key="registrationRequest.organization" cssStyle="width:50%;" tabindex="10" required="true" />
+                <s:textfield name="registrationRequest.address1" key="registrationRequest.address1" cssStyle="width:50%;" tabindex="11" required="true" />
+                <s:textfield name="registrationRequest.address2" key="registrationRequest.address2" cssStyle="width:50%;" tabindex="12" />
+                <s:textfield name="registrationRequest.city" key="registrationRequest.city" cssStyle="width:50%;" tabindex="13" />
+                <s:select key="registrationRequest.state"
+                      name="registrationRequest.state"
+                      list="stateList"
+                      listKey="id"
+                      listValue="code"
+                      headerKey=""
+                      headerValue="--Select a State--"
+                      template="select_display"
+                      templateDir="WEB-INF/classes/template"
+                      theme="freemarker"
+                      id="state"
+                      value="registrationRequest.state.id"
+                      tabindex="14"
+                      required="true"
+                />
+                <s:textfield name="registrationRequest.zip" key="registrationRequest.zip" size="20" cssStyle="width:30%;" tabindex="15" />
+                <s:select key="registrationRequest.country"
+                      name="registrationRequest.country"
+                      list="countryList"
+                      listKey="id"
+                      listValue="printableName"
+                      headerKey=""
+                      headerValue="--Select a Country--"
+                      value="registrationRequest.country.id"
+                      tabindex="15"
+                      required="true"
+                      onchange="javascript:if(this.options[selectedIndex].text == 'United States'){new Effect.BlindDown('state')}else{new Effect.BlindUp('state')}"
+                />
+                <s:textfield name="registrationRequest.phone" key="registrationRequest.phone" size="20" cssStyle="width:30%;" tabindex="16" required="true"/>
+                <s:textfield name="registrationRequest.fax" key="registrationRequest.fax" size="20" cssStyle="width:30%;" tabindex="17"/>
+            </table>
+
+            <div class="actions">
+                <del class="btnwrapper">
+                    <ul id="btnrow">
+                        <c:url value="/registration/cancel.action" var="cancelUrl"/>
+                        <c:url value="/registration/saveAuthenticate.action" var="saveUrl"/>
+                        <li><a href="${cancelUrl}" class="btn" onclick="this.blur();"><span class="btn_img"><span class="cancel">Cancel</span></span></a></li>
                         <c:choose>
-                            <c:when test="${ldapAuthenticate == 'false'}">
-                                <s:checkbox  name="ldapAuthenticate" key="registrationRequest.ldap" value="false" onclick="showMe('div1')"/>
+                            <c:when test="${ldapInstall == 'true'}">
+                                <li><a href="javascript:authenticate()" class="btn" onclick="this.blur();"><span class="btn_img"><span class="register">Submit Registration Request</span></span></a></li>
                             </c:when>
                             <c:otherwise>
-                                <s:checkbox  name="ldapAuthenticate" key="registrationRequest.ldap" value="true" onclick="showMe('div1')"/>
+                                <li><a href="${saveUrl}" class="btn" onclick="this.blur();"><span class="btn_img"><span class="register">Submit Registration Request</span></span></a></li>
                             </c:otherwise>
                         </c:choose>
-                    </div>
-                </div>
-            </c:if>
-            <div style="text-align: left">
-                <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"><span>*</span>First Name:</div>
-                <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
-                    <s:fielderror><s:param>registrationRequest.firstName</s:param></s:fielderror>
-                    <s:textfield name="registrationRequest.firstName" key="registrationRequest.firstName" size="40" tabindex="1" required="true"/>
-                </div>
-            </div>
-            <div style="text-align: left">
-                <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"><span></span>Middle Initial:</div>
-                <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
-                    <s:fielderror><s:param>registrationRequest.middleInitial</s:param></s:fielderror>
-                    <s:textfield name="registrationRequest.middleInitial" key="registrationRequest.middleInitial" size="40" tabindex="2"/>
-                </div>
-            </div>
-            <div style="text-align: left">
-                <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"><span>*</span>Last Name:</div>
-                <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
-                    <s:fielderror><s:param>registrationRequest.lastName</s:param></s:fielderror>
-                    <s:textfield name="registrationRequest.lastName" key="registrationRequest.lastName" size="40" tabindex="3" required="true"/>
-                </div>
-            </div>
-            <div style="text-align: left">
-                <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"><span>*</span>Phone:</div>
-                <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
-                    <s:fielderror><s:param>registrationRequest.phone</s:param></s:fielderror>
-                    <s:textfield name="registrationRequest.phone" key="registrationRequest.phone" size="40" tabindex="4" required="true"/>
-                </div>
-            </div>
-            <div style="text-align: left">
-                <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"><span></span>Fax:</div>
-                <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
-                    <s:fielderror><s:param>registrationRequest.fax</s:param></s:fielderror>
-                    <s:textfield name="registrationRequest.fax" key="registrationRequest.fax" size="40" tabindex="5"/>
-                </div>
-            </div>
-            <div style="text-align: left">
-                <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"><span>*</span>Organization:</div>
-                <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
-                    <s:fielderror><s:param>registrationRequest.organization</s:param></s:fielderror>
-                    <s:textfield name="registrationRequest.organization" key="registrationRequest.organization" size="40" tabindex="6" required="true"/>
-                </div>
-            </div>
-            <div style="text-align: left">
-                <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"><span>*</span>Address 1:</div>
-                <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
-                    <s:fielderror><s:param>registrationRequest.address1</s:param></s:fielderror>
-                    <s:textfield name="registrationRequest.address1" key="registrationRequest.address1" size="40" tabindex="7" required="true"/>
-                </div>
-            </div>
-            <div style="text-align: left">
-                <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"><span></span>Address 2:</div>
-                <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
-                    <s:fielderror><s:param>registrationRequest.address2</s:param></s:fielderror>
-                    <s:textfield name="registrationRequest.address2" key="registrationRequest.address2" size="40" tabindex="8"/>
-                </div>
-            </div>
-            <div style="text-align: left">
-                <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"><span>*</span>City:</div>
-                <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
-                    <s:fielderror><s:param>registrationRequest.city</s:param></s:fielderror>
-                    <s:textfield name="registrationRequest.city" key="registrationRequest.city" size="40" tabindex="9" required="true"/>
-                </div>
-            </div>
-            <div style="text-align: left">
-                <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"><span></span>State:</div>
-                <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
-                    <s:fielderror><s:param>registrationRequest.state</s:param></s:fielderror>
-                    <s:textfield name="registrationRequest.state" key="registrationRequest.state" size="40" tabindex="10"/>
-                </div>
-            </div>
-            <div style="text-align: left">
-                <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"><span></span>Province:</div>
-                <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
-                    <s:fielderror><s:param>registrationRequest.province</s:param></s:fielderror>
-                    <s:textfield name="registrationRequest.province" key="registrationRequest.province" size="40" tabindex="11"/>
-                </div>
-            </div>
-            <div style="text-align: left">
-                <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"><span>*</span>Country:</div>
-                <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
-                    <s:select key="registrationRequest.country"
-                              name="registrationRequest.country"
-                              list="countryList"
-                              listKey="id"
-                              listValue="printableName"
-                              tabindex="12"
-                              required="true"
-                    />
-                </div>
-            </div>
-            <div style="text-align: left">
-                <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"><span>*</span>Zip:</div>
-                <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
-                    <s:fielderror><s:param>registrationRequest.zip</s:param></s:fielderror>
-                    <s:textfield name="registrationRequest.zip" key="registrationRequest.zip" size="40" tabindex="13" required="true"/>
-                </div>
-            </div>
-            <div style="text-align: left">
-                <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"><span>*</span>Email:</div>
-                <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
-                    <s:fielderror><s:param>registrationRequest.email</s:param></s:fielderror>
-                    <s:textfield name="registrationRequest.email" key="registrationRequest.email" size="40" tabindex="14" required="true"/>
-                </div>
-            </div>
-            <div style="text-align: left">
-                <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"><span>*</span>Role:</div>
-                    <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
-                        <s:select key="registrationRequest.role"
-                                  name="registrationRequest.role"
-                                  list="#{'System Administrator':'System Administrator','Principal Investigator':'Principal Investigator',
-                                  'Lab Administrator':'Lab Administrator','Lab Scientist':'Lab Scientist','Biostatistician':'Biostatistician'}"
-                                  tabindex="15"
-                                  required="true"
-                        />
-                    </div>
-                </div>
-                <c:choose>
-                    <c:when test="${ldapInstall == 'true'&& ldapAuthenticate == 'false'}">
-                        <c:set var="div1Style" value="visibility:hidden;" />
-                    </c:when>
-                    <c:otherwise>
-                        <c:set var="div1Style" value="visibility:visible;" />
-                    </c:otherwise>
-                </c:choose>
-                <div id="div1" style="<c:out value='${div1Style}' />">
-                    <div style="text-align: left">
-                        <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"><span>*</span>Username:</div>
-                        <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
-                            <s:fielderror><s:param>registrationRequest.loginName</s:param></s:fielderror>
-                            <s:textfield name="registrationRequest.loginName" key="registrationRequest.loginName" size="40" tabindex="16" required="true"/>
-                        </div>
-                    </div>
-                    <div style="text-align: left">
-                        <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"><span>*</span>Password:</div>
-                        <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
-                            <s:fielderror><s:param>password</s:param></s:fielderror>
-                            <s:password name="password" key="registrationRequest.password" size="40" tabindex="17" required="true"/>
-                        </div>
-                    </div>
-                     <div style="text-align: left">
-                        <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"><span>*</span>Confirm Password:</div>
-                        <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
-                            <s:fielderror><s:param>passwordConfirm</s:param></s:fielderror>
-                            <s:password name="passwordConfirm" key="registrationRequest.passwordConfirm" size="40" tabindex="18" required="true"/>
-                        </div>
-                    </div>
-                </div>
-                <div style="text-align: left">
-                <div style="float:left; width:100px; margin-left:11px; margin-top:5px; text-align:left;"></div>
-                <div style="margin-top:5px; margin-bottom:5px; padding:0px;">
-                    <c:choose>
-                        <c:when test="${ldapInstall == 'true'}">
-                            <s:submit type="submit" value="Save" onclick="authenticate()"/>
-                        </c:when>
-                        <c:otherwise>
-                            <s:submit type="submit" value="Save" method="saveAuthenticate"/>
-                        </c:otherwise>
-                    </c:choose>
-                    <s:submit type="submit" value="Cancel" method="cancel"/>
-                </div>
+                    </ul>
+                </del>
             </div>
         </s:form>
-
+    </div>
 </body>

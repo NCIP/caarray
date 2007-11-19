@@ -83,10 +83,13 @@
 package gov.nih.nci.caarray.web.util;
 
 import gov.nih.nci.caarray.application.country.CountryService;
+import gov.nih.nci.caarray.application.state.StateService;
 import gov.nih.nci.caarray.domain.country.Country;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.state.State;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+import gov.nih.nci.caarray.web.action.registration.UserRole;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,6 +99,8 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author John Hedden
+ * @author Akhil Bhaskar (Amentra, Inc.)
+ *
  * This class manages cached information. It implements singleton pattern.
  */
 public final class CacheManager {
@@ -110,6 +115,8 @@ public final class CacheManager {
     // instance variables that serve as cache
     private List<LabelValue> fileTypes = new ArrayList<LabelValue>();
     private List<Country> countryList = new ArrayList<Country>();
+    private List<State> stateList = new ArrayList<State>();
+    private List<UserRole> roleList = new ArrayList<UserRole>();
 
     /**
      * Default constructor made private so that no other object can instantiate
@@ -139,6 +146,8 @@ public final class CacheManager {
         try {
             cacheFileTypes();
             cacheCountries();
+            cacheStates();
+            cacheRoles();
         } catch (Exception e) {
             this.LOG.error(e);
         }
@@ -192,6 +201,39 @@ public final class CacheManager {
     }
 
     /**
+     * Cache states.
+     */
+    protected void cacheStates() {
+        this.stateList = getStateService().getStates();
+    }
+
+    /**
+     * Cache file types.
+     */
+    protected void cacheRoles() {
+
+        roleList.add(UserRole.SYSTEM_ADMINISTRATOR);
+        roleList.add(UserRole.PRINCIPAL_INVESTIGATOR);
+        roleList.add(UserRole.LAB_ADMINISTRATOR);
+        roleList.add(UserRole.LAB_SCIENTIST);
+        roleList.add(UserRole.BIOSTATISTICIAN);
+    }
+
+    /**
+     * @return the states
+     */
+    public List<State> getStates() {
+        return stateList;
+    }
+
+    /**
+     * @return the roles
+     */
+    public List<UserRole> getRoles() {
+        return roleList;
+    }
+
+    /**
      * get locator for junit.
      * @return ServiceLocator ServiceLocator
      */
@@ -213,5 +255,13 @@ public final class CacheManager {
      */
     public CountryService getCountryService() {
         return (CountryService) locator.lookup(CountryService.JNDI_NAME);
+    }
+
+    /**
+     * Get StateService.
+     * @return stateService
+     */
+    public StateService getStateService() {
+        return (StateService) locator.lookup(StateService.JNDI_NAME);
     }
 }

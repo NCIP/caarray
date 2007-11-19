@@ -82,8 +82,10 @@
  */
 package gov.nih.nci.caarray.web.action.registration;
 
+import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.country.Country;
 import gov.nih.nci.caarray.domain.register.RegistrationRequest;
+import gov.nih.nci.caarray.domain.state.State;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 import gov.nih.nci.caarray.web.helper.EmailHelper;
 import gov.nih.nci.caarray.web.util.CacheManager;
@@ -101,6 +103,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.Action;
@@ -114,18 +117,24 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
  * @author John Hedden
+ * @author Akhil Bhaskar (Amentra, Inc.)
  *
  */
 @Validation
 public class RegistrationAction extends ActionSupport implements Preparable {
 
     private static final long serialVersionUID = 1L;
+    static final Logger LOG = Logger.getLogger(RegistrationAction.class);
+
     private RegistrationRequest registrationRequest;
     private String ldapInstall;
     private String password;
     private String passwordConfirm;
-    private String ldapAuthenticate;
+    private Boolean ldapAuthenticate;
+    private List<Organization> organizationList = new ArrayList<Organization>();
     private List<Country> countryList = new ArrayList<Country>();
+    private List<State> stateList = new ArrayList<State>();
+    private List<UserRole> roleList = new ArrayList<UserRole>();
 
     /**
      * {@inheritDoc}
@@ -133,6 +142,12 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     public void prepare() {
         if (getCountryList().size() < 1) {
             setCountryList(CacheManager.getInstance().getCountries());
+        }
+        if (getStateList().size() < 1) {
+            setStateList(CacheManager.getInstance().getStates());
+        }
+        if (getRoleList().size() < 1) {
+            setRoleList(CacheManager.getInstance().getRoles());
         }
         if (getLdapInstall() == null) {
             setLdapInstall();
@@ -165,14 +180,21 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     /**
      * Action to actually save the registration.
      * @return the directive for the next action / page to be directed to
-     * @throws MessagingException on error
      */
-    public String save() throws MessagingException {
-        persist();
-        EmailHelper.registerEmail(getRegistrationRequest());
-        EmailHelper.registerEmailAdmin(getRegistrationRequest());
+    public String save() {
+        try {
+            persist();
+            LOG.info("done saving registration request; sending email");
+            EmailHelper.registerEmail(getRegistrationRequest());
+            EmailHelper.registerEmailAdmin(getRegistrationRequest());
 
-        return Action.SUCCESS;
+            return Action.SUCCESS;
+        }
+        catch (MessagingException me) {
+            LOG.error("Failed to send an email", me);
+            ActionHelper.saveMessage(getText("registration.emailFailure"));
+            return Action.INPUT;
+        }
     }
 
     /**
@@ -197,11 +219,11 @@ public class RegistrationAction extends ActionSupport implements Preparable {
                                                 key = "validator.pattern",
                                                 message = "") }
     )
+    public String saveAuthenticate() throws CSException {
 
-    public String saveAuthenticate() throws CSException, MessagingException {
         if (getLdapInstall().equalsIgnoreCase("true")) {
             if (!LDAPUtil.ldapAuthenticateUser(registrationRequest.getLoginName(), getPassword())) {
-                addActionError("LDAP Authentication Failed.");
+                ActionHelper.saveMessage(getText("registration.ldapLookupFailure"));
                 return Action.INPUT;
             }
         } else {
@@ -210,11 +232,7 @@ public class RegistrationAction extends ActionSupport implements Preparable {
             }
         }
 
-        persist();
-        EmailHelper.registerEmail(getRegistrationRequest());
-        EmailHelper.registerEmailAdmin(getRegistrationRequest());
-
-        return Action.SUCCESS;
+        return save();
     }
 
 
@@ -224,7 +242,7 @@ public class RegistrationAction extends ActionSupport implements Preparable {
             if (StringUtils.isNotBlank(getRegistrationRequest().getLoginName())
                     && (ActionHelper.getUserProvisioningManager()
                                     .getUser(getRegistrationRequest().getLoginName()) != null)) {
-                addActionError("Username is already in use.");
+                ActionHelper.saveMessage(getText("registration.usernameInUse"));
                 retval = false;
             }
             if (StringUtils.isNotBlank(getRegistrationRequest().getEmail())) {
@@ -232,7 +250,7 @@ public class RegistrationAction extends ActionSupport implements Preparable {
                 searchUser.setEmailId(getRegistrationRequest().getEmail());
                 if (!ActionHelper.getUserProvisioningManager()
                                  .getObjects(new UserSearchCriteria(searchUser)).isEmpty()) {
-                    addActionError("Email Address is already in use.");
+                    ActionHelper.saveMessage(getText("registration.emailAddressInUse"));
                     retval = false;
                 }
             }
@@ -250,8 +268,9 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     private void setupForm() {
         registrationRequest = new RegistrationRequest();
 
-        if (getLdapAuthenticate() == null) {
-            setLdapAuthenticate("false");
+        // populate the initial radio for LDAP
+        if (null == getLdapAuthenticate()) {
+            setLdapAuthenticate(Boolean.TRUE);
         }
     }
 
@@ -285,6 +304,48 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     }
 
     /**
+     * @return the stateList
+     */
+    public List<State> getStateList() {
+        return stateList;
+    }
+
+    /**
+     * @param stateList the stateList to set
+     */
+    public void setStateList(List<State> stateList) {
+        this.stateList = stateList;
+    }
+
+    /**
+     * @return the organizationList
+     */
+    public List<Organization> getOrganizationList() {
+        return organizationList;
+    }
+
+    /**
+     * @param organizationList the organizationList to set
+     */
+    public void setOrganizationList(List<Organization> organizationList) {
+        this.organizationList = organizationList;
+    }
+
+    /**
+     * @return the roleList
+     */
+    public List<UserRole> getRoleList() {
+        return roleList;
+    }
+
+    /**
+     * @param roleList the roleList to set
+     */
+    public void setRoleList(List<UserRole> roleList) {
+        this.roleList = roleList;
+    }
+
+    /**
      * @return the password
      */
     public String getPassword() {
@@ -315,14 +376,14 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     /**
      * @return the ldapAuthenticate
      */
-    public String getLdapAuthenticate() {
+    public Boolean getLdapAuthenticate() {
         return ldapAuthenticate;
     }
 
     /**
      * @param ldapAuthenticate the ldapAuthenticate to set
      */
-    public void setLdapAuthenticate(String ldapAuthenticate) {
+    public void setLdapAuthenticate(Boolean ldapAuthenticate) {
         this.ldapAuthenticate = ldapAuthenticate;
     }
 

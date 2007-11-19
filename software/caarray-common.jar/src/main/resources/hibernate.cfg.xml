@@ -88,6 +88,7 @@
         <mapping class="gov.nih.nci.caarray.domain.vocabulary.TermSource"/>
         <mapping class="gov.nih.nci.caarray.domain.register.RegistrationRequest"/>
         <mapping class="gov.nih.nci.caarray.domain.country.Country"/>
+        <mapping class="gov.nih.nci.caarray.domain.state.State"/>
         <mapping class="gov.nih.nci.caarray.validation.ValidationMessage"/>
         <mapping class="gov.nih.nci.caarray.validation.FileValidationResult"/>
         <mapping class="gov.nih.nci.cabio.domain.ArrayReporter"/>

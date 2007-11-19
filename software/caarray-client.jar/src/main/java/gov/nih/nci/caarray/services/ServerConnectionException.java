@@ -90,7 +90,9 @@ public class ServerConnectionException extends Exception {
     private static final long serialVersionUID = 4865588860956168307L;
 
     /**
-     * {@inheritDoc}
+     *
+     * @param message the message of the exception
+     * @param cause the cause of the exception
      */
     public ServerConnectionException(String message, Throwable cause) {
         super(message, cause);

@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.domain.register;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.country.Country;
+import gov.nih.nci.caarray.domain.state.State;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -97,6 +98,7 @@ import org.hibernate.validator.Pattern;
 
 /**
  * @author John Hedden
+ * @author Akhil Bhaskar (Amentra, Inc.)
  *
  */
 @Entity
@@ -116,7 +118,6 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
     private static final int ADDRESS1_FIELD_LENGTH = 200;
     private static final int ADDRESS2_FIELD_LENGTH = 200;
     private static final int CITY_FIELD_LENGTH = 50;
-    private static final int STATE_FIELD_LENGTH = 2;
     private static final int PROVINCE_FIELD_LENGTH = 50;
     private static final int ZIP_FIELD_LENGTH = 10;
     private static final int ROLE_FIELD_LENGTH = 200;
@@ -132,13 +133,11 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
     private String address1;
     private String address2;
     private String city;
-    private String state;
+    private State state;
     private String province;
     private Country country;
     private String zip;
     private String role;
-
-
 
     /**
      * @return the loginName
@@ -148,16 +147,12 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
         return loginName;
     }
 
-
-
     /**
      * @param loginName the loginName to set
      */
     public void setLoginName(String loginName) {
         this.loginName = loginName;
     }
-
-
 
     /**
      * @return the firstName
@@ -169,16 +164,12 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
         return firstName;
     }
 
-
-
     /**
      * @param firstName the firstName to set
      */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-
-
 
     /**
      * @return the middleInitial
@@ -189,16 +180,12 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
         return middleInitial;
     }
 
-
-
     /**
      * @param middleInitial the middleInitial to set
      */
     public void setMiddleInitial(String middleInitial) {
         this.middleInitial = middleInitial;
     }
-
-
 
     /**
      * @return the lastName
@@ -210,16 +197,12 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
         return lastName;
     }
 
-
-
     /**
      * @param lastName the lastName to set
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-
-
 
     /**
      * @return the emaiId
@@ -232,15 +215,12 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
         return email;
     }
 
-
-
     /**
      * @param email the email to set
      */
     public void setEmail(String email) {
         this.email = email;
     }
-
 
     /**
      * @return the phone
@@ -253,16 +233,12 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
         return phone;
     }
 
-
-
     /**
      * @param phone the phone to set
      */
     public void setPhone(String phone) {
         this.phone = phone;
     }
-
-
 
     /**
      * @return the fax
@@ -274,16 +250,12 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
         return fax;
     }
 
-
-
     /**
      * @param fax the fax to set
      */
     public void setFax(String fax) {
         this.fax = fax;
     }
-
-
 
     /**
      * @return the organization
@@ -295,16 +267,12 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
         return organization;
     }
 
-
-
     /**
      * @param organization the organization to set
      */
     public void setOrganization(String organization) {
         this.organization = organization;
     }
-
-
 
     /**
      * @return the address1
@@ -316,16 +284,12 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
         return address1;
     }
 
-
-
     /**
      * @param address1 the address1 to set
      */
     public void setAddress1(String address1) {
         this.address1 = address1;
     }
-
-
 
     /**
      * @return the address2
@@ -336,16 +300,12 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
         return address2;
     }
 
-
-
     /**
      * @param address2 the address2 to set
      */
     public void setAddress2(String address2) {
         this.address2 = address2;
     }
-
-
 
     /**
      * @return the city
@@ -357,8 +317,6 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
         return city;
     }
 
-
-
     /**
      * @param city the city to set
      */
@@ -366,27 +324,21 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
         this.city = city;
     }
 
-
-
     /**
      * @return the state
      */
-    @Column(length = STATE_FIELD_LENGTH)
-    @Length(max = 2)
-    public String getState() {
+    @ManyToOne
+    @ForeignKey(name = "REGISTRATIONREQUEST_STATE_FK")
+    public State getState() {
         return state;
     }
-
-
 
     /**
      * @param state the state to set
      */
-    public void setState(String state) {
+    public void setState(State state) {
         this.state = state;
     }
-
-
 
     /**
      * @return the province
@@ -397,16 +349,12 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
         return province;
     }
 
-
-
     /**
      * @param province the province to set
      */
     public void setProvince(String province) {
         this.province = province;
     }
-
-
 
     /**
      * @return the zip
@@ -419,16 +367,12 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
         return zip;
     }
 
-
-
     /**
      * @param zip the zip to set
      */
     public void setZip(String zip) {
         this.zip = zip;
     }
-
-
 
     /**
      * @return the role
@@ -439,16 +383,12 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
         return role;
     }
 
-
-
     /**
      * @param role the role to set
      */
     public void setRole(String role) {
         this.role = role;
     }
-
-
 
     /**
      * @return the country
@@ -459,8 +399,6 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
     public Country getCountry() {
         return country;
     }
-
-
 
     /**
      * @param country the country to set

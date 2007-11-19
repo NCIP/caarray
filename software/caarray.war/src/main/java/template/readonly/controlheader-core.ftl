@@ -8,6 +8,9 @@
         class="label"<#t/>
     ><#t/>
 ${parameters.label?html}<#t/>
+<#if parameters.required?exists && parameters.required == true>
+    <span class="required">*</span><#t/>
+</#if>
 :<#t/>
 </label><#t/>
 </#if>

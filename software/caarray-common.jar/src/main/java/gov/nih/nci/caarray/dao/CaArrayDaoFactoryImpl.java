@@ -188,6 +188,15 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
     }
 
     /**
+     * Returns a <code>StateDao</code>.
+     *
+     * @return a <code>StateDao</code>.
+     */
+    public StateDao getStateDao() {
+        return new StateDaoImpl();
+    }
+
+    /**
      * {@inheritDoc}
      */
     public CollaboratorGroupDao getCollaboratorGroupDao() {
