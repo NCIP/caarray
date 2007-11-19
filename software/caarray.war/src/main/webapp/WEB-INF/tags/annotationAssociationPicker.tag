@@ -7,8 +7,15 @@
 <%@ attribute name="itemId" required="true"%>
 <%@ attribute name="baseId" required="true"%>
 <%@ include file="projectListTabCommon.tagf"%>
+<s:if test="fieldErrors['associatedValueName'] != null">
+<tr errorfor="associatedValueName">
+    <td valign="top" align="center" colspan="2">
+        <s:fielderror><s:param>associatedValueName</s:param></s:fielderror>
+    </td>
+</tr>
+</s:if>
 <tr>
-    <td class="tdLabel"><label class="label">${associatedEntityName}s:</label></td>
+    <td class="tdLabel"><label class="label">${associatedEntityName}s<span class="required">*</span>:</label></td>
     <td>
         <s:if test="${editMode}">
             <div class="selectListWrapper">
@@ -23,12 +30,19 @@
                     <h4>Selected ${associatedEntityName}s</h4>
                     <div class="scrolltable2">
                         <ul id="${baseId}SelectedItemDiv" class="selectedItemList">
-                            <c:forEach items="${currentAssociationsCollection}" var="currentItem">
+                            <c:forEach items="${initialSavedAssociations}" var="currentItem">
                                 <li onclick="AssociationPickerUtils.removeSelection(this, '${baseId}', '${associatedEntityName}'); "><input type="hidden" value="${currentItem.id}"/>${currentItem.name}</li>
+                            </c:forEach>
+                            <c:forEach items="${itemsToAssociate}" var="currentItem">
+                                <li onclick="AssociationPickerUtils.removeSelection(this, '${baseId}', '${associatedEntityName}'); "><input type="hidden" name="itemsToAssociate" value="${currentItem.id}"/>${currentItem.name}</li>
                             </c:forEach>
                         </ul>
                     </div>
-                    <span id="${baseId}ItemsToRemove"></span>
+                    <span id="${baseId}ItemsToRemove">
+                        <c:forEach items="${itemsToRemove}" var="currentItem">
+                            <input type="hidden" name="itemsToRemove" value="${currentItem.id}"/>
+                        </c:forEach>
+                    </span>
                 </div>
             </div>
             <c:url value="/protected/ajax/project/listTab/${plural}/searchForAssociationValues.action" var="autocompleteUrl" />

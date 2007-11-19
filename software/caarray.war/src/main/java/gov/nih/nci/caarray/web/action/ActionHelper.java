@@ -132,10 +132,19 @@ public final class ActionHelper {
     public static void saveMessage(String msg) {
         List messages = (List) ServletActionContext.getRequest().getSession().getAttribute("messages");
         if (messages == null) {
-            messages = new ArrayList();
+            messages = new ArrayList<String>();
         }
         messages.add(msg);
         ServletActionContext.getRequest().getSession().setAttribute("messages", messages);
+    }
+
+    /**
+     * Get the messages.
+     * @return the messages
+     */
+    @SuppressWarnings("unchecked")
+    public static List<String> getMessages() {
+        return (List<String>) ServletActionContext.getRequest().getSession().getAttribute("messages");
     }
 
     /**

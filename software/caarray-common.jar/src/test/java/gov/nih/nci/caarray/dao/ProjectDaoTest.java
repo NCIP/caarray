@@ -88,6 +88,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.contact.Address;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
@@ -154,6 +155,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
     // Experiment
     private static final String UNCHECKED = "unchecked";
+    private static Organism DUMMY_ORGANISM = new Organism();
     private static Project DUMMY_PROJECT_1 = new Project();
     private static Experiment DUMMY_EXPERIMENT_1 = new Experiment();
     private static TermSource DUMMY_TERM_SOURCE = new TermSource();
@@ -201,6 +203,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
     @Before
     public void setup() {
         // Experiment
+        DUMMY_ORGANISM = new Organism();
         DUMMY_PROJECT_1 = new Project();
         DUMMY_EXPERIMENT_1 = new Experiment();
         DUMMY_TERM_SOURCE = new TermSource();
@@ -260,6 +263,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         setBioMaterials();
         setHybridizations();
         DUMMY_PROJECT_1.setExperiment(DUMMY_EXPERIMENT_1);
+        DUMMY_EXPERIMENT_1.setOrganism(DUMMY_ORGANISM);
     }
 
     private static void setHybridizations() {

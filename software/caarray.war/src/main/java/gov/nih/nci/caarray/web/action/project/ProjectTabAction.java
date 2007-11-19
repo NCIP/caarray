@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.struts2.interceptor.validation.SkipValidation;
+
 import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
@@ -36,6 +38,7 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
      *
      * @return name of result to forward to
      */
+    @SkipValidation
     public String load() {
         return INPUT;
     }
@@ -61,7 +64,7 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
             getExperiment().getExperimentContacts().add(pi);
         }
         try {
-            getProjectManagementService().saveProject(getProject(), orphan);
+            getProjectManagementService().saveProject(getProject(), this.orphan);
             List<String> args = new ArrayList<String>();
             args.add(getProject().getExperiment().getTitle());
             ActionHelper.saveMessage(getText("project.saved", args));

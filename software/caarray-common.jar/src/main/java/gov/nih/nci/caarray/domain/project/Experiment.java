@@ -126,6 +126,8 @@ import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Where;
+import org.hibernate.validator.Length;
+import org.hibernate.validator.NotNull;
 
 /**
  *
@@ -252,7 +254,8 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the title
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
+    @NotNull
     @BrowseableProperty
     public String getTitle() {
         return this.title;
@@ -399,6 +402,7 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @Enumerated(EnumType.STRING)
     @BrowseableProperty
+    @NotNull
     public ServiceType getServiceType() {
         return this.serviceType;
     }
@@ -418,6 +422,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the assay type
      */
     @Enumerated(EnumType.STRING)
+    @NotNull
     public AssayType getAssayType() {
         return this.assayType;
     }
@@ -459,6 +464,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @ManyToOne
     @ForeignKey(name = "EXPERIMENT_ORGANISM_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @NotNull
     public Organism getOrganism() {
         return this.organism;
     }
@@ -953,7 +959,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @OneToOne(mappedBy = "experiment")
     @BrowseableProperty
     public Project getProject() {
-        return project;
+        return this.project;
     }
 
     /**

@@ -5,6 +5,7 @@ import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,11 +47,19 @@ public class ProjectAction extends AbstractBaseProjectAction {
         if (getProject().getId() == null) {
             return projectNotFound();
         }
-        if (!getProject().hasWritePermission(UsernameHolder.getCsmUser())) {
+        if (!getProject().hasWritePermission(getCsmUser())) {
             return permissionDenied("role.write");
         }
         setEditMode(true);
         return INPUT;
+    }
+
+    /**
+     * get the csm user.  This method is extracted so it can be overwritten in test cases.
+     * @return the csm user.
+     */
+    protected User getCsmUser() {
+        return UsernameHolder.getCsmUser();
     }
 
     /**
@@ -63,7 +72,7 @@ public class ProjectAction extends AbstractBaseProjectAction {
         if (getProject().getId() == null) {
             return projectNotFound();
         }
-        if (!getProject().hasReadPermission(UsernameHolder.getCsmUser())) {
+        if (!getProject().hasReadPermission(getCsmUser())) {
             return permissionDenied("role.read");
         }
         setEditMode(false);
@@ -72,7 +81,7 @@ public class ProjectAction extends AbstractBaseProjectAction {
 
     /**
      * show browse view for a project.
-     * 
+     *
      * @return path String
      */
     @SkipValidation
@@ -83,7 +92,7 @@ public class ProjectAction extends AbstractBaseProjectAction {
         setEditMode(false);
         return "browse";
     }
-    
+
     /**
      * handles the case where an attempt is made to view/edit a non-existent project.
      * @return the result name
@@ -107,7 +116,7 @@ public class ProjectAction extends AbstractBaseProjectAction {
 
     /**
      * change the workflow status of a project.
-     * 
+     *
      * @return path String
      */
     public String changeWorkflowStatus() {
@@ -131,7 +140,7 @@ public class ProjectAction extends AbstractBaseProjectAction {
      * @return the workflowStatus
      */
     public ProposalStatus getWorkflowStatus() {
-        return workflowStatus;
+        return this.workflowStatus;
     }
 
     /**

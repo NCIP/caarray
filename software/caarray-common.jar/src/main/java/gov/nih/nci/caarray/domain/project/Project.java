@@ -129,6 +129,7 @@ import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Where;
 import org.hibernate.validator.NotNull;
+import org.hibernate.validator.Valid;
 
 /**
  * A microarray project.
@@ -163,7 +164,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Gets the workflow status of this project. Hibernate use only
-     * 
+     *
      * @return the status
      */
     @Enumerated(EnumType.STRING)
@@ -176,7 +177,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Sets the workflow status of this project. Hibernate use only
-     * 
+     *
      * @param status the status to set
      */
     private void setStatusInternal(ProposalStatus statusInternal) {
@@ -185,7 +186,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Gets the workflow status of this project.
-     * 
+     *
      * @return the status
      */
     @Transient
@@ -195,7 +196,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Sets the workflow status of this project.
-     * 
+     *
      * @param status the status to set
      */
     public void setStatus(ProposalStatus status) {
@@ -264,7 +265,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Gets the experiment.
-     * 
+     *
      * @return the experiment
      */
     @ManyToOne
@@ -272,13 +273,14 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "PROJECT_EXPERIMENT_FK")
     @BrowseableProperty
+    @Valid
     public Experiment getExperiment() {
         return this.experiment;
     }
 
     /**
      * Sets the experiment.
-     * 
+     *
      * @param experimentVal the experiment
      */
     public void setExperiment(final Experiment experimentVal) {
@@ -287,7 +289,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Gets the files.
-     * 
+     *
      * @return the files
      */
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -304,7 +306,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Get the files.
-     * 
+     *
      * @return the files.
      */
     @Transient
@@ -314,7 +316,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Gets the files.
-     * 
+     *
      * @return the files
      */
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
@@ -331,7 +333,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Get the files.
-     * 
+     *
      * @return the files.
      */
     @Transient
@@ -341,7 +343,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Gets the files.
-     * 
+     *
      * @return the files
      */
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
@@ -424,7 +426,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      * Add a new AccessProfile for a collaborator group unless the project already has a profile for this
      * group.
      * @param group to add profile for
-     * @return if there already existed a profile for that group, then it is returned, otherwise a 
+     * @return if there already existed a profile for that group, then it is returned, otherwise a
      * new profile is added and returned
      */
     public AccessProfile addGroupProfile(CollaboratorGroup group) {
@@ -477,7 +479,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Checks whether a given user is an owner of this project.
-     * 
+     *
      * @param user user to check
      * @return whether the given user is an owner of this project
      */
@@ -487,7 +489,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Returns whether the given user has read permissions to this project.
-     * 
+     *
      * @param user the user (can be the synthetic "anonymous" permission)
      * @return whether the user has read permissions to this project
      */
@@ -497,7 +499,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Returns whether the given user has write permissions to this project.
-     * 
+     *
      * @param user the user (can be the synthetic "anonymous" permission)
      * @return whether the user has write permissions to this project
      */
@@ -507,7 +509,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Returns whether the given user has permission to modify permissions for this project.
-     * 
+     *
      * @param user the user (can be the synthetic "anonymous" permission)
      * @return whether the user has permissions to modify permissions for this project
      */
@@ -517,7 +519,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Gets the last updated date.
-     * 
+     *
      * @return the last date this experiment was updated
      */
     @Temporal(TemporalType.TIMESTAMP)
@@ -527,7 +529,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Sets the last updated date.
-     * 
+     *
      * @param lastUpdated the last date this experiment was updated
      */
     public void setLastUpdated(final Date lastUpdated) {

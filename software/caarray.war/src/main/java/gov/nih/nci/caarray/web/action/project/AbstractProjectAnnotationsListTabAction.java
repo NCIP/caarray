@@ -88,11 +88,18 @@ import gov.nih.nci.caarray.domain.PersistentObject;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.struts2.interceptor.validation.SkipValidation;
+
+import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
+import com.opensymphony.xwork2.validator.annotations.Validation;
+
 /**
  * Class that manages the annotation tabs.
  * @author Scott Miller
  * @param <T> the class of the annotations are being managed.
  */
+@Validation
 public abstract class AbstractProjectAnnotationsListTabAction<T extends PersistentObject> extends
     AbstractProjectListTabAction {
 
@@ -112,6 +119,9 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
      */
     @Override
     @SuppressWarnings("unchecked")
+    @FieldExpressionValidator(fieldName = "associatedValueName",
+            message = "You must select at least one annotation to associate.",
+            expression = "currentAssociationsCollection.size() - itemsToRemove.size() + itemsToAssociate.size() > 0")
     public String save() {
         // ideally this logic, along with the itemsToAssociate collection would be int he base class, but the
         // struts 2 type converter for persistent entity wasn't liking the generic collection.
@@ -141,6 +151,7 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
      * Action to search for associated annotations.
      * @return the string matching the result to follow
      */
+    @SkipValidation
     public String searchForAssociationValues() {
         if (getAssociatedValueName() ==  null) {
             setAssociatedValueName("");
@@ -149,6 +160,22 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
                 "name", getAssociatedValueName());
         setUnassociatedValues(possibleValues);
         return "associationValues";
+    }
+
+    /**
+     * Gets the set of initialSavedAssociations.
+     * @return the set of items.
+     */
+    public Collection getInitialSavedAssociations() {
+        return CollectionUtils.subtract(getCurrentAssociationsCollection(), getItemsToRemove());
+    }
+
+    /**
+     * does nothing, here to conform to java bean rules for the jsp.
+     * @param c the param that will be ignored
+     */
+    public void setInitialSavedAssociations(Collection c) {
+        // here to conform to java bean rules for jsp
     }
 
     /**

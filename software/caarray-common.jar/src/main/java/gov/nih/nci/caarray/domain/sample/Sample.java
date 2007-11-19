@@ -215,5 +215,5 @@ public class Sample extends AbstractBioMaterial implements Protectable {
             }
         }
         return null;
-    }    
+    }
 }

@@ -113,6 +113,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Where;
+import org.hibernate.validator.Length;
+import org.hibernate.validator.NotNull;
 
 /**
  * The act of hybridizing extracted genetic material to the probes on a microarray.
@@ -140,9 +142,10 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      *
      * @return the name
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @NotNull
+    @Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
-        return name;
+        return this.name;
     }
 
     /**
@@ -162,7 +165,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      */
     @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.LAZY)
     public Set<Image> getImages() {
-        return images;
+        return this.images;
     }
 
     /**
@@ -183,7 +186,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      */
     @ManyToMany(mappedBy = "hybridizations", fetch = FetchType.LAZY)
     public Set<DerivedArrayData> getDerivedDataCollection() {
-        return derivedDataCollection;
+        return this.derivedDataCollection;
     }
 
     /**
@@ -205,7 +208,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     @ManyToOne(cascade = { CascadeType.ALL })
     @ForeignKey(name = "HYBRIDIZATION_ARRAY_FK")
     public Array getArray() {
-        return array;
+        return this.array;
     }
 
     /**
@@ -226,7 +229,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     @OneToOne(mappedBy = MAPPED_BY)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public RawArrayData getArrayData() {
-        return arrayData;
+        return this.arrayData;
     }
 
     /**
@@ -246,7 +249,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      */
     @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.LAZY)
     public Set<FactorValue> getFactorValues() {
-        return factorValues;
+        return this.factorValues;
     }
 
     /**
@@ -268,7 +271,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     @ManyToOne
     @ForeignKey(name = "HYBRIDIZATION_PROTOCOLAPP_FK")
     public ProtocolApplication getProtocolApplication() {
-        return protocolApplication;
+        return this.protocolApplication;
     }
 
     /**
@@ -290,7 +293,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     @ManyToMany(mappedBy = "hybridizations", fetch = FetchType.LAZY)
     @Where(clause = Experiment.LABELED_EXTRACTS_FILTER)
     public Set<LabeledExtract> getLabeledExtracts() {
-        return labeledExtract;
+        return this.labeledExtract;
     }
 
     /**
@@ -317,7 +320,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      */
     @Column
     public float getAmountOfMaterial() {
-        return amountOfMaterial;
+        return this.amountOfMaterial;
     }
 
     /**
@@ -334,7 +337,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "HYBRIDIZATIONAMOUNT_UNIT_FK")
     public Term getAmountOfMaterialUnit() {
-        return amountOfMaterialUnit;
+        return this.amountOfMaterialUnit;
     }
 
     /**
@@ -351,7 +354,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "HYBRIDIZATION_LABEL_FK")
     public Term getLabel() {
-        return label;
+        return this.label;
     }
 
     /**
@@ -360,7 +363,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     public void setLabel(Term label) {
         this.label = label;
     }
-    
+
     /**
      * {@inheritDoc}
      */

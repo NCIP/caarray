@@ -8,7 +8,7 @@
             <tr>
                 <td colspan="2" class="centered">
                     <br />
-                    <img align="absmiddle" src="<c:url value="/images/iconWarning.gif"/>" alt="<fmt:message key='icon.warning'/>" class="icon"/>
+                    <img align="top" src="<c:url value="/images/iconWarning.gif"/>" alt="<fmt:message key='icon.warning'/>" class="icon"/>
                     <fmt:message key="errors.password.mismatch"/>
                 </td>
             </tr>

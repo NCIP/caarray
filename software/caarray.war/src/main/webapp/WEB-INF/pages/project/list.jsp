@@ -8,14 +8,14 @@
                 <c:when test="${caarrayfn:canRead(row, caarrayfn:currentUser()) }">
                     <c:url var="viewUrl" value="/protected/project/details.action">
                         <c:param name="project.id" value="${row.id}"/>
-                    </c:url>                
+                    </c:url>
                 </c:when>
                 <c:otherwise>
                     <c:url var="viewUrl" value="/protected/project/browse.action">
                         <c:param name="project.id" value="${row.id}"/>
-                    </c:url>                                
+                    </c:url>
                 </c:otherwise>
-            </c:choose>        
+            </c:choose>
             <a href="${viewUrl}">${row.experiment.publicIdentifier}</a>
         </display:column>
         <display:column property="experiment.title" title="Experiment Title" escapeXml="true" sortable="true"/>
@@ -33,7 +33,7 @@
                     <c:param name="initialTab" value="annotations" />
                     <c:param name="initialTab2" value="samples" />
                 </c:url>
-                <a href="${viewSamplesUrl}">${row.experiment.sampleCount}</a>                
+                <a href="${viewSamplesUrl}">${row.experiment.sampleCount}</a>
             </c:if>
         </display:column>
         <display:column sortProperty="status" title="Status" sortable="true">

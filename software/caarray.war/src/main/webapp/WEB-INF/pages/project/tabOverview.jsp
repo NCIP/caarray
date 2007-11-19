@@ -16,13 +16,13 @@ setExperimentTitleHeader('${project.experiment.title}');
             Required fields are marked with <span class="required">*asterisks*</span>.
         </p>
         <s:form action="ajax/project/tab/Overview/save" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper'); return false;">
-            <s:textfield required="true" name="project.experiment.title" label="Experiment Title" size="80" tabindex="1"/>
+            <s:textfield required="true" key="project.experiment.title" size="80" tabindex="1"/>
             <s:textfield theme="readonly" label="Status" value="%{getText(project.status.resourceKey)}"/>
             <s:textfield theme="readonly" name="project.experiment.publicIdentifier" label="Experiment Identifier"/>
-            <s:select required="true" name="project.experiment.serviceType" label="Service Type" tabindex="4"
+            <s:select required="true" key="project.experiment.serviceType" tabindex="4"
                       list="@gov.nih.nci.caarray.domain.project.ServiceType@values()" listValue="%{getText(resourceKey)}"
                       headerKey="" headerValue="--Select a Service Type--"/>
-            <s:select required="true" name="project.experiment.assayType" label="Assay Type" tabindex="5"
+            <s:select required="true" key="project.experiment.assayType" tabindex="5"
                       list="@gov.nih.nci.caarray.domain.project.AssayType@values()" listValue="%{getText(resourceKey)}"
                       headerKey="" headerValue="--Select an Assay Type--"/>
             <s:select name="project.experiment.manufacturer" label="Provider" tabindex="6"
@@ -35,7 +35,7 @@ setExperimentTitleHeader('${project.experiment.title}');
 
             <s:select multiple="true" name="project.experiment.arrayDesigns" label="Array Designs" tabindex="7"
                       list="arrayDesigns" listKey="id" listValue="name" value="%{project.experiment.arrayDesigns.{id}}" />
-            <s:select required="true" name="project.experiment.organism" label="Organism" tabindex="7"
+            <s:select required="true" key="project.experiment.organism" tabindex="7"
                       list="organisms" listKey="id" listValue="commonName" value="project.experiment.organism.id"
                       headerKey="" headerValue="--Select an Organism--"/>
             <caarray:termSelector baseId="tissueSite" category="<%= ExperimentOntologyCategory.ORGANISM_PART %>" initialTerms="${project.experiment.tissueSites}"
@@ -47,6 +47,7 @@ setExperimentTitleHeader('${project.experiment.title}');
             <caarray:termSelector baseId="conditions" category="<%= ExperimentOntologyCategory.DISEASE_STATE %>" initialTerms="${project.experiment.conditions}"
                 tabIndex="11" termFieldName="project.experiment.conditions" termLabel="Condition"/>
             <s:hidden name="project.id" />
+            <s:hidden name="editMode" />
         </s:form>
 
         <script type="text/javascript">

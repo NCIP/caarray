@@ -82,157 +82,142 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
-import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.sample.Extract;
-import gov.nih.nci.caarray.domain.sample.Sample;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.application.project.ProjectManagementService;
+import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
+import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.project.ProposalStatus;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import org.apache.struts2.ServletActionContext;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 
-import com.opensymphony.xwork2.validator.annotations.CustomValidator;
-import com.opensymphony.xwork2.validator.annotations.Validation;
-import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
+import com.opensymphony.xwork2.Action;
 
 /**
- * Action implementing the extracts tab.
- *
- * @author Dan Kokotov
+ * @author Scott Miller
  */
-@Validation
-public class ProjectExtractsAction extends AbstractProjectAnnotationsListTabAction<Sample> {
-    private static final long serialVersionUID = 1L;
+public class ProjectActionTest {
 
-    private Extract currentExtract = new Extract();
-    private List<Sample> itemsToAssociate = new ArrayList<Sample>();
-    private List<Sample> itemsToRemove = new ArrayList<Sample>();
+    private static final String WORKSPACE = "workspace";
+    ProjectAction action = new ProjectAction();
+    private static final ProjectManagementServiceStub projectManagementServiceStub = new ProjectManagementServiceStub();
 
-    /**
-     * Default constructor.
-     */
-    public ProjectExtractsAction() {
-        super("extract");
+    @BeforeClass
+    @SuppressWarnings("PMD")
+    public static void beforeClass() {
+        ServiceLocatorStub stub = ServiceLocatorStub.registerEmptyLocator();
+        stub.addLookup(ProjectManagementService.JNDI_NAME, projectManagementServiceStub);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws VocabularyServiceException
-     */
-    @Override
-    public void prepare() throws VocabularyServiceException {
-        super.prepare();
+    @Before
+    public void before() {
+        this.action = new ProjectAction() {
+            private static final long serialVersionUID = 1L;
 
-        if (this.currentExtract.getId() != null) {
-            this.currentExtract = getGenericDataService().retrieveEnity(Extract.class, this.currentExtract.getId());
-        }
+            @Override
+            protected User getCsmUser() {
+                return null;
+            }
+        };
+        projectManagementServiceStub.reset();
+        ServletActionContext.setRequest(new MockHttpServletRequest());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void doCopyItem() throws ProposalWorkflowException {
-        ActionHelper.getProjectManagementService().copyExtract(getProject(), this.currentExtract.getId());
+    private Project getTestProject(Long id) {
+        Project p = new Project() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public boolean hasReadPermission(User user) {
+                return (this.getId() == 1l);
+            }
+
+            @Override
+            public boolean hasWritePermission(User user) {
+                return (this.getId() == 1l);
+            }
+
+        };
+        p.setId(id);
+        return p;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected Collection<Extract> getCollection() {
-        return getProject().getExperiment().getExtracts();
+    @Test
+    public void testPrepare() throws Exception {
+        this.action.prepare();
+        assertEquals(0, projectManagementServiceStub.getProjectByIdCount());
+        this.action.setProject(this.getTestProject(null));
+        this.action.prepare();
+        assertEquals(0, projectManagementServiceStub.getProjectByIdCount());
+        this.action.setProject(this.getTestProject(1l));
+        this.action.prepare();
+        assertEquals(1, projectManagementServiceStub.getProjectByIdCount());
+        assertNotNull(this.action.getExperiment());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected AbstractCaArrayEntity getItem() {
-        return getCurrentExtract();
+    @Test
+    public void testCreate() throws Exception {
+        assertFalse(this.action.isEditMode());
+        assertEquals(Action.INPUT, this.action.create());
+        assertTrue(this.action.isEditMode());
     }
 
-    /**
-     * @return the currentExtract
-     */
-    @CustomValidator(type = "hibernate", parameters = @ValidationParameter(name = "resourceKeyBase",
-            value = "experiment.extracts"))
-    public Extract getCurrentExtract() {
-        return this.currentExtract;
+    @Test
+    public void testEdit() {
+        this.action.setProject(this.getTestProject(null));
+        assertEquals(WORKSPACE, this.action.edit());
+        assertEquals(1, ActionHelper.getMessages().size());
+        this.action.setProject(this.getTestProject((2l)));
+        assertEquals(WORKSPACE, this.action.edit());
+        assertEquals(2, ActionHelper.getMessages().size());
+        this.action.setProject(this.getTestProject((1l)));
+        assertEquals(Action.INPUT, this.action.edit());
+        assertTrue(this.action.isEditMode());
+        assertEquals(2, ActionHelper.getMessages().size());
     }
 
-    /**
-     * @param currentExtract the currentExtract to set
-     */
-    public void setCurrentExtract(Extract currentExtract) {
-        this.currentExtract = currentExtract;
+    @Test
+    public void testDetails() {
+        this.action.setProject(this.getTestProject(null));
+        assertEquals(WORKSPACE, this.action.details());
+        assertEquals(1, ActionHelper.getMessages().size());
+        this.action.setProject(this.getTestProject((2l)));
+        assertEquals(WORKSPACE, this.action.details());
+        assertEquals(2, ActionHelper.getMessages().size());
+        this.action.setProject(this.getTestProject((1l)));
+        assertEquals(Action.INPUT, this.action.details());
+        assertFalse(this.action.isEditMode());
+        assertEquals(2, ActionHelper.getMessages().size());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Collection getAnnotationCollectionToUpdate(Sample item) {
-        return item.getExtracts();
+    @Test
+    public void testBrowse() {
+        this.action.setProject(this.getTestProject(null));
+        assertEquals(WORKSPACE, this.action.browse());
+        assertEquals(1, ActionHelper.getMessages().size());
+        this.action.setProject(this.getTestProject((2l)));
+        assertEquals("browse", this.action.browse());
+        assertEquals(1, ActionHelper.getMessages().size());
+        assertFalse(this.action.isEditMode());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Collection<Sample> getCurrentAssociationsCollection() {
-        return getCurrentExtract().getSamples();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected Collection<Sample> getPossibleAssociationsCollection() {
-        return getExperiment().getSamples();
-    }
-
-    /**
-     * @return the itemsToAssociate
-     */
-    @Override
-    public List<Sample> getItemsToAssociate() {
-        return this.itemsToAssociate;
-    }
-
-    /**
-     * @param itemsToAssociate the itemsToAssociate to set
-     */
-    public void setItemsToAssociate(List<Sample> itemsToAssociate) {
-        this.itemsToAssociate = itemsToAssociate;
-    }
-
-    /**
-     * @return the itemsToRemove
-     */
-    @Override
-    public List<Sample> getItemsToRemove() {
-        return this.itemsToRemove;
-    }
-
-    /**
-     * @param itemsToRemove the itemsToRemove to set
-     */
-    public void setItemsToRemove(List<Sample> itemsToRemove) {
-        this.itemsToRemove = itemsToRemove;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void handleDelete() {
-        for (Sample s : getCurrentAssociationsCollection()) {
-            s.getExtracts().remove(getCurrentExtract());
-        }
+    @Test
+    public void testChangeStatus() {
+        this.action.setWorkflowStatus(ProposalStatus.DRAFT);
+        this.action.setProject(this.getTestProject(1l));
+        assertEquals(WORKSPACE, this.action.changeWorkflowStatus());
+        assertEquals(1, projectManagementServiceStub.getChangeWorkflowStatusCount());
+        this.action.setProject(this.getTestProject(999l));
+        assertEquals(Action.INPUT, this.action.changeWorkflowStatus());
+        assertEquals(2, projectManagementServiceStub.getChangeWorkflowStatusCount());
     }
 }

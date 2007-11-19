@@ -11,7 +11,10 @@
         <c:set var="pageSize" value="-1" />
     </c:otherwise>
 </c:choose>
-<c:set var="checkboxAll" value="<input type=\"checkbox\" name=\"selectAllCheckbox\" onClick=\"javascript: selectAll(this, document.getElementById('selectFilesForm'));\" >" />
+<fmt:message key="experiment.files.selectAllCheckBox" var="checkboxAll">
+    <fmt:param value="selectAllCheckbox" />
+    <fmt:param value="'selectFilesForm'" />
+</fmt:message>
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
     <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${files}" pagesize="${pageSize}"
         requestURI="${sortUrl}" sort="list" id="row" excludedParams="project.id">

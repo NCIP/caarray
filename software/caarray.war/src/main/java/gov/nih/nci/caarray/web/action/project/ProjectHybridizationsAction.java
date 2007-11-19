@@ -101,11 +101,17 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.struts2.interceptor.validation.SkipValidation;
+
+import com.opensymphony.xwork2.validator.annotations.CustomValidator;
+import com.opensymphony.xwork2.validator.annotations.Validation;
+import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
 
 /**
  * Action implementing the samples tab.
  * @author Dan Kokotov
  */
+@Validation
 public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListTabAction<LabeledExtract> {
     private static final long serialVersionUID = 1L;
 
@@ -140,6 +146,7 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
      * {@inheritDoc}
      */
     @Override
+    @SkipValidation
     public String copy() {
         return "notYetImplemented";
     }
@@ -149,6 +156,7 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
      * @return download
      * @throws IOException on file error
      */
+    @SkipValidation
     public String download() throws IOException {
         ProjectManagementService pms = (ProjectManagementService)
             ServiceLocatorFactory.getLocator().lookup(ProjectManagementService.JNDI_NAME);
@@ -192,6 +200,8 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
     /**
      * @return the currentHybridization
      */
+    @CustomValidator(type = "hibernate", parameters = @ValidationParameter(name = "resourceKeyBase",
+            value = "experiment.hybridizations"))
     public Hybridization getCurrentHybridization() {
         return this.currentHybridization;
     }

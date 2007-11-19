@@ -83,9 +83,12 @@
 package gov.nih.nci.caarray.domain.file;
 
 import static org.junit.Assert.assertEquals;
+import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity_HibernateIntegrationTest;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.project.ServiceType;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.File;
@@ -120,6 +123,10 @@ public class CaArrayFile_HibernateIntegrationTest extends AbstractCaArrayEntity_
         caArrayFile.setName(getUniqueStringValue());
         if (caArrayFile.getProject() == null) {
             caArrayFile.setProject(new Project());
+            caArrayFile.getProject().getExperiment().setTitle("TestFileExperiment1");
+            caArrayFile.getProject().getExperiment().setAssayType(AssayType.ACGH);
+            caArrayFile.getProject().getExperiment().setServiceType(ServiceType.ANALYSIS);
+            caArrayFile.getProject().getExperiment().setOrganism(new Organism());
             save(caArrayFile.getProject());
         }
         caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);

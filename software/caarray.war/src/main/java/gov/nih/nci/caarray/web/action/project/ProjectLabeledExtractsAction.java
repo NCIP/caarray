@@ -94,10 +94,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.opensymphony.xwork2.validator.annotations.CustomValidator;
+import com.opensymphony.xwork2.validator.annotations.Validation;
+import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
+
 /**
  * Action implementing the samples tab.
  * @author Dan Kokotov
  */
+@Validation
 public class ProjectLabeledExtractsAction extends AbstractProjectAnnotationsListTabAction<Extract> {
     private static final long serialVersionUID = 1L;
 
@@ -153,6 +158,8 @@ public class ProjectLabeledExtractsAction extends AbstractProjectAnnotationsList
     /**
      * @return the currentLabeledExtract
      */
+    @CustomValidator(type = "hibernate", parameters = @ValidationParameter(name = "resourceKeyBase",
+            value = "experiment.labeledExtracts"))
     public LabeledExtract getCurrentLabeledExtract() {
         return this.currentLabeledExtract;
     }

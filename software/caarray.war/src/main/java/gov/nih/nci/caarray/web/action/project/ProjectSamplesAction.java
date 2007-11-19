@@ -105,10 +105,17 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.struts2.interceptor.validation.SkipValidation;
+
+import com.opensymphony.xwork2.validator.annotations.CustomValidator;
+import com.opensymphony.xwork2.validator.annotations.Validation;
+import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
+
 /**
  * Action implementing the samples tab.
  * @author Dan Kokotov
  */
+@Validation
 public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabAction<Source> {
     private static final long serialVersionUID = 1L;
 
@@ -130,7 +137,7 @@ public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabActio
      */
     @Override
     public void prepare() throws VocabularyServiceException {
-        super.prepare();        
+        super.prepare();
         if (this.currentSample.getId() != null) {
             this.currentSample = getGenericDataService().retrieveEnity(Sample.class, this.currentSample.getId());
         }
@@ -141,6 +148,7 @@ public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabActio
      * @return download
      * @throws IOException on file error
      */
+    @SkipValidation
     public String download() throws IOException {
         ProjectManagementService pms = (ProjectManagementService)
             ServiceLocatorFactory.getLocator().lookup(ProjectManagementService.JNDI_NAME);
@@ -190,6 +198,8 @@ public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabActio
     /**
      * @return the currentSample
      */
+    @CustomValidator(type = "hibernate", parameters = @ValidationParameter(name = "resourceKeyBase",
+            value = "experiment.samples"))
     public Sample getCurrentSample() {
         return this.currentSample;
     }

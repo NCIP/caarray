@@ -101,11 +101,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ajaxtags.xml.AjaxXmlBuilder;
+import org.apache.struts2.interceptor.validation.SkipValidation;
+
+import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
  * Action implementing the overview tab.
  * @author Dan Kokotov
  */
+@Validation
 public class ProjectOverviewAction extends ProjectTabAction {
     private static final long serialVersionUID = 1L;
 
@@ -132,6 +136,7 @@ public class ProjectOverviewAction extends ProjectTabAction {
      * @return name of result to forward to
      */
     @Override
+    @SkipValidation
     public String load() {
         setup();
         return super.load();
@@ -164,6 +169,7 @@ public class ProjectOverviewAction extends ProjectTabAction {
     /**
      * @return xmlArrayDesigns
      */
+    @SkipValidation
     public String retrieveArrayDesigns() {
         if (this.manufacturerId != null) {
             Organization provider = getProjectManagementService().getOrganization(this.manufacturerId);
@@ -171,7 +177,6 @@ public class ProjectOverviewAction extends ProjectTabAction {
         }
         return "xmlArrayDesigns";
     }
-
 
     /**
      * @return the organisms

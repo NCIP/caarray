@@ -111,9 +111,13 @@ import java.util.Set;
 public class ProjectManagementServiceStub implements ProjectManagementService {
 
     private int filesAddedCount = 0;
+    private int projectByIdCount = 0;
+    private int changeWorkflowStatusCount = 0;
 
     public void reset() {
         this.filesAddedCount = 0;
+        this.projectByIdCount = 0;
+        this.changeWorkflowStatusCount = 0;
     }
 
     /**
@@ -121,6 +125,20 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
      */
     public int getFilesAddedCount() {
         return this.filesAddedCount;
+    }
+
+    /**
+     * @return the number of times getProjectByID was called.
+     */
+    public int getProjectByIdCount() {
+        return this.projectByIdCount;
+    }
+
+    /**
+     * @return get the number of times change workflow status has been called.
+     */
+    public int getChangeWorkflowStatusCount() {
+        return this.changeWorkflowStatusCount;
     }
 
     public Set<CaArrayFile> addFiles(Project project, Set<File> files) {
@@ -142,7 +160,10 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     }
 
     public Project getProject(long id) {
-        return null;
+        this.projectByIdCount++;
+        Project p = new Project();
+        p.setId(id);
+        return p;
     }
 
     public Organization getOrganization(long id) {
@@ -206,7 +227,10 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
      * {@inheritDoc}
      */
     public void changeProjectStatus(long projectId, ProposalStatus newStatus) throws ProposalWorkflowException {
-        // does nothing
+        this.changeWorkflowStatusCount++;
+        if (projectId == 999) {
+            throw new ProposalWorkflowException();
+        }
     }
 
     /**
