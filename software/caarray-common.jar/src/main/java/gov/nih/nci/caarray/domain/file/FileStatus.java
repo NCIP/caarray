@@ -115,7 +115,12 @@ public enum FileStatus {
     /**
      * Successfully imported.
      */
-    IMPORTED(false, false, false);
+    IMPORTED(false, false, false),
+
+    /**
+     * Arbitrary files associated directly with a project.
+     */
+    SUPPLEMENTAL(true, false, false);
 
     private boolean deletable = true;
     private boolean validatable = true;

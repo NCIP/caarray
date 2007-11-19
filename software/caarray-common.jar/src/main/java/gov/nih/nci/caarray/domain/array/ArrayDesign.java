@@ -121,6 +121,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     private Term technologyType;
     private Organism organism;
     private String version;
+    private CaArrayFile annotationFile;
     private CaArrayFile designFile;
     private Organization provider;
     private Microarray microarray;
@@ -313,6 +314,23 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     @ForeignKey(name = "DESIGN_FILE_FK")
     public CaArrayFile getDesignFile() {
         return designFile;
+    }
+
+    /**
+     * @param annotationFile the annotationFile to set
+     */
+    public void setAnnotationFile(CaArrayFile annotationFile) {
+        this.annotationFile = annotationFile;
+    }
+
+    /**
+     * @return the annotationFile
+     */
+    @ManyToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ForeignKey(name = "ANNOTATION_FILE_FK")
+    public CaArrayFile getAnnotationFile() {
+        return annotationFile;
     }
 
     /**
