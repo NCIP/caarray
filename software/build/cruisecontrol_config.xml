@@ -100,6 +100,10 @@
 	        </modificationset>
 
 	        <schedule interval="60">
+	                    <ant anthome="C:\dev\tools\apache-ant-1.7.0"
+			                buildfile="build.xml" target="main" uselogger="true"
+			                usedebug="false">
+            			</ant>
 	        </schedule>
 
 	        <log dir="logs\${project.name}">
