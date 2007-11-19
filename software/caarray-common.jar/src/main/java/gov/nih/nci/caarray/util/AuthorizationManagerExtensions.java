@@ -304,6 +304,7 @@ public final class AuthorizationManagerExtensions {
                 preparedStatement.close();
                 resultSet.close();
             } catch (Exception ex2) {
+                // do nothing
             }
             try {
                 session.close();

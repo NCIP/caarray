@@ -82,10 +82,10 @@
  */
 package gov.nih.nci.caarray.domain.state;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
 /**
  * @author Akhil Bhaskar (Amentra, Inc.)
@@ -101,7 +101,7 @@ public class State extends AbstractCaArrayEntity {
     /**
      * @return the code
      */
-    @Column(unique=true)
+    @Column(unique = true)
     public String getCode() {
         return code;
     }

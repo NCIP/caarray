@@ -124,7 +124,7 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
 public class RegistrationAction extends ActionSupport implements Preparable {
 
     private static final long serialVersionUID = 1L;
-    static final Logger LOG = Logger.getLogger(RegistrationAction.class);
+    static final Logger LOGGER = Logger.getLogger(RegistrationAction.class);
 
     private RegistrationRequest registrationRequest;
     private String ldapInstall;
@@ -184,14 +184,13 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     public String save() {
         try {
             persist();
-            LOG.info("done saving registration request; sending email");
+            LOGGER.info("done saving registration request; sending email");
             EmailHelper.registerEmail(getRegistrationRequest());
             EmailHelper.registerEmailAdmin(getRegistrationRequest());
 
             return Action.SUCCESS;
-        }
-        catch (MessagingException me) {
-            LOG.error("Failed to send an email", me);
+        } catch (MessagingException me) {
+            LOGGER.error("Failed to send an email", me);
             ActionHelper.saveMessage(getText("registration.emailFailure"));
             return Action.INPUT;
         }
@@ -201,7 +200,6 @@ public class RegistrationAction extends ActionSupport implements Preparable {
      * Action to actually save the registration with authentication.
      * @return the directive for the next action / page to be directed to
      * @throws CSException on CSM error
-     * @throws MessagingException on messaging error
      */
     @Validations(
             fieldExpressions = {@FieldExpressionValidator(fieldName = "passwordConfirm",
@@ -402,7 +400,7 @@ public class RegistrationAction extends ActionSupport implements Preparable {
             Configuration config = new PropertiesConfiguration("default.properties");
             this.ldapInstall = config.getString("ldap.install");
         } catch (ConfigurationException e) {
-            LOG.error("An IO error occured. Please check the path or filename.");
+            LOGGER.error("An IO error occured. Please check the path or filename.");
         }
     }
 }

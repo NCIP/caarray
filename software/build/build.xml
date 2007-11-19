@@ -906,7 +906,7 @@
 
     <target name="check:checkstyle" depends="build:caarray-common.jar,build:caarray-ejb.jar,compile:caarray.war">
         <mkdir dir="${site.dir}/checkstyle" />
-        <checkstyle config="${checkstyle.config}" failureProperty="checkstyle.failure" failOnViolation="false" maxerrors="0">
+        <checkstyle config="${checkstyle.config}" failureProperty="checkstyle.failure" failOnViolation="false" maxerrors="0" maxwarnings="0">
             <classpath>
                 <pathelement location="${caarray-common.jar}" />
                 <pathelement location="${caarray-ejb.jar}" />

@@ -120,7 +120,7 @@ public class StateServiceBean implements StateService {
     }
 
     /**
-     * @see gov.nih.nci.caarray.application.state.StateService#getStates()
+     * {@inheritDoc}
      */
     public List<State> getStates() {
         LogUtil.logSubsystemEntry(LOG);

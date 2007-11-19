@@ -157,7 +157,7 @@ public final class CacheManager {
      * This method clears the cache variables effectively flushes the cache.
      */
     public void flushCache() {
-        this.fileTypes = null;
+        CacheManager.fileTypes = null;
     }
 
     /**
@@ -190,7 +190,7 @@ public final class CacheManager {
      * Cache file types.
      */
     protected void cacheCountries() {
-        this.countryList = getCountryService().getCountries();
+        CacheManager.countryList = getCountryService().getCountries();
     }
 
     /**
@@ -204,7 +204,7 @@ public final class CacheManager {
      * Cache states.
      */
     protected void cacheStates() {
-        this.stateList = getStateService().getStates();
+        CacheManager.stateList = getStateService().getStates();
     }
 
     /**
