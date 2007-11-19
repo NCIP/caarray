@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="UpdateUtilityAntBuildFile" default="" basedir="${basedir}">
 	<description>
-         This is the build.xml run by AntInstaller for the Update/Updgrade Utility
+         This is the build.xml run by AntInstaller for caArray 2 installation
      </description>
 
 	<tstamp>

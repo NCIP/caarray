@@ -10,7 +10,7 @@
 
 	<!--  each page element represents a page of the installer -->
 	<page type="input" name="intro"
-		displayText="Welcome to the Caarray Installer">
+		displayText="Welcome to the caArray 2 installer">
 
 		<comment displayText="Minimum Requirements:" bold="true" />
 		<comment
