@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-war
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-war Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-war Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-war Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-war Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,80 +80,109 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain.project;
+package gov.nih.nci.caarray.web.action;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
+import gov.nih.nci.caarray.application.file.FileManagementService;
+import gov.nih.nci.caarray.application.file.FileManagementServiceStub;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.opensymphony.xwork2.Action;
 
 /**
- * Enum of Ontology categories for various concepts used by Experiment.
- * Taken from MGED Ontology, http://mged.sourceforge.net/ontologies/MGEDontology.php
+ * @author Winston Cheng
+ *
  */
-public enum ExperimentOntologyCategory {
+@SuppressWarnings("PMD")
+public class ArrayDesignActionTest {
+    private final ArrayDesignAction arrayDesignAction = new ArrayDesignAction();
+    private final LocalArrayDesignServiceStub arrayDesignServiceStub = new LocalArrayDesignServiceStub();
+    private final LocalVocabularyServiceStub vocabularyServiceStub = new LocalVocabularyServiceStub();
+    private final LocalFileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
+    private final LocalFileManagementServiceStub fileManagementServiceStub = new LocalFileManagementServiceStub();
 
-    /**
-     * OrganismPart category, used for tissue site.
-     */
-    ORGANISM_PART("OrganismPart"),
+    private static final int NUM_DESIGNS = 3;
+    private static final Long DESIGN_ID = new Long(1);
 
-    /**
-     * MaterialType category, used for tissue types.
-     */
-    MATERIAL_TYPE("MaterialType"),
-
-    /**
-     * CellType category, used for cell types.
-     */
-    CELL_TYPE("CellType"),
-
-    /**
-     * DiseaseState category, used for diseases/conditions of an experiment.
-     */
-    DISEASE_STATE("DiseaseState"),
-
-    /**
-     * ExperimentDesignType category, for selecting type of experiment design.
-     */
-    EXPERIMENT_DESIGN_TYPE("ExperimentDesignType"),
-
-    /**
-     * QualityControlDescriptionType category, for selecting type of quality control measures.
-     */
-    QUALITY_CONTROL_TYPE("QualityControlDescriptionType"),
-
-    /**
-     * QualityControlDescriptionType category, for selecting type of quality control measures.
-     */
-    REPLICATE_TYPE("ReplicateDescriptionType"),
-
-    /**
-     * Roles category, used for various roles in an experiment.
-     */
-    ROLES("Roles"),
-
-    /**
-     * PublicationType category, used for type of Publications.
-     */
-    PUBLICATION_TYPE("PublicationType"),
-
-    /**
-     * PublicationStatus category, used for status of Publications.
-     */
-    PUBLICATION_STATUS("PublicationStatus"),
-
-    /**
-     * TechnologyType category, used for array designs.
-     */
-    TECHNOLOGY_TYPE("TechnologyType");
-
-    private final String categoryName;
-
-    ExperimentOntologyCategory(String categoryName) {
-        this.categoryName = categoryName;
+    @Before
+    public void setUp() throws Exception {
+        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, this.arrayDesignServiceStub);
+        locatorStub.addLookup(VocabularyService.JNDI_NAME, this.vocabularyServiceStub);
+        locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
+        locatorStub.addLookup(FileManagementService.JNDI_NAME, this.fileManagementServiceStub);
     }
 
-    /**
-     * @return the categoryName
-     */
-    public String getCategoryName() {
-        return this.categoryName;
+    @Test
+    public void testList() throws Exception {
+        String result = arrayDesignAction.list();
+        List<ArrayDesign> designs = arrayDesignAction.getArrayDesigns();
+        assertEquals(NUM_DESIGNS, designs.size());
+        assertEquals("list", result);
+    }
+    @Test
+    public void testView() throws Exception {
+        setTargetIdParam();
+        String result = arrayDesignAction.view();
+        ArrayDesign target = arrayDesignAction.getTarget();
+        assertNotNull(target);
+        assertFalse(arrayDesignAction.isEditMode());
+        assertEquals(Action.INPUT, result);
+    }
+    @Test
+    public void testEdit() throws Exception {
+        setTargetIdParam();
+        String result = arrayDesignAction.edit();
+        ArrayDesign target = arrayDesignAction.getTarget();
+        assertNotNull(target);
+        assertTrue(arrayDesignAction.isEditMode());
+        assertEquals(Action.INPUT, result);
     }
 
+    @Test
+    public void testSave() throws Exception {
+        arrayDesignAction.setTarget(new ArrayDesign());
+        String result = arrayDesignAction.save();
+        assertEquals(Action.SUCCESS, result);
+    }
+
+    private void setTargetIdParam() {
+        ArrayDesign design = new ArrayDesign();
+        design.setId(DESIGN_ID);
+        arrayDesignAction.setTarget(design);
+    }
+
+    private static class LocalArrayDesignServiceStub extends ArrayDesignServiceStub {
+        @Override
+        public List<ArrayDesign> getArrayDesigns() {
+            List<ArrayDesign> designs = new ArrayList<ArrayDesign>();
+            for (int i=0; i<NUM_DESIGNS; i++) {
+                designs.add(new ArrayDesign());
+            }
+            return designs;
+        }
+        @Override
+        public ArrayDesign getArrayDesign(Long id) {
+            return DESIGN_ID.equals(id) ? new ArrayDesign() : null;
+        }
+    }
+    private static class LocalVocabularyServiceStub extends VocabularyServiceStub {}
+    private static class LocalFileAccessServiceStub extends FileAccessServiceStub {}
+    private static class LocalFileManagementServiceStub extends FileManagementServiceStub {}
 }

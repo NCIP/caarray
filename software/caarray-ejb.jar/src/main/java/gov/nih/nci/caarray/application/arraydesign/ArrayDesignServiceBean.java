@@ -240,6 +240,16 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         return getArrayDao().getArrayDesign(id);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public List<ArrayDesign> getArrayDesigns() {
+        LogUtil.logSubsystemEntry(LOG);
+        List<ArrayDesign> designs = getArrayDao().getArrayDesigns();
+        LogUtil.logSubsystemExit(LOG);
+        return designs;
+    }
+
     CaArrayDaoFactory getDaoFactory() {
         return daoFactory;
     }

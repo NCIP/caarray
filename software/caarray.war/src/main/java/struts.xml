@@ -187,6 +187,16 @@
             <result name="success">/WEB-INF/pages/collaborators/addTable.jsp</result>
         </action>
 
+        <action name="arrayDesign/*" class="gov.nih.nci.caarray.web.action.ArrayDesignAction" method="{1}">
+            <result name="list">/WEB-INF/pages/arrayDesign/list.jsp</result>
+            <result name="input">/WEB-INF/pages/arrayDesign/edit.jsp</result>
+            <result name="success" type="redirect-action">arrayDesign/list</result>
+        </action>
+
+        <action name="ajax/arrayDesign/*" class="gov.nih.nci.caarray.web.action.ArrayDesignAction" method="{1}">
+            <result name="list">/WEB-INF/pages/arrayDesign/list.jsp</result>
+        </action>
+
         <action name="vocabulary/manage">
             <result>/WEB-INF/pages/vocabulary/manage.jsp</result>
         </action>

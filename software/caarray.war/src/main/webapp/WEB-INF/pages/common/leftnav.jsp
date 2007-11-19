@@ -16,7 +16,7 @@
                 <li><a href="<c:url value="/protected/collaborators/listGroups.action" />">Manage Collaboration Groups</a></li>
 
                 <li class="liheader">Curation</li>
-                <li><a href="<c:url value="/notYetImplemented.jsp" />">Import Array Designs</a></li>
+                <li><a href="<c:url value="/protected/arrayDesign/list.action" />">Import Array Designs</a></li>
                 <li><a href="<c:url value="/protected/vocabulary/manage.action" />">Manage Vocabularies</a></li>
             </ul>
 

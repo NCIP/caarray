@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common.jar
+ * source code form and machine readable, binary, object code form. The caarray-war
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-common.jar Software License (the License) is between NCI and You. You (or
+ * This caarray-war Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-common.jar Software to (i) use, install, access, operate,
+ * its rights in the caarray-war Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common.jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-common.jar Software and any
+ * and prepare derivative works of the caarray-war Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-war Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,149 +80,180 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.dao;
+package gov.nih.nci.caarray.web.action;
 
+import static gov.nih.nci.caarray.web.action.ActionHelper.getArrayDesignService;
+import static gov.nih.nci.caarray.web.action.ActionHelper.getFileAccessService;
+import static gov.nih.nci.caarray.web.action.ActionHelper.getFileManagementService;
+import static gov.nih.nci.caarray.web.action.ActionHelper.getVocabularyService;
+import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.ArrayDataType;
-import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
-import gov.nih.nci.caarray.domain.data.DerivedArrayData;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
-import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
+import java.io.File;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hibernate.Query;
-import org.hibernate.Session;
+import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.Preparable;
 
 /**
- * DAO for entities in the <code>gov.nih.nci.caarray.domain.array</code> package.
+ * @author Winston Cheng
  *
- * @author Rashmi Srinivasa
  */
-class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
+public class ArrayDesignAction extends ActionSupport implements Preparable {
+    private static final long serialVersionUID = 1L;
 
-    private static final Log LOG = LogFactory.getLog(ArrayDaoImpl.class);
+    private ArrayDesign target;
+    private File upload;
+    private String uploadFileName;
+    private String uploadContentType;
+    private List<ArrayDesign> arrayDesigns;
+    private List<Organization> manufacturers;
+    private Set<Term> featureTypes;
+    private List<Organism> organisms;
+    private boolean editMode;
 
     /**
      * {@inheritDoc}
      */
-    public ArrayDesign getArrayDesign(long id) {
-        return (ArrayDesign) getCurrentSession().get(ArrayDesign.class, id);
+    public void prepare() {
+        VocabularyService vs = getVocabularyService();
+        ArrayDesignService ads = getArrayDesignService();
+        this.organisms = vs.getOrganisms();
+        this.manufacturers = ads.getArrayDesignProviders();
+        this.featureTypes = vs.getTerms(ExperimentOntologyCategory.TECHNOLOGY_TYPE.getCategoryName());
     }
 
     /**
-     * {@inheritDoc}
+     * @return the target
      */
-    @SuppressWarnings("unchecked")
+    public ArrayDesign getTarget() {
+        return target;
+    }
+    /**
+     * @param target the target to set
+     */
+    public void setTarget(ArrayDesign target) {
+        this.target = target;
+    }
+    /**
+     * @return the upload
+     */
+    public File getUpload() {
+        return upload;
+    }
+    /**
+     * @param upload the designFile to set
+     */
+    public void setUpload(File upload) {
+        this.upload = upload;
+    }
+    /**
+     * @return the uploadFileName
+     */
+    public String getUploadFileName() {
+        return uploadFileName;
+    }
+    /**
+     * @param uploadFileName the uploadFileName to set
+     */
+    public void setUploadFileName(String uploadFileName) {
+        this.uploadFileName = uploadFileName;
+    }
+    /**
+     * @return the uploadContentType
+     */
+    public String getUploadContentType() {
+        return uploadContentType;
+    }
+    /**
+     * @param uploadContentType the uploadContentType to set
+     */
+    public void setUploadContentType(String uploadContentType) {
+        this.uploadContentType = uploadContentType;
+    }
+    /**
+     * @return the arrayDesigns
+     */
     public List<ArrayDesign> getArrayDesigns() {
-        return getCurrentSession().createCriteria(ArrayDesign.class).list();
+        return arrayDesigns;
+    }
+    /**
+     * @return the manufacturers
+     */
+    public List<Organization> getManufacturers() {
+        return manufacturers;
+    }
+    /**
+     * @return the featureTypes
+     */
+    public Set<Term> getFeatureTypes() {
+        return featureTypes;
+    }
+    /**
+     * @return the organisms
+     */
+    public List<Organism> getOrganisms() {
+        return organisms;
+    }
+    /**
+     * @return the editMode
+     */
+    public boolean isEditMode() {
+        return editMode;
     }
 
     /**
-     * {@inheritDoc}
+     * Retrieves the list of all array designs.
+     * @return list
      */
-    @SuppressWarnings("unchecked")
-    public List<Organization> getArrayDesignProviders() {
-        String query = "select distinct ad.provider from " + ArrayDesign.class.getName() + " ad "
-                + " where ad.provider is not null order by ad.provider.name asc";
-        return getCurrentSession().createQuery(query).list();
+    public String list() {
+        arrayDesigns = getArrayDesignService().getArrayDesigns();
+        return "list";
     }
 
     /**
-     * {@inheritDoc}
+     * Edit view of an array design.
+     * @return input
      */
-    @SuppressWarnings("unchecked")
-    public List<ArrayDesign> getArrayDesignsForProvider(Organization provider) {
-        String query = "from " + ArrayDesign.class.getName() + " ad where ad.provider = :provider order by name asc";
-        return getCurrentSession().createQuery(query).setEntity("provider", provider).list();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public RawArrayData getRawArrayData(CaArrayFile file) {
-        Session session = HibernateUtil.getCurrentSession();
-        session.flush();
-        Query query = session.createQuery("from " + RawArrayData.class.getName()
-                + " arrayData where arrayData.dataFile = :file");
-        query.setEntity("file", file);
-        return (RawArrayData) query.uniqueResult();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public DerivedArrayData getDerivedArrayData(CaArrayFile file) {
-        Session session = HibernateUtil.getCurrentSession();
-        Query query = session.createQuery("from " + DerivedArrayData.class.getName()
-                + " arrayData where arrayData.dataFile = :file");
-        query.setEntity("file", file);
-        return (DerivedArrayData) query.uniqueResult();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public AbstractArrayData getArrayData(long id) {
-        return (AbstractArrayData) getCurrentSession().load(AbstractArrayData.class, id);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Hybridization getHybridization(Long id) {
-        return (Hybridization) getCurrentSession().load(Hybridization.class, id);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ArrayDataType getArrayDataType(ArrayDataTypeDescriptor descriptor) {
-        if (descriptor == null) {
-            return null;
+    public String edit() {
+        editMode = true;
+        if (target != null && target.getId() != null) {
+            target = getArrayDesignService().getArrayDesign(target.getId());
         }
-        ArrayDataType example = new ArrayDataType();
-        example.setName(descriptor.getName());
-        example.setVersion(descriptor.getVersion());
-        List<ArrayDataType> matches = queryEntityByExample(example);
-        if (matches.isEmpty()) {
-            return null;
-        } else if (matches.size() == 1) {
-            return matches.get(0);
+        return Action.INPUT;
+    }
+    /**
+     * Readonly view of an array design.
+     * @return input
+     */
+    public String view() {
+        editMode = false;
+        if (target != null && target.getId() != null) {
+            target = getArrayDesignService().getArrayDesign(target.getId());
+        }
+        return Action.INPUT;
+    }
+    /**
+     * Save a new or existing array design.
+     * @return success
+     */
+    // TODO remove this when the edit block is filled in
+    @SuppressWarnings("PMD.EmptyIfStmt")
+    public String save() {
+        if (target.getId() == null) {
+            CaArrayFile designFile = getFileAccessService().add(upload, uploadFileName);
+            getFileManagementService().importArrayDesignFile(target, designFile);
         } else {
-            throw new IllegalStateException("Duplicate registration of ArrayDataType " + descriptor);
+            // TODO edit an existing array design
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor) {
-        if (descriptor == null) {
-            return null;
-        }
-        QuantitationType example = new QuantitationType();
-        example.setName(descriptor.getName());
-        List<QuantitationType> matches = queryEntityByExample(example);
-        if (matches.isEmpty()) {
-            return null;
-        } else if (matches.size() == 1) {
-            return matches.get(0);
-        } else {
-            throw new IllegalStateException("Duplicate registration of ArrayDataType " + descriptor);
-        }
-    }
-
-    @Override
-    Log getLog() {
-        return LOG;
+        return Action.SUCCESS;
     }
 }

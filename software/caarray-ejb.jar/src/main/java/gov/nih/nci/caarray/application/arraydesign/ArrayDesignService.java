@@ -119,7 +119,7 @@ public interface ArrayDesignService {
     /**
      * Imports details for an existing array design from associated files(s) including
      * <code>designFile</code> and <code>annotationFile</code>.
-     * 
+     *
      * @param arrayDesign the design to import details for.
      */
     void importDesign(ArrayDesign arrayDesign);
@@ -144,7 +144,7 @@ public interface ArrayDesignService {
 
     /**
      * Returns the list of ArrayDesigns with the given provider.
-     * 
+     *
      * @param provider the provider
      * @return the List&lt;ArrayDesign&gt; of the array designs whose provider is the given provider
      */
@@ -157,4 +157,10 @@ public interface ArrayDesignService {
      * @return the <code>ArrayDesign</code>.
      */
     ArrayDesign getArrayDesign(Long id);
+
+    /**
+     * Returns the list of all ArrayDesigns.
+     * @return the List&lt;ArrayDesign&gt; of array designs
+     */
+    List<ArrayDesign> getArrayDesigns();
 }

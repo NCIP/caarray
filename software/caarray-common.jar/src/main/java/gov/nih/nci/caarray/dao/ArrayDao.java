@@ -111,6 +111,12 @@ public interface ArrayDao extends CaArrayDao {
     ArrayDesign getArrayDesign(long id);
 
     /**
+     * Returns the list of all ArrayDesigns.
+     * @return the List&lt;ArrayDesign&gt; of the array designs
+     */
+    List<ArrayDesign> getArrayDesigns();
+
+    /**
      * Returns the list of ArrayDesigns with the given provider.
      * @param provider the provider
      * @return the List&lt;ArrayDesign&gt; of the array designs whose

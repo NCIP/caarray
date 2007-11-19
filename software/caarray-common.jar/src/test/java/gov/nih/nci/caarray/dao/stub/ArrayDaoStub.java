@@ -110,6 +110,13 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
     /**
      * {@inheritDoc}
      */
+    public List<ArrayDesign> getArrayDesigns() {
+        return new ArrayList<ArrayDesign>();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public List<Organization> getArrayDesignProviders() {
         return new ArrayList<Organization>();
     }
