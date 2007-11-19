@@ -3,7 +3,7 @@
 <caarray:tabPane subtab="true">
     <caarray:projectListTabHeader entityName="Hybridization" isSubtab="true"/>
 
-    <c:url value="/protected/ajax/project/listTab/Hybridizations/load.action" var="sortUrl">
+    <c:url value="/ajax/project/listTab/Hybridizations/load.action" var="sortUrl">
         <c:param name="project.id" value="${project.id}" />
     </c:url>
 
@@ -23,7 +23,7 @@
             </display:column>
             <caarray:projectListTabActionColumns entityName="Hybridization" item="${row}" actions="!edit,!delete" isSubtab="true"/>
             <display:column titleKey="button.download">
-				<c:url value="/protected/ajax/project/listTab/Hybridizations/download.action" var="actionUrl">
+				<c:url value="/ajax/project/listTab/Hybridizations/download.action" var="actionUrl">
 				    <c:param name="project.id" value="${project.id}" />
 				    <c:param name="currentHybridization.id" value="${row.id}" />
 				</c:url>

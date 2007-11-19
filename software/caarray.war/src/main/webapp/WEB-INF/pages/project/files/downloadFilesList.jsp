@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 <div id="downloadFilesList" style="display: inline;">
-	<s:form action="/protected/ajax/project/files/downloadFilesList.action" id="extensionForm">
+	<s:form action="/ajax/project/files/downloadFilesList.action" id="extensionForm">
 		<s:select label="Filter By" 
 				  name="extensionFilter"
 				  list="allExtensions" 

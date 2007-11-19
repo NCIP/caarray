@@ -96,22 +96,20 @@
         <action name="ajax/browse/*" class="gov.nih.nci.caarray.web.action.BrowseAction" method="{1}">
             <result name="tab">/WEB-INF/pages/project/search/browseTab.jsp</result>
         </action>
-    </package>
-
-    <package name="protected" namespace="/protected" extends="default">
-        <action name="project/workspace">
-            <result>/WEB-INF/pages/project/workspace/tabs.jsp</result>
-        </action>
-
-        <action name="ajax/project/workspace/*" class="gov.nih.nci.caarray.web.action.project.ProjectWorkspaceAction" method="{1}">
-            <result name="success">/WEB-INF/pages/project/workspace/{1}.jsp</result>
-        </action>
 
         <action name="project/*" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="{1}">
             <result name="workspace" type="redirect-action">project/workspace</result>
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
             <result name="browse">/WEB-INF/pages/project/browse.jsp</result>
             <result name="permissions">/WEB-INF/pages/project/permissions.jsp</result>
+        </action>
+
+        <action name="project/workspace">
+            <result>/WEB-INF/pages/project/workspace/tabs.jsp</result>
+        </action>
+
+        <action name="ajax/project/workspace/*" class="gov.nih.nci.caarray.web.action.project.ProjectWorkspaceAction" method="{1}">
+            <result name="success">/WEB-INF/pages/project/workspace/{1}.jsp</result>
         </action>
 
         <action name="ajax/project/tab/*/*"
@@ -143,17 +141,6 @@
             </result>
         </action>
 
-        <action name="project/permissions/*" class="gov.nih.nci.caarray.web.action.project.ProjectPermissionsAction" method="{1}">
-            <result name="input">/WEB-INF/pages/project/permissions/profiles.jsp</result>
-            <result name="success">/WEB-INF/pages/project/permissions/profiles.jsp</result>
-        </action>
-
-        <action name="ajax/project/permissions/*" class="gov.nih.nci.caarray.web.action.project.ProjectPermissionsAction" method="{1}">
-            <result name="input">/WEB-INF/pages/project/permissions/{1}.jsp</result>
-            <result name="success">/WEB-INF/pages/project/permissions/{1}.jsp</result>
-            <result name="accessProfile">/WEB-INF/pages/project/permissions/accessProfile.jsp</result>
-        </action>
-
         <action name="project/files/*" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="{1}">
             <result name="upload" type="redirect-action">project/edit?project.id=${project.id}&amp;initialTab=data</result>
             <result name="download" type="stream">
@@ -171,6 +158,20 @@
             <result name="listUnimportedForm">/WEB-INF/pages/project/files/listUnimportedForm.jsp</result>
             <result name="table">/WEB-INF/pages/project/files/listTable.jsp</result>
             <result name="success">/WEB-INF/pages/project/files/{1}.jsp</result>
+        </action>
+
+    </package>
+
+    <package name="protected" namespace="/protected" extends="default">
+        <action name="project/permissions/*" class="gov.nih.nci.caarray.web.action.project.ProjectPermissionsAction" method="{1}">
+            <result name="input">/WEB-INF/pages/project/permissions/profiles.jsp</result>
+            <result name="success">/WEB-INF/pages/project/permissions/profiles.jsp</result>
+        </action>
+
+        <action name="ajax/project/permissions/*" class="gov.nih.nci.caarray.web.action.project.ProjectPermissionsAction" method="{1}">
+            <result name="input">/WEB-INF/pages/project/permissions/{1}.jsp</result>
+            <result name="success">/WEB-INF/pages/project/permissions/{1}.jsp</result>
+            <result name="accessProfile">/WEB-INF/pages/project/permissions/accessProfile.jsp</result>
         </action>
 
         <action name="collaborators/*" class="gov.nih.nci.caarray.web.action.CollaboratorsAction" method="{1}">

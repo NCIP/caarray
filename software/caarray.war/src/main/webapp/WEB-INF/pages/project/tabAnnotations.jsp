@@ -3,31 +3,31 @@
 <c:set var="initTab" value="${sessionScope.initialTab2 == null ? param.initialTab2 : sessionScope.initialTab2}" />
 <c:remove var="initialTab2" scope="session" />
 
-<c:url value="/protected/ajax/project/tab/ExperimentalDesign/load.action" var="experimentalDesignUrl">
+<c:url value="/ajax/project/tab/ExperimentalDesign/load.action" var="experimentalDesignUrl">
     <c:param name="project.id" value="${project.id}" />
     <c:param name="editMode" value="${editMode}" />
 </c:url>
-<c:url value="/protected/ajax/project/listTab/Factors/load.action" var="factorsUrl">
+<c:url value="/ajax/project/listTab/Factors/load.action" var="factorsUrl">
     <c:param name="project.id" value="${project.id}" />
     <c:param name="editMode" value="${editMode}" />
 </c:url>
-<c:url value="/protected/ajax/project/listTab/Sources/load.action" var="sourcesUrl">
+<c:url value="/ajax/project/listTab/Sources/load.action" var="sourcesUrl">
     <c:param name="project.id" value="${project.id}" />
     <c:param name="editMode" value="${editMode}" />
 </c:url>
-<c:url value="/protected/ajax/project/listTab/Samples/load.action" var="samplesUrl">
+<c:url value="/ajax/project/listTab/Samples/load.action" var="samplesUrl">
     <c:param name="project.id" value="${project.id}" />
     <c:param name="editMode" value="${editMode}" />
 </c:url>
-<c:url value="/protected/ajax/project/listTab/Extracts/load.action" var="extractsUrl">
+<c:url value="/ajax/project/listTab/Extracts/load.action" var="extractsUrl">
     <c:param name="project.id" value="${project.id}" />
     <c:param name="editMode" value="${editMode}" />
 </c:url>
-<c:url value="/protected/ajax/project/listTab/LabeledExtracts/load.action" var="labeledExtractsUrl">
+<c:url value="/ajax/project/listTab/LabeledExtracts/load.action" var="labeledExtractsUrl">
     <c:param name="project.id" value="${project.id}" />
     <c:param name="editMode" value="${editMode}" />
 </c:url>
-<c:url value="/protected/ajax/project/listTab/Hybridizations/load.action" var="hybridizationsUrl">
+<c:url value="/ajax/project/listTab/Hybridizations/load.action" var="hybridizationsUrl">
     <c:param name="project.id" value="${project.id}" />
     <c:param name="editMode" value="${editMode}" />
 </c:url>

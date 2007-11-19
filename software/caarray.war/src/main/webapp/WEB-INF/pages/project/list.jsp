@@ -6,12 +6,12 @@
         <display:column sortProperty="experiment.publicIdentifier" title="Experiment ID" sortable="true">
             <c:choose>
                 <c:when test="${caarrayfn:canRead(row, caarrayfn:currentUser()) }">
-                    <c:url var="viewUrl" value="/protected/project/details.action">
+                    <c:url var="viewUrl" value="/project/details.action">
                         <c:param name="project.id" value="${row.id}"/>
                     </c:url>
                 </c:when>
                 <c:otherwise>
-                    <c:url var="viewUrl" value="/protected/project/browse.action">
+                    <c:url var="viewUrl" value="/project/browse.action">
                         <c:param name="project.id" value="${row.id}"/>
                     </c:url>
                 </c:otherwise>
@@ -28,7 +28,7 @@
         </display:column>
         <display:column sortProperty="experiment.sampleCount" title="Samples" sortable="true">
             <c:if test="${caarrayfn:canRead(row, caarrayfn:currentUser()) }">
-                <c:url value="/protected/project/details.action" var="viewSamplesUrl">
+                <c:url value="/project/details.action" var="viewSamplesUrl">
                     <c:param name="project.id" value="${row.id}" />
                     <c:param name="initialTab" value="annotations" />
                     <c:param name="initialTab2" value="samples" />
@@ -50,7 +50,7 @@
             </display:column>
             <display:column titleKey="button.edit" class="centered" headerClass="centered">
                 <c:if test="${caarrayfn:canWrite(row, caarrayfn:currentUser())}">
-                    <c:url value="/protected/project/edit.action" var="editProjectUrl">
+                    <c:url value="/project/edit.action" var="editProjectUrl">
                         <c:param name="project.id" value="${row.id}" />
                     </c:url>
                     <a href="${editProjectUrl}"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>

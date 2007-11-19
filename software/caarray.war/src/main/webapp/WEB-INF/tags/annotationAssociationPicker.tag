@@ -45,7 +45,7 @@
                     </span>
                 </div>
             </div>
-            <c:url value="/protected/ajax/project/listTab/${plural}/searchForAssociationValues.action" var="autocompleteUrl" />
+            <c:url value="/ajax/project/listTab/${plural}/searchForAssociationValues.action" var="autocompleteUrl" />
             <script type="text/javascript">
                 var ${baseId}Picker = AssociationPickerUtils.createAutoUpdater('${baseId}', '${autocompleteUrl}', '${project.id}', '${entityName}', '${itemId}',  '${associatedEntityName}');
             </script>

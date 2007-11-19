@@ -3,7 +3,7 @@
 <caarray:tabPane subtab="true">
     <caarray:projectListTabHeader entityName="Sample" isSubtab="true"/>
 
-    <c:url value="/protected/ajax/project/listTab/Samples/load.action" var="sortUrl">
+    <c:url value="/ajax/project/listTab/Samples/load.action" var="sortUrl">
         <c:param name="project.id" value="${project.id}" />
     </c:url>
 
@@ -28,7 +28,7 @@
             </display:column>
             <caarray:projectListTabActionColumns entityName="Sample" item="${row}" actions="!edit,!copy,!delete" isSubtab="true"/>
             <display:column titleKey="button.download">
-				<c:url value="/protected/ajax/project/listTab/Samples/download.action" var="actionUrl">
+				<c:url value="/ajax/project/listTab/Samples/download.action" var="actionUrl">
 				    <c:param name="project.id" value="${project.id}" />
 				    <c:param name="currentSample.id" value="${row.id}" />
 				</c:url>

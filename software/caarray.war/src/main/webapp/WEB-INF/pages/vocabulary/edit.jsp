@@ -40,10 +40,10 @@
         <caarray:actions>
             <s:if test="returnToProjectOnCompletion">
                 <s:if test="returnProjectId == null">
-                    <c:url value="/protected/project/create.action" var="returnUrl" />
+                    <c:url value="/project/create.action" var="returnUrl" />
                 </s:if>
                 <s:else>
-                    <c:url value="/protected/project/edit.action" var="returnUrl" >
+                    <c:url value="/project/edit.action" var="returnUrl" >
                         <c:param name="project.id" value="${returnProjectId}" />
                     </c:url>
                 </s:else>

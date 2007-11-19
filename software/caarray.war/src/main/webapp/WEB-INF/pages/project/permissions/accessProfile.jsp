@@ -31,11 +31,11 @@
                 <c:set var="sampleSecLevel" value="${accessProfile.sampleSecurityLevels[sample]}"/>
                 <tr class="odd">
                     <td>
-                        <c:url var="sampleUrl" value="/protected/ajax/project/listTab/Samples/view.action">
+                        <c:url var="sampleUrl" value="/ajax/project/listTab/Samples/view.action">
                             <c:param name="project.id" value="${project.id}" />
                             <c:param name="currentSample.id" value="${sample.id}" />
                         </c:url>
-                        <c:url var="projectUrl" value="/protected/project/edit.action">
+                        <c:url var="projectUrl" value="/project/edit.action">
                             <c:param name="project.id" value="${project.id}"/>
                             <c:param name="initialTab" value="annotations"/>
                             <c:param name="initialTab2" value="samples"/>

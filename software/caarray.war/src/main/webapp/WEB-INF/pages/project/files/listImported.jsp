@@ -9,7 +9,7 @@
     </div>
 
     <div class="tableboxpad">
-        <s:form action="protected/ajax/project/files/process" id="selectFilesForm" method="post" theme="simple">
+        <s:form action="/ajax/project/files/process" id="selectFilesForm" method="post" theme="simple">
             <s:hidden name="project.id" value="${project.id}" />
             <%@ include file="/WEB-INF/pages/project/files/listTable.jsp" %>
         </s:form>

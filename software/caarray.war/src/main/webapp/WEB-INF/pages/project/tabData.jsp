@@ -12,14 +12,14 @@
     }
 </script>
 
-<c:url value="/protected/ajax/project/files/listUnimported.action" var="unimportedDataUrl">
+<c:url value="/ajax/project/files/listUnimported.action" var="unimportedDataUrl">
     <c:param name="project.id" value="${project.id}" />
     <c:param name="editMode" value="${editMode}" />
 </c:url>
-<c:url value="/protected/ajax/project/files/listImported.action" var="importedDataUrl">
+<c:url value="/ajax/project/files/listImported.action" var="importedDataUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
-<c:url value="/protected/ajax/project/files/downloadFiles.action" var="downloadDataUrl">
+<c:url value="/ajax/project/files/downloadFiles.action" var="downloadDataUrl">
     <c:param name="project.id" value="${project.id}" />
     <c:param name="editMode" value="${editMode}" />
 </c:url>
@@ -30,11 +30,23 @@
 
 <ajax:tabPanel panelStyleId="tablevel2" panelStyleClass="tablevel2" currentStyleClass="selected" contentStyleId="tabboxlevel2wrapper" contentStyleClass="tabboxlevel2wrapper"
         postFunction="TabUtils.setSelectedLevel2Tab" preFunction="TabUtils.showTabLoadingText">
-    <ajax:tab caption="${unimportedDataTitle}" baseUrl="${unimportedDataUrl}" defaultTab="${param.initialTab2 == null || param.initialTab2 == 'unimportedData'}" />
+	<c:if test="${pageContext.request.remoteUser != null}">        
+    	<ajax:tab caption="${unimportedDataTitle}" baseUrl="${unimportedDataUrl}" defaultTab="${param.initialTab2 == null || param.initialTab2 == 'unimportedData'}" />
+    </c:if>
     <ajax:tab caption="${importedDataTitle}" baseUrl="${importedDataUrl}" defaultTab="${param.initialTab2 == 'importedData'}" />
-    <ajax:tab caption="${downloadDataTitle}" baseUrl="${downloadDataUrl}" defaultTab="${param.initialTab2 == 'downloadData'}" />
+	<c:if test="${pageContext.request.remoteUser != null}">        
+	    <ajax:tab caption="${downloadDataTitle}" baseUrl="${downloadDataUrl}" defaultTab="${param.initialTab2 == 'downloadData'}" />
+    </c:if>
+	<c:if test="${pageContext.request.remoteUser == null}">        
+    	<ajax:tab caption="${downloadDataTitle}" baseUrl="${downloadDataUrl}" defaultTab="${param.initialTab2 == null || param.initialTab2 == 'downloadData'}" />
+    </c:if>
 </ajax:tabPanel>
 
 <script type="text/javascript">
-executeAjaxTab_tablevel2(null,'selected', '${unimportedDataUrl}', '');
+<c:if test="${pageContext.request.remoteUser != null}">
+  executeAjaxTab_tablevel2(null,'selected', '${unimportedDataUrl}', '');
+</c:if>
+<c:if test="${pageContext.request.remoteUser == null}">
+  executeAjaxTab_tablevel2(null,'selected', '${downloadDataUrl}', '');
+</c:if>
 </script>

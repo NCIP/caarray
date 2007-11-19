@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
-<c:url value="/protected/ajax/project/files/listUnimportedForm.action" var="listUnimportedFormUrl" />
+<c:url value="/ajax/project/files/listUnimportedForm.action" var="listUnimportedFormUrl" />
 
 <script type="text/javascript">
     moreUploads = function() {
@@ -56,13 +56,13 @@
     
     <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
         <caarray:actions divclass="actionsthin">
-            <c:url value="/protected/ajax/project/files/deleteFiles.action" var="deleteUrl" />
+            <c:url value="/ajax/project/files/deleteFiles.action" var="deleteUrl" />
             <caarray:linkButton actionClass="delete" text="Delete" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${deleteUrl}', 'tabboxlevel2wrapper');" />
-            <c:url value="/protected/ajax/project/files/editFiles.action" var="editUrl" />
+            <c:url value="/ajax/project/files/editFiles.action" var="editUrl" />
             <caarray:linkButton actionClass="edit" text="Change File Type" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${editUrl}', 'tabboxlevel2wrapper');" />
-            <c:url value="/protected/ajax/project/files/validateFiles.action" var="validateUrl" />
+            <c:url value="/ajax/project/files/validateFiles.action" var="validateUrl" />
             <caarray:linkButton actionClass="validate" text="Validate" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${validateUrl}', 'tabboxlevel2wrapper');" />
-            <c:url value="/protected/ajax/project/files/importFiles.action" var="importUrl"/>
+            <c:url value="/ajax/project/files/importFiles.action" var="importUrl"/>
             <caarray:linkButton actionClass="import" text="Import" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${importUrl}', 'tabboxlevel2wrapper');" />
         </caarray:actions>
     </c:if>

@@ -8,7 +8,7 @@
   IE can't seem to handle defining downloadMgr on the downloadFiles page, so it's here,
   since this is the outer (non-ajax) page.
 --%>
-<c:url var="downloadUrl" value="/protected/project/files/download.action"/>
+<c:url var="downloadUrl" value="/project/files/download.action"/>
 <c:url var="removeUrl" value="/images/ico_remove.gif"/>
 <script type="text/javascript">
   downloadMgr = new DownloadMgr('${downloadUrl}', '${removeUrl}');
@@ -53,19 +53,19 @@
         Experiment Details
     </h1>
 
-    <c:url value="/protected/ajax/project/tab/Overview/load.action" var="overviewUrl">
+    <c:url value="/ajax/project/tab/Overview/load.action" var="overviewUrl">
         <c:param name="project.id" value="${project.id}" />
         <c:param name="editMode" value="${editMode}" />
     </c:url>
-    <c:url value="/protected/ajax/project/tab/Contacts/load.action" var="contactsUrl">
+    <c:url value="/ajax/project/tab/Contacts/load.action" var="contactsUrl">
         <c:param name="project.id" value="${project.id}" />
         <c:param name="editMode" value="${editMode}" />
     </c:url>
-    <c:url value="/protected/ajax/project/tab/Annotations/load.action" var="annotationsUrl">
+    <c:url value="/ajax/project/tab/Annotations/load.action" var="annotationsUrl">
         <c:param name="project.id" value="${project.id}" />
         <c:param name="editMode" value="${editMode}" />
     </c:url>
-    <c:url value="/protected/ajax/project/tab/Data/load.action" var="dataUrl">
+    <c:url value="/ajax/project/tab/Data/load.action" var="dataUrl">
         <c:param name="project.id" value="${project.id}" />
         <c:param name="editMode" value="${editMode}" />
     </c:url>
@@ -73,7 +73,7 @@
         <c:param name="project.id" value="${project.id}" />
         <c:param name="editMode" value="${editMode}" />
     </c:url>
-    <c:url value="/protected/ajax/project/listTab/Publications/load.action" var="publicationsUrl">
+    <c:url value="/ajax/project/listTab/Publications/load.action" var="publicationsUrl">
         <c:param name="project.id" value="${project.id}" />
         <c:param name="editMode" value="${editMode}" />
     </c:url>

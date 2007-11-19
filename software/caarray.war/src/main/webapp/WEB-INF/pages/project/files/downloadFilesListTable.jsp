@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
-<c:url value="/protected/ajax/project/files/downloadFilesListTable.action" var="sortUrl">
+<c:url value="/ajax/project/files/downloadFilesListTable.action" var="sortUrl">
   <c:param name="project.id" value="${project.id}" />
 </c:url>
 <c:url var="addIco" value="/images/ico_add.gif"/>

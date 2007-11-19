@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
-<c:url value="/protected/ajax/project/files/${listAction}Table.action" var="sortUrl">
+<c:url value="/ajax/project/files/${listAction}Table.action" var="sortUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
 <c:set var="listingImported" value="${listAction == 'listImported'}"/>
@@ -43,7 +43,7 @@
                         ${statusVal}
                     </c:when>
                     <c:otherwise>
-                        <c:url value="/protected/ajax/project/files/validationMessages.action" var="viewMessagesUrl">
+                        <c:url value="/ajax/project/files/validationMessages.action" var="viewMessagesUrl">
                             <c:param name="project.id" value="${project.id}" />
                             <c:param name="selectedFiles" value="${row.id}" />
                             <c:param name="returnAction" value="${listAction}" />

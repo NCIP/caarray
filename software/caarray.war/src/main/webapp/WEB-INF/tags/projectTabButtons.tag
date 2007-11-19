@@ -26,7 +26,7 @@
             <caarray:action actionClass="save" text="Save" onclick="TabUtils.submitTabForm('projectForm', '${tabAnchor}'); return false;"/>
         </c:when>
         <c:when test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
-            <c:url value="/protected/ajax/project/tab/${tab}/load.action" var="actionUrl">
+            <c:url value="/ajax/project/tab/${tab}/load.action" var="actionUrl">
                 <c:param name="project.id" value="${project.id}" />
                 <c:param name="editMode" value="true" />
             </c:url>

@@ -60,7 +60,7 @@ setExperimentTitleHeader('${project.experiment.title}');
             }
         </script>
 
-        <c:url var="getArrayDesignsUrl" value="/protected/ajax/project/tab/Overview/retrieveArrayDesigns.action" />
+        <c:url var="getArrayDesignsUrl" value="/ajax/project/tab/Overview/retrieveArrayDesigns.action" />
         <c:if test="${editMode}">
             <ajax:select baseUrl="${getArrayDesignsUrl}"
                 source="projectForm_project_experiment_manufacturer" target="projectForm_project_experiment_arrayDesigns"

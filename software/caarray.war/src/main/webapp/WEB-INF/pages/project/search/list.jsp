@@ -8,12 +8,12 @@
         <display:column sortProperty="experiment.title" title="Experiment ID" sortable="true">
             <c:choose>
                 <c:when test="${caarrayfn:canRead(row, caarrayfn:currentUser())}">
-                    <c:url var="viewUrl" value="/protected/project/details.action">
+                    <c:url var="viewUrl" value="/project/details.action">
                         <c:param name="project.id" value="${row.id}"/>
                     </c:url>                
                 </c:when>
                 <c:otherwise>
-                    <c:url var="viewUrl" value="/protected/project/browse.action">
+                    <c:url var="viewUrl" value="/project/browse.action">
                         <c:param name="project.id" value="${row.id}"/>
                     </c:url>                                
                 </c:otherwise>
@@ -32,7 +32,7 @@
             </c:forEach>
         </display:column>
         <display:column titleKey="search.result.numSamples">
-            <c:url value="/protected/project/edit.action" var="editSamplesUrl">
+            <c:url value="/project/details.action" var="editSamplesUrl">
                 <c:param name="project.id" value="${row.id}" />
                 <c:param name="initialTab" value="annotations" />
                 <c:param name="initialTab2" value="samples" />

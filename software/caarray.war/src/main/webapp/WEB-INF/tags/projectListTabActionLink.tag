@@ -15,7 +15,7 @@
 
 <%@ include file="projectListTabCommon.tagf"%>
 
-<c:url value="/protected/ajax/project/listTab/${plural}/${action}.action" var="actionUrl">
+<c:url value="/ajax/project/listTab/${plural}/${action}.action" var="actionUrl">
     <c:param name="project.id" value="${project.id}" />
     <c:param name="current${entityName}.id" value="${itemId}" />
 </c:url>

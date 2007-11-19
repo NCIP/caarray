@@ -9,14 +9,16 @@
 
 <%@ include file="projectListTabCommon.tagf"%>
 
-<c:forTokens items="${actions}" delims="," var="action">
-    <c:set var="editableOnly" value="${fn:substring(action, 0, 1) == '!'}"/>
-    <c:if test="${editableOnly}">
-        <c:set var="action" value="${fn:substring(action, 1, fn:length(action))}"/>        
-    </c:if>
-    <display:column titleKey="button.${action}">
-        <c:if test="${!editableOnly || project.saveAllowed && caarrayfn:canWrite(item, caarrayfn:currentUser()) && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
-            <caarray:projectListTabActionLink entityName="${entityName}" action="${action}" itemId="${item.id}" isSubtab="${isSubtab}"/>            
-        </c:if>
-    </display:column>    
-</c:forTokens>
+<c:if test="${pageContext.request.remoteUser != null}">
+	<c:forTokens items="${actions}" delims="," var="action">
+	    <c:set var="editableOnly" value="${fn:substring(action, 0, 1) == '!'}"/>
+	    <c:if test="${editableOnly}">
+	        <c:set var="action" value="${fn:substring(action, 1, fn:length(action))}"/>        
+	    </c:if>
+	    <display:column titleKey="button.${action}">
+	        <c:if test="${!editableOnly || project.saveAllowed && caarrayfn:canWrite(item, caarrayfn:currentUser()) && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
+	            <caarray:projectListTabActionLink entityName="${entityName}" action="${action}" itemId="${item.id}" isSubtab="${isSubtab}"/>            
+	        </c:if>
+	    </display:column>    
+	</c:forTokens>
+</c:if>

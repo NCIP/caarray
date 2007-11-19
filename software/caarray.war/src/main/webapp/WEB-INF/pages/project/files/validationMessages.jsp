@@ -3,7 +3,7 @@
 <caarray:tabPane subtab="true">
     <c:set var="file" value="${selectedFiles[0]}" />
     <div class="boxpad2"><h3>Validation Messages for ${file.name}</h3></div>
-    <c:url value="/protected/ajax/project/files/validationMessages.action" var="sortUrl">
+    <c:url value="/ajax/project/files/validationMessages.action" var="sortUrl">
         <c:param name="project.id" value="${project.id}" />
         <c:param name="selectedFiles" value="${file.id}" />
     </c:url>
@@ -18,12 +18,12 @@
                 <display:column property="message" title="Message" sortable="true" />
             </display:table>
         </ajax:displayTag>
-        <s:form action="ajax/project/listTab/Sources/saveList" cssClass="form" id="projectForm" theme="simple">
+        <s:form action="/ajax/project/listTab/Sources/saveList" cssClass="form" id="projectForm" theme="simple">
             <s:hidden name="project.id" />
         </s:form>
     </div>
      <caarray:actions divclass="actionsthin">
-        <c:url value="/protected/ajax/project/files/${param.returnAction}.action" var="manageDataUrl">
+        <c:url value="/ajax/project/files/${param.returnAction}.action" var="manageDataUrl">
             <c:param name="project.id" value="${project.id}" />
         </c:url>
         <caarray:linkButton actionClass="cancel" text="Cancel" onclick="executeAjaxTab_tablevel2(null,'selected', '${manageDataUrl}', '');" />

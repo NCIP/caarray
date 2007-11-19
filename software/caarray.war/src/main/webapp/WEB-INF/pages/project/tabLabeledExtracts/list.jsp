@@ -3,7 +3,7 @@
 <caarray:tabPane subtab="true">
     <caarray:projectListTabHeader entityName="LabeledExtract" isSubtab="true"/>
 
-    <c:url value="/protected/ajax/project/listTab/LabeledExtracts/load.action" var="sortUrl">
+    <c:url value="/ajax/project/listTab/LabeledExtracts/load.action" var="sortUrl">
         <c:param name="project.id" value="${project.id}" />
     </c:url>
 
