@@ -88,7 +88,6 @@ import gov.nih.nci.security.authorization.domainobjects.User;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -99,6 +98,7 @@ import javax.persistence.ManyToMany;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.validator.Length;
 
 /**
  *
@@ -137,9 +137,9 @@ public class Person extends AbstractContact {
      *
      * @return the firstName
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
     public String getFirstName() {
-        return firstName;
+        return this.firstName;
     }
 
     /**
@@ -155,9 +155,9 @@ public class Person extends AbstractContact {
      *
      * @return the lastName
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
     public String getLastName() {
-        return lastName;
+        return this.lastName;
     }
 
     /**
@@ -173,9 +173,9 @@ public class Person extends AbstractContact {
      *
      * @return the middleInitials
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
     public String getMiddleInitials() {
-        return middleInitials;
+        return this.middleInitials;
     }
 
     /**
@@ -201,7 +201,7 @@ public class Person extends AbstractContact {
     @ForeignKey(name = "PERORG_PERSON_FK", inverseName = "PERORG_ORGANIZATION_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Organization> getAffiliations() {
-        return affiliations;
+        return this.affiliations;
     }
 
     /**

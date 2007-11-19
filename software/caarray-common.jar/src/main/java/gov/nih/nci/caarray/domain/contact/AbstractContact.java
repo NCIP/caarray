@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.domain.contact;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
@@ -97,9 +96,11 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.validator.Email;
+import org.hibernate.validator.Length;
 
 /**
- * 
+ *
  */
 @Entity
 @Table(name = "CONTACT")
@@ -123,9 +124,10 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
      *
      * @return the email
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
+    @Email
     public String getEmail() {
-        return email;
+        return this.email;
     }
 
     /**
@@ -141,9 +143,9 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
      *
      * @return the fax
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
     public String getFax() {
-        return fax;
+        return this.fax;
     }
 
     /**
@@ -159,9 +161,9 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
      *
      * @return the phone
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
     public String getPhone() {
-        return phone;
+        return this.phone;
     }
 
     /**
@@ -177,9 +179,9 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
      *
      * @return the url
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
     public String getUrl() {
-        return url;
+        return this.url;
     }
 
     /**
@@ -200,7 +202,7 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
     @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "CONTACT_ADDRESS_FK")
     public Address getAddress() {
-        return address;
+        return this.address;
     }
 
     /**

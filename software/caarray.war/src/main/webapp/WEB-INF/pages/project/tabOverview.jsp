@@ -25,7 +25,7 @@ setExperimentTitleHeader('${project.experiment.title}');
             <s:select required="true" key="project.experiment.assayType" tabindex="5"
                       list="@gov.nih.nci.caarray.domain.project.AssayType@values()" listValue="%{getText(resourceKey)}"
                       headerKey="" headerValue="--Select an Assay Type--"/>
-            <s:select name="project.experiment.manufacturer" label="Provider" tabindex="6" required="true"
+            <s:select key="project.experiment.manufacturer" tabindex="6" required="true"
                       list="manufacturers" listKey="id" listValue="name"
                       headerKey="" headerValue="--Select a Provider--" value="project.experiment.manufacturer.id">
                 <s:param name="after">

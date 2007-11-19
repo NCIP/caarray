@@ -98,6 +98,12 @@ import gov.nih.nci.security.authorization.domainobjects.User;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.struts2.interceptor.validation.SkipValidation;
+
+import com.opensymphony.xwork2.validator.annotations.CustomValidator;
+import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
+import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
+import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
  * Action for Contacts tab of Project management.
@@ -106,6 +112,8 @@ import org.apache.commons.beanutils.PropertyUtils;
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public class ProjectContactsAction extends ProjectTabAction {
     private static final long serialVersionUID = 1L;
+
+    private static final String REQUIRED_STRING_KEY = "struts.validator.requiredString";
 
     private User user;
     private boolean piIsMainPoc;
@@ -118,6 +126,7 @@ public class ProjectContactsAction extends ProjectTabAction {
      * @return name of result to forward to
      */
     @Override
+    @SkipValidation
     public String load() {
         setup();
         return super.load();
@@ -158,6 +167,22 @@ public class ProjectContactsAction extends ProjectTabAction {
      */
     @Override
     @SuppressWarnings("PMD")
+    @Validations(
+        fieldExpressions = {
+            @FieldExpressionValidator(expression = "primaryInvestigator.firstName.length() > 0",
+                    fieldName = "primaryInvestigator.firstName", key = REQUIRED_STRING_KEY, message = ""),
+            @FieldExpressionValidator(expression = "primaryInvestigator.lastName.length() > 0",
+                    fieldName = "primaryInvestigator.lastName", key = REQUIRED_STRING_KEY, message = ""),
+            @FieldExpressionValidator(expression = "primaryInvestigator.email.length() > 0",
+                    fieldName = "primaryInvestigator.email", key = REQUIRED_STRING_KEY, message = ""),
+            @FieldExpressionValidator(expression = "piIsMainPoc || mainPointOfContact.firstName.length() > 0",
+                    fieldName = "mainPointOfContact.firstName", key = REQUIRED_STRING_KEY, message = ""),
+            @FieldExpressionValidator(expression = "piIsMainPoc || mainPointOfContact.lastName.length() > 0",
+                    fieldName = "mainPointOfContact.lastName", key = REQUIRED_STRING_KEY, message = ""),
+            @FieldExpressionValidator(expression = "piIsMainPoc || mainPointOfContact.email.length() > 0",
+                    fieldName = "mainPointOfContact.email", key = REQUIRED_STRING_KEY, message = "")
+        }
+    )
     public String save() {
         VocabularyService vocabService = getVocabularyService();
         TermSource mged = vocabService.getSource(ExperimentOntology.MGED.getOntologyName());
@@ -254,6 +279,8 @@ public class ProjectContactsAction extends ProjectTabAction {
     /**
      * @return the primaryInvestigator
      */
+    @CustomValidator(type = "hibernate", parameters = @ValidationParameter(name = "conditionalExpression",
+                    value = "primaryInvestigator.email.length() > 0"))
     public Person getPrimaryInvestigator() {
         return this.primaryInvestigator;
     }
@@ -268,6 +295,8 @@ public class ProjectContactsAction extends ProjectTabAction {
     /**
      * @return the mainPointOfContact
      */
+    @CustomValidator(type = "hibernate", parameters = @ValidationParameter(name = "conditionalExpression",
+                    value = "mainPointOfContact.email.length() > 0 && !piIsMainPoc"))
     public Person getMainPointOfContact() {
         return this.mainPointOfContact;
     }
