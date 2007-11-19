@@ -128,6 +128,9 @@ public class ProjectOverviewAction extends ProjectTabAction {
         super.prepare();
         VocabularyService vocabService = getVocabularyService();
         this.organisms = vocabService.getOrganisms();
+
+        ArrayDesignService arrayDesignService = getArrayDesignService();
+        this.manufacturers = arrayDesignService.getArrayDesignProviders();
     }
 
     /**
@@ -146,8 +149,6 @@ public class ProjectOverviewAction extends ProjectTabAction {
      * set up the array designs.
      */
     public void setup() {
-        ArrayDesignService arrayDesignService = getArrayDesignService();
-        this.manufacturers = arrayDesignService.getArrayDesignProviders();
         if (getProject().getExperiment().getManufacturer() != null) {
             this.arrayDesigns = getArrayDesignService().getArrayDesignsForProvider(getProject().getExperiment()
                                                                                                .getManufacturer());

@@ -26,7 +26,7 @@
             </tbody>
             <tbody id="newSource" <s:if test="createNewSource == false">style="display: none"</s:if>>
             <s:textfield key="newSource.name" size="80" tabindex="5" required="true" />
-            <s:textfield key="newSource.url" size="80" tabindex="5" required="true"/>
+            <s:textfield key="newSource.url" size="80" tabindex="5" />
             <s:textfield key="newSource.version" size="80" tabindex="7"/>
             </tbody>
             <tr><th colspan="2">Accession</th></tr>

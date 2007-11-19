@@ -13,6 +13,13 @@
 <%@ taglib uri="/struts-tags" prefix="s" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="caarray" %>
 
+<s:if test="fieldErrors['${termFieldName}'] != null">
+<tr errorfor="${termFieldName}">
+    <td valign="top" align="center" colspan="2">
+        <s:fielderror><s:param>${termFieldName}</s:param></s:fielderror>
+    </td>
+</tr>
+</s:if>
 <tr>
     <td class="tdLabel"><label class="label">${termLabel}s:</label></td>
     <td>

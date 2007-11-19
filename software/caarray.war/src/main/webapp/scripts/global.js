@@ -710,7 +710,7 @@ var TermPickerUtils = {
         newItem.appendChild(newInput);
         var newText = selectedItem.childNodes[1].cloneNode(false);
         newItem.appendChild(newText);
-        newItem.onclick = TermPickerUtils.removeSelection
+        newItem.onclick = function() { TermPickerUtils.removeSelection(this); };
         $(baseId + 'SelectedItemDiv').appendChild(newItem);
     },
 

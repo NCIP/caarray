@@ -156,6 +156,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
     // Experiment
     private static final String UNCHECKED = "unchecked";
     private static Organism DUMMY_ORGANISM = new Organism();
+    private static Organization DUMMY_PROVIDER = new Organization();
     private static Project DUMMY_PROJECT_1 = new Project();
     private static Experiment DUMMY_EXPERIMENT_1 = new Experiment();
     private static TermSource DUMMY_TERM_SOURCE = new TermSource();
@@ -204,6 +205,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
     public void setup() {
         // Experiment
         DUMMY_ORGANISM = new Organism();
+        DUMMY_PROVIDER = new Organization();
         DUMMY_PROJECT_1 = new Project();
         DUMMY_EXPERIMENT_1 = new Experiment();
         DUMMY_TERM_SOURCE = new TermSource();
@@ -264,6 +266,11 @@ public class ProjectDaoTest extends AbstractDaoTest {
         setHybridizations();
         DUMMY_PROJECT_1.setExperiment(DUMMY_EXPERIMENT_1);
         DUMMY_EXPERIMENT_1.setOrganism(DUMMY_ORGANISM);
+        DUMMY_EXPERIMENT_1.setManufacturer(DUMMY_PROVIDER);
+        Term t = new Term();
+        t.setValue("t1");
+        DUMMY_EXPERIMENT_1.getTissueSites().add(t);
+        DUMMY_EXPERIMENT_1.getTissueTypes().add(t);
     }
 
     private static void setHybridizations() {

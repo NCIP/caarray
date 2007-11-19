@@ -128,6 +128,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Where;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
+import org.hibernate.validator.Size;
 
 /**
  *
@@ -442,7 +443,9 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the manufacturer
      */
     @ManyToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "EXPERIMENT_MANUFACTURER_FK")
+    @NotNull
     public Organization getManufacturer() {
         return this.manufacturer;
     }
@@ -484,10 +487,12 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the tissue sites
      */
     @ManyToMany(fetch = FetchType.LAZY)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinTable(name = "EXPERIMENTTISSUESITE",
             joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = {@JoinColumn(name = TERM_FK_NAME) })
     @ForeignKey(name = "TISSUESITE_EXP_FK", inverseName = "TISSUESITE_TERM_FK")
+    @Size(min = 1, message = "You must select at least one tissue site.")
     public Set<Term> getTissueSites() {
         return this.tissueSites;
     }
@@ -505,10 +510,12 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the tissue types
      */
     @ManyToMany(fetch = FetchType.LAZY)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinTable(name = "EXPERIMENTTISSUETYPE",
             joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = {@JoinColumn(name = TERM_FK_NAME) })
     @ForeignKey(name = "TISSUETYPE_EXP_FK", inverseName = "TISSUETYPE_TERM_FK")
+    @Size(min = 1, message = "You must select at least one tissue type.")
     public Set<Term> getTissueTypes() {
         return this.tissueTypes;
     }

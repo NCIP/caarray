@@ -88,6 +88,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -361,6 +362,12 @@ public class SearchDaoTest {
             project.getExperiment().setAssayType(AssayType.ACGH);
             project.getExperiment().setServiceType(ServiceType.ANALYSIS);
             project.getExperiment().setOrganism(new Organism());
+            project.getExperiment().setManufacturer(new Organization());
+            Term t = new Term();
+            t.setValue("t1");
+            project.getExperiment().getTissueSites().add(t);
+            project.getExperiment().getTissueTypes().add(t);
+
             Source source = new Source();
             source.setName("Source 1 Name");
             project.getExperiment().getSources().add(source);

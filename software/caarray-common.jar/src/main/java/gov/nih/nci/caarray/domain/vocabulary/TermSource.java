@@ -134,8 +134,7 @@ public class TermSource extends AbstractCaArrayEntity {
      *
      * @return the url
      */
-    @NotNull
-    @Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
+    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
     public String getUrl() {
         return this.url;
     }
