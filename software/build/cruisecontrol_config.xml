@@ -91,4 +91,29 @@
 
     </project>
 
+    <!--
+    <project name="caarray2-docs_end-user-doco" buildafterfailed="false">
+
+	        <modificationset quietperiod="0">
+	            <svn localworkingcopy="projects/caarray2/docs/end_user_documentation" />
+	        </modificationset>
+
+	        <schedule interval="60">
+	        </schedule>
+
+	        <log dir="logs\${project.name}">
+	            <gzip every="1" unit="WEEK"/>
+	            <delete every="2" unit="WEEK" ignoreSuffix="true"/>
+	        </log>
+
+	        <publishers>
+	            <currentbuildstatuspublisher file="logs/${project.name}/buildstatus.txt" />
+	            <htmlemail buildresultsurl="${email.buildresultsurl.prefix}${project.name}">
+	                <always address="matyass@mail.nih.gov" />
+	            </htmlemail>
+	        </publishers>
+
+    </project>
+    -->
+
 </cruisecontrol>
