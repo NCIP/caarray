@@ -8,6 +8,7 @@
 <%@ attribute name="initialTerms" required="true" type="java.util.Collection" %>
 <%@ attribute name="termFieldName" required="true" type="java.lang.String" %>
 <%@ attribute name="tabIndex" required="true" type="java.lang.String" %>
+<%@ attribute name="required" required="false" type="java.lang.String" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="/struts-tags" prefix="s" %>
@@ -21,7 +22,7 @@
 </tr>
 </s:if>
 <tr>
-    <td class="tdLabel"><label class="label">${termLabel}s:</label></td>
+    <td class="tdLabel"><label class="label">${termLabel}s<c:if test="${required == 'true'}"><span class="required">*</span></c:if>:</label></td>
     <td>
         <s:if test="${editMode}">
             <div class="selectListWrapper">

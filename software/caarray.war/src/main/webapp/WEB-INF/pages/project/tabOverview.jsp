@@ -39,9 +39,9 @@ setExperimentTitleHeader('${project.experiment.title}');
                       list="organisms" listKey="id" listValue="commonName" value="project.experiment.organism.id"
                       headerKey="" headerValue="--Select an Organism--"/>
             <caarray:termSelector baseId="tissueSite" category="<%= ExperimentOntologyCategory.ORGANISM_PART %>" initialTerms="${project.experiment.tissueSites}"
-                tabIndex="8" termFieldName="project.experiment.tissueSites" termLabel="Tissue Site"/>
+                tabIndex="8" termFieldName="project.experiment.tissueSites" termLabel="Tissue Site" required="true" />
             <caarray:termSelector baseId="tissueType" category="<%= ExperimentOntologyCategory.MATERIAL_TYPE %>" initialTerms="${project.experiment.tissueTypes}"
-                tabIndex="9" termFieldName="project.experiment.tissueTypes" termLabel="Tissue Type"/>
+                tabIndex="9" termFieldName="project.experiment.tissueTypes" termLabel="Tissue Type" required="true" />
             <caarray:termSelector baseId="cellType" category="<%= ExperimentOntologyCategory.CELL_TYPE %>" initialTerms="${project.experiment.cellTypes}"
                 tabIndex="10" termFieldName="project.experiment.cellTypes" termLabel="Cell Type"/>
             <caarray:termSelector baseId="conditions" category="<%= ExperimentOntologyCategory.DISEASE_STATE %>" initialTerms="${project.experiment.conditions}"
