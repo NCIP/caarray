@@ -134,6 +134,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private static final long serialVersionUID = 1L;
     private static final String ACTION_UNIMPORTED = "listUnimported";
     private static final String ACTION_IMPORTED = "listImported";
+    private static final String ACTION_SUPPLEMENTAL = "listSupplemental";
     private static final String ACTION_TABLE = "table";
     private static final Transformer EXTENSION_TRANSFORMER = new Transformer() {
         /**
@@ -175,6 +176,12 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         setListAction(ACTION_IMPORTED);
         setFiles(getProject().getImportedFiles());
         return ACTION_IMPORTED;
+    }
+
+    private String prepListSupplementalPage() {
+        setListAction(ACTION_SUPPLEMENTAL);
+        setFiles(getProject().getSupplementalFiles());
+        return ACTION_SUPPLEMENTAL;
     }
 
     /**
@@ -220,6 +227,16 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     }
 
     /**
+     * Method to get the list of supplemental files.
+     *
+     * @return the string matching the result to follow
+     */
+    @SkipValidation
+    public String listSupplemental() {
+        return prepListSupplementalPage();
+    }
+
+    /**
      * Method to get the list of files.
      *
      * @return the string matching the result to follow
@@ -227,6 +244,17 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     @SkipValidation
     public String listImportedTable() {
         prepListImportedPage();
+        return ACTION_TABLE;
+    }
+    
+    /**
+     * Method to get the list of files.
+     *
+     * @return the string matching the result to follow
+     */
+    @SkipValidation
+    public String listSupplementalTable() {
+        prepListSupplementalPage();
         return ACTION_TABLE;
     }
 
@@ -274,6 +302,20 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * @return the string representing the UI to display.
      */
     public String deleteFiles() {
+        doFileDeletion();
+        return prepListUnimportedPage();
+    }
+
+    /**
+     * Method to delete supplemental files.
+     * @return the string representing the UI to display.
+     */
+    public String deleteSupplementalFiles() {
+        doFileDeletion();
+        return prepListSupplementalPage();
+    }
+
+    private void doFileDeletion() {
         int deletedFiles = 0;
         int skippedFiles = 0;
         for (CaArrayFile caArrayFile : getSelectedFiles()) {
@@ -288,7 +330,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         if (skippedFiles > 0) {
             ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for deletion.");
         }
-        return prepListUnimportedPage();
     }
 
     /**
@@ -367,6 +408,24 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         if (skippedFiles > 0) {
             ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for importing.");
         }
+        refreshProject();
+        return prepListUnimportedPage();
+    }
+
+    /**
+     * Adds supplemental data files to the system.
+     * 
+     * @return the string matching the result to follow
+     */
+    public String addSupplementalFiles() {
+        CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
+        for (CaArrayFile file : getSelectedFiles()) {
+            fileSet.add(file);
+        }
+        if (!fileSet.getFiles().isEmpty()) {
+            getFileManagementService().addSupplementalFiles(getProject(), fileSet);
+        }
+        ActionHelper.saveMessage(fileSet.getFiles().size() + " supplemental files added to project.");
         refreshProject();
         return prepListUnimportedPage();
     }

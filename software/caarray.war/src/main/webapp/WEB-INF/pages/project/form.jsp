@@ -82,7 +82,6 @@
     <fmt:message key="project.tabs.contacts" var="contactsTitle" />
     <fmt:message key="project.tabs.annotations" var="annotationsTitle" />
     <fmt:message key="project.tabs.data" var="dataTitle" />
-    <fmt:message key="project.tabs.supplemental" var="supplementalTitle" />
     <fmt:message key="project.tabs.publications" var="publicationsTitle" />
 
     <c:if test="${param.initialTab == 'annotations' && param.initialTab2 != null}">
@@ -103,7 +102,6 @@
                 <ajax:tab caption="${contactsTitle}" baseUrl="${contactsUrl}" defaultTab="${param.initialTab == 'contacts'}" />
                 <ajax:tab caption="${annotationsTitle}" baseUrl="${annotationsUrl}" defaultTab="${param.initialTab == 'annotations'}" />
                 <ajax:tab caption="${dataTitle}" baseUrl="${dataUrl}" defaultTab="${param.initialTab == 'data'}" />
-                <ajax:tab caption="${supplementalTitle}" baseUrl="${supplementalUrl}" defaultTab="${param.initialTab == 'supplemental'}" />
                 <ajax:tab caption="${publicationsTitle}" baseUrl="${publicationsUrl}" defaultTab="${param.initialTab == 'publications'}" />
             </c:if>
         </ajax:tabPanel>

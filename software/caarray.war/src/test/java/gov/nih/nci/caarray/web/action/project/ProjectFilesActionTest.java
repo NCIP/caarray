@@ -121,6 +121,7 @@ public class ProjectFilesActionTest {
 
     private static final String LIST_IMPORTED = "listImported";
     private static final String LIST_UNIMPORTED = "listUnimported";
+    private static final String LIST_SUPPLEMENTAL = "listSupplemental";
     private static final String UPLOAD = "upload";
     private static final ProjectManagementServiceStub projectManagementServiceStub = new ProjectManagementServiceStub();
     private static final FileManagementServiceStub fileManagementServiceStub = new FileManagementServiceStub();
@@ -305,6 +306,26 @@ public class ProjectFilesActionTest {
         assertEquals(LIST_UNIMPORTED, this.action.getListAction());
         assertEquals(3, fileAccessServiceStub.getRemovedFileCount());
     }
+    @Test
+    @SuppressWarnings("PMD")
+    public void testDeleteSupplemental() throws Exception {
+        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        this.action.setSelectedFiles(selectedFiles);
+        assertEquals(LIST_SUPPLEMENTAL, this.action.deleteSupplementalFiles());
+        assertEquals(LIST_SUPPLEMENTAL, this.action.getListAction());
+
+        CaArrayFile file = new CaArrayFile();
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.SUPPLEMENTAL);
+        selectedFiles.add(file);
+        file = new CaArrayFile();
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.SUPPLEMENTAL);
+        selectedFiles.add(file);
+        assertEquals(LIST_SUPPLEMENTAL, this.action.deleteSupplementalFiles());
+        assertEquals(LIST_SUPPLEMENTAL, this.action.getListAction());
+        assertEquals(2, fileAccessServiceStub.getRemovedFileCount());
+    }
 
     @Test
     @SuppressWarnings("PMD")
@@ -372,8 +393,12 @@ public class ProjectFilesActionTest {
 
         assertEquals(LIST_IMPORTED, this.action.listImported());
         assertEquals(LIST_IMPORTED, this.action.getListAction());
+        assertEquals(LIST_SUPPLEMENTAL, this.action.listSupplemental());
+        assertEquals(LIST_SUPPLEMENTAL, this.action.getListAction());
         assertEquals("table", this.action.listImportedTable());
         assertEquals(LIST_IMPORTED, this.action.getListAction());
+        assertEquals("table", this.action.listSupplementalTable());
+        assertEquals(LIST_SUPPLEMENTAL, this.action.getListAction());
     }
 
     @Test
