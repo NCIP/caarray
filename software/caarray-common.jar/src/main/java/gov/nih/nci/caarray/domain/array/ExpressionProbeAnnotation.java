@@ -99,24 +99,9 @@ public class ExpressionProbeAnnotation extends AbstractProbeAnnotation {
 
     private static final long serialVersionUID = 1L;
 
-    private String ensemblId;
-    private String unigeneId;
-    private String geneTitle;
-    private String geneSymbol;
+    private Gene gene;
     private ExpressionArrayReporter expressionArrayReporter;
 
-    /**
-     * @return the ensemblId
-     */
-    public String getEnsemblId() {
-        return ensemblId;
-    }
-    /**
-     * @param ensemblId the ensemblId to set
-     */
-    public void setEnsemblId(String ensemblId) {
-        this.ensemblId = ensemblId;
-    }
     /**
      * @return the expressionArrayReporter
      */
@@ -125,47 +110,29 @@ public class ExpressionProbeAnnotation extends AbstractProbeAnnotation {
     public ExpressionArrayReporter getExpressionArrayReporter() {
         return expressionArrayReporter;
     }
+    
     /**
      * @param expressionArrayReporter the expressionArrayReporter to set
      */
     public void setExpressionArrayReporter(ExpressionArrayReporter expressionArrayReporter) {
         this.expressionArrayReporter = expressionArrayReporter;
     }
+
     /**
-     * @return the geneSymbol
+     * @return the gene
      */
-    public String getGeneSymbol() {
-        return geneSymbol;
+    @OneToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    public Gene getGene() {
+        return gene;
     }
+
     /**
-     * @param geneSymbol the geneSymbol to set
+     * @param gene the gene to set
      */
-    public void setGeneSymbol(String geneSymbol) {
-        this.geneSymbol = geneSymbol;
+    public void setGene(Gene gene) {
+        this.gene = gene;
     }
-    /**
-     * @return the geneTitle
-     */
-    public String getGeneTitle() {
-        return geneTitle;
-    }
-    /**
-     * @param geneTitle the geneTitle to set
-     */
-    public void setGeneTitle(String geneTitle) {
-        this.geneTitle = geneTitle;
-    }
-    /**
-     * @return the unigeneId
-     */
-    public String getUnigeneId() {
-        return unigeneId;
-    }
-    /**
-     * @param unigeneId the unigeneId to set
-     */
-    public void setUnigeneId(String unigeneId) {
-        this.unigeneId = unigeneId;
-    }
+
 
 }

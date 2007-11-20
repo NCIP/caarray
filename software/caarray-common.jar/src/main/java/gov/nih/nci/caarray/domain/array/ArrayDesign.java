@@ -99,7 +99,7 @@ import org.hibernate.validator.NotNull;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.file.ArrayType;
+import gov.nih.nci.caarray.domain.file.AssayType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -369,26 +369,26 @@ public class ArrayDesign extends AbstractCaArrayEntity {
 
     private void checkType(String typeValue) {
         if (typeValue != null) {
-            ArrayType.valueOf(typeValue);
+            AssayType.valueOf(typeValue);
         }
     }
 
     /**
-     * @return the arrayType
+     * @return the assayType
      */
     @Transient
-    public ArrayType getArrayType() {
-        return getType() == null ? null : ArrayType.valueOf(getType());
+    public AssayType getAssayType() {
+        return getType() == null ? null : AssayType.valueOf(getType());
     }
 
     /**
-     * @param arrayType the arrayType to set
+     * @param assayType the assayType to set
      */
-    public void setArrayType(ArrayType arrayType) {
-        if (arrayType == null) {
+    public void setAssayType(AssayType assayType) {
+        if (assayType == null) {
             setType(null);
         } else {
-            setType(arrayType.name());
+            setType(assayType.name());
         }
     }
 

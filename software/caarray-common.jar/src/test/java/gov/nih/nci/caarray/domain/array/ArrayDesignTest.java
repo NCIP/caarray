@@ -1,7 +1,7 @@
 package gov.nih.nci.caarray.domain.array;
 
 import static org.junit.Assert.*;
-import gov.nih.nci.caarray.domain.file.ArrayType;
+import gov.nih.nci.caarray.domain.file.AssayType;
 
 import org.junit.Test;
 
@@ -10,11 +10,11 @@ public class ArrayDesignTest {
     @Test(expected = IllegalArgumentException.class)
     public void testSetType() {
         ArrayDesign arrayDesign = new ArrayDesign();
-        arrayDesign.setType(ArrayType.EXON.name());
-        assertEquals(ArrayType.EXON.name(), arrayDesign.getType());
-        assertEquals(ArrayType.EXON, arrayDesign.getArrayType());
+        arrayDesign.setType(AssayType.EXON.name());
+        assertEquals(AssayType.EXON.name(), arrayDesign.getType());
+        assertEquals(AssayType.EXON, arrayDesign.getAssayType());
         arrayDesign.setType(null);
-        assertNull(arrayDesign.getArrayType());
+        assertNull(arrayDesign.getAssayType());
         assertNull(arrayDesign.getType());
         arrayDesign.setType("illegal value");
     }
@@ -22,11 +22,11 @@ public class ArrayDesignTest {
     @Test
     public void testSetArrayType() {
         ArrayDesign arrayDesign = new ArrayDesign();
-        arrayDesign.setArrayType(ArrayType.EXON);
-        assertEquals(ArrayType.EXON.name(), arrayDesign.getType());
-        assertEquals(ArrayType.EXON, arrayDesign.getArrayType());
-        arrayDesign.setArrayType(null);
-        assertNull(arrayDesign.getArrayType());
+        arrayDesign.setAssayType(AssayType.EXON);
+        assertEquals(AssayType.EXON.name(), arrayDesign.getType());
+        assertEquals(AssayType.EXON, arrayDesign.getAssayType());
+        arrayDesign.setAssayType(null);
+        assertNull(arrayDesign.getAssayType());
         assertNull(arrayDesign.getType());
     }
 

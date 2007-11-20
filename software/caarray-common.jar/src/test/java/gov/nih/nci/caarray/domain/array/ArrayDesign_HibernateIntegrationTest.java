@@ -86,7 +86,7 @@ import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity_HibernateIntegrationTest;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.file.ArrayType;
+import gov.nih.nci.caarray.domain.file.AssayType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -118,7 +118,7 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         arrayDesign.getSurfaceType().setValue("testval3");
         arrayDesign.setTechnologyType(new Term());
         arrayDesign.getTechnologyType().setValue("testval4");
-        arrayDesign.setType(getNextValue(ArrayType.values(), arrayDesign.getArrayType()).name());
+        arrayDesign.setType(getNextValue(AssayType.values(), arrayDesign.getAssayType()).name());
         arrayDesign.setVersion(getUniqueStringValue());
         ArrayDesignDetails designDetails = new ArrayDesignDetails();
         arrayDesign.setDesignDetails(designDetails);
@@ -128,13 +128,21 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         designDetails.getProbeGroups().add(probeGroup);
         PhysicalProbe physicalProbe = new PhysicalProbe("authority", "namespace", "physicalProbe", designDetails, probeGroup);
         designDetails.getProbes().add(physicalProbe);
+        ExpressionProbeAnnotation annotation = new ExpressionProbeAnnotation();
+        Gene gene = new Gene();
+        gene.setEnsemblId(getUniqueStringValue());
+        gene.setFullName(getUniqueStringValue());
+        gene.setSymbol(getUniqueStringValue());
+        gene.setUnigeneId(getUniqueStringValue());
+        annotation.setGene(gene);
+        physicalProbe.setAnnotation(annotation);
     }
 
     @Override
     protected void compareValues(AbstractCaArrayObject caArrayObject, AbstractCaArrayObject retrievedCaArrayObject) {
         ArrayDesign original = (ArrayDesign) caArrayObject;
         ArrayDesign retrieved = (ArrayDesign) retrievedCaArrayObject;
-        assertEquals(original.getArrayType(), retrieved.getArrayType());
+        assertEquals(original.getAssayType(), retrieved.getAssayType());
         assertEquals(original.getDesignFile(), retrieved.getDesignFile());
         assertEquals(original.getName(), retrieved.getName());
         assertEquals(original.getNumberOfFeatures(), retrieved.getNumberOfFeatures());
@@ -151,6 +159,14 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
             ArrayDesignDetails originalDetails = original.getDesignDetails();
             ArrayDesignDetails retrievedDetails = retrieved.getDesignDetails();
             assertEquals(originalDetails.getFeatures().size(), retrievedDetails.getFeatures().size());
+            ExpressionProbeAnnotation originalAnnotation = 
+                (ExpressionProbeAnnotation) originalDetails.getProbes().iterator().next().getAnnotation();
+            ExpressionProbeAnnotation retrievedAnnotation = 
+                (ExpressionProbeAnnotation) retrievedDetails.getProbes().iterator().next().getAnnotation();
+            assertEquals(originalAnnotation.getGene().getEnsemblId(), retrievedAnnotation.getGene().getEnsemblId());
+            assertEquals(originalAnnotation.getGene().getFullName(), retrievedAnnotation.getGene().getFullName());
+            assertEquals(originalAnnotation.getGene().getSymbol(), retrievedAnnotation.getGene().getSymbol());
+            assertEquals(originalAnnotation.getGene().getUnigeneId(), retrievedAnnotation.getGene().getUnigeneId());
         }
     }
 

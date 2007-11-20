@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.domain.file;
 /**
  * Used to represent the fundamental genomic information interrogated by an array design.
  */
-public enum ArrayType {
+public enum AssayType {
 
     /**
      * Array design used to interrogate exons; the sequences of a gene that are present 

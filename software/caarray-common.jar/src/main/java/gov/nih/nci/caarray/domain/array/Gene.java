@@ -82,107 +82,76 @@
  */
 package gov.nih.nci.caarray.domain.array;
 
-import gov.nih.nci.cabio.domain.ExonArrayReporter;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.OneToOne;
-
-import org.hibernate.annotations.Cascade;
 
 /**
- *
+ * Represents a single gene.
  */
 @Entity
-@DiscriminatorValue("EXON")
-public class ExonProbeAnnotation extends AbstractProbeAnnotation {
+public class Gene extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1L;
 
-    private Long start;
-    private Long stop;
-    private String strand;
-    private String uniprotId;
-    private ExonArrayReporter exonArrayReporter;
-    private Gene gene;
+    private String ensemblId;
+    private String unigeneId;
+    private String fullName;
+    private String symbol;
+
+    /**
+     * @return the ensemblId
+     */
+    public String getEnsemblId() {
+        return ensemblId;
+    }
+    /**
+     * @param ensemblId the ensemblId to set
+     */
+    public void setEnsemblId(String ensemblId) {
+        this.ensemblId = ensemblId;
+    }
+
+    /**
+     * @return the symbol
+     */
+    public String getSymbol() {
+        return symbol;
+    }
     
     /**
-     * @return the exonArrayReporter
+     * @param symbol the symbol to set
      */
-    @OneToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    public ExonArrayReporter getExonArrayReporter() {
-        return exonArrayReporter;
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
     }
+    
     /**
-     * @param exonArrayReporter the exonArrayReporter to set
+     * @return the fullName
      */
-    public void setExonArrayReporter(ExonArrayReporter exonArrayReporter) {
-        this.exonArrayReporter = exonArrayReporter;
+    public String getFullName() {
+        return fullName;
     }
-     /**
-     * @return the start
-     */
-    public Long getStart() {
-        return start;
-    }
+    
     /**
-     * @param start the start to set
+     * @param fullName the fullName to set
      */
-    public void setStart(Long start) {
-        this.start = start;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
+    
     /**
-     * @return the stop
+     * @return the unigeneId
      */
-    public Long getStop() {
-        return stop;
+    public String getUnigeneId() {
+        return unigeneId;
     }
+    
     /**
-     * @param stop the stop to set
+     * @param unigeneId the unigeneId to set
      */
-    public void setStop(Long stop) {
-        this.stop = stop;
-    }
-    /**
-     * @return the strand
-     */
-    public String getStrand() {
-        return strand;
-    }
-    /**
-     * @param strand the strand to set
-     */
-    public void setStrand(String strand) {
-        this.strand = strand;
-    }
-    /**
-     * @return the swissprotId
-     */
-    public String getUniprotId() {
-        return uniprotId;
-    }
-    /**
-     * @param swissprotId the swissprotId to set
-     */
-    public void setUniprotId(String swissprotId) {
-        this.uniprotId = swissprotId;
-    }
-
-    /**
-     * @return the gene
-     */
-    @OneToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    public Gene getGene() {
-        return gene;
-    }
-
-    /**
-     * @param gene the gene to set
-     */
-    public void setGene(Gene gene) {
-        this.gene = gene;
+    public void setUnigeneId(String unigeneId) {
+        this.unigeneId = unigeneId;
     }
 
 }

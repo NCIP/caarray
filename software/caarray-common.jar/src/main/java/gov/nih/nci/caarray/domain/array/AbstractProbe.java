@@ -87,6 +87,8 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToOne;
 
+import org.hibernate.annotations.Cascade;
+
 /**
  * Reports on the presence or intensity of a given target probe.
  */
@@ -113,6 +115,7 @@ public abstract class AbstractProbe extends AbstractDesignElement {
      * @return the annotation
      */
     @OneToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public AbstractProbeAnnotation getAnnotation() {
         return annotation;
     }

@@ -31,9 +31,10 @@
         <mapping class="gov.nih.nci.caarray.domain.array.ArrayGroup"/>
         <mapping class="gov.nih.nci.caarray.domain.array.ArrayDesign"/>
         <mapping class="gov.nih.nci.caarray.domain.array.ArrayDesignDetails"/>
-        <mapping class="gov.nih.nci.caarray.domain.array.Feature"/>
         <mapping class="gov.nih.nci.caarray.domain.array.ExonProbeAnnotation"/>
         <mapping class="gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation"/>
+        <mapping class="gov.nih.nci.caarray.domain.array.Feature"/>
+        <mapping class="gov.nih.nci.caarray.domain.array.Gene"/>
         <mapping class="gov.nih.nci.caarray.domain.array.LogicalProbe"/>
         <mapping class="gov.nih.nci.caarray.domain.array.PhysicalProbe"/>
         <mapping class="gov.nih.nci.caarray.domain.array.ProbeGroup"/>
