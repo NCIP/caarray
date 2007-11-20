@@ -12,7 +12,7 @@
         <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${project.experiment.factors}"
             requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="project.id">
             <caarray:displayTagProperties/>
-            <display:column titleKey="experiment.factors.name" sortable="true">
+            <display:column titleKey="experiment.factors.name" sortable="true" sortProperty="name">
                 <caarray:projectListTabActionLink linkContent="${row.name}" entityName="Factor" action="view" itemId="${row.id}" isSubtab="true"/>
             </display:column>
             <display:column property="type.value" titleKey="experiment.factors.category" sortable="true" />
