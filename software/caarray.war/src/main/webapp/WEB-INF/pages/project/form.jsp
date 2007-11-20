@@ -17,11 +17,16 @@
   }
 
   submitWorkflowForm = function() {
-    if (TabUtils.preFunction() != false) {
-        $('workflowForm').submit();
+    var confirmMsg = "Are you sure you want to change the project's status?";
+    if (TabUtils.hasFormChanges()) {
+        confirmMsg = "There are unsaved changed in your form that will be lost. Are you sure you want to proceed to change the project's status?";
     }
+    if (confirm(confirmMsg)) {
+        $('workflowForm').submit();    
+    }    
+    
     return false;
-  }
+  }  
 </script>
 </head>
 <body>

@@ -118,7 +118,6 @@ public class ProjectOverviewAction extends ProjectTabAction {
     private List<Organism> organisms = new ArrayList<Organism>();
     private List<Organization> manufacturers = new ArrayList<Organization>();
     private List<ArrayDesign> arrayDesigns = new ArrayList<ArrayDesign>();
-    private List<PaymentMechanism> paymentMechanisms = new ArrayList<PaymentMechanism>();
 
     /**
      * {@inheritDoc}
@@ -131,40 +130,9 @@ public class ProjectOverviewAction extends ProjectTabAction {
 
         ArrayDesignService arrayDesignService = getArrayDesignService();
         this.manufacturers = arrayDesignService.getArrayDesignProviders();
-    }
-
-    /**
-     * load the overview tab.
-     *
-     * @return name of result to forward to
-     */
-    @Override
-    @SkipValidation
-    public String load() {
-        setup();
-        return super.load();
-    }
-
-    /**
-     * set up the array designs.
-     */
-    public void setup() {
-        if (getProject().getExperiment().getManufacturer() != null) {
-            this.arrayDesigns = getArrayDesignService().getArrayDesignsForProvider(getProject().getExperiment()
-                                                                                               .getManufacturer());
+        if (getExperiment().getManufacturer() != null) {
+            this.arrayDesigns = getArrayDesignService().getArrayDesignsForProvider(getExperiment().getManufacturer());
         }
-    }
-
-    /**
-     * save a project.
-     *
-     * @return path String
-     */
-    @Override
-    public String save() {
-        String result = super.save();
-        setup();
-        return result;
     }
 
     /**
@@ -205,20 +173,6 @@ public class ProjectOverviewAction extends ProjectTabAction {
      */
     public void setManufacturers(List<Organization> manufacturers) {
         this.manufacturers = manufacturers;
-    }
-
-    /**
-     * @return the paymentMechanisms
-     */
-    public List<PaymentMechanism> getPaymentMechanisms() {
-        return this.paymentMechanisms;
-    }
-
-    /**
-     * @param paymentMechanisms the paymentMechanisms to set
-     */
-    public void setPaymentMechanisms(List<PaymentMechanism> paymentMechanisms) {
-        this.paymentMechanisms = paymentMechanisms;
     }
 
     /**

@@ -350,13 +350,18 @@ var TabUtils = {
 
     savedFormData : null,
 
-    preFunction : function() {
-        if (TabUtils.savedFormData != null && $('projectForm') && TabUtils.savedFormData != Form.serialize('projectForm')) {
-            if (!confirm('There are unsaved changed in your form, are you sure you want to continue?')) {
+    preFunction : function(confirmMessage) {
+        confirmMessage = confirmMessage || 'There are unsaved changed in your form, are you sure you want to continue?';
+        if (TabUtils.hasFormChanges()) {
+            if (!confirm(confirmMessage)) {
                 return false;
             }
         }
         TabUtils.showLoadingText();
+    },
+    
+    hasFormChanges : function() {
+        return TabUtils.savedFormData != null && $('projectForm') && TabUtils.savedFormData != Form.serialize('projectForm');    
     },
 
     updateSavedFormData : function() {
