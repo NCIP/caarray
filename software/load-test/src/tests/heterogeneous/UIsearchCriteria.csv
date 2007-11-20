@@ -1,0 +1,6 @@
+ORGANISM	Rat
+ARRAY_PROVIDER	Illumina
+ORGANISM	Mouse
+ARRAY_PROVIDER	Affymetrix
+ORGANISM	Zebrafish
+ORGANISM	Homo Sapiens

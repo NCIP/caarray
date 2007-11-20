@@ -104,6 +104,10 @@
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/SearchTest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchTest_Basic.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+        </jmeter>
         <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/SearchByExampleAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchByExampleAPITest_Basic.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jndi.port" value="${server.jndi.port}" />
@@ -135,6 +139,13 @@
             <jvmarg value="-Xmx1024m" />
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/heterogeneous/HeterogeneousTest.jmx" resultlog="${tests.out.dir}/heterogeneous/HeterogeneousTest.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="server.jndi.port" value="${server.jndi.port}" />
         </jmeter>
         <!-- UNCOMMENT TO RUN TESTS WITH BIGGER DATABASE SIZES.
         <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/setup/FiveHundredExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/FiveHundredExperimentLoader.jtl">
