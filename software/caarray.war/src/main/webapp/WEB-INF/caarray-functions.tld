@@ -82,4 +82,17 @@
       &lt;c:if test="${caarrayfn:isOwner(project, user)}">
     </example>
   </function>  
+  
+  <function>
+    <description>
+      makes a string safe to be used inside a quoted javascript string, dealing with quotes, tabs, newlines, etc
+    </description>
+    <name>escapeJavaScript</name>
+    <function-class>org.apache.commons.lang.StringEscapeUtils</function-class>
+    <function-signature>java.lang.String escapeJavaScript(java.lang.String)</function-signature>
+    <example>
+      var foo = '${caarrayfn:escapeJavaScript(somVal)}';
+    </example>
+  </function>  
+  
 </taglib>

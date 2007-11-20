@@ -2,7 +2,7 @@
 
 <%@page import="gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory"%>
 <script type="text/javascript">
-setExperimentTitleHeader('${project.experiment.title}');
+setExperimentTitleHeader('${caarrayfn:escapeJavaScript(project.experiment.title)}');
 </script>
 
 <c:if test="${!editMode}">
