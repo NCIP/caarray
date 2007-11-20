@@ -100,10 +100,10 @@
 	        </modificationset>
 
 	        <schedule interval="60">
-	                    <ant anthome="C:\dev\tools\apache-ant-1.7.0"
-			                buildfile="build.xml" target="main" uselogger="true"
-			                usedebug="false">
-            			</ant>
+				<ant anthome="C:\dev\tools\apache-ant-1.7.0"
+					buildfile="build.xml" target="main" uselogger="true"
+					usedebug="false">
+				</ant>
 	        </schedule>
 
 	        <log dir="logs\${project.name}">
@@ -114,6 +114,10 @@
 	        <publishers>
 	            <currentbuildstatuspublisher file="logs/${project.name}/buildstatus.txt" />
 	            <htmlemail buildresultsurl="${email.buildresultsurl.prefix}${project.name}">
+	                <always address="swand@mail.nih.gov" />
+	                <always address="klemmj@mail.nih.gov" />
+	                <always address="gendlemb@mail.nih.gov" />
+	                <always address="hadfielj@mail.nih.gov" />
 	                <always address="matyass@mail.nih.gov" />
 	            </htmlemail>
 	        </publishers>
