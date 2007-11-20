@@ -106,14 +106,6 @@ public interface FileManagementService {
     void validateFiles(CaArrayFileSet fileSet);
 
     /**
-     * Imports the files provided. This method provided for imports that are not associated
-     * with a project (e.g. array design files).
-     *
-     * @param fileSet the files to import.
-     */
-    void importFiles(CaArrayFileSet fileSet);
-
-    /**
      * Imports the files provided into the project given.
      *
      * @param fileSet the files to import.

@@ -95,10 +95,6 @@ public class FileManagementServiceStub implements FileManagementService {
     int validatedFileCount = 0;
     int importedFilecCount = 0;
 
-    public void importFiles(CaArrayFileSet fileSet) {
-        this.importedFilecCount += fileSet.getFiles().size();
-    }
-
     public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
         this.importedFilecCount += fileSet.getFiles().size();
     }

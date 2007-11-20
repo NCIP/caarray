@@ -64,6 +64,7 @@ import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
@@ -113,6 +114,20 @@ public class FileManagementServiceTest {
         }
     }
     
+    @Test(expected = IllegalArgumentException.class)
+    public void testImportIllegalState() {
+        Project project = getTgaBroadTestProject();
+        project.getFiles().iterator().next().setFileStatus(FileStatus.VALIDATION_ERRORS);
+        fileManagementService.importFiles(project, project.getFileSet());
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testValidateIllegalState() {
+        Project project = getTgaBroadTestProject();
+        project.getFiles().iterator().next().setFileStatus(FileStatus.IMPORTED);
+        fileManagementService.validateFiles(project.getFileSet());
+    }
+    
     @Test
     public void testImportDoesntOverwriteExistingExperiment() {
         Project project = getTgaBroadTestProject();
@@ -145,8 +160,21 @@ public class FileManagementServiceTest {
         ArrayDesign design = new ArrayDesign();
         design.setName("design name");
         CaArrayFile caArrayFile = fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
+        caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
         design.setDesignFile(caArrayFile);
         fileManagementService.importArrayDesignFile(design, caArrayFile);
+        assertTrue(arrayDesignServiceStub.importCalled);
+    }
+
+    @Test
+    public void testImportArrayDesign() {
+        Project project = getTgaBroadTestProject();
+        project.getFiles().clear();
+        CaArrayFile caArrayFile = fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
+        caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
+        caArrayFile.setProject(project);
+        project.getFiles().add(caArrayFile);  
+        fileManagementService.importFiles(project, project.getFileSet());
         assertTrue(arrayDesignServiceStub.importCalled);
     }
 
@@ -175,6 +203,12 @@ public class FileManagementServiceTest {
             importCalled = true;
         }
 
+        @Override
+        public ArrayDesign importDesign(CaArrayFile designFile) {
+            importCalled = true;
+            return new ArrayDesign();
+        }
+
     }
 
     private static class LocalFileAccessServiceStub extends FileAccessServiceStub {
@@ -182,6 +216,8 @@ public class FileManagementServiceTest {
         public File getFile(CaArrayFile caArrayFile) {
             if (new File(MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY, caArrayFile.getName()).exists()) {
                 return new File(MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY, caArrayFile.getName());
+            } else if (new File(AffymetrixArrayDesignFiles.TEST3_CDF.getParentFile(), caArrayFile.getName()).exists()) {
+                return new File(AffymetrixArrayDesignFiles.TEST3_CDF.getParentFile(), caArrayFile.getName());
             } else {
                 throw new IllegalArgumentException("Don't know location of " + caArrayFile.getName());
             }

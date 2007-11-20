@@ -99,8 +99,6 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
 import org.apache.commons.logging.Log;
@@ -118,19 +116,6 @@ public class FileManagementServiceBean implements FileManagementService {
     private static final Log LOG = LogFactory.getLog(FileManagementServiceBean.class);
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void importFiles(CaArrayFileSet fileSet) {
-        checkForImport(fileSet);
-        LogUtil.logSubsystemEntry(LOG, fileSet);
-        FileAccessService fileAccessService = getFileAccessService();
-        doImport(fileAccessService, fileSet);
-        fileAccessService.closeFiles();
-        LogUtil.logSubsystemExit(LOG);
-    }
 
     private void checkForImport(CaArrayFileSet fileSet) {
         for (CaArrayFile caArrayFile : fileSet.getFiles()) {
@@ -160,10 +145,6 @@ public class FileManagementServiceBean implements FileManagementService {
         doImport(fileAccessService, targetProject, fileSet);
         fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
-    }
-
-    private void doImport(FileAccessService fileAccessService, CaArrayFileSet fileSet) {
-        doImport(fileAccessService, null, fileSet);
     }
 
     private void doImport(FileAccessService fileAccessService, Project targetProject, CaArrayFileSet fileSet) {
