@@ -507,10 +507,10 @@ public class ProjectDaoTest extends AbstractDaoTest {
     }
 
     private void checkBioMaterials(Experiment dummyInv, Experiment retrievedInv) {
-        assertEquals(dummyInv.getSources().size(), retrievedInv.getSources().size());
-        assertEquals(dummyInv.getSamples().size(), retrievedInv.getSamples().size());
-        assertEquals(dummyInv.getExtracts().size(), retrievedInv.getExtracts().size());
-        assertEquals(dummyInv.getLabeledExtracts().size(), retrievedInv.getLabeledExtracts().size());
+        CollectionUtils.isEqualCollection(dummyInv.getSources(), retrievedInv.getSources());
+        CollectionUtils.isEqualCollection(dummyInv.getSamples(), retrievedInv.getSamples());
+        CollectionUtils.isEqualCollection(dummyInv.getExtracts(), retrievedInv.getExtracts());
+        CollectionUtils.isEqualCollection(dummyInv.getLabeledExtracts(), retrievedInv.getLabeledExtracts());
     }
 
     /**
