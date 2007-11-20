@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.web.action;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getPermissionsManagementService;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
-import gov.nih.nci.caarray.util.SecurityUtils;
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;

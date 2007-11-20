@@ -6,6 +6,7 @@
         <s:textarea name="currentSample.description" key="experiment.samples.description" rows="3" cols="75"
             tabindex="2" />
         <caarray:annotationAssociationPicker baseId="sourcePicker" entityName="Sample" associatedEntityName="Source" itemId="${currentSample.id}" />
+        <caarray:annotationCharacteristics item="${currentSource}"/>                 
         <s:hidden name="currentSample.id" />
         <s:hidden name="project.id" />
     </caarray:projectListTabItemForm>

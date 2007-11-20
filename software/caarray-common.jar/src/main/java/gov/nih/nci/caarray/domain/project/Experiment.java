@@ -95,7 +95,8 @@ import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.util.BrowseableProperty;
+import gov.nih.nci.caarray.security.AttributePolicy;
+import gov.nih.nci.caarray.security.SecurityPolicy;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -246,7 +247,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the dateOfExperiment
      */
     @Temporal(TemporalType.TIMESTAMP)
-    @BrowseableProperty
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public Date getDateOfExperiment() {
         return this.dateOfExperiment;
     }
@@ -266,6 +267,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the description
      */
     @Column(length = LARGE_TEXT_FIELD_LENGTH)
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public String getDescription() {
         return this.description;
     }
@@ -305,7 +307,7 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
     @NotNull
-    @BrowseableProperty
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public String getTitle() {
         return this.title;
     }
@@ -341,7 +343,7 @@ public class Experiment extends AbstractCaArrayEntity {
             + "join experimentcontactrole ecr on ecr.experimentcontact_id = ec.id "
             + "join term t on ecr.role_id = t.id where t.value='" + ExperimentContact.PI_ROLE
             + "' and ec.experiment = id)")
-    @BrowseableProperty
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public String getPublicIdentifier() {
         return this.publicIdentifier;
     }
@@ -450,7 +452,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the service type
      */
     @Enumerated(EnumType.STRING)
-    @BrowseableProperty
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     @NotNull
     public ServiceType getServiceType() {
         return this.serviceType;
@@ -698,7 +700,7 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the sources
      */
-    @ManyToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "EXPERIMENTSOURCE",
             joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = {@JoinColumn(name = "SOURCE_ID") })
@@ -729,11 +731,11 @@ public class Experiment extends AbstractCaArrayEntity {
      * to being initialized by hibernate, and 2 afterwards
      * @return the samples
      */
-    @ManyToMany
-    @LazyCollection(LazyCollectionOption.EXTRA)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "EXPERIMENTSAMPLE",
             joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = {@JoinColumn(name = "SAMPLE_ID") })
+    @LazyCollection(LazyCollectionOption.EXTRA)
     @ForeignKey(name = "EXPERIMENTSAMPLE_INVEST_FK", inverseName = "EXPERIMENTSAMPLE_SAMPLE_FK")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @Where(clause = SAMPLES_FILTER)
@@ -764,7 +766,7 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the extracts
      */
-    @ManyToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "EXPERIMENTEXTRACT",
             joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
             inverseJoinColumns = {@JoinColumn(name = "EXTRACT_ID") })
@@ -790,10 +792,10 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the labeledExtracts
      */
-    @ManyToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "EXPERIMENTLABELEDEXTRACT",
             joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
-            inverseJoinColumns = {@JoinColumn(name = "SAMPLE_ID") })
+            inverseJoinColumns = {@JoinColumn(name = "LABELED_EXTRACT_ID") })
     @ForeignKey(name = "EXPERIMENTLE_INVEST_FK", inverseName = "EXPERIMENTLE_LE_FK")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @Where(clause = LABELED_EXTRACTS_FILTER)
@@ -1012,7 +1014,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the project to which this experiment belongs.
      */
     @OneToOne(mappedBy = "experiment")
-    @BrowseableProperty
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public Project getProject() {
         return this.project;
     }

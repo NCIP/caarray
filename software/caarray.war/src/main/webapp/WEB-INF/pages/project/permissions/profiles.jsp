@@ -3,6 +3,11 @@
 <html>
 <head>
     <title>Experiment Permissions</title>
+    <style>
+        table.searchresults table.form td {
+          border: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -33,7 +38,7 @@
                     Assign specific access rules down to the sample level in the box on the right.
                 </p>
 
-                <div class="datatable" id="access_profile_owners" style="margin-top: 10px">
+                <div class="datatable" style="margin-top: 10px">
                     <table class="searchresults" cellspacing="0">
                         <tr>
                             <th>Browsability</th>
@@ -51,6 +56,27 @@
                                         <caarray:action actionClass="save" text="Toggle" onclick="$('browsability_form').submit(); return false;"/>
                                     </caarray:actions>
                                 </s:form>                                                        
+                            </td>                        
+                        </tr>
+                    </table>
+                </div>                    
+
+                <div class="datatable" style="margin-top: 10px">
+                    <table class="searchresults" cellspacing="0">
+                        <tr>
+                            <th>Policies</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="boxpad">
+                                <s:form action="project/permissions/setTcgaPolicy" cssClass="form" id="policy_form">
+                                    <s:hidden name="project.id"/>
+                                    <s:checkbox name="useTcgaPolicy" value="%{project.useTcgaPolicy}" label="Use TCGA Policy" cssStyle="border: none"/>
+                                </s:form>                                                        
+                                <caarray:actions>
+                                    <caarray:action actionClass="save" text="Save" onclick="$('policy_form').submit(); return false;"/>
+                                </caarray:actions>
+                                </div>
                             </td>                        
                         </tr>
                     </table>

@@ -16,8 +16,8 @@
       Sees if a user has read access to a protectable
     </description>
     <name>canRead</name>
-    <function-class>gov.nih.nci.caarray.util.SecurityUtils</function-class>
-    <function-signature>boolean canRead(gov.nih.nci.caarray.util.Protectable, gov.nih.nci.security.authorization.domainobjects.User)</function-signature>
+    <function-class>gov.nih.nci.caarray.security.SecurityUtils</function-class>
+    <function-signature>boolean canRead(gov.nih.nci.caarray.security.Protectable, gov.nih.nci.security.authorization.domainobjects.User)</function-signature>
     <example>
       &lt;c:if test="${caarrayfn:canRead(project, user)}">
     </example>
@@ -28,7 +28,7 @@
       Sees if a user has write access to a protectable
     </description>
     <name>canWrite</name>
-    <function-class>gov.nih.nci.caarray.util.SecurityUtils</function-class>
+    <function-class>gov.nih.nci.caarray.security.SecurityUtils</function-class>
     <function-signature>boolean canWrite(gov.nih.nci.caarray.domain.PersistentObject, gov.nih.nci.security.authorization.domainobjects.User)</function-signature>
     <example>
       &lt;c:if test="${caarrayfn:canWrite(project, user)}">
@@ -40,8 +40,8 @@
       Sees if a user has access to modify permissions of a project
     </description>
     <name>canModifyPermissions</name>
-    <function-class>gov.nih.nci.caarray.util.SecurityUtils</function-class>
-    <function-signature>boolean canModifyPermissions(gov.nih.nci.caarray.util.Protectable, gov.nih.nci.security.authorization.domainobjects.User)</function-signature>
+    <function-class>gov.nih.nci.caarray.security.SecurityUtils</function-class>
+    <function-signature>boolean canModifyPermissions(gov.nih.nci.caarray.security.Protectable, gov.nih.nci.security.authorization.domainobjects.User)</function-signature>
     <example>
       &lt;c:if test="${caarrayfn:canModifyPermissions(project, user)}">
     </example>
@@ -76,8 +76,8 @@
       Sees if a user is among the owners of a protectable
     </description>
     <name>isOwner</name>
-    <function-class>gov.nih.nci.caarray.util.SecurityUtils</function-class>
-    <function-signature>boolean isOwner(gov.nih.nci.caarray.util.Protectable, gov.nih.nci.security.authorization.domainobjects.User)</function-signature>
+    <function-class>gov.nih.nci.caarray.security.SecurityUtils</function-class>
+    <function-signature>boolean isOwner(gov.nih.nci.caarray.security.Protectable, gov.nih.nci.security.authorization.domainobjects.User)</function-signature>
     <example>
       &lt;c:if test="${caarrayfn:isOwner(project, user)}">
     </example>

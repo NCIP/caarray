@@ -137,6 +137,16 @@ public enum ExperimentOntologyCategory {
      * PublicationStatus category, used for status of Publications.
      */
     PUBLICATION_STATUS("PublicationStatus"),
+    
+    /**
+     * Clinical Diagnosis category, one of annotation fields allowed by TCGA policy.
+     */
+    CLINICAL_DIAGNOSIS("ClinicalDiagnosis"),
+
+    /**
+     * Histologic Diagnosis category, one of annotation fields allowed by TCGA policy.
+     */
+    HISTOLOGIC_DIAGNOSIS("HistologicDiagnosis"),
 
     /**
      * TechnologyType category, used for array designs.

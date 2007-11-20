@@ -85,10 +85,15 @@ package gov.nih.nci.caarray.domain.sample;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.security.AttributeMutator;
+import gov.nih.nci.caarray.security.AttributePolicy;
+import gov.nih.nci.caarray.security.SecurityPolicy;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -102,21 +107,20 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.apache.commons.collections.Closure;
+import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
 /**
- *
+ * 
  */
 @Entity
 @Table(name = "BIOMATERIAL")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(
-        name = "DISCRIMINATOR",
-        discriminatorType = DiscriminatorType.STRING
-)
+@DiscriminatorColumn(name = "DISCRIMINATOR", discriminatorType = DiscriminatorType.STRING)
 public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 
@@ -147,7 +151,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
 
     /**
      * Gets the materialType.
-     *
+     * 
      * @return the materialType
      */
     @ManyToOne
@@ -159,15 +163,16 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
 
     /**
      * Sets the materialType.
-     *
+     * 
      * @param materialTypeVal the materialType
      */
     public void setMaterialType(final Term materialTypeVal) {
         this.materialType = materialTypeVal;
     }
+
     /**
      * Gets the name.
-     *
+     * 
      * @return the name
      */
     @NotNull
@@ -178,25 +183,27 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
 
     /**
      * Sets the name.
-     *
+     * 
      * @param nameVal the name
      */
     public void setName(final String nameVal) {
         this.name = nameVal;
     }
+
     /**
      * Gets the description.
-     *
+     * 
      * @return the description
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @AttributePolicy(deny = SecurityPolicy.TCGA_POLICY_NAME)
     public String getDescription() {
         return this.description;
     }
 
     /**
      * Sets the description.
-     *
+     * 
      * @param descriptionVal the description
      */
     public void setDescription(final String descriptionVal) {
@@ -205,18 +212,20 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
 
     /**
      * Gets the characteristics.
-     *
+     * 
      * @return the characteristics
      */
     @OneToMany(mappedBy = "bioMaterial", fetch = FetchType.LAZY)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @AttributePolicy(mutators = @AttributeMutator(policies = SecurityPolicy.TCGA_POLICY_NAME, 
+            mutator = TcgaCharacteristicFilter.class))
     public Set<AbstractCharacteristic> getCharacteristics() {
         return this.characteristics;
     }
 
     /**
      * Sets the characteristics.
-     *
+     * 
      * @param characteristicsVal the characteristics
      */
     @SuppressWarnings("unused")
@@ -226,7 +235,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
 
     /**
      * Gets the protocolApplications.
-     *
+     * 
      * @return the protocolApplications
      */
     @OneToMany(mappedBy = "bioMaterial", fetch = FetchType.LAZY)
@@ -237,7 +246,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
 
     /**
      * Sets the protocolApplications.
-     *
+     * 
      * @param protocolApplicationsVal the protocolApplications
      */
     @SuppressWarnings("unused")
@@ -251,6 +260,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "BIOMATERIAL_ORGANISM_FK")
+    @AttributePolicy(deny = SecurityPolicy.TCGA_POLICY_NAME)
     public Organism getOrganism() {
         return this.organism;
     }
@@ -260,5 +270,37 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      */
     public void setOrganism(Organism organism) {
         this.organism = organism;
+    }
+
+    /**
+     * Attribute filter for characteristics under the TCGA Policy.
+     * 
+     * @author dkokotov
+     */
+    public static class TcgaCharacteristicFilter implements Closure {
+        private static final String[] ALLOWED_CHARACTERISTIC_CATEGORIES =
+                {ExperimentOntologyCategory.CLINICAL_DIAGNOSIS.getCategoryName(),
+                        ExperimentOntologyCategory.HISTOLOGIC_DIAGNOSIS.getCategoryName(),
+                        ExperimentOntologyCategory.DISEASE_STATE.getCategoryName() };
+
+        /**
+         * {@inheritDoc}
+         */
+        @SuppressWarnings("unchecked")
+        public void execute(Object o) {
+            Set<AbstractCharacteristic> characteristics = (Set<AbstractCharacteristic>) o;
+            for (Iterator<AbstractCharacteristic> it = characteristics.iterator(); it.hasNext();) {
+                AbstractCharacteristic absChar = it.next();
+                if (!(absChar instanceof TermBasedCharacteristic)) {
+                    it.remove();
+                } else {
+                    TermBasedCharacteristic termChar = (TermBasedCharacteristic) absChar;
+                    if (!ArrayUtils.contains(ALLOWED_CHARACTERISTIC_CATEGORIES, termChar.getTerm().getCategory()
+                            .getName())) {
+                        it.remove();
+                    }
+                }
+            }
+        }
     }
 }

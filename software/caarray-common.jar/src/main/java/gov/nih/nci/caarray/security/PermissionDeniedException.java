@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common-jar
+ * source code form and machine readable, binary, object code form. The caArray
  * Software was developed in conjunction with the National Cancer Institute 
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent 
  * government employees are authors, any rights in such works shall be subject 
  * to Title 17 of the United States Code, section 105. 
  *
- * This caarray-common-jar Software License (the License) is between NCI and You. You (or 
+ * This caArray Software License (the License) is between NCI and You. You (or 
  * Your) shall mean a person or an entity, and all other entities that control, 
  * are controlled by, or are under common control with the entity. Control for 
  * purposes of this definition means (i) the direct or indirect power to cause 
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described 
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up, 
  * no-charge, irrevocable, transferable and royalty-free right and license in 
- * its rights in the caarray-common-jar Software to (i) use, install, access, operate, 
+ * its rights in the caArray Software to (i) use, install, access, operate, 
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and 
- * have distributed to and by third parties the caarray-common-jar Software and any 
+ * and prepare derivative works of the caArray Software; (ii) distribute and 
+ * have distributed to and by third parties the caArray Software and any 
  * modifications and derivative works thereof; and (iii) sublicense the 
  * foregoing rights set out in (i) and (ii) to third parties, including the 
  * right to license such rights to further third parties. For sake of clarity, 
@@ -80,25 +80,53 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.util;
+package gov.nih.nci.caarray.security;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import gov.nih.nci.caarray.domain.PersistentObject;
 
 /**
- * Marker annotation denoting that a property of a Protectable only requires BROWSE (as opposed to READ)
- * access. Is currently intended for use on Project and Experiment properties. This annotation
- * should be placed on the getter method for the property (same as the Hibernate annotations). Any properties
- * not marked with this annotation are assumed to require READ access
- * 
- * @author dkokotov
+ * Indicates that an operation was not allowed due to the current user not having the required permissions.
  */
-@Documented
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface BrowseableProperty {
+public class PermissionDeniedException extends RuntimeException {
+    private static final long serialVersionUID = 3582622697786140397L;
+    private final PersistentObject entity;
+    private final String privilege;
+    private final String userName;
 
+    /**
+     * Create a new PermissionDeniedException for a given user not having the given privilege to the
+     * given entity.
+     * 
+     * @param entity the instance on which an operation was requested
+     * @param privilege the privilege that was needed to perform the operation
+     * @param userName the user attempting the operation
+     */
+    public PermissionDeniedException(PersistentObject entity, String privilege, String userName) {
+        super(String.format("User %s does not have privilege %s for entity of type %s with id %s", userName,
+                privilege, entity.getClass().getName(), entity.getId()));
+        this.privilege = privilege;
+        this.entity = entity;
+        this.userName = userName;
+    }
+
+    /**
+     * @return the privilege
+     */
+    public String getPrivilege() {
+        return privilege;
+    }
+
+    /**
+     * @return the userName
+     */
+    public String getUserName() {
+        return userName;
+    }
+
+    /**
+     * @return the entity
+     */
+    public PersistentObject getEntity() {
+        return entity;
+    }
 }

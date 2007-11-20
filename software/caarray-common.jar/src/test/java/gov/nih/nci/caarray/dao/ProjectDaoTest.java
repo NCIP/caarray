@@ -110,12 +110,13 @@ import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.sample.ValueBasedCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.caarray.util.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
@@ -284,7 +285,15 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
     private static void setBioMaterials() {
         DUMMY_SOURCE.setName("DummySource");
+        DUMMY_SOURCE.setDescription("DummySourceDescription");
+        ValueBasedCharacteristic vbChar = new ValueBasedCharacteristic();
+        vbChar.setValue("Foo");
+        DUMMY_SOURCE.getCharacteristics().add(vbChar);        
         DUMMY_SAMPLE.setName("DummySample");
+        DUMMY_SAMPLE.setDescription("DummySampleDescription");
+        vbChar = new ValueBasedCharacteristic();
+        vbChar.setValue("Foo");
+        DUMMY_SAMPLE.getCharacteristics().add(vbChar);
         DUMMY_EXTRACT.setName("DummyExtract");
         DUMMY_LABELED_EXTRACT.setName("DummyLabeledExtract");
         DUMMY_EXPERIMENT_1.getSources().add(DUMMY_SOURCE);
@@ -608,6 +617,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
     public void testProjectPermissions() {
         Transaction tx = HibernateUtil.beginTransaction();
         saveSupportingObjects();
+        assertTrue(SecurityUtils.canWrite(DUMMY_PROJECT_1, UsernameHolder.getCsmUser()));
         HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
         tx.commit();
 
@@ -618,8 +628,10 @@ public class ProjectDaoTest extends AbstractDaoTest {
         tx.commit();
 
         tx = HibernateUtil.beginTransaction();
-        UsernameHolder.setUser("caarrayadmin");
+        UsernameHolder.setUser(STANDARD_USER);
         p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
+        assertTrue(SecurityUtils.isOwner(p, UsernameHolder.getCsmUser()));
+        assertTrue(SecurityUtils.canWrite(DUMMY_SOURCE, UsernameHolder.getCsmUser()));
         assertNotNull(p.getPublicProfile());
         assertEquals(p.getPublicProfile().getSecurityLevel(), SecurityLevel.NONE);
         assertEquals(p.getHostProfile().getSecurityLevel(), SecurityLevel.READ_WRITE_SELECTIVE);
@@ -644,7 +656,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         assertFalse(SecurityUtils.canWrite(p, UsernameHolder.getCsmUser()));
         assertFalse(SecurityUtils.canModifyPermissions(p, UsernameHolder.getCsmUser()));
 
-        UsernameHolder.setUser("caarrayadmin");
+        UsernameHolder.setUser(STANDARD_USER);
         p.setBrowsable(true);
         tx.commit();
 
@@ -661,7 +673,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
 
         tx = HibernateUtil.beginTransaction();
-        UsernameHolder.setUser("caarrayadmin");
+        UsernameHolder.setUser(STANDARD_USER);
         p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
         p.getPublicProfile().setSecurityLevel(SecurityLevel.READ);
         tx.commit();
@@ -693,7 +705,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         tx.commit();
 
         tx = HibernateUtil.beginTransaction();
-        UsernameHolder.setUser("caarrayadmin");
+        UsernameHolder.setUser(STANDARD_USER);
         p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
         p.getPublicProfile().setSecurityLevel(SecurityLevel.READ_SELECTIVE);
         p.getPublicProfile().getSampleSecurityLevels().put(DUMMY_SAMPLE, SampleSecurityLevel.NONE);
@@ -712,7 +724,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         tx.commit();
 
         tx = HibernateUtil.beginTransaction();
-        UsernameHolder.setUser("caarrayadmin");
+        UsernameHolder.setUser(STANDARD_USER);
         p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
         p.getPublicProfile().setSecurityLevel(SecurityLevel.READ_SELECTIVE);
         p.getPublicProfile().getSampleSecurityLevels().put(DUMMY_SAMPLE, SampleSecurityLevel.READ);
@@ -729,6 +741,43 @@ public class ProjectDaoTest extends AbstractDaoTest {
         Hibernate.initialize(p.getExperiment().getSamples());
         assertEquals(1, p.getExperiment().getSamples().size());
         tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        UsernameHolder.setUser(STANDARD_USER);
+        p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
+        Sample s = new Sample();
+        s.setName("New Sample");
+        p.getExperiment().getSamples().add(s);
+        DAO_OBJECT.save(p);
+        tx.commit();        
+
+        tx = HibernateUtil.beginTransaction();
+        UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
+        p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
+        // because Exp.samples is extra lazy, must initialize it explicitly to verify security
+        Hibernate.initialize(p.getExperiment().getSamples());
+        assertEquals(1, p.getExperiment().getSamples().size());
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        UsernameHolder.setUser(STANDARD_USER);
+        p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
+        p.getPublicProfile().setSecurityLevel(SecurityLevel.READ);
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
+        p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
+        // because Exp.samples is extra lazy, must initialize it explicitly to verify security
+        Hibernate.initialize(p.getExperiment().getSamples());
+        assertEquals(2, p.getExperiment().getSamples().size());
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        UsernameHolder.setUser(STANDARD_USER);
+        p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
+        DAO_OBJECT.remove(p);
+        tx.commit();        
     }
 
     @Test
@@ -739,7 +788,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         tx.commit();
 
         tx = HibernateUtil.beginTransaction();
-        Project p = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        Project p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
         List<UserGroupRoleProtectionGroup> list = SecurityUtils.getUserGroupRoleProtectionGroups(p);
         assertEquals(4, list.size()); // expect the user-only ones only
         assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
@@ -801,7 +850,53 @@ public class ProjectDaoTest extends AbstractDaoTest {
         assertTrue(p.isBrowsable());
         assertEquals(SecurityLevel.READ, p.getPublicProfile().getSecurityLevel());
         tx.commit();
-}
+    }
+    
+    @Test
+    public void testTcgaPolicy() {
+        Transaction tx = HibernateUtil.beginTransaction();
+        saveSupportingObjects();
+        DUMMY_PROJECT_1.setBrowsable(true);        
+        DUMMY_PROJECT_1.getPublicProfile().setSecurityLevel(SecurityLevel.READ);
+        HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);        
+        assertFalse(DUMMY_PROJECT_1.isUseTcgaPolicy());
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        Sample s = SEARCH_DAO.retrieve(Sample.class, DUMMY_SAMPLE.getId());
+        assertNotNull(s.getDescription());
+        assertEquals(1, DUMMY_SAMPLE.getCharacteristics().size());
+        tx.commit();
+
+        UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
+        tx = HibernateUtil.beginTransaction();
+        s = SEARCH_DAO.retrieve(Sample.class, DUMMY_SAMPLE.getId());
+        assertNotNull(s.getDescription());
+        assertEquals(1, DUMMY_SAMPLE.getCharacteristics().size());
+        tx.commit();
+ 
+        UsernameHolder.setUser(STANDARD_USER);        
+        tx = HibernateUtil.beginTransaction();
+        Project p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
+        p.setUseTcgaPolicy(true);
+        DAO_OBJECT.save(p);
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        s = SEARCH_DAO.retrieve(Sample.class, DUMMY_SAMPLE.getId());
+        assertNotNull(s.getDescription());
+        assertEquals(1, DUMMY_SAMPLE.getCharacteristics().size());
+        tx.commit();
+        
+        UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
+        tx = HibernateUtil.beginTransaction();
+        p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
+        assertEquals(1, p.getExperiment().getSamples().size());
+        s = p.getExperiment().getSamples().iterator().next();
+        assertNull(s.getDescription());
+        assertEquals(0, s.getCharacteristics().size());        
+        tx.rollback();        
+    }
 
     @Test
     public void testFilters() {

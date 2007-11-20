@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute 
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent 
  * government employees are authors, any rights in such works shall be subject 
  * to Title 17 of the United States Code, section 105. 
  *
- * This caArray Software License (the License) is between NCI and You. You (or 
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or 
  * Your) shall mean a person or an entity, and all other entities that control, 
  * are controlled by, or are under common control with the entity. Control for 
  * purposes of this definition means (i) the direct or indirect power to cause 
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described 
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up, 
  * no-charge, irrevocable, transferable and royalty-free right and license in 
- * its rights in the caArray Software to (i) use, install, access, operate, 
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate, 
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and 
- * have distributed to and by third parties the caArray Software and any 
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and 
+ * have distributed to and by third parties the caarray-common-jar Software and any 
  * modifications and derivative works thereof; and (iii) sublicense the 
  * foregoing rights set out in (i) and (ii) to third parties, including the 
  * right to license such rights to further third parties. For sake of clarity, 
@@ -80,53 +80,94 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.util;
+package gov.nih.nci.caarray.security;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
+import java.lang.reflect.Method;
+
+import org.apache.commons.lang.ArrayUtils;
+import org.hibernate.util.ReflectHelper;
 
 /**
- * Indicates that an operation was not allowed due to the current user not having the required permissions.
+ * This class models a security policy. For now, security policies are limited to applying attribute-level security to
+ * entities. Policies can use either whitelist or blacklist mode - in whitelist mode attributes are only allowed if the
+ * have the policy in their whitelist, whereas in blacklist mode attributes are allowed unless they have the policy in
+ * their blacklist.
+ * 
+ * If an attribute is disallowed by policy, then it is nulled out (or, if it is a collection, set to an empty
+ * collection) via a Hibernate Interceptor.
+ * 
+ * @author dkokotov
  */
-public class PermissionDeniedException extends RuntimeException {
-    private static final long serialVersionUID = 3582622697786140397L;
-    private final PersistentObject entity;
-    private final String privilege;
-    private final String userName;
+public class SecurityPolicy {
+    private final String name;
+    private final SecurityPolicyMode mode;
 
     /**
-     * Create a new PermissionDeniedException for a given user not having the given privilege to the
-     * given entity.
-     * 
-     * @param entity the instance on which an operation was requested
-     * @param privilege the privilege that was needed to perform the operation
-     * @param userName the user attempting the operation
+     * Name of the "Browse" SecurityPolicy.
      */
-    public PermissionDeniedException(PersistentObject entity, String privilege, String userName) {
-        super(String.format("User %s does not have privilege %s for entity of type %s with id %s", userName,
-                privilege, entity.getClass().getName(), entity.getId()));
-        this.privilege = privilege;
-        this.entity = entity;
-        this.userName = userName;
+    public static final String BROWSE_POLICY_NAME = "Browse";
+    
+    /**
+     * The "Browse" SecurityPolicy applies to browsable projects to which a user does not
+     * also have READ or WRITE access.
+     */
+    public static final SecurityPolicy BROWSE = new SecurityPolicy(BROWSE_POLICY_NAME, SecurityPolicyMode.WHITELIST);
+    
+    /**
+     * Name of the TCGA SecurityPolicy.
+     */
+    public static final String TCGA_POLICY_NAME = "TCGA";
+    
+    /**
+     * The "TCGA" SecurityPolicy applies to TCGA human projects and restricts public access to certain
+     * fields.
+     */
+    public static final SecurityPolicy TCGA = new SecurityPolicy(TCGA_POLICY_NAME, SecurityPolicyMode.BLACKLIST);
+
+    /**
+     * Constructor For SecurityPolicy with given name and mode of operation.
+     * @param name the name for the policy
+     * @param mode the mode of operation (blacklist or whitelist)
+     */
+    public SecurityPolicy(String name, SecurityPolicyMode mode) {
+        super();
+        this.name = name;
+        this.mode = mode;
     }
 
     /**
-     * @return the privilege
+     * Returns whether the given property on the given entity object is allowed by this policy.
+     * @param entity the object in question
+     * @param propertyName the name of the property on the object
+     * @return whether this policy allows the specified property on the specified object to be seen
      */
-    public String getPrivilege() {
-        return privilege;
+    public boolean allowProperty(Object entity, String propertyName) {
+        AttributePolicy attributePolicy = getAttributePolicy(entity, propertyName);
+        String[] policyNames = ArrayUtils.EMPTY_STRING_ARRAY;
+        if (attributePolicy != null) {
+            policyNames = (mode == SecurityPolicyMode.WHITELIST) ? attributePolicy.allow() : attributePolicy.deny();
+        }
+        boolean containsPolicy = ArrayUtils.contains(policyNames, name);
+        return (mode == SecurityPolicyMode.WHITELIST) ? containsPolicy : !containsPolicy;
+    }
+
+
+    static AttributePolicy getAttributePolicy(Object entity, String propertyName) {
+        Method getterMethod = ReflectHelper.getGetter(entity.getClass(), propertyName).getMethod();
+        return getterMethod.getAnnotation(AttributePolicy.class);        
     }
 
     /**
-     * @return the userName
+     * @return the name of this policy
      */
-    public String getUserName() {
-        return userName;
+    public String getName() {
+        return name;
     }
 
     /**
-     * @return the entity
+     * @return the mode for this policy
      */
-    public PersistentObject getEntity() {
-        return entity;
+    public SecurityPolicyMode getMode() {
+        return mode;
     }
 }

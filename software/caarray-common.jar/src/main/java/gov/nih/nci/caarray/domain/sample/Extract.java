@@ -85,8 +85,8 @@ package gov.nih.nci.caarray.domain.sample;
 
 import edu.wustl.catissuecore.domain.MolecularSpecimen;
 import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.util.Protectable;
-import gov.nih.nci.caarray.util.ProtectableDescendent;
+import gov.nih.nci.caarray.security.Protectable;
+import gov.nih.nci.caarray.security.ProtectableDescendent;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -96,8 +96,10 @@ import java.util.Set;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -122,6 +124,7 @@ public class Extract extends AbstractBioMaterial implements ProtectableDescenden
      */
     private Set<Sample> samples = new HashSet<Sample>();
     private MolecularSpecimen molecularSpecimen;
+    private Experiment experiment;
 
     /**
      * Gets the samples.
@@ -200,6 +203,24 @@ public class Extract extends AbstractBioMaterial implements ProtectableDescenden
      */
     public void setMolecularSpecimen(MolecularSpecimen molecularSpecimen) {
         this.molecularSpecimen = molecularSpecimen;
+    }
+    
+    /**
+     * @return the experiment to which this source belongs
+     */
+    @ManyToOne
+    @JoinTable(name = "EXPERIMENTEXTRACT", 
+            joinColumns = {@JoinColumn(name = "EXTRACT_ID", insertable = false, updatable = false) },
+            inverseJoinColumns = {@JoinColumn(name = "EXPERIMENT_ID", insertable = false, updatable = false) })
+    public Experiment getExperiment() {
+        return experiment;
+    }
+
+    /**
+     * @param experiment the experiment to set
+     */
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
     }
     
     /**

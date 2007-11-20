@@ -84,12 +84,16 @@ package gov.nih.nci.caarray.domain.sample;
 
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
+import java.text.DecimalFormat;
+
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.validator.NotNull;
 
 /**
  * 
@@ -97,17 +101,22 @@ import org.hibernate.annotations.ForeignKey;
 @Entity
 @DiscriminatorValue("MEASUREMENT")
 public class MeasurementCharacteristic extends AbstractCharacteristic {
-
     private static final long serialVersionUID = 1L;
+
+    // this should probably be Locale-dependent, but there is no mechanism for user-specific
+    // Locales right now
+    private static final String NUMBER_FORMAT = "0.00";
+
     private Float value;
     private Term unit;
 
     /**
      * Gets the unit.
-     *
+     * 
      * @return the unit
      */
     @ManyToOne
+    @NotNull
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "CHARACTERISTIC_UNIT_FK")
     public Term getUnit() {
@@ -116,7 +125,7 @@ public class MeasurementCharacteristic extends AbstractCharacteristic {
 
     /**
      * Sets the unit.
-     *
+     * 
      * @param unitVal the unit
      */
     public void setUnit(final Term unitVal) {
@@ -137,4 +146,15 @@ public class MeasurementCharacteristic extends AbstractCharacteristic {
         this.value = value;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public String getDisplayValue() {
+        if (getValue() == null) {
+            return null;
+        }
+        return new DecimalFormat(NUMBER_FORMAT).format(this.value.doubleValue()) + " " + this.unit.getValue();
+    }
 }

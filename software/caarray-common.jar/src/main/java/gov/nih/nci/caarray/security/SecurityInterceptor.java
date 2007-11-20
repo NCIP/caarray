@@ -80,31 +80,26 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.util;
+package gov.nih.nci.caarray.security;
 
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.collection.PersistentCollection;
-import org.hibernate.type.CollectionType;
 import org.hibernate.type.Type;
-import org.hibernate.util.ReflectHelper;
 
 /**
  * Hibernate interceptor that keeps track of object changes and queues up lists of interesting objects that will require
@@ -118,7 +113,6 @@ public class SecurityInterceptor extends EmptyInterceptor {
     // SessionFactory level in hibernate.
     //
 
-    private static final Log LOG = LogFactory.getLog(SecurityInterceptor.class);
     private static final long serialVersionUID = -2071964672876972370L;
 
     // Indicates that some activity of interest occurred
@@ -137,53 +131,6 @@ public class SecurityInterceptor extends EmptyInterceptor {
     private static final ThreadLocal<Collection<AccessProfile>> PROFILES =
             new ThreadLocal<Collection<AccessProfile>>();
     
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
-        boolean modified = false;
-        // apply attribute-level security - project/experiment only
-        // DEVELOPER NOTE: any attempt to flush this object will likely result in
-        // errors as it has the effect of dissociating collections from the entity.
-        // This is correct anyways as the user will not have WRITE access to the project,
-        // but care must be taken not to cause phantom flushes
-        if (entity instanceof Experiment || entity instanceof Project) {
-            Protectable p = null;
-            if (entity instanceof Project) {
-                p = (Protectable) entity;
-            } else {
-                p = (Protectable) state[ArrayUtils.indexOf(propertyNames, "project")];
-            }
-
-            for (int i = 0; i < propertyNames.length; i++) {
-                if (requiresReadPrivilege(entity, propertyNames[i])
-                        && !SecurityUtils.canRead(p, UsernameHolder.getCsmUser())) {
-                    if (types[i] instanceof CollectionType) {
-                        CollectionType ct = (CollectionType) types[i];
-                        state[i] = ct.instantiate(0);
-                    } else if (!isPrimitiveProperty(entity, propertyNames[i])) {
-                        state[i] = null;
-                    } else {
-                        LOG.warn("Could not null out primitive property " + propertyNames[i]);
-                    }
-                    modified = true;
-                }
-            }
-        }
-        return modified;
-    }
-
-    private static boolean requiresReadPrivilege(Object entity, String property) {
-        // read privilege is required unless the Browseable property is present
-        Method getterMethod = ReflectHelper.getGetter(entity.getClass(), property).getMethod();
-        return !getterMethod.isAnnotationPresent(BrowseableProperty.class);
-    }
-
-    private static boolean isPrimitiveProperty(Object entity, String property) {
-        return ReflectHelper.getGetter(entity.getClass(), property).getReturnType().isPrimitive();
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -336,6 +283,15 @@ public class SecurityInterceptor extends EmptyInterceptor {
         if (MARKER.get() == null) {
             MARKER.set(null);
             return;
+        }
+        
+        // punt any access profiles who belong to deleted projects
+        if (PROFILES.get() != null && DELETEDOBJS.get() != null) {
+            for (AccessProfile ap : PROFILES.get()) {
+                if (DELETEDOBJS.get().contains(ap.getProject())) {
+                    PROFILES.get().remove(ap);
+                }
+            }
         }
 
         try {

@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.util;
 
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import org.apache.commons.lang.StringUtils;

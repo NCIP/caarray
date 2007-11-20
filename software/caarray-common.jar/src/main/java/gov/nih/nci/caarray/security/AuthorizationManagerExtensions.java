@@ -80,8 +80,9 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.util;
+package gov.nih.nci.caarray.security;
 
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.logging.api.logger.hibernate.HibernateSessionFactoryHelper;
 import gov.nih.nci.security.authorization.domainobjects.Application;
 import gov.nih.nci.security.exceptions.CSException;
@@ -91,8 +92,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -266,65 +265,6 @@ public final class AuthorizationManagerExtensions {
     }
 
     /**
-     * Retrieve accessible attributes for a given user for a given class given in a given
-     * application requiring a specified privilege.
-     * @param userName the user to check for
-     * @param className the class to which access is needed
-     * @param privilegeName the privilege at which access is attempted
-     * @param application the application making the request
-     * @return the list of attributes of the class to which the user has access privileges
-     */
-    public static List<String> getAccessibleAttributes(String userName, String className, String privilegeName,
-            Application application) {
-        List<String> attributeList = new ArrayList<String>();
-        ResultSet resultSet = null;
-
-        Session session = HibernateSessionFactoryHelper.getAuditSession(HibernateUtil.getSessionFactory());
-        Connection connection = session.connection();
-
-        PreparedStatement preparedStatement = null;
-
-        try {
-            preparedStatement =
-                    CaarrayQueries.getQueryforUserAttributeMap(userName, className, privilegeName, application
-                            .getApplicationId().intValue(), connection);
-            resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                attributeList.add(resultSet.getString(1));
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Authorization|||getAttributeMap|Failure|Error in Obtaining the Attribute Map|"
-                        + ex.getMessage());
-            }
-        } finally {
-            try {
-                preparedStatement.close();
-                resultSet.close();
-            } catch (Exception ex2) {
-                // do nothing
-            }
-            try {
-                session.close();
-            } catch (Exception ex2) {
-                if (LOG.isDebugEnabled()) {
-                    LOG
-                            .debug("Authorization|||getAttributeMap|Failure|Error in Closing Session |"
-                                    + ex2.getMessage());
-                }
-            }
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Authorization|||getAttributeMap|Success|Successful in Obtaining the Attribute Map|");
-        }
-        return attributeList;
-    }
-
-
-    /**
      * Utility class to contstruct PReparedStatement queries, adapted from CSM.
      */
     @SuppressWarnings("PMD")
@@ -430,111 +370,6 @@ public final class AuthorizationManagerExtensions {
             stbr.append(" pgpe.protection_element_id = pe.protection_element_id and");
             stbr.append(" r.role_id = rp.role_id and");
             stbr.append(" rp.privilege_id = p.privilege_id ");
-
-            return stbr.toString();
-        }
-        /**
-         * Creates PreparedStatement for retrieving attibutes of a class to which a user
-         * has access (based on user-level security.
-         * @param userName username
-         * @param className class name
-         * @param privilegeName privilege needed
-         * @param applicationId app id
-         * @param cn sql connection
-         * @return the PreparedStatement
-         * @throws SQLException on error
-         */
-        protected static PreparedStatement getQueryforUserAttributeMap(String userName, String className,
-                String privilegeName, int applicationId, Connection cn) throws SQLException {
-
-            StringBuffer stbr = new StringBuffer();
-            stbr.append("and pe.object_id=?");
-            stbr.append(" and u.login_name=?");
-            stbr.append(" and p.privilege_name=?");
-            stbr.append(" and pg.application_id=?");
-            stbr.append(" and pe.application_id=?");
-
-            StringBuffer sqlBfr = new StringBuffer();
-            sqlBfr.append(getQueryStringforDirectUserAttributeMap());
-            sqlBfr.append(stbr.toString());
-            sqlBfr.append(" union ");
-            sqlBfr.append(getQueryStringforUserByGroupAttributeMap());
-            sqlBfr.append(stbr.toString());
-
-            PreparedStatement pstmt = cn.prepareStatement(stbr.toString());
-            int i = 1;
-            pstmt.setString(i++, className);
-            pstmt.setString(i++, userName);
-            pstmt.setString(i++, privilegeName);
-            pstmt.setInt(i++, applicationId);
-            pstmt.setInt(i++, applicationId);
-
-            pstmt.setString(i++, className);
-            pstmt.setString(i++, userName);
-            pstmt.setString(i++, privilegeName);
-            pstmt.setInt(i++, applicationId);
-            pstmt.setInt(i++, applicationId);
-
-            return pstmt;
-
-        }
-
-        private static String getQueryStringforDirectUserAttributeMap() {
-            StringBuffer stbr = new StringBuffer();
-
-            stbr.append("SELECT DISTINCT pe.attribute");
-            stbr.append("      FROM  csm_protection_element pe,");
-            stbr.append("            csm_protection_group pg,");
-            stbr.append("            csm_privilege p,");
-            stbr.append("            csm_user u,");
-            stbr.append("            csm_pg_pe pgpe,");
-            stbr.append("            csm_role r,");
-            stbr.append("            csm_role_privilege rp,");
-            stbr.append("            csm_user_group_role_pg ugrpg");
-            stbr.append("          WHERE ugrpg.protection_group_id  = ANY");
-            stbr.append("            (select pg1.protection_group_id from csm_protection_group pg1 where");
-            stbr.append("            pg1.protection_group_id = pg.protection_group_id or pg1.protection_group_id = ");
-            stbr.append("            (select pg2.parent_protection_group_id from csm_protection_group pg2 where");
-            stbr.append("            pg2.protection_group_id = pg.protection_group_id)) and");
-            stbr.append("            AND ugrpg.role_id = rp.role_id");
-            stbr.append("            AND rp.privilege_id = p.privilege_id");
-            stbr.append("            AND pg.protection_group_id = pgpe.protection_group_id");
-            stbr.append("            AND pgpe.protection_element_id = pe.protection_element_id");
-            stbr.append("            AND ugrpg.user_id = u.user_id");
-            stbr.append("            AND pe.attribute is not null");
-            stbr.append("            AND pe.attribute <> ''");
-            stbr.append("            AND pe.attribute_value is null");
-
-            return stbr.toString();
-        }
-
-        private static String getQueryStringforUserByGroupAttributeMap() {
-            StringBuffer stbr = new StringBuffer();
-
-            stbr.append("SELECT DISTINCT pe.attribute");
-            stbr.append("      FROM  csm_protection_element pe,");
-            stbr.append("            csm_protection_group pg,");
-            stbr.append("            csm_privilege p,");
-            stbr.append("            csm_user u,");
-            stbr.append("            csm_pg_pe pgpe,");
-            stbr.append("            csm_role r,");
-            stbr.append("            csm_role_privilege rp,");
-            stbr.append("            csm_user_group_role_pg ugrpg");
-            stbr.append("          WHERE ugrpg.protection_group_id  = ANY");
-            stbr.append("            (select pg1.protection_group_id from csm_protection_group pg1 where");
-            stbr.append("            pg1.protection_group_id = pg.protection_group_id or pg1.protection_group_id = ");
-            stbr.append("            (select pg2.parent_protection_group_id from csm_protection_group pg2 where");
-            stbr.append("            pg2.protection_group_id = pg.protection_group_id)) and");
-            stbr.append("            AND ugrpg.role_id = rp.role_id");
-            stbr.append("            AND rp.privilege_id = p.privilege_id");
-            stbr.append("            AND pg.protection_group_id = pgpe.protection_group_id");
-            stbr.append("            AND pgpe.protection_element_id = pe.protection_element_id");
-            stbr.append("            AND ugrpg.group_id = g.group_id");
-            stbr.append("            AND g.group_id = ug.group_id and");
-            stbr.append("            AND ug.user_id = u.user_id and");
-            stbr.append("            AND pe.attribute is not null");
-            stbr.append("            AND pe.attribute <> ''");
-            stbr.append("            AND pe.attribute_value is null");
 
             return stbr.toString();
         }

@@ -35,6 +35,8 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     private boolean publicProfile;
     private String profileOwnerName;
     private Map<Long, SampleSecurityLevel> sampleSecurityLevels = new HashMap<Long, SampleSecurityLevel>();
+    private boolean useTcgaPolicy;
+    
     /**
      * {@inheritDoc}
      */
@@ -73,6 +75,24 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     public String toggleBrowsability() {
         try {
             getProjectManagementService().toggleBrowsableStatus(getProject().getId());
+            return SUCCESS;
+        } catch (ProposalWorkflowException e) {
+            List<String> args = new ArrayList<String>();
+            args.add(getProject().getExperiment().getTitle());
+            ActionHelper.saveMessage(getText("project.permissionsSaveProblem", args));
+            return INPUT;
+        }
+    }
+
+    /**
+     * Saves whether to use tcga policy.
+     *
+     * @return success
+     */
+    @SkipValidation
+    public String setTcgaPolicy() {
+        try {
+            getProjectManagementService().setUseTcgaPolicy(getProject().getId(), this.useTcgaPolicy);
             return SUCCESS;
         } catch (ProposalWorkflowException e) {
             List<String> args = new ArrayList<String>();
@@ -245,5 +265,19 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
      */
     public void setPublicProfile(boolean publicProfile) {
         this.publicProfile = publicProfile;
+    }
+
+    /**
+     * @return the useTcgaPolicy
+     */
+    public boolean isUseTcgaPolicy() {
+        return useTcgaPolicy;
+    }
+
+    /**
+     * @param useTcgaPolicy the useTcgaPolicy to set
+     */
+    public void setUseTcgaPolicy(boolean useTcgaPolicy) {
+        this.useTcgaPolicy = useTcgaPolicy;
     }
 }

@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.util;
 
+import gov.nih.nci.caarray.security.SecurityInterceptor;
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.instancelevel.InstanceLevelSecurityHelper;
 

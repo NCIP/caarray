@@ -93,9 +93,9 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
 /**
@@ -111,7 +111,6 @@ import org.hibernate.annotations.ForeignKey;
 public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1L;
 
-    private Category category;
     private AbstractBioMaterial bioMaterial;
 
     /**
@@ -139,20 +138,19 @@ public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the category
+     * @return the value of this characteristic as a string displayable 
+     * in the ui
      */
-    @ManyToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "CHARACTERISTIC_CATEGORY_FK")
-    public Category getCategory() {
-        return category;
-    }
-
+    @Transient
+    public abstract String getDisplayValue();
+    
     /**
-     * @param category the category to set
+     * @return the category for this characteristic. By default, characteristics do not have categories, 
+     * but subclasses that do should override this method to return it
      */
-    public void setCategory(Category category) {
-        this.category = category;
+    @Transient
+    public Category getCategory() {
+        return null;
     }
 }
 

@@ -82,11 +82,13 @@
  */
 package gov.nih.nci.caarray.domain.sample;
 
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
@@ -122,5 +124,22 @@ public class TermBasedCharacteristic extends AbstractCharacteristic {
     public void setTerm(final Term termVal) {
         this.term = termVal;
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public String getDisplayValue() {
+        return this.term != null ? this.term.getValue() : null;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public Category getCategory() {
+        return getTerm().getCategory();
+    }
 }

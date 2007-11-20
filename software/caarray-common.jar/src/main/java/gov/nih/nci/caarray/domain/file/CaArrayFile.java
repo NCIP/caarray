@@ -85,8 +85,8 @@ package gov.nih.nci.caarray.domain.file;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.util.Protectable;
-import gov.nih.nci.caarray.util.ProtectableDescendent;
+import gov.nih.nci.caarray.security.Protectable;
+import gov.nih.nci.caarray.security.ProtectableDescendent;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.ByteArrayInputStream;

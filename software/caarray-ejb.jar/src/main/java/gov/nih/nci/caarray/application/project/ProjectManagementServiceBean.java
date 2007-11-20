@@ -105,8 +105,8 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
-import gov.nih.nci.caarray.util.PermissionDeniedException;
-import gov.nih.nci.caarray.util.SecurityUtils;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
@@ -289,10 +289,33 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             LogUtil.logSubsystemExit(LOG);
             throw new ProposalWorkflowException("Cannot change browsability of project in current state");
         }
+        if (!p.canModifyPermissions(UsernameHolder.getCsmUser())) {
+            LogUtil.logSubsystemExit(LOG);
+            throw new PermissionDeniedException(p, SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder
+                    .getUser());
+        }
         p.setBrowsable(!p.isBrowsable());
         getProjectDao().save(p);
         LogUtil.logSubsystemExit(LOG);
         return p;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public Project setUseTcgaPolicy(long projectId, boolean useTcgaPolicy) {
+        LogUtil.logSubsystemEntry(LOG, projectId);
+        Project project = getProject(projectId);
+        if (!project.canModifyPermissions(UsernameHolder.getCsmUser())) {
+            LogUtil.logSubsystemExit(LOG);
+            throw new PermissionDeniedException(project, SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder
+                    .getUser());
+        }
+        project.setUseTcgaPolicy(useTcgaPolicy);
+        getProjectDao().save(project);
+        LogUtil.logSubsystemExit(LOG);
+        return project;
     }
 
     /**

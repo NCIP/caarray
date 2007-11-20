@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute 
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent 
  * government employees are authors, any rights in such works shall be subject 
  * to Title 17 of the United States Code, section 105. 
  *
- * This caArray Software License (the License) is between NCI and You. You (or 
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or 
  * Your) shall mean a person or an entity, and all other entities that control, 
  * are controlled by, or are under common control with the entity. Control for 
  * purposes of this definition means (i) the direct or indirect power to cause 
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described 
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up, 
  * no-charge, irrevocable, transferable and royalty-free right and license in 
- * its rights in the caArray Software to (i) use, install, access, operate, 
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate, 
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and 
- * have distributed to and by third parties the caArray Software and any 
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and 
+ * have distributed to and by third parties the caarray-common-jar Software and any 
  * modifications and derivative works thereof; and (iii) sublicense the 
  * foregoing rights set out in (i) and (ii) to third parties, including the 
  * right to license such rights to further third parties. For sake of clarity, 
@@ -80,49 +80,37 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain.sample;
+package gov.nih.nci.caarray.security;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.apache.commons.collections.Closure;
 
 /**
- * 
+ * Annotation allowing a property to specifying a mutator to be applied when the property
+ * is allowed by the policy.
+ * @author dkokotov
  */
-@Entity
-@DiscriminatorValue("VALUE")
-public class ValueBasedCharacteristic extends AbstractCharacteristic {
-
-    private static final long serialVersionUID = 1L;
-    
-    private String value;
-
+@Documented
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface AttributeMutator {
     /**
-     * Gets the value.
-     *
-     * @return the value
+     * the list of names of policies under which the mutator is active. The mutator is only
+     * applied when the property is allowed by the policy.
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public String getValue() {
-        return value;
-    }
-
-    /**
-     * Sets the value.
-     *
-     * @param valueVal the value
-     */
-    public void setValue(final String valueVal) {
-        this.value = valueVal;
-    }
+    String[] policies() default { };
     
     /**
-     * {@inheritDoc}
+     * The class of a Closure that will be applied to the value
+     * of the property if it is allowed by the policy. A new instance of this
+     * class (which must have a no-arg public constructor) will be instantiated, and its execute method
+     * will be called on the attribute value. Note that the setter method will not be called - 
+     * use a @AttributeTransformer annotation instead if that is what you need.
      */
-    @Override
-    @Transient
-    public String getDisplayValue() {
-        return getValue();
-    }
-}
+    Class<? extends Closure> mutator();        
+ }

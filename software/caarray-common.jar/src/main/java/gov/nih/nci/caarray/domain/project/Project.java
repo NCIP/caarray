@@ -89,9 +89,10 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
-import gov.nih.nci.caarray.util.BrowseableProperty;
-import gov.nih.nci.caarray.util.Protectable;
-import gov.nih.nci.caarray.util.SecurityUtils;
+import gov.nih.nci.caarray.security.AttributePolicy;
+import gov.nih.nci.caarray.security.Protectable;
+import gov.nih.nci.caarray.security.SecurityPolicy;
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -101,6 +102,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -149,6 +151,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private AccessProfile hostProfile = new AccessProfile();
     private Map<CollaboratorGroup, AccessProfile> groupProfiles = new HashMap<CollaboratorGroup, AccessProfile>();
     private boolean browsable = false;
+    private boolean useTcgaPolicy = false;
     private Set<User> owners;
     private Date lastUpdated = new Date();
 
@@ -170,7 +173,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @Enumerated(EnumType.STRING)
     @NotNull
     @Column(name = "STATUS")
-    @BrowseableProperty
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     private ProposalStatus getStatusInternal() {
         return this.status;
     }
@@ -272,7 +275,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @JoinColumn(unique = true)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "PROJECT_EXPERIMENT_FK")
-    @BrowseableProperty
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     @Valid
     public Experiment getExperiment() {
         return this.experiment;
@@ -423,16 +426,17 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     }
 
     /**
-     * Add a new AccessProfile for a collaborator group unless the project already has a profile for this
-     * group.
+     * Add a new AccessProfile for a collaborator group unless the project already has a profile for this group.
+     * 
      * @param group to add profile for
      * @return if there already existed a profile for that group, then it is returned, otherwise a
-     * new profile is added and returned
+     *         new profile is added and returned
      */
     public AccessProfile addGroupProfile(CollaboratorGroup group) {
         AccessProfile profile = new AccessProfile();
         this.groupProfiles.put(group, profile);
         profile.setProjectForGroupProfile(this);
+        profile.setGroup(group);
         return profile;
     }
 
@@ -451,7 +455,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      * @return whether this project is browsable to any user in the system, including anonymous users
      */
     @Column(nullable = false)
-    @BrowseableProperty
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public boolean isBrowsable() {
         return this.browsable;
     }
@@ -518,6 +522,23 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     }
 
     /**
+     * Returns whether the given user is a collaborator on this project, ie whether he is in any of the collaborator
+     * groups that have an access profile with a security level greater than "None" configured for this project.
+     * 
+     * @param user the user (can be the synthetic "anonymous" user)
+     * @return whether the user is a collaborator for this project
+     */
+    public boolean isCollaborator(User user) {
+        for (Map.Entry<CollaboratorGroup, AccessProfile> cgEntry : groupProfiles.entrySet()) {
+            if (cgEntry.getValue().getSecurityLevel() != SecurityLevel.NONE
+                    && cgEntry.getKey().getGroup().getUsers().contains(user)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Gets the last updated date.
      *
      * @return the last date this experiment was updated
@@ -534,6 +555,39 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     public void setLastUpdated(final Date lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+
+    /**
+     * @return the useTcgaPolicy
+     */
+    @Column(nullable = false)
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
+    public boolean isUseTcgaPolicy() {
+        return useTcgaPolicy;
+    }
+
+    /**
+     * @param useTcgaPolicy the useTcgaPolicy to set
+     */
+    public void setUseTcgaPolicy(boolean useTcgaPolicy) {
+        this.useTcgaPolicy = useTcgaPolicy;
+    }
+
+    /**
+     * Returns the set of SecurityPolicies that apply to this project for the given user.
+     * 
+     * @param user the user for whom to check the policies
+     * @return the set of policies that apply for that user for this project
+     */
+    public Set<SecurityPolicy> getApplicablePolicies(User user) {
+        Set<SecurityPolicy> policies = new HashSet<SecurityPolicy>();
+        if (!SecurityUtils.canRead(this, user)) {
+            policies.add(SecurityPolicy.BROWSE);
+        }
+        if (useTcgaPolicy && !isOwner(user) && !isCollaborator(user)) {
+            policies.add(SecurityPolicy.TCGA);
+        }
+        return policies;
     }
 
     /**

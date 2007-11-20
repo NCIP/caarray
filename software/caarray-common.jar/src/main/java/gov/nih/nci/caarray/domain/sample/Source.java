@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.sample;
 
 import gov.nih.nci.caarray.domain.contact.AbstractContact;
+import gov.nih.nci.caarray.domain.project.Experiment;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -91,8 +92,10 @@ import java.util.Set;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
@@ -109,6 +112,7 @@ public class Source extends AbstractBioMaterial {
 
     private Set<Sample> samples = new HashSet<Sample>();
     private Set<AbstractContact> providers = new HashSet<AbstractContact>();
+    private Experiment experiment;
 
     /**
      * Gets the samples.
@@ -162,6 +166,24 @@ public class Source extends AbstractBioMaterial {
     @SuppressWarnings("unused")
     private void setProviders(final Set<AbstractContact> providersVal) { // NOPMD
         this.providers = providersVal;
+    }
+
+    /**
+     * @return the experiment to which this source belongs
+     */
+    @ManyToOne
+    @JoinTable(name = "EXPERIMENTSOURCE", 
+            joinColumns = {@JoinColumn(name = "SOURCE_ID", insertable = false, updatable = false) },
+            inverseJoinColumns = {@JoinColumn(name = "EXPERIMENT_ID", insertable = false, updatable = false) })
+    public Experiment getExperiment() {
+        return experiment;
+    }
+
+    /**
+     * @param experiment the experiment to set
+     */
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
     }
 
     /**

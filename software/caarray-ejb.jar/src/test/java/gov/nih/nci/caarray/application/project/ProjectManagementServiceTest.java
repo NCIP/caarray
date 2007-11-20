@@ -85,12 +85,15 @@ package gov.nih.nci.caarray.application.project;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.SessionContextStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.dao.AbstractDaoTest;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
@@ -103,13 +106,18 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.security.Protectable;
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -140,6 +148,7 @@ public class ProjectManagementServiceTest {
     private final FileAccessService fileAccessService = new FileAccessServiceStub();
     private final GenericDataService genericDataService = new GenericDataServiceStub();
     private final LocalSessionContextStub sessionContextStub = new LocalSessionContextStub();
+    private static final ProjectDao REAL_PROJECT_DAO = CaArrayDaoFactory.INSTANCE.getProjectDao();
 
     @Before
     public void setUpService() {
@@ -271,6 +280,80 @@ public class ProjectManagementServiceTest {
         assertNotNull(abm);
         assertEquals("Test2", abm.getName());
         assertEquals("Test", abm.getDescription());
+    }
+    
+    
+    
+    @Test
+    public void testToggleBrowsable() {        
+        Project project = this.projectManagementService.getProject(123L);
+        UsernameHolder.setUser("caarrayadmin");
+        createProtectionGroup(project);
+        assertFalse(project.isBrowsable());
+        try {
+            this.projectManagementService.toggleBrowsableStatus(123L);
+        } catch (ProposalWorkflowException e) {
+            fail("Should have been able to set browsable status");
+        }
+        project = this.projectManagementService.getProject(123L);
+        assertTrue(project.isBrowsable());
+        try {
+            this.projectManagementService.toggleBrowsableStatus(123L);
+        } catch (ProposalWorkflowException e) {
+            fail("Should have been able to set browsable status");
+        }
+        project = this.projectManagementService.getProject(123L);
+        assertFalse(project.isBrowsable());
+        try {
+            this.projectManagementService.changeProjectStatus(123L, ProposalStatus.IN_PROGRESS);
+            this.projectManagementService.changeProjectStatus(123L, ProposalStatus.PUBLIC);
+        } catch (ProposalWorkflowException e) {
+            fail("Should have been able to update project status");
+        }
+        try {
+            this.projectManagementService.toggleBrowsableStatus(123L);
+            fail("Should not have been able to set browsable status");
+        } catch (ProposalWorkflowException e) {
+            // expected
+        }        
+    }
+
+    /**
+     * @param project
+     */
+    private void createProtectionGroup(Project project) {
+        // Perform voodoo magic
+        try {
+            Method m = SecurityUtils.class.getDeclaredMethod("createProtectionGroup", Protectable.class, User.class);
+            m.setAccessible(true);
+            m.invoke(null, project, UsernameHolder.getCsmUser());
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        
+    }
+
+    @Test
+    public void testSetUseTcgaPolicy() {
+        Project project = this.projectManagementService.getProject(123L);
+        UsernameHolder.setUser("caarrayadmin");        
+        createProtectionGroup(project);
+        assertFalse(project.isUseTcgaPolicy());
+        try {
+            this.projectManagementService.setUseTcgaPolicy(123L, true);
+        } catch (ProposalWorkflowException e) {
+            fail("Should have been able to set tcga policy status");
+        }
+        project = this.projectManagementService.getProject(123L);
+        assertTrue(project.isUseTcgaPolicy());
     }
 
     @Test

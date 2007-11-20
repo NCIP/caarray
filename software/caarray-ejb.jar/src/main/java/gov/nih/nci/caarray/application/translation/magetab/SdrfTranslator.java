@@ -103,11 +103,14 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
+import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.domain.sample.MeasurementCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
+import gov.nih.nci.caarray.domain.sample.ValueBasedCharacteristic;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode;
@@ -272,18 +275,30 @@ final class SdrfTranslator extends AbstractTranslator {
         bioMaterial.setDescription(sdrfBiomaterial.getDescription());
         bioMaterial.setMaterialType(getTerm(sdrfBiomaterial.getMaterialType()));
         for (Characteristic sdrfCharacteristic : sdrfBiomaterial.getCharacteristics()) {
-            TermBasedCharacteristic characteristic =
+            AbstractCharacteristic characteristic =
                 translateCharacteristic(sdrfCharacteristic);
             bioMaterial.getCharacteristics().add(characteristic);
+            characteristic.setBioMaterial(bioMaterial);
         }
     }
 
-    private TermBasedCharacteristic translateCharacteristic(
+    private AbstractCharacteristic translateCharacteristic(
             Characteristic sdrfCharacteristic) {
-        TermBasedCharacteristic characteristic =
-            new TermBasedCharacteristic();
-        characteristic.setTerm(getTerm(sdrfCharacteristic.getTerm()));
-        return null;
+        if (sdrfCharacteristic.getTerm() != null) {
+            TermBasedCharacteristic characteristic =
+                new TermBasedCharacteristic();
+            characteristic.setTerm(getTerm(sdrfCharacteristic.getTerm()));
+            return characteristic;
+        } else if (sdrfCharacteristic.getUnit() != null) {
+            MeasurementCharacteristic characteristic = new MeasurementCharacteristic();
+            characteristic.setValue(Float.valueOf(sdrfCharacteristic.getValue()));
+            characteristic.setUnit(getTerm(sdrfCharacteristic.getUnit()));
+            return characteristic;
+        } else {
+            ValueBasedCharacteristic characteristic = new ValueBasedCharacteristic();
+            characteristic.setValue(sdrfCharacteristic.getValue());
+            return characteristic;
+        }
     }
 
     // Translates arraydesigns to a linked array-arraydesign pair in the caArray domain.

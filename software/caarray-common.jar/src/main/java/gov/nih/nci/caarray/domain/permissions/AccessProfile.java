@@ -315,10 +315,11 @@ public class AccessProfile implements PersistentObject, Serializable {
     }
 
     /**
-     * @param group the group to set
+     * @param group for group access profiles only, the group to which this profile corresponds
+     * This method should not generally never be called. It needs to remain public
+     * as it must be called by Project.addProfile to establish the symmetric link
      */
-    @SuppressWarnings("unused")
-    private void setGroup(CollaboratorGroup group) { // NOPMD
+    public void setGroup(CollaboratorGroup group) { 
         this.group = group;
     }
 }

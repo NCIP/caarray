@@ -84,9 +84,10 @@
 package gov.nih.nci.caarray.domain.sample;
 
 import edu.wustl.catissuecore.domain.Specimen;
-import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.util.Protectable;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.security.AttributePolicy;
+import gov.nih.nci.caarray.security.Protectable;
+import gov.nih.nci.caarray.security.SecurityPolicy;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -94,10 +95,11 @@ import java.util.Set;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
@@ -115,6 +117,7 @@ public class Sample extends AbstractBioMaterial implements Protectable {
     private static final long serialVersionUID = 1234567890L;
 
     private Specimen specimen;
+    private Experiment experiment;
 
 
     /**
@@ -187,6 +190,7 @@ public class Sample extends AbstractBioMaterial implements Protectable {
      */
     @OneToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @AttributePolicy(deny = SecurityPolicy.TCGA_POLICY_NAME)
     public Specimen getSpecimen() {
         return this.specimen;
     }
@@ -197,23 +201,22 @@ public class Sample extends AbstractBioMaterial implements Protectable {
     public void setSpecimen(Specimen specimen) {
         this.specimen = specimen;
     }
+    
+    /**
+     * @return the experiment to which this source belongs
+     */
+    @ManyToOne
+    @JoinTable(name = "EXPERIMENTSAMPLE", 
+            joinColumns = {@JoinColumn(name = "SAMPLE_ID", insertable = false, updatable = false) },
+            inverseJoinColumns = {@JoinColumn(name = "EXPERIMENT_ID", insertable = false, updatable = false) })
+    public Experiment getExperiment() {
+        return experiment;
+    }
 
     /**
-     * Retrieve the tissue site for this Sample. The tissue site is stored
-     * as a Characteristic of the Sample; this is a helper method to make
-     * it easier to retrieve
-     * @return the Term for the sample's tissue site, or null if this Sample does not have a characteristic
-     * for tissue site
+     * @param experiment the experiment to set
      */
-    @Override
-    @Transient
-    public Term getTissueSite() {
-        for (AbstractCharacteristic characteristic : getCharacteristics()) {
-            if (characteristic.getCategory().getName()
-                                            .equals(ExperimentOntologyCategory.ORGANISM_PART.getCategoryName())) {
-                return ((TermBasedCharacteristic) characteristic).getTerm();
-            }
-        }
-        return null;
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
     }
 }

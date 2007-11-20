@@ -107,6 +107,7 @@ import org.hibernate.Session;
  *
  * @author Rashmi Srinivasa
  */
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
 
     private static final Log LOG = LogFactory.getLog(ArrayDaoImpl.class);
@@ -172,14 +173,22 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      * {@inheritDoc}
      */
     public AbstractArrayData getArrayData(long id) {
-        return (AbstractArrayData) getCurrentSession().load(AbstractArrayData.class, id);
+        Query q =
+                HibernateUtil.getCurrentSession().createQuery(
+                        "from " + AbstractArrayData.class.getName() + " where id = :id");
+        q.setLong("id", id);
+        return (AbstractArrayData) q.uniqueResult();
     }
 
     /**
      * {@inheritDoc}
      */
     public Hybridization getHybridization(Long id) {
-        return (Hybridization) getCurrentSession().load(Hybridization.class, id);
+        Query q =
+                HibernateUtil.getCurrentSession().createQuery(
+                        "from " + Hybridization.class.getName() + " where id = :id");
+        q.setLong("id", id);
+        return (Hybridization) q.uniqueResult();
     }
 
     /**

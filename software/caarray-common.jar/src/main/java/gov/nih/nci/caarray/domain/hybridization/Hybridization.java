@@ -93,8 +93,8 @@ import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.util.Protectable;
-import gov.nih.nci.caarray.util.ProtectableDescendent;
+import gov.nih.nci.caarray.security.Protectable;
+import gov.nih.nci.caarray.security.ProtectableDescendent;
 
 import java.util.Collection;
 import java.util.HashSet;

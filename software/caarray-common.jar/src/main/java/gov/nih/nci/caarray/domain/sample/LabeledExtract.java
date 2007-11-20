@@ -86,8 +86,8 @@ package gov.nih.nci.caarray.domain.sample;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.util.Protectable;
-import gov.nih.nci.caarray.util.ProtectableDescendent;
+import gov.nih.nci.caarray.security.Protectable;
+import gov.nih.nci.caarray.security.ProtectableDescendent;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -96,6 +96,7 @@ import java.util.Set;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -117,6 +118,7 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
     private Term label;
     private Set<Extract> extracts = new HashSet<Extract>();
     private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
+    private Experiment experiment;
 
     /**
      * Gets the label.
@@ -187,7 +189,25 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
     private void setHybridizations(final Set<Hybridization> hybridizationsVal) { // NOPMD
         this.hybridizations = hybridizationsVal;
     }
-    
+
+    /**
+     * @return the experiment to which this source belongs
+     */
+    @ManyToOne
+    @JoinTable(name = "EXPERIMENTLABELEDEXTRACT", 
+            joinColumns = {@JoinColumn(name = "LABELED_EXTRACT_ID", insertable = false, updatable = false) },
+            inverseJoinColumns = {@JoinColumn(name = "EXPERIMENT_ID", insertable = false, updatable = false) })
+    public Experiment getExperiment() {
+        return experiment;
+    }
+
+    /**
+     * @param experiment the experiment to set
+     */
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
+    }
+
     /**
      * {@inheritDoc}
      */

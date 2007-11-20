@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.util;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.security.SecurityUtils;
 
 import org.junit.Test;
 

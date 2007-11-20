@@ -80,124 +80,22 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain.permissions;
+package gov.nih.nci.caarray.security;
 
-import gov.nih.nci.caarray.domain.PersistentObject;
-import gov.nih.nci.caarray.security.Protectable;
-import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.security.authorization.domainobjects.Group;
-import gov.nih.nci.security.authorization.domainobjects.User;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 
 /**
- * CollaboratorGroups bridge CSM groups with owners.
+ * Enum of modes in which a security policy can operate.
  */
-@Entity
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "CSM_GROUP", "CSM_USER" }) })
-@SuppressWarnings("PMD.AvoidDuplicateLiterals")
-public class CollaboratorGroup implements PersistentObject, Protectable {
-    //
-    // DEVELOPER NOTE: This class has-a Group, rather than is-a Group,
-    // to be fully compatible with whatever CSM changes may come down
-    // the pike.  It's somewhat clunky, but then again, so is CSM.
-    //
-
-    private static final long serialVersionUID = -7566813289284832301L;
-
-    private Long id;
-    private Group group;
-    private User owner;
+public enum SecurityPolicyMode {
+    /**
+     * Whitelist mode - attributes must explicitly list a policy in their whitelist for them
+     * to be allowed by that policies.
+     */
+    WHITELIST,
 
     /**
-     * @param group CSM group
-     * @param owner group owner
+     * Blacklist mode - attributes are allowed by a policy unless they explicitly list that policy
+     * in their blacklist.
      */
-    public CollaboratorGroup(Group group, User owner) {
-        if (group == null || owner == null) {
-            throw new IllegalArgumentException("Group and owner must be non-null");
-        }
-        setGroup(group);
-        setOwner(owner);
-    }
-
-    /**
-     * For UI / Hibernate Usage only.
-     */
-    public CollaboratorGroup() {
-        // intentionally empty
-    }
-
-    /**
-     * @return database identifier
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long getId() {
-        return id;
-    }
-
-    /**
-     * Sets the id.
-     *
-     * @param id the id to set
-     * @deprecated should only be used by castor, hibernate and struts
-     */
-    @Deprecated
-    public void setId(Long id) { // NOPMD
-        this.id = id;
-    }
-
-    /**
-     * @return the group
-     */
-    @Transient
-    public Group getGroup() {
-        return group;
-    }
-
-    private void setGroup(Group group) {
-        this.group = group;
-    }
-
-    /**
-     * @return the owner
-     */
-    @Transient
-    public User getOwner() {
-        return owner;
-    }
-
-    private void setOwner(User owner) {
-        this.owner = owner;
-    }
-
-    @SuppressWarnings("unused")
-    @Column(name = "CSM_GROUP", nullable = false)
-    private long getGroupId() { // NOPMD
-        return group.getGroupId();
-    }
-
-    @SuppressWarnings("unused")
-    private void setGroupId(long groupId) { // NOPMD
-        group = (Group) HibernateUtil.getCurrentSession().load(Group.class, groupId);
-    }
-
-    @SuppressWarnings("unused")
-    @Column(name = "CSM_USER", nullable = false)
-    private long getOwnerId() { // NOPMD
-        return owner.getUserId();
-    }
-
-    @SuppressWarnings("unused")
-    private void setOwnerId(long ownerId) { // NOPMD
-        owner = (User) HibernateUtil.getCurrentSession().load(User.class, ownerId);
-    }
+    BLACKLIST;
 }

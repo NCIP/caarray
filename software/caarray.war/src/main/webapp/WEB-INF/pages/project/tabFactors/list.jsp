@@ -15,7 +15,7 @@
             <display:column titleKey="experiment.factors.name" sortable="true">
                 <caarray:projectListTabActionLink linkContent="${row.name}" entityName="Factor" action="view" itemId="${row.id}" isSubtab="true"/>
             </display:column>
-            <display:column property="type.category.name" titleKey="experiment.factors.category" sortable="true" />
+            <display:column property="type.value" titleKey="experiment.factors.category" sortable="true" />
             <caarray:projectListTabActionColumns entityName="Factor" item="${row}" actions="!edit,!copy,!delete" isSubtab="true"/>
         </display:table>
     </ajax:displayTag>
