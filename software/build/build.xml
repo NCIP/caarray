@@ -480,6 +480,7 @@
               <include name="**/util/**" />
               <include name="**/validation/**" />
               <include name="**/georgetown/**"/>
+              <include name="**/Protectable*"/>
             </fileset>
         </jar>
     </target>
@@ -838,7 +839,7 @@
     </target>
 
     <target name="test:cobertura-check">
-        <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="59" totallinerate="64" />
+        <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="61" totallinerate="66" />
     </target>
 
     <!-- Functional (Selenium) Test Targets -->
