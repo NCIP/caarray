@@ -3,8 +3,8 @@
 <installer ui="swing,text" verbose="false"
 	lookAndFeel="org.tp23.jgoodies.plaf.plastic.PlasticXPLookAndFeel"
 	name="Caarray2 Installer"
-	windowIcon="/resources/gkmain_inv.png"
-	defaultImageResource="/resources/banner_caarray.jpg"
+	windowIcon="C:/dev/caarray2/software/build/installer/target/build/resources/resources/gkmain_inv.png"
+	defaultImageResource="C:/dev/caarray2/software/build/installer/target/build/resources/banner_caarray.jpg"
 	minJavaVersion="1.5" finishButtonText="Install" wide="600:375"
 	debug="false">
 
@@ -14,11 +14,11 @@
 
 		<comment displayText="Minimum Requirements:" bold="true" />
 		<comment
-			displayText="Caarray2: INSERT TEXT HERE 1"
+			displayText="NOTE1"
 			bold="false" />
 		<comment displayText="" bold="true" />
 		<comment displayText="Recommendation:" bold="true" />
-		<comment displayText="Caarray2: INSERT TEXT HERE 2" bold="false" />
+		<comment displayText="NOTE2" bold="false" />
 		<comment displayText="" bold="true" />
 		<comment displayText="" bold="true" />
 		<comment displayText="" bold="true" />
@@ -37,7 +37,7 @@
 	</page>
 	<!--  type="input" shows a list of editable options for the installer -->
 	<page type="input" name="input.file"
-		displayText="Caarray2: SAY SOMETHING USEFUL HERE">
+		displayText="NOTE3">
 		<comment displayText="" bold="true" />
 		<comment
 			displayText="This will install the Caarray2 Application"
@@ -61,7 +61,7 @@
 		<comment displayText="" bold="true" />
 		<comment displayText="" bold="true" />
 		<comment
-			displayText="NOTE: BREW" />
+			displayText="NOTE1" />
 	</page>
 	
 	<page type="input" name="patchOptions" displayText="Confirmation">

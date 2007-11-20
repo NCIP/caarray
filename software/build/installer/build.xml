@@ -105,8 +105,8 @@
 		<replace file="${installer.build.dir}/resources/release_notes.html" token="txt2html" value="Caarray2 Release Notes" />
 		<copy file="${installer.basedir}/LICENSE.txt" todir="${installer.build.dir}/resources" />
 		<copy file="${docs.dir}/release_notes.txt" todir="${installer.build.dir}/resources" />
-		<copy file="${installer.basedir}/config/images/banner_caarray.jpg" todir="${installer.build.dir}/resources" />
-		<copy file="${installer.basedir}/config/images/banner_caarray.jpg" tofile="${installer.build.dir}/resources/extract-image.jpg" />
+		<copy file="${installer.basedir}/config/images/banner_caarray.png" todir="${installer.build.dir}/resources" />
+		<copy file="${installer.basedir}/config/images/banner_caarray.png" tofile="${installer.build.dir}/resources/extract-image.jpg" />
 	</target>
 
 	<target name="build:installpack.zip:get-deps">
