@@ -88,6 +88,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -116,6 +117,8 @@ public class UtilsTest {
         assertTrue(b.getOtherSet().isEmpty());
         assertTrue(b.getOtherMap().entrySet().isEmpty());
         assertTrue(b.getOtherCollection().isEmpty());
+        assertNotNull(b.getFoo());
+        assertNull(b.getUser());
     }
 
     @Test
@@ -123,6 +126,7 @@ public class UtilsTest {
         B b = new B();
         CaArrayUtils.makeChildrenLeaves(b);
 
+        assertNull(b.getUser());
         assertEquals(b.getId(), 1L);
         assertNotNull(b.getA());
         assertNotNull(b.getOther());
@@ -184,7 +188,27 @@ public class UtilsTest {
         private Set<A> otherSet = new HashSet<A>();
         private Map<Integer, A> otherMap = new HashMap<Integer, A>();
         private Collection<A> otherCollection = new HashSet<A>();
+        private String foo = "foo";
+        private User user = new User();
 
+
+        public User getUser() {
+            return user;
+        }
+
+        public void setUser(User user) {
+            this.user = user;
+        }
+
+        @SuppressWarnings("unused")
+        private String getFoo() {
+            return foo;
+        }
+
+        @SuppressWarnings("unused")
+        private void setFoo(String foo) {
+            this.foo = foo;
+        }
 
         public B() {
             other = new A();

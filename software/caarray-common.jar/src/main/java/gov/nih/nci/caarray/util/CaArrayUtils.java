@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.util;
 
 import gov.nih.nci.caarray.domain.PersistentObject;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -182,6 +183,9 @@ public final class CaArrayUtils {
                 param = Collections.EMPTY_MAP;
             } else if (Collection.class.isAssignableFrom(type)) {
                 param = Collections.EMPTY_LIST;
+            } else if (!Serializable.class.isAssignableFrom(type)) {
+                // Don't allow non-serializable to go over the wire
+                LOG.debug("Cutting non-serializable object of type: " + type);
             } else if (!PersistentObject.class.isAssignableFrom(type)) {
                 // Don't call setting for primitive types, or non-domain model objects
                 continue;
@@ -204,7 +208,8 @@ public final class CaArrayUtils {
 
     /**
      * Calls the makeLeaf method on all bean properties for T.  This has the effect of making
-     * val the root of an object graph with exactly one level of domain objects.
+     * val the root of an object graph with exactly one level of domain objects.  Also makes all
+     * non-serializable properties null.
      *
      * @param val object to perform cutting on
      */
@@ -215,13 +220,16 @@ public final class CaArrayUtils {
 
         for (Method[] m : findGettersAndSetters(val)) {
             try {
+                m[0].setAccessible(true);
                 Object curObj = m[0].invoke(val);
                 if (curObj instanceof Collection) {
                     for (Object o : (Collection<?>) curObj) {
                         makeLeaf(o);
                     }
-                } else {
+                } else if (!Serializable.class.isAssignableFrom(curObj.getClass())) {
                     m[1].setAccessible(true);
+                    m[1].invoke(val, new Object[] {null});
+                } else {
                     makeLeaf(m[0].invoke(val));
                 }
             } catch (Exception e) {
