@@ -146,6 +146,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private Experiment experiment = new Experiment();
     private SortedSet<CaArrayFile> files = new TreeSet<CaArrayFile>();
     private SortedSet<CaArrayFile> importedFiles = new TreeSet<CaArrayFile>();
+    private SortedSet<CaArrayFile> supplementalFiles = new TreeSet<CaArrayFile>();
     private SortedSet<CaArrayFile> unImportedFiles = new TreeSet<CaArrayFile>();
     private AccessProfile publicProfile = new AccessProfile();
     private AccessProfile hostProfile = new AccessProfile();
@@ -329,6 +330,33 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         return this.importedFiles;
     }
 
+    /**
+     * Get the files.
+     *
+     * @return the files.
+     */
+    @Transient
+    public SortedSet<CaArrayFile> getSupplementalFiles() {
+        return Collections.unmodifiableSortedSet(getSupplementalFileSet());
+    }
+
+    /**
+     * Gets the files.
+     *
+     * @return the files
+     */
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    @Sort(type = SortType.NATURAL)
+    @Where(clause = "status = 'SUPPLEMENTAL' and " + Experiment.FILES_FILTER)
+    private SortedSet<CaArrayFile> getSupplementalFileSet() {
+        return this.supplementalFiles;
+    }
+
+    @SuppressWarnings("unused")
+    private void setSupplementalFileSet(final SortedSet<CaArrayFile> filesVal) { // NOPMD
+        this.supplementalFiles = filesVal;
+    }
+
     @SuppressWarnings("unused")
     private void setImportedFileSet(final SortedSet<CaArrayFile> filesVal) { // NOPMD
         this.importedFiles = filesVal;
@@ -351,7 +379,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     @Sort(type = SortType.NATURAL)
-    @Where(clause = "status != 'IMPORTED' and " + Experiment.FILES_FILTER)
+    @Where(clause = "status != 'IMPORTED' and status != 'SUPPLEMENTAL' and " + Experiment.FILES_FILTER)
     private SortedSet<CaArrayFile> getUnImportedFileSet() {
         return this.unImportedFiles;
     }
@@ -430,7 +458,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      * 
      * @param group to add profile for
      * @return if there already existed a profile for that group, then it is returned, otherwise a
-     *         new profile is added and returned
+     * new profile is added and returned
      */
     public AccessProfile addGroupProfile(CollaboratorGroup group) {
         AccessProfile profile = new AccessProfile();
