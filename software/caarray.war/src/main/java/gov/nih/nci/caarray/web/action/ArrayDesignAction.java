@@ -97,16 +97,23 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.validator.annotations.CustomValidator;
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
  * @author Winston Cheng
  *
  */
+@Validation
 public class ArrayDesignAction extends ActionSupport implements Preparable {
     private static final long serialVersionUID = 1L;
 
@@ -134,6 +141,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     /**
      * @return the target
      */
+    @CustomValidator(type = "hibernate")
     public ArrayDesign getTarget() {
         return target;
     }
@@ -158,6 +166,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     /**
      * @return the uploadFileName
      */
+    @RequiredStringValidator(message = "File Required")
     public String getUploadFileName() {
         return uploadFileName;
     }
@@ -214,6 +223,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      * Retrieves the list of all array designs.
      * @return list
      */
+    @SkipValidation
     public String list() {
         arrayDesigns = getArrayDesignService().getArrayDesigns();
         return "list";
@@ -223,6 +233,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      * Edit view of an array design.
      * @return input
      */
+    @SkipValidation
     public String edit() {
         editMode = true;
         if (target != null && target.getId() != null) {
@@ -230,10 +241,12 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         }
         return Action.INPUT;
     }
+
     /**
      * Readonly view of an array design.
      * @return input
      */
+    @SkipValidation
     public String view() {
         editMode = false;
         if (target != null && target.getId() != null) {
@@ -241,6 +254,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         }
         return Action.INPUT;
     }
+
     /**
      * Save a new or existing array design.
      * @return success
@@ -255,5 +269,22 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             // TODO edit an existing array design
         }
         return Action.SUCCESS;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public void validate() {
+        super.validate();
+        if (this.hasErrors()) {
+            Map fieldErrors = this.getFieldErrors();
+            if (fieldErrors.containsKey("uploadFileName")) {
+                String msg = ((List<String>) fieldErrors.get("uploadFileName")).get(0);
+                addFieldError("upload", msg);
+            }
+            editMode = true;
+        }
     }
 }

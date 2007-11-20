@@ -93,6 +93,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.validator.Length;
+import org.hibernate.validator.NotNull;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
@@ -132,7 +134,8 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @return the name
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @NotNull
+    @Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
         return name;
     }
