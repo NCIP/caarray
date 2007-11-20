@@ -82,19 +82,18 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * DAO to manipulate file objects.
  *
  */
 class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
-    private static final Log LOG = LogFactory.getLog(FileDaoImpl.class);
+    private static final Logger LOG = Logger.getLogger(FileDaoImpl.class);
 
-    
+
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 }

@@ -61,8 +61,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -76,7 +75,7 @@ import org.hibernate.criterion.Restrictions;
  */
 class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao {
 
-    private static final Log LOG = LogFactory.getLog(VocabularyDaoImpl.class);
+    private static final Logger LOG = Logger.getLogger(VocabularyDaoImpl.class);
     private static final String UNCHECKED = "unchecked";
 
     /**
@@ -242,7 +241,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
     }
 
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 

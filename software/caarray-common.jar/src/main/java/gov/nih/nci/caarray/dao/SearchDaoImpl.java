@@ -96,8 +96,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -110,7 +109,7 @@ import org.hibernate.Session;
  * @author Rashmi Srinivasa
  */
 class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
-    private static final Log LOG = LogFactory.getLog(SearchDaoImpl.class);
+    private static final Logger LOG = Logger.getLogger(SearchDaoImpl.class);
     private static final String UNCHECKED = "unchecked";
 
     /**
@@ -199,7 +198,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     }
 
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 }

@@ -92,7 +92,7 @@ import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
 
-import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
 
 /**
  * Base class for all design handlers.
@@ -149,7 +149,7 @@ abstract class AbstractArrayDesignHandler {
         return result;
     }
 
-    abstract Log getLog();
+    abstract Logger getLog();
 
     abstract void validate(FileValidationResult result);
 

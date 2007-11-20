@@ -84,8 +84,7 @@ package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.sample.Sample;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * DAO for biomaterials - sources, samples and extracts.
@@ -93,7 +92,7 @@ import org.apache.commons.logging.LogFactory;
  * @author Rashmi Srinivasa
  */
 class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
-    private static final Log LOG = LogFactory.getLog(SampleDaoImpl.class);
+    private static final Logger LOG = Logger.getLogger(SampleDaoImpl.class);
 
     /**
      * {@inheritDoc}
@@ -103,7 +102,7 @@ class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
     }
 
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 }

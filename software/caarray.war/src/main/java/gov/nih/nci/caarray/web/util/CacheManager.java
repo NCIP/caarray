@@ -94,8 +94,7 @@ import gov.nih.nci.caarray.web.action.registration.UserRole;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * @author John Hedden
@@ -108,7 +107,7 @@ public final class CacheManager {
     // The singleton static variable
     private static CacheManager instance = null;
 
-    private static final Log LOG = LogFactory.getLog(CacheManager.class);
+    private static final Logger LOG = Logger.getLogger(CacheManager.class);
 
     private ServiceLocator locator = ServiceLocatorFactory.getLocator();
 

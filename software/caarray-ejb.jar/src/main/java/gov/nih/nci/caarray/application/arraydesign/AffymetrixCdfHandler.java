@@ -94,8 +94,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import affymetrix.fusion.cdf.FusionCDFData;
 import affymetrix.fusion.cdf.FusionCDFHeader;
@@ -112,7 +111,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
 
     private static final String LSID_AUTHORITY = "Affymetrix.com";
     private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
-    private static final Log LOG = LogFactory.getLog(AffymetrixCdfHandler.class);
+    private static final Logger LOG = Logger.getLogger(AffymetrixCdfHandler.class);
 
     private boolean[][] featureCreated;
 
@@ -277,7 +276,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     }
 
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 

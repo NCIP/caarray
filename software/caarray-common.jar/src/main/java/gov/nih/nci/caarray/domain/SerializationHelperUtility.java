@@ -93,15 +93,14 @@ import java.io.Serializable;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Helper utility for reading and writing serialized objects to zipped byte arrays.
  */
 public final class SerializationHelperUtility {
 
-    private static final Log LOG = LogFactory.getLog(SerializationHelperUtility.class);
+    private static final Logger LOG = Logger.getLogger(SerializationHelperUtility.class);
 
     private SerializationHelperUtility() {
         super();

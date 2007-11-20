@@ -105,8 +105,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import affymetrix.fusion.chp.FusionCHPDataReg;
 import affymetrix.fusion.chp.FusionCHPGenericData;
@@ -122,7 +121,7 @@ import affymetrix.fusion.chp.FusionGenotypeProbeSetResults;
 @SuppressWarnings("PMD.CyclomaticComplexity") // long switch statements
 final class AffymetrixChpHandler extends AbstractDataFileHandler {
 
-    private static final Log LOG = LogFactory.getLog(AffymetrixChpHandler.class);
+    private static final Logger LOG = Logger.getLogger(AffymetrixChpHandler.class);
     private static final Map<String, AffymetrixExpressionChpQuantitationType> EXPRESSION_TYPE_MAP =
         new HashMap<String, AffymetrixExpressionChpQuantitationType>();
     private static final Map<String, AffymetrixSnpChpQuantitationType> SNP_TYPE_MAP =
@@ -173,7 +172,7 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void loadExpressionData(HybridizationData hybridizationData, Set<QuantitationType> typeSet, 
+    private void loadExpressionData(HybridizationData hybridizationData, Set<QuantitationType> typeSet,
             FusionCHPLegacyData chpData) {
         int numberOfProbeSets = chpData.getHeader().getNumProbeSets();
         FusionExpressionProbeSetResults entry = new FusionExpressionProbeSetResults();
@@ -231,7 +230,7 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
             ((FloatColumn) column).getValues()[index] = entry.getSignalLogRatioLow();
             break;
         default:
-            throw new IllegalArgumentException("Unsupported QuantitationType for expression CHP data: " 
+            throw new IllegalArgumentException("Unsupported QuantitationType for expression CHP data: "
                     + quantitationType);
         }
     }
@@ -256,7 +255,7 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
         return SNP_TYPE_MAP.get(quantitationType.getName());
     }
 
-    private void loadSnpData(HybridizationData hybridizationData, Set<QuantitationType> typeSet, 
+    private void loadSnpData(HybridizationData hybridizationData, Set<QuantitationType> typeSet,
             FusionCHPLegacyData chpData) {
         int numberOfProbeSets = chpData.getHeader().getNumProbeSets();
         FusionGenotypeProbeSetResults entry = new FusionGenotypeProbeSetResults();
@@ -323,7 +322,7 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 

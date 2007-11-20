@@ -103,8 +103,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import affymetrix.fusion.cel.FusionCELData;
 import affymetrix.fusion.cel.FusionCELFileEntryType;
@@ -116,7 +115,7 @@ import affymetrix.fusion.cel.FusionCELFileEntryType;
 @SuppressWarnings("PMD.CyclomaticComplexity") // Switch-like statement setValue()
 class AffymetrixCelHandler extends AbstractDataFileHandler {
 
-    private static final Log LOG = LogFactory.getLog(AffymetrixCelHandler.class);
+    private static final Logger LOG = Logger.getLogger(AffymetrixCelHandler.class);
     private FusionCELData celData = new FusionCELData();
 
     @Override
@@ -221,7 +220,7 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 

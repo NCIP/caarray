@@ -93,8 +93,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 /**
@@ -106,7 +105,7 @@ import org.hibernate.Session;
 @SuppressWarnings("PMD")
 // adapted from CSM code
 public final class AuthorizationManagerExtensions {
-    private static final Log LOG = LogFactory.getLog(AuthorizationManagerExtensions.class);
+    private static final Logger LOG = Logger.getLogger(AuthorizationManagerExtensions.class);
 
     private AuthorizationManagerExtensions() {
     }

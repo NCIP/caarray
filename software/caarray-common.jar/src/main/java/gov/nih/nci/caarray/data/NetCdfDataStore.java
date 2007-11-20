@@ -52,11 +52,9 @@ package gov.nih.nci.caarray.data;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import ucar.ma2.Array;
 import ucar.ma2.ArrayBoolean;
@@ -121,7 +119,7 @@ import ucar.nc2.Variable;
 @SuppressWarnings("PMD")
 public class NetCdfDataStore implements DataStore {
 
-    private static final Log LOG = LogFactory.getLog(NetCdfDataStore.class);
+    private static final Logger LOG = Logger.getLogger(NetCdfDataStore.class);
     private final NetcdfFileWriteable netcdffile;
     private NetcdfDataStoreDescriptor descriptor;
     private static final int SVAR_LEN = 80;
@@ -440,8 +438,7 @@ public class NetCdfDataStore implements DataStore {
         Dimension[] dimStrList = {dataDim, svarLen};
         List<Column> columns = descriptor.getColumns();
 
-        for (Iterator<Column> iter = columns.iterator(); iter.hasNext();) {
-            Column column = iter.next();
+        for (Column column : columns) {
             Dimension[] dimListToAdd = null;
             if ((column.getType().getType()).equals(ucar.ma2.DataType.CHAR)
                     || (column.getType().getType()).equals(ucar.ma2.DataType.STRING)) {

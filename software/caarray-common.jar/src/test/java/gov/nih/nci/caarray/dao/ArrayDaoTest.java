@@ -101,8 +101,7 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
@@ -114,7 +113,7 @@ import org.junit.Test;
  */
 @SuppressWarnings("PMD")
 public class ArrayDaoTest extends AbstractDaoTest {
-    private static final Log LOG = LogFactory.getLog(ArrayDaoTest.class);
+    private static final Logger LOG = Logger.getLogger(ArrayDaoTest.class);
 
     private static Organization DUMMY_ORGANIZATION = new Organization();
     private static Organization DUMMY_ORGANIZATION2 = new Organization();

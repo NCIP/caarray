@@ -110,8 +110,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Handles reading of Illumina data.
@@ -123,7 +122,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         new HashMap<String, IlluminaExpressionQuantitationType>();
     private static final Map<String, IlluminaGenotypingQuantitationType> SNP_TYPE_MAP =
         new HashMap<String, IlluminaGenotypingQuantitationType>();
-    private static final Log LOG = LogFactory.getLog(IlluminaDataHandler.class);
+    private static final Logger LOG = Logger.getLogger(IlluminaDataHandler.class);
 
     static {
         initializeExpressionTypeMap();
@@ -233,7 +232,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 
@@ -287,7 +286,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         loadData(headers, reader, dataSet, types);
     }
 
-    private void loadData(List<String> headers, DelimitedFileReader reader, DataSet dataSet, 
+    private void loadData(List<String> headers, DelimitedFileReader reader, DataSet dataSet,
             List<QuantitationType> types) {
         prepareColumns(dataSet, types, getNumberOfDataRows(reader));
         Map<String, Integer> groupIdToHybridizationDataIndexMap = getGroupIdToHybridizationDataIndexMap(headers);
@@ -298,7 +297,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
             for (int i = 0; i < values.size(); i++) {
-                loadValue(values.get(i), headers.get(i), dataSet, typeSet, groupIdToHybridizationDataIndexMap, 
+                loadValue(values.get(i), headers.get(i), dataSet, typeSet, groupIdToHybridizationDataIndexMap,
                         rowIndex);
             }
             rowIndex++;
@@ -328,7 +327,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private AbstractDataColumn getColumn(HybridizationData hybridizationData, 
+    private AbstractDataColumn getColumn(HybridizationData hybridizationData,
             QuantitationTypeDescriptor typeDescriptor) {
         for (AbstractDataColumn column : hybridizationData.getColumns()) {
             if (column.getQuantitationType().getName().equals(typeDescriptor.getName())) {

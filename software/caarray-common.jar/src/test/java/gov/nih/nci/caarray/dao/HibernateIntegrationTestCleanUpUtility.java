@@ -89,8 +89,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.EntityMode;
 import org.hibernate.FlushMode;
@@ -104,7 +103,7 @@ import org.hibernate.metadata.ClassMetadata;
  */
 public final class HibernateIntegrationTestCleanUpUtility {
 
-    private static final Log LOG = LogFactory.getLog(HibernateIntegrationTestCleanUpUtility.class);
+    private static final Logger LOG = Logger.getLogger(HibernateIntegrationTestCleanUpUtility.class);
     private static List<Class<?>> classesToRemove;
 
     private HibernateIntegrationTestCleanUpUtility() {

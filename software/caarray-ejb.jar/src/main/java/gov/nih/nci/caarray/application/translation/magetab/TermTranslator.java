@@ -82,17 +82,16 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.OntologyTerm;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
  * Translates MAGE-TAB <code>OntologyTerms</code> to caArray <code>Terms</code>.
@@ -100,7 +99,7 @@ import gov.nih.nci.caarray.magetab.OntologyTerm;
 @SuppressWarnings("PMD")
 final class TermTranslator extends AbstractTranslator {
 
-    private static final Log LOG = LogFactory.getLog(TermTranslator.class);
+    private static final Logger LOG = Logger.getLogger(TermTranslator.class);
 
     private final VocabularyService service;
 
@@ -161,7 +160,7 @@ final class TermTranslator extends AbstractTranslator {
     }
 
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 

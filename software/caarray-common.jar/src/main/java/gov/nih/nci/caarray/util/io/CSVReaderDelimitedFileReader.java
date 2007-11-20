@@ -90,8 +90,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import com.csvreader.CsvReader;
 
@@ -102,7 +101,7 @@ import com.csvreader.CsvReader;
  */
 final class CSVReaderDelimitedFileReader implements DelimitedFileReader {
 
-    private static final Log LOG = LogFactory.getLog(CSVReaderDelimitedFileReader.class);
+    private static final Logger LOG = Logger.getLogger(CSVReaderDelimitedFileReader.class);
 
     private CsvReader reader;
     /** Next values from the <i>client's</i> perspective. */

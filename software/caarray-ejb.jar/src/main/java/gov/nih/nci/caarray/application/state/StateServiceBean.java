@@ -92,8 +92,7 @@ import java.util.List;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * @author Akhil Bhaskar (Amentra, Inc.)
@@ -103,7 +102,7 @@ import org.apache.commons.logging.LogFactory;
 @Stateless
 public class StateServiceBean implements StateService {
 
-    private static final Log LOG = LogFactory.getLog(StateServiceBean.class);
+    private static final Logger LOG = Logger.getLogger(StateServiceBean.class);
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 

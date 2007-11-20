@@ -96,8 +96,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Responsible for ensuring that data columns for a <code>DataSet</code> are loaded. This enables
@@ -105,7 +104,7 @@ import org.apache.commons.logging.LogFactory;
  */
 final class DataSetLoader {
 
-    private static final Log LOG = LogFactory.getLog(DataSetLoader.class);
+    private static final Logger LOG = Logger.getLogger(DataSetLoader.class);
 
     private final CaArrayDaoFactory daoFactory;
     private final FileAccessService fileAccessService;
@@ -191,7 +190,7 @@ final class DataSetLoader {
 
     AbstractDataFileHandler getDataFileHandler() {
         if (dataFileHandler == null) {
-            dataFileHandler = 
+            dataFileHandler =
                 ArrayDataHandlerFactory.getInstance().getHandler(getArrayData().getDataFile().getFileType());
         }
         return dataFileHandler;

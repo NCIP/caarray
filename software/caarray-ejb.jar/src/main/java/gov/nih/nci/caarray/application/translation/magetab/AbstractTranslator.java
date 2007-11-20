@@ -98,7 +98,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
 
 /**
  * Base class for translators.
@@ -171,7 +171,7 @@ abstract class AbstractTranslator {
 
     abstract void translate();
 
-    abstract Log getLog();
+    abstract Logger getLog();
 
     /**
      * Checks database to see if a matching caArray entity already exists.

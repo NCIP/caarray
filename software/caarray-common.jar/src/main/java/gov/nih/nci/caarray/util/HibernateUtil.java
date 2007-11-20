@@ -89,8 +89,7 @@ import gov.nih.nci.security.authorization.instancelevel.InstanceLevelSecurityHel
 
 import java.util.Iterator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.ConnectionReleaseMode;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
@@ -111,7 +110,7 @@ import org.hibernate.mapping.Collection;
 @SuppressWarnings("unchecked")
 public final class HibernateUtil {
 
-    private static final Log LOG = LogFactory.getLog(HibernateUtil.class);
+    private static final Logger LOG = Logger.getLogger(HibernateUtil.class);
 
     private static final Configuration HIBERNATE_CONFIG;
     private static final SessionFactory SESSION_FACTORY;

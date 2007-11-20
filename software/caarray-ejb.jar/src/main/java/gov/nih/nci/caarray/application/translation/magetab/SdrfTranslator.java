@@ -97,9 +97,9 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.FactorValue;
-import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
@@ -126,8 +126,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Translates entities in SDRF documents into caArray entities.
@@ -135,7 +134,7 @@ import org.apache.commons.logging.LogFactory;
 @SuppressWarnings("PMD")
 final class SdrfTranslator extends AbstractTranslator {
 
-    private static final Log LOG = LogFactory.getLog(SdrfTranslator.class);
+    private static final Logger LOG = Logger.getLogger(SdrfTranslator.class);
 
     private static final String GENERATED_SAMPLE_PREFIX = "GeneratedSample.";
     private static final String GENERATED_EXTRACT_PREFIX = "GeneratedExtract.";
@@ -652,7 +651,7 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 }

@@ -86,15 +86,14 @@ import gov.nih.nci.caarray.domain.state.State;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * @author Akhil Bhaskar (Amentra, Inc.)
  *
  */
 public class StateDaoImpl extends AbstractCaArrayDaoImpl implements StateDao {
-    private static final Log LOG = LogFactory.getLog(StateDaoImpl.class);
+    private static final Logger LOG = Logger.getLogger(StateDaoImpl.class);
 
     /**
      * {@inheritDoc}
@@ -106,7 +105,7 @@ public class StateDaoImpl extends AbstractCaArrayDaoImpl implements StateDao {
     }
 
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 }

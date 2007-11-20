@@ -82,9 +82,9 @@
  */
 package gov.nih.nci.caarray.util.io.logging;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 /**
@@ -97,9 +97,6 @@ public class LogUtilTest {
         public boolean isDebugEnabled() {return true;}
     };
 
-    /**
-     * Test method for {@link logSubsystemEntry(org.apache.commons.logging.Log, java.lang.Object[])}.
-     */
     @Test
     public void testLogSubsystemEntry() {
         LogUtil.logSubsystemEntry(testLog, 1, "two", null);
@@ -109,9 +106,6 @@ public class LogUtilTest {
         assertEquals(expectedMessage, testLog.getMessage());
     }
 
-    /**
-     * Test method for {@link logSubsystemExit(org.apache.commons.logging.Log)}.
-     */
     @Test
     public void testLogSubsystemExit() {
         LogUtil.logSubsystemExit(testLog);
@@ -120,9 +114,6 @@ public class LogUtilTest {
         assertEquals(expectedMessage, testLog.getMessage());
     }
 
-    /**
-     * Test method for {@link traceEntry(org.apache.commons.logging.Log, java.lang.Object[])}.
-     */
     @Test
     public void testTraceEntry() {
         LogUtil.traceEntry(testLog, 1, "two", null);
@@ -132,9 +123,6 @@ public class LogUtilTest {
         assertEquals(expectedMessage, testLog.getMessage());
     }
 
-    /**
-     * Test method for {@link traceExit(org.apache.commons.logging.Log)}.
-     */
     @Test
     public void testTraceExit() {
         LogUtil.traceExit(testLog);
@@ -146,10 +134,14 @@ public class LogUtilTest {
     /**
      * Logging stub for test.
      */
-    private static class TestLog implements Log {
+    private static class TestLog extends Logger {
 
         private Object loggedMessage;
         private String logLevel;
+
+        public TestLog() {
+            super("TestLog");
+        }
 
         String getLogLevel() {
             return logLevel;
@@ -159,39 +151,48 @@ public class LogUtilTest {
             return loggedMessage;
         }
 
+        @Override
         public void debug(Object message) {
             logLevel = "DEBUG";
             this.loggedMessage = message;
         }
 
+        @Override
         public void debug(Object message, Throwable t) {
             this.loggedMessage = message;
         }
 
+        @Override
         public void error(Object message) {
             this.loggedMessage = message;
         }
 
+        @Override
         public void error(Object message, Throwable t) {
             this.loggedMessage = message;
         }
 
+        @Override
         public void fatal(Object message) {
             this.loggedMessage = message;
         }
 
+        @Override
         public void fatal(Object message, Throwable t) {
             this.loggedMessage = message;
         }
 
+        @Override
         public void info(Object message) {
             this.loggedMessage = message;
         }
 
+        @Override
         public void info(Object message, Throwable t) {
             this.loggedMessage = message;
         }
 
+        @Override
         public boolean isDebugEnabled() {
             return false;
         }
@@ -204,10 +205,12 @@ public class LogUtilTest {
             return false;
         }
 
+        @Override
         public boolean isInfoEnabled() {
             return false;
         }
 
+        @Override
         public boolean isTraceEnabled() {
             return false;
         }
@@ -216,19 +219,23 @@ public class LogUtilTest {
             return false;
         }
 
+        @Override
         public void trace(Object message) {
             logLevel = "TRACE";
             this.loggedMessage = message;
         }
 
+        @Override
         public void trace(Object message, Throwable t) {
             this.loggedMessage = message;
         }
 
+        @Override
         public void warn(Object message) {
             this.loggedMessage = message;
         }
 
+        @Override
         public void warn(Object message, Throwable t) {
             this.loggedMessage = message;
         }

@@ -54,8 +54,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
+
 import ucar.nc2.NetcdfFileWriteable;
 
 
@@ -65,7 +65,7 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public class NetcdfDataStoreFactory implements DataStoreFactory {
 
-    private static final Log LOG = LogFactory.getLog(NetcdfDataStoreFactory.class);
+    private static final Logger LOG = Logger.getLogger(NetcdfDataStoreFactory.class);
 
 
 

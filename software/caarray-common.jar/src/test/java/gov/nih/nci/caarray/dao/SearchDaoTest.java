@@ -107,8 +107,7 @@ import gov.nih.nci.system.query.cql.CQLQuery;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.Before;
@@ -121,7 +120,7 @@ import org.junit.Test;
  */
 @SuppressWarnings("PMD")
 public class SearchDaoTest {
-    private static final Log LOG = LogFactory.getLog(SearchDaoTest.class);
+    private static final Logger LOG = Logger.getLogger(SearchDaoTest.class);
 
     private static final String FAIL_NO_MATCH = "Retrieved protocol is different from saved protocol.";
     private static final Category DUMMY_CATEGORY = new Category();

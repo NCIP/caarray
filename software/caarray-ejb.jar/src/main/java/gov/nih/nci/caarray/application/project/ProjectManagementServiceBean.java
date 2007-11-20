@@ -132,8 +132,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Implementation entry point for the ProjectManagement subsystem.
@@ -144,7 +143,7 @@ import org.apache.commons.logging.LogFactory;
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class ProjectManagementServiceBean implements ProjectManagementService {
 
-    private static final Log LOG = LogFactory.getLog(ProjectManagementServiceBean.class);
+    private static final Logger LOG = Logger.getLogger(ProjectManagementServiceBean.class);
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
     @Resource
@@ -253,7 +252,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
 
     /**
      * Checks whether the project can be saved. if it can, does nothing, otherwise throws an exception
-     * 
+     *
      * @param project project to check for being able to save
      * @throws ProposalWorkflowException if the project can't be saved due to workflow state
      */

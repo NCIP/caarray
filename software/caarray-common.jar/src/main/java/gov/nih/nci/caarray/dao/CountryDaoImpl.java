@@ -86,15 +86,14 @@ import gov.nih.nci.caarray.domain.country.Country;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * @author John Hedden
  *
  */
 public class CountryDaoImpl extends AbstractCaArrayDaoImpl implements CountryDao {
-    private static final Log LOG = LogFactory.getLog(CountryDaoImpl.class);
+    private static final Logger LOG = Logger.getLogger(CountryDaoImpl.class);
 
     /**
      * {@inheritDoc}
@@ -106,7 +105,7 @@ public class CountryDaoImpl extends AbstractCaArrayDaoImpl implements CountryDao
     }
 
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 }

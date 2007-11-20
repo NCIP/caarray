@@ -98,8 +98,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Implementation of the remote API file retrieval subsystem.
@@ -109,7 +108,7 @@ import org.apache.commons.logging.LogFactory;
 @Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
 public class FileRetrievalServiceBean implements FileRetrievalService {
 
-    private static final Log LOG = LogFactory.getLog(FileRetrievalServiceBean.class);
+    private static final Logger LOG = Logger.getLogger(FileRetrievalServiceBean.class);
     private static final int CHUNK_SIZE = 4096;
 
     final FileAccessService getFileAccessService() {

@@ -103,8 +103,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Implementation entry point for the ArrayDesign subsystem.
@@ -114,7 +113,7 @@ import org.apache.commons.logging.LogFactory;
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class ArrayDesignServiceBean implements ArrayDesignService {
 
-    private static final Log LOG = LogFactory.getLog(ArrayDesignServiceBean.class);
+    private static final Logger LOG = Logger.getLogger(ArrayDesignServiceBean.class);
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 

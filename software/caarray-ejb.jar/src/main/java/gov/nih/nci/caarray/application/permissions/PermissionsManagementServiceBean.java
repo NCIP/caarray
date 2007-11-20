@@ -108,8 +108,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.criterion.MatchMode;
 
 /**
@@ -120,7 +119,7 @@ import org.hibernate.criterion.MatchMode;
 @Interceptors(ExceptionLoggingInterceptor.class)
 public class PermissionsManagementServiceBean implements PermissionsManagementService {
 
-    private static final Log LOG = LogFactory.getLog(PermissionsManagementServiceBean.class);
+    private static final Logger LOG = Logger.getLogger(PermissionsManagementServiceBean.class);
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
@@ -209,7 +208,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public void addUsers(CollaboratorGroup targetGroup, List<String> users) 
+    public void addUsers(CollaboratorGroup targetGroup, List<String> users)
     throws CSTransactionException, CSObjectNotFoundException {
         LogUtil.logSubsystemEntry(LOG, targetGroup, users);
 
@@ -242,7 +241,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     /**
      * {@inheritDoc}
      */
-    public void rename(CollaboratorGroup targetGroup, String groupName) 
+    public void rename(CollaboratorGroup targetGroup, String groupName)
     throws CSTransactionException, CSObjectNotFoundException {
         LogUtil.logSubsystemEntry(LOG, targetGroup, groupName);
         AuthorizationManager am = SecurityUtils.getAuthorizationManager();

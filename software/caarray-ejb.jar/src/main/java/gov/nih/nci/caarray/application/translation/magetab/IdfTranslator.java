@@ -100,15 +100,14 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Translates entities found in and IDF document.
  */
 final class IdfTranslator extends AbstractTranslator {
 
-    private static final Log LOG = LogFactory.getLog(IdfTranslator.class);
+    private static final Logger LOG = Logger.getLogger(IdfTranslator.class);
 
     IdfTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
             CaArrayDaoFactory daoFactory) {
@@ -220,7 +219,7 @@ final class IdfTranslator extends AbstractTranslator {
     }
 
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 }

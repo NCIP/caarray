@@ -97,8 +97,7 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -110,7 +109,7 @@ import org.hibernate.Session;
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
 
-    private static final Log LOG = LogFactory.getLog(ArrayDaoImpl.class);
+    private static final Logger LOG = Logger.getLogger(ArrayDaoImpl.class);
 
     /**
      * {@inheritDoc}
@@ -231,7 +230,7 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     }
 
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 }

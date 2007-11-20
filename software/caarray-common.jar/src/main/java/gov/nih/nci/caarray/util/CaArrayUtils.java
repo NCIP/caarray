@@ -94,8 +94,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Utility classes for our project.
@@ -103,7 +102,7 @@ import org.apache.commons.logging.LogFactory;
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public final class CaArrayUtils {
 
-    private static final Log LOG = LogFactory.getLog(CaArrayUtils.class);
+    private static final Logger LOG = Logger.getLogger(CaArrayUtils.class);
 
     private CaArrayUtils() {
         // prevent instantiation;

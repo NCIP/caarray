@@ -119,8 +119,7 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Query;
 
 /**
@@ -129,7 +128,7 @@ import org.hibernate.Query;
  */
 @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength", "PMD.AvoidDuplicateLiterals" })
 public final class SecurityUtils {
-    private static final Log LOG = LogFactory.getLog(SecurityUtils.class);
+    private static final Logger LOG = Logger.getLogger(SecurityUtils.class);
     private static final long serialVersionUID = -2071964672876972370L;
 
     /**
@@ -631,11 +630,9 @@ public final class SecurityUtils {
             return AuthorizationManagerExtensions.checkPermission(user.getLoginName(), getNonGLIBClass(p).getName(),
                     "id", p.getId().toString(), privilege, app);
         } catch (CSException e) {
-            if (LOG.isWarnEnabled()) {
-                LOG.warn(String.format(
-                        "Could not check if User %s had privilege %s for protectable of class %s with id %s", user
-                                .getLoginName(), privilege, p.getClass().getName(), p.getId()));
-            }
+            LOG.warn(String.format(
+                    "Could not check if User %s had privilege %s for protectable of class %s with id %s", user
+                            .getLoginName(), privilege, p.getClass().getName(), p.getId()));
             return false;
         }
     }

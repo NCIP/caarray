@@ -104,8 +104,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Represents an Investigation Description Format (IDF) file - a tab-delimited file providing general information about
@@ -117,7 +116,7 @@ import org.apache.commons.logging.LogFactory;
 public final class IdfDocument extends AbstractMageTabDocument {
 
     private static final long serialVersionUID = 149154919398572572L;
-    private static final Log LOG = LogFactory.getLog(IdfDocument.class);
+    private static final Logger LOG = Logger.getLogger(IdfDocument.class);
 
     private final Investigation investigation = new Investigation();
     private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
@@ -128,7 +127,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     /**
      * Creates a new IDF from an existing file.
-     * 
+     *
      * @param documentSet the MAGE-TAB document set the IDF belongs to.
      * @param file the file containing the IDF content.
      */
@@ -145,7 +144,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     /**
      * Parses the MAGE-TAB document, creating the object graph of entities.
-     * 
+     *
      * @throws MageTabParsingException if the document couldn't be read.
      */
     @Override
@@ -437,9 +436,9 @@ public final class IdfDocument extends AbstractMageTabDocument {
     private void handleProtocolParameters(String value, int valueIndex) {
         Protocol protocol = investigation.getOrCreateProtcol(valueIndex);
         String[] parameterNames = value.split(";");
-        for (int i = 0; i < parameterNames.length; i++) {
+        for (String element : parameterNames) {
             Parameter parameter = new Parameter();
-            parameter.setName(parameterNames[i]);
+            parameter.setName(element);
             protocol.getParameters().add(parameter);
         }
     }
@@ -692,7 +691,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     /**
      * Returns all the SDRF files referenced by the IDF.
-     * 
+     *
      * @return all related SDRF documents.
      */
     public List<SdrfDocument> getSdrfDocuments() {

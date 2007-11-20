@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
  */
 public final class LDAPUtil {
 
-    static final Logger LOG = Logger.getLogger(LDAPUtil.class);
+    private static final Logger LOG = Logger.getLogger(LDAPUtil.class);
     private static final String INITCTX = "com.sun.jndi.ldap.LdapCtxFactory";
     private static Map<String, String> configMap = new HashMap<String, String>();
     @SuppressWarnings("PMD.ReplaceHashtableWithMap")

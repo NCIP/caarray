@@ -91,8 +91,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Example;
 import org.hibernate.mapping.PersistentClass;
@@ -104,7 +103,7 @@ import org.hibernate.mapping.Property;
  * @author Rashmi Srinivasa
  */
 public final class SearchCriteriaUtil {
-    private static final Log LOG = LogFactory.getLog(SearchCriteriaUtil.class);
+    private static final Logger LOG = Logger.getLogger(SearchCriteriaUtil.class);
     private static final String UNABLE_TO_GET_ASSOCIATION_VAL = "Unable to get association value";
 
     private SearchCriteriaUtil() {

@@ -82,21 +82,20 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.TermSource;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
  * Translates MAGE-TAB <code>TermSources</code> to caArray <code>TermSources</code>.
  */
 final class TermSourceTranslator extends AbstractTranslator {
 
-    private static final Log LOG = LogFactory.getLog(TermSourceTranslator.class);
+    private static final Logger LOG = Logger.getLogger(TermSourceTranslator.class);
 
     private final VocabularyService vocabularyService;
 
@@ -153,7 +152,7 @@ final class TermSourceTranslator extends AbstractTranslator {
     }
 
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 

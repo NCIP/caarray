@@ -101,8 +101,7 @@ import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * EJB implementation of the entry point to the FileManagement subsystem. Delegates functionality
@@ -113,7 +112,7 @@ import org.apache.commons.logging.LogFactory;
 @Interceptors(ExceptionLoggingInterceptor.class)
 public class FileManagementServiceBean implements FileManagementService {
 
-    private static final Log LOG = LogFactory.getLog(FileManagementServiceBean.class);
+    private static final Logger LOG = Logger.getLogger(FileManagementServiceBean.class);
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
@@ -252,7 +251,7 @@ public class FileManagementServiceBean implements FileManagementService {
         }
         getDaoFactory().getProjectDao().save(targetProject);
     }
-    
+
     /**
      * {@inheritDoc}
      */

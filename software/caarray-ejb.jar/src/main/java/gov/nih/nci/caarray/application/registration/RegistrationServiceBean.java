@@ -92,8 +92,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Implementation entry point for the Registration subsystem.
@@ -102,7 +101,7 @@ import org.apache.commons.logging.LogFactory;
 @Stateless
 public class RegistrationServiceBean implements RegistrationService {
 
-    private static final Log LOG = LogFactory.getLog(RegistrationServiceBean.class);
+    private static final Logger LOG = Logger.getLogger(RegistrationServiceBean.class);
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
     /**

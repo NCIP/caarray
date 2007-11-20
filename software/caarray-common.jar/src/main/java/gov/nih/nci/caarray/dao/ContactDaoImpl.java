@@ -84,8 +84,7 @@ package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.contact.AbstractContact;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.contact</code> package.
@@ -93,7 +92,7 @@ import org.apache.commons.logging.LogFactory;
  * @author Dan Kokotov
  */
 class ContactDaoImpl extends AbstractCaArrayDaoImpl implements ContactDao {
-    private static final Log LOG = LogFactory.getLog(ContactDaoImpl.class);
+    private static final Logger LOG = Logger.getLogger(ContactDaoImpl.class);
 
     /**
      * {@inheritDoc}
@@ -101,9 +100,9 @@ class ContactDaoImpl extends AbstractCaArrayDaoImpl implements ContactDao {
     public AbstractContact getContact(long id) {
         return (AbstractContact) getCurrentSession().get(AbstractContact.class, id);
     }
-    
+
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 }

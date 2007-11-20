@@ -359,7 +359,6 @@
                 <pathelement location="${commons-collections.jar}" />
                 <pathelement location="${commons-io.jar}" />
                 <pathelement location="${commons-lang.jar}" />
-                <pathelement location="${commons-logging.jar}" />
                 <pathelement location="${caarray-common.resources.dir}" />
                 <pathelement location="${hibernate-annotations.jar}" />
                 <pathelement location="${cacore32-client.jar}"/>
@@ -380,7 +379,6 @@
                 <pathelement location="${commons-io.jar}" />
                 <pathelement location="${commons-lang.jar}" />
                 <pathelement location="${javacsv.jar}" />
-                <pathelement location="${commons-logging.jar}" />
                 <pathelement location="${netcdf.jar}" />
                 <pathelement location="${caarray-common.resources.dir}" />
                 <pathelement location="${caarray-common.test.files.dir}" />
@@ -411,6 +409,7 @@
                 <pathelement location="${hibernate-annotations.jar}" />
                 <pathelement location="${javaee.jar}" />
                 <pathelement location="${csmapi.jar}"/>
+                <pathelement location="${log4j.jar}"/>
             </classpath>
         </javac>
     </target>
@@ -711,7 +710,6 @@
                 <pathelement location="${caarray-common.test.files.dir}" />
                 <pathelement location="${caarray-common.resources.dir}" />
                 <pathelement location="${commons-io.jar}" />
-                <pathelement location="${commons-logging.jar}" />
                 <pathelement location="${commons-lang.jar}" />
                 <pathelement location="${commons-collections.jar}" />
                 <pathelement location="${junit.jar}" />
@@ -722,6 +720,7 @@
                 <pathelement location="${javaee.jar}" />
                 <pathelement location="${cacore32-client.jar}"/>
                 <pathelement location="${csmapi.jar}"/>
+                <pathelement location="${log4j.jar}" />
             </classpath>
         </javac>
     </target>
@@ -750,7 +749,6 @@
                 <pathelement location="${affxfusion.jar}" />
                 <pathelement location="${cacore32-client.jar}" />
                 <pathelement location="${commons-lang.jar}" />
-                <pathelement location="${commons-logging.jar}" />
                 <pathelement location="${commons-io.jar}" />
                 <pathelement location="${javaee.jar}" />
                 <pathelement location="${junit.jar}" />

@@ -104,8 +104,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
@@ -118,7 +117,7 @@ import com.opensymphony.xwork2.ActionContext;
  */
 public final class ActionHelper {
 
-    private static final Log LOG = LogFactory.getLog(ActionHelper.class);
+    private static final Logger LOG = Logger.getLogger(ActionHelper.class);
 
     private ActionHelper() {
 

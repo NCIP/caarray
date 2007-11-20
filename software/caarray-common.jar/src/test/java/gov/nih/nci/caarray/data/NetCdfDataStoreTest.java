@@ -50,14 +50,14 @@
  */
 package gov.nih.nci.caarray.data;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -83,7 +83,7 @@ import ucar.ma2.Index;
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class NetCdfDataStoreTest {
 
-    private static final Log LOG = LogFactory.getLog(NetCdfDataStoreTest.class);
+    private static final Logger LOG = Logger.getLogger(NetCdfDataStoreTest.class);
 
     private static final String X_VAL_COL_NAME = "xvalue";
 

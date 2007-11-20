@@ -91,7 +91,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -110,7 +110,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
 
     private static final String UNABLE_TO_RETRIEVE_ENTITY_MESSAGE = "Unable to retrieve entity";
 
-    abstract Log getLog();
+    abstract Logger getLog();
 
     /**
      * Returns the current Hibernate Session.

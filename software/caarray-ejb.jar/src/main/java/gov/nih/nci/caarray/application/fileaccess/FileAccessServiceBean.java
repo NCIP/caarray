@@ -112,8 +112,7 @@ import javax.interceptor.Interceptors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Implementation of the FileAccess subsystem.
@@ -123,7 +122,7 @@ import org.apache.commons.logging.LogFactory;
 @Interceptors(ExceptionLoggingInterceptor.class)
 public class FileAccessServiceBean implements FileAccessService {
 
-    private static final Log LOG = LogFactory.getLog(FileAccessServiceBean.class);
+    private static final Logger LOG = Logger.getLogger(FileAccessServiceBean.class);
     private static final String WORKING_DIRECTORY_PROPERTY_KEY = "caarray.working.directory";
     private static final String TEMP_DIR_PROPERTY_KEY = "java.io.tmpdir";
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
@@ -245,7 +244,7 @@ public class FileAccessServiceBean implements FileAccessService {
         this.sessionWorkingDirectory = new File(getWorkingDirectory(), sessionSubdirectoryName);
         if (!this.sessionWorkingDirectory.mkdirs()) {
             LOG.error("Couldn't create directory: " + this.sessionWorkingDirectory.getAbsolutePath());
-            throw new IllegalStateException("Couldn't create directory: " 
+            throw new IllegalStateException("Couldn't create directory: "
                     + this.sessionWorkingDirectory.getAbsolutePath());
         }
     }

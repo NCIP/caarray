@@ -82,13 +82,6 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.logging.Log;
-
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.BooleanColumn;
@@ -105,6 +98,13 @@ import gov.nih.nci.caarray.domain.data.StringColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
+
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -146,7 +146,7 @@ abstract class AbstractDataFileHandler {
         }
     }
 
-    abstract Log getLog();
+    abstract Logger getLog();
 
     abstract ArrayDataTypeDescriptor getArrayDataTypeDescriptor(File dataFile);
 

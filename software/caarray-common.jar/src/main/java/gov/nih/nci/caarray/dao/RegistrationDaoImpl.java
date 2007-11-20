@@ -82,18 +82,17 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * DAO to manipulate registration.
  * @author John Hedden
  */
 public class RegistrationDaoImpl extends AbstractCaArrayDaoImpl implements RegistrationDao {
-    private static final Log LOG = LogFactory.getLog(RegistrationDaoImpl.class);
+    private static final Logger LOG = Logger.getLogger(RegistrationDaoImpl.class);
 
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 }

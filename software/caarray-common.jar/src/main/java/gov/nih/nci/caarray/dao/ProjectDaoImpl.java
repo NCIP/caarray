@@ -93,8 +93,7 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.Query;
 
 /**
@@ -103,7 +102,7 @@ import org.hibernate.Query;
  * @author Rashmi Srinivasa
  */
 class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
-    private static final Log LOG = LogFactory.getLog(ProjectDaoImpl.class);
+    private static final Logger LOG = Logger.getLogger(ProjectDaoImpl.class);
 
     /**
      * Saves a project by first updating the lastUpdated field, and then
@@ -121,7 +120,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     }
 
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 

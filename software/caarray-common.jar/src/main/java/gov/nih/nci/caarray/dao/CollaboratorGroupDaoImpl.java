@@ -86,21 +86,20 @@ import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Dao impl.
  */
 public class CollaboratorGroupDaoImpl extends AbstractCaArrayDaoImpl implements CollaboratorGroupDao {
 
-    private static final Log LOG = LogFactory.getLog(CollaboratorGroupDaoImpl.class);
+    private static final Logger LOG = Logger.getLogger(CollaboratorGroupDaoImpl.class);
 
     /**
      * {@inheritDoc}
      */
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 

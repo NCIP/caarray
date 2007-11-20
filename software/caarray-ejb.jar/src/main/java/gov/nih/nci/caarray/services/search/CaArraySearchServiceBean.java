@@ -97,8 +97,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Session bean that searches for caArray entities based on various types of criteria.
@@ -110,7 +109,7 @@ import org.apache.commons.logging.LogFactory;
 @Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
 public class CaArraySearchServiceBean implements CaArraySearchService {
 
-    private static final Log LOG = LogFactory.getLog(CaArraySearchServiceBean.class);
+    private static final Logger LOG = Logger.getLogger(CaArraySearchServiceBean.class);
 
     /**
      * {@inheritDoc}

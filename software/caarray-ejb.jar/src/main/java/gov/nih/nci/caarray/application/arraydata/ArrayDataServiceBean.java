@@ -100,8 +100,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Entry point to the ArrayDataService subsystem.
@@ -111,7 +110,7 @@ import org.apache.commons.logging.LogFactory;
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class ArrayDataServiceBean implements ArrayDataService {
 
-    private static final Log LOG = LogFactory.getLog(ArrayDataServiceBean.class);
+    private static final Logger LOG = Logger.getLogger(ArrayDataServiceBean.class);
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
@@ -157,7 +156,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
         return arrayData.getDataSet();
     }
 
-    private void loadDataSet(AbstractArrayData arrayData, List<QuantitationType> types, 
+    private void loadDataSet(AbstractArrayData arrayData, List<QuantitationType> types,
             FileAccessService fileAccessService) {
         DataSetLoader loader =
             new DataSetLoader(arrayData, getDaoFactory(), fileAccessService);

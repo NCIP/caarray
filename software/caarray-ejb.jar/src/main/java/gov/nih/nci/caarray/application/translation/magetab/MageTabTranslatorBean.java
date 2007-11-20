@@ -95,8 +95,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Implementation of the MAGE-TAB translation component.
@@ -105,7 +104,7 @@ import org.apache.commons.logging.LogFactory;
 @Stateless
 public class MageTabTranslatorBean implements MageTabTranslator {
 
-    private static final Log LOG = LogFactory.getLog(MageTabTranslatorBean.class);
+    private static final Logger LOG = Logger.getLogger(MageTabTranslatorBean.class);
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 

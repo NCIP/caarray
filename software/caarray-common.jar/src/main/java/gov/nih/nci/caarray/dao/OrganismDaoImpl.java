@@ -86,8 +86,7 @@ import edu.georgetown.pir.Organism;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * DAO for Organism entities .
@@ -95,7 +94,7 @@ import org.apache.commons.logging.LogFactory;
  * @author Dan Kokotov
  */
 class OrganismDaoImpl extends AbstractCaArrayDaoImpl implements OrganismDao {
-    private static final Log LOG = LogFactory.getLog(OrganismDaoImpl.class);
+    private static final Logger LOG = Logger.getLogger(OrganismDaoImpl.class);
 
     /**
      * {@inheritDoc}
@@ -114,7 +113,7 @@ class OrganismDaoImpl extends AbstractCaArrayDaoImpl implements OrganismDao {
     }
 
     @Override
-    Log getLog() {
+    Logger getLog() {
         return LOG;
     }
 }
