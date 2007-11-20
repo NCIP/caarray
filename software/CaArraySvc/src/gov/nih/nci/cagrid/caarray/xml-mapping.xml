@@ -214,6 +214,9 @@
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
+    <field name="type" type="string">
+      <bind-xml name="type" node="attribute" />
+    </field>    
     <field name="version" type="string">
       <bind-xml name="version" node="attribute" />
     </field>
@@ -781,14 +784,17 @@
   </class>
   <class name="gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation" identity="id" extends="gov.nih.nci.caarray.domain.array.AbstractProbeAnnotation">
     <map-to xml="ExpressionProbeAnnotation" ns-uri="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.array" />
+  </class>
+  <class name="gov.nih.nci.caarray.domain.array.Gene" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
+    <map-to xml="Gene" ns-uri="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.array" />
     <field name="ensemblId" type="string">
       <bind-xml name="ensemblId" node="attribute" />
     </field>
-    <field name="geneSymbol" type="string">
-      <bind-xml name="geneSymbol" node="attribute" />
+    <field name="symbol" type="string">
+      <bind-xml name="symbol" node="attribute" />
     </field>
-    <field name="geneTitle" type="string">
-      <bind-xml name="geneTitle" node="attribute" />
+    <field name="fullName" type="string">
+      <bind-xml name="fullName" node="attribute" />
     </field>
     <field name="unigeneId" type="string">
       <bind-xml name="unigeneId" node="attribute" />
@@ -796,12 +802,6 @@
   </class>
   <class name="gov.nih.nci.caarray.domain.array.ExonProbeAnnotation" identity="id" extends="gov.nih.nci.caarray.domain.array.AbstractProbeAnnotation">
     <map-to xml="ExonProbeAnnotation" ns-uri="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.array" />
-    <field name="genomeVersion" type="string">
-      <bind-xml name="genomeVersion" node="attribute" />
-    </field>
-    <field name="seqName" type="string">
-      <bind-xml name="seqName" node="attribute" />
-    </field>
     <field name="start" type="long">
       <bind-xml name="start" node="attribute" />
     </field>
@@ -810,9 +810,6 @@
     </field>
     <field name="strand" type="string">
       <bind-xml name="strand" node="attribute" />
-    </field>
-    <field name="unigeneId" type="string">
-      <bind-xml name="unigeneId" node="attribute" />
     </field>
     <field name="uniprotId" type="string">
       <bind-xml name="uniprotId" node="attribute" />
