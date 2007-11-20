@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation;
+import gov.nih.nci.caarray.domain.array.Gene;
 import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
@@ -136,8 +137,9 @@ class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
             new LogicalProbe(LSID_AUTHORITY, LSID_NAMESPACE, arrayDesign.getName() + "." + target, details);
         logicalProbe.setName(target);
         ExpressionProbeAnnotation annotation = new ExpressionProbeAnnotation();
-        annotation.setGeneSymbol(getValue(values, IlluminaDesignCsvHeader.SYMBOL));
-        annotation.setGeneTitle(getValue(values, IlluminaDesignCsvHeader.DEFINITION));
+        annotation.setGene(new Gene());
+        annotation.getGene().setSymbol(getValue(values, IlluminaDesignCsvHeader.SYMBOL));
+        annotation.getGene().setFullName(getValue(values, IlluminaDesignCsvHeader.DEFINITION));
         details.getLogicalProbes().add(logicalProbe);
     }
 
