@@ -107,6 +107,7 @@ public class UtilsTest {
 
     @Test
     public void testMakeLeaf() {
+        HibernateUtil.beginTransaction();
         B b = new B();
         CaArrayUtils.makeLeaf(b);
 
@@ -119,10 +120,12 @@ public class UtilsTest {
         assertTrue(b.getOtherCollection().isEmpty());
         assertNotNull(b.getFoo());
         assertNull(b.getUser());
+        assertEquals(3, b.getI());
     }
 
     @Test
     public void testMakeChildrenLeaves() {
+        HibernateUtil.beginTransaction();
         B b = new B();
         CaArrayUtils.makeChildrenLeaves(b);
 
@@ -141,6 +144,7 @@ public class UtilsTest {
         assertNull(b.getOtherList().iterator().next().getA());
         assertNull(b.getOtherSet().iterator().next().getA());
         assertNull(b.getOtherCollection().iterator().next().getA());
+        assertTrue(b.getUsers().isEmpty());
     }
 
     public static class A implements PersistentObject {
@@ -190,7 +194,17 @@ public class UtilsTest {
         private Collection<A> otherCollection = new HashSet<A>();
         private String foo = "foo";
         private User user = new User();
+        private int i = 3;
+        private Set<User> users = new HashSet<User>();
 
+
+        public Set<User> getUsers() {
+            return users;
+        }
+
+        public void setUsers(Set<User> users) {
+            this.users = users;
+        }
 
         public User getUser() {
             return user;
@@ -216,6 +230,7 @@ public class UtilsTest {
             otherSet.add(new A());
             otherMap.put(1, new A());
             otherCollection.add(new A());
+            users.add(new User());
         }
 
         /**
@@ -288,6 +303,14 @@ public class UtilsTest {
         private void setOtherCollection(Collection<A> otherCollection) {
             // private on purpose, to test setAccessable
             this.otherCollection = otherCollection;
+        }
+
+        public int getI() {
+            return i;
+        }
+
+        public void setI(int i) {
+            this.i = i;
         }
     }
 }

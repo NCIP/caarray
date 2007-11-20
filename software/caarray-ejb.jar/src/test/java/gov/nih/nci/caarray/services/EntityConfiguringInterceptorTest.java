@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.services;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -103,6 +104,8 @@ public class EntityConfiguringInterceptorTest {
 
     @Test
     public void testPrepareReturnValue() throws Exception {
+        HibernateUtil.beginTransaction();
+
         EntityConfiguringInterceptor interceptor = new EntityConfiguringInterceptor();
         TestInvocationContext testContext = new TestInvocationContext();
         TestEntity entity = new TestEntity();

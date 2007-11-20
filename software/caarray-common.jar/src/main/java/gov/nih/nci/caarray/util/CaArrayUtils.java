@@ -90,6 +90,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -172,6 +173,8 @@ public final class CaArrayUtils {
             return;
         }
 
+        HibernateUtil.getCurrentSession().evict(val);
+
         for (Method[] m : findGettersAndSetters(val)) {
             Class<?> type = m[1].getParameterTypes()[0];
             Object param = null;
@@ -183,7 +186,7 @@ public final class CaArrayUtils {
                 param = Collections.EMPTY_MAP;
             } else if (Collection.class.isAssignableFrom(type)) {
                 param = Collections.EMPTY_LIST;
-            } else if (!Serializable.class.isAssignableFrom(type)) {
+            } else if (!type.isPrimitive() && !Serializable.class.isAssignableFrom(type)) {
                 // Don't allow non-serializable to go over the wire
                 LOG.debug("Cutting non-serializable object of type: " + type);
             } else if (!PersistentObject.class.isAssignableFrom(type)) {
@@ -213,20 +216,29 @@ public final class CaArrayUtils {
      *
      * @param val object to perform cutting on
      */
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
     public static void makeChildrenLeaves(Object val) {
         if (val == null) {
             return;
         }
+
+        HibernateUtil.getCurrentSession().evict(val);
 
         for (Method[] m : findGettersAndSetters(val)) {
             try {
                 m[0].setAccessible(true);
                 Object curObj = m[0].invoke(val);
                 if (curObj instanceof Collection) {
-                    for (Object o : (Collection<?>) curObj) {
-                        makeLeaf(o);
+                    Iterator<?> iter = ((Collection<?>) curObj).iterator();
+                    while (iter.hasNext()) {
+                        Object o = iter.next();
+                        if (!Serializable.class.isAssignableFrom(o.getClass())) {
+                            iter.remove();
+                        } else {
+                            makeLeaf(o);
+                        }
                     }
-                } else if (!Serializable.class.isAssignableFrom(curObj.getClass())) {
+                } else if (curObj != null && !Serializable.class.isAssignableFrom(curObj.getClass())) {
                     m[1].setAccessible(true);
                     m[1].invoke(val, new Object[] {null});
                 } else {

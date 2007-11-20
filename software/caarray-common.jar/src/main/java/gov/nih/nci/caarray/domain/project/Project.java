@@ -153,7 +153,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private Map<CollaboratorGroup, AccessProfile> groupProfiles = new HashMap<CollaboratorGroup, AccessProfile>();
     private boolean browsable = false;
     private boolean useTcgaPolicy = false;
-    private Set<User> owners;
+    private transient Set<User> owners;
     private Date lastUpdated = new Date();
 
     /**
@@ -455,7 +455,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Add a new AccessProfile for a collaborator group unless the project already has a profile for this group.
-     * 
+     *
      * @param group to add profile for
      * @return if there already existed a profile for that group, then it is returned, otherwise a
      * new profile is added and returned
@@ -552,7 +552,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     /**
      * Returns whether the given user is a collaborator on this project, ie whether he is in any of the collaborator
      * groups that have an access profile with a security level greater than "None" configured for this project.
-     * 
+     *
      * @param user the user (can be the synthetic "anonymous" user)
      * @return whether the user is a collaborator for this project
      */
@@ -603,7 +603,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
 
     /**
      * Returns the set of SecurityPolicies that apply to this project for the given user.
-     * 
+     *
      * @param user the user for whom to check the policies
      * @return the set of policies that apply for that user for this project
      */
