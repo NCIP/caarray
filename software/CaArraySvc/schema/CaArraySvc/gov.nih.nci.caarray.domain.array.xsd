@@ -50,6 +50,7 @@
           <xs:element name="designFile" minOccurs="0" maxOccurs="1" type="gov.nih.nci.caarray.domain.file:CaArrayFile" />
         </xs:sequence>
         <xs:attribute name="name" type="xs:string" />
+        <xs:attribute name="type" type="xs:string" />
         <xs:attribute name="version" type="xs:string" />
       </xs:extension>
     </xs:complexContent>
@@ -144,11 +145,8 @@
       <xs:extension base="AbstractProbeAnnotation">
         <xs:sequence>
           <xs:element name="expressionArrayReporter" minOccurs="0" maxOccurs="1" type="gov.nih.nci.cabio.domain:ExpressionArrayReporter" />
+          <xs:element name="gene" minOccurs="0" maxOccurs="1" type="Gene" />
         </xs:sequence>
-        <xs:attribute name="ensemblId" type="xs:string" />
-        <xs:attribute name="geneSymbol" type="xs:string" />
-        <xs:attribute name="geneTitle" type="xs:string" />
-        <xs:attribute name="unigeneId" type="xs:string" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -184,14 +182,23 @@
       <xs:extension base="AbstractProbeAnnotation">
         <xs:sequence>
           <xs:element name="exonArrayReporter" minOccurs="0" maxOccurs="1" type="gov.nih.nci.cabio.domain:ExonArrayReporter" />
+          <xs:element name="gene" minOccurs="0" maxOccurs="1" type="Gene" />
         </xs:sequence>
-        <xs:attribute name="genomeVersion" type="xs:string" />
-        <xs:attribute name="seqName" type="xs:string" />
         <xs:attribute name="start" type="xs:long" />
         <xs:attribute name="stop" type="xs:long" />
         <xs:attribute name="strand" type="xs:string" />
-        <xs:attribute name="unigeneId" type="xs:string" />
         <xs:attribute name="uniprotId" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>  
+  <xs:element name="Gene" type="Gene" />
+  <xs:complexType name="Gene">
+    <xs:complexContent>
+      <xs:extension base="gov.nih.nci.caarray.domain:AbstractCaArrayEntity">
+        <xs:attribute name="ensemblId" type="xs:string" />
+        <xs:attribute name="unigeneId" type="xs:string" />
+        <xs:attribute name="fullName" type="xs:string" />
+        <xs:attribute name="symbol" type="xs:string" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
