@@ -965,7 +965,7 @@
       <bind-xml name="OrganismCollection" type="edu.georgetown.pir.Organism" location="organismCollection" node="element" />
     </field>
   </class>
-  <class name="gov.nih.nci.caarray.services.data.DataRetrievalRequest">
+  <class name="gov.nih.nci.caarray.domain.data.DataRetrievalRequest">
     <map-to xml="DataRetrievalRequest" ns-uri="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.data" />
     <field name="designElements" type="gov.nih.nci.caarray.domain.array.AbstractDesignElement" collection="collection" handler="gov.nih.nci.cagrid.caarray.util.CaArrayFieldHandler">
       <bind-xml name="designElements" type="gov.nih.nci.caarray.domain.array.AbstractDesignElement" location="designElements" node="element" />
