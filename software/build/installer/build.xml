@@ -1,10 +1,7 @@
 <?xml version="1.0"?>
 
-
 <!-- Ant script for creating self-extracting AntInstaller for Caarray2 -->
 <!-- To run, type ant from the command line -->
-
-
 <project name="caarrray-local-installer" default="run" basedir="..">
 
 	<property name="installer.basedir" value="${basedir}/installer" />
@@ -18,6 +15,7 @@
 	<property name="installer.test.dir" value="${installer.basedir}/test" />
 	<property name="lib.dir" location="${basedir}/../lib" />
 	<property name="antcontrib.jar" value="ant-contrib-1.0b3.jar" />
+	<property name="application.name" value="pmd-tmp" />
 
 	<available file="${lib.dir}/${antcontrib.jar}" property="antcontrib.jar.present"/>
 
@@ -61,7 +59,7 @@
 		</condition>
 	</target>
 
-	<target name="selfextract" depends="clean, _set-version, build:installpack.zip, prepare-installer-cp">
+	<target name="selfextract" depends="clean, _set-version, build, prepare">
 		<echo message="Building caarray2-installer.jar..." />		
 		<mkdir dir="${target.dir}" />
 		<taskdef name="installer" classname="org.tp23.antinstaller.taskdefs.Installer" classpathref="project.classpath" />
@@ -70,7 +68,7 @@
 
 		<installer file="${installer.dist.dir}/${installer.file.name}" compress="true" extractType="SelfExtractor" installConfig="${installer.cofig.dir}/${installer.installConfig.name}" buildFile="${installer.cofig.dir}/${installer.buildFile.name}" antInstallLib="${installer.basedir}/lib" antLib="${installer.basedir}/antlib${ant.lib.version}" validateConfig="true" failOnError="true" icons="eclipse" duplicate="preserve">
 
-			<fileset dir="${installer.dist.dir}" includes="installpack.zip" description="The update artifacts and used by installer's build script" />
+			<fileset dir="${installer.dist.dir}" includes="installpack.zip" description="caArray artifacts. Used by installer's build script" />
 			<fileset dir="${installer.build.dir}" includes="resources/*" description="Used by installer antinstall-config.xml" />
 			<zipgroupfileset dir="${installer.basedir}/antlib${ant.lib.version}" includes="*.jar" excludes="ant.jar, ant-launcher.jar" description="Used by installers build script" />
 			<zipgroupfileset dir="${lib.dir}" includes="${antcontrib.jar}" description="Used by installers build script" />
@@ -87,7 +85,7 @@
 		<delete file="${installer.basedir}/artifacts/caarray2-installer.jar" failonerror="false" />
 	</target>
 
-	<target name="prepare-installer-cp">
+	<target name="prepare">
 		<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="${lib.dir}/${antcontrib.jar}" />
 
 		<delete dir="${installer.build.dir}/resources" />
@@ -109,10 +107,6 @@
 		<copy file="${installer.basedir}/config/images/banner_caarray.png" tofile="${installer.build.dir}/resources/extract-image.jpg" />
 	</target>
 
-	<target name="build:installpack.zip:get-deps">
-		<ant inheritAll="true" inheritRefs="true" antfile="${basedir}/_repository.xml" target="get-deps" />
-	</target>
-
 	<target name="-configure-jboss-ds">
 		<echo message="Configuring caarray-mysql database..." />
 		<taskdef name="xmlconfig" classname="com.xmlconfig.anttask.XmlConfig" classpathref="project.classpath" />
@@ -123,13 +117,10 @@
 		</xmlconfig>
 	</target>
 
-	<target name="build:installpack.zip">
+	<target name="build">
 		<echo message="Creating caarray2-installer.zip ..." />
-
 		<mkdir dir="${installer.dist.dir}" />
-
 		<delete dir="${installer.dist.dir.temp}" />
-
 		<mkdir dir="${installer.dist.dir.temp}" />
 
 		<!-- Copy caarray2 EAR file to temp -->
@@ -178,6 +169,8 @@
 		<mkdir dir="${installer.dist.dir.temp}/jboss-bin" />
 		<get dest="${installer.dist.dir.temp}/jboss-bin/jboss-4.0.5.GA.zip" usetimestamp="true" ignoreerrors="false" src="http://www.integratebutton.com/downloads/ncicb/jboss-4.0.5.GA.zip">
 		</get>
+		<get dest="${installer.dist.dir.temp}/jboss-bin/jems-installer-1.2.0.GA.jar" usetimestamp="true" ignoreerrors="false" src="http://www.integratebutton.com/downloads/ncicb/jems-installer-1.2.0.GA.jar">
+		</get>
 
 		<!-- Configure JBoss MySQL datasource -->
 		<antcall target="-configure-jboss-ds" />
@@ -187,8 +180,6 @@
 				<include name="**/*.*" />
 			</fileset>
 		</zip>
-
-
 
 	</target>
 
