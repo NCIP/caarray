@@ -1,0 +1,91 @@
+All, 
+
+Looking good so far. I need to run some CQL tests against my 4.0.4 instance before I’m happy but it appears to be relatively simple to deploy to JBoss (as expected). 
+
+ 
+
+Todd, 
+
+Some initial concerns I have are related to library class versions. Certain classes are pre-bundled in JBoss 4.0.4 which differ from those distributed w/ Globus. As of now, it is not clear to me which classes would be problematic though I’m certain some classes will collide and be improperly loaded (similar to Hibernate & Apache library issues w/in caArray.ear). 
+
+ 
+
+Levent & Todd,
+
+Most if not all of the tricky JBoss configuration is already scripted for us; following the instructions within the section “Deploy Globus to JBOSS Tomcat” under http://www.cagrid.org/mwiki/index.php?title=CaGrid:How-To:DeployGlobusToJBoss an Ant script already exists which will modify the JBoss Tomcat instance to allow deploying Globus to JBoss (see step 3). 
+
+ 
+
+ 
+
+HowTo Deploy CaArraySvc to JBoss 4.0.4  (CookBook)
+
+
+1. Download / Checkout the caGRid 1.1 Release stream
+
+2. Download and extract JBoss 4.0.4 GA into temp dir c:/temp/jboss404
+    2a. Configure your 4.0.4 instance to use different port numbers than your JBoss 4.0.5 instance (runs caarray.ear)
+	** I modified my JBoss 4.0.4 instance to use different port numbers by prepending a ‘1’ to all the port values so HTTP port is not 18080. 
+	*** This is a bit of a pain to figure out, etc.. 
+
+3. Install Globus onto JBoss 4.0.4 instance 
+        %> cd CAGRID_LOCATION/antfiles/jboss
+        %> ant -f jboss.xml deployJBoss -Djboss.dir c:/temp/jboss404 –DdefaultPort=18080
+ 
+C:\ncicb_cvs\caGrid-1_1_release\caGrid\antfiles\jboss>ant -f jboss.xml deployJBoss -Djboss.dir=c:/temp/jboss-4.0.4.GA -DdefaultPort=18080
+	Buildfile: jboss.xml
+
+	deployJBoss:
+
+	_baseDeploy:
+	    [mkdir] Created dir: c:\temp\jboss-4.0.4.GA\server\default\deploy\wsrf.war
+	     [copy] Copying 149 files to c:\temp\jboss-4.0.4.GA\server\default\deploy\wsrf.war
+	    [mkdir] Created dir: c:\temp\jboss-4.0.4.GA\server\default\deploy\wsrf.war\WEB-INF
+	     [copy] Copying 46 files to c:\temp\jboss-4.0.4.GA\server\default\deploy\wsrf.war\WEB-INF
+	    [mkdir] Created dir: c:\temp\jboss-4.0.4.GA\server\default\deploy\wsrf.war\WEB-INF\classes
+	     [copy] Copying 1 file to c:\temp\jboss-4.0.4.GA\server\default\deploy\wsrf.war\WEB-INF\classes
+	     [copy] Copying 1 file to c:\temp\jboss-4.0.4.GA\server\default\deploy\wsrf.war\WEB-INF\classes
+	    [mkdir] Created dir: c:\temp\jboss-4.0.4.GA\server\default\deploy\wsrf.war\WEB-INF\lib
+	     [copy] Copying 1 file to c:\temp\jboss-4.0.4.GA\server\default\deploy\wsrf.war\WEB-INF
+
+	_setDefaults:
+	     [echo] Setting default protocol/port to: http/18080
+	     [copy] Copying 1 file to c:\temp\jboss-4.0.4.GA\server\default\deploy\wsrf.war\WEB-INF
+	     [xslt] Processing c:\temp\jboss-4.0.4.GA\server\default\deploy\wsrf.war\WEB-INF\web.xml.bak to c:\temp\jboss-4.0.4.
+	GA\server\default\deploy\wsrf.war\WEB-INF\web.xml.tmp
+	     [xslt] Loading stylesheet C:\ncicb_cvs\caGrid-1_1_release\caGrid\antfiles\jboss\set-param.xsl
+	     [xslt] Processing c:\temp\jboss-4.0.4.GA\server\default\deploy\wsrf.war\WEB-INF\web.xml.tmp to c:\temp\jboss-4.0.4.
+	GA\server\default\deploy\wsrf.war\WEB-INF\web.xml
+	     [xslt] Loading stylesheet C:\ncicb_cvs\caGrid-1_1_release\caGrid\antfiles\jboss\set-param.xsl
+
+	_baseLibDeploy:
+	     [copy] Copying 103 files to c:\temp\jboss-4.0.4.GA\server\default\deploy\wsrf.war\WEB-INF\lib
+	     [copy] Copying 2 files to c:\temp\jboss-4.0.4.GA\server\default\deploy\wsrf.war\WEB-INF\lib
+	     [copy] Copying 8 files to c:\temp\jboss-4.0.4.GA\server\default\lib
+
+	_baseEndorsedLibDeploy:
+	     [copy] Copying 1 file to c:\temp\jboss-4.0.4.GA\server\default\lib
+	     [copy] Copying 1 file to c:\temp\jboss-4.0.4.GA\server\default\deploy\wsrf.war\WEB-INF
+	     [xslt] Processing c:\temp\jboss-4.0.4.GA\server\default\deploy\wsrf.war\WEB-INF\web.xml.bak to c:\temp\jboss-4.0.4.
+	GA\server\default\deploy\wsrf.war\WEB-INF\web.xml
+	     [xslt] Loading stylesheet C:\ncicb_cvs\caGrid-1_1_release\caGrid\antfiles\jboss\set-param.xsl
+	     [copy] Copying 1 file to c:\temp\jboss-4.0.4.GA\server\default\deploy\wsrf.war\WEB-INF
+
+	fixResourceServicePortType:
+	     [move] Moving 1 file to c:\temp\jboss-4.0.4.GA\server\default\deploy\wsrf.war\share\schema\resolutionService
+
+	BUILD SUCCESSFUL
+	Total time: 22 seconds
+ 
+4. Build all caArray2 artifacts, deploy caArray.ear to JBoss 4.0.5
+
+5. Deploy CaArraySvc to Jboss 4.0.4 instance 
+
+%> cd <CAARRAY2_SOFTWARE>/CaArraySvc 
+
+%> ant -Djboss.dir=c:/temp/jboss-4.0.4.GA deployJBoss
+
+6. Start both JBoss instances
+
+7. Run a CQL query test against http://localhost:18080/
+
