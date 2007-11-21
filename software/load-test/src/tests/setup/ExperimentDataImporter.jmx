@@ -312,7 +312,7 @@
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
               <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
               <stringProp name="HTTPSampler.mimetype">application/x-zip-compressed</stringProp>
-              <stringProp name="HTTPSampler.FILE_NAME">C:\ncicb_svn\caarray2\software\load-test\data\affy_magetab.zip</stringProp>
+              <stringProp name="HTTPSampler.FILE_NAME">@loadtest.data.dir.path@affy_magetab.zip</stringProp>
               <stringProp name="HTTPSampler.FILE_FIELD">upload</stringProp>
               <stringProp name="HTTPSampler.monitor">false</stringProp>
               <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
