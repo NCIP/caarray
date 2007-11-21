@@ -4,11 +4,24 @@
          This is the build.xml run by AntInstaller for caArray 2 installation
      </description>
 
+    <property name="jboss.home" value="${temp.dir}/jboss-4.0.5.GA" />
+	<property name="lib.dir" value="C:/dev/caarray2/software/lib" />
+	<property name="caarray.ear" value="${temp.dir}/ear/caarray.ear" />
+	<property name="jboss.server.name" value="default" />
+	<property name="jboss.server.hostname" value="localhost" />
+	<property name="mail.smtp.host" value="mailfwd.nih.gov" />
+	<property name="mail.smtp.port" value="25" />
+	<property name="jboss.deploy.dir" value="${temp.dir}/jboss-4.0.5.GA/server/default/deploy" />
+	<property name="mysql.datasource.file" value="caarray-mysql-ds.xml" />
+	<property name="resource.dir" value="C:/dev/caarray2/software/build/resources" />
+	<property name="build.dir" value="C:/dev/caarray2/software/build" />
+	<property name="clm.jar" value="${lib.dir}/clm.jar" />
+	<property name="jboss.lib.dir" value="${jboss.home}/server/${jboss.server.name}/lib" />
+	<property name="jboss.server.jndi.port" value="1099" />	
+
 	<tstamp>
 		<format property="touch.time" pattern="yyyy-MM-dd-HH-mm" />
 	</tstamp>
-
-    <filterset id="caarray.filterset" onmissingfiltersfile="warn">
 
 	<!-- this is required to pick up the properties generated during the install pages -->
 	<property file="${basedir}/ant.install.properties" />
@@ -30,7 +43,6 @@
 
 		<unzip dest="${temp.dir}" overwrite="true" src="${basedir}/installpack.zip" />
 		<unzip dest="${temp.dir}" overwrite="true" src="${temp.dir}/jboss-bin/jboss-4.0.5.GA.zip" />
-		
 		<copy file="${temp.dir}/ear/caarray.ear" todir="${temp.dir}/jboss-4.0.5.GA/server/default/deploy" />
 		<copy file="${temp.dir}/config/caarray-mysql-ds.xml" todir="${temp.dir}/jboss-4.0.5.GA/server/default/deploy" />
 		<copy file="${temp.dir}/jars/mysql-connector-java-5.0.5-bin.jar" todir="${temp.dir}/jboss-4.0.5.GA/server/default/lib" />	
@@ -63,23 +75,16 @@
 	</target>
 
   <target name="deploy:caarray.ear">
-    <property name="jboss.home" value="${temp.dir}/jboss-4.0.5.GA" />
-	<property name="lib.dir" value="C:\dev\caarray2\software\lib" />
-	<property name="caarray.ear" value="${temp.dir}/ear/caarray.ear" />
-	<property name="jboss.server.name" value="localhost" />
-	<property name="mail.smtp.host" value="mailfwd.nih.gov" />
-	<property name="mail.smtp.port" value="25" />
-	<property name="jboss.deploy.dir" value="${temp.dir}/jboss-4.0.5.GA/server/default/deploy" />
-	<property name="mysql.datasource.file" value="caarray-mysql-ds.xml" />
-	<property name="resource.dir" value="C:/dev/caarray2/software/build/resources" />
-	<property name="build.dir" value="C:/dev/caarray2/software/build" />
-	<property name="clm.jar" value="${lib.dir}/clm.jar" />
-	<property name="jboss.lib.dir" value="${jboss.home}/server/${jboss.server.name}/lib" />
+
 
 	<antcall target="deploy:stop-jboss"/>
 
 	<copy file="${resource.dir}/deploy/${mysql.datasource.file}" todir="${jboss.deploy.dir}" overwrite="true">
-      <filterset refid="caarray.filterset" />
+      <filterset id="caarray.filterset" onmissingfiltersfile="warn">
+	    <filtersfile file="${build.dir}/default.properties" />
+		<filtersfile file="${build.dir}/local.properties" />
+		<filtersfile file="C:/dev/caarray2/software/build/DEV.properties" />
+      </filterset>
     </copy>
     <copy file="${clm.jar}" todir="${jboss.lib.dir}" overwrite="true" />
     <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
@@ -152,14 +157,6 @@
             </sequential>
         </for>
     </target>
-
-
-
-
-
-
-
-
 
 	<target name="cleanuptarget" />
 
