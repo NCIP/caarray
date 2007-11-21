@@ -6,6 +6,7 @@
 
 	<property name="installer.basedir" value="${basedir}/installer" />
 	<property name="target.dir" value="${installer.basedir}/target" />
+	<property name="tools.dir" value="${installer.basedir}/tools" />
 	<property name="installer.dist.dir" value="${target.dir}/dist" />
 	<property name="installer.dist.dir.temp" value="${installer.dist.dir}/temp" />
 	<property name="installer.build.dir" value="${target.dir}/build" />
@@ -51,7 +52,7 @@
 	</target>
 
 	<target name="_check-version">
-	    <fail unless="antcontrib.jar.present" message="${antcontrib.jar} is not present in the ${lib.dir}" />
+		<fail unless="antcontrib.jar.present" message="${antcontrib.jar} is not present in the ${lib.dir}" />
 		<condition property="antlib.missing">
 			<not>
 				<available file="antlib${ant.lib.version}" />
@@ -60,7 +61,7 @@
 	</target>
 
 	<target name="selfextract" depends="clean, _set-version, build, prepare">
-		<echo message="Building caarray2-installer.jar..." />		
+		<echo message="Building caarray2-installer.jar..." />
 		<mkdir dir="${target.dir}" />
 		<taskdef name="installer" classname="org.tp23.antinstaller.taskdefs.Installer" classpathref="project.classpath" />
 
@@ -165,12 +166,22 @@
 			</fileset>
 		</copy>
 
-		<!-- Get JBoss zip 	-->
-		<mkdir dir="${installer.dist.dir.temp}/jboss-bin" />
-		<get dest="${installer.dist.dir.temp}/jboss-bin/jboss-4.0.5.GA.zip" usetimestamp="true" ignoreerrors="false" src="http://www.integratebutton.com/downloads/ncicb/jboss-4.0.5.GA.zip">
-		</get>
-		<get dest="${installer.dist.dir.temp}/jboss-bin/jems-installer-1.2.0.GA.jar" usetimestamp="true" ignoreerrors="false" src="http://www.integratebutton.com/downloads/ncicb/jems-installer-1.2.0.GA.jar">
-		</get>
+		<!-- Get/Copy JBoss zip 	-->
+		<mkdir dir="${installer.dist.dir.temp}/tools" />
+		<available file="${tools.dir}" type="dir" property="tools.dir.present"/>
+		<available file="${tools.dir}/jboss-4.0.5.GA.zip" type="file" property="local.jboss.present"/>
+		<available file="${tools.dir}/jems-installer-1.2.0.GA.jar" type="file" property="local.jems.present"/>
+		<available file="${tools.dir}/mysql-noinstall-5.0.45-win32.zip" type="file" property="local.mysql.present"/>
+
+		<antcall target="create-tools-dir" />
+		<antcall target="get-jboss-bin" />
+		<antcall target="get-jems-bin" />
+		<antcall target="get-mysql-bin" />
+
+		<copy file="${tools.dir}/jboss-4.0.5.GA.zip" todir="${installer.dist.dir.temp}/tools" />
+		<copy file="${tools.dir}/jems-installer-1.2.0.GA.jar" todir="${installer.dist.dir.temp}/tools" />
+		<copy file="${tools.dir}/mysql-noinstall-5.0.45-win32.zip" todir="${installer.dist.dir.temp}/tools" />
+
 
 		<!-- Configure JBoss MySQL datasource -->
 		<antcall target="-configure-jboss-ds" />
@@ -181,6 +192,23 @@
 			</fileset>
 		</zip>
 
+	</target>
+
+	<target name="create-tools-dir" unless="tools.dir.present">
+		<delete dir="${tools.dir}" />
+		<mkdir dir="${tools.dir}" />
+	</target>
+	
+	<target name="get-jboss-bin" unless="local.jboss.present" >
+		<get dest="${tools.dir}/jboss-4.0.5.GA.zip" usetimestamp="true" ignoreerrors="false" src="http://www.integratebutton.com/downloads/ncicb/jboss-4.0.5.GA.zip" />
+	</target>
+
+	<target name="get-jems-bin" unless="local.jems.present" >
+		<get dest="${tools.dir}/jems-installer-1.2.0.GA.jar" usetimestamp="true" ignoreerrors="false" src="http://www.integratebutton.com/downloads/ncicb/jems-installer-1.2.0.GA.jar" />
+	</target>
+
+	<target name="get-mysql-bin" unless="local.mysql.present" >
+		<get dest="${tools.dir}/mysql-noinstall-5.0.45-win32.zip" usetimestamp="true" ignoreerrors="false" src="http://mysql.mirrors.pair.com/Downloads/MySQL-5.0/mysql-noinstall-5.0.45-win32.zip" />
 	</target>
 
 	<target name="run" depends="clean, selfextract">

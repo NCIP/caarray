@@ -4,7 +4,7 @@
          This is the build.xml run by AntInstaller for caArray 2 installation
      </description>
 
-    <property name="jboss.home" value="${temp.dir}/jboss-4.0.5.GA" />
+	<property name="jboss.home" value="${temp.dir}/jboss-4.0.5.GA" />
 	<property name="lib.dir" value="C:/dev/caarray2/software/lib" />
 	<property name="caarray.ear" value="${temp.dir}/ear/caarray.ear" />
 	<property name="jboss.server.name" value="default" />
@@ -17,7 +17,7 @@
 	<property name="build.dir" value="C:/dev/caarray2/software/build" />
 	<property name="clm.jar" value="${lib.dir}/clm.jar" />
 	<property name="jboss.lib.dir" value="${jboss.home}/server/${jboss.server.name}/lib" />
-	<property name="jboss.server.jndi.port" value="1099" />	
+	<property name="jboss.server.jndi.port" value="1099" />
 
 	<tstamp>
 		<format property="touch.time" pattern="yyyy-MM-dd-HH-mm" />
@@ -25,7 +25,7 @@
 
 	<!-- this is required to pick up the properties generated during the install pages -->
 	<property file="${basedir}/ant.install.properties" />
-	
+
 	<target name="auto-update">
 		<echoproperties />
 		<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
@@ -42,121 +42,122 @@
 		<echo />
 
 		<unzip dest="${temp.dir}" overwrite="true" src="${basedir}/installpack.zip" />
-		<unzip dest="${temp.dir}" overwrite="true" src="${temp.dir}/jboss-bin/jboss-4.0.5.GA.zip" />
+		<unzip dest="${temp.dir}" overwrite="true" src="${temp.dir}/tools/jboss-4.0.5.GA.zip" />
+		<unzip dest="${temp.dir}" overwrite="true" src="${temp.dir}/tools/mysql-noinstall-5.0.45-win32.zip" />
 		<copy file="${temp.dir}/ear/caarray.ear" todir="${temp.dir}/jboss-4.0.5.GA/server/default/deploy" />
 		<copy file="${temp.dir}/config/caarray-mysql-ds.xml" todir="${temp.dir}/jboss-4.0.5.GA/server/default/deploy" />
-		<copy file="${temp.dir}/jars/mysql-connector-java-5.0.5-bin.jar" todir="${temp.dir}/jboss-4.0.5.GA/server/default/lib" />	
-        <antcall target="deploy:caarray.ear"/>		
-	</target>	
+		<copy file="${temp.dir}/jars/mysql-connector-java-5.0.5-bin.jar" todir="${temp.dir}/jboss-4.0.5.GA/server/default/lib" />
+		<antcall target="deploy:caarray.ear" />
+	</target>
 
 	<target name="start-jboss">
-	  <exec executable="cmd" dir="${temp.dir}/jboss-4.0.5.GA/bin" spawn="true">
-        <arg line="/c run.bat" />
-      </exec>
-	  <sleep seconds="20" />
+		<exec executable="cmd" dir="${temp.dir}/jboss-4.0.5.GA/bin" spawn="true">
+			<arg line="/c run.bat" />
+		</exec>
+		<sleep seconds="20" />
 	</target>
 
-    <target name="stop-jboss" description="Stop JBoss container">
-	    <echo> Stopping JBoss from location ${temp.dir}/jboss-4.0.5.GA/bin ...</echo>
-          <java classname="org.jboss.Shutdown" fork="true" spawn="false">
-            <arg line="-s localhost:1099 -S" />
-            <classpath>
-                <pathelement location="${temp.dir}/jboss-4.0.5.GA/bin/shutdown.jar" />
-            </classpath>
-          </java>
-		  <sleep seconds="30" />
-    </target>
+	<target name="stop-jboss" description="Stop JBoss container">
+		<echo> Stopping JBoss from location ${temp.dir}/jboss-4.0.5.GA/bin ...</echo>
+		<java classname="org.jboss.Shutdown" fork="true" spawn="false">
+			<arg line="-s localhost:1099 -S" />
+			<classpath>
+				<pathelement location="${temp.dir}/jboss-4.0.5.GA/bin/shutdown.jar" />
+			</classpath>
+		</java>
+		<sleep seconds="30" />
+	</target>
 
 	<target name="install-jems">
-      <exec executable="cmd" dir="${temp.dir}/jboss-bin" spawn="true">
-        <arg line="/c java -jar jems-installer-1.2.0.GA.jar -installGroup default installpath=${temp.dir}/jboss-4.0.5.GA" />
-      </exec>	  
-	  <sleep seconds="20" />
+		<exec executable="cmd" dir="${temp.dir}/tools" spawn="true">
+			<arg line="/c java -jar jems-installer-1.2.0.GA.jar -installGroup default installpath=${temp.dir}/jboss-4.0.5.GA" />
+		</exec>
+		<sleep seconds="20" />
 	</target>
 
-  <target name="deploy:caarray.ear">
+	<target name="deploy:caarray.ear">
 
 
-	<antcall target="deploy:stop-jboss"/>
+		<antcall target="deploy:stop-jboss" />
 
-	<copy file="${resource.dir}/deploy/${mysql.datasource.file}" todir="${jboss.deploy.dir}" overwrite="true">
-      <filterset id="caarray.filterset" onmissingfiltersfile="warn">
-	    <filtersfile file="${build.dir}/default.properties" />
-		<filtersfile file="${build.dir}/local.properties" />
-		<filtersfile file="C:/dev/caarray2/software/build/DEV.properties" />
-      </filterset>
-    </copy>
-    <copy file="${clm.jar}" todir="${jboss.lib.dir}" overwrite="true" />
-    <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
-    <copy file="${build.dir}/mail-service.xml" todir="${jboss.deploy.dir}" />
-    <replace file="${jboss.deploy.dir}/mail-service.xml">
-      <replacefilter token="@SMTPHOST@" value="${mail.smtp.host}" />
-      <replacefilter token="@SMTPPORT@" value="${mail.smtp.port}" />
-    </replace>
-    <antcall target="deploy:start-jboss"/>
-	<antcall target="install-jems"/>	
-  </target>
+		<copy file="${resource.dir}/deploy/${mysql.datasource.file}" todir="${jboss.deploy.dir}" overwrite="true">
+			<filterset id="caarray.filterset" onmissingfiltersfile="warn">
+				<filtersfile file="${build.dir}/default.properties" />
+				<filtersfile file="${build.dir}/local.properties" />
+				<filtersfile file="C:/dev/caarray2/software/build/DEV.properties" />
+			</filterset>
+		</copy>
+		<copy file="${clm.jar}" todir="${jboss.lib.dir}" overwrite="true" />
+		<copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
+		<copy file="${build.dir}/mail-service.xml" todir="${jboss.deploy.dir}" />
+		<replace file="${jboss.deploy.dir}/mail-service.xml">
+			<replacefilter token="@SMTPHOST@" value="${mail.smtp.host}" />
+			<replacefilter token="@SMTPPORT@" value="${mail.smtp.port}" />
+		</replace>
+		<antcall target="deploy:start-jboss" />
+		<antcall target="install-jems" />
+	</target>
 
-  <target name="undeploy" description="Undeploys the application from JBoss" >
-    <delete file="${jboss.deploy.dir}/${mysql.datasource.file}" />
-    <delete file="${jboss.deploy.dir}/caarray.ear" />
-    <delete file="${jboss.deploy.dir}/mail-service.xml" />
-  </target>
+	<target name="undeploy" description="Undeploys the application from JBoss">
+		<delete file="${jboss.deploy.dir}/${mysql.datasource.file}" />
+		<delete file="${jboss.deploy.dir}/caarray.ear" />
+		<delete file="${jboss.deploy.dir}/mail-service.xml" />
+	</target>
 
-    <target name="deploy:deploy-and-wait">
-        <sleep seconds="5" />
-        <waitfor maxwait="60" maxwaitunit="second" checkevery="5" checkeveryunit="second">
-            <http url="http://${jboss.server.hostname}:${jboss.server.port}/caarray" />
-        </waitfor>
-    </target>
+	<target name="deploy:deploy-and-wait">
+		<sleep seconds="5" />
+		<waitfor maxwait="60" maxwaitunit="second" checkevery="5" checkeveryunit="second">
+			<http url="http://${jboss.server.hostname}:${jboss.server.port}/caarray" />
+		</waitfor>
+	</target>
 
-    <target name="deploy:stop-jboss">
-        <java classname="org.jboss.Shutdown" fork="true" spawn="false">
-            <arg line="-s ${jboss.server.hostname}:${jboss.server.jndi.port} -S" />
-            <classpath>
-                <pathelement location="${jboss.home}/bin/shutdown.jar" />
-            </classpath>
-        </java>
-    </target>
+	<target name="deploy:stop-jboss">
+		<java classname="org.jboss.Shutdown" fork="true" spawn="false">
+			<arg line="-s ${jboss.server.hostname}:${jboss.server.jndi.port} -S" />
+			<classpath>
+				<pathelement location="${jboss.home}/bin/shutdown.jar" />
+			</classpath>
+		</java>
+	</target>
 
-    <target name="deploy:start-jboss" depends="deploy:check-if-jboss-is-running" unless="jboss.running">
-        <exec executable="cmd" dir="${jboss.home}/bin" spawn="true">
-            <env key="NOPAUSE" value="true" />
-            <arg line="/c run.bat" />
-        </exec>
-    </target>
+	<target name="deploy:start-jboss" depends="deploy:check-if-jboss-is-running" unless="jboss.running">
+		<exec executable="cmd" dir="${jboss.home}/bin" spawn="true">
+			<env key="NOPAUSE" value="true" />
+			<arg line="/c run.bat" />
+		</exec>
+	</target>
 
-    <target name="deploy:check-if-jboss-is-running">
-        <condition property="jboss.running">
-            <socket port="8080" server="localhost" />
-        </condition>
-    </target>
+	<target name="deploy:check-if-jboss-is-running">
+		<condition property="jboss.running">
+			<socket port="8080" server="localhost" />
+		</condition>
+	</target>
 
-    <target name="deploy:copy-jsp" description="Copies the jsp's over to the unpacked war directory in jboss">
-      <property name="caarray-war.dir" value="C:/dev/caarray2/software/caarray.war" />
-      <property name="caarray-war.webapp.dir" value="${caarray-war.dir}/src/main/webapp" />
-        <for param="toDir">
-            <path>
-                <dirset dir="${jboss.deploy.dir}/../tmp/deploy" includes="tmp*caarray.ear-contents/caarray-exp.war" />
-            </path>
-            <sequential>
-                <copy todir="@{toDir}">
-                    <fileset dir="${caarray-war.webapp.dir}">
-                        <include name="**/*.jsp" />
-                        <include name="**/*.jspf" />
-                        <include name="**/*.css" />
-                        <include name="**/*.js" />
-                        <include name="**/*.jpg" />
-                        <include name="**/*.gif" />
-                        <include name="**/*.png" />
-                        <include name="**/*.faces" />
-                        <include name="**/*.tag" />
-                        <include name="**/*.tagf" />
-                    </fileset>
-                </copy>
-            </sequential>
-        </for>
-    </target>
+	<target name="deploy:copy-jsp" description="Copies the jsp's over to the unpacked war directory in jboss">
+		<property name="caarray-war.dir" value="C:/dev/caarray2/software/caarray.war" />
+		<property name="caarray-war.webapp.dir" value="${caarray-war.dir}/src/main/webapp" />
+		<for param="toDir">
+			<path>
+				<dirset dir="${jboss.deploy.dir}/../tmp/deploy" includes="tmp*caarray.ear-contents/caarray-exp.war" />
+			</path>
+			<sequential>
+				<copy todir="@{toDir}">
+					<fileset dir="${caarray-war.webapp.dir}">
+						<include name="**/*.jsp" />
+						<include name="**/*.jspf" />
+						<include name="**/*.css" />
+						<include name="**/*.js" />
+						<include name="**/*.jpg" />
+						<include name="**/*.gif" />
+						<include name="**/*.png" />
+						<include name="**/*.faces" />
+						<include name="**/*.tag" />
+						<include name="**/*.tagf" />
+					</fileset>
+				</copy>
+			</sequential>
+		</for>
+	</target>
 
 	<target name="cleanuptarget" />
 
