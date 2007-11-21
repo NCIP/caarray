@@ -110,10 +110,7 @@ import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
-import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
-import com.opensymphony.xwork2.validator.annotations.RegexFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
-import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
  * @author John Hedden
@@ -201,22 +198,6 @@ public class RegistrationAction extends ActionSupport implements Preparable {
      * @return the directive for the next action / page to be directed to
      * @throws CSException on CSM error
      */
-    @Validations(
-            fieldExpressions = {@FieldExpressionValidator(fieldName = "passwordConfirm",
-                                    expression = "password == passwordConfirm",
-                                    key = "passwordConfirmation.mustBeEqual",
-                                    message = "") },
-            regexFields = {@RegexFieldValidator(fieldName = "password",
-                                                expression = "(?=^.{7,30}$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])"
-                                                    + "(?=.*[!@#$%^&amp;*()_+}{&quot;&quot;:;'?/&gt;.&lt;,]).*$",
-                                                key = "validator.pattern",
-                                                message = ""),
-                           @RegexFieldValidator(fieldName = "passwordConfirm",
-                                                expression = "(?=^.{7,30}$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])"
-                                                    + "(?=.*[!@#$%^&amp;*()_+}{&quot;&quot;:;'?/&gt;.&lt;,]).*$",
-                                                key = "validator.pattern",
-                                                message = "") }
-    )
     public String saveAuthenticate() throws CSException {
 
         if (getLdapInstall().equalsIgnoreCase("true")) {

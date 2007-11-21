@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.util.Collection;
 import java.util.List;
@@ -94,6 +95,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
  * Implementation of the GenericDataService.
@@ -104,13 +106,18 @@ import org.apache.commons.lang.StringUtils;
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class GenericDataServiceBean implements GenericDataService {
 
+    private static final Logger LOG = Logger.getLogger(GenericDataServiceBean.class);
+
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
     /**
      * {@inheritDoc}
      */
     public <T extends PersistentObject> T retrieveEnity(Class<T> entityClass, Long entityId) {
-        return this.daoFactory.getSearchDao().retrieve(entityClass, entityId);
+        LogUtil.logSubsystemEntry(LOG, entityClass, entityId);
+        T result = this.daoFactory.getSearchDao().retrieve(entityClass, entityId);
+        LogUtil.logSubsystemExit(LOG);
+        return result;
     }
 
     /**

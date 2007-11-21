@@ -126,13 +126,13 @@ public final class EmailHelper {
         String subject = null;
         String from = null;
 
-        String mailBody = "Dear CBIIT_Customer\n"
-            + "Thank you for your submission concerning caArray registration request.  It has\n"
+        String mailBody = "Dear NCICB User\n"
+            + "Thank you for your submission concerning caArray registration request.  It has "
             + "been logged in our SupportWizard database with an ID of " + registrationRequest.getLoginName() + ".\n"
             + "Your questions and suggestions are very important to us. You will receive a followup call or "
             + "email shortly.\n"
             + "Thank you,\n"
-            + "CBIIT Application Support Group";
+            + "NCICB Application Support Group";
 
         try {
             subject = getRegistrationProperties().get("subject");
