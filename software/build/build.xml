@@ -182,6 +182,7 @@
     <property name="jboss.deploy.dir" value="${jboss.home}/server/${jboss.server.name}/deploy" />
     <property name="jboss.lib.dir" value="${jboss.home}/server/${jboss.server.name}/lib" />
     <property name="mysql.datasource.file" value="caarray-mysql-ds.xml" />
+    <property name="jboss-mail-service.file" value="mail-service.xml" />
 
     <filterset id="caarray.filterset" onmissingfiltersfile="warn">
     <filtersfile file="${build.dir}/default.properties" />
@@ -1065,11 +1066,11 @@
         </copy>
         <copy file="${clm.jar}" todir="${jboss.lib.dir}" overwrite="true" />
         <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
-      <copy file="${build.dir}/mail-service.xml" todir="${jboss.deploy.dir}" />
-      <replace file="${jboss.deploy.dir}/mail-service.xml">
-           <replacefilter token="@SMTPHOST@" value="${mail.smtp.host}" />
-             <replacefilter token="@SMTPPORT@" value="${mail.smtp.port}" />
-      </replace>
+		<copy file="${resource.dir}/deploy/${jboss-mail-service.file}" todir="${jboss.deploy.dir}" />
+		<replace file="${jboss.deploy.dir}/${jboss-mail-service.file}">
+			<replacefilter token="@SMTPHOST@" value="${mail.smtp.host}" />
+			<replacefilter token="@SMTPPORT@" value="${mail.smtp.port}" />
+		</replace>
     </target>
 
     <target name="deploy:caarray-svc" depends="build:caarray-svc,prepare:create-local.properties">
@@ -1079,7 +1080,7 @@
     <target name="undeploy" description="Undeploys the application from JBoss" >
         <delete file="${jboss.deploy.dir}/${mysql.datasource.file}" />
         <delete file="${jboss.deploy.dir}/caarray.ear" />
-      <delete file="${jboss.deploy.dir}/mail-service.xml" />
+        <delete file="${jboss.deploy.dir}/mail-service.xml" />
     </target>
 
     <target name="deploy:deploy-and-wait" depends="deploy">
@@ -1215,17 +1216,34 @@
 
     <target name="remote-jboss:configure-jboss-ds">
         <echo message="Configuring caarray-mysql database..." />
+		<mkdir dir="${target.dir}"/>
+    	<copy todir="${target.dir}/deploy/" file="${resource.dir}/deploy/${mysql.datasource.file}"/>
         <taskdef name="xmlconfig" classname="com.xmlconfig.anttask.XmlConfig" classpathref="project.classpath" />
-        <xmlconfig in="${resource.dir}/deploy/${mysql.datasource.file}" verbose="false">
+        <xmlconfig in="${target.dir}/deploy/${mysql.datasource.file}" verbose="false">
             <update path="//datasources/local-tx-datasource/connection-url" value="jdbc:mysql://${database.server}:${database.port}/${database.name}" />
             <update path="//datasources/local-tx-datasource/user-name" value="${database.user}" />
             <update path="//datasources/local-tx-datasource/password" value="${database.password}" />
         </xmlconfig>
     </target>
 
+    <target name="remote-jboss:configure-jboss-mailservice">
+        <echo message="Configuring jboss mail service..." />
+		<mkdir dir="${target.dir}"/>
+    	<copy todir="${target.dir}/deploy/" file="${resource.dir}/deploy/${jboss-mail-service.file}"/>
+		<replace file="${target.dir}/deploy/${jboss-mail-service.file}">
+			<replacefilter token="@SMTPHOST@" value="${mail.smtp.host}" />
+			<replacefilter token="@SMTPPORT@" value="${mail.smtp.port}" />
+		</replace>
+    </target>
+
     <target name="remote-jboss:copy-jboss-config">
         <echo message="Copying caarray-mysql configuration to jboss server at ${ssh.server.hostname}..." />
-        <scp file="${resource.dir}/deploy/${mysql.datasource.file}" keyfile="${ssh.key.file}" passphrase="" trust="true" verbose="true" todir="${ssh.server.username}@${ssh.server.hostname}:${jboss.home}/deploy" />
+        <scp file="${target.dir}/deploy/${mysql.datasource.file}" keyfile="${ssh.key.file}" passphrase="" trust="true" verbose="true" todir="${ssh.server.username}@${ssh.server.hostname}:${jboss.home}/deploy" />
+    </target>
+
+    <target name="remote-jboss:copy-jboss-mailservice">
+        <echo message="Copying mail service configuration to jboss server at ${ssh.server.hostname}..." />
+        <scp file="${target.dir}/deploy/${jboss-mail-service.file}" keyfile="${ssh.key.file}" passphrase="" trust="true" verbose="true" todir="${ssh.server.username}@${ssh.server.hostname}:${jboss.home}/deploy" />
     </target>
 
     <target name="remote-jboss:copy-clm-jar">
@@ -1245,16 +1263,18 @@
     </target>
 
     <target name="remote-jboss:undeploy-caarray">
-        <echo message="Undeploying caarray EAR to jboss server at ${ssh.server.hostname}..." />
-        <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" verbose="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" command="rm -rf ${jboss.home}/deploy/caarray.ear ${jboss.home}/deploy/${mysql.datasource.file}" />
+        <echo message="Undeploying caarray EAR, datasource and mail service config from jboss server at ${ssh.server.hostname}..." />
+        <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" verbose="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" command="rm -rf ${jboss.home}/deploy/caarray.ear ${jboss.home}/deploy/${mysql.datasource.file} ${jboss.home}/deploy/${jboss-mail-service.file}" />
     </target>
 
     <target name="remote-jboss:deploy" unless="nodeploy">
         <antcall target="remote-jboss:stop" />
         <antcall target="remote-jboss:undeploy-caarray" />
         <antcall target="remote-jboss:configure-jboss-ds" />
+        <antcall target="remote-jboss:configure-jboss-mailservice" />
         <antcall target="remote-jboss:deploy-caarray" />
         <antcall target="remote-jboss:copy-jboss-config" />
+        <antcall target="remote-jboss:copy-jboss-mailservice" />
         <antcall target="remote-jboss:copy-clm-jar" />
         <antcall target="remote-jboss:start" />
     </target>
