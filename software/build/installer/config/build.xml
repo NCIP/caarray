@@ -52,24 +52,6 @@
 		<antcall target="deploy:caarray.ear" />
 	</target>
 
-	<target name="start-jboss">
-		<exec executable="cmd" dir="${temp.dir}/jboss-4.0.5.GA/bin" spawn="true">
-			<arg line="/c run.bat" />
-		</exec>
-		<sleep seconds="20" />
-	</target>
-
-	<target name="stop-jboss" description="Stop JBoss container">
-		<echo> Stopping JBoss from location ${temp.dir}/jboss-4.0.5.GA/bin ...</echo>
-		<java classname="org.jboss.Shutdown" fork="true" spawn="false">
-			<arg line="-s localhost:1099 -S" />
-			<classpath>
-				<pathelement location="${temp.dir}/jboss-4.0.5.GA/bin/shutdown.jar" />
-			</classpath>
-		</java>
-		<sleep seconds="30" />
-	</target>
-
 	<target name="install-jems">
 		<exec executable="cmd" dir="${temp.dir}/tools" spawn="true">
 			<arg line="/c java -jar jems-installer-1.2.0.GA.jar -installGroup default installpath=${temp.dir}/jboss-4.0.5.GA" />
@@ -114,7 +96,7 @@
 	</target>
 
 	<target name="deploy:stop-jboss">
-		<java classname="org.jboss.Shutdown" fork="true" spawn="false">
+		<java classname="org.jboss.Shutdown" fork="true" spawn="true">
 			<arg line="-s ${jboss.server.hostname}:${jboss.server.jndi.port} -S" />
 			<classpath>
 				<pathelement location="${jboss.home}/bin/shutdown.jar" />
