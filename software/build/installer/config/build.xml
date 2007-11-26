@@ -5,7 +5,7 @@
      </description>
 
 	<property name="jboss.home" value="${temp.dir}/jboss-4.0.5.GA" />
-	<property name="lib.dir" value="C:/dev/caarray2/software/lib" />
+	<property name="lib.dir" value="../../../lib" />
 	<property name="caarray.ear" value="${temp.dir}/ear/caarray.ear" />
 	<property name="jboss.server.name" value="default" />
 	<property name="jboss.server.hostname" value="localhost" />
@@ -13,8 +13,8 @@
 	<property name="mail.smtp.port" value="25" />
 	<property name="jboss.deploy.dir" value="${temp.dir}/jboss-4.0.5.GA/server/default/deploy" />
 	<property name="mysql.datasource.file" value="caarray-mysql-ds.xml" />
-	<property name="resource.dir" value="C:/dev/caarray2/software/build/resources" />
-	<property name="build.dir" value="C:/dev/caarray2/software/build" />
+	<property name="resource.dir" value="../../resources" />
+	<property name="build.dir" value="../.." />
 	<property name="clm.jar" value="${lib.dir}/clm.jar" />
 	<property name="jboss.lib.dir" value="${jboss.home}/server/${jboss.server.name}/lib" />
 	<property name="jboss.server.jndi.port" value="1099" />
@@ -89,7 +89,7 @@
 		</copy>
 		<copy file="${clm.jar}" todir="${jboss.lib.dir}" overwrite="true" />
 		<copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
-		<copy file="${build.dir}/mail-service.xml" todir="${jboss.deploy.dir}" />
+		<copy file="${build.dir}/resources/deploy/mail-service.xml" todir="${jboss.deploy.dir}" />
 		<replace file="${jboss.deploy.dir}/mail-service.xml">
 			<replacefilter token="@SMTPHOST@" value="${mail.smtp.host}" />
 			<replacefilter token="@SMTPPORT@" value="${mail.smtp.port}" />
