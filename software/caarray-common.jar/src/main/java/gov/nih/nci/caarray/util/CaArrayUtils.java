@@ -94,6 +94,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -178,7 +180,9 @@ public final class CaArrayUtils {
         for (Method[] m : findGettersAndSetters(val)) {
             Class<?> type = m[1].getParameterTypes()[0];
             Object param = null;
-            if (Set.class.isAssignableFrom(type)) {
+            if (SortedSet.class.isAssignableFrom(type)) {
+                param = new TreeSet<Object>();
+            } else if (Set.class.isAssignableFrom(type)) {
                 param = Collections.EMPTY_SET;
             } else if (List.class.isAssignableFrom(type)) {
                 param = Collections.EMPTY_LIST;
@@ -195,6 +199,9 @@ public final class CaArrayUtils {
             }
 
             try {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Calling method: " + m[1].getName());
+                }
                 m[1].setAccessible(true);
                 m[1].invoke(val, new Object[] {param});
             } catch (Exception e) {

@@ -97,6 +97,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.junit.Test;
 
@@ -121,6 +123,7 @@ public class UtilsTest {
         assertNotNull(b.getFoo());
         assertNull(b.getUser());
         assertEquals(3, b.getI());
+        assertTrue(b.getSortedSet().isEmpty());
     }
 
     @Test
@@ -147,7 +150,7 @@ public class UtilsTest {
         assertTrue(b.getUsers().isEmpty());
     }
 
-    public static class A implements PersistentObject {
+    public static class A implements PersistentObject, Comparable<A> {
         private static final long serialVersionUID = 1L;
         private Long id = 1L;
         private A aToo;
@@ -183,6 +186,13 @@ public class UtilsTest {
         public void setA(A a) {
             this.aToo = a;
         }
+
+        /**
+         * {@inheritDoc}
+         */
+        public int compareTo(A o) {
+            return 0;
+        }
     }
 
     public static class B extends A {
@@ -196,6 +206,7 @@ public class UtilsTest {
         private User user = new User();
         private int i = 3;
         private Set<User> users = new HashSet<User>();
+        private SortedSet<A> sortedSet = new TreeSet<A>();
 
 
         public Set<User> getUsers() {
@@ -231,6 +242,7 @@ public class UtilsTest {
             otherMap.put(1, new A());
             otherCollection.add(new A());
             users.add(new User());
+            sortedSet.add(new A());
         }
 
         /**
@@ -311,6 +323,14 @@ public class UtilsTest {
 
         public void setI(int i) {
             this.i = i;
+        }
+
+        public SortedSet<A> getSortedSet() {
+            return sortedSet;
+        }
+
+        public void setSortedSet(SortedSet<A> sortedSet) {
+            this.sortedSet = sortedSet;
         }
     }
 }
