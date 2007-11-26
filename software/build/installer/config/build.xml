@@ -13,11 +13,13 @@
 	<property name="mail.smtp.port" value="25" />
 	<property name="jboss.deploy.dir" value="${temp.dir}/jboss-4.0.5.GA/server/default/deploy" />
 	<property name="mysql.datasource.file" value="caarray-mysql-ds.xml" />
-	<property name="resource.dir" value="../../resources" />
+	<property name="resource.dir" value="../../../resources" />
 	<property name="build.dir" value="../.." />
 	<property name="clm.jar" value="${lib.dir}/clm.jar" />
 	<property name="jboss.lib.dir" value="${jboss.home}/server/${jboss.server.name}/lib" />
 	<property name="jboss.server.jndi.port" value="1099" />
+
+	<echoproperties/>
 
 	<tstamp>
 		<format property="touch.time" pattern="yyyy-MM-dd-HH-mm" />
