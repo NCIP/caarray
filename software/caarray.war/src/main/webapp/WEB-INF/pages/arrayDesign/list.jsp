@@ -19,17 +19,15 @@
                     <display:table class="searchresults" cellspacing="0" defaultsort="2" list="${arrayDesigns}"
                                    requestURI="${sortUrl}" sort="list" id="row" pagesize="20">
                         <caarray:displayTagProperties/>
-                        <display:column property="name" titleKey="arrayDesign.list.name" sortable="true" url="/protected/arrayDesign/view.action" paramId="target.id" paramProperty="id"/>
-                        <display:column property="provider.name" titleKey="arrayDesign.list.manufacturer" sortable="true"/>
-                        <display:column titleKey="arrayDesign.list.assayType">
-                            NotYetImplemented
-                        </display:column>
-                        <display:column property="version" titleKey="arrayDesign.list.versionNumber" sortable="true"/>
-                        <display:column property="technologyType.value" titleKey="arrayDesign.list.featureType" sortable="true"/>
-                        <display:column property="organism.commonName" titleKey="arrayDesign.list.organism" sortable="true"/>
+                        <display:column property="name" titleKey="arrayDesign.name" sortable="true" url="/protected/arrayDesign/view.action" paramId="arrayDesign.id" paramProperty="id"/>
+                        <display:column property="provider.name" titleKey="arrayDesign.provider" sortable="true"/>
+                        <display:column property="assayType" titleKey="arrayDesign.assayType" sortable="true"/>
+                        <display:column property="version" titleKey="arrayDesign.version" sortable="true"/>
+                        <display:column property="technologyType.value" titleKey="arrayDesign.technologyType" sortable="true"/>
+                        <display:column property="organism.commonName" titleKey="arrayDesign.organism" sortable="true"/>
                         <display:column titleKey="button.edit" class="centered" headerClass="centered">
                             <c:url value="/protected/arrayDesign/edit.action" var="editDesignUrl">
-                                <c:param name="target.id" value="${row.id}" />
+                                <c:param name="arrayDesign.id" value="${row.id}" />
                             </c:url>
                             <a href="${editDesignUrl}"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
                         </display:column>

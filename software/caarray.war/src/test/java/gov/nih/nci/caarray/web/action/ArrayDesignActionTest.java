@@ -140,7 +140,7 @@ public class ArrayDesignActionTest {
     public void testView() throws Exception {
         setTargetIdParam();
         String result = arrayDesignAction.view();
-        ArrayDesign target = arrayDesignAction.getTarget();
+        ArrayDesign target = arrayDesignAction.getArrayDesign();
         assertNotNull(target);
         assertFalse(arrayDesignAction.isEditMode());
         assertEquals(Action.INPUT, result);
@@ -149,7 +149,7 @@ public class ArrayDesignActionTest {
     public void testEdit() throws Exception {
         setTargetIdParam();
         String result = arrayDesignAction.edit();
-        ArrayDesign target = arrayDesignAction.getTarget();
+        ArrayDesign target = arrayDesignAction.getArrayDesign();
         assertNotNull(target);
         assertTrue(arrayDesignAction.isEditMode());
         assertEquals(Action.INPUT, result);
@@ -157,7 +157,7 @@ public class ArrayDesignActionTest {
 
     @Test
     public void testSave() throws Exception {
-        arrayDesignAction.setTarget(new ArrayDesign());
+        arrayDesignAction.setArrayDesign(new ArrayDesign());
         String result = arrayDesignAction.save();
         assertEquals(Action.SUCCESS, result);
     }
@@ -165,7 +165,7 @@ public class ArrayDesignActionTest {
     private void setTargetIdParam() {
         ArrayDesign design = new ArrayDesign();
         design.setId(DESIGN_ID);
-        arrayDesignAction.setTarget(design);
+        arrayDesignAction.setArrayDesign(design);
     }
 
     private static class LocalArrayDesignServiceStub extends ArrayDesignServiceStub {

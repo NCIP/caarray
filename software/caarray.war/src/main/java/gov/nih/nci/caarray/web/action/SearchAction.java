@@ -88,6 +88,8 @@ import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,7 +132,11 @@ public class SearchAction extends ActionSupport {
      * @param keyword the keyword to set
      */
     public void setKeyword(String keyword) {
-        this.keyword = keyword;
+        try {
+            this.keyword = URLDecoder.decode(keyword, "ISO-8859-1");
+        } catch (UnsupportedEncodingException e) {
+            this.keyword = keyword;
+        }
     }
     /**
      * @return the category

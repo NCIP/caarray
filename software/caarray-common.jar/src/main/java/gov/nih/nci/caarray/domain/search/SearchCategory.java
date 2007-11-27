@@ -107,8 +107,8 @@ public enum SearchCategory implements ResourceBasedEnum {
      * Array provider.
      */
     ARRAY_PROVIDER   ("search.category.arrayProvider",
-                      new String[]{"p.experiment e", "e.arrayDesigns a"},
-                      "a.provider.name"),
+                      new String[]{"p.experiment e", "e.arrayDesigns a", "a.provider pr"},
+                      "pr.name"),
     /**
      * Array design.
      */

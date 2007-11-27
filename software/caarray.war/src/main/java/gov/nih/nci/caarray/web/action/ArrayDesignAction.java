@@ -105,9 +105,10 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
-import com.opensymphony.xwork2.validator.annotations.CustomValidator;
+import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
+import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
  * @author Winston Cheng
@@ -117,7 +118,7 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 public class ArrayDesignAction extends ActionSupport implements Preparable {
     private static final long serialVersionUID = 1L;
 
-    private ArrayDesign target;
+    private ArrayDesign arrayDesign;
     private File upload;
     private String uploadFileName;
     private String uploadContentType;
@@ -139,17 +140,16 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     }
 
     /**
-     * @return the target
+     * @return the array design
      */
-    @CustomValidator(type = "hibernate")
-    public ArrayDesign getTarget() {
-        return target;
+    public ArrayDesign getArrayDesign() {
+        return arrayDesign;
     }
     /**
-     * @param target the target to set
+     * @param arrayDesign the array design to set
      */
-    public void setTarget(ArrayDesign target) {
-        this.target = target;
+    public void setArrayDesign(ArrayDesign arrayDesign) {
+        this.arrayDesign = arrayDesign;
     }
     /**
      * @return the upload
@@ -166,7 +166,6 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     /**
      * @return the uploadFileName
      */
-    @RequiredStringValidator(message = "File Required")
     public String getUploadFileName() {
         return uploadFileName;
     }
@@ -236,8 +235,8 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     @SkipValidation
     public String edit() {
         editMode = true;
-        if (target != null && target.getId() != null) {
-            target = getArrayDesignService().getArrayDesign(target.getId());
+        if (arrayDesign != null && arrayDesign.getId() != null) {
+            arrayDesign = getArrayDesignService().getArrayDesign(arrayDesign.getId());
         }
         return Action.INPUT;
     }
@@ -249,8 +248,8 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     @SkipValidation
     public String view() {
         editMode = false;
-        if (target != null && target.getId() != null) {
-            target = getArrayDesignService().getArrayDesign(target.getId());
+        if (arrayDesign != null && arrayDesign.getId() != null) {
+            arrayDesign = getArrayDesignService().getArrayDesign(arrayDesign.getId());
         }
         return Action.INPUT;
     }
@@ -260,11 +259,23 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      * @return success
      */
     // TODO remove this when the edit block is filled in
-    @SuppressWarnings("PMD.EmptyIfStmt")
+    @SuppressWarnings({"PMD.EmptyIfStmt", "PMD.AvoidDuplicateLiterals" })
+    @Validations(
+        requiredStrings = {
+            @RequiredStringValidator(fieldName = "arrayDesign.name", key = "errors.required", message = ""),
+            @RequiredStringValidator(fieldName = "arrayDesign.version", key = "errors.required", message = ""),
+            @RequiredStringValidator(fieldName = "uploadFileName", key = "fileRequired", message = "")
+        },
+        requiredFields = {
+            @RequiredFieldValidator(fieldName = "arrayDesign.provider", key = "errors.required", message = ""),
+            @RequiredFieldValidator(fieldName = "arrayDesign.technologyType", key = "errors.required", message = ""),
+            @RequiredFieldValidator(fieldName = "arrayDesign.organism", key = "errors.required", message = "")
+        }
+    )
     public String save() {
-        if (target.getId() == null) {
+        if (arrayDesign.getId() == null) {
             CaArrayFile designFile = getFileAccessService().add(upload, uploadFileName);
-            getFileManagementService().importArrayDesignFile(target, designFile);
+            getFileManagementService().importArrayDesignFile(arrayDesign, designFile);
         } else {
             // TODO edit an existing array design
         }
