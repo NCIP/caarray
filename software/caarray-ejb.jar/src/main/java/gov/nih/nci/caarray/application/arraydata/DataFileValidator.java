@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.arraydata;
 
 import java.io.File;
 
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -98,18 +99,21 @@ final class DataFileValidator {
     private final CaArrayFile arrayDataFile;
     private final CaArrayDaoFactory daoFactory;
     private final FileAccessService fileAccessService;
+    private final ArrayDesignService arrayDesignService;
 
-    DataFileValidator(CaArrayFile arrayDataFile, CaArrayDaoFactory daoFactory, FileAccessService fileAccessService) {
+    DataFileValidator(CaArrayFile arrayDataFile, CaArrayDaoFactory daoFactory, FileAccessService fileAccessService, 
+            ArrayDesignService arrayDesignService) {
         this.arrayDataFile = arrayDataFile;
         this.daoFactory = daoFactory;
         this.fileAccessService = fileAccessService;
+        this.arrayDesignService = arrayDesignService;
     }
 
     void validate() {
         AbstractDataFileHandler handler =
             ArrayDataHandlerFactory.getInstance().getHandler(getArrayDataFile().getFileType());
         File file = getFileAccessService().getFile(arrayDataFile);
-        FileValidationResult result = handler.validate(arrayDataFile, file);
+        FileValidationResult result = handler.validate(arrayDataFile, file, arrayDesignService);
         getArrayDataFile().setValidationResult(result);
         if (result.isValid()) {
             getArrayDataFile().setFileStatus(FileStatus.VALIDATED);

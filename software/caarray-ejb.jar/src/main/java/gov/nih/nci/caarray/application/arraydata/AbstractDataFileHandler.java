@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.BooleanColumn;
@@ -115,10 +116,10 @@ abstract class AbstractDataFileHandler {
 
     abstract QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(File file);
 
-    final FileValidationResult validate(CaArrayFile caArrayFile, File file) {
+    final FileValidationResult validate(CaArrayFile caArrayFile, File file, ArrayDesignService arrayDesignService) {
         FileValidationResult result = new FileValidationResult(file);
         try {
-            validate(caArrayFile, file, result);
+            validate(caArrayFile, file, result, arrayDesignService);
         } catch (RuntimeException e) {
             getLog().error("Unexpected RuntimeException validating data file", e);
             result.addMessage(Type.ERROR, "Unexpected error validating data file: " + e.getMessage());
@@ -126,7 +127,8 @@ abstract class AbstractDataFileHandler {
         return result;
     }
 
-    abstract void validate(CaArrayFile caArrayFile, File file, FileValidationResult result);
+    abstract void validate(CaArrayFile caArrayFile, File file, FileValidationResult result, 
+            ArrayDesignService arrayDesignService);
 
 
     abstract void loadData(DataSet dataSet, List<QuantitationType> types, File file);

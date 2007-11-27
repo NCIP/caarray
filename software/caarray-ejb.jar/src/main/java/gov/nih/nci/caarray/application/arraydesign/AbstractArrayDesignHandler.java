@@ -127,6 +127,7 @@ abstract class AbstractArrayDesignHandler {
         ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.setDesignFile(getDesignFile());
         load(arrayDesign);
+        arrayDesign.setDesignDetails(getDesignDetails(arrayDesign));
         return arrayDesign;
     }
 

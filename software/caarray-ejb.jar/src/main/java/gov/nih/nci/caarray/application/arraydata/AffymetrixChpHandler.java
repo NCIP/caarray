@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.arraydata;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixExpressionChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpChpQuantitationType;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
@@ -122,6 +123,9 @@ import affymetrix.fusion.chp.FusionGenotypeProbeSetResults;
 final class AffymetrixChpHandler extends AbstractDataFileHandler {
 
     private static final Logger LOG = Logger.getLogger(AffymetrixChpHandler.class);
+    private static final String LSID_AUTHORITY = "Affymetrix.com";
+    private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
+
     private static final Map<String, AffymetrixExpressionChpQuantitationType> EXPRESSION_TYPE_MAP =
         new HashMap<String, AffymetrixExpressionChpQuantitationType>();
     private static final Map<String, AffymetrixSnpChpQuantitationType> SNP_TYPE_MAP =
@@ -310,12 +314,30 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result) {
+    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result, 
+            ArrayDesignService arrayDesignService) {
         FusionCHPLegacyData chpData = getChpData(file);
         if (chpData == null) {
             result.addMessage(Type.ERROR, "Couldn't read Affymetrix CHP file: " + file.getName());
+        } else {
+            validateAgainstDesign(chpData, result, arrayDesignService);
+        }    
+    }
+
+    private void validateAgainstDesign(FusionCHPLegacyData chpData, FileValidationResult result, 
+            ArrayDesignService arrayDesignService) {
+        validateDesignExists(chpData, result, arrayDesignService);
+    }
+
+    private void validateDesignExists(FusionCHPLegacyData chpData, FileValidationResult result, 
+            ArrayDesignService arrayDesignService) {
+        String lsidObjectId = chpData.getHeader().getChipType();
+        if (arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, lsidObjectId) == null) {
+            result.addMessage(Type.ERROR, "The system doesn't contain the required Affymetrix array design: " 
+                    + lsidObjectId);
         }
     }
+
 
     private FusionCHPLegacyData getChpData(File file) {
         return FusionCHPLegacyData.fromBase(FusionCHPDataReg.read(file.getAbsolutePath()));

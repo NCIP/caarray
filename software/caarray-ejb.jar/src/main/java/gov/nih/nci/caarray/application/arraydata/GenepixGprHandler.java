@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.application.arraydata.genepix.GenepixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
@@ -337,7 +338,8 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result) {
+    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result, 
+            ArrayDesignService arrayDesignService) {
         DelimitedFileReader reader = getReader(file);
         validateHeader(reader, result);
         if (result.isValid()) {

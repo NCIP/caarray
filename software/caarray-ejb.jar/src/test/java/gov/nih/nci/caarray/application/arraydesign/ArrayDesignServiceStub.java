@@ -133,4 +133,8 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
     public void importDesign(ArrayDesign arrayDesign) {
         // no-op
     }
+
+    public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamesapce, String lsidObjectId) {
+        return null;
+    }
 }

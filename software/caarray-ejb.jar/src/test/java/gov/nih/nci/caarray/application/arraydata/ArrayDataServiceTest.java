@@ -142,6 +142,8 @@ import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
@@ -202,7 +204,9 @@ public class ArrayDataServiceTest {
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
-        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, new ArrayDesignServiceBean());
+        ArrayDesignServiceBean arrayDesignServiceBean = new ArrayDesignServiceBean();
+        arrayDesignServiceBean.setDaoFactory(daoFactoryStub);
+        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, arrayDesignServiceBean);
         arrayDataServiceBean.setDaoFactory(daoFactoryStub);
         arrayDataService = arrayDataServiceBean;
     }
@@ -407,6 +411,7 @@ public class ArrayDataServiceTest {
         if (FileStatus.VALIDATION_ERRORS.equals(caArrayFile.getFileStatus())) {
             System.out.println(caArrayFile.getValidationResult());
         }
+        System.out.println(caArrayFile.getValidationResult());
         assertEquals(FileStatus.VALIDATED, caArrayFile.getFileStatus());
     }
 
@@ -640,7 +645,6 @@ public class ArrayDataServiceTest {
 
     private CaArrayFile getIlluminaCaArrayFile(File file) {
         return getDataCaArrayFile(file, FileType.ILLUMINA_DATA_CSV);
-
     }
 
     private CaArrayFile getDataCaArrayFile(File file, FileType type) {
@@ -664,6 +668,32 @@ public class ArrayDataServiceTest {
         @Override
         public ArrayDao getArrayDao() {
             return new ArrayDaoStub() {
+                
+                @Override
+                public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
+                    if ("Test3".equals(lsidObjectId)) {
+                        return createArrayDesign(126, 126);
+                    } else if ("HG-Focus".equals(lsidObjectId)) {
+                        return createArrayDesign(448, 448);
+                    } else {
+                        return null;
+                    }
+                }
+
+                private ArrayDesign createArrayDesign(int rows, int columns) {
+                    ArrayDesign arrayDesign = new ArrayDesign();
+                    ArrayDesignDetails details = new ArrayDesignDetails();
+                    for (int row = 0; row < rows; row++) {
+                        for (int column = 0; column < columns; column++) {
+                            Feature feature = new Feature();
+                            feature.setRow(row);
+                            feature.setColumn(column);
+                            details.getFeatures().add(feature);
+                        }
+                    }
+                    arrayDesign.setDesignDetails(details);
+                    return arrayDesign;
+                }
 
                 @Override
                 public ArrayDataType getArrayDataType(ArrayDataTypeDescriptor descriptor) {

@@ -242,6 +242,13 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
+    public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
+        return getArrayDao().getArrayDesign(lsidAuthority, lsidNamespace, lsidObjectId);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
     public List<ArrayDesign> getArrayDesigns() {
         LogUtil.logSubsystemEntry(LOG);
         List<ArrayDesign> designs = getArrayDao().getArrayDesigns();
@@ -253,7 +260,12 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         return daoFactory;
     }
 
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
+    /**
+     * Sets the DAO factory to use -- test support method.
+     * 
+     * @param daoFactory the DAO factory
+     */
+    public void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
 
@@ -269,6 +281,5 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     private FileAccessService getFileAccessService() {
         return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
     }
-
 
 }

@@ -163,4 +163,15 @@ public interface ArrayDesignService {
      * @return the List&lt;ArrayDesign&gt; of array designs
      */
     List<ArrayDesign> getArrayDesigns();
+
+    /**
+     * Retrieves an <code>ArrayDesign</code> by LSID.
+     * 
+     * @param lsidAuthority the LSID authority
+     * @param lsidNamespace the LSID namespace
+     * @param lsidObjectId the LSID object ID
+     * @return the matching design or null.
+     */
+    ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId);
+    
 }

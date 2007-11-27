@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
@@ -193,7 +194,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
     public FileValidationResult validate(CaArrayFile arrayDataFile) {
         FileAccessService fileAccessService = getFileAccessService();
         DataFileValidator dataFileValidator =
-            new DataFileValidator(arrayDataFile, getDaoFactory(), fileAccessService);
+            new DataFileValidator(arrayDataFile, getDaoFactory(), fileAccessService, getArrayDesignService());
         dataFileValidator.validate();
         fileAccessService.closeFiles();
         return arrayDataFile.getValidationResult();
@@ -209,6 +210,10 @@ public class ArrayDataServiceBean implements ArrayDataService {
 
     private FileAccessService getFileAccessService() {
         return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
+    }
+
+    private ArrayDesignService getArrayDesignService() {
+        return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
     }
 
 

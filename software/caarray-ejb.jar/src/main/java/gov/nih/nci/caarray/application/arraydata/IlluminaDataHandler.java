@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.arraydata;
 import gov.nih.nci.caarray.application.arraydata.illumina.IlluminaArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.illumina.IlluminaExpressionQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.illumina.IlluminaGenotypingQuantitationType;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
@@ -361,7 +362,8 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result) {
+    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result, 
+            ArrayDesignService arrayDesignService) {
         DelimitedFileReader reader = getReader(file);
         validateHeaders(reader, result);
         if (result.isValid()) {
