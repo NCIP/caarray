@@ -84,6 +84,9 @@ package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.BooleanColumn;
@@ -96,8 +99,10 @@ import gov.nih.nci.caarray.domain.data.ShortColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -116,6 +121,9 @@ import affymetrix.fusion.cel.FusionCELFileEntryType;
 class AffymetrixCelHandler extends AbstractDataFileHandler {
 
     private static final Logger LOG = Logger.getLogger(AffymetrixCelHandler.class);
+    private static final String LSID_AUTHORITY = "Affymetrix.com";
+    private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
+    
     private FusionCELData celData = new FusionCELData();
 
     @Override
@@ -124,7 +132,8 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result) {
+    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result, 
+            ArrayDesignService arrayDesignService) {
         String celDataFileName;
         celData.setFileName(file.getAbsolutePath());
         celDataFileName = StringUtils.defaultIfEmpty(celData.getFileName(), "<MISSING FILE NAME>");
@@ -133,23 +142,65 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
                     + celDataFileName);
         } else {
             validateHeader(result);
+            validateAgainstDesign(result, arrayDesignService);
         }
         closeCelData();
     }
 
+    private void validateAgainstDesign(FileValidationResult result, ArrayDesignService arrayDesignService) {
+        validateDesignExists(result, arrayDesignService);
+        if (result.isValid()) {
+            validateFeatures(result, arrayDesignService);
+        }
+    }
+
+    private void validateDesignExists(FileValidationResult result, ArrayDesignService arrayDesignService) {
+        if (arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, getLsidObjectId()) == null) {
+            result.addMessage(Type.ERROR, "The system doesn't contain the required Affymetrix array design: " 
+                    + getLsidObjectId());
+        }
+    }
+
+    private String getLsidObjectId() {
+        return celData.getChipType();
+    }
+
+    private void validateFeatures(FileValidationResult result, ArrayDesignService arrayDesignService) {
+        FeatureLookup featureLookup = getFeatureLookup(arrayDesignService);
+        int numberOfCells = celData.getCells();
+        for (int cellIndex = 0; cellIndex < numberOfCells; cellIndex++) {
+            int column = celData.indexToX(cellIndex);
+            int row = celData.indexToY(cellIndex);
+            if (featureLookup.getFeature(column, row) == null) {
+                result.addMessage(Type.ERROR, "The CEL file is inconsistent with the array design: "
+                        + "there is no Feature at the location (" + column + ", " + row);
+                return;
+            }
+        }
+    }
+
+    private FeatureLookup getFeatureLookup(ArrayDesignService arrayDesignService) {
+        Collection<Feature> features = getFeatures(arrayDesignService);
+        return new FeatureLookup(features);
+    }
+
+    private Collection<Feature> getFeatures(ArrayDesignService arrayDesignService) {
+        ArrayDesign arrayDesign = arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, getLsidObjectId());
+        return arrayDesign.getDesignDetails().getFeatures();
+    }
 
     private void validateHeader(FileValidationResult result) {
         if (celData.getRows() == 0) {
-            result.addMessage(ValidationMessage.Type.ERROR, "Invalid CEL file: header specified 0 rows.");
+            result.addMessage(Type.ERROR, "Invalid CEL file: header specified 0 rows.");
         }
         if (celData.getCols() == 0) {
-            result.addMessage(ValidationMessage.Type.ERROR, "Invalid CEL file: header specified 0 columns.");
+            result.addMessage(Type.ERROR, "Invalid CEL file: header specified 0 columns.");
         }
         if (celData.getCells() == 0) {
-            result.addMessage(ValidationMessage.Type.ERROR, "Invalid CEL file: header specified 0 cells.");
+            result.addMessage(Type.ERROR, "Invalid CEL file: header specified 0 cells.");
         }
         if (StringUtils.isEmpty(celData.getChipType())) {
-            result.addMessage(ValidationMessage.Type.ERROR, "Invalid CEL file: no array design type was specified.");
+            result.addMessage(Type.ERROR, "Invalid CEL file: no array design type was specified.");
         }
     }
 
