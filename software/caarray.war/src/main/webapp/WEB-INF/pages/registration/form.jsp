@@ -89,7 +89,7 @@ function authenticate() {
                 <s:textfield name="registrationRequest.organization" key="registrationRequest.organization" cssStyle="width:50%;" tabindex="10" required="true" />
                 <s:textfield name="registrationRequest.address1" key="registrationRequest.address1" cssStyle="width:50%;" tabindex="11" required="true" />
                 <s:textfield name="registrationRequest.address2" key="registrationRequest.address2" cssStyle="width:50%;" tabindex="12" />
-                <s:textfield name="registrationRequest.city" key="registrationRequest.city" cssStyle="width:50%;" tabindex="13" />
+                <s:textfield name="registrationRequest.city" key="registrationRequest.city" cssStyle="width:50%;" tabindex="13" required="true" />
                 <s:select key="registrationRequest.state"
                       name="registrationRequest.state"
                       list="stateList"
@@ -105,7 +105,7 @@ function authenticate() {
                       tabindex="14"
                       required="true"
                 />
-                <s:textfield name="registrationRequest.zip" key="registrationRequest.zip" size="20" cssStyle="width:30%;" tabindex="15" />
+                <s:textfield name="registrationRequest.zip" key="registrationRequest.zip" size="20" cssStyle="width:30%;" tabindex="15" required="true" />
                 <s:select key="registrationRequest.country"
                       name="registrationRequest.country"
                       list="countryList"
