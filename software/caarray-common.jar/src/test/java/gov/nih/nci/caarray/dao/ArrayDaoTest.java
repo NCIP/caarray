@@ -161,6 +161,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
         DUMMY_ARRAYDESIGN_1.setName("DummyTestArrayDesign1");
         DUMMY_ARRAYDESIGN_1.setVersion("2.0");
         DUMMY_ARRAYDESIGN_1.setProvider(DUMMY_ORGANIZATION);
+        DUMMY_ARRAYDESIGN_1.setLsidForEntity("authority:namespace:objectId");
         DUMMY_ARRAYDESIGN_2 = new ArrayDesign();
         DUMMY_ARRAYDESIGN_2.setName("DummyTestArrayDesign2");
         DUMMY_ARRAYDESIGN_2.setVersion("2.0");
@@ -180,6 +181,26 @@ public class ArrayDaoTest extends AbstractDaoTest {
             ArrayDesign retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getId());
             tx.commit();
             assertEquals(DUMMY_ARRAYDESIGN_1, retrievedArrayDesign);
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());
+        }
+    }
+    
+    @Test
+    public void testGetArrayDesignByLsid() {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.beginTransaction();
+            ArrayDesign retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getLsidAuthority(), 
+                    DUMMY_ARRAYDESIGN_1.getLsidNamespace(), DUMMY_ARRAYDESIGN_1.getLsidObjectId());
+            tx.commit();
+            assertEquals(DUMMY_ARRAYDESIGN_1, retrievedArrayDesign);
+            tx = HibernateUtil.beginTransaction();
+            retrievedArrayDesign = DAO_OBJECT.getArrayDesign(DUMMY_ARRAYDESIGN_1.getLsidAuthority(), 
+                    DUMMY_ARRAYDESIGN_1.getLsidNamespace(), "incorrectObjectId");
+            tx.commit();
+            assertNull(retrievedArrayDesign);
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());

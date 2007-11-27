@@ -233,4 +233,19 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     Logger getLog() {
         return LOG;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
+        Query q =            HibernateUtil.getCurrentSession().createQuery(
+                    "from " 
+                    + ArrayDesign.class.getName() 
+                    + " where lsidAuthority = :lsidAuthority and lsidNamespace = :lsidNamespace "
+                    + "and lsidObjectId = :lsidObjectId");
+        q.setString("lsidAuthority", lsidAuthority);
+        q.setString("lsidNamespace", lsidNamespace);
+        q.setString("lsidObjectId", lsidObjectId);
+        return (ArrayDesign) q.uniqueResult();
+    }
 }

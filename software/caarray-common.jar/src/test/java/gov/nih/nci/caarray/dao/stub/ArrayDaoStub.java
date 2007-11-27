@@ -170,5 +170,9 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
         return null;
     }
 
+    public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
+        return null;
+    }
+
 
 }

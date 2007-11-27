@@ -111,6 +111,16 @@ public interface ArrayDao extends CaArrayDao {
     ArrayDesign getArrayDesign(long id);
 
     /**
+     * Returns the entity matching the LSID given.
+     *
+     * @param lsidAuthority the LSID authority
+     * @param lsidNamespace the LSID namespace
+     * @param lsidObjectId the LSID object ID
+     * @return the matching design or null.
+     */
+    ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId);
+
+    /**
      * Returns the list of all ArrayDesigns.
      * @return the List&lt;ArrayDesign&gt; of the array designs
      */
