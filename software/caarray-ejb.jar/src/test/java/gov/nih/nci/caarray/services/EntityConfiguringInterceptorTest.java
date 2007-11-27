@@ -82,13 +82,12 @@
  */
 package gov.nih.nci.caarray.services;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -123,9 +122,8 @@ public class EntityConfiguringInterceptorTest {
     }
 
     private void checkEntity(TestEntity entity) {
-        assertTrue(entity.attributeRetrieved);
-        assertTrue(entity.collectionRetrieved);
         assertNull(entity.a.getB());
+        assertNotNull(entity.a.getId());
     }
 
     private static class TestInvocationContext implements InvocationContext {
@@ -160,19 +158,7 @@ public class EntityConfiguringInterceptorTest {
 
     public static class TestEntity {
 
-        boolean attributeRetrieved;
-        boolean collectionRetrieved;
         A a = new A();
-
-        public Object getAttribute() {
-            this.attributeRetrieved = true;
-            return null;
-        }
-
-        public Collection<?> getCollection() {
-            this.collectionRetrieved = true;
-            return null;
-        }
 
         public A getA() {
             return a;
@@ -187,10 +173,16 @@ public class EntityConfiguringInterceptorTest {
     public static class A implements PersistentObject {
 
         private static final long serialVersionUID = 1L;
-        public B b = new B();
+        private B b = new B();
+        private Long id = 1L;
+
 
         public Long getId() {
-            return null;
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
         }
 
         public B getB() {
@@ -210,7 +202,6 @@ public class EntityConfiguringInterceptorTest {
         public Long getId() {
             return null;
         }
-
     }
 
 }

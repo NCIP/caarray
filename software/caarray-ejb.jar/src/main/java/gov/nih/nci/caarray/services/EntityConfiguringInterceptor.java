@@ -83,20 +83,18 @@
 package gov.nih.nci.caarray.services;
 
 import gov.nih.nci.caarray.util.CaArrayUtils;
+import gov.nih.nci.caarray.util.HibernateUtil;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
-import java.util.Map;
 
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.hibernate.Hibernate;
-
 /**
- * Ensures that retrieved entitites are ready for transport, making sure that there are
- * no lazy-load exceptions for first-level associations.
+ * Ensures that retrieved entitites are ready for transport, including correct
+ * 'cutting' of object graphs.
+ *
+ * @see CaArrayUtils#makeChildrenLeaves(Object)
  */
 public class EntityConfiguringInterceptor {
 
@@ -110,28 +108,29 @@ public class EntityConfiguringInterceptor {
     @AroundInvoke
     @SuppressWarnings("PMD.SignatureDeclareThrowsException") // method invocation wrapper requires throws Exception
     public Object prepareReturnValue(InvocationContext invContext) throws Exception {
+        // flush any changes made (ie, DataSet population) to this point.  We're going to modify
+        // hibernate objects in ways we /don't/ want flushed in prepareEntity
+        HibernateUtil.getCurrentSession().flush();
+
         Object returnValue = invContext.proceed();
         if (returnValue instanceof Collection) {
             prepareEntities((Collection<?>) returnValue);
         } else {
             prepareEntity(returnValue);
         }
+
+        // keep hibernate from performing write behind of all the cutting we just did
+        HibernateUtil.getCurrentSession().clear();
         return returnValue;
     }
 
-    private void prepareEntities(Collection<?> collection)
-    throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    private void prepareEntities(Collection<?> collection) {
         for (Object entity : collection) {
             prepareEntity(entity);
         }
     }
 
-    private void prepareEntity(Object entity)
-    throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        Map<?, ?> properties = BeanUtils.describe(entity);
-        for (Object propertyName : properties.keySet()) {
-            Hibernate.initialize(properties.get(propertyName));
-        }
+    private void prepareEntity(Object entity) {
         CaArrayUtils.makeChildrenLeaves(entity);
     }
 

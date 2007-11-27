@@ -175,8 +175,6 @@ public final class CaArrayUtils {
             return;
         }
 
-        HibernateUtil.getCurrentSession().evict(val);
-
         for (Method[] m : findGettersAndSetters(val)) {
             Class<?> type = m[1].getParameterTypes()[0];
             Object param = null;
@@ -217,7 +215,7 @@ public final class CaArrayUtils {
     }
 
     /**
-     * Calls the makeLeaf method on all bean properties for T.  This has the effect of making
+     * Calls the makeLeaf method on all bean properties for val.  This has the effect of making
      * val the root of an object graph with exactly one level of domain objects.  Also makes all
      * non-serializable properties null.
      *
@@ -228,8 +226,6 @@ public final class CaArrayUtils {
         if (val == null) {
             return;
         }
-
-        HibernateUtil.getCurrentSession().evict(val);
 
         for (Method[] m : findGettersAndSetters(val)) {
             try {
