@@ -314,26 +314,26 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result, 
+    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result,
             ArrayDesignService arrayDesignService) {
         FusionCHPLegacyData chpData = getChpData(file);
         if (chpData == null) {
             result.addMessage(Type.ERROR, "Couldn't read Affymetrix CHP file: " + file.getName());
-        } else {
-            validateAgainstDesign(chpData, result, arrayDesignService);
-        }    
+//        } else {
+//            validateAgainstDesign(chpData, result, arrayDesignService);
+        }
     }
 
-    private void validateAgainstDesign(FusionCHPLegacyData chpData, FileValidationResult result, 
+    void validateAgainstDesign(FusionCHPLegacyData chpData, FileValidationResult result,
             ArrayDesignService arrayDesignService) {
         validateDesignExists(chpData, result, arrayDesignService);
     }
 
-    private void validateDesignExists(FusionCHPLegacyData chpData, FileValidationResult result, 
+    private void validateDesignExists(FusionCHPLegacyData chpData, FileValidationResult result,
             ArrayDesignService arrayDesignService) {
         String lsidObjectId = chpData.getHeader().getChipType();
         if (arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, lsidObjectId) == null) {
-            result.addMessage(Type.ERROR, "The system doesn't contain the required Affymetrix array design: " 
+            result.addMessage(Type.ERROR, "The system doesn't contain the required Affymetrix array design: "
                     + lsidObjectId);
         }
     }

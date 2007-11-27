@@ -123,7 +123,7 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
     private static final Logger LOG = Logger.getLogger(AffymetrixCelHandler.class);
     private static final String LSID_AUTHORITY = "Affymetrix.com";
     private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
-    
+
     private FusionCELData celData = new FusionCELData();
 
     @Override
@@ -132,7 +132,7 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result, 
+    void validate(CaArrayFile caArrayFile, File file, FileValidationResult result,
             ArrayDesignService arrayDesignService) {
         String celDataFileName;
         celData.setFileName(file.getAbsolutePath());
@@ -142,12 +142,12 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
                     + celDataFileName);
         } else {
             validateHeader(result);
-            validateAgainstDesign(result, arrayDesignService);
+            //validateAgainstDesign(result, arrayDesignService);
         }
         closeCelData();
     }
 
-    private void validateAgainstDesign(FileValidationResult result, ArrayDesignService arrayDesignService) {
+    void validateAgainstDesign(FileValidationResult result, ArrayDesignService arrayDesignService) {
         validateDesignExists(result, arrayDesignService);
         if (result.isValid()) {
             validateFeatures(result, arrayDesignService);
@@ -156,7 +156,7 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
 
     private void validateDesignExists(FileValidationResult result, ArrayDesignService arrayDesignService) {
         if (arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, getLsidObjectId()) == null) {
-            result.addMessage(Type.ERROR, "The system doesn't contain the required Affymetrix array design: " 
+            result.addMessage(Type.ERROR, "The system doesn't contain the required Affymetrix array design: "
                     + getLsidObjectId());
         }
     }
