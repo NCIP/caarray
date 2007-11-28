@@ -1390,7 +1390,7 @@
 		<antcall target="validate-properties" />
 		<antcall target="continuous-integration" />
 		<antcall target="remote-jboss:deploy" />
-    <antcall target="remote-globus:deploy"/>
+    <antcall target="remote-grid:deploy"/>
 		<ant inheritAll="true" inheritRefs="true" antfile="${basedir}/build/test-build.xml" target="post-build-checks" />
 	</target>
 
