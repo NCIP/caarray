@@ -96,7 +96,9 @@ import com.thoughtworks.selenium.SeleneseTestCase;
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     private static final int PAGE_TIMEOUT_SECONDS = 180;
+    protected static final String TAB_KEY = "\\009";
     protected static int RECORD_TIMEOUT_SECONDS = 240;
+    protected static final int PAGE_SIZE = 20;
 
     @Override
     public void setUp() throws Exception {
@@ -188,5 +190,53 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         waitForElementWithId("tabboxlevel2wrapper", timeoutSeconds);
     }
 
+    protected void waitForText(String id) {
+        waitForText(id, Integer.valueOf(RECORD_TIMEOUT_SECONDS));
+    }
+    
+    protected void waitForText(String id, int waitTime) {
+        for (int second = 0;; second++) {
+            if (second >= Integer.valueOf(waitTime))
+                fail("timeout");
+            try {
+                if (selenium.isTextPresent(id))
+                    break;
+            } catch (Exception e) {
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * @param title
+     */
+    protected void createExperiment(String title) {
+        selenium.click("link=Create/Propose Experiment");
+        waitForElementWithId("projectForm_project_experiment_title");
+        // - Type in the Experiment name
+        selenium.type("projectForm_project_experiment_title", title);
+        // - Service type
+        selenium.select("projectForm_project_experiment_serviceType", "label=Full");
+        // - Assay Type
+        selenium.select("projectForm_project_experiment_assayType", "label=Gene Expression");
+        // - Provider
+        selenium.select("projectForm_project_experiment_manufacturer", "label=Affymetrix");
+        // - Organism
+        selenium.select("projectForm_project_experiment_organism", "label=Xenopus");
+        // - Tissue Site
+        selenium.setCursorPosition("id=tissueSiteSearchInput", "0");
+        selenium.keyPress("id=tissueSiteSearchInput", TAB_KEY);
+        // - Tissue Types
+        selenium.setCursorPosition("id=tissueTypeSearchInput", "0");
+        selenium.keyPress("id=tissueTypeSearchInput", TAB_KEY);
+        // - Save the Experiment
+        selenium.click("link=Save");
+        waitForAction();
+    
+    }
 
 }
