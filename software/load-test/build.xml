@@ -85,83 +85,82 @@
         <delete dir="${tests.out.dir}" />
     </target>
 
-	<target name="test:setup-filter-files">
-		<property name="loadtest.data.dir" value="${basedir}/data"/>
-		<path id="loadtest.data.dir.path" location="${loadtest.data.dir}${file.separator}"/>
-		<property name="loadtest.data.dir.path.prop.base" refid="loadtest.data.dir.path"/>
-		<property name="loadtest.data.dir.path.prop" value="${loadtest.data.dir.path.prop.base}${file.separator}"/>
-		<echo>
-			loadtest.data.dir.path.prop=${loadtest.data.dir.path.prop}
-		</echo>
+    <target name="test:setup-filter-files">
+        <property name="loadtest.data.dir" value="${basedir}/data" />
+        <path id="loadtest.data.dir.path" location="${loadtest.data.dir}${file.separator}" />
+        <property name="loadtest.data.dir.path.prop.base" refid="loadtest.data.dir.path" />
+        <property name="loadtest.data.dir.path.prop" value="${loadtest.data.dir.path.prop.base}${file.separator}" />
+        <echo>
+            loadtest.data.dir.path.prop=${loadtest.data.dir.path.prop}
+        </echo>
 
-		<mkdir dir="${filtered.tests.src.dir}"/>
-		<copy todir="${filtered.tests.src.dir}" filtering="true" overwrite="true">
-			<fileset dir="${tests.src.dir}">
-			</fileset>
-			<filterset>
-				<filter token="loadtest.data.dir.path" value="${loadtest.data.dir.path.prop}"/>
-			</filterset>
-		</copy>
-	</target>
+        <mkdir dir="${filtered.tests.src.dir}" />
+        <copy todir="${filtered.tests.src.dir}" filtering="true" overwrite="true">
+            <fileset dir="${tests.src.dir}">
+            </fileset>
+            <filterset>
+                <filter token="loadtest.data.dir.path" value="${loadtest.data.dir.path.prop}" />
+            </filterset>
+        </copy>
+    </target>
 
     <target name="tests:run" depends="test:setup-filter-files">
         <mkdir dir="${tests.out.dir}" />
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/setup/ExperimentDataImporter.jmx" resultlog="${tests.out.dir}/setup/ExperimentDataImporter.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/setup/ExperimentDataImporter.jmx" resultlog="${tests.out.dir}/setup/ExperimentDataImporter.jtl">
             <jvmarg value="-Xms512m" />
             <jvmarg value="-Xmx1024m" />
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/setup/HundredExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/HundredExperimentLoader.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/setup/HundredExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/HundredExperimentLoader.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
-    	<!-- -->
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/browse/BrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseTest_Basic.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/BrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseTest_Basic.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/browse/BrowseExperimentTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseExperimentTest_Basic.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/BrowseExperimentTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseExperimentTest_Basic.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/SearchTest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchTest_Basic.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/search/SearchTest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchTest_Basic.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/SearchByExampleAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchByExampleAPITest_Basic.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/search/SearchByExampleAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchByExampleAPITest_Basic.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jndi.port" value="${server.jndi.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/CQLSearchAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/CQLSearchAPITest_Basic.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/search/CQLSearchAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/CQLSearchAPITest_Basic.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jndi.port" value="${server.jndi.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/import/UploadTest_Basic.jmx" resultlog="${tests.out.dir}/import/UploadTest_Basic.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/import/UploadTest_Basic.jmx" resultlog="${tests.out.dir}/import/UploadTest_Basic.jtl">
             <jvmarg value="-Xms512m" />
             <jvmarg value="-Xmx1024m" />
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/import/ImportTest_Basic.jmx" resultlog="${tests.out.dir}/import/ImportTest_Basic.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/import/ImportTest_Basic.jmx" resultlog="${tests.out.dir}/import/ImportTest_Basic.jtl">
             <jvmarg value="-Xms512m" />
             <jvmarg value="-Xmx1024m" />
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/download/DataDownloadAPITest_Basic.jmx" resultlog="${tests.out.dir}/download/DataDownloadAPITest_Basic.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/download/DataDownloadAPITest_Basic.jmx" resultlog="${tests.out.dir}/download/DataDownloadAPITest_Basic.jtl">
             <jvmarg value="-Xms512m" />
             <jvmarg value="-Xmx1024m" />
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jndi.port" value="${server.jndi.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/download/FileDownloadUITest_Basic.jmx" resultlog="${tests.out.dir}/download/FileDownloadUITest_Basic.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/download/FileDownloadUITest_Basic.jmx" resultlog="${tests.out.dir}/download/FileDownloadUITest_Basic.jtl">
             <jvmarg value="-Xms512m" />
             <jvmarg value="-Xmx1024m" />
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/heterogeneous/HeterogeneousTest.jmx" resultlog="${tests.out.dir}/heterogeneous/HeterogeneousTest.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/heterogeneous/HeterogeneousTest.jmx" resultlog="${tests.out.dir}/heterogeneous/HeterogeneousTest.jtl">
             <jvmarg value="-Xms512m" />
             <jvmarg value="-Xmx1024m" />
             <property name="server.host.name" value="${server.host.name}" />
@@ -170,63 +169,63 @@
         </jmeter>
 
         <!-- UNCOMMENT TO RUN TESTS WITH BIGGER DATABASE SIZES.
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/setup/FiveHundredExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/FiveHundredExperimentLoader.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/setup/FiveHundredExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/FiveHundredExperimentLoader.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/browse/BrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseTest_Basic.db500.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/BrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseTest_Basic.db500.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/browse/BrowseExperimentTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseExperimentTest_Basic.db500.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/BrowseExperimentTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseExperimentTest_Basic.db500.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/SearchByExampleAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchByExampleAPITest_Basic.db500.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/search/SearchByExampleAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchByExampleAPITest_Basic.db500.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jndi.port" value="${server.jndi.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/CQLSearchAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/CQLSearchAPITest_Basic.db500.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/search/CQLSearchAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/CQLSearchAPITest_Basic.db500.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jndi.port" value="${server.jndi.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/setup/ThousandExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/ThousandExperimentLoader.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/setup/ThousandExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/ThousandExperimentLoader.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/browse/BrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseTest_Basic.db1000.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/BrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseTest_Basic.db1000.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/browse/BrowseExperimentTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseExperimentTest_Basic.db1000.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/BrowseExperimentTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseExperimentTest_Basic.db1000.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/SearchByExampleAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchByExampleAPITest_Basic.db1000.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/search/SearchByExampleAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchByExampleAPITest_Basic.db1000.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jndi.port" value="${server.jndi.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/CQLSearchAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/CQLSearchAPITest_Basic.db1000.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/search/CQLSearchAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/CQLSearchAPITest_Basic.db1000.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jndi.port" value="${server.jndi.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/setup/TwoThousandExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/TwoThousandExperimentLoader.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/setup/TwoThousandExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/TwoThousandExperimentLoader.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/browse/BrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseTest_Basic.db2000.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/BrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseTest_Basic.db2000.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/browse/BrowseExperimentTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseExperimentTest_Basic.db2000.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/BrowseExperimentTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseExperimentTest_Basic.db2000.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/SearchByExampleAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchByExampleAPITest_Basic.db2000.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/search/SearchByExampleAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchByExampleAPITest_Basic.db2000.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jndi.port" value="${server.jndi.port}" />
         </jmeter>
-        <jmeter jmeterhome="${jmeter.dir}" testplan="${tests.src.dir}/search/CQLSearchAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/CQLSearchAPITest_Basic.db2000.jtl">
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/search/CQLSearchAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/CQLSearchAPITest_Basic.db2000.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jndi.port" value="${server.jndi.port}" />
         </jmeter>
