@@ -82,6 +82,12 @@
  */
 package gov.nih.nci.cagrid.caarray.client;
 
+import gov.nih.nci.caarray.domain.contact.Address;
+import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.Factor;
+import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.cagrid.common.Utils;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
@@ -92,7 +98,9 @@ import java.io.FileWriter;
 
 import javax.xml.namespace.QName;
 
+import junit.framework.Test;
 import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -101,6 +109,14 @@ public class CaArray2xGrid extends TestCase {
 
     private static Log LOG = LogFactory.getLog(CaArray2xGrid.class);
 
+    public CaArray2xGrid() {
+        super();
+    }
+
+    public CaArray2xGrid(String string) {
+        super(string);
+    }
+
     @Override
     public void setUp() {
 
@@ -108,26 +124,58 @@ public class CaArray2xGrid extends TestCase {
 //        System.setProperty("test.serviceUrl", "http://cbvapp-q1001.nci.nih.gov:8080/wsrf/services/cagrid/CaArraySvc");
         /*DEV URL*/
 //        System.setProperty("test.serviceUrl", "http://cbvapp-d1002.nci.nih.gov:8080/wsrf/services/cagrid/CaArraySvc");
+        /*DEV URL*/
+//        System.setProperty("test.serviceUrl", "http://cbvapp-d1002.nci.nih.gov:59580/wsrf/services/cagrid/CaArraySvc");
         /*Local URL*/
         System.setProperty("test.serviceUrl", "http://localhost:8080/wsrf/services/cagrid/CaArraySvc");
     }
 
-    /**
-     * Quick smoke test.
-     */
-    public void testRetrieveAllProjects() {
-        CQLQuery query = new CQLQuery();
-        query.setTarget(new gov.nih.nci.cagrid.cqlquery.Object());
-//       query.getTarget().setName("gov.nih.nci.caarray.domain.project.Factor");
-       // query.getTarget().setName("gov.nih.nci.caarray.domain.contact.Address");
-//        query.getTarget().setName("gov.nih.nci.caarray.domain.array.Gene");
-        query.getTarget().setName("gov.nih.nci.caarray.domain.project.Project");
-
-        CQLQueryResults results = executeCQLQuery(query);
-        printResults(results, "all.projects.xml");
-
+    public static Test suite() {
+        TestSuite suite = new TestSuite();
+        suite.addTest(new CaArray2xGrid("testFindAllFactors"));
+        suite.addTest(new CaArray2xGrid("testFindAllOrganizations"));
+        suite.addTest(new CaArray2xGrid("testFindAllAddresses"));
+        suite.addTest(new CaArray2xGrid("testFindAllCategorys"));
+        suite.addTest(new CaArray2xGrid("testFindAllExperiments"));
+        suite.addTest(new CaArray2xGrid("testFindAllProjects"));
+        return suite;
     }
 
+    public void testFindAllOrganizations() throws Exception {
+        findAllHelper(Organization.class.getName());
+    }
+
+    public void testFindAllAddresses() throws Exception {
+        findAllHelper(Address.class.getName());
+    }
+
+    public void testFindAllFactors() throws Exception {
+        findAllHelper(Factor.class.getName());
+    }
+
+    public void testFindAllCategorys() throws Exception {
+        findAllHelper(Category.class.getName());
+    }
+
+    public void testFindAllProjects() throws Exception {
+        findAllHelper(Project.class.getName());
+    }
+
+    public void testFindAllExperiments() throws Exception {
+        findAllHelper(Experiment.class.getName());
+    }
+
+    private void findAllHelper(String target) throws Exception {
+        CQLQuery query = new CQLQuery();
+        query.setTarget(new gov.nih.nci.cagrid.cqlquery.Object());
+        query.getTarget().setName(target);
+        CQLQueryResults results = executeCQLQuery(query);
+        printResults(results, "findAll." + target + ".xml");
+    }
+
+    public void testDomainModel() throws Exception {
+
+    }
 
     public static CQLQueryResults executeCQLQuery(CQLQuery query) {
         try {
