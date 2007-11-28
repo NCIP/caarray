@@ -82,12 +82,6 @@
  */
 package gov.nih.nci.cagrid.caarray.client;
 
-import gov.nih.nci.caarray.domain.contact.Address;
-import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.domain.project.Factor;
-import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.cagrid.common.Utils;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
@@ -142,27 +136,27 @@ public class CaArray2xGrid extends TestCase {
     }
 
     public void testFindAllOrganizations() throws Exception {
-        findAllHelper(Organization.class.getName());
+        findAllHelper("gov.nih.nci.caarray.domain.contact.Organization");
     }
 
     public void testFindAllAddresses() throws Exception {
-        findAllHelper(Address.class.getName());
+        findAllHelper("gov.nih.nci.caarray.domain.contact.Address");
     }
 
     public void testFindAllFactors() throws Exception {
-        findAllHelper(Factor.class.getName());
+        findAllHelper("gov.nih.nci.caarray.domain.project.Factor");
     }
 
     public void testFindAllCategorys() throws Exception {
-        findAllHelper(Category.class.getName());
+        findAllHelper("gov.nih.nci.caarray.domain.vocabulary.Category");
     }
 
     public void testFindAllProjects() throws Exception {
-        findAllHelper(Project.class.getName());
+        findAllHelper("gov.nih.nci.caarray.domain.project.Project");
     }
 
     public void testFindAllExperiments() throws Exception {
-        findAllHelper(Experiment.class.getName());
+        findAllHelper("gov.nih.nci.caarray.domain.project.Experiment");
     }
 
     private void findAllHelper(String target) throws Exception {
