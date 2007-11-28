@@ -24,7 +24,11 @@
         <script type="text/javascript" src="<c:url value='/scripts/print.js'/>"></script>
         <decorator:head/>
     </head>
-    <body id="twocol">
+    
+    <c:if test="${pageContext.request.remoteUser == null}">
+        <c:set var="showLoginSidebar"><decorator:getProperty property="meta.showLoginSidebar" default="false"/></c:set>    
+    </c:if>    
+    <body id="${showLoginSidebar ? 'home' : 'twocol'}">
         <div id="wrapper">
             <jsp:include page="/WEB-INF/pages/common/header.jsp"/>
             <div id="workarea">
@@ -38,6 +42,10 @@
                             </div>
                         </div>
                     </div>
+                    <c:if test="${showLoginSidebar}">
+                        <jsp:include page="/WEB-INF/pages/common/rightnavLogin.jsp"/>
+                        <div class="clear"></div>
+                    </c:if>
                 </div>
             </div>
             <!-- footer -->

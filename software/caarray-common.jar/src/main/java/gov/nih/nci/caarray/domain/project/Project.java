@@ -211,11 +211,12 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         }
 
         // public projects are effectively read rights to all and write rights to no one
+        // we leave the host and profile access profiles alone, however, in case they revert
+        // to in progress status. prohibition against writing is enforced in the application
+        // layer based on workflow status
         if (status == ProposalStatus.PUBLIC) {
             setBrowsable(true);
             getPublicProfile().setSecurityLevel(SecurityLevel.READ);
-            getHostProfile().setSecurityLevel(SecurityLevel.NONE);
-            getGroupProfilesMap().clear();
         }
     }
 

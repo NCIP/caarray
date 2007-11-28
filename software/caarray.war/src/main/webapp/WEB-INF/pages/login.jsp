@@ -1,67 +1,70 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
-<page:applyDecorator name="login">
+<page:applyDecorator name="default">
 <html>
-<head>
-</head>
-<body>
-    <div class="homebanner"><img src="<c:url value="/images/banner_caarray.jpg"/>" width="600" height="140" alt="" /></div>
-    <h1>Welcome to the caArray Data Portal</h1>
-	<div class="pagehelp" style="margin-top:-1.8em">
-		<a href="javascript:openHelpWindow('')" class="help">Help</a>
-		<a href="javascript:printpage()" class="print">Print</a>
-	</div>
-    <p><strong>caArray</strong> is an open-source, role-based, Web and programmatically accessible data management system that guides the annotation and exchange of array data through a federated model of local and centralized installations. It provides browser-based and programmatic access to the data stored locally; enables mechanisms for accessing all local installation data over <a href="http://cabig.nci.nih.gov/workspaces/Architecture/caGrid/" class="external" target"#">caGrid</a>; supports silver compatibility with <a href="http://cabig.cancer.gov/index.asp" class="external" target"#">caBIG</a> guidelines, promotes compatibility with the MIAME 1.1 guidelines and the import of MAGE-TAB and provides a data service for caBIG analytical services.</p>
-    <div id="browsesearchwrapper">
-        <div id="browseboxhome">
-            <h2 class="tanbar">Browse caArray</h2>
-            <div class="boxpad">
-                <div>
-                    <s:select name="location" key="search.location"
-                              list="#{'NCICB':'NCICB'}"
-                              headerKey="" headerValue="(All Locations)"/>
+    <head>
+    </head>
+    <body>
+        <h1>Login</h1>
+        <div class="pagehelp" style="margin-top:-1.8em">
+            <a href="javascript:openHelpWindow('')" class="help">Help</a>
+            <a href="javascript:printpage()" class="print">Print</a>
+        </div>
+        <div class="padme">
+            <div id="tabboxwrapper_notabs">
+                <div class="boxpad2">
+                    <h3>Login to caArray</h3>
                 </div>
-                <display:table class="alttable" cellspacing="0" list="${browseItems}" id="row">
-                    <display:setProperty name="basic.show.header" value="false" />
-                    <display:column>
-                        <s:if test="${!empty row.category}">
-                            <c:url value="/browse.action" var="browseLink">
-                                <c:param name="category" value="${row.category}"/>
-                            </c:url>
-                            <a href="${browseLink}"><s:text name="${row.category.resourceKey}"/></a>
-                        </s:if><s:else>
-                            <s:text name="${row.resourceKey}"/>
-                        </s:else>
-                    </display:column>
-                    <display:column>
-                        <s:if test="${!empty row.category}">
-                            <c:url value="/browse.action" var="browseLink">
-                                <c:param name="category" value="${row.category}"/>
-                            </c:url>
-                            <a href="${browseLink}">${row.count}</a>
-                        </s:if><s:else>
-                            ${row.count}
-                        </s:else>
-                    </display:column>
-                </display:table>
+
+                <div class="boxpad">
+                    <p class="instructions">
+                        caArray registered users may login below. First time here? Please <a href="<c:url value="/registration/input.action"/>">register</a>
+to become a caArray user.
+                    </p>
+
+                    <form method="post" id="login" action="<c:url value='/j_security_check'/>">
+                        <table class="form">
+            <c:if test="${param.error != null}">
+            <tr>
+                <td colspan="2" class="centered">
+                    <br />
+                    <img align="top" src="<c:url value="/images/iconWarning.gif"/>" alt="<fmt:message key='icon.warning'/>" class="icon"/>
+                    <fmt:message key="errors.password.mismatch"/>
+                </td>
+            </tr>
+            </c:if>
+            <tr>
+                <td colspan="2" class="space">&nbsp;</td>
+            </tr>
+                            <tr>
+                                <td scope="row" class="label">
+                                    <label for="j_username">Username:</label>
+                                </td>
+                                <td class="value">
+                                    <input type="text" id="j_username" name="j_username" maxlength="100" size="15"/>                                    
+                                </td>
+                            </tr>
+                            <tr>
+                                <td scope="row" class="label">
+                                    <label for="j_password">Password:</label>
+                                </td>
+                                <td class="value">
+                                    <input type="password" id="j_password" name="j_password" maxlength="100" size="15"/>
+                                    <br />
+                                    <a href="<c:url value="/notYetImplemented.jsp" />">Forgot your password?</a>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <caarray:actions>
+                            <caarray:action actionClass="cancel" text="Cancel">
+                                <jsp:attribute name="url"><c:url value="/home.action"/></jsp:attribute>
+                            </caarray:action>
+                            <caarray:action actionClass="register" text="Login" onclick="document.getElementById('login').submit();"/>
+                        </caarray:actions>
+                    </form>
+                </div>
             </div>
         </div>
-        <div id="searchboxhome">
-            <h2 class="tanbar">Search caArray</h2>
-            <div class="boxpad">
-                <s:form action="/search/basicSearch.action">
-                    <s:textfield name="keyword" key="search.keyword"/>
-                    <s:select name="category" key="search.category"
-                              list="@gov.nih.nci.caarray.domain.search.SearchCategory@values()" listValue="%{getText(resourceKey)}"
-                              headerKey="" headerValue="(All Categories)"/>
-                    <s:select name="location" key="search.location"
-                              list="#{'NCICB':'NCICB'}"
-                              headerKey="" headerValue="(All Locations)"/>
-                    <s:submit value="Search"/>
-                </s:form>
-            </div>
-        </div>
-    </div>
-    <div class="clear"></div>
-</body>
+    </body>
 </html>
 </page:applyDecorator>

@@ -95,16 +95,19 @@ import java.util.List;
  */
 public interface ProjectDao extends CaArrayDao {
     /**
-     * Returns all projects.
+     * Returns all non public (workflow status is not PUBLIC) projects to which the current user is directly related, 
+     * either by being the data owner or a collaborator.
      *
-     * @return all projects for the given user.
+     * @return all non public projects for the current user.
      */
     List<Project> getNonPublicProjectsForUser();
 
 
     /**
-     * Get all public projects.
-     * @return the public projects
+     * Get all public projects. (workflow status is PUBLIC) projects to which the current user is directly related, 
+     * either by being the data owner or a collaborator
+     *
+     * @return the public projects for the current user.
      */
     List<Project> getPublicProjects();
 

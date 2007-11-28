@@ -22,13 +22,13 @@
 
             <ul class="welcomemenu">
                 <li class="liheader">Welcome to caArray</li>
-                <li><a href="<c:url value="/" />">Public Home</a></li>
+                <li><a href="<c:url value="/home.action" />">Public Home</a></li>
             </ul>
         </c:when>
         <c:otherwise>
             <div class="navheader">Welcome to caArray</div>
             <ul class="caarraymenu">
-                <li><a href="<c:url value="/" />">Public Home</a></li>
+                <li><a href="<c:url value="/home.action" />">Public Home</a></li>
                 <li><a href="<c:url value="/registration/input.action"/>">Register</a></li>
                 <li><a href="<c:url value="/protected/project/workspace.action" />">Login</a></li>
             </ul>

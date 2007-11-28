@@ -140,8 +140,6 @@ public final class SecurityUtils {
     public static final String ANONYMOUS_USER = "__anonymous__";
     /** The synthetic group for anonymous access permissions. */
     public static final String ANONYMOUS_GROUP = "__anonymous__";
-    /** The public group to which every user must belong. */
-    public static final String PUBLIC_GROUP = "Public";
 
     /** The privilege for Browsing a Protectable. * */
     public static final String BROWSE_PRIVILEGE = "ACCESS";

@@ -83,11 +83,16 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.permissions.AccessProfile;
+import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -98,17 +103,16 @@ import org.hibernate.Query;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.project</code> package.
- *
+ * 
  * @author Rashmi Srinivasa
  */
 class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     private static final Logger LOG = Logger.getLogger(ProjectDaoImpl.class);
 
     /**
-     * Saves a project by first updating the lastUpdated field, and then
-     * saves the entity to persistent storage, updating or inserting
-     * as necessary.
-     *
+     * Saves a project by first updating the lastUpdated field, and then saves the entity to persistent storage,
+     * updating or inserting as necessary.
+     * 
      * @param persistentObject the entity to save
      */
     @Override
@@ -127,24 +131,41 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     public List<Project> getNonPublicProjectsForUser() {
-        String hql = "from " + Project.class.getName()
-                + " p where p.statusInternal != :status order by experiment.title";
-        Query query = getCurrentSession().createQuery(hql);
-        query.setParameter("status", ProposalStatus.PUBLIC);
-        return query.list();
+        return getProjectsForUser(false);
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     public List<Project> getPublicProjects() {
-        String hql = "from " + Project.class.getName()
-                + " p where p.statusInternal = :status order by experiment.title";
-        Query query = getCurrentSession().createQuery(hql);
+        return getProjectsForUser(true);
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Project> getProjectsForUser(boolean showPublic) {
+        String ownerSubqueryStr =
+                "(select pe.value from " + ProtectionElement.class.getName()
+                        + " pe where pe.objectId = :objectId and pe.attribute = :attribute and "
+                        + " pe.application = :application and :user in elements(pe.owners)) "; 
+        String collabSubqueryStr =
+                "(select ap.projectForGroupProfile.id from "
+                        + AccessProfile.class.getName()
+                        + " ap join ap.group cg, Group g "
+                        + " where ap.securityLevelInternal != :noneSecLevel and cg.groupId = g.groupId "
+                        + " and :user in elements(g.users))";
+        String queryStr =
+                "from " + Project.class.getName() + " p " + " where p.statusInternal "
+                        + (showPublic ? " = " : " != ") + " :status and (p.id in " + ownerSubqueryStr
+                        + " or p.id in " + collabSubqueryStr + ")";
+        
+        Query query = getCurrentSession().createQuery(queryStr);
         query.setParameter("status", ProposalStatus.PUBLIC);
+        query.setString("objectId", Project.class.getName());
+        query.setString("attribute", "id");
+        query.setEntity("application", SecurityUtils.getApplication());
+        query.setEntity("user", UsernameHolder.getCsmUser());
+        query.setParameter("noneSecLevel", SecurityLevel.NONE);
         return query.list();
     }
 
@@ -179,7 +200,9 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         sb.append(getWhereClause(categories));
         if (!count && params.getSortCriterion() != null) {
             sb.append(" ORDER BY p.").append(params.getSortCriterion());
-            if (params.isDesc()) { sb.append(" desc"); }
+            if (params.isDesc()) {
+                sb.append(" desc");
+            }
         }
         Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
         q.setString("keyword", "%" + keyword + "%");
@@ -201,6 +224,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         }
         return sb.toString();
     }
+
     private String getWhereClause(SearchCategory... categories) {
         StringBuffer sb = new StringBuffer();
         int i = 0;
@@ -209,7 +233,9 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             String[] fields = category.getSearchFields();
             int j = 0;
             for (String field : fields) {
-                if (j++ > 0) { sb.append(" OR "); }
+                if (j++ > 0) {
+                    sb.append(" OR ");
+                }
                 sb.append(field).append(" LIKE :keyword");
             }
             sb.append(')');

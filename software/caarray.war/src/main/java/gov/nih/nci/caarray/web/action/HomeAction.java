@@ -91,10 +91,10 @@ import java.util.List;
 import com.opensymphony.xwork2.Action;
 
 /**
+ * Action for displaying the home page.
  * @author Winston Cheng
- *
  */
-public class LoginAction {
+public class HomeAction {
     /**
      * This holds the name and count for each item in the browse box.
      */

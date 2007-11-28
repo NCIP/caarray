@@ -1,5 +1,7 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
+<html>
+<head>
 <script type=text/javascript>
 <!--
 function authenticate() {
@@ -12,8 +14,6 @@ function authenticate() {
 }
 //-->
 </script>
-
-<head>
 </head>
 <body>
     <h1>Register</h1>
@@ -126,23 +126,23 @@ function authenticate() {
                 <s:textfield name="registrationRequest.fax" key="registrationRequest.fax" size="20" cssStyle="width:30%;" tabindex="17"/>
             </table>
 
-            <div class="actions">
-                <del class="btnwrapper">
-                    <ul id="btnrow">
-                        <c:url value="/registration/cancel.action" var="cancelUrl"/>
-                        <c:url value="/registration/saveAuthenticate.action" var="saveUrl"/>
-                        <li><a href="${cancelUrl}" class="btn" onclick="this.blur();"><span class="btn_img"><span class="cancel">Cancel</span></span></a></li>
-                        <c:choose>
-                            <c:when test="${ldapInstall == 'true'}">
-                                <li><a href="javascript:authenticate()" class="btn" onclick="this.blur();"><span class="btn_img"><span class="register">Submit Registration Request</span></span></a></li>
-                            </c:when>
-                            <c:otherwise>
-                                <li><a href="${saveUrl}" class="btn" onclick="this.blur();"><span class="btn_img"><span class="register">Submit Registration Request</span></span></a></li>
-                            </c:otherwise>
-                        </c:choose>
-                    </ul>
-                </del>
-            </div>
+            <caarray:actions>
+                <c:url value="/registration/saveAuthenticate.action" var="saveUrl"/>
+                <caarray:action actionClass="cancel" text="Cancel">
+                    <jsp:attribute name="url"><c:url value="/home.action"/></jsp:attribute>
+                </caarray:action>
+                <c:choose>
+                    <c:when test="${ldapInstall == 'true'}">
+                        <caarray:action actionClass="register" text="Submit Registration Request" onclick="this.blur();" url="javascript:authenticate()"/>
+                    </c:when>
+                    <c:otherwise>
+                        <caarray:action actionClass="register" text="Submit Registration Request" onclick="this.blur();" url="${saveUrl}"/>
+                    </c:otherwise>
+                </c:choose>            
+            </caarray:actions>
         </s:form>
     </div>
+    </div>
+    </div>
 </body>
+</html>
