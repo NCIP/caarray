@@ -82,9 +82,10 @@
  */
 package gov.nih.nci.caarray.web.authentication;
 
-import gov.nih.nci.security.authentication.loginmodules.RDBMSLoginModule;
+import gov.nih.nci.security.authentication.loginmodules.LDAPLoginModule;
 import gov.nih.nci.security.exceptions.internal.CSInternalConfigurationException;
 import gov.nih.nci.security.exceptions.internal.CSInternalInsufficientAttributesException;
+import gov.nih.nci.security.exceptions.internal.CSInternalLoginException;
 
 import java.util.Map;
 
@@ -98,7 +99,7 @@ import javax.security.auth.callback.CallbackHandler;
  * via LDAP but get role information from CSM.  This class bridges between
  * the CSM world and JBoss.
  */
-public class CaArrayLoginModule extends RDBMSLoginModule {
+public class CaArrayLDAPLoginModule extends LDAPLoginModule {
 
     private Map<String, Object> state;
 
@@ -119,7 +120,8 @@ public class CaArrayLoginModule extends RDBMSLoginModule {
     @SuppressWarnings("unchecked")
     @Override
     protected boolean validate(Map options, String user, char[] password, Subject subject)
-            throws CSInternalConfigurationException, CSInternalInsufficientAttributesException {
+            throws CSInternalConfigurationException, CSInternalInsufficientAttributesException,
+                   CSInternalLoginException {
         boolean result = super.validate(options, user, password, subject);
 
         if (result) {

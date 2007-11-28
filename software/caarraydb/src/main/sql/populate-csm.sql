@@ -34,17 +34,18 @@ values(1,2,sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(2,2,sysdate());
 
+-- 2nd db-backed user to test permissions
+-- caArray2! is password
 insert into CSM_USER (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("fb_admin","caArray","ldapuser","sNYUJiYS6oaabiiT/fn5hIc+SidokNh2+YRTFJJYiuZLRCIBFypS8Q==",sysdate());
+values ("caarrayuser","caArray","User","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(1,3,sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(2,3,sysdate());
 
--- 2nd db-backed user to test permissions
--- caArray2! is password
+ -- caArray2! is password
 insert into CSM_USER (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("caarrayuser","caArray","User","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
+values ("researchscientist","ResearchScientist","ResearchScientist","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(1,4,sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
@@ -52,7 +53,7 @@ values(2,4,sysdate());
 
  -- caArray2! is password
 insert into CSM_USER (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("researchscientist","ResearchScientist","ResearchScientist","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
+values ("labadministrator","LabAdministrator","LabAdministrator","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(1,5,sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
@@ -60,7 +61,7 @@ values(2,5,sysdate());
 
  -- caArray2! is password
 insert into CSM_USER (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("labadministrator","LabAdministrator","LabAdministrator","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
+values ("labscientist","LabScientist","LabScientist","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(1,6,sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
@@ -68,15 +69,15 @@ values(2,6,sysdate());
 
  -- caArray2! is password
 insert into CSM_USER (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("labscientist","LabScientist","LabScientist","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
+values ("biostatistician","Biostatistician","Biostatistician","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(1,7,sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(2,7,sysdate());
 
- -- caArray2! is password
+-- caArray2! is password
 insert into CSM_USER (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("biostatistician","Biostatistician","Biostatistician","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
+values ("systemadministrator","SystemAdministrator","SystemAdministrator","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(1,8,sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
@@ -84,19 +85,11 @@ values(2,8,sysdate());
 
 -- caArray2! is password
 insert into CSM_USER (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("systemadministrator","SystemAdministrator","SystemAdministrator","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
+values ("collaborator","Collaborator","Collaborator","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(1,9,sysdate());
 insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
 values(2,9,sysdate());
-
--- caArray2! is password
-insert into CSM_USER (LOGIN_NAME,FIRST_NAME,LAST_NAME,PASSWORD,UPDATE_DATE)
-values ("collaborator","Collaborator","Collaborator","AnmtKPmmzJ9BrnK3kl9XaA==",sysdate());
-insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
-values(1,10,sysdate());
-insert into CSM_USER_PE(PROTECTION_ELEMENT_ID,USER_ID,UPDATE_DATE)
-values(2,10,sysdate());
 
 -- The anonymous group corresponds to access profiles.  Everyone, including the anonymous user,
 -- should be in this group
@@ -153,41 +146,37 @@ insert into CSM_USER_GROUP (user_id, group_id)
 values(8, 1);
 insert into CSM_USER_GROUP (user_id, group_id)
 values(9, 1);
-insert into CSM_USER_GROUP (user_id, group_id)
-values(10, 1);
 
 
--- the first 3 real users are in the PI group
+-- the first 2 real users are in the PI group
 insert into CSM_USER_GROUP (user_id, group_id)
 values(2, 2);
 insert into CSM_USER_GROUP (user_id, group_id)
 values(3, 2);
-insert into CSM_USER_GROUP (user_id, group_id)
-values(4, 2);
 
 -- the ResearchScientist
 insert into CSM_USER_GROUP (user_id, group_id)
-values(5, 3);
+values(4, 3);
 
 -- the LabAdmin
 insert into CSM_USER_GROUP (user_id, group_id)
-values(6, 4);
+values(5, 4);
 
 -- the LabScientist
 insert into CSM_USER_GROUP (user_id, group_id)
-values(7, 5);
+values(6, 5);
 
 -- the Biostatistician
 insert into CSM_USER_GROUP (user_id, group_id)
-values(8, 6);
+values(7, 6);
 
 -- the SysAdmin
 insert into CSM_USER_GROUP (user_id, group_id)
-values(9, 7);
+values(8, 7);
 
 -- the Collaborator
 insert into CSM_USER_GROUP (user_id, group_id)
-values(10, 8);
+values(9, 8);
 
 #
 # The following entries are Common Set of Privileges
