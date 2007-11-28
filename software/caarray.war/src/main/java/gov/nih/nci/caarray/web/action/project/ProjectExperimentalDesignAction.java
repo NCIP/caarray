@@ -90,10 +90,15 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.Set;
 
+import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
+import com.opensymphony.xwork2.validator.annotations.Validation;
+import com.opensymphony.xwork2.validator.annotations.Validations;
+
 /**
  * Action implementing the experimental design tab.
  * @author Dan Kokotov
  */
+@Validation
 public class ProjectExperimentalDesignAction extends ProjectTabAction {
     private static final long serialVersionUID = 1L;
 
@@ -114,6 +119,22 @@ public class ProjectExperimentalDesignAction extends ProjectTabAction {
         this.qualityControlTypes = vocabService.getTerms(ExperimentOntologyCategory.QUALITY_CONTROL_TYPE
                 .getCategoryName());
         this.replicateTypes = vocabService.getTerms(ExperimentOntologyCategory.REPLICATE_TYPE.getCategoryName());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Validations(
+        fieldExpressions = {
+            @FieldExpressionValidator(fieldName = "project.experiment.experimentDesignType",
+                message = "", key = "struts.validator.requiredString",
+                expression = "project.experiment.experimentDesignType != null")
+        }
+    )
+    @SuppressWarnings("PMD.UselessOverridingMethod")
+    public String save() {
+        return super.save();
     }
 
     /**

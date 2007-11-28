@@ -137,7 +137,7 @@ public enum ExperimentOntologyCategory {
      * PublicationStatus category, used for status of Publications.
      */
     PUBLICATION_STATUS("PublicationStatus"),
-    
+
     /**
      * Clinical Diagnosis category, one of annotation fields allowed by TCGA policy.
      */
@@ -151,7 +151,12 @@ public enum ExperimentOntologyCategory {
     /**
      * TechnologyType category, used for array designs.
      */
-    TECHNOLOGY_TYPE("TechnologyType");
+    TECHNOLOGY_TYPE("TechnologyType"),
+
+    /**
+     * ComplextAction category, used for experimental factors.
+     */
+    COMPLEX_ACTION("ComplexAction");
 
     private final String categoryName;
 

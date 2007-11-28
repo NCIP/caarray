@@ -881,7 +881,7 @@ public class Experiment extends AbstractCaArrayEntity {
     /**
      * @return the experimentDesignDescription
      */
-    @Column(length = LARGE_TEXT_FIELD_LENGTH)
+    @Length(min = 1, max = LARGE_TEXT_FIELD_LENGTH)
     public String getExperimentDesignDescription() {
         return this.experimentDesignDescription;
     }
@@ -896,7 +896,7 @@ public class Experiment extends AbstractCaArrayEntity {
     /**
      * @return the qualityControlDescription
      */
-    @Column(length = LARGE_TEXT_FIELD_LENGTH)
+    @Length(max = LARGE_TEXT_FIELD_LENGTH)
     public String getQualityControlDescription() {
         return this.qualityControlDescription;
     }
@@ -911,7 +911,7 @@ public class Experiment extends AbstractCaArrayEntity {
     /**
      * @return the replicateDescription
      */
-    @Column(length = LARGE_TEXT_FIELD_LENGTH)
+    @Length(max = LARGE_TEXT_FIELD_LENGTH)
     public String getReplicateDescription() {
         return this.replicateDescription;
     }

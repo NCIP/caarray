@@ -10,6 +10,7 @@ insert into category (name) value ('Roles');
 insert into category (name) value ('PublicationType');
 insert into category (name) value ('PublicationStatus');
 insert into category (name) value ('TechnologyType');
+insert into category (name) value ('ComplexAction');
 
 insert into termsource (name, url, version) values ('MGED', 'http://mged.sourceforge.net/ontologies/MGEDontology.php', '1.3.1.1');
 insert into termsource (name, url, version) values ('Caarray', 'http://caarray.nci.nih.gov/ontologies/UserDefined.html', '0.1');
@@ -23,15 +24,6 @@ insert into term (value, source, category) select 'DNA', termsource.id, category
 insert into term (value, source, category) select 'Brain Tissue', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='CellType';
 insert into term (value, source, category) select 'Chromaphine Cells', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='CellType';
 insert into term (value, source, category) select 'Adrenocortical Carcinoma', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DiseaseState';
-insert into term (value, source, category) select 'pharmacogenomic', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentDesignType';
-insert into term (value, source, category) select 'subclassification', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentDesignType';
-insert into term (value, source, category) select 'time_series_design', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentDesignType';
-insert into term (value, source, category) select 'biological_replicate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='QualityControlDescriptionType';
-insert into term (value, source, category) select 'dye_swap_quality_control', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='QualityControlDescriptionType';
-insert into term (value, source, category) select 'peer_review_quality_control', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='QualityControlDescriptionType';
-insert into term (value, source, category) select 'biological_replicate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ReplicateDescriptionType';
-insert into term (value, source, category) select 'dye_swap_replicate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ReplicateDescriptionType';
-insert into term (value, source, category) select 'technical_replicate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ReplicateDescriptionType';
 insert into term (value, source, category) select 'investigator', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='Roles';
 insert into term (value, source, category) select 'submitter', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='Roles';
 insert into term (value, source, category) select 'Book', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='PublicationType';
@@ -41,6 +33,25 @@ insert into term (value, source, category) select 'Submitted', termsource.id, ca
 insert into term (value, source, category) select 'In Preparation', termsource.id, category.id from termsource, category where termsource.name='Caarray' and category.name='PublicationStatus';
 insert into term (value, source, category) select 'Published', termsource.id, category.id from termsource, category where termsource.name='Caarray' and category.name='PublicationStatus';
 
+-- ExperimentDesignType
+insert into term (value, source, category) select 'pharmacogenomic', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentDesignType';
+insert into term (value, source, category) select 'subclassification', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentDesignType';
+insert into term (value, source, category) select 'time_series_design', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentDesignType';
+
+-- QualityControlDescriptionType
+insert into term (value, source, category) select 'biological_replicate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='QualityControlDescriptionType';
+insert into term (value, source, category) select 'dye_swap_quality_control', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='QualityControlDescriptionType';
+insert into term (value, source, category) select 'peer_review_quality_control', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='QualityControlDescriptionType';
+insert into term (value, source, category) select 'real_time_PCR_quality_control', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='QualityControlDescriptionType';
+insert into term (value, source, category) select 'reverse_transcription_PCR_quality_control', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='QualityControlDescriptionType';
+insert into term (value, source, category) select 'spike_quality_control', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='QualityControlDescriptionType';
+insert into term (value, source, category) select 'technical_replicate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='QualityControlDescriptionType';
+
+-- ReplicateDescriptionType
+insert into term (value, source, category) select 'biological_replicate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ReplicateDescriptionType';
+insert into term (value, source, category) select 'dye_swap_replicate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ReplicateDescriptionType';
+insert into term (value, source, category) select 'technical_replicate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ReplicateDescriptionType';
+
 -- TechnologyTypes
 insert into term (value, source, category) select 'in_situ_oligo_features', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='TechnologyType';
 insert into term (value, source, category) select 'spotted_antibody_features', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='TechnologyType';
@@ -49,6 +60,41 @@ insert into term (value, source, category) select 'spotted_ds_DNA_features', ter
 insert into term (value, source, category) select 'spotted_protein_features', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='TechnologyType';
 insert into term (value, source, category) select 'spotted_ss_PCR_amplicon_features', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='TechnologyType';
 insert into term (value, source, category) select 'spotted_ss_oligo_features', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='TechnologyType';
+
+-- ComplexActions
+insert into term (value, source, category) select 'PCR_amplification', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'acclimatization', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'behavioral_stimulus', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'biological_fluid_collection', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'biopsy', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'change_biomaterial_characteristics', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'compound_based_treatment', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'decontaminate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'dissect', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'fractionate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'genetic_modification', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'grow', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'harvest', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'histological_slide_preparation', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'hybridization', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'incubate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'inoculate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'irradiate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'labeling', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'linear_amplification', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'nucleic_acid_extraction', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'pool', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'preservation', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'purify', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'reverse_transcription', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'sacrifice', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'specified_biomaterial_action', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'split', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'starvation', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'store', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'timepoint', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'transfect', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+insert into term (value, source, category) select 'wash', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
 
 insert into organism (common_name, scientific_name, taxonomy_rank, ethnicity_strain) values ('Bovine', '', '', '');
 insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Canine', '', '', '');
@@ -65,7 +111,7 @@ insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Str
 insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Yeast', '', '', '');
 insert into organism (common_name, scientific_name, taxonomy_rank, ethnicity_strain) values ('Zebra finch', '', '', '');
 insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Zebrafish', '', '', '');
- 
+
 insert into contact(discriminator, name) values ('O', 'Affymetrix');
 insert into contact(discriminator, name) values ('O', 'Illumina');
 

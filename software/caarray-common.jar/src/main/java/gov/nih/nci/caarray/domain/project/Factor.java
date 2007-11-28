@@ -89,7 +89,6 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
@@ -99,6 +98,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.validator.Length;
+import org.hibernate.validator.NotNull;
 
   /**
 
@@ -108,6 +109,7 @@ public class Factor extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 
     private String name;
+    private String description;
     private Term type;
     private Set<FactorValue> factorValues = new HashSet<FactorValue>();
 
@@ -116,9 +118,10 @@ public class Factor extends AbstractCaArrayEntity {
      *
      * @return the name
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @NotNull
+    @Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
-        return name;
+        return this.name;
     }
 
     /**
@@ -131,6 +134,21 @@ public class Factor extends AbstractCaArrayEntity {
     }
 
     /**
+     * @return the description
+     */
+    @Length(max = LARGE_TEXT_FIELD_LENGTH)
+    public String getDescription() {
+        return this.description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
      * Gets the type.
      *
      * @return the type
@@ -138,8 +156,9 @@ public class Factor extends AbstractCaArrayEntity {
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "FACTOR_TYPE_FK")
+    @NotNull
     public Term getType() {
-        return type;
+        return this.type;
     }
 
     /**
@@ -159,7 +178,7 @@ public class Factor extends AbstractCaArrayEntity {
     @OneToMany(mappedBy = "factor", fetch = FetchType.LAZY)
     @Cascade(CascadeType.SAVE_UPDATE)
     public Set<FactorValue> getFactorValues() {
-        return factorValues;
+        return this.factorValues;
     }
 
     /**

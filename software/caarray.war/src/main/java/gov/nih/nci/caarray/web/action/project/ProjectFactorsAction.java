@@ -87,9 +87,19 @@ import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementSe
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Factor;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.struts2.interceptor.validation.SkipValidation;
+
+import com.opensymphony.xwork2.validator.annotations.CustomValidator;
+import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
 
 /**
  * Action implementing the factors tab.
@@ -100,6 +110,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
     private static final long serialVersionUID = 1L;
 
     private Factor currentFactor = new Factor();
+    private Set<Term> categories = new HashSet<Term>();
 
     /**
      * Default constructor.
@@ -118,6 +129,39 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
 
         if (this.currentFactor.getId() != null) {
             this.currentFactor = getGenericDataService().retrieveEnity(Factor.class, this.currentFactor.getId());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String view() {
+        setCategories(ActionHelper.getVocabularyService().getTerms(
+                ExperimentOntologyCategory.COMPLEX_ACTION.getCategoryName()));
+        return super.view();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SkipValidation
+    public String edit() {
+        setCategories(ActionHelper.getVocabularyService().getTerms(
+                ExperimentOntologyCategory.COMPLEX_ACTION.getCategoryName()));
+        return super.edit();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void validate() {
+        super.validate();
+        if (hasErrors()) {
+            setCategories(ActionHelper.getVocabularyService().getTerms(
+                    ExperimentOntologyCategory.COMPLEX_ACTION.getCategoryName()));
         }
     }
 
@@ -149,8 +193,10 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
     /**
      * @return the currentFactor
      */
+    @CustomValidator(type = "hibernate", parameters = @ValidationParameter(name = "resourceKeyBase",
+            value = "experiment.factors"))
     public Factor getCurrentFactor() {
-        return currentFactor;
+        return this.currentFactor;
     }
 
     /**
@@ -158,5 +204,19 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
      */
     public void setCurrentFactor(Factor currentFactor) {
         this.currentFactor = currentFactor;
+    }
+
+    /**
+     * @return the categories
+     */
+    public Set<Term> getCategories() {
+        return this.categories;
+    }
+
+    /**
+     * @param categories the categories to set
+     */
+    public void setCategories(Set<Term> categories) {
+        this.categories = categories;
     }
 }

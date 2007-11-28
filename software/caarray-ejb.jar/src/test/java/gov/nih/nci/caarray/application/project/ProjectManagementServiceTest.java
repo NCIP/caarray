@@ -83,16 +83,15 @@
 package gov.nih.nci.caarray.application.project;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.SessionContextStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
@@ -146,7 +145,6 @@ public class ProjectManagementServiceTest {
     private final FileAccessService fileAccessService = new FileAccessServiceStub();
     private final GenericDataService genericDataService = new GenericDataServiceStub();
     private final LocalSessionContextStub sessionContextStub = new LocalSessionContextStub();
-    private static final ProjectDao REAL_PROJECT_DAO = CaArrayDaoFactory.INSTANCE.getProjectDao();
 
     @Before
     public void setUpService() {
@@ -279,11 +277,11 @@ public class ProjectManagementServiceTest {
         assertEquals("Test2", abm.getName());
         assertEquals("Test", abm.getDescription());
     }
-    
-    
-    
+
+
+
     @Test
-    public void testToggleBrowsable() {        
+    public void testToggleBrowsable() {
         Project project = this.projectManagementService.getProject(123L);
         UsernameHolder.setUser("caarrayadmin");
         createProtectionGroup(project);
@@ -313,7 +311,7 @@ public class ProjectManagementServiceTest {
             fail("Should not have been able to set browsable status");
         } catch (ProposalWorkflowException e) {
             // expected
-        }        
+        }
     }
 
     /**
@@ -336,13 +334,13 @@ public class ProjectManagementServiceTest {
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
-        
+
     }
 
     @Test
     public void testSetUseTcgaPolicy() {
         Project project = this.projectManagementService.getProject(123L);
-        UsernameHolder.setUser("caarrayadmin");        
+        UsernameHolder.setUser("caarrayadmin");
         createProtectionGroup(project);
         assertFalse(project.isUseTcgaPolicy());
         try {
@@ -452,7 +450,7 @@ public class ProjectManagementServiceTest {
             return new LocalSearchDaoStub(this.projectDao);
         }
     }
-    
+
     private static class LocalProjectDaoStub extends ProjectDaoStub {
 
         final HashMap<Long, PersistentObject> savedObjects = new HashMap<Long, PersistentObject>();
@@ -475,7 +473,7 @@ public class ProjectManagementServiceTest {
 
         @Override
         public void remove(PersistentObject caArrayEntity) {
-            lastDeleted = caArrayEntity;
+            this.lastDeleted = caArrayEntity;
         }
 
         /**
@@ -487,14 +485,14 @@ public class ProjectManagementServiceTest {
         }
 
         public PersistentObject getLastDeleted() {
-            return lastDeleted;
+            return this.lastDeleted;
         }
 
     }
 
     private static class LocalSearchDaoStub extends SearchDaoStub {
-        private LocalProjectDaoStub projectDao;
-        
+        private final LocalProjectDaoStub projectDao;
+
         /**
          * @param projectDao
          */
@@ -532,8 +530,8 @@ public class ProjectManagementServiceTest {
          * {@inheritDoc}
          */
         private Project getProject(Long id) {
-            if (projectDao.savedObjects.containsKey(id)) {
-                return (Project) projectDao.savedObjects.get(id);
+            if (this.projectDao.savedObjects.containsKey(id)) {
+                return (Project) this.projectDao.savedObjects.get(id);
             }
             Project project = new Project();
             // Perform voodoo magic
@@ -552,7 +550,7 @@ public class ProjectManagementServiceTest {
             } catch (InvocationTargetException e) {
                 e.printStackTrace();
             }
-            projectDao.save(project);
+            this.projectDao.save(project);
             return project;
         }
 
