@@ -8,7 +8,10 @@
     <h1>
         Experiment Details
     </h1>
-
+	<div class="pagehelp">
+		<a href="javascript:openHelpWindow('')" class="help">Help</a>
+		<a href="javascript:printpage()" class="print">Print</a>
+	</div>
     <div class="padme">
         <h2>
             <span class="dark">Experiment:</span>

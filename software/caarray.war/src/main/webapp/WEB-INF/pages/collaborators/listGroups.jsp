@@ -6,6 +6,10 @@
 <body>
     <h1>Manage Collaboration Groups
     </h1>
+	<div class="pagehelp">
+		<a href="javascript:openHelpWindow('')" class="help">Help</a>
+		<a href="javascript:printpage()" class="print">Print</a>
+	</div>
     <div class="padme">
     <div class="addlink_notabs">
         <caarray:linkButton url="edit.action" actionClass="add" text="Add a New Collaboration Group" />

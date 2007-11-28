@@ -5,6 +5,10 @@
 </head>
 <body>
     <h1>Search Results</h1>
+	<div class="pagehelp">
+		<a href="javascript:openHelpWindow('')" class="help">Help</a>
+		<a href="javascript:printpage()" class="print">Print</a>
+	</div>
     <div class="padme">
         <h2>Results for: "<strong>${keyword}</strong>"</h2>
         <ajax:tabPanel panelStyleId="tabs" panelStyleClass="tabs2" currentStyleClass="active" contentStyleId="tabboxwrapper" contentStyleClass="tabboxwrapper"

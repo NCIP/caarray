@@ -3,16 +3,20 @@
 <head>
     <title>Manage Collaboration Group</title>
     <script type="text/javascript">
-		function clearFilter() {    
-			document.getElementById('targetUserLastName').value = ''; 
-			document.getElementById('targetUserFirstName').value = ''; 
-			document.getElementById('targetUserOrganization').value = ''; 
+		function clearFilter() {
+			document.getElementById('targetUserLastName').value = '';
+			document.getElementById('targetUserFirstName').value = '';
+			document.getElementById('targetUserOrganization').value = '';
 			document.getElementById('filterForm').submit();
-		}    
+		}
     </script>
 </head>
 <body>
     <h1>Manage Collaboration Group</h1>
+	<div class="pagehelp">
+		<a href="javascript:openHelpWindow('')" class="help">Help</a>
+		<a href="javascript:printpage()" class="print">Print</a>
+	</div>
     <div class="padme">
     <div id="tabboxwrapper_notabs">
       <div class="boxpad2">

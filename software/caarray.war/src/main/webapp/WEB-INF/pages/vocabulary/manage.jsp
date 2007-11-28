@@ -7,7 +7,10 @@
     <h1>
         Manage Vocabularies
     </h1>
-
+	<div class="pagehelp">
+		<a href="javascript:openHelpWindow('')" class="help">Help</a>
+		<a href="javascript:printpage()" class="print">Print</a>
+	</div>
     <c:url value="/protected/ajax/vocabulary/list.action" var="tissueSitesUrl">
         <c:param name="category"><s:property value="@gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory@ORGANISM_PART" /></c:param>
     </c:url>

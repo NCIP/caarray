@@ -13,6 +13,11 @@
         <script type="text/javascript" src="<c:url value='/scripts/prototype.js'/>"></script>
         <script type="text/javascript" src="<c:url value='/scripts/scriptaculous.js'/>"></script>
         <script type="text/javascript" src="<c:url value='/scripts/global.js'/>"></script>
+        <script type="text/javascript" language="javascript">
+		// for help script
+		var contextPath = "<%=request.getContextPath()%>";
+		</script>
+        <script type="text/javascript" src="<c:url value='/scripts/help.js'/>"></script>
         <decorator:head/>
     </head>
     <body id="home">

@@ -5,6 +5,10 @@
 </head>
 <body>
     <h1>View User Information</h1>
+	<div class="pagehelp">
+		<a href="javascript:openHelpWindow('')" class="help">Help</a>
+		<a href="javascript:printpage()" class="print">Print</a>
+	</div>
     <div class="padme">
         <div id="tabboxwrapper_notabs">
             <div class="boxpad2">

@@ -22,15 +22,19 @@
         confirmMsg = "There are unsaved changed in your form that will be lost. Are you sure you want to proceed to change the project's status?";
     }
     if (confirm(confirmMsg)) {
-        $('workflowForm').submit();    
-    }    
-    
+        $('workflowForm').submit();
+    }
+
     return false;
-  }  
+  }
 </script>
 </head>
 <body>
     <h1>
+        Experiment Details
+    </h1>
+
+	<div class="pagehelp" style="width:auto;">
         <c:if test="${!empty project.id && caarrayfn:isOwner(project, caarrayfn:currentUser())}">
             <c:choose>
                 <c:when test="${project.submissionAllowed}">
@@ -52,12 +56,12 @@
                     <s:hidden name="workflowStatus" value="${newWorkflowStatus}"/>
                 </s:form>
                 <caarray:linkButton onclick="submitWorkflowForm();"
-                        actionClass="submit_experiment" text="${buttonTitle}" style="display: block; float: right; margin-bottom: -1em"/>
+                        actionClass="submit_experiment" text="${buttonTitle}" style="margin-top:-.6em; margin-right:15px;"/>
             </c:if>
         </c:if>
-        Experiment Details
-    </h1>
-
+		<a href="javascript:openHelpWindow('')" class="help">Help</a>
+		<a href="javascript:printpage()" class="print">Print</a>
+	</div>
     <c:url value="/ajax/project/tab/Overview/load.action" var="overviewUrl">
         <c:param name="project.id" value="${project.id}" />
         <c:param name="editMode" value="${editMode}" />
@@ -97,7 +101,7 @@
     </c:if>
     <div class="padme">
         <h2>
-            <span class="dark">Experiment:</span>   
+            <span class="dark">Experiment:</span>
             <span id="experimentTitleHeader"><c:out value="${project.experiment.title}" default="New Experiment"/></span>
         </h2>
         <ajax:tabPanel panelStyleId="tabs" panelStyleClass="tabs2" currentStyleClass="active" contentStyleId="tabboxwrapper" contentStyleClass="tabboxwrapper"

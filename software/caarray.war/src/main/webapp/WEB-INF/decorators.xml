@@ -5,13 +5,13 @@
         <pattern>/protected/ajax/*</pattern>
         <pattern>/struts/dojo/*</pattern>
         <pattern>/resources/*</pattern>
+        <pattern>/help/*</pattern>
     </excludes>
     <decorator name="default" page="/WEB-INF/pages/decorators/default.jsp">
         <excludes>
             <pattern>/login.action</pattern>
         </excludes>
         <pattern>/*</pattern>
-
     </decorator>
     <decorator name="login" page="/WEB-INF/pages/decorators/login.jsp">
         <pattern>/login.action</pattern>

@@ -16,6 +16,12 @@
         <script type="text/javascript" src="<c:url value="/scripts/ajaxtags.js"/>"></script>
         <script type="text/javascript" src="<c:url value="/scripts/ajaxtags_controls.js"/>"></script>
         <script type="text/javascript" src="<c:url value="/scripts/ajaxtags_parser.js"/>"></script>
+        <script type="text/javascript" language="javascript">
+		// for help script
+		var contextPath = "<%=request.getContextPath()%>";
+		</script>
+        <script type="text/javascript" src="<c:url value='/scripts/help.js'/>"></script>
+        <script type="text/javascript" src="<c:url value='/scripts/print.js'/>"></script>
         <decorator:head/>
     </head>
     <body id="twocol">

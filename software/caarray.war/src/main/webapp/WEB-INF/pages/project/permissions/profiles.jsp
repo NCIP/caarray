@@ -12,9 +12,12 @@
 
 <body>
     <h1>Experiment Permissions</h1>
-
+	<div class="pagehelp">
+		<a href="javascript:openHelpWindow('')" class="help">Help</a>
+		<a href="javascript:printpage()" class="print">Print</a>
+	</div>
     <script type="text/javascript">
-    
+
     var SecurityLevel = new Object();
     SecurityLevel.sampleSecurityLevels = new Object();
     <s:iterator value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@values()" id="secLevel">
@@ -22,7 +25,7 @@
         <s:iterator value="#secLevel.sampleSecurityLevels" id="sampleSecLevel">
     SecurityLevel.sampleSecurityLevels['<s:property value="#secLevel.name()"/>'].push({ value: '<s:property value="#sampleSecLevel.name()"/>', label: '<s:property value="getText(#sampleSecLevel.resourceKey)"/>' });
         </s:iterator>
-    </s:iterator>    
+    </s:iterator>
     </script>
 
     <div class="padme">
@@ -46,7 +49,7 @@
                         <tr>
                             <td>
                                 This project is currently <em>${!project.browsable ? 'not' : ''}</em> browsable
-                            </td>                        
+                            </td>
                         </tr>
                         <tr>
                             <td>
@@ -55,11 +58,11 @@
                                     <caarray:actions divclass="actionsthin">
                                         <caarray:action actionClass="save" text="Toggle" onclick="$('browsability_form').submit(); return false;"/>
                                     </caarray:actions>
-                                </s:form>                                                        
-                            </td>                        
+                                </s:form>
+                            </td>
                         </tr>
                     </table>
-                </div>                    
+                </div>
 
                 <div class="datatable" style="margin-top: 10px">
                     <table class="searchresults" cellspacing="0">
@@ -72,15 +75,15 @@
                                 <s:form action="project/permissions/setTcgaPolicy" cssClass="form" id="policy_form">
                                     <s:hidden name="project.id"/>
                                     <s:checkbox name="useTcgaPolicy" value="%{project.useTcgaPolicy}" label="Use TCGA Policy" cssStyle="border: none"/>
-                                </s:form>                                                        
+                                </s:form>
                                 <caarray:actions>
                                     <caarray:action actionClass="save" text="Save" onclick="$('policy_form').submit(); return false;"/>
                                 </caarray:actions>
                                 </div>
-                            </td>                        
+                            </td>
                         </tr>
                     </table>
-                </div>                    
+                </div>
 
                 <c:if test="${project.browsable && project.permissionsEditingAllowed}">
                     <div class="line" style="margin-bottom: 10px"></div>
@@ -115,7 +118,7 @@
                                 <c:if test="${!empty collaboratorGroupsWithoutProfiles}">
                                     <tr>
                                         <th>
-                                            Add New Collaboration Group Access Profile                                        
+                                            Add New Collaboration Group Access Profile
                                         </th>
                                     </tr>
                                     <tr>
@@ -146,7 +149,7 @@
                                 <div id="access_profile_details"></div>
                             </div>
                         </div>
-                    </div>                
+                    </div>
                 </c:if>
             </div>
         </div>

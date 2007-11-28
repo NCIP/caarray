@@ -11,7 +11,7 @@
 
                 <li class="liheader">Users &amp; Groups</li>
                 <c:if test="${isSystemAdministrator}">
-	                <li><a href="<c:out value='${initParam["uptUrl"]}'/>" target="_blank">Manage Users</a></li>                
+	                <li><a href="<c:out value='${initParam["uptUrl"]}'/>" target="_blank">Manage Users</a></li>
                 </c:if>
                 <li><a href="<c:url value="/protected/collaborators/listGroups.action" />">Manage Collaboration Groups</a></li>
 
@@ -41,6 +41,7 @@
         <li><a href="<c:url value="/notYetImplemented.jsp" />">User Guide</a></li>
         <li><a href="<c:url value="/notYetImplemented.jsp" />">Release Notes</a></li>
         <li><a href="<c:url value="/notYetImplemented.jsp" />">Technical Documentation</a></li>
+        <li><a href="javascript:openHelpWindow('')">Help</a></li>
     </ul>
     <ul class="quicklinks">
         <li class="liheader">Global Quick Links</li>
