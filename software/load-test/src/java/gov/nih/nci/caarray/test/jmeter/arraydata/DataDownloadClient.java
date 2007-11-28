@@ -173,6 +173,8 @@ public class DataDownloadClient extends CaArrayJmeterSampler implements JavaSamp
                         || (request.getQuantitationTypes().size()) == dataSet.getQuantitationTypes().size()) {
                     results.setSuccessful(true);
                     results.setResponseCodeOK();
+                    results.setResponseMessage("Retrieved " + request.getHybridizations().size() + " hybridizations and "
+                            + dataSet.getQuantitationTypes().size() + " quantitation types.");
                 }
             } else {
                 results.setSuccessful(false);
