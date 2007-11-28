@@ -8,10 +8,10 @@
 </head>
 <body>
     <h1>Import Array Designs</h1>
-	<div class="pagehelp">
-		<a href="javascript:openHelpWindow('')" class="help">Help</a>
-		<a href="javascript:printpage()" class="print">Print</a>
-	</div>
+    <div class="pagehelp">
+        <a href="javascript:openHelpWindow('')" class="help">Help</a>
+        <a href="javascript:printpage()" class="print">Print</a>
+    </div>
     <div class="padme">
         <div id="tabboxwrapper_notabs">
             <div class="boxpad2">
@@ -32,8 +32,8 @@
                         <tr><th colspan="2">Array Design Details</th></tr>
                         <s:textfield required="true" key="arrayDesign.name" size="50" tabindex="1"/>
                         <s:select required="true" key="arrayDesign.provider" tabindex="2"
-                                  list="manufacturers" listKey="id" listValue="name"
-                                  headerKey="" headerValue="--Please select a Manufacturer--" value="arrayDesign.provider.id"/>
+                                  list="providers" listKey="id" listValue="name"
+                                  headerKey="" headerValue="--Please select a Provider--" value="arrayDesign.provider.id"/>
                         <s:textfield required="true" key="arrayDesign.version" size="50" tabindex="3"/>
                         <s:select required="true" key="arrayDesign.technologyType" tabindex="4"
                                   list="featureTypes" listKey="id" listValue="value" value="arrayDesign.technologyType.id"

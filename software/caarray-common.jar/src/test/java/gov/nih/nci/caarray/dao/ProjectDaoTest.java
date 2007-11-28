@@ -113,6 +113,8 @@ import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.sample.ValueBasedCharacteristic;
+import gov.nih.nci.caarray.domain.search.PageSortParams;
+import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -146,6 +148,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
@@ -164,7 +167,11 @@ public class ProjectDaoTest extends AbstractDaoTest {
     private static Organism DUMMY_ORGANISM = new Organism();
     private static Organization DUMMY_PROVIDER = new Organization();
     private static Project DUMMY_PROJECT_1 = new Project();
+    private static Project DUMMY_PROJECT_2 = new Project();
+    private static Project DUMMY_PROJECT_3 = new Project();
     private static Experiment DUMMY_EXPERIMENT_1 = new Experiment();
+    private static Experiment DUMMY_EXPERIMENT_2 = new Experiment();
+    private static Experiment DUMMY_EXPERIMENT_3 = new Experiment();
     private static TermSource DUMMY_TERM_SOURCE = new TermSource();
     private static Category DUMMY_CATEGORY = new Category();
 
@@ -214,7 +221,11 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DUMMY_ORGANISM = new Organism();
         DUMMY_PROVIDER = new Organization();
         DUMMY_PROJECT_1 = new Project();
+        DUMMY_PROJECT_2 = new Project();
+        DUMMY_PROJECT_3 = new Project();
         DUMMY_EXPERIMENT_1 = new Experiment();
+        DUMMY_EXPERIMENT_2 = new Experiment();
+        DUMMY_EXPERIMENT_3 = new Experiment();
         DUMMY_TERM_SOURCE = new TermSource();
         DUMMY_CATEGORY = new Category();
 
@@ -278,6 +289,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
         t.setValue("t1");
         DUMMY_EXPERIMENT_1.getTissueSites().add(t);
         DUMMY_EXPERIMENT_1.getTissueTypes().add(t);
+        DUMMY_PROJECT_2.setExperiment(DUMMY_EXPERIMENT_2);
+        DUMMY_PROJECT_3.setExperiment(DUMMY_EXPERIMENT_3);
     }
 
     private static void setHybridizations() {
@@ -319,6 +332,18 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DUMMY_EXPERIMENT_1.setPublicReleaseDate(currDate);
         DUMMY_EXPERIMENT_1.setAssayType(AssayType.ACGH);
         DUMMY_EXPERIMENT_1.setServiceType(ServiceType.FULL);
+
+        DUMMY_EXPERIMENT_2.setTitle("DummyExperiment2");
+        DUMMY_EXPERIMENT_2.setAssayType(AssayType.ACGH);
+        DUMMY_EXPERIMENT_2.setServiceType(ServiceType.FULL);
+        DUMMY_EXPERIMENT_2.setOrganism(DUMMY_ORGANISM);
+        DUMMY_EXPERIMENT_2.setManufacturer(DUMMY_PROVIDER);
+
+        DUMMY_EXPERIMENT_3.setTitle("DummyExperiment3");
+        DUMMY_EXPERIMENT_3.setAssayType(AssayType.ACGH);
+        DUMMY_EXPERIMENT_3.setServiceType(ServiceType.FULL);
+        DUMMY_EXPERIMENT_3.setOrganism(DUMMY_ORGANISM);
+        DUMMY_EXPERIMENT_3.setManufacturer(DUMMY_PROVIDER);
     }
 
     private static void setExperimentContacts() {
@@ -1063,6 +1088,44 @@ public class ProjectDaoTest extends AbstractDaoTest {
         SearchCriteria searchCriteria = new FilterClauseSearchCriteria(searchFilterClause);
         List<?> list = SecurityUtils.getAuthorizationManager().getObjects(searchCriteria);
         assertTrue(list.size() > 0);
+        tx.commit();
+    }
+
+    @Test
+    public void testSearchByCategory() {
+        Transaction tx = HibernateUtil.beginTransaction();
+        saveSupportingObjects();
+        DAO_OBJECT.save(DUMMY_PROJECT_1);
+        DAO_OBJECT.save(DUMMY_PROJECT_2);
+        DAO_OBJECT.save(DUMMY_PROJECT_3);
+        tx.commit();
+        tx = HibernateUtil.beginTransaction();
+
+        // test search all
+        PageSortParams psp = new PageSortParams(20,0,"experiment.title",false);
+        List<Project> projects = DAO_OBJECT.searchByCategory(psp, "DummyExperiment", SearchCategory.values());
+        assertEquals(3, projects.size());
+
+        // test count
+        assertEquals(3, DAO_OBJECT.searchCount("DummyExperiment", SearchCategory.values()));
+
+        // test paging
+        psp.setPageSize(2);
+        projects = DAO_OBJECT.searchByCategory(psp, "DummyExperiment", SearchCategory.values());
+        assertEquals(2, projects.size());
+
+        // test sorting
+        psp.setPageSize(20);
+        projects = DAO_OBJECT.searchByCategory(psp, "DummyExperiment", SearchCategory.values());
+        assertTrue(DUMMY_PROJECT_1.equals(projects.get(0)));
+        psp.setDesc(true);
+        projects = DAO_OBJECT.searchByCategory(psp, "DummyExperiment", SearchCategory.values());
+        assertTrue(DUMMY_PROJECT_1.equals(projects.get(2)));
+
+        // test search by title
+        projects = DAO_OBJECT.searchByCategory(psp, "DummyExperiment1", SearchCategory.EXPERIMENT_TITLE);
+        assertTrue(DUMMY_PROJECT_1.equals(projects.get(0)));
+
         tx.commit();
     }
 

@@ -45,7 +45,7 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(project.experiment.title)
             <caarray:termSelector baseId="cellType" category="<%= ExperimentOntologyCategory.CELL_TYPE %>" initialTerms="${project.experiment.cellTypes}"
                 tabIndex="10" termFieldName="project.experiment.cellTypes" termLabel="Cell Type"/>
             <caarray:termSelector baseId="conditions" category="<%= ExperimentOntologyCategory.DISEASE_STATE %>" initialTerms="${project.experiment.conditions}"
-                tabIndex="11" termFieldName="project.experiment.conditions" termLabel="Condition"/>
+                tabIndex="11" termFieldName="project.experiment.conditions" termLabel="Condition/Disease State"/>
             <s:hidden name="project.id" />
             <s:hidden name="editMode" />
         </s:form>

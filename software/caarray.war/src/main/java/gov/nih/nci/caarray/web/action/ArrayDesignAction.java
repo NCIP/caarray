@@ -123,7 +123,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     private String uploadFileName;
     private String uploadContentType;
     private List<ArrayDesign> arrayDesigns;
-    private List<Organization> manufacturers;
+    private List<Organization> providers;
     private Set<Term> featureTypes;
     private List<Organism> organisms;
     private boolean editMode;
@@ -135,7 +135,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         VocabularyService vs = getVocabularyService();
         ArrayDesignService ads = getArrayDesignService();
         this.organisms = vs.getOrganisms();
-        this.manufacturers = ads.getArrayDesignProviders();
+        this.providers = ads.getArrayDesignProviders();
         this.featureTypes = vs.getTerms(ExperimentOntologyCategory.TECHNOLOGY_TYPE.getCategoryName());
     }
 
@@ -196,8 +196,8 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     /**
      * @return the manufacturers
      */
-    public List<Organization> getManufacturers() {
-        return manufacturers;
+    public List<Organization> getProviders() {
+        return providers;
     }
     /**
      * @return the featureTypes
