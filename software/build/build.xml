@@ -181,9 +181,12 @@
 	<property file="${build.dir}/default.properties" />
 	<property name="jboss.deploy.dir" value="${jboss.home}/server/${jboss.server.name}/deploy" />
 	<property name="jboss.lib.dir" value="${jboss.home}/server/${jboss.server.name}/lib" />
+
+	<!-- File References -->
 	<property name="mysql.datasource.file" value="caarray-mysql-ds.xml" />
 	<property name="jboss-mail-service.file" value="mail-service.xml" />
 	<property name="jboss-globus-serverinstance-config.zip" location="${resource.dir}/deploy/jboss-globus-serverinstance-config.zip"/>
+	<property name="caArrayOnlineHelp.zip" location="${caarray-war.dir}/src/main/help/caArrayOnlineHelp.zip"/>
 
 	<filterset id="caarray.filterset" onmissingfiltersfile="warn">
 		<filtersfile file="${build.dir}/default.properties" />
@@ -501,7 +504,16 @@
 		</jar>
 	</target>
 
-    <target name="build:caarray.war" depends="compile:caarray.war">
+	<target name="prepare:caarray.war:onlinehelp">
+		<mkdir dir="${caarray-war.target.dir}/help"/>
+		<unzip src="${caArrayOnlineHelp.zip}" dest="${caarray-war.target.dir}/help">
+			<patternset>
+				<include name="caArray Online Help/Output/WebWorks Help 5.0/caArray Online Help/**"/>
+			</patternset>
+		</unzip>
+	</target>
+
+	<target name="build:caarray.war" depends="compile:caarray.war, prepare:caarray.war:onlinehelp">
 		<mkdir dir="${caarray-war.target.dir}" />
 		<copy todir="${caarray-war.target.dir}/xml" file="${caarray-war.webapp.dir}/WEB-INF/web.xml" overwrite="true">
 			<filterset>
@@ -557,6 +569,8 @@
 				<include name="ajaxtags-1.3-beta-rc7.jar" />
 				<include name="jericho-html-2.4.jar" />
 			</lib>
+			<zipfileset dir="${caarray-war.target.dir}/help/caArray Online Help/Output/WebWorks Help 5.0/caArray Online Help"
+				prefix="help"/>
 		</war>
 	</target>
 
