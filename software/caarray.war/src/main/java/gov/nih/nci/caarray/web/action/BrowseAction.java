@@ -115,7 +115,7 @@ public class BrowseAction extends ActionSupport {
     // browse results
     private SortedSet<BrowseTab> tabs;
     private final PaginatedListImpl<Project> results =
-        new PaginatedListImpl<Project>(BROWSE_PAGE_SIZE, "experiment.title");
+        new PaginatedListImpl<Project>(BROWSE_PAGE_SIZE, "experiment.publicIdentifier");
 
     /**
      * @return the category

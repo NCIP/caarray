@@ -5,7 +5,7 @@
         <display:setProperty name="pagination.sort.param" value="results.sortCriterion" />
         <display:setProperty name="pagination.sortdirection.param" value="results.sortDirection" />
         <display:setProperty name="pagination.pagenumber.param" value="results.pageNumber" />
-        <display:column sortProperty="experiment.title" title="Experiment ID" sortable="true">
+        <display:column sortProperty="experiment.publicIdentifier" title="Experiment ID" sortable="true">
             <c:choose>
                 <c:when test="${caarrayfn:canRead(row, caarrayfn:currentUser())}">
                     <c:url var="viewUrl" value="/project/details.action">
@@ -20,7 +20,7 @@
             </c:choose>        
             <a href="${viewUrl}">${row.experiment.publicIdentifier}</a>
         </display:column>
-        <display:column property="experiment.publicIdentifier" titleKey="search.result.experimentId" sortable="true"/>
+        <display:column property="experiment.title" titleKey="search.result.experimentTitle" sortable="true"/>
         <display:column property="experiment.assayType" titleKey="search.result.assayType" sortable="true" />
         <display:column titleKey="search.result.pi">
             <a href="mailto:${row.experiment.mainPointOfContact.contact.email}" class="email">${row.experiment.mainPointOfContact.contact.lastName}<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a>

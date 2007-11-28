@@ -119,7 +119,7 @@ public class SearchAction extends ActionSupport {
     // fields for displaying search results
     private String currentTab;
     private final PaginatedListImpl<Project> results =
-        new PaginatedListImpl<Project>(SEARCH_PAGE_SIZE, "experiment.title");
+        new PaginatedListImpl<Project>(SEARCH_PAGE_SIZE, "experiment.publicIdentifier");
     private Map<String, Integer> tabs;
 
     /**
