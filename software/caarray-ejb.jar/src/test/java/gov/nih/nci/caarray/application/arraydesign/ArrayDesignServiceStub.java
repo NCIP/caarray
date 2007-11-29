@@ -137,4 +137,8 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
     public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamesapce, String lsidObjectId) {
         return null;
     }
+
+    public FileValidationResult validateDesign(ArrayDesign design) {
+        return null;
+    }
 }

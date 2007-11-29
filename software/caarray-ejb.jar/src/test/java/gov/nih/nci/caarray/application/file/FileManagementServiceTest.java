@@ -72,10 +72,13 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
+import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.InvalidDataFileException;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
 import java.util.HashMap;
@@ -184,7 +187,7 @@ public class FileManagementServiceTest {
     }
 
     @Test
-    public void testImportArrayDesignFile() {
+    public void testImportArrayDesignFile() throws InvalidDataFileException {
         ArrayDesign design = new ArrayDesign();
         design.setName("design name");
         daoFactoryStub.searchDaoStub.save(design);
@@ -206,6 +209,17 @@ public class FileManagementServiceTest {
         daoFactoryStub.searchDaoStub.save(caArrayFile);
         fileManagementService.importFiles(project, project.getFileSet());
         assertTrue(arrayDesignServiceStub.importCalled);
+    } 
+    
+    @Test(expected = InvalidDataFileException.class)
+    public void testImportArrayDesignFileInvalid() throws InvalidDataFileException {
+        ArrayDesign design = new ArrayDesign();
+        design.setName("design name");
+        daoFactoryStub.searchDaoStub.save(design);
+        CaArrayFile caArrayFile = fileAccessServiceStub.add(AffymetrixArrayDataFiles.TEST3_CHP);
+        caArrayFile.setFileType(FileType.AFFYMETRIX_CHP);
+        design.setDesignFile(caArrayFile);
+        fileManagementService.importArrayDesignFile(design, caArrayFile);
     }
 
 
@@ -224,8 +238,14 @@ public class FileManagementServiceTest {
 
         @Override
         public FileValidationResult validateDesign(CaArrayFile designFile) {
-            designFile.setFileStatus(FileStatus.VALIDATED);
-            return new FileValidationResult(new File(designFile.getName()));
+            FileValidationResult result = new FileValidationResult(new File(designFile.getName()));
+            if (!designFile.getFileType().isArrayDesign()) {
+                result.addMessage(Type.ERROR, "Invalid design");
+                designFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
+            } else {
+                designFile.setFileStatus(FileStatus.VALIDATED);
+            }
+            return result;
         }
 
         @Override
@@ -256,8 +276,8 @@ public class FileManagementServiceTest {
         private static long nextId = 1;
         Map<Long, PersistentObject> objectMap = new HashMap<Long, PersistentObject>();
 
-        @SuppressWarnings("unchecked")
         @Override
+        @SuppressWarnings("unchecked")
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
             return (T) objectMap.get(entityId);
         }

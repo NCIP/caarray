@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.arraydesign;
 
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -102,13 +103,15 @@ abstract class AbstractArrayDesignHandler {
     private final CaArrayFile designFile;
     private final VocabularyService vocabularyService;
     private final FileAccessService fileAccessService;
+    private final CaArrayDaoFactory daoFactory;
 
     AbstractArrayDesignHandler(CaArrayFile designFile, VocabularyService vocabularyService,
-            FileAccessService fileAccessService) {
+            FileAccessService fileAccessService, CaArrayDaoFactory daoFactory) {
         super();
         this.designFile = designFile;
         this.vocabularyService = vocabularyService;
         this.fileAccessService = fileAccessService;
+        this.daoFactory = daoFactory;
     }
 
     final CaArrayFile getDesignFile() {
@@ -154,5 +157,9 @@ abstract class AbstractArrayDesignHandler {
     abstract Logger getLog();
 
     abstract void validate(FileValidationResult result);
+
+    CaArrayDaoFactory getDaoFactory() {
+        return daoFactory;
+    }
 
 }

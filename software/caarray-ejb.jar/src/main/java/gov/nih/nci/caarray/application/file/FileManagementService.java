@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 /**
  * Provides file storage, validation and import services to the caArray application.
@@ -127,7 +128,8 @@ public interface FileManagementService {
      *
      * @param arrayDesign the array design object
      * @param designFile the file containing the array design annotation.
+     * @throws InvalidDataFileException if the design file was invalid for import.
      */
-    void importArrayDesignFile(ArrayDesign arrayDesign, CaArrayFile designFile);
+    void importArrayDesignFile(ArrayDesign arrayDesign, CaArrayFile designFile) throws InvalidDataFileException;;
 
 }

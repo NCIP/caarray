@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -91,6 +92,8 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -163,11 +166,16 @@ public class FileManagementServiceBean implements FileManagementService {
     /**
      * {@inheritDoc}
      */
-    public void importArrayDesignFile(ArrayDesign arrayDesign, CaArrayFile designFile) {
+    public void importArrayDesignFile(ArrayDesign arrayDesign, CaArrayFile designFile) throws InvalidDataFileException {
         designFile.setFileStatus(FileStatus.IMPORTING);
         arrayDesign.setDesignFile(designFile);
         getDaoFactory().getProjectDao().save(designFile);
         getDaoFactory().getArrayDao().save(arrayDesign);
+        getArrayDesignService().validateDesign(arrayDesign);
+        if (FileStatus.VALIDATION_ERRORS.equals(designFile.getFileStatus())) {
+            getDaoFactory().getArrayDao().remove(arrayDesign);
+            throw new InvalidDataFileException(designFile.getValidationResult());
+        }
         ArrayDesignFileImportJob job = new ArrayDesignFileImportJob(UsernameHolder.getUser(), arrayDesign);
         getSubmitter().submitJob(job);
     }
@@ -209,6 +217,10 @@ public class FileManagementServiceBean implements FileManagementService {
 
     void setSubmitter(FileManagementJobSubmitter submitter) {
         this.submitter = submitter;
+    }
+
+    ArrayDesignService getArrayDesignService() {
+        return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
     }
 
 

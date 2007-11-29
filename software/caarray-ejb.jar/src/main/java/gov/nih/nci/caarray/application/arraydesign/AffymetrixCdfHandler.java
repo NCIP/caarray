@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.arraydesign;
 
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.Feature;
@@ -93,6 +94,7 @@ import gov.nih.nci.caarray.domain.array.ProbeGroup;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import org.apache.log4j.Logger;
 
@@ -120,8 +122,8 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     private ProbeGroup probeGroup;
 
     AffymetrixCdfHandler(CaArrayFile designFile, VocabularyService vocabularyService,
-            FileAccessService fileAccessService) {
-        super(designFile, vocabularyService, fileAccessService);
+            FileAccessService fileAccessService, CaArrayDaoFactory daoFactory) {
+        super(designFile, vocabularyService, fileAccessService, daoFactory);
     }
 
     @Override
@@ -134,7 +136,21 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
                         "Unable to read the CDF file : " + fusionCDFData.getFileName());
             }
         }
+        checkForDuplicateDesign(result);
         closeCdf();
+    }
+
+    /**
+     * @param result
+     */
+    private void checkForDuplicateDesign(FileValidationResult result) {
+        ArrayDesign existingDesign = 
+            getDaoFactory().getArrayDao().getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, 
+                    getFusionCDFData().getChipType());
+        if (existingDesign != null) {
+            result.addMessage(Type.ERROR, "Affymetrix design " + getFusionCDFData().getChipType() 
+                    + " has already been imported");
+        }
     }
 
     private void closeCdf() {

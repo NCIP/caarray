@@ -83,14 +83,17 @@
 package gov.nih.nci.caarray.application.arraydesign;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -100,8 +103,9 @@ import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
-
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -113,7 +117,7 @@ import org.junit.Test;
 public class ArrayDesignServiceTest {
 
     private ArrayDesignService arrayDesignService;
-    private final DaoFactoryStub caArrayDaoFactoryStub = new DaoFactoryStub();
+    private final LocalDaoFactoryStub caArrayDaoFactoryStub = new LocalDaoFactoryStub();
     private final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
     private final VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
 
@@ -204,6 +208,29 @@ public class ArrayDesignServiceTest {
         result = arrayDesignService.validateDesign(designFile);
         assertFalse(result.isValid());
     }
+    
+    @Test
+    public void testValidateDesign_InvalidFileType() {
+        CaArrayFile invalidDesignFile = getCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, FileType.AFFYMETRIX_CEL);
+        FileValidationResult result = arrayDesignService.validateDesign(invalidDesignFile);
+        assertFalse(result.isValid());
+        invalidDesignFile = getCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, null);
+        result = arrayDesignService.validateDesign(invalidDesignFile);
+        assertFalse(result.isValid());
+    }
+
+    @Test
+    public void testDuplicateArrayDesign() {
+        ArrayDesign design = new ArrayDesign();
+        design.setDesignFile(getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
+        arrayDesignService.importDesign(design);
+        CaArrayFile designFile = getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF);
+        FileValidationResult result = arrayDesignService.validateDesign(designFile);
+        assertFalse(result.isValid());
+        assertTrue(result.getMessages().iterator().next().getMessage().contains("has already been imported"));
+        design.setDesignFile(designFile);
+        arrayDesignService.importDesign(design);
+    }
 
     @Test
     public void testGetDesignDetails_IlluminaHumanWG6() {
@@ -225,15 +252,41 @@ public class ArrayDesignServiceTest {
     }
 
     private CaArrayFile getAffymetrixCaArrayFile(File file) {
-        CaArrayFile caArrayFile = fileAccessServiceStub.add(file);
-        caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
-        return caArrayFile;
+        return getCaArrayFile(file, FileType.AFFYMETRIX_CDF);
     }
 
     private CaArrayFile getIlluminaCaArrayFile(File file) {
+        return getCaArrayFile(file, FileType.ILLUMINA_DESIGN_CSV);
+    }
+
+    private CaArrayFile getCaArrayFile(File file, FileType type) {
         CaArrayFile caArrayFile = fileAccessServiceStub.add(file);
-        caArrayFile.setFileType(FileType.ILLUMINA_DESIGN_CSV);
+        caArrayFile.setFileType(type);
         return caArrayFile;
+    }
+
+    private static class LocalDaoFactoryStub extends DaoFactoryStub {
+        
+        private Map<String, ArrayDesign> lsidDesignMap = new HashMap<String, ArrayDesign>();
+
+        @Override
+        public ArrayDao getArrayDao() {
+            return new ArrayDaoStub() {
+                @Override
+                public void save(PersistentObject caArrayEntity) {
+                    if (caArrayEntity instanceof ArrayDesign) {
+                        ArrayDesign arrayDesign = (ArrayDesign) caArrayEntity;
+                        lsidDesignMap.put(arrayDesign.getLsid(), arrayDesign);
+                    }
+                }
+
+                @Override
+                public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
+                    // TODO Auto-generated method stub
+                    return lsidDesignMap.get("URN:LSID:" + lsidAuthority + ":" + lsidNamespace + ":" + lsidObjectId);
+                }
+            };
+        }
     }
 
 }

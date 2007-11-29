@@ -101,6 +101,14 @@ public interface ArrayDesignService {
     String JNDI_NAME = "caarray/ArrayDesignServiceBean/local";
 
     /**
+     * Validates an array design in preparation for save.
+     *
+     * @param design the design to validate
+     * @return the validation result.
+     */
+    FileValidationResult validateDesign(ArrayDesign design);
+
+    /**
      * Validates an array design file in preparation for import.
      *
      * @param designFile the native file to validate
