@@ -126,7 +126,13 @@ public enum SearchCategory implements ResourceBasedEnum {
      */
     SAMPLE           ("search.category.sample",
                       new String[]{"p.experiment e", "e.samples s"},
-                      "s.name");
+                      "s.name"),
+    /**
+     * Disease state.
+     */
+    DISEASE_STATE    ("search.category.diseaseState",
+                      new String[]{"p.experiment e", "e.sources src", "src.diseaseState ds"},
+                      "ds.value");
 
     private final String resourceKey;
     private final String[] joins;

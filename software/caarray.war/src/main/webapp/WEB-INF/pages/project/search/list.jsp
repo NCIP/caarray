@@ -10,25 +10,25 @@
                 <c:when test="${caarrayfn:canRead(row, caarrayfn:currentUser())}">
                     <c:url var="viewUrl" value="/project/details.action">
                         <c:param name="project.id" value="${row.id}"/>
-                    </c:url>                
+                    </c:url>
                 </c:when>
                 <c:otherwise>
                     <c:url var="viewUrl" value="/project/browse.action">
                         <c:param name="project.id" value="${row.id}"/>
-                    </c:url>                                
+                    </c:url>
                 </c:otherwise>
-            </c:choose>        
+            </c:choose>
             <a href="${viewUrl}">${row.experiment.publicIdentifier}</a>
         </display:column>
         <display:column property="experiment.title" titleKey="search.result.experimentTitle" sortable="true"/>
         <display:column property="experiment.assayType" titleKey="search.result.assayType" sortable="true" />
         <display:column titleKey="search.result.pi">
-            <a href="mailto:${row.experiment.mainPointOfContact.contact.email}" class="email">${row.experiment.mainPointOfContact.contact.lastName}<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a>
+            <a href="mailto:${row.experiment.mainPointOfContact.contact.email}?subject=${row.experiment.title}" class="email">${row.experiment.mainPointOfContact.contact.lastName}<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a>
         </display:column>
         <display:column property="experiment.organism.commonName" titleKey="search.result.organism" sortable="true"/>
         <display:column titleKey="search.result.diseaseState">
-            <c:forEach var="condition" items="${row.experiment.conditions}" varStatus="status">
-                ${condition.value}<c:if test="${!status.last}">,</c:if>
+            <c:forEach var="condition" items="${row.experiment.sources}" varStatus="status">
+                ${condition.diseaseState.value}<c:if test="${!status.last}">,</c:if>
             </c:forEach>
         </display:column>
         <display:column titleKey="search.result.numSamples">
