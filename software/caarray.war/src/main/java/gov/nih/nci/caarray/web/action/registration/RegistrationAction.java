@@ -222,10 +222,14 @@ public class RegistrationAction extends ActionSupport implements Preparable {
 
         if (isLdapInstall()) {
             try {
-                LDAPHelper.authenticate(LDAP_CONTEXT_PARAMS , registrationRequest.getLoginName(),
-                                        getPassword().toCharArray(), null);
+                if (!LDAPHelper.authenticate(LDAP_CONTEXT_PARAMS , registrationRequest.getLoginName(),
+                                             getPassword().toCharArray(), null)) {
+                    // invalid user
+                    ActionHelper.saveMessage(getText("registration.ldapLookupFailure"));
+                    return Action.INPUT;
+                }
             } catch (CSInternalLoginException e) {
-                // CSM throws this exception on invalid user/password
+                // CSM throws this exception on valid user / wrong pass
                 ActionHelper.saveMessage(getText("registration.ldapLookupFailure"));
                 return Action.INPUT;
             }
