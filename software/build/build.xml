@@ -109,6 +109,7 @@
 	<property name="jboss-aspect-jdk50-client.jar" value="${lib.dir}/jboss-aspect-jdk50-client.jar" />
 	<property name="jbossall-client.jar" value="${lib.dir}/jbossall-client.jar" />
 	<property name="jboss-ejb3-client.jar" value="${lib.dir}/jboss-ejb3-client.jar" />
+	<property name="jboss-annotations-ejb3.jar" value="${lib.dir}/jboss-annotations-ejb3.jar" />
 	<property name="jta.jar" value="${lib.dir}/jta.jar" />
 	<property name="junit.jar" value="${lib.dir}/junit-4.3.1.jar" />
 	<property name="log4j.jar" value="${lib.dir}/log4j-1.2.13.jar" />
@@ -409,6 +410,7 @@
 				<pathelement location="${javaee.jar}" />
 				<pathelement location="${affxfusion.jar}" />
 				<pathelement location="${netcdf.jar}" />
+				<pathelement location="${jboss-annotations-ejb3.jar}" />
 				<pathelement location="${ejb3-persistence.jar}" />
 				<pathelement location="${hibernate.jar}" />
 				<pathelement location="${hibernate-annotations.jar}" />
@@ -773,6 +775,7 @@
 				<pathelement location="${commons-io.jar}" />
 				<pathelement location="${javaee.jar}" />
 				<pathelement location="${junit.jar}" />
+				<pathelement location="${jboss-annotations-ejb3.jar}" />
 				<pathelement location="${ejb3-persistence.jar}" />
 				<pathelement location="${hibernate.jar}" />
 				<pathelement location="${hibernate-annotations.jar}" />
