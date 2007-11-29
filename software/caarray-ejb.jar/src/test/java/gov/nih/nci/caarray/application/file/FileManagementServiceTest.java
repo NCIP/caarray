@@ -237,6 +237,11 @@ public class FileManagementServiceTest {
         protected boolean importCalled;
 
         @Override
+        public FileValidationResult validateDesign(ArrayDesign design) {
+            return validateDesign(design.getDesignFile());
+        }
+        
+        @Override
         public FileValidationResult validateDesign(CaArrayFile designFile) {
             FileValidationResult result = new FileValidationResult(new File(designFile.getName()));
             if (!designFile.getFileType().isArrayDesign()) {
