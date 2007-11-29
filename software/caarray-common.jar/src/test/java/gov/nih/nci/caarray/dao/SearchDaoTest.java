@@ -199,6 +199,19 @@ public class SearchDaoTest {
             } else {
                 fail(FAIL_NO_MATCH);
             }
+
+            // search by id
+            exampleProtocol = new Protocol();
+            exampleProtocol.setId(DUMMY_PROTOCOL_1.getId());
+            exampleProtocol.setDescription("differentDescription");
+            matchingProtocols = SEARCH_DAO.query(exampleProtocol);
+            if (matchingProtocols != null && matchingProtocols.size() > 0
+                    && DUMMY_PROTOCOL_1.equals(matchingProtocols.get(0))) {
+                // The retrieved protocol is the same as the saved protocol. Test passed.
+                assertTrue(true);
+            } else {
+                fail(FAIL_NO_MATCH);
+            }
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);

@@ -100,6 +100,8 @@ public interface SearchDao {
     /**
      * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity
      * and its associations, or null if none exists.
+     * If the id of the given entity is not null, this query will only match by id,
+     * ignoring all other fields.
      *
      * @param <T> the type of entites to retreive
      * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity

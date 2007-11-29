@@ -101,6 +101,8 @@ public interface CaArraySearchService {
 
     /**
      * Performs a query-by-example search based on the entity passed.
+     * If the id of the given entity is not null, this query will only match by id,
+     * ignoring all other fields.
      *
      * @param <T> object type to search for
      * @param entityExample find entities that match the non-null fields and associations of this example.

@@ -115,7 +115,14 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     public <T extends AbstractCaArrayObject> List<T> query(final T entityToMatch) {
+        if (entityToMatch.getId() != null) {
+            String qStr = "from " + entityToMatch.getClass().getName() + " where id = :id";
+            Query q = HibernateUtil.getCurrentSession().createQuery(qStr);
+            q.setLong("id", entityToMatch.getId());
+            return q.list();
+        }
         return queryEntityAndAssociationsByExample(entityToMatch);
     }
 
