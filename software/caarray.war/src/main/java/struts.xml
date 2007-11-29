@@ -80,6 +80,7 @@
         </action>
         <action name="logout" class="gov.nih.nci.caarray.web.action.LogoutAction">
             <result name="success" type="redirect-action">
+            	<param name="namespace">/</param>
                 <param name="actionName">home</param>
             </result>
         </action>
