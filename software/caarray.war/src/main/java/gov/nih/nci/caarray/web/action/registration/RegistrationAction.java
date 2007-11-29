@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.web.action.registration;
 
-import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.country.Country;
 import gov.nih.nci.caarray.domain.register.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.register.RegistrationRequest;
@@ -98,7 +97,6 @@ import gov.nih.nci.security.exceptions.internal.CSInternalConfigurationException
 import gov.nih.nci.security.exceptions.internal.CSInternalInsufficientAttributesException;
 import gov.nih.nci.security.exceptions.internal.CSInternalLoginException;
 
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -109,7 +107,6 @@ import javax.servlet.ServletContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
-import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
@@ -118,9 +115,7 @@ import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
- * @author John Hedden
- * @author Akhil Bhaskar (Amentra, Inc.)
- *
+ * Registration action.  Handles saving and email sending.
  */
 // CSM requires Hashtable, servletcontext untyped
 @SuppressWarnings({ "PMD.ReplaceHashtableWithMap", "unchecked", "PMD.CyclomaticComplexity" })
@@ -134,69 +129,43 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     private String password;
     private String passwordConfirm;
     private Boolean ldapAuthenticate;
-    private List<Organization> organizationList = new ArrayList<Organization>();
-    private List<Country> countryList = new ArrayList<Country>();
-    private List<State> stateList = new ArrayList<State>();
-    private List<UserRole> roleList = new ArrayList<UserRole>();
-    private static final Hashtable<String, String> LDAP_CONTEXT_PARAMS = new Hashtable<String, String>();
+    private List<Country> countryList;
+    private List<State> stateList;
+    private List<UserRole> roleList;
+    private final Hashtable<String, String> ldapContextParams = new Hashtable<String, String>();
     private String successMessage;
 
     /**
      * {@inheritDoc}
      */
     public void prepare() {
-        if (getCountryList().isEmpty()) {
-            setCountryList(CacheManager.getInstance().getCountries());
-        }
-        if (getStateList().isEmpty()) {
-            setStateList(CacheManager.getInstance().getStates());
-        }
-        if (getRoleList().isEmpty()) {
-            setRoleList(CacheManager.getInstance().getRoles());
-        }
-        if (LDAP_CONTEXT_PARAMS.isEmpty()) {
-            ServletContext context = ServletActionContext.getServletContext();
-            Enumeration<String> e = context.getInitParameterNames();
-            while (e.hasMoreElements()) {
-                String param = e.nextElement();
-                if (param.startsWith("ldap")) {
-                    LDAP_CONTEXT_PARAMS.put(param, context.getInitParameter(param));
-                }
+        setCountryList(CacheManager.getInstance().getCountries());
+        setStateList(CacheManager.getInstance().getStates());
+        setRoleList(CacheManager.getInstance().getRoles());
+        ServletContext context = ServletActionContext.getServletContext();
+        Enumeration<String> e = context.getInitParameterNames();
+        while (e.hasMoreElements()) {
+            String param = e.nextElement();
+            if (param.startsWith("ldap")) {
+                ldapContextParams.put(param, context.getInitParameter(param));
             }
         }
+        registrationRequest = new RegistrationRequest();
+        ldapAuthenticate = Boolean.TRUE;
     }
 
     /**
-     * Action to load the registration form.
-     *
-     * @return the directive for the next action / page to be directed to
-     */
-    @Override
-    @SkipValidation
-    public String input() {
-        setupForm();
-        return Action.INPUT;
-    }
-
-    /**
-     * Action to cancel.
-     *
-     * @return the directive for the next action / page to be directed to
-     */
-    @SkipValidation
-    public String cancel() {
-        setupForm();
-        return Action.INPUT;
-    }
-
-    /**
-     * Action to actually save the registration.
+     * Action to actually save the registration with authentication.
      * @return the directive for the next action / page to be directed to
      */
     public String save() {
         try {
-            persist();
-            LOGGER.info("done saving registration request; sending email");
+            // We call the service to save, then send email.  This is non-transactional behavior,
+            // but it's okay in this case.  The request gets logged to our db, but if email doesn't
+            // send, we tell the user to retry.  (We don't send email in service because Email helper
+            // makes assemptions about the environment that are innappropriate for the service tier.)
+            ActionHelper.getRegistrationService().register(getRegistrationRequest());
+            LOGGER.debug("done saving registration request; sending email");
             EmailHelper.registerEmail(getRegistrationRequest());
             EmailHelper.registerEmailAdmin(getRegistrationRequest());
             setSuccessMessage(ActionHelper.getRegistrationService()
@@ -211,75 +180,63 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     }
 
     /**
-     * Action to actually save the registration with authentication.
-     * @return the directive for the next action / page to be directed to
-     * @throws CSException on CSM error
-     * @throws CSInternalInsufficientAttributesException on CSM error
-     * @throws CSInternalConfigurationException on CSM error
+     * {@inheritDoc}
      */
-    public String saveAuthenticate() throws CSException, CSInternalConfigurationException,
-        CSInternalInsufficientAttributesException {
-
+    @Override
+    public void validate() {
+        super.validate();
         if (isLdapInstall()) {
-            try {
-                if (!LDAPHelper.authenticate(LDAP_CONTEXT_PARAMS , registrationRequest.getLoginName(),
-                                             getPassword().toCharArray(), null)) {
-                    // invalid user
-                    ActionHelper.saveMessage(getText("registration.ldapLookupFailure"));
-                    return Action.INPUT;
-                }
-            } catch (CSInternalLoginException e) {
-                // CSM throws this exception on valid user / wrong pass
-                ActionHelper.saveMessage(getText("registration.ldapLookupFailure"));
-                return Action.INPUT;
-            }
+            validateLdap();
         } else {
-            if (!validateDBUniqueFields()) {
-                return Action.INPUT;
-            }
+            validateNonLdap();
         }
-
-        return save();
     }
 
+    private void validateLdap() {
+        try {
+            if (ldapAuthenticate
+                    && !LDAPHelper.authenticate(ldapContextParams , registrationRequest.getLoginName(),
+                                                getPassword().toCharArray(), null)) {
+                addActionError(getText("registration.ldapLookupFailure"));
+            }
+        } catch (CSInternalLoginException e) {
+            // CSM throws this exception on valid user / wrong pass
+            addActionError(getText("registration.ldapLookupFailure"));
+        } catch (CSInternalConfigurationException e) {
+            addActionError(e.getMessage());
+            LOGGER.error("Unable to validate", e);
+        } catch (CSInternalInsufficientAttributesException e) {
+            addActionError(e.getMessage());
+            LOGGER.error("Unable to validate", e);
+        }
+    }
 
-    private boolean validateDBUniqueFields() throws CSException {
-        boolean retval = true;
-        if (getRegistrationRequest() != null) {
+    private void validateNonLdap() {
+        try {
             if (StringUtils.isNotBlank(getRegistrationRequest().getLoginName())
                     && (ActionHelper.getUserProvisioningManager()
                                     .getUser(getRegistrationRequest().getLoginName()) != null)) {
-                ActionHelper.saveMessage(getText("registration.usernameInUse"));
-                retval = false;
+                addActionError(getText("registration.usernameInUse"));
             }
             if (StringUtils.isNotBlank(getRegistrationRequest().getEmail())) {
                 User searchUser = new User();
                 searchUser.setEmailId(getRegistrationRequest().getEmail());
                 if (!ActionHelper.getUserProvisioningManager()
                                  .getObjects(new UserSearchCriteria(searchUser)).isEmpty()) {
-                    ActionHelper.saveMessage(getText("registration.emailAddressInUse"));
-                    retval = false;
+                    addActionError(getText("registration.emailAddressInUse"));
                 }
             }
+        } catch (CSException e) {
+            addActionError(e.getMessage());
+            LOGGER.error("Unable to validate", e);
         }
-        return retval;
     }
 
-    private void persist() {
-        ActionHelper.getRegistrationService().register(getRegistrationRequest());
-    }
-
-    /**
-     * method to setup drop downs on form.
+    /*
+     *
+     * Getters / setters below here
+     *
      */
-    private void setupForm() {
-        registrationRequest = new RegistrationRequest();
-
-        // populate the initial radio for LDAP
-        if (null == getLdapAuthenticate()) {
-            setLdapAuthenticate(Boolean.TRUE);
-        }
-    }
 
     /**
      * @return the user
@@ -322,20 +279,6 @@ public class RegistrationAction extends ActionSupport implements Preparable {
      */
     public void setStateList(List<State> stateList) {
         this.stateList = stateList;
-    }
-
-    /**
-     * @return the organizationList
-     */
-    public List<Organization> getOrganizationList() {
-        return organizationList;
-    }
-
-    /**
-     * @param organizationList the organizationList to set
-     */
-    public void setOrganizationList(List<Organization> organizationList) {
-        this.organizationList = organizationList;
     }
 
     /**
@@ -398,7 +341,7 @@ public class RegistrationAction extends ActionSupport implements Preparable {
      * @return is ldap install?
      */
     public boolean isLdapInstall() {
-        return Boolean.parseBoolean(LDAP_CONTEXT_PARAMS.get("ldap.install"));
+        return Boolean.parseBoolean(ldapContextParams.get("ldap.install"));
     }
 
     /**
