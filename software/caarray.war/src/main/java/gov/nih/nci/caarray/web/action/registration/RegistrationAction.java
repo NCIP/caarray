@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.web.action.registration;
 
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.country.Country;
+import gov.nih.nci.caarray.domain.register.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.register.RegistrationRequest;
 import gov.nih.nci.caarray.domain.state.State;
 import gov.nih.nci.caarray.web.action.ActionHelper;
@@ -138,6 +139,7 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     private List<State> stateList = new ArrayList<State>();
     private List<UserRole> roleList = new ArrayList<UserRole>();
     private static final Hashtable<String, String> LDAP_CONTEXT_PARAMS = new Hashtable<String, String>();
+    private String successMessage;
 
     /**
      * {@inheritDoc}
@@ -197,6 +199,8 @@ public class RegistrationAction extends ActionSupport implements Preparable {
             LOGGER.info("done saving registration request; sending email");
             EmailHelper.registerEmail(getRegistrationRequest());
             EmailHelper.registerEmailAdmin(getRegistrationRequest());
+            setSuccessMessage(ActionHelper.getRegistrationService()
+                                          .getParams().get(ConfigParamEnum.THANKS_MESSAGE).toString());
 
             return Action.SUCCESS;
         } catch (MessagingException me) {
@@ -213,7 +217,6 @@ public class RegistrationAction extends ActionSupport implements Preparable {
      * @throws CSInternalInsufficientAttributesException on CSM error
      * @throws CSInternalConfigurationException on CSM error
      */
-
     public String saveAuthenticate() throws CSException, CSInternalConfigurationException,
         CSInternalInsufficientAttributesException {
 
@@ -392,6 +395,20 @@ public class RegistrationAction extends ActionSupport implements Preparable {
      */
     public boolean isLdapInstall() {
         return Boolean.parseBoolean(LDAP_CONTEXT_PARAMS.get("ldap.install"));
+    }
+
+    /**
+     * @return the successMessage
+     */
+    public String getSuccessMessage() {
+        return successMessage;
+    }
+
+    /**
+     * @param successMessage the successMessage to set
+     */
+    public void setSuccessMessage(String successMessage) {
+        this.successMessage = successMessage;
     }
 }
 

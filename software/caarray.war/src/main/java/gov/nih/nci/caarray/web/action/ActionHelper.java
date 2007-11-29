@@ -266,5 +266,4 @@ public final class ActionHelper {
     public static BrowseService getBrowseService() {
         return (BrowseService) ServiceLocatorFactory.getLocator().lookup(BrowseService.JNDI_NAME);
     }
-
 }

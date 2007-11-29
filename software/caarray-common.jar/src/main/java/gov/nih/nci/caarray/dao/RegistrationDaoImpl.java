@@ -82,6 +82,10 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.register.RegistrationParameter;
+
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -94,5 +98,13 @@ public class RegistrationDaoImpl extends AbstractCaArrayDaoImpl implements Regis
     @Override
     Logger getLog() {
         return LOG;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<RegistrationParameter> getRegistrationParameters() {
+        RegistrationParameter rp = new RegistrationParameter();
+        return queryEntityByExample(rp);
     }
 }

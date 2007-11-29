@@ -82,9 +82,17 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.register.RegistrationParameter;
+
+import java.util.List;
+
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.register</code> package.
  * @author John Hedden
  */
 public interface RegistrationDao extends CaArrayDao {
+    /**
+     * @return all current registration parameters
+     */
+    List<RegistrationParameter> getRegistrationParameters();
 }

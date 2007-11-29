@@ -83,10 +83,33 @@
 package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.RegistrationDao;
+import gov.nih.nci.caarray.domain.register.ConfigParamEnum;
+import gov.nih.nci.caarray.domain.register.RegistrationParameter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author John Hedden
  *
  */
 public class RegistrationDaoStub extends AbstractDaoStub implements RegistrationDao {
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("deprecation")
+    public List<RegistrationParameter> getRegistrationParameters() {
+        List<RegistrationParameter> result = new ArrayList<RegistrationParameter>();
+        for (ConfigParamEnum e : ConfigParamEnum.values()) {
+            RegistrationParameter rp = new RegistrationParameter();
+            rp.setParam(e);
+            Object foo = (e.getParamType().equals(String.class)) ? "test" : Boolean.TRUE;
+            rp.setRawValue(foo.toString());
+
+            result.add(rp);
+        }
+
+        return result;
+    }
 }

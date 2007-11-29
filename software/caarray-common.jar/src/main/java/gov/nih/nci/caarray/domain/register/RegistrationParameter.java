@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-ejb-jar
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-ejb-jar Software and any
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,71 +80,81 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.registration;
+package gov.nih.nci.caarray.domain.register;
 
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.RegistrationDao;
-import gov.nih.nci.caarray.domain.register.ConfigParamEnum;
-import gov.nih.nci.caarray.domain.register.RegistrationParameter;
-import gov.nih.nci.caarray.domain.register.RegistrationRequest;
-import gov.nih.nci.caarray.util.io.logging.LogUtil;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Transient;
 
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import org.apache.log4j.Logger;
+import org.hibernate.validator.NotNull;
 
 /**
- * Implementation entry point for the Registration subsystem.
+ * Registration parameters.
  */
-@Local
-@Stateless
-public class RegistrationServiceBean implements RegistrationService {
+@Entity
+@org.hibernate.annotations.Entity(mutable = false)
+@SuppressWarnings({"PMD.UnusedPrivateMethod", "unused" })
+public class RegistrationParameter extends AbstractCaArrayObject {
 
-    private static final Logger LOG = Logger.getLogger(RegistrationServiceBean.class);
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+    private static final long serialVersionUID = 1L;
+
+    private ConfigParamEnum param;
+    private String rawValue;
 
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void register(RegistrationRequest registrationRequest) {
-        LogUtil.logSubsystemEntry(LOG, registrationRequest);
-        getRegistrationDao().save(registrationRequest);
-        LogUtil.logSubsystemExit(LOG);
+    public RegistrationParameter() {
+        // Do nothing.
     }
 
     /**
-     * {@inheritDoc}
+     * @return which configuration parameter this is
      */
-    public Map<ConfigParamEnum, Object> getParams() {
-        LogUtil.logSubsystemEntry(LOG);
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    @Column(unique = true)
+    public ConfigParamEnum getParam() {
+        return param;
+    }
 
-        Map<ConfigParamEnum, Object> result = new HashMap<ConfigParamEnum, Object>();
-        List<RegistrationParameter> l = getRegistrationDao().getRegistrationParameters();
-        for (RegistrationParameter rp : l) {
-            result.put(rp.getParam(), rp.getValue());
+    /**
+     * @param param config param
+     */
+    public void setParam(ConfigParamEnum param) {
+        this.param = param;
+    }
+
+    @NotNull
+    @Column(length = LARGE_TEXT_FIELD_LENGTH)
+    private String getRawValue() {
+        return rawValue;
+    }
+
+    /**
+     * @deprecated unit tests / hibernate only
+     * @param rawValue raw value
+     */
+    @Deprecated
+    public void setRawValue(String rawValue) {
+        this.rawValue = rawValue;
+    }
+
+    /**
+     * @return the parameter value.  Will be the type from <code>getParam.getParamType()</code>.
+     */
+    @Transient
+    public Object getValue() {
+        if (getParam().getParamType().equals(String.class)) {
+            return rawValue;
+        } else if (getParam().getParamType().equals(Boolean.class)) {
+            return Boolean.valueOf(rawValue);
+        } else {
+            throw new IllegalArgumentException("Unknown param type: " + getParam().getParamType());
         }
-
-        LogUtil.logSubsystemExit(LOG);
-        return result;
-    }
-
-    CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
-    }
-
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
-    }
-
-    private RegistrationDao getRegistrationDao() {
-        return daoFactory.getRegistrationDao();
     }
 }

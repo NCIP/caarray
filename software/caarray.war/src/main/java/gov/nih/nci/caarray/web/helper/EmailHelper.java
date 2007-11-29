@@ -82,20 +82,15 @@
  */
 package gov.nih.nci.caarray.web.helper;
 
+import gov.nih.nci.caarray.domain.register.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.register.RegistrationRequest;
 import gov.nih.nci.caarray.util.EmailUtil;
+import gov.nih.nci.caarray.web.action.ActionHelper;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 
 import javax.mail.MessagingException;
-
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.log4j.Logger;
 
 /**
  * @author John Hedden (Amentra, Inc.)
@@ -103,15 +98,6 @@ import org.apache.log4j.Logger;
  */
 public final class EmailHelper {
 
-    private static final Logger LOG = Logger.getLogger(EmailHelper.class);
-
-    private static final String REGISTRATION_SUBJECT = "mail.registration.subject";
-    private static final String REGISTRATION_FROM = "mail.registration.from";
-    private static final String ADMIN_EMAIL_ADDRESS = "mail.registration.admin";
-
-    /**
-     * No instantiation is allowed, hence the private constructor.
-     */
     private EmailHelper() {
         // nothing here.
     }
@@ -121,39 +107,28 @@ public final class EmailHelper {
      * @throws MessagingException on other error
      */
     public static void registerEmail(RegistrationRequest registrationRequest) throws MessagingException {
-        List<String> mailRecipients = new ArrayList<String>();
-        mailRecipients.add(registrationRequest.getEmail());
-        String subject = null;
-        String from = null;
+        Map<ConfigParamEnum, Object> props = getRegistrationProperties();
 
-        String mailBody = "Dear NCICB User\n"
-            + "Thank you for your submission concerning caArray registration request.  It has "
-            + "been logged in our SupportWizard database with an ID of " + registrationRequest.getLoginName() + ".\n"
-            + "Your questions and suggestions are very important to us. You will receive a followup call or "
-            + "email shortly.\n"
-            + "Thank you,\n"
-            + "NCICB Application Support Group";
-
-        try {
-            subject = getRegistrationProperties().get("subject");
-            from = getRegistrationProperties().get("from");
-        } catch (ConfigurationException e) {
-            LOG.error(e.getMessage(), e);
+        if (!((Boolean) props.get(ConfigParamEnum.SEND_CONFIRM_EMAIL)).booleanValue()) {
+            return;
         }
 
-        EmailUtil.sendMail(mailRecipients, from, subject, mailBody);
+        String subject = (String) props.get(ConfigParamEnum.CONFIRM_EMAIL_SUBJECT);
+        String from = (String) props.get(ConfigParamEnum.EMAIL_FROM);
+        String mailBody = (String) props.get(ConfigParamEnum.CONFIRM_EMAIL_CONTENT);
+
+        EmailUtil.sendMail(Collections.singletonList(registrationRequest.getEmail()), from, subject, mailBody);
     }
 
     /**
      * @param registrationRequest request
      * @throws MessagingException on error
      */
-    @SuppressWarnings("PMD.ExcessiveMethodLength")
     public static void registerEmailAdmin(RegistrationRequest registrationRequest) throws MessagingException {
-        List<String> mailRecipients = new ArrayList<String>();
-        String admin = null;
-        String subject = null;
-        String from = null;
+        Map<ConfigParamEnum, Object> props = getRegistrationProperties();
+        String admin = (String) props.get(ConfigParamEnum.REG_EMAIL_TO);
+        String subject = (String) props.get(ConfigParamEnum.REG_EMAIL_SUBJECT);
+        String from = (String) props.get(ConfigParamEnum.EMAIL_FROM);
 
         String mailBody = "Registration Request:\n"
             + "First Name: " + registrationRequest.getFirstName() + "\n"
@@ -172,34 +147,13 @@ public final class EmailHelper {
             + "Zip: " + registrationRequest.getZip() + "\n"
             + "Role: " + registrationRequest.getRole();
 
-        try {
-            subject = getRegistrationProperties().get("subject");
-            from = getRegistrationProperties().get("from");
-            admin = getRegistrationProperties().get("admin");
-            mailRecipients.add(admin);
-        } catch (ConfigurationException e) {
-            LOG.error(e.getMessage(), e);
-        }
-        EmailUtil.sendMail(mailRecipients, from, subject, mailBody);
+        EmailUtil.sendMail(Collections.singletonList(admin), from, subject, mailBody);
     }
 
     /**
      * @return reg props
-     * @throws ConfigurationException on error
      */
-    public static Map<String, String> getRegistrationProperties() throws ConfigurationException {
-        Map<String, String> propertiesMap = new HashMap<String, String>();
-
-        Configuration config = new PropertiesConfiguration("default.properties");
-        String subject = config.getString(REGISTRATION_SUBJECT);
-        String from = config.getString(REGISTRATION_FROM);
-        String admin = config.getString(ADMIN_EMAIL_ADDRESS);
-
-        propertiesMap.put("subject", subject);
-        propertiesMap.put("from", from);
-        propertiesMap.put("admin", admin);
-
-        return propertiesMap;
-
+    public static Map<ConfigParamEnum, Object> getRegistrationProperties() {
+        return ActionHelper.getRegistrationService().getParams();
     }
 }

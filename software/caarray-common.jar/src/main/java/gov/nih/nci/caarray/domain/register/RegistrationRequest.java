@@ -82,12 +82,15 @@
  */
 package gov.nih.nci.caarray.domain.register;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.country.Country;
 import gov.nih.nci.caarray.domain.state.State;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.ForeignKey;
@@ -103,7 +106,7 @@ import org.hibernate.validator.Pattern;
  */
 @Entity
 @SuppressWarnings("PMD.TooManyFields")
-public class RegistrationRequest extends AbstractCaArrayEntity {
+public class RegistrationRequest implements PersistentObject {
 
     private static final long serialVersionUID = -9198769730580475043L;
 
@@ -138,6 +141,22 @@ public class RegistrationRequest extends AbstractCaArrayEntity {
     private Country country;
     private String zip;
     private String role;
+
+    private Long id;
+
+    /**
+     * @return database identifier
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public Long getId() {
+        return this.id;
+    }
+
+    @SuppressWarnings({"PMD.UnusedPrivateMethod", "unused" })
+    private void setId(Long id) {
+        this.id = id;
+    }
 
     /**
      * @return the loginName
