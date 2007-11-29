@@ -34,7 +34,8 @@
         Experiment Details
     </h1>
 
-	<div class="pagehelp" style="width:auto;">
+    <caarray:helpPrint>
+        <jsp:attribute name="extraContent">
         <c:if test="${!empty project.id && caarrayfn:isOwner(project, caarrayfn:currentUser())}">
             <c:choose>
                 <c:when test="${project.submissionAllowed}">
@@ -55,13 +56,14 @@
                     <s:hidden name="project.id"/>
                     <s:hidden name="workflowStatus" value="${newWorkflowStatus}"/>
                 </s:form>
-                <caarray:linkButton onclick="submitWorkflowForm();"
-                        actionClass="submit_experiment" text="${buttonTitle}" style="margin-top:-.6em; margin-right:15px;"/>
+                <caarray:linkButton onclick="this.blur(); submitWorkflowForm();"
+                        actionClass="submit_experiment" text="${buttonTitle}" style="float: right; padding-top: 0px; margin-top: -0.3em"/>
             </c:if>
         </c:if>
-		<a href="javascript:openHelpWindow('')" class="help">Help</a>
-		<a href="javascript:printpage()" class="print">Print</a>
-	</div>
+        </jsp:attribute>
+	</caarray:helpPrint>
+
+
     <c:url value="/ajax/project/tab/Overview/load.action" var="overviewUrl">
         <c:param name="project.id" value="${project.id}" />
         <c:param name="editMode" value="${editMode}" />

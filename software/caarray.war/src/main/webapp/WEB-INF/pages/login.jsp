@@ -5,10 +5,7 @@
     </head>
     <body>
         <h1>Login</h1>
-        <div class="pagehelp" style="margin-top:-1.8em">
-            <a href="javascript:openHelpWindow('')" class="help">Help</a>
-            <a href="javascript:printpage()" class="print">Print</a>
-        </div>
+        <caarray:helpPrint/>
         <div class="padme">
             <div id="tabboxwrapper_notabs">
                 <div class="boxpad2">

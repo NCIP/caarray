@@ -12,10 +12,7 @@
 
 <body>
     <h1>Experiment Permissions</h1>
-	<div class="pagehelp">
-		<a href="javascript:openHelpWindow('')" class="help">Help</a>
-		<a href="javascript:printpage()" class="print">Print</a>
-	</div>
+    <caarray:helpPrint/>
     <script type="text/javascript">
 
     var SecurityLevel = new Object();

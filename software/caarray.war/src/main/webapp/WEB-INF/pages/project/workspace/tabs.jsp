@@ -5,10 +5,7 @@
 </head>
 <body>
     <h1>Experiment Workspace</h1>
-	<div class="pagehelp">
-		<a href="javascript:openHelpWindow('')" class="help">Help</a>
-		<a href="javascript:printpage()" class="print">Print</a>
-	</div>
+    <caarray:helpPrint/>
     <c:url value="/protected/ajax/project/workspace/myProjects.action" var="myProjectsUrl" />
     <c:url value="/protected/ajax/project/workspace/publicProjects.action" var="publicProjectsUrl" />
 

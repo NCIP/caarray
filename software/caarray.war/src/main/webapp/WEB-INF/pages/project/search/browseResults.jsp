@@ -5,10 +5,7 @@
 </head>
 <body>
     <h1>Browse caArray</h1>
-	<div class="pagehelp">
-		<a href="javascript:openHelpWindow('')" class="help">Help</a>
-		<a href="javascript:printpage()" class="print">Print</a>
-	</div>
+    <caarray:helpPrint/>
     <div class="padme">
         <h2>Browse by: "<strong><s:text name="${category.resourceKey}"/></strong>"</h2>
         <ajax:tabPanel panelStyleId="tabs" panelStyleClass="tabs2" currentStyleClass="active" contentStyleId="tabboxwrapper" contentStyleClass="tabboxwrapper"
