@@ -51,7 +51,7 @@
                 </c:when>
             </c:choose>
             <c:if test="${!empty newWorkflowStatus}">
-                <s:form action="project/changeWorkflowStatus" id="workflowForm" cssStyle="display: inline">
+                <s:form namespace="/protected" action="project/changeWorkflowStatus" id="workflowForm" cssStyle="display: inline">
                     <s:hidden name="project.id"/>
                     <s:hidden name="workflowStatus" value="${newWorkflowStatus}"/>
                 </s:form>

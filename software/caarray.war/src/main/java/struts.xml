@@ -179,6 +179,11 @@
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
         </action>
 
+        <action name="project/changeWorkflowStatus" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="changeWorkflowStatus">
+            <result name="workspace" type="redirect-action">project/workspace</result>
+            <result name="input">/WEB-INF/pages/project/form.jsp</result>
+        </action>
+
         <action name="project/permissions/*" class="gov.nih.nci.caarray.web.action.project.ProjectPermissionsAction" method="{1}">
             <result name="input">/WEB-INF/pages/project/permissions/profiles.jsp</result>
             <result name="success">/WEB-INF/pages/project/permissions/profiles.jsp</result>
