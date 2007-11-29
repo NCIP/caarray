@@ -4,17 +4,17 @@
 	lookAndFeel="org.tp23.jgoodies.plaf.plastic.PlasticXPLookAndFeel"
 	name="Caarray2 Installer"
 	windowIcon="/resources/gkmain_inv.png"
-	defaultImageResource="/resources/banner_caarray.jpg"
+	defaultImageResource="/resources/banner_caarray.png"
 	minJavaVersion="1.5" finishButtonText="Install" wide="600:375"
 	debug="false">
 
 	<!--  each page element represents a page of the installer -->
 	<page type="input" name="intro"
-		displayText="Welcome to the caArray 2 installer">
+		displayText="Welcome to the Caarray2 installer">
 
 		<comment displayText="Installation Information:" bold="true" />
 		<comment
-			displayText="This installer will install the caArray2 software with JBoss 4.0.05-GA (with JEMS Installer-1.2.0.GA) and MySQL 5.0.45"
+			displayText="This installer will install the Caarray2 software with JBoss 4.0.05-GA (with JEMS Installer-1.2.0.GA) and MySQL 5.0.45"
 			bold="false" />
 	</page>
 	<!--  type="license" shows a license page to click through -->
@@ -27,23 +27,16 @@
 	</page>
 	<!--  type="input" shows a list of editable options for the installer -->
 	<page type="input" name="input.file"
-		displayText="NOTE3">
+		displayText="Installation Folder">
 		<comment displayText="" bold="true" />
 		<comment
-			displayText="This will install the Caarray2 Application"
+			displayText="Please enter the destination folder for the Caarray2 application:"
 			bold="true" />
 		<comment displayText="" bold="true" />
-		
-		<!--
-		<file property="input.file"
-			defaultValue="C:/dev/Caarray2/LICENSE.TXT"
-			defaultValueWin="C:\dev\Caarray2\LICENSE.TXT"
-			displayText="Select some file"
-			checkExists="true" />  -->
 			
-		<text displayText="Temp folder" 
-			defaultValue="C:\TEMP" 
-			property="temp.dir" explanatoryText="Enter a temporary folder for the install files."/>
+		<text displayText="Installation folder" 
+			defaultValue="C:\caarray-app" 
+			property="temp.dir"/>
 			
     </page>
 	
@@ -52,10 +45,8 @@
 			displayText="Install Caarray2?"
 			bold="true" />
 		<comment displayText="" bold="true" />
-		<target displayText="Yes or No (check for Yes)?"
-			target="auto-update" defaultValue="No" />
-		<comment
-			displayText="NOTE: When using Text-only mode, type 'Yes' or 'No' (excluding apostrophes)" />
+		<target displayText="Please confirm the Caarray2 installation."
+			target="auto-update" defaultValue="Yes" />
 	</page>
 
 	<!--  page type="progress" shows a progress page with the install button

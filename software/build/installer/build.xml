@@ -163,25 +163,26 @@
 		<copy todir="${installer.dist.dir.temp}/jars">
 			<fileset dir="${lib.dir}">
 				<include name="**/mysql-connector-java-5.0.5-bin.jar" />
+				<include name="**/clm.jar" />
 			</fileset>
 		</copy>
+		
+		<!-- Copy property files to temp -->
+		<copy file="${basedir}/local.properties" todir="${installer.basedir}/target/dist/temp" />
+		<copy file="${basedir}/default.properties" todir="${installer.basedir}/target/dist/temp" />
 
 		<!-- Get/Copy JBoss zip 	-->
 		<mkdir dir="${installer.dist.dir.temp}/tools" />
 		<available file="${tools.dir}" type="dir" property="tools.dir.present"/>
 		<available file="${tools.dir}/jboss-4.0.5.GA.zip" type="file" property="local.jboss.present"/>
-		<available file="${tools.dir}/jems-installer-1.2.0.GA.jar" type="file" property="local.jems.present"/>
 		<available file="${tools.dir}/mysql-noinstall-5.0.45-win32.zip" type="file" property="local.mysql.present"/>
 
 		<antcall target="create-tools-dir" />
 		<antcall target="get-jboss-bin" />
-		<antcall target="get-jems-bin" />
 		<antcall target="get-mysql-bin" />
 
 		<copy file="${tools.dir}/jboss-4.0.5.GA.zip" todir="${installer.dist.dir.temp}/tools" />
-		<copy file="${tools.dir}/jems-installer-1.2.0.GA.jar" todir="${installer.dist.dir.temp}/tools" />
 		<copy file="${tools.dir}/mysql-noinstall-5.0.45-win32.zip" todir="${installer.dist.dir.temp}/tools" />
-
 
 		<!-- Configure JBoss MySQL datasource -->
 		<antcall target="-configure-jboss-ds" />
@@ -201,10 +202,6 @@
 	
 	<target name="get-jboss-bin" unless="local.jboss.present" >
 		<get dest="${tools.dir}/jboss-4.0.5.GA.zip" usetimestamp="true" ignoreerrors="false" src="http://www.integratebutton.com/downloads/ncicb/jboss-4.0.5.GA.zip" />
-	</target>
-
-	<target name="get-jems-bin" unless="local.jems.present" >
-		<get dest="${tools.dir}/jems-installer-1.2.0.GA.jar" usetimestamp="true" ignoreerrors="false" src="http://www.integratebutton.com/downloads/ncicb/jems-installer-1.2.0.GA.jar" />
 	</target>
 
 	<target name="get-mysql-bin" unless="local.mysql.present" >

@@ -5,7 +5,9 @@
      </description>
 
 	<property name="jboss.home" value="${temp.dir}/jboss-4.0.5.GA" />
-	<property name="lib.dir" value="../../../lib" />
+	<property name="mysql.home" value="${temp.dir}/mysql-5.0.45-win32" />
+	<property name="lib.dir" value="${temp.dir}/jars" />
+	<property name="db.dir" value="${temp.dir}/database" />
 	<property name="caarray.ear" value="${temp.dir}/ear/caarray.ear" />
 	<property name="jboss.server.name" value="default" />
 	<property name="jboss.server.hostname" value="localhost" />
@@ -13,13 +15,16 @@
 	<property name="mail.smtp.port" value="25" />
 	<property name="jboss.deploy.dir" value="${temp.dir}/jboss-4.0.5.GA/server/default/deploy" />
 	<property name="mysql.datasource.file" value="caarray-mysql-ds.xml" />
-	<property name="resource.dir" value="../../../resources" />
 	<property name="build.dir" value="../.." />
-	<property name="clm.jar" value="${lib.dir}/clm.jar" />
 	<property name="jboss.lib.dir" value="${jboss.home}/server/${jboss.server.name}/lib" />
 	<property name="jboss.server.jndi.port" value="1099" />
 
-	<echoproperties/>
+	<!-- used to configure the updater build -->
+	<property file="${temp.dir}/local.properties" />
+	<property file="${temp.dir}/default.properties" />
+
+
+	<echoproperties />
 
 	<tstamp>
 		<format property="touch.time" pattern="yyyy-MM-dd-HH-mm" />
@@ -36,7 +41,7 @@
 		<echo />
 		<echo />
 		<echo />
-		<echo>Installed ${application.name} Application</echo>
+		<echo>Installing Caarray2...Please wait...</echo>
 		<echo />
 		<echo />
 		<echo />
@@ -46,40 +51,39 @@
 		<unzip dest="${temp.dir}" overwrite="true" src="${basedir}/installpack.zip" />
 		<unzip dest="${temp.dir}" overwrite="true" src="${temp.dir}/tools/jboss-4.0.5.GA.zip" />
 		<unzip dest="${temp.dir}" overwrite="true" src="${temp.dir}/tools/mysql-noinstall-5.0.45-win32.zip" />
-		<copy file="${temp.dir}/ear/caarray.ear" todir="${temp.dir}/jboss-4.0.5.GA/server/default/deploy" />
-		<copy file="${temp.dir}/config/caarray-mysql-ds.xml" todir="${temp.dir}/jboss-4.0.5.GA/server/default/deploy" />
-		<copy file="${temp.dir}/jars/mysql-connector-java-5.0.5-bin.jar" todir="${temp.dir}/jboss-4.0.5.GA/server/default/lib" />
+		<antcall target="mysql:stop" />
+		<antcall target="mysql:start" />
+		<antcall target="mysql:db-integrate" />
+		<antcall target="deploy:stop-jboss" />
 		<antcall target="deploy:caarray.ear" />
-	</target>
-
-	<target name="install-jems">
-		<exec executable="cmd" dir="${temp.dir}/tools" spawn="true">
-			<arg line="/c java -jar jems-installer-1.2.0.GA.jar -installGroup default installpath=${temp.dir}/jboss-4.0.5.GA" />
-		</exec>
-		<sleep seconds="20" />
+		<antcall target="deploy:start-jboss" />
 	</target>
 
 	<target name="deploy:caarray.ear">
-
-
 		<antcall target="deploy:stop-jboss" />
+		<copy file="${temp.dir}/ear/caarray.ear" todir="${temp.dir}/jboss-4.0.5.GA/server/default/deploy" overwrite="true" />
+		<copy file="${temp.dir}/config/caarray-mysql-ds.xml" todir="${temp.dir}/jboss-4.0.5.GA/server/default/deploy" overwrite="true" />
+		<copy file="${temp.dir}/jars/mysql-connector-java-5.0.5-bin.jar" todir="${jboss.lib.dir}" overwrite="true" />
+		<copy file="${temp.dir}/jars/clm.jar" todir="${jboss.lib.dir}" overwrite="true" />
 
-		<copy file="${resource.dir}/deploy/${mysql.datasource.file}" todir="${jboss.deploy.dir}" overwrite="true">
+
+		<!--
+		<copy file="${temp.dir}/config/${mysql.datasource.file}" todir="${jboss.deploy.dir}" overwrite="true">
 			<filterset id="caarray.filterset" onmissingfiltersfile="warn">
 				<filtersfile file="${build.dir}/default.properties" />
 				<filtersfile file="${build.dir}/local.properties" />
 				<filtersfile file="C:/dev/caarray2/software/build/DEV.properties" />
 			</filterset>
 		</copy>
-		<copy file="${clm.jar}" todir="${jboss.lib.dir}" overwrite="true" />
+		
 		<copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
 		<copy file="${build.dir}/resources/deploy/mail-service.xml" todir="${jboss.deploy.dir}" />
 		<replace file="${jboss.deploy.dir}/mail-service.xml">
 			<replacefilter token="@SMTPHOST@" value="${mail.smtp.host}" />
 			<replacefilter token="@SMTPPORT@" value="${mail.smtp.port}" />
 		</replace>
-		<antcall target="deploy:start-jboss" />
-		<antcall target="install-jems" />
+		
+		-->
 	</target>
 
 	<target name="undeploy" description="Undeploys the application from JBoss">
@@ -95,6 +99,42 @@
 		</waitfor>
 	</target>
 
+
+
+	<!-- ################################################# -->
+	<!-- #############    DB Integration   ############### -->
+	<!-- ################################################# -->
+
+	<target name="mysql:start">
+		<echo message="${mysql.home}/bin" />
+		<exec executable="cmd" dir="${mysql.home}/bin" spawn="true">
+			<arg line="/c mysqld --verbose" />
+		</exec>
+		<sleep seconds="15" />
+	</target>
+
+	<target name="mysql:stop">
+		<exec executable="cmd" dir="${mysql.home}/bin" spawn="true">
+			<arg line="/c mysqladmin -u root shutdown" />
+		</exec>
+		<sleep seconds="15" />
+	</target>
+
+	<target name="mysql:db-integrate" description="Apply DB changes">
+		<run-sql-script database.url="${database.system.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${db.dir}/create_database_and_user.sql" />
+		<run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${db.dir}/create_schema.sql" />
+		<run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${db.dir}/init-csm-schema.sql" />
+		<run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${db.dir}/populate-csm.sql" />
+		<run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${db.dir}/populate-csm2.sql" />
+		<run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${db.dir}/populate-caarray.sql" />
+	</target>
+
+
+	<!-- ################################################# -->
+	<!-- #############   JBoss Deployment  ############### -->
+	<!-- ################################################# -->
+
+
 	<target name="deploy:stop-jboss">
 		<java classname="org.jboss.Shutdown" fork="true" spawn="true">
 			<arg line="-s ${jboss.server.hostname}:${jboss.server.jndi.port} -S" />
@@ -102,6 +142,7 @@
 				<pathelement location="${jboss.home}/bin/shutdown.jar" />
 			</classpath>
 		</java>
+		<sleep seconds="15" />
 	</target>
 
 	<target name="deploy:start-jboss" depends="deploy:check-if-jboss-is-running" unless="jboss.running">
@@ -109,6 +150,7 @@
 			<env key="NOPAUSE" value="true" />
 			<arg line="/c run.bat" />
 		</exec>
+		<sleep seconds="15" />
 	</target>
 
 	<target name="deploy:check-if-jboss-is-running">
@@ -144,5 +186,25 @@
 	</target>
 
 	<target name="cleanuptarget" />
+
+	<!-- ################################################# -->
+	<!-- #############      Macrodefs      ############### -->
+	<!-- ################################################# -->
+
+	<macrodef name="run-sql-script" description="By default this will use the database.url, to use drop database &amp; user use the database.system.url property">
+		<attribute name="sql.file" />
+		<attribute name="sql.delimiter" default=";" />
+		<attribute name="sql.delimitertype" default="normal" />
+		<attribute name="database.url" default="${database.url}" />
+		<attribute name="database.user" default="${database.user}" />
+		<attribute name="database.password" default="${database.password}" />
+		<sequential>
+			<sql driver="${database.driver}" url="@{database.url}" userid="@{database.user}" password="@{database.password}" src="@{sql.file}" onerror="abort" autocommit="true" delimiter="@{sql.delimiter}" delimitertype="@{sql.delimitertype}" keepformat="true">
+				<classpath>
+					<pathelement location="${lib.dir}/mysql-connector-java-5.0.5-bin.jar" />
+				</classpath>
+			</sql>
+		</sequential>
+	</macrodef>
 
 </project>

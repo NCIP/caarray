@@ -3,7 +3,7 @@
 Release Notes
 =============
  
-  #Product:#	CAARRAY2
+  #Product:#	Caarray2
   #Version:#	1.0
   #Date:#	November 2007
 
@@ -17,14 +17,14 @@ Contents
    5. Known Issues/Defects
    6. Bug Reports, Feature Requests, and Support
    7. Documentation and Files
-   8. CAARRAY2 Web Pages
+   8. Caarray2 Web Pages
 
 Introduction
 ---------------------------
  
 For more information:
 
-* http://code.google.com/p/CAARRAY2-ci/
+* https://gforge.nci.nih.gov/projects/caarraydev/
 
 Release History
 ---------------
@@ -47,7 +47,7 @@ Defects Fixed Since Last Release
 Known Issues/Defects
 --------------------
   
-    See http://code.google.com/p/CAARRAY2-ci/
+    See https://gforge.nci.nih.gov/tracker/?atid=422&group_id=82&func=browse
 
 
 Bug Reports, Feature Requests, And Support
@@ -60,8 +60,8 @@ Documentation And Files
 
 TBD 
 
-CAARRAY2 Web Pages
+Caarray2 Web Pages
 ---------------
 
-    * http://code.google.com/p/CAARRAY2-ci/
+    * https://gforge.nci.nih.gov/projects/caarraydev/
 
