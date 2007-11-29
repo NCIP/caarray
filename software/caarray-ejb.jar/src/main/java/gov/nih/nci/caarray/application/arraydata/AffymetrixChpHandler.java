@@ -319,12 +319,12 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
         FusionCHPLegacyData chpData = getChpData(file);
         if (chpData == null) {
             result.addMessage(Type.ERROR, "Couldn't read Affymetrix CHP file: " + file.getName());
-//        } else {
-//            validateAgainstDesign(chpData, result, arrayDesignService);
+        } else {
+            validateAgainstDesign(chpData, result, arrayDesignService);
         }
     }
 
-    void validateAgainstDesign(FusionCHPLegacyData chpData, FileValidationResult result,
+    private void validateAgainstDesign(FusionCHPLegacyData chpData, FileValidationResult result,
             ArrayDesignService arrayDesignService) {
         validateDesignExists(chpData, result, arrayDesignService);
     }

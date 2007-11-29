@@ -121,12 +121,14 @@ abstract class AbstractArrayDesignHandler {
 
     final void loadDesignDetails(ArrayDesign arrayDesign) {
         load(arrayDesign);
+        arrayDesign.setDesignDetails(getDesignDetails(arrayDesign));
     }
 
     final ArrayDesign getArrayDesign() {
         ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.setDesignFile(getDesignFile());
         load(arrayDesign);
+        arrayDesign.setDesignDetails(getDesignDetails(arrayDesign));
         return arrayDesign;
     }
 

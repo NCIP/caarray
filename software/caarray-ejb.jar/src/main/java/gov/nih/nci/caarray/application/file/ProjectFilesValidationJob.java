@@ -82,55 +82,26 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.project.Project;
 
 /**
- * Simple stub with no functionality.
+ * Encapsulates the functionality necessary for validating a set of files in a project.
  */
-public class FileManagementServiceStub implements FileManagementService {
+final class ProjectFilesValidationJob extends AbstractProjectFilesJob {
 
-    int validatedFileCount = 0;
-    int importedFilecCount = 0;
+    private static final long serialVersionUID = 1L;
 
-    public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
-        this.importedFilecCount += fileSet.getFiles().size();
+    ProjectFilesValidationJob(String username, Project project, CaArrayFileSet fileSet) {
+        super(username, project, fileSet);
     }
 
-    public void validateFiles(Project project, CaArrayFileSet fileSet) {
-        this.validatedFileCount += fileSet.getFiles().size();
+    void execute() {
+        FileAccessService fileAccessService = getFileAccessService();
+        Project project = getProject();
+        doValidate(fileAccessService, getFileSet(project));
+        fileAccessService.closeFiles();
     }
 
-    /**
-     * @return the validatedFileCount
-     */
-    public int getValidatedFileCount() {
-        return this.validatedFileCount;
-    }
-
-    /**
-     * @return the importedFilecCount
-     */
-    public int getImportedFilecCount() {
-        return this.importedFilecCount;
-    }
-
-    public void reset() {
-        this.validatedFileCount = 0;
-        this.importedFilecCount = 0;
-    }
-
-    public void importArrayDesignFile(ArrayDesign arrayDesign, CaArrayFile caArrayFile) {
-        arrayDesign.setDesignFile(caArrayFile);
-    }
-
-    public void addSupplementalFiles(Project targetProject, CaArrayFileSet fileSet) {
-        // no-op
-    }
-
-    public void importArrayDesignAnnotationFile(ArrayDesign arrayDesign, CaArrayFile annotationFile) {
-        arrayDesign.setAnnotationFile(annotationFile);
-    }
 }

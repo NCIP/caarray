@@ -101,9 +101,10 @@ public interface FileManagementService {
     /**
      * Validates the files provided.
      *
+     * @param project the project the files belong to.
      * @param fileSet the files to validate.
      */
-    void validateFiles(CaArrayFileSet fileSet);
+    void validateFiles(Project project, CaArrayFileSet fileSet);
 
     /**
      * Imports the files provided into the project given.
@@ -123,7 +124,7 @@ public interface FileManagementService {
 
     /**
      * Imports array design information from the file provided into an <code>ArrayDesign</code>.
-     * 
+     *
      * @param arrayDesign the array design object
      * @param designFile the file containing the array design annotation.
      */

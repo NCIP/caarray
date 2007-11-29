@@ -60,7 +60,11 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorStub;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
@@ -74,6 +78,10 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -83,11 +91,16 @@ public class FileManagementServiceTest {
     private FileManagementService fileManagementService;
     private final LocalFileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
     private final LocalArrayDesignServiceStub arrayDesignServiceStub = new LocalArrayDesignServiceStub();
+    private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
 
     @Before
     public void setUp() {
+        FileManagementMDB fileManagementMDB = new FileManagementMDB();
+        fileManagementMDB.setDaoFactory(daoFactoryStub);
+        DirectJobSubmitter submitter = new DirectJobSubmitter(fileManagementMDB);
         FileManagementServiceBean fileManagementServiceBean = new FileManagementServiceBean();
-        fileManagementServiceBean.setDaoFactory(new DaoFactoryStub());
+        fileManagementServiceBean.setSubmitter(submitter);
+        fileManagementServiceBean.setDaoFactory(daoFactoryStub);
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
         locatorStub.addLookup(ArrayDataService.JNDI_NAME, new LocalArrayDataServiceStub());
@@ -99,12 +112,12 @@ public class FileManagementServiceTest {
     @Test
     public void testValidateFiles() {
         Project project = getTgaBroadTestProject();
-        fileManagementService.validateFiles(project.getFileSet());
+        fileManagementService.validateFiles(project, project.getFileSet());
         for (CaArrayFile file : project.getFiles()) {
             assertEquals(FileStatus.VALIDATED, file.getFileStatus());
         }
     }
-    
+
     @Test
     public void testImportFiles() {
         Project project = getTgaBroadTestProject();
@@ -113,21 +126,21 @@ public class FileManagementServiceTest {
             assertEquals(FileStatus.IMPORTED, file.getFileStatus());
         }
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testImportIllegalState() {
         Project project = getTgaBroadTestProject();
         project.getFiles().iterator().next().setFileStatus(FileStatus.VALIDATION_ERRORS);
         fileManagementService.importFiles(project, project.getFileSet());
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testValidateIllegalState() {
         Project project = getTgaBroadTestProject();
         project.getFiles().iterator().next().setFileStatus(FileStatus.IMPORTED);
-        fileManagementService.validateFiles(project.getFileSet());
+        fileManagementService.validateFiles(project, project.getFileSet());
     }
-    
+
     @Test
     public void testImportDoesntOverwriteExistingExperiment() {
         Project project = getTgaBroadTestProject();
@@ -141,11 +154,26 @@ public class FileManagementServiceTest {
 
     private Project getTgaBroadTestProject() {
         Project project = new Project();
-        project.getFiles().addAll(TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_SET).getFiles());
+        daoFactoryStub.searchDaoStub.save(project);
+        addFiles(project, TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_SET).getFiles());
+        saveFiles(project.getFiles());
         assertEquals(29, project.getFiles().size());
         return project;
     }
-    
+
+    private void addFiles(Project project, Set<CaArrayFile> files) {
+        for (CaArrayFile file : files) {
+            project.getFiles().add(file);
+            file.setProject(project);
+        }
+    }
+
+    private void saveFiles(SortedSet<CaArrayFile> files) {
+        for (CaArrayFile file : files) {
+            daoFactoryStub.searchDaoStub.save(file);
+        }
+    }
+
     @Test
     public void testAddSupplementalFiles() {
         Project project = getTgaBroadTestProject();
@@ -159,6 +187,7 @@ public class FileManagementServiceTest {
     public void testImportArrayDesignFile() {
         ArrayDesign design = new ArrayDesign();
         design.setName("design name");
+        daoFactoryStub.searchDaoStub.save(design);
         CaArrayFile caArrayFile = fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
         caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
         design.setDesignFile(caArrayFile);
@@ -173,7 +202,8 @@ public class FileManagementServiceTest {
         CaArrayFile caArrayFile = fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
         caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
         caArrayFile.setProject(project);
-        project.getFiles().add(caArrayFile);  
+        project.getFiles().add(caArrayFile);
+        daoFactoryStub.searchDaoStub.save(caArrayFile);
         fileManagementService.importFiles(project, project.getFileSet());
         assertTrue(arrayDesignServiceStub.importCalled);
     }
@@ -207,6 +237,33 @@ public class FileManagementServiceTest {
         public ArrayDesign importDesign(CaArrayFile designFile) {
             importCalled = true;
             return new ArrayDesign();
+        }
+
+    }
+
+    private static class LocalDaoFactoryStub extends DaoFactoryStub {
+
+        private LocalSearchDaoStub searchDaoStub = new LocalSearchDaoStub();
+
+        @Override
+        public SearchDao getSearchDao() {
+            return searchDaoStub;
+        }
+    }
+
+    private static class LocalSearchDaoStub extends SearchDaoStub {
+
+        private static long nextId = 1;
+        Map<Long, PersistentObject> objectMap = new HashMap<Long, PersistentObject>();
+
+        @Override
+        public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
+            return (T) objectMap.get(entityId);
+        }
+
+        void save(AbstractCaArrayObject object) {
+            object.setId(nextId++);
+            objectMap.put(object.getId(), object);
         }
 
     }

@@ -82,55 +82,74 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
+import gov.nih.nci.caarray.util.UsernameHolder;
+
+import java.io.Serializable;
+
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.MessageDriven;
+import javax.interceptor.Interceptors;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.ObjectMessage;
+
+import org.apache.log4j.Logger;
 
 /**
- * Simple stub with no functionality.
+ * Singleton MDB that handles file import jobs.
  */
-public class FileManagementServiceStub implements FileManagementService {
+@MessageDriven(activationConfig = {
+    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
+    @ActivationConfigProperty(propertyName = "destination", propertyValue = FileManagementMDB.QUEUE_JNDI_NAME),
+    @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "1")
+    })
+@Interceptors(HibernateSessionInterceptor.class)
+public class FileManagementMDB implements MessageListener {
 
-    int validatedFileCount = 0;
-    int importedFilecCount = 0;
-
-    public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
-        this.importedFilecCount += fileSet.getFiles().size();
-    }
-
-    public void validateFiles(Project project, CaArrayFileSet fileSet) {
-        this.validatedFileCount += fileSet.getFiles().size();
-    }
+    private static final Logger LOG = Logger.getLogger(FileManagementMDB.class);
 
     /**
-     * @return the validatedFileCount
+     * JNDI name for file management handling <code>Queue</code>.
      */
-    public int getValidatedFileCount() {
-        return this.validatedFileCount;
-    }
+    static final String QUEUE_JNDI_NAME = "queue/caArray/FileManagement";
+
+    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
     /**
-     * @return the importedFilecCount
+     * Handles file management job message.
+     *
+     * @param message the JMS message to handle.
      */
-    public int getImportedFilecCount() {
-        return this.importedFilecCount;
+    public void onMessage(Message message) {
+        if (!(message instanceof ObjectMessage)) {
+            LOG.error("Invalid message type delivered: " + message.getClass().getName());
+            return;
+        }
+        try {
+            Serializable contents = ((ObjectMessage) message).getObject();
+            if (!(contents instanceof AbstractFileManagementJob)) {
+                LOG.error("Invalid message contents: " + contents.getClass().getName());
+            } else {
+                AbstractFileManagementJob job = (AbstractFileManagementJob) contents;
+                UsernameHolder.setUser(job.getUsername());
+                job.setDaoFactory(getDaoFactory());
+                job.execute();
+            }
+        } catch (JMSException e) {
+            LOG.error("Error handling message", e);
+        }
     }
 
-    public void reset() {
-        this.validatedFileCount = 0;
-        this.importedFilecCount = 0;
+    CaArrayDaoFactory getDaoFactory() {
+        return daoFactory;
     }
 
-    public void importArrayDesignFile(ArrayDesign arrayDesign, CaArrayFile caArrayFile) {
-        arrayDesign.setDesignFile(caArrayFile);
+    void setDaoFactory(CaArrayDaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
     }
 
-    public void addSupplementalFiles(Project targetProject, CaArrayFileSet fileSet) {
-        // no-op
-    }
 
-    public void importArrayDesignAnnotationFile(ArrayDesign arrayDesign, CaArrayFile annotationFile) {
-        arrayDesign.setAnnotationFile(annotationFile);
-    }
 }

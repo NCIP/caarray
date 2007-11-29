@@ -182,14 +182,13 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
 
     private void handleProbeSet(FusionCDFProbeSetInformation probeSetInformation, String probeSetName,
             ArrayDesignDetails designDetails) {
-        LogicalProbe logicalProbe = new LogicalProbe(LSID_AUTHORITY, LSID_NAMESPACE, getFusionCDFData()
-                .getChipType()
-                + "." + probeSetName, designDetails);
+        LogicalProbe logicalProbe = new LogicalProbe(designDetails);
+        logicalProbe.setName(probeSetName);
         designDetails.getLogicalProbes().add(logicalProbe);
         int numLists = probeSetInformation.getNumLists();
         for (int listIndex = 0; listIndex < numLists; listIndex++) {
-            PhysicalProbe probe = new PhysicalProbe(LSID_AUTHORITY, LSID_NAMESPACE, probeSetName
-                    + ".ProbePair" + listIndex, designDetails, probeGroup);
+            PhysicalProbe probe = new PhysicalProbe(designDetails, probeGroup);
+            probe.setName(probeSetName + ".ProbePair" + listIndex);
             designDetails.getProbes().add(probe);
         }
         int numGroups = probeSetInformation.getNumGroups();
@@ -216,8 +215,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     }
 
     private Feature createFeature(int x, int y, ArrayDesignDetails details) {
-        Feature feature = new Feature(LSID_AUTHORITY, LSID_NAMESPACE, getFusionCDFData().getChipType() + ".Probe(" + x
-                + "," + y + ")", details);
+        Feature feature = new Feature(details);
         feature.setColumn((short) x);
         feature.setRow((short) y);
         featureCreated[x][y] = true;

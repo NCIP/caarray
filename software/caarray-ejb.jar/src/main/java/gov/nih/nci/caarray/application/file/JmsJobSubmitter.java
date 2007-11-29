@@ -82,55 +82,84 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+
+import java.io.Serializable;
+
+import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
+import javax.jms.Queue;
+import javax.jms.QueueConnection;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.QueueSender;
+import javax.jms.QueueSession;
+import javax.jms.Session;
+
+import org.apache.log4j.Logger;
 
 /**
- * Simple stub with no functionality.
+ * Submits jobs via JMS queue.
  */
-public class FileManagementServiceStub implements FileManagementService {
+class JmsJobSubmitter implements Serializable, FileManagementJobSubmitter {
 
-    int validatedFileCount = 0;
-    int importedFilecCount = 0;
-
-    public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
-        this.importedFilecCount += fileSet.getFiles().size();
-    }
-
-    public void validateFiles(Project project, CaArrayFileSet fileSet) {
-        this.validatedFileCount += fileSet.getFiles().size();
-    }
+    private static final long serialVersionUID = 1L;
+    private static final String DEFAULT_QUEUE_CONN_FACTORY = "UIL2ConnectionFactory";
+    private static final Logger LOG = Logger.getLogger(JmsJobSubmitter.class);
 
     /**
-     * @return the validatedFileCount
+     * {@inheritDoc}
      */
-    public int getValidatedFileCount() {
-        return this.validatedFileCount;
+    public void submitJob(AbstractFileManagementJob job) {
+        ServiceLocator locator = ServiceLocatorFactory.getLocator();
+        final QueueConnectionFactory factory = (QueueConnectionFactory) locator.lookup(DEFAULT_QUEUE_CONN_FACTORY);
+        final Queue queue = (Queue) locator.lookup(FileManagementMDB.QUEUE_JNDI_NAME);
+        QueueConnection queueConnection = null;
+        QueueSession queueSession = null;
+        QueueSender queueSender = null;
+        try {
+            queueConnection = factory.createQueueConnection();
+            queueSession = queueConnection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
+            queueSender = queueSession.createSender(queue);
+            final ObjectMessage message = queueSession.createObjectMessage(job);
+            queueSender.send(message);
+        } catch (JMSException e) {
+            LOG.error("Couldn't submit job to JMS", e);
+        } finally {
+            close(queueSender);
+            close(queueSession);
+            close(queueConnection);
+        }
     }
 
-    /**
-     * @return the importedFilecCount
-     */
-    public int getImportedFilecCount() {
-        return this.importedFilecCount;
+    private void close(QueueSender queueSender) {
+        if (queueSender != null) {
+            try {
+                queueSender.close();
+            } catch (JMSException e) {
+                LOG.error("Couldn't close QueueSender", e);
+            }
+        }
     }
 
-    public void reset() {
-        this.validatedFileCount = 0;
-        this.importedFilecCount = 0;
+    private void close(QueueSession queueSession) {
+        if (queueSession != null) {
+            try {
+                queueSession.close();
+            } catch (JMSException e) {
+                LOG.error("Couldn't close QueueSession", e);
+            }
+        }
     }
 
-    public void importArrayDesignFile(ArrayDesign arrayDesign, CaArrayFile caArrayFile) {
-        arrayDesign.setDesignFile(caArrayFile);
+    private void close(QueueConnection queueConnection) {
+        if (queueConnection != null) {
+            try {
+                queueConnection.close();
+            } catch (JMSException e) {
+                LOG.error("Couldn't close QueueConnection", e);
+            }
+        }
     }
 
-    public void addSupplementalFiles(Project targetProject, CaArrayFileSet fileSet) {
-        // no-op
-    }
-
-    public void importArrayDesignAnnotationFile(ArrayDesign arrayDesign, CaArrayFile annotationFile) {
-        arrayDesign.setAnnotationFile(annotationFile);
-    }
 }

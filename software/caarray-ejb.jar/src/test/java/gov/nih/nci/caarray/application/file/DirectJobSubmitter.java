@@ -82,55 +82,20 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.project.Project;
-
 /**
- * Simple stub with no functionality.
+ * Submitter that circumvents JMS
  */
-public class FileManagementServiceStub implements FileManagementService {
+class DirectJobSubmitter implements FileManagementJobSubmitter {
 
-    int validatedFileCount = 0;
-    int importedFilecCount = 0;
+    private final FileManagementMDB fileManagementMDB;
 
-    public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
-        this.importedFilecCount += fileSet.getFiles().size();
+    DirectJobSubmitter(FileManagementMDB fileManagementMDB) {
+        this.fileManagementMDB = fileManagementMDB;
     }
 
-    public void validateFiles(Project project, CaArrayFileSet fileSet) {
-        this.validatedFileCount += fileSet.getFiles().size();
+    public void submitJob(AbstractFileManagementJob job) {
+        StubbedObjectMessage message = new StubbedObjectMessage(job);
+        fileManagementMDB.onMessage(message);
     }
 
-    /**
-     * @return the validatedFileCount
-     */
-    public int getValidatedFileCount() {
-        return this.validatedFileCount;
-    }
-
-    /**
-     * @return the importedFilecCount
-     */
-    public int getImportedFilecCount() {
-        return this.importedFilecCount;
-    }
-
-    public void reset() {
-        this.validatedFileCount = 0;
-        this.importedFilecCount = 0;
-    }
-
-    public void importArrayDesignFile(ArrayDesign arrayDesign, CaArrayFile caArrayFile) {
-        arrayDesign.setDesignFile(caArrayFile);
-    }
-
-    public void addSupplementalFiles(Project targetProject, CaArrayFileSet fileSet) {
-        // no-op
-    }
-
-    public void importArrayDesignAnnotationFile(ArrayDesign arrayDesign, CaArrayFile annotationFile) {
-        arrayDesign.setAnnotationFile(annotationFile);
-    }
 }

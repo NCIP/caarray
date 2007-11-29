@@ -83,19 +83,14 @@
 package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
-import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.magetab.MageTabParsingException;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -115,6 +110,7 @@ public class FileManagementServiceBean implements FileManagementService {
     private static final Logger LOG = Logger.getLogger(FileManagementServiceBean.class);
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+    private FileManagementJobSubmitter submitter = new JmsJobSubmitter();
 
     private void checkForImport(CaArrayFileSet fileSet) {
         for (CaArrayFile caArrayFile : fileSet.getFiles()) {
@@ -140,76 +136,47 @@ public class FileManagementServiceBean implements FileManagementService {
     public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
         LogUtil.logSubsystemEntry(LOG, fileSet);
         checkForImport(fileSet);
-        FileAccessService fileAccessService = getFileAccessService();
-        doImport(fileAccessService, targetProject, fileSet);
-        fileAccessService.closeFiles();
+        updateFileStatus(fileSet, FileStatus.IMPORTING);
+        sendImportJobMessage(targetProject, fileSet);
         LogUtil.logSubsystemExit(LOG);
     }
 
-    private void doImport(FileAccessService fileAccessService, Project targetProject, CaArrayFileSet fileSet) {
-        doValidate(fileAccessService, fileSet);
-        if (fileSet.getStatus().equals(FileStatus.VALIDATED)) {
-            importArrayDesigns(fileSet);
-            importAnnotation(fileAccessService, targetProject, fileSet);
-            importArrayData(fileSet);
-        }
-    }
-
-    private void importArrayDesigns(CaArrayFileSet fileSet) {
-        getArrayDesignImporter().importArrayDesigns(fileSet);
-    }
-
-    private ArrayDesignImporter getArrayDesignImporter() {
-        return new ArrayDesignImporter(getArrayDesignService());
-    }
-
-    private void importAnnotation(FileAccessService fileAccessService, Project targetProject, CaArrayFileSet fileSet) {
-        try {
-            getMageTabImporter(fileAccessService).importFiles(targetProject, fileSet);
-        } catch (MageTabParsingException e) {
-            LOG.error(e.getMessage(), e);
-        }
-    }
-
-    private MageTabImporter getMageTabImporter(FileAccessService fileAccessService) {
-        return new MageTabImporter(fileAccessService, getMageTabTranslator(), daoFactory);
-    }
-
-    private void importArrayData(CaArrayFileSet fileSet) {
-        ArrayDataImporter arrayDataImporter = getArrayDataImporter();
-        arrayDataImporter.importFiles(fileSet);
-    }
-
-    private ArrayDataImporter getArrayDataImporter() {
-        return new ArrayDataImporter(getArrayDataService(), daoFactory);
+    private void sendImportJobMessage(Project targetProject, CaArrayFileSet fileSet) {
+        ProjectFilesImportJob job = new ProjectFilesImportJob(UsernameHolder.getUser(), targetProject, fileSet);
+        getSubmitter().submitJob(job);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void validateFiles(CaArrayFileSet fileSet) {
+    public void validateFiles(Project project, CaArrayFileSet fileSet) {
         checkForValidation(fileSet);
-        FileAccessService fileAccessService = getFileAccessService();
-        doValidate(fileAccessService, fileSet);
-        fileAccessService.closeFiles();
+        updateFileStatus(fileSet, FileStatus.VALIDATING);
+        sendValidationJobMessage(project, fileSet);
     }
 
-    private void doValidate(FileAccessService fileAccessService, CaArrayFileSet fileSet) {
-        validateArrayDesigns(fileSet);
-        validateAnnotation(fileAccessService, fileSet);
-        validateArrayData(fileSet);
+    private void sendValidationJobMessage(Project project, CaArrayFileSet fileSet) {
+        ProjectFilesValidationJob job = new ProjectFilesValidationJob(UsernameHolder.getUser(), project, fileSet);
+        getSubmitter().submitJob(job);
     }
 
-    private void validateArrayDesigns(CaArrayFileSet fileSet) {
-        getArrayDesignImporter().validateFiles(fileSet);
+    /**
+     * {@inheritDoc}
+     */
+    public void importArrayDesignFile(ArrayDesign arrayDesign, CaArrayFile designFile) {
+        designFile.setFileStatus(FileStatus.IMPORTING);
+        arrayDesign.setDesignFile(designFile);
+        getDaoFactory().getProjectDao().save(designFile);
+        getDaoFactory().getArrayDao().save(arrayDesign);
+        ArrayDesignFileImportJob job = new ArrayDesignFileImportJob(UsernameHolder.getUser(), arrayDesign);
+        getSubmitter().submitJob(job);
     }
 
-    private void validateAnnotation(FileAccessService fileAccessService, CaArrayFileSet fileSet) {
-        getMageTabImporter(fileAccessService).validateFiles(fileSet);
-    }
-
-    private void validateArrayData(CaArrayFileSet fileSet) {
-        getArrayDataImporter().validateFiles(fileSet);
+    private void updateFileStatus(CaArrayFileSet fileSet, FileStatus status) {
+        for (CaArrayFile file : fileSet.getFiles()) {
+            file.setFileStatus(status);
+            getDaoFactory().getProjectDao().save(file);
+        }
     }
 
     CaArrayDaoFactory getDaoFactory() {
@@ -218,22 +185,6 @@ public class FileManagementServiceBean implements FileManagementService {
 
     void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
-    }
-
-    private FileAccessService getFileAccessService() {
-        return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
-    }
-
-    private ArrayDesignService getArrayDesignService() {
-        return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
-    }
-
-    private MageTabTranslator getMageTabTranslator() {
-        return (MageTabTranslator) ServiceLocatorFactory.getLocator().lookup(MageTabTranslator.JNDI_NAME);
-    }
-
-    private ArrayDataService getArrayDataService() {
-        return (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);
     }
 
     /**
@@ -252,12 +203,12 @@ public class FileManagementServiceBean implements FileManagementService {
         getDaoFactory().getProjectDao().save(targetProject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void importArrayDesignFile(ArrayDesign arrayDesign, CaArrayFile designFile) {
-        arrayDesign.setDesignFile(designFile);
-        getArrayDesignImporter().importArrayDesign(arrayDesign);
+    FileManagementJobSubmitter getSubmitter() {
+        return submitter;
+    }
+
+    void setSubmitter(FileManagementJobSubmitter submitter) {
+        this.submitter = submitter;
     }
 
 

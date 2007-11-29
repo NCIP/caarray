@@ -82,55 +82,56 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import org.apache.log4j.Logger;
+
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.magetab.MageTabParsingException;
 
 /**
- * Simple stub with no functionality.
+ * Encapsulates the functionality necessary for importing a set of files into a project.
  */
-public class FileManagementServiceStub implements FileManagementService {
+final class ProjectFilesImportJob extends AbstractProjectFilesJob {
 
-    int validatedFileCount = 0;
-    int importedFilecCount = 0;
+    private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(ProjectFilesImportJob.class);
 
-    public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
-        this.importedFilecCount += fileSet.getFiles().size();
+    ProjectFilesImportJob(String username, Project targetProject, CaArrayFileSet fileSet) {
+        super(username, targetProject, fileSet);
     }
 
-    public void validateFiles(Project project, CaArrayFileSet fileSet) {
-        this.validatedFileCount += fileSet.getFiles().size();
+    void execute() {
+        FileAccessService fileAccessService = getFileAccessService();
+        Project project = getProject();
+        doImport(fileAccessService, project, getFileSet(project));
+        fileAccessService.closeFiles();
     }
 
-    /**
-     * @return the validatedFileCount
-     */
-    public int getValidatedFileCount() {
-        return this.validatedFileCount;
+    private void doImport(FileAccessService fileAccessService, Project targetProject, CaArrayFileSet fileSet) {
+        doValidate(fileAccessService, fileSet);
+        if (fileSet.getStatus().equals(FileStatus.VALIDATED)) {
+            importArrayDesigns(fileSet);
+            importAnnotation(fileAccessService, targetProject, fileSet);
+            importArrayData(fileSet);
+        }
     }
 
-    /**
-     * @return the importedFilecCount
-     */
-    public int getImportedFilecCount() {
-        return this.importedFilecCount;
+    private void importArrayDesigns(CaArrayFileSet fileSet) {
+        getArrayDesignImporter().importArrayDesigns(fileSet);
     }
 
-    public void reset() {
-        this.validatedFileCount = 0;
-        this.importedFilecCount = 0;
+    private void importAnnotation(FileAccessService fileAccessService, Project targetProject, CaArrayFileSet fileSet) {
+        try {
+            getMageTabImporter(fileAccessService).importFiles(targetProject, fileSet);
+        } catch (MageTabParsingException e) {
+            LOG.error(e.getMessage(), e);
+        }
     }
 
-    public void importArrayDesignFile(ArrayDesign arrayDesign, CaArrayFile caArrayFile) {
-        arrayDesign.setDesignFile(caArrayFile);
-    }
-
-    public void addSupplementalFiles(Project targetProject, CaArrayFileSet fileSet) {
-        // no-op
-    }
-
-    public void importArrayDesignAnnotationFile(ArrayDesign arrayDesign, CaArrayFile annotationFile) {
-        arrayDesign.setAnnotationFile(annotationFile);
+    private void importArrayData(CaArrayFileSet fileSet) {
+        ArrayDataImporter arrayDataImporter = getArrayDataImporter();
+        arrayDataImporter.importFiles(fileSet);
     }
 }

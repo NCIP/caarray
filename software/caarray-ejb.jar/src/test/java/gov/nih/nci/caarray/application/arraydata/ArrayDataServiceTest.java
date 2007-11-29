@@ -668,7 +668,7 @@ public class ArrayDataServiceTest {
         @Override
         public ArrayDao getArrayDao() {
             return new ArrayDaoStub() {
-                
+
                 @Override
                 public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
                     if ("Test3".equals(lsidObjectId)) {
@@ -683,8 +683,8 @@ public class ArrayDataServiceTest {
                 private ArrayDesign createArrayDesign(int rows, int columns) {
                     ArrayDesign arrayDesign = new ArrayDesign();
                     ArrayDesignDetails details = new ArrayDesignDetails();
-                    for (int row = 0; row < rows; row++) {
-                        for (int column = 0; column < columns; column++) {
+                    for (short row = 0; row < rows; row++) {
+                        for (short column = 0; column < columns; column++) {
                             Feature feature = new Feature();
                             feature.setRow(row);
                             feature.setColumn(column);

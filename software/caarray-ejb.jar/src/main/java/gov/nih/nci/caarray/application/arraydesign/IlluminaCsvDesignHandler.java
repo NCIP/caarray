@@ -122,7 +122,7 @@ class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
             DelimitedFileReader reader = DelimitedFileReaderFactory.INSTANCE.getCsvReader(getFile());
             reader.nextLine();
             while (reader.hasNextLine()) {
-                addLogicalProbe(arrayDesign, details, reader.nextLine());
+                addLogicalProbe(details, reader.nextLine());
             }
         } catch (IOException e) {
             throw new IllegalStateException("Couldn't read file " + getDesignFile().getName(), e);
@@ -130,10 +130,9 @@ class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
         return details;
     }
 
-    private void addLogicalProbe(ArrayDesign arrayDesign, ArrayDesignDetails details, List<String> values) {
+    private void addLogicalProbe(ArrayDesignDetails details, List<String> values) {
         String target = getValue(values, IlluminaDesignCsvHeader.TARGET);
-        LogicalProbe logicalProbe =
-            new LogicalProbe(LSID_AUTHORITY, LSID_NAMESPACE, arrayDesign.getName() + "." + target, details);
+        LogicalProbe logicalProbe = new LogicalProbe(details);
         logicalProbe.setName(target);
         ExpressionProbeAnnotation annotation = new ExpressionProbeAnnotation();
         annotation.setGene(new Gene());

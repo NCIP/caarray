@@ -82,55 +82,17 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.project.Project;
-
 /**
- * Simple stub with no functionality.
+ * Passes the job provided to the FileManagementMDB for handling. Implemented as an interface so that
+ * unit tests may substitute a non-JMS based approach.
  */
-public class FileManagementServiceStub implements FileManagementService {
-
-    int validatedFileCount = 0;
-    int importedFilecCount = 0;
-
-    public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
-        this.importedFilecCount += fileSet.getFiles().size();
-    }
-
-    public void validateFiles(Project project, CaArrayFileSet fileSet) {
-        this.validatedFileCount += fileSet.getFiles().size();
-    }
+interface FileManagementJobSubmitter {
 
     /**
-     * @return the validatedFileCount
+     * Submits the job to the FilemanagementMDB.
+     *
+     * @param job the job to submit.
      */
-    public int getValidatedFileCount() {
-        return this.validatedFileCount;
-    }
+    void submitJob(AbstractFileManagementJob job);
 
-    /**
-     * @return the importedFilecCount
-     */
-    public int getImportedFilecCount() {
-        return this.importedFilecCount;
-    }
-
-    public void reset() {
-        this.validatedFileCount = 0;
-        this.importedFilecCount = 0;
-    }
-
-    public void importArrayDesignFile(ArrayDesign arrayDesign, CaArrayFile caArrayFile) {
-        arrayDesign.setDesignFile(caArrayFile);
-    }
-
-    public void addSupplementalFiles(Project targetProject, CaArrayFileSet fileSet) {
-        // no-op
-    }
-
-    public void importArrayDesignAnnotationFile(ArrayDesign arrayDesign, CaArrayFile annotationFile) {
-        arrayDesign.setAnnotationFile(annotationFile);
-    }
 }

@@ -82,55 +82,50 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+
+import java.io.Serializable;
 
 /**
- * Simple stub with no functionality.
+ * Base class for file handling jobs.
  */
-public class FileManagementServiceStub implements FileManagementService {
+abstract class AbstractFileManagementJob implements Serializable {
 
-    int validatedFileCount = 0;
-    int importedFilecCount = 0;
+    private static final long serialVersionUID = 1L;
+    private final String username;
+    private CaArrayDaoFactory daoFactory;
 
-    public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
-        this.importedFilecCount += fileSet.getFiles().size();
+    AbstractFileManagementJob(String username) {
+        this.username = username;
     }
 
-    public void validateFiles(Project project, CaArrayFileSet fileSet) {
-        this.validatedFileCount += fileSet.getFiles().size();
+    String getUsername() {
+        return username;
     }
 
-    /**
-     * @return the validatedFileCount
-     */
-    public int getValidatedFileCount() {
-        return this.validatedFileCount;
+    abstract void execute();
+
+    CaArrayDaoFactory getDaoFactory() {
+        return daoFactory;
     }
 
-    /**
-     * @return the importedFilecCount
-     */
-    public int getImportedFilecCount() {
-        return this.importedFilecCount;
+    void setDaoFactory(CaArrayDaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
     }
 
-    public void reset() {
-        this.validatedFileCount = 0;
-        this.importedFilecCount = 0;
+    FileAccessService getFileAccessService() {
+        return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
     }
 
-    public void importArrayDesignFile(ArrayDesign arrayDesign, CaArrayFile caArrayFile) {
-        arrayDesign.setDesignFile(caArrayFile);
+    ArrayDesignService getArrayDesignService() {
+        return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
     }
 
-    public void addSupplementalFiles(Project targetProject, CaArrayFileSet fileSet) {
-        // no-op
+    ArrayDesignImporter getArrayDesignImporter() {
+        return new ArrayDesignImporter(getArrayDesignService());
     }
 
-    public void importArrayDesignAnnotationFile(ArrayDesign arrayDesign, CaArrayFile annotationFile) {
-        arrayDesign.setAnnotationFile(annotationFile);
-    }
 }

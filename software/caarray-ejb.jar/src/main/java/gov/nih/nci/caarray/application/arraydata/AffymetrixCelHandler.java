@@ -142,12 +142,12 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
                     + celDataFileName);
         } else {
             validateHeader(result);
-            //validateAgainstDesign(result, arrayDesignService);
+            validateAgainstDesign(result, arrayDesignService);
         }
         closeCelData();
     }
 
-    void validateAgainstDesign(FileValidationResult result, ArrayDesignService arrayDesignService) {
+    private void validateAgainstDesign(FileValidationResult result, ArrayDesignService arrayDesignService) {
         validateDesignExists(result, arrayDesignService);
         if (result.isValid()) {
             validateFeatures(result, arrayDesignService);

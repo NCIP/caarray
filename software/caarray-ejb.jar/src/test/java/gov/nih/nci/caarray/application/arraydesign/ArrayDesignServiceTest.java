@@ -165,16 +165,6 @@ public class ArrayDesignServiceTest {
         assertEquals("Mapping10K_Xba131-xda", arrayDesign.getLsidObjectId());
     }
 
-//    @Test
-//    public void testImportDesign_HGU133Plus2() {
-//        CaArrayFile designFile = getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF);
-//        ArrayDesign arrayDesign = arrayDesignService.importDesign(designFile);
-//        assertEquals("Mapping10K_Xba131-xda", arrayDesign.getName());
-//        assertEquals("Affymetrix.com", arrayDesign.getLsidAuthority());
-//        assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
-//        assertEquals("Mapping10K_Xba131-xda", arrayDesign.getLsidObjectId());
-//    }
-
     @Test
     public void testImportDesign_IlluminaHumanWG6() {
         CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
@@ -245,21 +235,6 @@ public class ArrayDesignServiceTest {
         CaArrayFile caArrayFile = fileAccessServiceStub.add(file);
         caArrayFile.setFileType(FileType.ILLUMINA_DESIGN_CSV);
         return caArrayFile;
-    }
-    
-    public static void main(String[] args) {
-        try {
-            System.out.println("Starting");
-            ArrayDesignServiceTest test = new ArrayDesignServiceTest();
-            test.setUp();
-            test.testImportDesign_AffymetrixMapping10K();
-            //test.testImportDesign_AffymetrixTest3();
-            System.out.println("Pausing");
-            Thread.sleep(120000);
-            System.out.println("Finished");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 }

@@ -83,54 +83,28 @@
 package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.project.Project;
 
 /**
- * Simple stub with no functionality.
+ * Encapsulates the data to import array design details from a design file.
  */
-public class FileManagementServiceStub implements FileManagementService {
+final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
 
-    int validatedFileCount = 0;
-    int importedFilecCount = 0;
+    private static final long serialVersionUID = 1L;
 
-    public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
-        this.importedFilecCount += fileSet.getFiles().size();
+    private final long arrayDesignId;
+
+    ArrayDesignFileImportJob(String username, ArrayDesign arrayDesign) {
+        super(username);
+        this.arrayDesignId = arrayDesign.getId();
     }
 
-    public void validateFiles(Project project, CaArrayFileSet fileSet) {
-        this.validatedFileCount += fileSet.getFiles().size();
+    long getArrayDesignId() {
+        return arrayDesignId;
     }
 
-    /**
-     * @return the validatedFileCount
-     */
-    public int getValidatedFileCount() {
-        return this.validatedFileCount;
+    void execute() {
+        ArrayDesign arrayDesign = getDaoFactory().getArrayDao().getArrayDesign(getArrayDesignId());
+        getArrayDesignImporter().importArrayDesign(arrayDesign);
     }
 
-    /**
-     * @return the importedFilecCount
-     */
-    public int getImportedFilecCount() {
-        return this.importedFilecCount;
-    }
-
-    public void reset() {
-        this.validatedFileCount = 0;
-        this.importedFilecCount = 0;
-    }
-
-    public void importArrayDesignFile(ArrayDesign arrayDesign, CaArrayFile caArrayFile) {
-        arrayDesign.setDesignFile(caArrayFile);
-    }
-
-    public void addSupplementalFiles(Project targetProject, CaArrayFileSet fileSet) {
-        // no-op
-    }
-
-    public void importArrayDesignAnnotationFile(ArrayDesign arrayDesign, CaArrayFile annotationFile) {
-        arrayDesign.setAnnotationFile(annotationFile);
-    }
 }
