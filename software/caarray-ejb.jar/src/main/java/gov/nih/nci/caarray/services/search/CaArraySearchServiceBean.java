@@ -98,6 +98,7 @@ import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 
 import org.apache.log4j.Logger;
+import org.jboss.annotation.ejb.TransactionTimeout;
 
 /**
  * Session bean that searches for caArray entities based on various types of criteria.
@@ -107,9 +108,11 @@ import org.apache.log4j.Logger;
 @Stateless
 @Remote(CaArraySearchService.class)
 @Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
+@TransactionTimeout(CaArraySearchServiceBean.TIMEOUT_SECONDS)
 public class CaArraySearchServiceBean implements CaArraySearchService {
 
     private static final Logger LOG = Logger.getLogger(CaArraySearchServiceBean.class);
+    static final int TIMEOUT_SECONDS = 1800;
 
     /**
      * {@inheritDoc}

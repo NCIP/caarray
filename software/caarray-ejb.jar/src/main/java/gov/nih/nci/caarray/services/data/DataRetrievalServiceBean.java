@@ -104,6 +104,8 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
+import org.jboss.annotation.ejb.TransactionTimeout;
+
 /**
  * Implementation for remote API data retrieval.
  */
@@ -113,10 +115,12 @@ import javax.interceptor.Interceptors;
  * Transaction required for these "getter" methods because database changes may occur as a side effect.
  */
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
+@TransactionTimeout(DataRetrievalServiceBean.TIMEOUT_SECONDS)
 @Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
 public class DataRetrievalServiceBean implements DataRetrievalService {
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+    static final int TIMEOUT_SECONDS = 1800;
 
     /**
      * {@inheritDoc}

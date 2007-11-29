@@ -90,6 +90,8 @@ import java.io.Serializable;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -97,6 +99,7 @@ import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
 import org.apache.log4j.Logger;
+import org.jboss.annotation.ejb.TransactionTimeout;
 
 /**
  * Singleton MDB that handles file import jobs.
@@ -107,9 +110,12 @@ import org.apache.log4j.Logger;
     @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "1")
     })
 @Interceptors(HibernateSessionInterceptor.class)
+@TransactionAttribute(TransactionAttributeType.REQUIRED)
+@TransactionTimeout(FileManagementMDB.TIMEOUT_SECONDS)
 public class FileManagementMDB implements MessageListener {
 
     private static final Logger LOG = Logger.getLogger(FileManagementMDB.class);
+    static final int TIMEOUT_SECONDS = 1800;
 
     /**
      * JNDI name for file management handling <code>Queue</code>.
