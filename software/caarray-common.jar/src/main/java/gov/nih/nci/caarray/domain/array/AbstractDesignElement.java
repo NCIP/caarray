@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.domain.array;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
@@ -92,41 +92,13 @@ import javax.persistence.MappedSuperclass;
  */
 @Entity
 @MappedSuperclass
-public abstract class AbstractDesignElement extends AbstractCaArrayEntity {
-
-    private String name;
+public abstract class AbstractDesignElement extends AbstractCaArrayObject {
 
     /**
-     * @param lsidAuthority lsidAuthority
-     * @param lsidNamespace namespace
-     * @param lsidObjectId object id
+     * Element constructor.
      */
-    protected AbstractDesignElement(final String lsidAuthority, final String lsidNamespace, final String lsidObjectId) {
-        super(lsidAuthority, lsidNamespace, lsidObjectId);
-        if (lsidAuthority == null || lsidNamespace == null || lsidObjectId == null) {
-            throw new IllegalArgumentException("LSID component was null");
-        }
-    }
-
-    /**
-     * @deprecated for castor & hibernate use only
-     */
-    @Deprecated
     public AbstractDesignElement() {
-        // hibernate constructor
+        super();
     }
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
 }

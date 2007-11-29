@@ -98,17 +98,13 @@ import org.hibernate.annotations.Cascade;
 public abstract class AbstractProbe extends AbstractDesignElement {
 
     private AbstractProbeAnnotation annotation;
-    
-    AbstractProbe(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-        super(lsidAuthority, lsidNamespace, lsidObjectId);
-    }
+    private String name;
 
     /**
-     * @deprecated hibernate & castor only
+     * Construtor.
      */
-    @Deprecated
     public AbstractProbe() {
-        // hibernate-only constructor
+        super();
     }
 
     /**
@@ -126,5 +122,20 @@ public abstract class AbstractProbe extends AbstractDesignElement {
     public void setAnnotation(AbstractProbeAnnotation annotation) {
         this.annotation = annotation;
     }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
 
 }

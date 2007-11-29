@@ -108,14 +108,10 @@ public class LogicalProbe extends AbstractProbe {
     /**
      * Creates a new <code>LogicalProbe</code> with its LSID initialized.
      *
-     * @param lsidAuthority the LSID authority
-     * @param lsidNamespace the LSID namespace
-     * @param lsidObjectId the LSID object ID
      * @param details the array design details
      */
-    public LogicalProbe(String lsidAuthority, String lsidNamespace, String lsidObjectId,
-                             ArrayDesignDetails details) {
-        super(lsidAuthority, lsidNamespace, lsidObjectId);
+    public LogicalProbe(ArrayDesignDetails details) {
+        super();
         setArrayDesignDetails(details);
     }
 

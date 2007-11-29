@@ -146,9 +146,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.AndPredicate;
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
@@ -478,7 +476,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
     /**
      * Tests retrieving the <code>Project</code> with the given id. Test encompasses save and delete of a
      * <code>Project</code>.
-     * @throws CSTransactionException 
+     * @throws CSTransactionException
      */
     @Test
     public void testGetWorkspaceProjects() throws CSTransactionException {
@@ -501,31 +499,31 @@ public class ProjectDaoTest extends AbstractDaoTest {
             assertEquals(0, DAO_OBJECT.getNonPublicProjectsForUser().size());
             assertEquals(0, DAO_OBJECT.getPublicProjects().size());
             tx.commit();
-            
+
             UsernameHolder.setUser(AbstractDaoTest.STANDARD_USER);
             tx = HibernateUtil.beginTransaction();
             Project p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             p.setStatus(ProposalStatus.IN_PROGRESS);
             tx.commit();
-            
+
             UsernameHolder.setUser("caarrayuser");
             tx = HibernateUtil.beginTransaction();
             assertEquals(0, DAO_OBJECT.getNonPublicProjectsForUser().size());
             assertEquals(0, DAO_OBJECT.getPublicProjects().size());
-            tx.commit();            
-            
+            tx.commit();
+
             UsernameHolder.setUser(AbstractDaoTest.STANDARD_USER);
             tx = HibernateUtil.beginTransaction();
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             p.getPublicProfile().setSecurityLevel(SecurityLevel.READ);
             tx.commit();
-            
+
             UsernameHolder.setUser("caarrayuser");
             tx = HibernateUtil.beginTransaction();
             assertEquals(0, DAO_OBJECT.getNonPublicProjectsForUser().size());
             assertEquals(0, DAO_OBJECT.getPublicProjects().size());
-            tx.commit();            
-            
+            tx.commit();
+
             UsernameHolder.setUser(AbstractDaoTest.STANDARD_USER);
             tx = HibernateUtil.beginTransaction();
             AuthorizationManager am = SecurityUtils.getAuthorizationManager();
@@ -541,19 +539,19 @@ public class ProjectDaoTest extends AbstractDaoTest {
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             p.addGroupProfile(cg).setSecurityLevel(SecurityLevel.READ);
             tx.commit();
-            
+
             UsernameHolder.setUser("caarrayuser");
             tx = HibernateUtil.beginTransaction();
             assertEquals(1, DAO_OBJECT.getNonPublicProjectsForUser().size());
             assertEquals(0, DAO_OBJECT.getPublicProjects().size());
             tx.commit();
-            
+
             UsernameHolder.setUser(AbstractDaoTest.STANDARD_USER);
             tx = HibernateUtil.beginTransaction();
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             p.setStatus(ProposalStatus.PUBLIC);
             tx.commit();
-            
+
             tx = HibernateUtil.beginTransaction();
             assertEquals(0, DAO_OBJECT.getNonPublicProjectsForUser().size());
             assertEquals(1, DAO_OBJECT.getPublicProjects().size());
@@ -897,7 +895,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             Hibernate.initialize(p.getExperiment().getSamples());
             assertEquals(1, p.getExperiment().getSamples().size());
             tx.commit();
-            
+
             tx = HibernateUtil.beginTransaction();
             UsernameHolder.setUser(STANDARD_USER);
             AuthorizationManager am = SecurityUtils.getAuthorizationManager();
@@ -1076,7 +1074,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         s = p.getExperiment().getSamples().iterator().next();
         assertNull(s.getDescription());
         assertEquals(0, s.getCharacteristics().size());
-        tx.rollback();        
+        tx.rollback();
     }
 
     @Test

@@ -122,11 +122,11 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         arrayDesign.setVersion(getUniqueStringValue());
         ArrayDesignDetails designDetails = new ArrayDesignDetails();
         arrayDesign.setDesignDetails(designDetails);
-        Feature feature = new Feature("authority", "namespace", "feature", designDetails);
+        Feature feature = new Feature(designDetails);
         designDetails.getFeatures().add(feature);
         ProbeGroup probeGroup = new ProbeGroup(designDetails);
         designDetails.getProbeGroups().add(probeGroup);
-        PhysicalProbe physicalProbe = new PhysicalProbe("authority", "namespace", "physicalProbe", designDetails, probeGroup);
+        PhysicalProbe physicalProbe = new PhysicalProbe(designDetails, probeGroup);
         designDetails.getProbes().add(physicalProbe);
         ExpressionProbeAnnotation annotation = new ExpressionProbeAnnotation();
         Gene gene = new Gene();
@@ -159,9 +159,9 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
             ArrayDesignDetails originalDetails = original.getDesignDetails();
             ArrayDesignDetails retrievedDetails = retrieved.getDesignDetails();
             assertEquals(originalDetails.getFeatures().size(), retrievedDetails.getFeatures().size());
-            ExpressionProbeAnnotation originalAnnotation = 
+            ExpressionProbeAnnotation originalAnnotation =
                 (ExpressionProbeAnnotation) originalDetails.getProbes().iterator().next().getAnnotation();
-            ExpressionProbeAnnotation retrievedAnnotation = 
+            ExpressionProbeAnnotation retrievedAnnotation =
                 (ExpressionProbeAnnotation) retrievedDetails.getProbes().iterator().next().getAnnotation();
             assertEquals(originalAnnotation.getGene().getEnsemblId(), retrievedAnnotation.getGene().getEnsemblId());
             assertEquals(originalAnnotation.getGene().getFullName(), retrievedAnnotation.getGene().getFullName());

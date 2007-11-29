@@ -82,13 +82,9 @@
  */
 package gov.nih.nci.caarray.domain.array;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.ForeignKey;
@@ -102,24 +98,20 @@ public class Feature extends AbstractDesignElement {
 
     private static final long serialVersionUID = -6319120292398781186L;
 
-    private int blockColumn;
-    private int blockRow;
-    private int column;
-    private int row;
+    private short blockColumn;
+    private short blockRow;
+    private short column;
+    private short row;
 
-    private Set<PhysicalProbe> probes = new HashSet<PhysicalProbe>();
     private ArrayDesignDetails arrayDesignDetails;
 
     /**
-     * Creates a new Feature with its LSID initialized.
+     * Creates a new Feature.
      *
-     * @param lsidAuthority the LSID authority
-     * @param lsidNamespace the LSID namespace
-     * @param lsidObjectId the LSID object ID
      * @param details the array design details this feature is for
      */
-    public Feature(String lsidAuthority, String lsidNamespace, String lsidObjectId, ArrayDesignDetails details) {
-        super(lsidAuthority, lsidNamespace, lsidObjectId);
+    public Feature(ArrayDesignDetails details) {
+        super();
         setArrayDesignDetails(details);
     }
 
@@ -134,28 +126,28 @@ public class Feature extends AbstractDesignElement {
     /**
      * @return the blockColumn
      */
-    public int getBlockColumn() {
+    public short getBlockColumn() {
         return blockColumn;
     }
 
     /**
      * @param blockColumn the blockColumn to set
      */
-    public void setBlockColumn(int blockColumn) {
+    public void setBlockColumn(short blockColumn) {
         this.blockColumn = blockColumn;
     }
 
     /**
      * @return the blockRow
      */
-    public int getBlockRow() {
+    public short getBlockRow() {
         return blockRow;
     }
 
     /**
      * @param blockRow the blockRow to set
      */
-    public void setBlockRow(int blockRow) {
+    public void setBlockRow(short blockRow) {
         this.blockRow = blockRow;
     }
 
@@ -163,14 +155,14 @@ public class Feature extends AbstractDesignElement {
      * @return the column
      */
     @Column(name = "feature_column")
-    public int getColumn() {
+    public short getColumn() {
         return column;
     }
 
     /**
      * @param column the column to set
      */
-    public void setColumn(int column) {
+    public void setColumn(short column) {
         this.column = column;
     }
 
@@ -178,28 +170,15 @@ public class Feature extends AbstractDesignElement {
      * @return the row
      */
     @Column(name = "feature_row")
-    public int getRow() {
+    public short getRow() {
         return row;
     }
 
     /**
      * @param row the row to set
      */
-    public void setRow(int row) {
+    public void setRow(short row) {
         this.row = row;
-    }
-
-    /**
-     * @return the probes
-     */
-    @ManyToMany(mappedBy = "features")
-    public Set<PhysicalProbe> getProbes() {
-        return probes;
-    }
-
-    @SuppressWarnings("unused")
-    private void setProbes(Set<PhysicalProbe> probes) { // NOPMD
-        this.probes = probes;
     }
 
     /**

@@ -107,22 +107,17 @@ public class PhysicalProbe extends AbstractProbe {
 
     private ProbeGroup probeGroup;
     private Set<Feature> features = new HashSet<Feature>();
-    private Set<LogicalProbe> logicalProbes = new HashSet<LogicalProbe>();
     private ArrayDesignDetails arrayDesignDetails;
     private Term controlType;
 
     /**
-     * Creates a new <code>PhysicalProbe</code> with its LSID initialized.
+     * Creates a new <code>PhysicalProbe</code>.
      *
-     * @param lsidAuthority the LSID authority
-     * @param lsidNamespace the LSID namespace
-     * @param lsidObjectId the LSID object ID
      * @param details the array design details
      * @param probeGroup probe group
      */
-    public PhysicalProbe(String lsidAuthority, String lsidNamespace, String lsidObjectId,
-                            ArrayDesignDetails details, ProbeGroup probeGroup) {
-        super(lsidAuthority, lsidNamespace, lsidObjectId);
+    public PhysicalProbe(ArrayDesignDetails details, ProbeGroup probeGroup) {
+        super();
         setProbeGroup(probeGroup);
         setArrayDesignDetails(details);
     }
@@ -166,19 +161,6 @@ public class PhysicalProbe extends AbstractProbe {
     @SuppressWarnings("unused")
     private void setFeatures(Set<Feature> features) { // NOPMD
         this.features = features;
-    }
-
-    /**
-     * @return the logicalProbes
-     */
-    @ManyToMany(mappedBy = "probes")
-    public Set<LogicalProbe> getLogicalProbes() {
-        return logicalProbes;
-    }
-
-    @SuppressWarnings("unused")
-    private void setLogicalProbes(Set<LogicalProbe> logicalProbes) { // NOPMD
-        this.logicalProbes = logicalProbes;
     }
 
     /**
