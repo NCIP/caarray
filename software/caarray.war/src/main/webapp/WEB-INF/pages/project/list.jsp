@@ -50,7 +50,7 @@
             </display:column>
             <display:column titleKey="button.edit" class="centered" headerClass="centered">
                 <c:if test="${caarrayfn:canWrite(row, caarrayfn:currentUser())}">
-                    <c:url value="/project/edit.action" var="editProjectUrl">
+                    <c:url value="/protected/project/edit.action" var="editProjectUrl">
                         <c:param name="project.id" value="${row.id}" />
                     </c:url>
                     <a href="${editProjectUrl}"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>

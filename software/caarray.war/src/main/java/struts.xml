@@ -99,19 +99,15 @@
             <result name="tab">/WEB-INF/pages/project/search/browseTab.jsp</result>
         </action>
 
-        <action name="project/*" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="{1}">
+        <action name="project/details" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="details">
+            <result name="workspace" type="redirect-action">project/workspace</result>
+            <result name="input">/WEB-INF/pages/project/form.jsp</result>
+        </action>
+
+        <action name="project/browse" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="browse">
             <result name="workspace" type="redirect-action">project/workspace</result>
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
             <result name="browse">/WEB-INF/pages/project/browse.jsp</result>
-            <result name="permissions">/WEB-INF/pages/project/permissions.jsp</result>
-        </action>
-
-        <action name="project/workspace">
-            <result>/WEB-INF/pages/project/workspace/tabs.jsp</result>
-        </action>
-
-        <action name="ajax/project/workspace/*" class="gov.nih.nci.caarray.web.action.project.ProjectWorkspaceAction" method="{1}">
-            <result name="success">/WEB-INF/pages/project/workspace/{1}.jsp</result>
         </action>
 
         <action name="ajax/project/tab/*/*"
@@ -166,6 +162,23 @@
     </package>
 
     <package name="protected" namespace="/protected" extends="default">
+        <action name="project/workspace">
+            <result>/WEB-INF/pages/project/workspace/tabs.jsp</result>
+        </action>
+
+        <action name="ajax/project/workspace/*" class="gov.nih.nci.caarray.web.action.project.ProjectWorkspaceAction" method="{1}">
+            <result name="success">/WEB-INF/pages/project/workspace/{1}.jsp</result>
+        </action>
+
+        <action name="project/create" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="create">
+            <result name="input">/WEB-INF/pages/project/form.jsp</result>
+        </action>
+
+        <action name="project/edit" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="edit">
+            <result name="workspace" type="redirect-action">project/workspace</result>
+            <result name="input">/WEB-INF/pages/project/form.jsp</result>
+        </action>
+
         <action name="project/permissions/*" class="gov.nih.nci.caarray.web.action.project.ProjectPermissionsAction" method="{1}">
             <result name="input">/WEB-INF/pages/project/permissions/profiles.jsp</result>
             <result name="success">/WEB-INF/pages/project/permissions/profiles.jsp</result>

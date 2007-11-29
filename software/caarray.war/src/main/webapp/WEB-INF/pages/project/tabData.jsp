@@ -19,10 +19,10 @@
 <c:url value="/ajax/project/files/listImported.action" var="importedDataUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
-<c:url value="/protected/ajax/project/files/listSupplemental.action" var="supplementalFilesUrl">
+<c:url value="/ajax/project/files/listSupplemental.action" var="supplementalFilesUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
-<c:url value="/protected/ajax/project/files/downloadFiles.action" var="downloadDataUrl">
+<c:url value="/ajax/project/files/downloadFiles.action" var="downloadDataUrl">
     <c:param name="project.id" value="${project.id}" />
     <c:param name="editMode" value="${editMode}" />
 </c:url>

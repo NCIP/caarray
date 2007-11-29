@@ -109,6 +109,7 @@ import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
@@ -207,6 +208,17 @@ public class ProjectManagementServiceTest {
             assertEquals(e, this.daoFactoryStub.projectDao.lastDeleted);
         } catch (ProposalWorkflowException e) {
             fail("Unexpected exception: " + e);
+        }
+        
+        project = new Project();
+        UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
+        try {
+            this.projectManagementService.saveProject(project);
+            fail("anonymous user should not have been allowed to save a project");
+        } catch (ProposalWorkflowException e) {
+            fail("Unexpected exception: " + e);
+        } catch (PermissionDeniedException e) {
+            // expected exception
         }
     }
 

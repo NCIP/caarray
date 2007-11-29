@@ -27,9 +27,6 @@
             <s:select required="true" name="project.experiment.serviceType" label="Service Type" tabindex="4"
                       list="@gov.nih.nci.caarray.domain.project.ServiceType@values()" listValue="%{getText(resourceKey)}"
                       headerKey="" headerValue="--Select a Service Type--"/>
-            <s:select required="true" name="project.experiment.assayType" label="Assay Type" tabindex="5"
-                      list="@gov.nih.nci.caarray.domain.project.AssayType@values()" listValue="%{getText(resourceKey)}"
-                      headerKey="" headerValue="--Select an Assay Type--"/>
         </s:form>
     </div>
 </caarray:tabPane>

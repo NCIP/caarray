@@ -35,7 +35,7 @@
                             <c:param name="project.id" value="${project.id}" />
                             <c:param name="currentSample.id" value="${sample.id}" />
                         </c:url>
-                        <c:url var="projectUrl" value="/project/edit.action">
+                        <c:url var="projectUrl" value="/project/details.action">
                             <c:param name="project.id" value="${project.id}"/>
                             <c:param name="initialTab" value="annotations"/>
                             <c:param name="initialTab2" value="samples"/>

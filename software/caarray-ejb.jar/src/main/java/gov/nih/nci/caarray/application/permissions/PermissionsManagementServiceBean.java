@@ -97,6 +97,7 @@ import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -211,7 +212,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     public void addUsers(CollaboratorGroup targetGroup, List<String> users)
     throws CSTransactionException, CSObjectNotFoundException {
         LogUtil.logSubsystemEntry(LOG, targetGroup, users);
-
+        
         // This is a hack.  We should simply call am.assignUserToGroup, but that method appears to be buggy.
         AuthorizationManager am = SecurityUtils.getAuthorizationManager();
         String groupId = targetGroup.getGroup().getGroupId().toString();
@@ -221,6 +222,9 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
         for (User u : curUsers) {
             newUsers.add(u.getUserId().toString());
         }
+        // ensure that the fake anonymous user is not among them
+        newUsers.remove(am.getUser(SecurityUtils.ANONYMOUS_USER).getUserId().toString());
+        
         String[] userIds = newUsers.toArray(new String[] {});
         am.assignUsersToGroup(groupId, userIds);
         LogUtil.logSubsystemExit(LOG);
@@ -258,8 +262,12 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     @SuppressWarnings("unchecked")
     public List<User> getUsers(User u) {
         LogUtil.logSubsystemEntry(LOG);
-        List<User> result = getDaoFactory().getArrayDao().queryEntityByExample(u == null ? new User() : u,
-                                                                               MatchMode.START);
+        List<User> result =
+                new ArrayList<User>(getDaoFactory().getArrayDao().queryEntityByExample(u == null ? new User() : u,
+                        MatchMode.START));
+        // do not include the anonymous user
+        result.remove(SecurityUtils.getAuthorizationManager().getUser(SecurityUtils.ANONYMOUS_USER));
+
         LogUtil.logSubsystemExit(LOG);
         return result;
     }

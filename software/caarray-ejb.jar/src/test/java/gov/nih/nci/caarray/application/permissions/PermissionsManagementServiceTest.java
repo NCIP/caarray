@@ -83,12 +83,14 @@
 package gov.nih.nci.caarray.application.permissions;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.dao.stub.CollaboratorGroupDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -165,29 +167,35 @@ public class PermissionsManagementServiceTest {
     public void testAddAndRemoveUsers() throws CSTransactionException, CSObjectNotFoundException {
         CollaboratorGroup created = permissionsManagementService.create(TEST);
         List<String> toAdd = new ArrayList<String>();
-        toAdd.add("1");
+        Long anonId = SecurityUtils.getAuthorizationManager().getUser(SecurityUtils.ANONYMOUS_USER).getUserId();
+        toAdd.add(anonId.toString());
         toAdd.add("3");
+        toAdd.add("4");
         permissionsManagementService.addUsers(created, toAdd);
         // gymnastics here due to auth manager being it's own session
         Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
         Group g =  (Group) HibernateUtil.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
-        User u1 = (User) HibernateUtil.getCurrentSession().load(User.class, 1L);
+        User u1 = (User) HibernateUtil.getCurrentSession().load(User.class, anonId);
         User u2 = (User) HibernateUtil.getCurrentSession().load(User.class, 3L);
+        User u3 = (User) HibernateUtil.getCurrentSession().load(User.class, 4L);
         Hibernate.initialize(u1.getGroups());
-        assertTrue(u1.getGroups().contains(g));
+        assertFalse(u1.getGroups().contains(g));
+        assertTrue(u2.getGroups().contains(g));
         assertTrue(u2.getGroups().contains(g));
         tx.commit();
 
         List<String> toRemove = new ArrayList<String>();
-        toRemove.add("1");
+        toRemove.add("3");
         permissionsManagementService.removeUsers(created, toRemove);
         // go the other way or remove - make sure groups are set correctly
         tx = HibernateUtil.getCurrentSession().beginTransaction();
         HibernateUtil.getCurrentSession().refresh(u1);
         HibernateUtil.getCurrentSession().refresh(u2);
+        HibernateUtil.getCurrentSession().refresh(u3);
         HibernateUtil.getCurrentSession().refresh(g);
-        assertTrue(!u1.getGroups().contains(g));
-        assertTrue(u2.getGroups().contains(g));
+        assertFalse(u1.getGroups().contains(g));
+        assertFalse(u2.getGroups().contains(g));
+        assertTrue(u3.getGroups().contains(g));
         tx.commit();
     }
 

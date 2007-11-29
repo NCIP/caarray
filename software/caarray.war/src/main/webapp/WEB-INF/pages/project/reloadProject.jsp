@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
-<c:url var="editProjectUrl" value="/project/edit.action">
+<c:url var="editProjectUrl" value="/protected/project/edit.action">
     <c:param name="project.id" value="${project.id}"/>
     <c:param name="editMode" value="${editMode}" />
 </c:url>
