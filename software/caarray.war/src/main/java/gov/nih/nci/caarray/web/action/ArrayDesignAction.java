@@ -94,6 +94,9 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.InvalidDataFileException;
+import gov.nih.nci.caarray.validation.ValidationMessage;
 
 import java.io.File;
 import java.util.List;
@@ -275,7 +278,16 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     public String save() {
         if (arrayDesign.getId() == null) {
             CaArrayFile designFile = getFileAccessService().add(upload, uploadFileName);
-            getFileManagementService().importArrayDesignFile(arrayDesign, designFile);
+            try {
+                getFileManagementService().importArrayDesignFile(arrayDesign, designFile);
+            } catch (InvalidDataFileException e) {
+                FileValidationResult result = e.getFileValidationResult();
+                for (ValidationMessage message : result.getMessages()) {
+                    addFieldError("upload", message.getMessage());
+                }
+                editMode = true;
+                return Action.INPUT;
+            }
         } else {
             // TODO edit an existing array design
         }

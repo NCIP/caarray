@@ -66,6 +66,8 @@
             <caarray:linkButton actionClass="import" text="Import" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${importUrl}', 'tabboxlevel2wrapper');" />
             <c:url value="/protected/ajax/project/files/addSupplementalFiles.action" var="supplementalUrl"/>
             <caarray:linkButton actionClass="import" text="Add Supplemental Files" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${supplementalUrl}', 'tabboxlevel2wrapper');" />
+            <c:url value="/ajax/project/files/listUnimported.action" var="unimportedUrl"/>
+            <caarray:linkButton actionClass="import" text="Refresh Status" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${unimportedUrl}', 'tabboxlevel2wrapper');" />
         </caarray:actions>
     </c:if>
 </caarray:tabPane>
