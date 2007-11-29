@@ -267,8 +267,8 @@ public class ValidateTest {
         boolean calledValidateFiles;
 
         @Override
-        public void validateFiles(CaArrayFileSet fileSet) {
-            super.validateFiles(fileSet);
+        public void validateFiles(Project project, CaArrayFileSet fileSet) {
+            super.validateFiles(project, fileSet);
             this.calledValidateFiles = true;
         }
     }

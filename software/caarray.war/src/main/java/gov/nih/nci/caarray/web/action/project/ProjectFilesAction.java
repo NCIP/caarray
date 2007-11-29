@@ -246,7 +246,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         prepListImportedPage();
         return ACTION_TABLE;
     }
-    
+
     /**
      * Method to get the list of files.
      *
@@ -376,9 +376,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             }
         }
         if (!fileSet.getFiles().isEmpty()) {
-            getFileManagementService().validateFiles(fileSet);
+            getFileManagementService().validateFiles(getProject(), fileSet);
         }
-        ActionHelper.saveMessage(validatedFiles + " files validated.");
+        ActionHelper.saveMessage(validatedFiles + " files validating.");
         if (skippedFiles > 0) {
             ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for validation.");
         }
@@ -404,7 +404,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         if (!fileSet.getFiles().isEmpty()) {
             getFileManagementService().importFiles(getProject(), fileSet);
         }
-        ActionHelper.saveMessage(importedFiles + " files imported.");
+        ActionHelper.saveMessage(importedFiles + " files importing.");
         if (skippedFiles > 0) {
             ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for importing.");
         }
@@ -414,7 +414,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Adds supplemental data files to the system.
-     * 
+     *
      * @return the string matching the result to follow
      */
     public String addSupplementalFiles() {
