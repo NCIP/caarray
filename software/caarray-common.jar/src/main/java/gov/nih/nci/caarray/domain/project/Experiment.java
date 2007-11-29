@@ -129,7 +129,6 @@ import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Where;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
-import org.hibernate.validator.Size;
 
 /**
  *
@@ -219,10 +218,6 @@ public class Experiment extends AbstractCaArrayEntity {
     private AssayType assayType;
     private Organization manufacturer;
     private Organism organism;
-    private Set<Term> tissueSites = new HashSet<Term>();
-    private Set<Term> tissueTypes = new HashSet<Term>();
-    private Set<Term> cellTypes = new HashSet<Term>();
-    private Set<Term> conditions = new HashSet<Term>();
     private Set<Factor> factors = new HashSet<Factor>();
     private Set<ExperimentContact> experimentContacts = new HashSet<ExperimentContact>();
     private Term experimentDesignType;
@@ -531,94 +526,6 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     public void setOrganism(Organism organism) {
         this.organism = organism;
-    }
-
-    /**
-     * Gets the tissue sites associated with this experiment.
-     *
-     * @return the tissue sites
-     */
-    @ManyToMany(fetch = FetchType.LAZY)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinTable(name = "EXPERIMENTTISSUESITE",
-            joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
-            inverseJoinColumns = {@JoinColumn(name = TERM_FK_NAME) })
-    @ForeignKey(name = "TISSUESITE_EXP_FK", inverseName = "TISSUESITE_TERM_FK")
-    @Size(min = 1, message = "You must select at least one tissue site.")
-    public Set<Term> getTissueSites() {
-        return this.tissueSites;
-    }
-
-    /**
-     * @param tissueSites the tissueSites to set
-     */
-    public void setTissueSites(final Set<Term> tissueSites) {
-        this.tissueSites = tissueSites;
-    }
-
-    /**
-     * Gets the tissue types associated with this experiment.
-     *
-     * @return the tissue types
-     */
-    @ManyToMany(fetch = FetchType.LAZY)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinTable(name = "EXPERIMENTTISSUETYPE",
-            joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
-            inverseJoinColumns = {@JoinColumn(name = TERM_FK_NAME) })
-    @ForeignKey(name = "TISSUETYPE_EXP_FK", inverseName = "TISSUETYPE_TERM_FK")
-    @Size(min = 1, message = "You must select at least one tissue type.")
-    public Set<Term> getTissueTypes() {
-        return this.tissueTypes;
-    }
-
-    /**
-     * @param tissueTypes the tissueTypes to set
-     */
-    public void setTissueTypes(final Set<Term> tissueTypes) {
-        this.tissueTypes = tissueTypes;
-    }
-
-    /**
-     * Gets the cell types associated with this experiment.
-     *
-     * @return the cell types
-     */
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "EXPERIMENTCELLTYPE",
-            joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
-            inverseJoinColumns = {@JoinColumn(name = TERM_FK_NAME) })
-    @ForeignKey(name = "CELLTYPE_EXP_FK", inverseName = "CELLTYPE_TERM_FK")
-    public Set<Term> getCellTypes() {
-        return this.cellTypes;
-    }
-
-    /**
-     * @param cellTypes the cellTypes to set
-     */
-    public void setCellTypes(final Set<Term> cellTypes) {
-        this.cellTypes = cellTypes;
-    }
-
-    /**
-     * Gets the conditions associated with this experiment.
-     *
-     * @return the conditions
-     */
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "EXPERIMENTCONDITION",
-            joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
-            inverseJoinColumns = {@JoinColumn(name = TERM_FK_NAME) })
-    @ForeignKey(name = "CONDITION_EXP_FK", inverseName = "CONDITION_TERM_FK")
-    public Set<Term> getConditions() {
-        return this.conditions;
-    }
-
-    /**
-     * @param conditions the conditions to set
-     */
-    public void setConditions(final Set<Term> conditions) {
-        this.conditions = conditions;
     }
 
     /**

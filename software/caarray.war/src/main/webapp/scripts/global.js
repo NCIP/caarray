@@ -359,9 +359,9 @@ var TabUtils = {
         }
         TabUtils.showLoadingText();
     },
-    
+
     hasFormChanges : function() {
-        return TabUtils.savedFormData != null && $('projectForm') && TabUtils.savedFormData != Form.serialize('projectForm');    
+        return TabUtils.savedFormData != null && $('projectForm') && TabUtils.savedFormData != Form.serialize('projectForm');
     },
 
     updateSavedFormData : function() {
@@ -699,10 +699,16 @@ var AssociationPickerUtils = {
 }
 
 var TermPickerUtils = {
-    processSelection : function(selectedItem, baseId, termLabel, termFieldName) {
+    processSelection : function(selectedItem, baseId, termLabel, termFieldName, multiple) {
         var id = selectedItem.firstChild.value;
         if (id == null || id == '') {
             return;
+        }
+        if (multiple != 'true') {
+            if ($(baseId + 'SelectedItemDiv').getElementsBySelector('input').length  > 0) {
+                alert('Only one ' + termLabel + ' may be selected.');
+                return;
+            }
         }
         if ($(baseId + 'SelectedItemDiv').getElementsBySelector('input[value="' + id + '"]').length  > 0) {
             alert(termLabel + ' already selected.');
@@ -723,10 +729,10 @@ var TermPickerUtils = {
         Element.remove(selectedItem);
     },
 
-    createAutoUpdater : function(baseId, url, termLabel, category, termFieldName) {
+    createAutoUpdater : function(baseId, url, termLabel, category, termFieldName, multiple) {
         autoUpdater =  new Ajax.Autocompleter(baseId + "SearchInput", baseId +"AutocompleteDiv", url,
             {paramName: "currentTerm.value", minChars: '0', indicator: baseId + 'ProgressMsg', frequency: 0.75,
-             updateElement: function(selectedItem) {TermPickerUtils.processSelection(selectedItem, baseId, termLabel, termFieldName);},
+             updateElement: function(selectedItem) {TermPickerUtils.processSelection(selectedItem, baseId, termLabel, termFieldName, multiple);},
              onHide: function() {}, onShow: function() {},
              parameters: 'category=' + category});
         Element.show(autoUpdater.update);

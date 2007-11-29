@@ -90,7 +90,6 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ServiceType;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.File;
@@ -130,10 +129,6 @@ public class CaArrayFile_HibernateIntegrationTest extends AbstractCaArrayEntity_
             caArrayFile.getProject().getExperiment().setServiceType(ServiceType.ANALYSIS);
             caArrayFile.getProject().getExperiment().setOrganism(new Organism());
             caArrayFile.getProject().getExperiment().setManufacturer(new Organization());
-            Term t = new Term();
-            t.setValue("t1");
-            caArrayFile.getProject().getExperiment().getTissueSites().add(t);
-            caArrayFile.getProject().getExperiment().getTissueTypes().add(t);
             save(caArrayFile.getProject());
         }
         caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);

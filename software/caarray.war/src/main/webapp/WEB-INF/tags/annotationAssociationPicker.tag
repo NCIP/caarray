@@ -6,6 +6,7 @@
 <%@ attribute name="associatedEntityName" required="true"%>
 <%@ attribute name="itemId" required="true"%>
 <%@ attribute name="baseId" required="true"%>
+<%@ attribute name="tabIndex" required="true" type="java.lang.String" %>
 <%@ include file="projectListTabCommon.tagf"%>
 <s:if test="fieldErrors['associatedValueName'] != null">
 <tr errorfor="associatedValueName">
@@ -21,7 +22,7 @@
             <div class="selectListWrapper">
                 <div class="selectListSide">
                     <div class="selectListHeader">
-                        <span class="selectListFilterLabel">Filter:</span> <s:textfield id="${baseId}AssociatedValueName" name="associatedValueName" theme="simple" size="20" tabindex="3" cssStyle="align:left;" />
+                        <span class="selectListFilterLabel">Filter:</span> <s:textfield id="${baseId}AssociatedValueName" name="associatedValueName" theme="simple" size="20" tabindex="${tabIndex}" cssStyle="align:left;" />
                         <span id="${baseId}ProgressMsg" style="display:none;"><img alt="Indicator" src="<c:url value="/images/indicator.gif"/>" /> Loading...</span>
                     </div>
                     <div id="${baseId}AutocompleteDiv"></div>

@@ -126,6 +126,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     private static final String MAPPED_BY = "hybridization";
 
     private String name;
+    private String description;
     private float amountOfMaterial;
     private Term amountOfMaterialUnit;
     private RawArrayData arrayData;
@@ -156,6 +157,21 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      */
     public void setName(final String nameVal) {
         this.name = nameVal;
+    }
+
+    /**
+     * @return the description
+     */
+    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
+    public String getDescription() {
+        return this.description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /**

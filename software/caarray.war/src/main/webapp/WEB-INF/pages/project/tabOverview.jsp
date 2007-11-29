@@ -1,6 +1,5 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
-<%@page import="gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory"%>
 <script type="text/javascript">
 setExperimentTitleHeader('${caarrayfn:escapeJavaScript(project.experiment.title)}');
 </script>
@@ -38,14 +37,6 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(project.experiment.title)
             <s:select required="true" key="project.experiment.organism" tabindex="7"
                       list="organisms" listKey="id" listValue="commonName" value="project.experiment.organism.id"
                       headerKey="" headerValue="--Select an Organism--"/>
-            <caarray:termSelector baseId="tissueSite" category="<%= ExperimentOntologyCategory.ORGANISM_PART %>" initialTerms="${project.experiment.tissueSites}"
-                tabIndex="8" termFieldName="project.experiment.tissueSites" termLabel="Tissue Site" required="true" />
-            <caarray:termSelector baseId="tissueType" category="<%= ExperimentOntologyCategory.MATERIAL_TYPE %>" initialTerms="${project.experiment.tissueTypes}"
-                tabIndex="9" termFieldName="project.experiment.tissueTypes" termLabel="Tissue Type" required="true" />
-            <caarray:termSelector baseId="cellType" category="<%= ExperimentOntologyCategory.CELL_TYPE %>" initialTerms="${project.experiment.cellTypes}"
-                tabIndex="10" termFieldName="project.experiment.cellTypes" termLabel="Cell Type"/>
-            <caarray:termSelector baseId="conditions" category="<%= ExperimentOntologyCategory.DISEASE_STATE %>" initialTerms="${project.experiment.conditions}"
-                tabIndex="11" termFieldName="project.experiment.conditions" termLabel="Condition/Disease State"/>
             <s:hidden name="project.id" />
             <s:hidden name="editMode" />
         </s:form>

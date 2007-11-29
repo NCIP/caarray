@@ -375,11 +375,6 @@ public class SearchDaoTest {
             project.getExperiment().setServiceType(ServiceType.ANALYSIS);
             project.getExperiment().setOrganism(new Organism());
             project.getExperiment().setManufacturer(new Organization());
-            Term t = new Term();
-            t.setValue("t1");
-            project.getExperiment().getTissueSites().add(t);
-            project.getExperiment().getTissueTypes().add(t);
-
             Source source = new Source();
             source.setName("Source 1 Name");
             project.getExperiment().getSources().add(source);

@@ -16,13 +16,7 @@
                 <caarray:projectListTabActionLink linkContent="${row.name}" entityName="LabeledExtract" action="view" itemId="${row.id}" isSubtab="true"/>
             </display:column>
             <display:column property="description" titleKey="experiment.labeledExtracts.description" sortable="true" />
-            <display:column property="label.value" titleKey="experiment.labeledExtracts.label" sortable="true" />
-            <display:column titleKey="experiment.labeledExtracts.amount" sortable="true">
-                TODO
-            </display:column>
-            <display:column titleKey="experiment.labeledExtracts.protocol" sortable="true">
-                TODO
-            </display:column>
+            <display:column property="materialType.value" titleKey="currentLabeledExtract.materialType" sortable="true" />
             <display:column titleKey="experiment.labeledExtracts.relatedExtract">
                 <caarray:projectListTabRelatedItemsLinks relatedItems="${row.extracts}" relatedEntityName="Extract" nameProperty="name" isSubtab="true"/>
             </display:column>

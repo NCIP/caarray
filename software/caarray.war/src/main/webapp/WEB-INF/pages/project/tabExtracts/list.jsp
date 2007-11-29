@@ -16,9 +16,7 @@
                 <caarray:projectListTabActionLink linkContent="${row.name}" entityName="Extract" action="view" itemId="${row.id}" isSubtab="true"/>
             </display:column>
             <display:column property="description" titleKey="experiment.extracts.description" sortable="true" />
-            <display:column titleKey="experiment.extracts.nucleicAcidType" sortable="true">
-                TODO
-            </display:column>
+            <display:column property="materialType.value" titleKey="currentExtract.materialType" sortable="true" />
             <display:column titleKey="experiment.extracts.relatedSamples">
                 <caarray:projectListTabRelatedItemsLinks relatedItems="${row.samples}" relatedEntityName="Sample" nameProperty="name" isSubtab="true"/>
             </display:column>

@@ -283,10 +283,6 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DUMMY_PROJECT_1.setExperiment(DUMMY_EXPERIMENT_1);
         DUMMY_EXPERIMENT_1.setOrganism(DUMMY_ORGANISM);
         DUMMY_EXPERIMENT_1.setManufacturer(DUMMY_PROVIDER);
-        Term t = new Term();
-        t.setValue("t1");
-        DUMMY_EXPERIMENT_1.getTissueSites().add(t);
-        DUMMY_EXPERIMENT_1.getTissueTypes().add(t);
         DUMMY_PROJECT_2.setExperiment(DUMMY_EXPERIMENT_2);
         DUMMY_PROJECT_3.setExperiment(DUMMY_EXPERIMENT_3);
     }

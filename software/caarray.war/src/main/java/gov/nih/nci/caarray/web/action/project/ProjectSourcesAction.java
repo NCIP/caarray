@@ -92,14 +92,20 @@ import gov.nih.nci.caarray.domain.sample.Source;
 import java.util.Collection;
 
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
+import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
+import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
  * Action implementing the sources tab.
  * @author Dan Kokotov
  */
 @Validation
+@Validations(
+    requiredFields = @RequiredFieldValidator(fieldName = "currentSource.tissueSite",
+            key = "struts.validator.requiredString", message = "")
+)
 public class ProjectSourcesAction extends AbstractProjectListTabAction {
     private static final long serialVersionUID = 1L;
 

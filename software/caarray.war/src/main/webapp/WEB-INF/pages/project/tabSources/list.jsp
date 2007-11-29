@@ -16,7 +16,7 @@
                 <caarray:projectListTabActionLink linkContent="${row.name}" entityName="Source" action="view" itemId="${row.id}" isSubtab="true"/>
             </display:column>
             <display:column property="description" titleKey="experiment.sources.description" sortable="true" />
-            <display:column property="organism.commonName" titleKey="experiment.sources.organism" sortable="true" />
+            <display:column property="tissueSite.value" titleKey="currentSource.tissueSite" sortable="true" />
             <display:column titleKey="experiment.sources.relatedSamples">
                 <caarray:projectListTabRelatedItemsLinks relatedItems="${row.samples}" relatedEntityName="Sample" nameProperty="name" isSubtab="true"/>
             </display:column>

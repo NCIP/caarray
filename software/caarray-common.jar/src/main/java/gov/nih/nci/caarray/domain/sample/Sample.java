@@ -104,6 +104,7 @@ import javax.persistence.OneToOne;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.validator.Length;
 
   /**
 
@@ -118,6 +119,7 @@ public class Sample extends AbstractBioMaterial implements Protectable {
 
     private Specimen specimen;
     private Experiment experiment;
+    private String externalSampleId;
 
 
     /**
@@ -201,16 +203,16 @@ public class Sample extends AbstractBioMaterial implements Protectable {
     public void setSpecimen(Specimen specimen) {
         this.specimen = specimen;
     }
-    
+
     /**
      * @return the experiment to which this source belongs
      */
     @ManyToOne
-    @JoinTable(name = "EXPERIMENTSAMPLE", 
+    @JoinTable(name = "EXPERIMENTSAMPLE",
             joinColumns = {@JoinColumn(name = "SAMPLE_ID", insertable = false, updatable = false) },
             inverseJoinColumns = {@JoinColumn(name = "EXPERIMENT_ID", insertable = false, updatable = false) })
     public Experiment getExperiment() {
-        return experiment;
+        return this.experiment;
     }
 
     /**
@@ -218,5 +220,20 @@ public class Sample extends AbstractBioMaterial implements Protectable {
      */
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
+    }
+
+    /**
+     * @return the externalSampleId
+     */
+    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
+    public String getExternalSampleId() {
+        return this.externalSampleId;
+    }
+
+    /**
+     * @param externalSampleId the externalSampleId to set
+     */
+    public void setExternalSampleId(String externalSampleId) {
+        this.externalSampleId = externalSampleId;
     }
 }

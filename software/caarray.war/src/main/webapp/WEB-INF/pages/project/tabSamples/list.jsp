@@ -16,10 +16,7 @@
                 <caarray:projectListTabActionLink linkContent="${row.name}" entityName="Sample" action="view" itemId="${row.id}" isSubtab="true"/>
             </display:column>
             <display:column property="description" titleKey="experiment.samples.description" sortable="true" />
-            <display:column property="organism.commonName" titleKey="experiment.samples.organism" sortable="true" />
-            <display:column titleKey="experiment.samples.tissueSite">
-                ${!empty row.tissueSite ? row.tissueSite.name : 'No Tissue Site'}
-            </display:column>
+            <display:column property="materialType.value" titleKey="currentSample.materialType" sortable="true" />
             <display:column titleKey="experiment.samples.sources">
                 <caarray:projectListTabRelatedItemsLinks relatedItems="${row.sources}" relatedEntityName="Source" nameProperty="name" isSubtab="true"/>
             </display:column>
@@ -28,13 +25,13 @@
             </display:column>
             <caarray:projectListTabActionColumns entityName="Sample" item="${row}" actions="!edit,!copy,!delete" isSubtab="true"/>
             <display:column titleKey="button.download">
-				<c:url value="/ajax/project/listTab/Samples/download.action" var="actionUrl">
-				    <c:param name="project.id" value="${project.id}" />
-				    <c:param name="currentSample.id" value="${row.id}" />
-				</c:url>
-		        <a href="${actionUrl}">
-	            	<img src="<c:url value="/images/ico_download.gif"/>" alt="<fmt:message key="button.download"/>">
-		        </a>
+        <c:url value="/ajax/project/listTab/Samples/download.action" var="actionUrl">
+            <c:param name="project.id" value="${project.id}" />
+            <c:param name="currentSample.id" value="${row.id}" />
+        </c:url>
+            <a href="${actionUrl}">
+                <img src="<c:url value="/images/ico_download.gif"/>" alt="<fmt:message key="button.download"/>">
+            </a>
             </display:column>
         </display:table>
     </ajax:displayTag>
