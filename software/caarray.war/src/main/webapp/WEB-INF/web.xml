@@ -28,6 +28,22 @@
         <param-name>uptUrl</param-name>
         <param-value>@upt.url@</param-value>
     </context-param>
+    <context-param>
+        <param-name>ldapHost</param-name>
+        <param-value>@ldap.host@</param-value>
+    </context-param>
+    <context-param>
+        <param-name>ldapSearchableBase</param-name>
+        <param-value>@ldap.searchbase@</param-value>
+    </context-param>
+    <context-param>
+        <param-name>ldapUserIdLabel</param-name>
+        <param-value>@ldap.searchprefix@</param-value>
+    </context-param>
+    <context-param>
+        <param-name>ldap.install</param-name>
+        <param-value>@ldap.install@</param-value>
+    </context-param>
 
     <filter>
         <filter-name>openSessionFilter</filter-name>

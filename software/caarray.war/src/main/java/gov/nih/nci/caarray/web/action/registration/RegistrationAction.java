@@ -89,21 +89,25 @@ import gov.nih.nci.caarray.domain.state.State;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 import gov.nih.nci.caarray.web.helper.EmailHelper;
 import gov.nih.nci.caarray.web.util.CacheManager;
-import gov.nih.nci.caarray.web.util.LDAPUtil;
+import gov.nih.nci.security.authentication.helper.LDAPHelper;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.dao.UserSearchCriteria;
 import gov.nih.nci.security.exceptions.CSException;
+import gov.nih.nci.security.exceptions.internal.CSInternalConfigurationException;
+import gov.nih.nci.security.exceptions.internal.CSInternalInsufficientAttributesException;
+import gov.nih.nci.security.exceptions.internal.CSInternalLoginException;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.mail.MessagingException;
+import javax.servlet.ServletContext;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.Action;
@@ -117,14 +121,15 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
  * @author Akhil Bhaskar (Amentra, Inc.)
  *
  */
+// CSM requires Hashtable, servletcontext untyped
+@SuppressWarnings({ "PMD.ReplaceHashtableWithMap", "unchecked", "PMD.CyclomaticComplexity" })
 @Validation
 public class RegistrationAction extends ActionSupport implements Preparable {
 
     private static final long serialVersionUID = 1L;
-    static final Logger LOGGER = Logger.getLogger(RegistrationAction.class);
+    private static final Logger LOGGER = Logger.getLogger(RegistrationAction.class);
 
     private RegistrationRequest registrationRequest;
-    private String ldapInstall;
     private String password;
     private String passwordConfirm;
     private Boolean ldapAuthenticate;
@@ -132,22 +137,30 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     private List<Country> countryList = new ArrayList<Country>();
     private List<State> stateList = new ArrayList<State>();
     private List<UserRole> roleList = new ArrayList<UserRole>();
+    private static final Hashtable<String, String> LDAP_CONTEXT_PARAMS = new Hashtable<String, String>();
 
     /**
      * {@inheritDoc}
      */
     public void prepare() {
-        if (getCountryList().size() < 1) {
+        if (getCountryList().isEmpty()) {
             setCountryList(CacheManager.getInstance().getCountries());
         }
-        if (getStateList().size() < 1) {
+        if (getStateList().isEmpty()) {
             setStateList(CacheManager.getInstance().getStates());
         }
-        if (getRoleList().size() < 1) {
+        if (getRoleList().isEmpty()) {
             setRoleList(CacheManager.getInstance().getRoles());
         }
-        if (getLdapInstall() == null) {
-            setLdapInstall();
+        if (LDAP_CONTEXT_PARAMS.isEmpty()) {
+            ServletContext context = ServletActionContext.getServletContext();
+            Enumeration<String> e = context.getInitParameterNames();
+            while (e.hasMoreElements()) {
+                String param = e.nextElement();
+                if (param.startsWith("ldap")) {
+                    LDAP_CONTEXT_PARAMS.put(param, context.getInitParameter(param));
+                }
+            }
         }
     }
 
@@ -197,11 +210,19 @@ public class RegistrationAction extends ActionSupport implements Preparable {
      * Action to actually save the registration with authentication.
      * @return the directive for the next action / page to be directed to
      * @throws CSException on CSM error
+     * @throws CSInternalInsufficientAttributesException on CSM error
+     * @throws CSInternalConfigurationException on CSM error
      */
-    public String saveAuthenticate() throws CSException {
 
-        if (getLdapInstall().equalsIgnoreCase("true")) {
-            if (!LDAPUtil.ldapAuthenticateUser(registrationRequest.getLoginName(), getPassword())) {
+    public String saveAuthenticate() throws CSException, CSInternalConfigurationException,
+        CSInternalInsufficientAttributesException {
+
+        if (isLdapInstall()) {
+            try {
+                LDAPHelper.authenticate(LDAP_CONTEXT_PARAMS , registrationRequest.getLoginName(),
+                                        getPassword().toCharArray(), null);
+            } catch (CSInternalLoginException e) {
+                // CSM throws this exception on invalid user/password
                 ActionHelper.saveMessage(getText("registration.ldapLookupFailure"));
                 return Action.INPUT;
             }
@@ -367,22 +388,10 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     }
 
     /**
-     * @return the ldapInstall
+     * @return is ldap install?
      */
-    public String getLdapInstall() {
-        return ldapInstall;
-    }
-
-    /**
-     * Configures for LDAP.
-     */
-    public void setLdapInstall() {
-        try {
-            Configuration config = new PropertiesConfiguration("default.properties");
-            this.ldapInstall = config.getString("ldap.install");
-        } catch (ConfigurationException e) {
-            LOGGER.error("An IO error occured. Please check the path or filename.");
-        }
+    public boolean isLdapInstall() {
+        return Boolean.parseBoolean(LDAP_CONTEXT_PARAMS.get("ldap.install"));
     }
 }
 
