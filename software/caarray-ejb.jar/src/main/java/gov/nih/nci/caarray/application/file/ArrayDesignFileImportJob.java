@@ -102,6 +102,7 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
         return arrayDesignId;
     }
 
+    @Override
     void execute() {
         ArrayDesign arrayDesign = getDaoFactory().getArrayDao().getArrayDesign(getArrayDesignId());
         getArrayDesignImporter().importArrayDesign(arrayDesign);

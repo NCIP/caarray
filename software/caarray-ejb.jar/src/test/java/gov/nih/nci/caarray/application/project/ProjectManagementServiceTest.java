@@ -209,7 +209,7 @@ public class ProjectManagementServiceTest {
         } catch (ProposalWorkflowException e) {
             fail("Unexpected exception: " + e);
         }
-        
+
         project = new Project();
         UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
         try {
@@ -590,6 +590,7 @@ public class ProjectManagementServiceTest {
             return s;
         }
 
+        @SuppressWarnings("deprecation")
         private Factor getFactor(Long entityId) {
             Factor f = new Factor();
             f.setName("Test");
@@ -597,6 +598,7 @@ public class ProjectManagementServiceTest {
             return f;
         }
 
+        @SuppressWarnings("deprecation")
         private void setABM(AbstractBioMaterial abm, Long entityId) {
             abm.setName("Test");
             abm.setDescription("Test");

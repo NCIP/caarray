@@ -83,9 +83,9 @@
 package gov.nih.nci.caarray.application.arraydesign;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
@@ -100,7 +100,6 @@ import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
-import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
 
@@ -135,7 +134,7 @@ public class ArrayDesignServiceTest {
     }
 
     @Test
-    public void testImportDesign_ArrayDesign() throws InvalidDataFileException {
+    public void testImportDesign_ArrayDesign() {
         ArrayDesign design = new ArrayDesign();
         design.setDesignFile(getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
         arrayDesignService.importDesign(design);

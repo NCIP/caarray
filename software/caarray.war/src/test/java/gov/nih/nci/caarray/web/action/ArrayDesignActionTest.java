@@ -162,6 +162,7 @@ public class ArrayDesignActionTest {
         assertEquals(Action.SUCCESS, result);
     }
 
+    @SuppressWarnings("deprecation")
     private void setTargetIdParam() {
         ArrayDesign design = new ArrayDesign();
         design.setId(DESIGN_ID);

@@ -220,7 +220,7 @@ public class FileManagementServiceTest {
 
     private static class LocalArrayDesignServiceStub extends ArrayDesignServiceStub {
 
-        private boolean importCalled;
+        protected boolean importCalled;
 
         @Override
         public FileValidationResult validateDesign(CaArrayFile designFile) {
@@ -243,7 +243,7 @@ public class FileManagementServiceTest {
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
 
-        private LocalSearchDaoStub searchDaoStub = new LocalSearchDaoStub();
+        private final LocalSearchDaoStub searchDaoStub = new LocalSearchDaoStub();
 
         @Override
         public SearchDao getSearchDao() {
@@ -256,11 +256,13 @@ public class FileManagementServiceTest {
         private static long nextId = 1;
         Map<Long, PersistentObject> objectMap = new HashMap<Long, PersistentObject>();
 
+        @SuppressWarnings("unchecked")
         @Override
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
             return (T) objectMap.get(entityId);
         }
 
+        @SuppressWarnings("deprecation")
         void save(AbstractCaArrayObject object) {
             object.setId(nextId++);
             objectMap.put(object.getId(), object);

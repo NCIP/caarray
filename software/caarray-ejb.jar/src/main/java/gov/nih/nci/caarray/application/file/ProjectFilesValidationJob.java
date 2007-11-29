@@ -97,6 +97,7 @@ final class ProjectFilesValidationJob extends AbstractProjectFilesJob {
         super(username, project, fileSet);
     }
 
+    @Override
     void execute() {
         FileAccessService fileAccessService = getFileAccessService();
         Project project = getProject();

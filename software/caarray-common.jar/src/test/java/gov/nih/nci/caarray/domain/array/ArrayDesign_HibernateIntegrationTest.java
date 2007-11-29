@@ -93,11 +93,11 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import org.junit.Test;
 
+@SuppressWarnings("PMD")
 public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_HibernateIntegrationTest {
 
     @Test
     @Override
-    @SuppressWarnings("PMD")
     public void testSave() {
         super.testSave();
     }

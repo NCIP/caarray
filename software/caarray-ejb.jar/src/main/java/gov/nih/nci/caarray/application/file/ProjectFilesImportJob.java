@@ -82,13 +82,13 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import org.apache.log4j.Logger;
-
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
+
+import org.apache.log4j.Logger;
 
 /**
  * Encapsulates the functionality necessary for importing a set of files into a project.
@@ -102,6 +102,7 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
         super(username, targetProject, fileSet);
     }
 
+    @Override
     void execute() {
         FileAccessService fileAccessService = getFileAccessService();
         Project project = getProject();

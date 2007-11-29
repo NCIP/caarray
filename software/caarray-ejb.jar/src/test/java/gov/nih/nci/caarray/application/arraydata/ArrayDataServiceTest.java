@@ -680,6 +680,7 @@ public class ArrayDataServiceTest {
                     }
                 }
 
+                @SuppressWarnings("deprecation")
                 private ArrayDesign createArrayDesign(int rows, int columns) {
                     ArrayDesign arrayDesign = new ArrayDesign();
                     ArrayDesignDetails details = new ArrayDesignDetails();

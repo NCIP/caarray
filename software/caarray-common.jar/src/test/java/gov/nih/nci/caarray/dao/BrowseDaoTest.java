@@ -95,7 +95,6 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.Before;
@@ -107,10 +106,7 @@ import org.junit.Test;
  */
 @SuppressWarnings("PMD")
 public class BrowseDaoTest extends AbstractDaoTest {
-    private static final Logger LOG = Logger.getLogger(BrowseDaoTest.class);
-
     // Experiment
-    private static final String UNCHECKED = "unchecked";
     private static Organism DUMMY_ORGANISM_1 = new Organism();
     private static Organism DUMMY_ORGANISM_2 = new Organism();
     private static Organization DUMMY_PROVIDER = new Organization();

@@ -132,6 +132,7 @@ public class ProjectActionTest {
         ServletActionContext.setRequest(new MockHttpServletRequest());
     }
 
+    @SuppressWarnings("deprecation")
     private Project getTestProject(Long id) {
         Project p = new Project() {
             private static final long serialVersionUID = 1L;

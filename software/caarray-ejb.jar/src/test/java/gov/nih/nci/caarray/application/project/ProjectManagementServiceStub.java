@@ -159,6 +159,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         return null;
     }
 
+    @SuppressWarnings("deprecation")
     public Project getProject(long id) {
         this.projectByIdCount++;
         Project p = new Project();
@@ -190,7 +191,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     public Project toggleBrowsableStatus(long projectId) {
         return null;
     }
-    
+
     public Project setUseTcgaPolicy(long projectId, boolean useTcgaPolicy) throws ProposalWorkflowException {
         return null;
     }
