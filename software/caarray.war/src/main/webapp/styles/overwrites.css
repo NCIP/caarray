@@ -123,8 +123,10 @@ table.form td .selectListHeader input
 .selectListFilterLabel
 {font-size:100%; line-height:1.4em; padding-bottom:6px; font-weight: bold;}
 
+.selectListWrapper .selectionside h4 
+{ width: 200px; }
 UL.selectedItemList
-{ background:url("../images/bg_shadow.gif") repeat-x fixed top ; clear:both; text-align:left; overflow:auto; }
+{ border:1px solid #999; background:url("../images/bg_shadow.gif") repeat-x fixed top ; clear:both; text-align:left; width: 204px; height: 95px; overflow: auto}
 UL.selectedItemList
 { background-attachment:scroll }
 UL.selectedItemList li

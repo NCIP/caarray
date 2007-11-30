@@ -351,13 +351,17 @@ var TabUtils = {
     savedFormData : null,
 
     preFunction : function(confirmMessage) {
+        TabUtils.confirmNavigateFromForm(confirmMessage);
+        TabUtils.showLoadingText();
+    },
+    
+    confirmNavigateFromForm : function(confirmMessage) {
         confirmMessage = confirmMessage || 'There are unsaved changed in your form, are you sure you want to continue?';
         if (TabUtils.hasFormChanges()) {
             if (!confirm(confirmMessage)) {
                 return false;
             }
-        }
-        TabUtils.showLoadingText();
+        }    
     },
 
     hasFormChanges : function() {

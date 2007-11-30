@@ -30,14 +30,14 @@
 </tr>
 </s:if>
 <tr>
-    <td class="tdLabel"><label class="label">${termLabel}<c:if test="${multiple != 'true'}">s</c:if><c:if test="${required == 'true'}"><span class="required">*</span></c:if>:</label></td>
+    <td class="tdLabel"><label class="label">${termLabel}<c:if test="${multiple == 'true'}">s</c:if><c:if test="${required == 'true'}"><span class="required">*</span></c:if>:</label></td>
     <td>
         <s:if test="${editMode}">
             <div class="selectListWrapper">
                 <div class="selectListSide">
                     <div class="selectListHeader">
-                        <span class="selectListFilterLabel">Filter:</span> <s:textfield id="${baseId}SearchInput" name="currentTerm.value" theme="simple" size="20" tabindex="${tabIndex}" cssStyle="align:left;" />
-                        <span id="${baseId}ProgressMsg" style="display:none;"><img alt="Indicator" src="<c:url value="/images/indicator.gif"/>" /></span>
+                        <span class="selectListFilterLabel">Filter:</span> <s:textfield id="${baseId}SearchInput" name="currentTerm.value" theme="simple" size="10" tabindex="${tabIndex}" cssStyle="align:left;" />
+                        <span id="${baseId}ProgressMsg" style="display: none"><img alt="Indicator" src="<c:url value="/images/indicator.gif"/>" /></span>
                         <c:url value="/protected/vocabulary/manage.action" var="addTermUrl">
                             <c:param name="initialTab" value="${category}" />
                             <c:param name="startWithEdit" value="true" />
@@ -46,13 +46,15 @@
                             <c:param name="returnInitialTab2" value="${returnInitialTab2}" />
                             <c:param name="returnInitialTab2Url" value="${returnInitialTab2Url}" />
                         </c:url>
-                        <span style="position: relative; left: 15px; margin-top: -24px; float: right;"><caarray:linkButton actionClass="add" text="Add" url="${addTermUrl}" /></span>
+                        <span style="position: relative; left: 15px; margin-top: -24px; float: right;">
+                            <caarray:linkButton actionClass="add" text="Add" url="${addTermUrl}" onclick="return TabUtils.confirmNavigateFromForm()"/>
+                        </span>
                     </div>
                     <div id="${baseId}AutocompleteDiv"></div>
                 </div>
                 <div class="selectionside">
                     <h4>Selected ${termLabel}s</h4>
-                    <div class="scrolltable2">
+                    <div>
                         <input name="${termFieldName}" type="hidden" value=""/>
                         <ul id="${baseId}SelectedItemDiv" class="selectedItemList">
                             <c:choose>

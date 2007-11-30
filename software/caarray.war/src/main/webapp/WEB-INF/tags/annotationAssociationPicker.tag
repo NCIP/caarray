@@ -29,7 +29,7 @@
                 </div>
                 <div class="selectionside">
                     <h4>Selected ${associatedEntityName}s</h4>
-                    <div class="scrolltable2">
+                    <div>
                         <ul id="${baseId}SelectedItemDiv" class="selectedItemList">
                             <c:forEach items="${initialSavedAssociations}" var="currentItem">
                                 <li onclick="AssociationPickerUtils.removeSelection(this, '${baseId}', '${associatedEntityName}'); "><input type="hidden" value="${currentItem.id}"/>${currentItem.name}</li>
