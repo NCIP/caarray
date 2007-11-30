@@ -212,6 +212,10 @@
 		<java jar="${installer.dist.dir}/${installer.file.name}" fork="true" />
 	</target>
 
+	<target name="install">
+		<java jar="${installer.dist.dir}/${installer.file.name}" fork="true" />
+	</target>
+
 	<target name="test-xmlconfig">
 		<path id="xmlconfig.path">
 			<fileset dir="${installer.ext.dir}">
