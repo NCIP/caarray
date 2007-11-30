@@ -344,7 +344,7 @@ public class CollaboratorsAction extends ActionSupport {
             List<Group> matchingGroups = am.getObjects(gsc);
 
             if (!matchingGroups.isEmpty()) {
-                addFieldError("groupName", "Collaborator Group Name must be unique");
+                addFieldError("groupName", getText("collaboration.duplicateName", new String[] {getGroupName()}));
             }
         }
     }
