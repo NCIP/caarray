@@ -3,7 +3,7 @@
     <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${projects}" requestURI="${sortUrl}"
         sort="list" id="row" pagesize="20" excludedParams="project.id" style="clear: none;">
         <caarray:displayTagProperties/>
-        <display:column sortProperty="experiment.publicIdentifier" title="Experiment ID" sortable="true">
+        <display:column sortProperty="experiment.publicIdentifier" title="Experiment ID" sortable="true" >
             <c:choose>
                 <c:when test="${caarrayfn:canRead(row, caarrayfn:currentUser()) }">
                     <c:url var="viewUrl" value="/project/details.action">
@@ -16,7 +16,7 @@
                     </c:url>
                 </c:otherwise>
             </c:choose>
-            <a href="${viewUrl}">${row.experiment.publicIdentifier}</a>
+            <a href="${viewUrl}" title="View experiment ${row.experiment.publicIdentifier} in read only mode">${row.experiment.publicIdentifier}</a>
         </display:column>
         <display:column property="experiment.title" title="Experiment Title" escapeXml="true" sortable="true"/>
         <display:column sortProperty="experiment.assayType" title="Assay Type" sortable="true" >
