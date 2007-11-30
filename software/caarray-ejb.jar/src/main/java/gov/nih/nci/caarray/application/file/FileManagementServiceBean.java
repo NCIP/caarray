@@ -175,8 +175,8 @@ public class FileManagementServiceBean implements FileManagementService {
     /**
      * {@inheritDoc}
      */
-    public void importArrayDesignFile(ArrayDesign arrayDesign, CaArrayFile designFile) throws InvalidDataFileException {
-        designFile.setFileStatus(FileStatus.IMPORTING);
+    public void addArrayDesign(ArrayDesign arrayDesign, CaArrayFile designFile) throws InvalidDataFileException {
+        designFile.setFileStatus(FileStatus.VALIDATING);
         arrayDesign.setDesignFile(designFile);
         getDaoFactory().getProjectDao().save(designFile);
         getDaoFactory().getArrayDao().save(arrayDesign);
@@ -185,6 +185,13 @@ public class FileManagementServiceBean implements FileManagementService {
             getDaoFactory().getArrayDao().remove(arrayDesign);
             throw new InvalidDataFileException(designFile.getValidationResult());
         }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void importArrayDesignDetails(ArrayDesign arrayDesign) {
+        arrayDesign.getDesignFile().setFileStatus(FileStatus.IMPORTING);
         ArrayDesignFileImportJob job = new ArrayDesignFileImportJob(UsernameHolder.getUser(), arrayDesign);
         getSubmitter().submitJob(job);
     }

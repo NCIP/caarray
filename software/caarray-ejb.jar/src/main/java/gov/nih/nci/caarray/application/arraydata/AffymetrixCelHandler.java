@@ -86,7 +86,6 @@ import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataT
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.BooleanColumn;
@@ -102,7 +101,6 @@ import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -166,27 +164,16 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
     }
 
     private void validateFeatures(FileValidationResult result, ArrayDesignService arrayDesignService) {
-        FeatureLookup featureLookup = getFeatureLookup(arrayDesignService);
-        int numberOfCells = celData.getCells();
-        for (int cellIndex = 0; cellIndex < numberOfCells; cellIndex++) {
-            int column = celData.indexToX(cellIndex);
-            int row = celData.indexToY(cellIndex);
-            if (featureLookup.getFeature(column, row) == null) {
-                result.addMessage(Type.ERROR, "The CEL file is inconsistent with the array design: "
-                        + "there is no Feature at the location (" + column + ", " + row);
-                return;
-            }
+        ArrayDesign arrayDesign = getDesign(arrayDesignService);
+        if (celData.getCells() != arrayDesign.getDesignDetails().getFeatures().size()) {
+            result.addMessage(Type.ERROR, "The CEL file is inconsistent with the array design: "
+                    + "the CEL file contains data for " + celData.getCells() + " features, but the "
+                    + "array design contains " + arrayDesign.getNumberOfFeatures() + " features");
         }
     }
 
-    private FeatureLookup getFeatureLookup(ArrayDesignService arrayDesignService) {
-        Collection<Feature> features = getFeatures(arrayDesignService);
-        return new FeatureLookup(features);
-    }
-
-    private Collection<Feature> getFeatures(ArrayDesignService arrayDesignService) {
-        ArrayDesign arrayDesign = arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, getLsidObjectId());
-        return arrayDesign.getDesignDetails().getFeatures();
+    private ArrayDesign getDesign(ArrayDesignService arrayDesignService) {
+        return arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, getLsidObjectId());
     }
 
     private void validateHeader(FileValidationResult result) {

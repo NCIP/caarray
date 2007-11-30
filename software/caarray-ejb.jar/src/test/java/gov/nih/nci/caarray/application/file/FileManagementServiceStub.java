@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 /**
  * Simple stub with no functionality.
@@ -122,15 +123,19 @@ public class FileManagementServiceStub implements FileManagementService {
         this.importedFilecCount = 0;
     }
 
-    public void importArrayDesignFile(ArrayDesign arrayDesign, CaArrayFile caArrayFile) {
-        arrayDesign.setDesignFile(caArrayFile);
-    }
-
     public void addSupplementalFiles(Project targetProject, CaArrayFileSet fileSet) {
         // no-op
     }
 
     public void importArrayDesignAnnotationFile(ArrayDesign arrayDesign, CaArrayFile annotationFile) {
         arrayDesign.setAnnotationFile(annotationFile);
+    }
+
+    public void addArrayDesign(ArrayDesign arrayDesign, CaArrayFile designFile) throws InvalidDataFileException {
+        arrayDesign.setDesignFile(designFile);
+    }
+
+    public void importArrayDesignDetails(ArrayDesign arrayDesign) {
+        // no-op
     }
 }

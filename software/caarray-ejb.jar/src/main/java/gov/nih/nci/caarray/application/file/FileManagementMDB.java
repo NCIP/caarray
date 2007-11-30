@@ -123,7 +123,7 @@ public class FileManagementMDB implements MessageListener {
 
     private static final String ERROR_MANAGAGING_TRANSACTION = "Error managaging transaction";
     private static final Logger LOG = Logger.getLogger(FileManagementMDB.class);
-    static final int TIMEOUT_SECONDS = 1800;
+    static final int TIMEOUT_SECONDS = 3600;
 
     /**
      * JNDI name for file management handling <code>Queue</code>.
@@ -152,10 +152,12 @@ public class FileManagementMDB implements MessageListener {
                 transaction.setTransactionTimeout(TIMEOUT_SECONDS);
                 transaction.begin();
                 AbstractFileManagementJob job = (AbstractFileManagementJob) contents;
+                LOG.info("Starting job of type: " + job.getClass().getSimpleName());
                 UsernameHolder.setUser(job.getUsername());
                 job.setDaoFactory(getDaoFactory());
                 job.execute();
                 transaction.commit();
+                LOG.info("Successfully completed job");
             }
         } catch (JMSException e) {
             LOG.error("Error handling message", e);

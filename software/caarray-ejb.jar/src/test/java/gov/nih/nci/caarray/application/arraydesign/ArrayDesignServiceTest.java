@@ -156,6 +156,7 @@ public class ArrayDesignServiceTest {
         assertEquals("Affymetrix.com", arrayDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
         assertEquals("Test3", arrayDesign.getLsidObjectId());
+        assertEquals(15876, arrayDesign.getNumberOfFeatures());
     }
 
     @Test

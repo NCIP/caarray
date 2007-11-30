@@ -180,6 +180,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
         handleQCProbeSets(designDetails);
         createMissingFeatures(designDetails);
         closeCdf();
+        arrayDesign.setNumberOfFeatures(designDetails.getFeatures().size());
         return designDetails;
     }
 

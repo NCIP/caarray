@@ -196,7 +196,8 @@ public class FileManagementServiceTest {
         CaArrayFile caArrayFile = fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
         caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
         design.setDesignFile(caArrayFile);
-        fileManagementService.importArrayDesignFile(design, caArrayFile);
+        fileManagementService.addArrayDesign(design, caArrayFile);
+        fileManagementService.importArrayDesignDetails(design);
         assertTrue(arrayDesignServiceStub.importCalled);
     }
 
@@ -221,7 +222,7 @@ public class FileManagementServiceTest {
         CaArrayFile caArrayFile = fileAccessServiceStub.add(AffymetrixArrayDataFiles.TEST3_CHP);
         caArrayFile.setFileType(FileType.AFFYMETRIX_CHP);
         design.setDesignFile(caArrayFile);
-        fileManagementService.importArrayDesignFile(design, caArrayFile);
+        fileManagementService.addArrayDesign(design, caArrayFile);
     }
 
 
@@ -259,7 +260,7 @@ public class FileManagementServiceTest {
         public void importDesign(ArrayDesign arrayDesign) {
             importCalled = true;
         }
-
+        
         @Override
         public ArrayDesign importDesign(CaArrayFile designFile) {
             importCalled = true;
