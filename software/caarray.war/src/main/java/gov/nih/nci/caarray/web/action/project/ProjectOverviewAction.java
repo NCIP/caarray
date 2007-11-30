@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -117,6 +118,10 @@ public class ProjectOverviewAction extends ProjectTabAction {
     private List<Organism> organisms = new ArrayList<Organism>();
     private List<Organization> manufacturers = new ArrayList<Organization>();
     private List<ArrayDesign> arrayDesigns = new ArrayList<ArrayDesign>();
+    private List<Term> tissueSites;
+    private List<Term> materialTypes;
+    private List<Term> cellTypes;
+    private List<Term> diseaseState;
 
     /**
      * {@inheritDoc}
@@ -133,6 +138,23 @@ public class ProjectOverviewAction extends ProjectTabAction {
             this.arrayDesigns = getArrayDesignService().getArrayDesignsForProvider(getExperiment().getManufacturer());
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SkipValidation
+    public String load() {
+        if (!isEditMode() && getExperiment() != null && getExperiment().getId() != null) {
+            setTissueSites(getVocabularyService().getTissueSitesForExperiment(getExperiment()));
+            setCellTypes(getVocabularyService().getCellTypesForExperiment(getExperiment()));
+            setDiseaseState(getVocabularyService().getDiseaseStatesForExperiment(getExperiment()));
+            setMaterialTypes(getVocabularyService().getMaterialTypesForExperiment(getExperiment()));
+        }
+        return super.load();
+    }
+
+
 
     /**
      * @return xmlArrayDesigns
@@ -200,6 +222,62 @@ public class ProjectOverviewAction extends ProjectTabAction {
      */
     public void setArrayDesigns(List<ArrayDesign> arrayDesigns) {
         this.arrayDesigns = arrayDesigns;
+    }
+
+    /**
+     * @return the tissueSites
+     */
+    public List<Term> getTissueSites() {
+        return this.tissueSites;
+    }
+
+    /**
+     * @param tissueSites the tissueSites to set
+     */
+    public void setTissueSites(List<Term> tissueSites) {
+        this.tissueSites = tissueSites;
+    }
+
+    /**
+     * @return the materialTypes
+     */
+    public List<Term> getMaterialTypes() {
+        return this.materialTypes;
+    }
+
+    /**
+     * @param materialTypes the materialTypes to set
+     */
+    public void setMaterialTypes(List<Term> materialTypes) {
+        this.materialTypes = materialTypes;
+    }
+
+    /**
+     * @return the cellTypes
+     */
+    public List<Term> getCellTypes() {
+        return this.cellTypes;
+    }
+
+    /**
+     * @param cellTypes the cellTypes to set
+     */
+    public void setCellTypes(List<Term> cellTypes) {
+        this.cellTypes = cellTypes;
+    }
+
+    /**
+     * @return the diseaseState
+     */
+    public List<Term> getDiseaseState() {
+        return this.diseaseState;
+    }
+
+    /**
+     * @param diseaseState the diseaseState to set
+     */
+    public void setDiseaseState(List<Term> diseaseState) {
+        this.diseaseState = diseaseState;
     }
 
     /**

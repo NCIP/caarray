@@ -55,6 +55,7 @@ import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dao.stub.AbstractDaoStub;
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
@@ -179,5 +180,32 @@ public class VocabularyServiceTest {
         public void removeTerms(List<Term> termList) {
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        public List<Term> getCellTypesForExperiment(Experiment experiment) {
+            return null;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public List<Term> getDiseaseStatesForExperiment(Experiment experiment) {
+            return null;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public List<Term> getMaterialTypesForExperiment(Experiment experiment) {
+            return null;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public List<Term> getTissueSitesForExperiment(Experiment experiment) {
+            return null;
+        }
     }
 }

@@ -37,6 +37,12 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(project.experiment.title)
             <s:select required="true" key="project.experiment.organism" tabindex="7"
                       list="organisms" listKey="id" listValue="commonName" value="project.experiment.organism.id"
                       headerKey="" headerValue="--Select an Organism--"/>
+            <c:if test="${!editMode}">
+                <s:select key="tissueSites" list="tissueSites" listKey="id" listValue="value" value="%{tissueSites.{id}}" multiple="true" label="Tissue Sites"/>
+                <s:select key="materialTypes" list="materialTypes" listKey="id" listValue="value" value="%{materialTypes.{id}}" multiple="true" label="Material Types"/>
+                <s:select key="cellTypes" list="cellTypes" listKey="id" listValue="value" value="%{cellTypes.{id}}" multiple="true" label="Cell Types"/>
+                <s:select key="diseaseState" list="diseaseState" listKey="id" listValue="value" value="%{diseaseState.{id}}" multiple="true" label="Disease States"/>
+            </c:if>
             <s:hidden name="project.id" />
             <s:hidden name="editMode" />
         </s:form>

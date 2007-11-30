@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
@@ -128,6 +129,34 @@ public class VocabularyDaoStub extends AbstractDaoStub implements VocabularyDao 
      * {@inheritDoc}
      */
     public Term getTermById(Long id) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Term> getCellTypesForExperiment(Experiment experiment) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Term> getDiseaseStatesForExperiment(Experiment experiment) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Term> getMaterialTypesForExperiment(Experiment experiment) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Term> getTissueSitesForExperiment(Experiment experiment) {
         return null;
     }
 }

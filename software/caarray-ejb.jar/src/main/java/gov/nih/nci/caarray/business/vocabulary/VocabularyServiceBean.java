@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.OrganismDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -188,6 +189,34 @@ public class VocabularyServiceBean implements VocabularyService {
      */
     public Term getTerm(Long id) {
         return getVocabularyDao().getTermById(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Term> getCellTypesForExperiment(Experiment experiment) {
+        return getVocabularyDao().getCellTypesForExperiment(experiment);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Term> getDiseaseStatesForExperiment(Experiment experiment) {
+        return getVocabularyDao().getDiseaseStatesForExperiment(experiment);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Term> getMaterialTypesForExperiment(Experiment experiment) {
+        return getVocabularyDao().getMaterialTypesForExperiment(experiment);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Term> getTissueSitesForExperiment(Experiment experiment) {
+        return getVocabularyDao().getTissueSitesForExperiment(experiment);
     }
 
     /**

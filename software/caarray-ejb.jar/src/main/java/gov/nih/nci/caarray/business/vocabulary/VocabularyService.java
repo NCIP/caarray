@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.business.vocabulary;
 
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -184,4 +185,32 @@ public interface VocabularyService {
      * @return the sources.
      */
     List<TermSource> getAllSources();
+
+    /**
+     * Get tissue sites for the experiment and category.
+     * @param experiment the experiment
+     * @return the list of terms
+     */
+    List<Term> getTissueSitesForExperiment(Experiment experiment);
+
+    /**
+     * Get material types for the experiment and category.
+     * @param experiment the experiment
+     * @return the list of terms
+     */
+    List<Term> getMaterialTypesForExperiment(Experiment experiment);
+
+    /**
+     * Get cell types for the experiment and category.
+     * @param experiment the experiment
+     * @return the list of terms
+     */
+    List<Term> getCellTypesForExperiment(Experiment experiment);
+
+    /**
+     * Get disease states for the experiment and category.
+     * @param experiment the experiment
+     * @return the list of terms
+     */
+    List<Term> getDiseaseStatesForExperiment(Experiment experiment);
 }

@@ -85,6 +85,11 @@ package gov.nih.nci.caarray.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.project.AssayType;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.ServiceType;
 import gov.nih.nci.caarray.domain.vocabulary.Accession;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -501,6 +506,30 @@ public class VocabularyDaoTest extends AbstractDaoTest {
             assertTrue(true);
         } else {
             fail("Retrieved accession is different from saved accession.");
+        }
+    }
+
+    @Test
+    public void testGetTermsForExperiment() {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.beginTransaction();
+            Experiment e = new Experiment();
+            e.setTitle("test title");
+            e.setServiceType(ServiceType.ANALYSIS);
+            e.setAssayType(AssayType.ACGH);
+            e.setManufacturer(new Organization());
+            e.setOrganism(new Organism());
+            DAO_OBJECT.save(e);
+            assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());
+            assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());
+            assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());
+            assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            e.printStackTrace();
+            fail("DAO exception during save of accession collection: " + e.getMessage());
         }
     }
 

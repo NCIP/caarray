@@ -244,7 +244,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         // make sure that an anonymous user cannot create a new project
         if (project.getId() == null && UsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USER)) {
             throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, UsernameHolder.getUser());
-        }            
+        }
         getProjectDao().save(project);
         for (PersistentObject obj : orphansToDelete) {
             if (obj != null) {
@@ -448,6 +448,9 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         to.setName(copyName);
         to.setDescription(from.getDescription());
         to.setMaterialType(from.getMaterialType());
+        to.setTissueSite(from.getTissueSite());
+        to.setCellType(from.getCellType());
+        to.setDiseaseState(from.getDiseaseState());
         to.setOrganism(from.getOrganism());
     }
 
@@ -476,7 +479,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         Source source = getDaoFactory().getSearchDao().retrieve(Source.class, sourceId);
         Source copy = new Source();
         copyInto(Source.class, copy, source);
-        copy.setTissueSite(source.getTissueSite());
         project.getExperiment().getSources().add(copy);
         getDaoFactory().getProjectDao().save(project);
         return copy;

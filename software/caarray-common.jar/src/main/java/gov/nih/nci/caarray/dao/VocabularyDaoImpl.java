@@ -50,10 +50,14 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
+import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -77,6 +81,10 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
 
     private static final Logger LOG = Logger.getLogger(VocabularyDaoImpl.class);
     private static final String UNCHECKED = "unchecked";
+    private static final String EXP_ID_PARAM = "expId";
+    private static final String TERM_FOR_EXPERIMENT_HSQL = "select distinct s.{0} from " + Experiment.class.getName()
+        + " e," +  Source.class.getName() + " s where e.id = :" + EXP_ID_PARAM + " and s in elements(e.sources) "
+        + "and s.{0} is not null";
 
     /**
      * Gets all the <code>Terms</code> matching the given category name.
@@ -238,6 +246,45 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
      */
     public Term getTermById(Long id) {
         return (Term) getCurrentSession().get(Term.class, id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public List<Term> getCellTypesForExperiment(Experiment experiment) {
+        String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "cellType");
+        return HibernateUtil.getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public List<Term> getDiseaseStatesForExperiment(Experiment experiment) {
+        String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "diseaseState");
+        return HibernateUtil.getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public List<Term> getTissueSitesForExperiment(Experiment experiment) {
+        String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "tissueSite");
+        return HibernateUtil.getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public List<Term> getMaterialTypesForExperiment(Experiment experiment) {
+        String hsql = "select distinct b.materialType from " + Experiment.class.getName() + " e,"
+            + AbstractBioMaterial.class.getName() +  " b where e.id = :expId and "
+            + "(b in elements(e.sources) or b in elements(e.samples) or b in elements(e.extracts) "
+            + "or b in elements(e.labeledExtracts)) and b.materialType is not null";
+        return HibernateUtil.getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
     }
 
     @Override
