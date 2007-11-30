@@ -118,11 +118,11 @@ public class TestApiPerformance {
         Experiment searchExperiment = new Experiment();
         searchExperiment.setTitle(TITLE);
         List<Experiment> matches = searchService.search(searchExperiment);
-        
+
         QuantitationType searchIntensity = new QuantitationType();
         searchIntensity.setName("CELIntensity");
         QuantitationType intensity = searchService.search(searchIntensity).iterator().next();
-        
+
         Set<Hybridization> hybridizations = getAllHybridizations(matches);
 
         DataRetrievalRequest request = new DataRetrievalRequest();
@@ -135,9 +135,9 @@ public class TestApiPerformance {
         assertNotNull(dataSet);
         long end = System.currentTimeMillis();
         long time = end - start;
-        System.out.println("Retrieval of DataSet with all hybridizations, in milliseconds: " + time);    
+        System.out.println("Retrieval of DataSet with all hybridizations, in milliseconds: " + time);
         long totalMilliseconds = 0L;
-        
+
         int index = 0;
         for (Hybridization hybridization : hybridizations) {
             request = new DataRetrievalRequest();
@@ -171,9 +171,7 @@ public class TestApiPerformance {
 
     private Set<Hybridization> getAllHybridizations(Experiment experiment) {
         Set<Hybridization> hybridizations = new HashSet<Hybridization>();
-        for (LabeledExtract labeledExtract : experiment.getLabeledExtracts()) {
-            hybridizations.addAll(labeledExtract.getHybridizations());
-        }
+        hybridizations.addAll(experiment.getHybridizations());
         return hybridizations;
     }
 }
