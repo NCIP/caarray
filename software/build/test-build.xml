@@ -43,8 +43,7 @@
 	  <echoproperties/>
   </target>
 
-  <target name="pre-build-checks" depends="testEnvPropertyFile,testPropertiesFileExists,testSshKeyFileExists,
-    testSvnLocalTrunk" />
+  <target name="pre-build-checks" depends="testEnvPropertyFile,testPropertiesFileExists,testSshKeyFileExists, testSshConnection, testSvnLocalTrunk" />
 
   <target name="post-build-checks"/>
 
@@ -82,7 +81,17 @@
 
   <target name="testSshKeyFileExists">
     <echo>Checking for the existence of the ${ssh.key.file} file...</echo>
-	<au:assertFileExists file="${ssh.key.file}" message="Unable to find the file: ${ssh.key.file}. Please update the value of the ssh.key.file attribute in the ${envpropertyfile} file." />  
+	<au:assertFileExists file="${ssh.key.file}" message="Unable to find the file: ${ssh.key.file}. Please update the value of the ssh.key.file attribute in the ${envpropertyfile} file." /> 
+  </target>
+
+  <target name="testSshConnection">
+    <echo>Testing valid SSH connection to ${ssh.server.username} and ${ssh.grid.username}...</echo>
+	    <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true"
+          username="${ssh.server.username}" keyfile="${ssh.key.file}"
+          passphrase="" verbose="true" command="ls" />
+	    <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true"
+          username="${ssh.grid.username}" keyfile="${ssh.key.file}"
+          passphrase="" verbose="true" command="ls" />
   </target>
 
   <target name="testJavaSecureChannelFileExists">
