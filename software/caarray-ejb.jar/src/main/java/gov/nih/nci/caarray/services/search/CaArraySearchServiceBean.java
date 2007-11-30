@@ -95,6 +95,8 @@ import java.util.List;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
 import org.apache.log4j.Logger;
@@ -109,6 +111,7 @@ import org.jboss.annotation.ejb.TransactionTimeout;
 @Remote(CaArraySearchService.class)
 @Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
 @TransactionTimeout(CaArraySearchServiceBean.TIMEOUT_SECONDS)
+@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class CaArraySearchServiceBean implements CaArraySearchService {
 
     private static final Logger LOG = Logger.getLogger(CaArraySearchServiceBean.class);

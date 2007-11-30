@@ -114,7 +114,7 @@ import org.jboss.annotation.ejb.TransactionTimeout;
 /*
  * Transaction required for these "getter" methods because database changes may occur as a side effect.
  */
-@TransactionAttribute(TransactionAttributeType.REQUIRED)
+@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 @TransactionTimeout(DataRetrievalServiceBean.TIMEOUT_SECONDS)
 @Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
 public class DataRetrievalServiceBean implements DataRetrievalService {

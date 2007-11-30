@@ -105,6 +105,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
 import org.apache.log4j.Logger;
+import org.jboss.annotation.ejb.TransactionTimeout;
 
 /**
  * Implementation entry point for the ArrayDesign subsystem.
@@ -112,9 +113,11 @@ import org.apache.log4j.Logger;
 @Local(ArrayDesignService.class)
 @Stateless
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+@TransactionTimeout(ArrayDesignServiceBean.TIMEOUT_SECONDS)
 public class ArrayDesignServiceBean implements ArrayDesignService {
 
     private static final Logger LOG = Logger.getLogger(ArrayDesignServiceBean.class);
+    static final int TIMEOUT_SECONDS = 1800;
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 

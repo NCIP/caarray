@@ -89,18 +89,24 @@ import gov.nih.nci.caarray.util.UsernameHolder;
 
 import java.io.Serializable;
 
+import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.interceptor.Interceptors;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 
 import org.apache.log4j.Logger;
-import org.jboss.annotation.ejb.TransactionTimeout;
 
 /**
  * Singleton MDB that handles file import jobs.
@@ -111,10 +117,11 @@ import org.jboss.annotation.ejb.TransactionTimeout;
     @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "1")
     })
 @Interceptors({ HibernateSessionInterceptor.class, ExceptionLoggingInterceptor.class })
-@TransactionAttribute(TransactionAttributeType.REQUIRED)
-@TransactionTimeout(FileManagementMDB.TIMEOUT_SECONDS)
+@TransactionManagement(TransactionManagementType.BEAN)
+@SuppressWarnings("PMD.CyclomaticComplexity") // requires multiple catch clauses in onMessage
 public class FileManagementMDB implements MessageListener {
 
+    private static final String ERROR_MANAGAGING_TRANSACTION = "Error managaging transaction";
     private static final Logger LOG = Logger.getLogger(FileManagementMDB.class);
     static final int TIMEOUT_SECONDS = 1800;
 
@@ -124,12 +131,14 @@ public class FileManagementMDB implements MessageListener {
     static final String QUEUE_JNDI_NAME = "queue/caArray/FileManagement";
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-
+    @Resource private UserTransaction transaction;
+    
     /**
      * Handles file management job message.
      *
      * @param message the JMS message to handle.
      */
+    @SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.ExcessiveMethodLength" }) // requires multiple catch clauses
     public void onMessage(Message message) {
         if (!(message instanceof ObjectMessage)) {
             LOG.error("Invalid message type delivered: " + message.getClass().getName());
@@ -140,13 +149,30 @@ public class FileManagementMDB implements MessageListener {
             if (!(contents instanceof AbstractFileManagementJob)) {
                 LOG.error("Invalid message contents: " + contents.getClass().getName());
             } else {
+                transaction.setTransactionTimeout(TIMEOUT_SECONDS);
+                transaction.begin();
                 AbstractFileManagementJob job = (AbstractFileManagementJob) contents;
                 UsernameHolder.setUser(job.getUsername());
                 job.setDaoFactory(getDaoFactory());
                 job.execute();
+                transaction.commit();
             }
         } catch (JMSException e) {
             LOG.error("Error handling message", e);
+        } catch (SystemException e) {
+            LOG.error(ERROR_MANAGAGING_TRANSACTION, e);
+        } catch (NotSupportedException e) {
+            LOG.error(ERROR_MANAGAGING_TRANSACTION, e);
+        } catch (SecurityException e) {
+            LOG.error(ERROR_MANAGAGING_TRANSACTION, e);
+        } catch (IllegalStateException e) {
+            LOG.error(ERROR_MANAGAGING_TRANSACTION, e);
+        } catch (RollbackException e) {
+            LOG.error(ERROR_MANAGAGING_TRANSACTION, e);
+        } catch (HeuristicMixedException e) {
+            LOG.error(ERROR_MANAGAGING_TRANSACTION, e);
+        } catch (HeuristicRollbackException e) {
+            LOG.error(ERROR_MANAGAGING_TRANSACTION, e);
         }
     }
 
@@ -158,5 +184,18 @@ public class FileManagementMDB implements MessageListener {
         this.daoFactory = daoFactory;
     }
 
+    /**
+     * @return the transaction
+     */
+    public UserTransaction getTransaction() {
+        return transaction;
+    }
+
+    /**
+     * @param transaction the transaction to set
+     */
+    public void setTransaction(UserTransaction transaction) {
+        this.transaction = transaction;
+    }
 
 }

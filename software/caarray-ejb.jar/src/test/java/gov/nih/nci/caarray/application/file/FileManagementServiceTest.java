@@ -52,6 +52,7 @@ package gov.nih.nci.caarray.application.file;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.application.UserTransactionStub;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceStub;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
@@ -100,6 +101,7 @@ public class FileManagementServiceTest {
     public void setUp() {
         FileManagementMDB fileManagementMDB = new FileManagementMDB();
         fileManagementMDB.setDaoFactory(daoFactoryStub);
+        fileManagementMDB.setTransaction(new UserTransactionStub());
         DirectJobSubmitter submitter = new DirectJobSubmitter(fileManagementMDB);
         FileManagementServiceBean fileManagementServiceBean = new FileManagementServiceBean();
         fileManagementServiceBean.setSubmitter(submitter);
