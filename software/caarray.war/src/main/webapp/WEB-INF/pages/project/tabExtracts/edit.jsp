@@ -1,5 +1,9 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 <%@page import="gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory"%>
+<c:url var="thisUrl" value="/ajax/project/listTab/Extracts/edit.action">
+    <c:param name="project.id" value="${project.id}" />
+    <c:param name="currentExtract.id" value="${currentExtract.id}" />
+</c:url>
 <caarray:tabPane subtab="true">
     <caarray:projectListTabItemForm entityName="Extract" item="${currentExtract}" itemName="${currentExtract.name}"
         isSubtab="true">
@@ -8,7 +12,7 @@
             tabindex="2" />
         <caarray:annotationAssociationPicker baseId="samplePicker" entityName="Extract" associatedEntityName="Sample" itemId="${currentExtract.id}" tabIndex="3" />
         <caarray:termSelector baseId="materialType" category="<%= ExperimentOntologyCategory.MATERIAL_TYPE %>" termField="${currentExtract.materialType}"
-            tabIndex="4" termFieldName="currentExtract.materialType" />
+            tabIndex="4" termFieldName="currentExtract.materialType" returnInitialTab1="annotations" returnInitialTab2="extracts" returnInitialTab2Url="${thisUrl}" />
         <caarray:annotationCharacteristics item="${currentSource}"/>
         <s:hidden name="currentExtract.id" />
         <s:hidden name="project.id" />

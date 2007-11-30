@@ -26,9 +26,12 @@
     <fmt:message key="vocabulary.tabs.CELL_TYPE" var="cellTypesTitle" />
     <fmt:message key="vocabulary.tabs.DISEASE_STATE" var="conditionsTitle" />
 
-    <c:if test="${param.initialTab != null && param.startWithCreate != null}">
-        <c:set value="${param.startWithCreate}" scope="session" var="startWithCreate" />
+    <c:if test="${param.initialTab != null && param.startWithEdit != null}">
+        <c:set value="${param.startWithEdit}" scope="session" var="startWithEdit" />
         <c:set value="${param.returnProjectId}" scope="session" var="returnProjectId" />
+        <c:set value="${param.returnInitialTab1}" scope="session" var="returnInitialTab1" />
+        <c:set value="${param.returnInitialTab2}" scope="session" var="returnInitialTab2" />
+        <c:set value="${param.returnInitialTab2Url}" scope="session" var="returnInitialTab2Url" />
     </c:if>
 
     <div class="padme">

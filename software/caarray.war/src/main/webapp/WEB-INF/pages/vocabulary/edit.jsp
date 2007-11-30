@@ -35,26 +35,24 @@
             <s:hidden name="category" />
             <s:hidden name="currentTerm.id" />
             <s:hidden name="returnProjectId" />
+            <s:hidden name="returnInitialTab1" />
+            <s:hidden name="returnInitialTab2" />
+            <s:hidden name="returnInitialTab2Url" />
             <s:hidden name="returnToProjectOnCompletion" />
         </s:form>
         <caarray:actions>
-            <s:if test="returnToProjectOnCompletion">
-                <s:if test="returnProjectId == null">
-                    <c:url value="/protected/project/create.action" var="returnUrl" />
-                </s:if>
-                <s:else>
-                    <c:url value="/protected/project/edit.action" var="returnUrl" >
-                        <c:param name="project.id" value="${returnProjectId}" />
-                    </c:url>
-                </s:else>
-                <caarray:action actionClass="cancel" text="Cancel" url="${returnUrl}" tabindex="1/" />
+            <s:if test="returnToProjectOnCompletion && returnProjectId == null">
+                <c:url value="/protected/project/create.action" var="returnUrl" />
             </s:if>
+            <s:elseif test="returnToProjectOnCompletion">
+                <c:url value="/protected/ajax/vocabulary/projectEdit.action" var="returnUrl" />
+            </s:elseif>
             <s:else>
-                <c:url value="/protected/ajax/vocabulary/list.action" var="vocabListAction">
+                <c:url value="/protected/ajax/vocabulary/list.action" var="returnUrl">
                     <c:param name="category" value="${category}" />
                 </c:url>
-                <caarray:action actionClass="cancel" text="Cancel" onclick="executeAjaxTab_tabs(null,'selected', '${vocabListAction}', '');" tabindex="10" />
             </s:else>
+            <caarray:action actionClass="cancel" text="Cancel" onclick="TabUtils.submitTabFormToUrl('termForm', '${returnUrl}','tabboxwrapper'); return false;" tabindex="10" />
             <caarray:action actionClass="save" text="Save" onclick="TabUtils.submitTabForm('termForm', 'tabboxwrapper'); return false;" tabindex="11" />
         </caarray:actions>
     </div>

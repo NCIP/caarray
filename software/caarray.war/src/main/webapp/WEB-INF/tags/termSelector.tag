@@ -10,6 +10,9 @@
 <%@ attribute name="tabIndex" required="true" type="java.lang.String" %>
 <%@ attribute name="required" required="false" type="java.lang.String" %>
 <%@ attribute name="multiple" required="false" type="java.lang.String" %>
+<%@ attribute name="returnInitialTab1" required="false" type="java.lang.String" %>
+<%@ attribute name="returnInitialTab2" required="false" type="java.lang.String" %>
+<%@ attribute name="returnInitialTab2Url" required="false" type="java.lang.String" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="/struts-tags" prefix="s" %>
@@ -37,8 +40,11 @@
                         <span id="${baseId}ProgressMsg" style="display:none;"><img alt="Indicator" src="<c:url value="/images/indicator.gif"/>" /></span>
                         <c:url value="/protected/vocabulary/manage.action" var="addTermUrl">
                             <c:param name="initialTab" value="${category}" />
-                            <c:param name="startWithCreate" value="true" />
+                            <c:param name="startWithEdit" value="true" />
                             <c:param name="returnProjectId" value="${project.id}" />
+                            <c:param name="returnInitialTab1" value="${returnInitialTab1}" />
+                            <c:param name="returnInitialTab2" value="${returnInitialTab2}" />
+                            <c:param name="returnInitialTab2Url" value="${returnInitialTab2Url}" />
                         </c:url>
                         <span style="position: relative; left: 15px; margin-top: -24px; float: right;"><caarray:linkButton actionClass="add" text="Add" url="${addTermUrl}" /></span>
                     </div>

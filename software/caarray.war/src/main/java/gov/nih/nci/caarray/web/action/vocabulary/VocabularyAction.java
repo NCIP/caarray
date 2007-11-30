@@ -92,6 +92,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
@@ -116,7 +118,9 @@ public class VocabularyAction extends ActionSupport implements Preparable {
     private List<TermSource> sources = new ArrayList<TermSource>();
     private Long returnProjectId;
     private boolean returnToProjectOnCompletion = false;
-    private String returnInitialTab = "overview";
+    private String returnInitialTab1 = "overview";
+    private String returnInitialTab2;
+    private String returnInitialTab2Url;
     private boolean createNewSource = false;
     private TermSource newSource;
 
@@ -136,17 +140,23 @@ public class VocabularyAction extends ActionSupport implements Preparable {
      */
     @SkipValidation
     public String list() {
-        if (Boolean.valueOf((String) ServletActionContext.getRequest().getSession().getAttribute("startWithCreate"))) {
-            String returnProjectIdString =
-                (String) ServletActionContext.getRequest().getSession().getAttribute("returnProjectId");
+        if (Boolean.valueOf((String) ServletActionContext.getRequest().getSession().getAttribute("startWithEdit"))) {
+            HttpSession session = ServletActionContext.getRequest().getSession();
+            String returnProjectIdString = (String) session.getAttribute("returnProjectId");
             if (StringUtils.isNotBlank(returnProjectIdString)) {
                 setReturnProjectId(Long.parseLong(returnProjectIdString));
             } else {
                 setReturnProjectId(null);
             }
+            setReturnInitialTab1((String) session.getAttribute("returnInitialTab1"));
+            setReturnInitialTab2((String) session.getAttribute("returnInitialTab2"));
+            setReturnInitialTab2Url((String) session.getAttribute("returnInitialTab2Url"));
             setReturnToProjectOnCompletion(true);
-            ServletActionContext.getRequest().getSession().removeAttribute("startWithCreate");
-            ServletActionContext.getRequest().getSession().removeAttribute("returnProjectId");
+            session.removeAttribute("startWithEdit");
+            session.removeAttribute("returnProjectId");
+            session.removeAttribute("returnInitialTab1");
+            session.removeAttribute("returnInitialTab2");
+            session.removeAttribute("returnInitialTab2Url");
             return edit();
         }
         this.setTerms(ActionHelper.getVocabularyService().getTerms(this.getCategory().getCategoryName()));
@@ -199,6 +209,15 @@ public class VocabularyAction extends ActionSupport implements Preparable {
             return "projectEdit";
         }
         return list();
+    }
+
+    /**
+     * handles the return to project / cancel action.
+     * @return the string indicating which result to follow.
+     */
+    @SkipValidation
+    public String projectEdit() {
+        return "projectEdit";
     }
 
     /**
@@ -303,17 +322,45 @@ public class VocabularyAction extends ActionSupport implements Preparable {
     }
 
     /**
-     * @return the returnInitialTab
+     * @return the returnInitialTab1
      */
-    public String getReturnInitialTab() {
-        return this.returnInitialTab;
+    public String getReturnInitialTab1() {
+        return this.returnInitialTab1;
     }
 
     /**
-     * @param returnInitialTab the returnInitialTab to set
+     * @param returnInitialTab1 the returnInitialTab1 to set
      */
-    public void setReturnInitialTab(String returnInitialTab) {
-        this.returnInitialTab = returnInitialTab;
+    public void setReturnInitialTab1(String returnInitialTab1) {
+        this.returnInitialTab1 = returnInitialTab1;
+    }
+
+    /**
+     * @return the returnInitialTab2
+     */
+    public String getReturnInitialTab2() {
+        return this.returnInitialTab2;
+    }
+
+    /**
+     * @param returnInitialTab2 the returnInitialTab2 to set
+     */
+    public void setReturnInitialTab2(String returnInitialTab2) {
+        this.returnInitialTab2 = returnInitialTab2;
+    }
+
+    /**
+     * @return the returnInitialTab2Url
+     */
+    public String getReturnInitialTab2Url() {
+        return this.returnInitialTab2Url;
+    }
+
+    /**
+     * @param returnInitialTab2Url the returnInitialTab2Url to set
+     */
+    public void setReturnInitialTab2Url(String returnInitialTab2Url) {
+        this.returnInitialTab2Url = returnInitialTab2Url;
     }
 
     /**
