@@ -139,9 +139,17 @@ public class FileManagementServiceBean implements FileManagementService {
     public void importFiles(Project targetProject, CaArrayFileSet fileSet) {
         LogUtil.logSubsystemEntry(LOG, fileSet);
         checkForImport(fileSet);
+        clearValidationMessages(fileSet);
         updateFileStatus(fileSet, FileStatus.IMPORTING);
         sendImportJobMessage(targetProject, fileSet);
         LogUtil.logSubsystemExit(LOG);
+    }
+
+    private void clearValidationMessages(CaArrayFileSet fileSet) {
+        for (CaArrayFile caArrayFile : fileSet.getFiles()) {
+            caArrayFile.setValidationResult(null);
+            getDaoFactory().getProjectDao().save(caArrayFile);
+        }
     }
 
     private void sendImportJobMessage(Project targetProject, CaArrayFileSet fileSet) {
@@ -154,6 +162,7 @@ public class FileManagementServiceBean implements FileManagementService {
      */
     public void validateFiles(Project project, CaArrayFileSet fileSet) {
         checkForValidation(fileSet);
+        clearValidationMessages(fileSet);
         updateFileStatus(fileSet, FileStatus.VALIDATING);
         sendValidationJobMessage(project, fileSet);
     }

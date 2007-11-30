@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 import gov.nih.nci.caarray.util.UsernameHolder;
@@ -109,7 +110,7 @@ import org.jboss.annotation.ejb.TransactionTimeout;
     @ActivationConfigProperty(propertyName = "destination", propertyValue = FileManagementMDB.QUEUE_JNDI_NAME),
     @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "1")
     })
-@Interceptors(HibernateSessionInterceptor.class)
+@Interceptors({ HibernateSessionInterceptor.class, ExceptionLoggingInterceptor.class })
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 @TransactionTimeout(FileManagementMDB.TIMEOUT_SECONDS)
 public class FileManagementMDB implements MessageListener {
