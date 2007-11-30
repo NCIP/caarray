@@ -280,7 +280,8 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         if (arrayDesign.getId() == null) {
             CaArrayFile designFile = getFileAccessService().add(upload, uploadFileName);
             try {
-                getFileManagementService().importArrayDesignFile(arrayDesign, designFile);
+                getFileManagementService().addArrayDesign(arrayDesign, designFile);
+                getFileManagementService().importArrayDesignDetails(arrayDesign);
             } catch (InvalidDataFileException e) {
                 FileValidationResult result = e.getFileValidationResult();
                 for (ValidationMessage message : result.getMessages()) {
