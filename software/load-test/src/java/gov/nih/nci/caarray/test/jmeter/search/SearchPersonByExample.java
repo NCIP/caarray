@@ -84,10 +84,6 @@ package gov.nih.nci.caarray.test.jmeter.search;
 
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
-import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.sample.Sample;
-import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
@@ -121,7 +117,6 @@ public class SearchPersonByExample extends CaArrayJmeterSampler implements JavaS
      * @param context the <code>JavaSamplerContext</code> which contains the arguments passed in.
      */
     public void setupTest(JavaSamplerContext context) {
-        organizationName = context.getParameter(ORGANIZATION_PARAM, DEFAULT_ORGANIZATION);
         hostName = context.getParameter(getHostNameParam(), getDefaultHostName());
         jndiPort = Integer.parseInt(context.getParameter(getJndiPortParam(), getDefaultJndiPort()));
     }
@@ -147,6 +142,7 @@ public class SearchPersonByExample extends CaArrayJmeterSampler implements JavaS
      */
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
+        organizationName = context.getParameter(ORGANIZATION_PARAM, DEFAULT_ORGANIZATION);
 
         Person examplePerson = createExamplePerson();
         try {
@@ -162,7 +158,7 @@ public class SearchPersonByExample extends CaArrayJmeterSampler implements JavaS
                 results.setResponseMessage("Retrieved " + personList.size() + " persons.");
             } else {
                 results.setSuccessful(false);
-                results.setResponseCode("Error: Response did not match request.");
+                results.setResponseCode("Error: Response did not match request. Retrieved " + personList.size() + " persons.");
             }
         } catch (ServerConnectionException e) {
             results.setSuccessful(false);
@@ -190,7 +186,7 @@ public class SearchPersonByExample extends CaArrayJmeterSampler implements JavaS
 
     private boolean isResultOkay(List<Person> personList) {
         if (personList.isEmpty()) {
-            return false;
+            return true;
         }
 
         Iterator<Person> i = personList.iterator();

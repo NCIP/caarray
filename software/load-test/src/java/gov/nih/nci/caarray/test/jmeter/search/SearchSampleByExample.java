@@ -121,8 +121,6 @@ public class SearchSampleByExample extends CaArrayJmeterSampler implements JavaS
      * @param context the <code>JavaSamplerContext</code> which contains the arguments passed in.
      */
     public void setupTest(JavaSamplerContext context) {
-        sampleName = context.getParameter(NAME_PARAM, DEFAULT_NAME);
-        tissueSite = context.getParameter(TISSUE_SITE_PARAM, DEFAULT_TISSUE_SITE);
         hostName = context.getParameter(getHostNameParam(), getDefaultHostName());
         jndiPort = Integer.parseInt(context.getParameter(getJndiPortParam(), getDefaultJndiPort()));
     }
@@ -149,6 +147,8 @@ public class SearchSampleByExample extends CaArrayJmeterSampler implements JavaS
      */
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
+        sampleName = context.getParameter(NAME_PARAM, DEFAULT_NAME);
+        tissueSite = context.getParameter(TISSUE_SITE_PARAM, DEFAULT_TISSUE_SITE);
 
         Sample exampleSample = createExampleSample();
         try {
@@ -164,7 +164,7 @@ public class SearchSampleByExample extends CaArrayJmeterSampler implements JavaS
                 results.setResponseMessage("Retrieved " + sampleList.size() + " samples.");
             } else {
                 results.setSuccessful(false);
-                results.setResponseCode("Error: Response did not match request.");
+                results.setResponseCode("Error: Response did not match request. Retrieved " + sampleList.size() + " samples.");
             }
         } catch (ServerConnectionException e) {
             results.setSuccessful(false);
@@ -196,7 +196,6 @@ public class SearchSampleByExample extends CaArrayJmeterSampler implements JavaS
     }
 
     private boolean isResultOkay(List<Sample> sampleList) {
-        // TODO Make an empty sample list return false, once we have samples with non-null tissue sites in the database.
         if (sampleList.isEmpty()) {
             return true;
         }

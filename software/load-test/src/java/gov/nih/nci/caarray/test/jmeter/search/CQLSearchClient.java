@@ -126,8 +126,6 @@ public class CQLSearchClient extends CaArrayJmeterSampler implements JavaSampler
      * @param context the <code>JavaSamplerContext</code> which contains the arguments passed in.
      */
     public void setupTest(JavaSamplerContext context) {
-        manufacturer = context.getParameter(MANUFACTURER_PARAM, DEFAULT_MANUFACTURER);
-        organism = context.getParameter(ORGANISM_PARAM, DEFAULT_ORGANISM);
         hostName = context.getParameter(getHostNameParam(), getDefaultHostName());
         jndiPort = Integer.parseInt(context.getParameter(getJndiPortParam(), getDefaultJndiPort()));
     }
@@ -154,6 +152,8 @@ public class CQLSearchClient extends CaArrayJmeterSampler implements JavaSampler
      */
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
+        manufacturer = context.getParameter(MANUFACTURER_PARAM, DEFAULT_MANUFACTURER);
+        organism = context.getParameter(ORGANISM_PARAM, DEFAULT_ORGANISM);
 
         CQLQuery cqlQuery = createCqlQuery();
         try {

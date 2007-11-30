@@ -121,7 +121,6 @@ public class SearchArrayDesignByExample extends CaArrayJmeterSampler implements 
      * @param context the <code>JavaSamplerContext</code> which contains the arguments passed in.
      */
     public void setupTest(JavaSamplerContext context) {
-        provider = context.getParameter(PROVIDER_PARAM, DEFAULT_PROVIDER);
         hostName = context.getParameter(getHostNameParam(), getDefaultHostName());
         jndiPort = Integer.parseInt(context.getParameter(getJndiPortParam(), getDefaultJndiPort()));
     }
@@ -147,6 +146,7 @@ public class SearchArrayDesignByExample extends CaArrayJmeterSampler implements 
      */
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
+        provider = context.getParameter(PROVIDER_PARAM, DEFAULT_PROVIDER);
 
         ArrayDesign exampleArrayDesign = createExampleArrayDesign();
         try {
@@ -162,7 +162,7 @@ public class SearchArrayDesignByExample extends CaArrayJmeterSampler implements 
                 results.setResponseMessage("Retrieved " + arrayDesignList.size() + " array designs.");
             } else {
                 results.setSuccessful(false);
-                results.setResponseCode("Error: Response did not match request.");
+                results.setResponseCode("Error: Response did not match request. Retrieved " + arrayDesignList.size() + " array designs.");
             }
         } catch (ServerConnectionException e) {
             results.setSuccessful(false);
@@ -190,7 +190,7 @@ public class SearchArrayDesignByExample extends CaArrayJmeterSampler implements 
 
     private boolean isResultOkay(List<ArrayDesign> arrayDesignList) {
         if (arrayDesignList.isEmpty()) {
-            return false;
+            return true;
         }
 
         Iterator<ArrayDesign> i = arrayDesignList.iterator();

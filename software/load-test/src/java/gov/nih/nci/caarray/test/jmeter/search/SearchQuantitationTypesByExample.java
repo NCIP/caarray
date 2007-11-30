@@ -83,9 +83,6 @@
 package gov.nih.nci.caarray.test.jmeter.search;
 
 import gov.nih.nci.caarray.domain.data.QuantitationType;
-import gov.nih.nci.caarray.domain.sample.Sample;
-import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
@@ -119,7 +116,6 @@ public class SearchQuantitationTypesByExample extends CaArrayJmeterSampler imple
      * @param context the <code>JavaSamplerContext</code> which contains the arguments passed in.
      */
     public void setupTest(JavaSamplerContext context) {
-        quantitationTypeType = context.getParameter(TYPE_PARAM, DEFAULT_TYPE);
         hostName = context.getParameter(getHostNameParam(), getDefaultHostName());
         jndiPort = Integer.parseInt(context.getParameter(getJndiPortParam(), getDefaultJndiPort()));
     }
@@ -145,6 +141,7 @@ public class SearchQuantitationTypesByExample extends CaArrayJmeterSampler imple
      */
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
+        quantitationTypeType = context.getParameter(TYPE_PARAM, DEFAULT_TYPE);
 
         QuantitationType exampleQuantitationType = createExampleQuantitationType();
         try {
@@ -160,7 +157,7 @@ public class SearchQuantitationTypesByExample extends CaArrayJmeterSampler imple
                 results.setResponseMessage("Retrieved " + quantitationTypeList.size() + " quantitation types.");
             } else {
                 results.setSuccessful(false);
-                results.setResponseCode("Error: Response did not match request.");
+                results.setResponseCode("Error: Response did not match request. Retrieved " + quantitationTypeList.size() + " quantitation types.");
             }
         } catch (ServerConnectionException e) {
             results.setSuccessful(false);
@@ -184,7 +181,7 @@ public class SearchQuantitationTypesByExample extends CaArrayJmeterSampler imple
 
     private boolean isResultOkay(List<QuantitationType> quantitationTypeList) {
         if (quantitationTypeList.isEmpty()) {
-            return false;
+            return true;
         }
 
         Iterator<QuantitationType> i = quantitationTypeList.iterator();

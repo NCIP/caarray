@@ -121,8 +121,6 @@ public class SearchExperimentByExample extends CaArrayJmeterSampler implements J
      * @param context the <code>JavaSamplerContext</code> which contains the arguments passed in.
      */
     public void setupTest(JavaSamplerContext context) {
-        manufacturer = context.getParameter(MANUFACTURER_PARAM, DEFAULT_MANUFACTURER);
-        organism = context.getParameter(ORGANISM_PARAM, DEFAULT_ORGANISM);
         hostName = context.getParameter(getHostNameParam(), getDefaultHostName());
         jndiPort = Integer.parseInt(context.getParameter(getJndiPortParam(), getDefaultJndiPort()));
     }
@@ -149,6 +147,8 @@ public class SearchExperimentByExample extends CaArrayJmeterSampler implements J
      */
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
+        manufacturer = context.getParameter(MANUFACTURER_PARAM, DEFAULT_MANUFACTURER);
+        organism = context.getParameter(ORGANISM_PARAM, DEFAULT_ORGANISM);
 
         Experiment exampleExperiment = createExampleExperiment();
         try {
@@ -164,7 +164,7 @@ public class SearchExperimentByExample extends CaArrayJmeterSampler implements J
                 results.setResponseMessage("Retrieved " + experimentList.size() + " experiments.");
             } else {
                 results.setSuccessful(false);
-                results.setResponseCode("Error: Response did not match request.");
+                results.setResponseCode("Error: Response did not match request. Retrieved " + experimentList.size() + " experiments.");
             }
         } catch (ServerConnectionException e) {
             results.setSuccessful(false);
@@ -196,7 +196,7 @@ public class SearchExperimentByExample extends CaArrayJmeterSampler implements J
 
     private boolean isResultOkay(List<Experiment> experimentList) {
         if (experimentList.isEmpty()) {
-            return false;
+            return true;
         }
 
         Iterator<Experiment> i = experimentList.iterator();

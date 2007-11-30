@@ -121,8 +121,6 @@ public class SearchByExampleClient extends CaArrayJmeterSampler implements JavaS
      * @param context the <code>JavaSamplerContext</code> which contains the arguments passed in.
      */
     public void setupTest(JavaSamplerContext context) {
-        manufacturer = context.getParameter(MANUFACTURER_PARAM, DEFAULT_MANUFACTURER);
-        organism = context.getParameter(ORGANISM_PARAM, DEFAULT_ORGANISM);
         hostName = context.getParameter(getHostNameParam(), getDefaultHostName());
         jndiPort = Integer.parseInt(context.getParameter(getJndiPortParam(), getDefaultJndiPort()));
     }
@@ -149,6 +147,8 @@ public class SearchByExampleClient extends CaArrayJmeterSampler implements JavaS
      */
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
+        manufacturer = context.getParameter(MANUFACTURER_PARAM, DEFAULT_MANUFACTURER);
+        organism = context.getParameter(ORGANISM_PARAM, DEFAULT_ORGANISM);
 
         Experiment exampleExperiment = createExampleExperiment();
         try {

@@ -118,7 +118,6 @@ public class SearchTermByExample extends CaArrayJmeterSampler implements JavaSam
      * @param context the <code>JavaSamplerContext</code> which contains the arguments passed in.
      */
     public void setupTest(JavaSamplerContext context) {
-        categoryName = context.getParameter(CATEGORY_PARAM, DEFAULT_CATEGORY);
         hostName = context.getParameter(getHostNameParam(), getDefaultHostName());
         jndiPort = Integer.parseInt(context.getParameter(getJndiPortParam(), getDefaultJndiPort()));
     }
@@ -144,6 +143,7 @@ public class SearchTermByExample extends CaArrayJmeterSampler implements JavaSam
      */
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
+        categoryName = context.getParameter(CATEGORY_PARAM, DEFAULT_CATEGORY);
 
         Term exampleTerm = createExampleTerm();
         try {
@@ -159,7 +159,7 @@ public class SearchTermByExample extends CaArrayJmeterSampler implements JavaSam
                 results.setResponseMessage("Retrieved " + termList.size() + " terms.");
             } else {
                 results.setSuccessful(false);
-                results.setResponseCode("Error: Response did not match request.");
+                results.setResponseCode("Error: Response did not match request. Retrieved " + termList.size() + " terms.");
             }
         } catch (ServerConnectionException e) {
             results.setSuccessful(false);
@@ -187,7 +187,7 @@ public class SearchTermByExample extends CaArrayJmeterSampler implements JavaSam
 
     private boolean isResultOkay(List<Term> termList) {
         if (termList.isEmpty()) {
-            return false;
+            return true;
         }
 
         Iterator<Term> i = termList.iterator();

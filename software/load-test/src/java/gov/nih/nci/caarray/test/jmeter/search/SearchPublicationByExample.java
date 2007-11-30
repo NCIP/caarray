@@ -82,7 +82,10 @@
  */
 package gov.nih.nci.caarray.test.jmeter.search;
 
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.publication.Publication;
+import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
@@ -97,16 +100,19 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
 /**
- * A custom JMeter Sampler that acts as a client searching for hybridizations by example through CaArray's Remote Java API.
+ * A custom JMeter Sampler that acts as a client searching for publications by example through CaArray's Remote Java API.
  *
  * @author Rashmi Srinivasa
  */
-public class SearchHybridizationByExample extends CaArrayJmeterSampler implements JavaSamplerClient {
-    private static final String NAME_PARAM = "hybridizationName";
+public class SearchPublicationByExample extends CaArrayJmeterSampler implements JavaSamplerClient {
+    private static final String STATUS_PARAM = "status";
+    private static final String TYPE_PARAM = "publicationType";
 
-    private static final String DEFAULT_NAME = "TCGA-02-0011-01B-01R-00177-01";
+    private static final String DEFAULT_STATUS = "Published";
+    private static final String DEFAULT_TYPE = "Journal";
 
-    private String hybridizationName;
+    private String publicationStatus;
+    private String publicationType;
     private String hostName;
     private int jndiPort;
 
@@ -127,7 +133,8 @@ public class SearchHybridizationByExample extends CaArrayJmeterSampler implement
      */
     public Arguments getDefaultParameters() {
         Arguments params = new Arguments();
-        params.addArgument(NAME_PARAM, DEFAULT_NAME);
+        params.addArgument(STATUS_PARAM, DEFAULT_STATUS);
+        params.addArgument(TYPE_PARAM, DEFAULT_TYPE);
         params.addArgument(getHostNameParam(), getDefaultHostName());
         params.addArgument(getJndiPortParam(), getDefaultJndiPort());
         return params;
@@ -141,23 +148,24 @@ public class SearchHybridizationByExample extends CaArrayJmeterSampler implement
      */
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
-        hybridizationName = context.getParameter(NAME_PARAM, DEFAULT_NAME);
+        publicationStatus = context.getParameter(STATUS_PARAM, DEFAULT_STATUS);
+        publicationType = context.getParameter(TYPE_PARAM, DEFAULT_TYPE);
 
-        Hybridization exampleHybridization = createExampleHybridization();
+        Publication examplePublication = createExamplePublication();
         try {
             CaArrayServer server = new CaArrayServer(hostName, jndiPort);
             server.connect();
             CaArraySearchService searchService = server.getSearchService();
             results.sampleStart();
-            List<Hybridization> hybridizationList = searchService.search(exampleHybridization);
+            List<Publication> publicationList = searchService.search(examplePublication);
             results.sampleEnd();
-            if (isResultOkay(hybridizationList)) {
+            if (isResultOkay(publicationList)) {
                 results.setSuccessful(true);
                 results.setResponseCodeOK();
-                results.setResponseMessage("Retrieved " + hybridizationList.size() + " hybridizations.");
+                results.setResponseMessage("Retrieved " + publicationList.size() + " publications.");
             } else {
                 results.setSuccessful(false);
-                results.setResponseCode("Error: Response did not match request. Retrieved " + hybridizationList.size() + " hybridizations.");
+                results.setResponseCode("Error: Response did not match request. Retrieved " + publicationList.size() + " publications.");
             }
         } catch (ServerConnectionException e) {
             results.setSuccessful(false);
@@ -173,22 +181,36 @@ public class SearchHybridizationByExample extends CaArrayJmeterSampler implement
         return results;
     }
 
-    private Hybridization createExampleHybridization() {
-        Hybridization exampleHybridization = new Hybridization();
-        exampleHybridization.setName(hybridizationName);
-        return exampleHybridization;
+    private Publication createExamplePublication() {
+        Publication examplePublication = new Publication();
+
+        Term statusTerm = new Term();
+        statusTerm.setValue(publicationStatus);
+        Category publicationStatusCategory = new Category();
+        publicationStatusCategory.setName("PublicationStatus");
+        statusTerm.setCategory(publicationStatusCategory);
+        examplePublication.setStatus(statusTerm);
+
+        Term typeTerm = new Term();
+        typeTerm.setValue(publicationType);
+        Category publicationTypeCategory = new Category();
+        publicationTypeCategory.setName("PublicationType");
+        typeTerm.setCategory(publicationTypeCategory);
+        examplePublication.setType(typeTerm);
+
+        return examplePublication;
     }
 
-    private boolean isResultOkay(List<Hybridization> hybridizationList) {
-        if (hybridizationList.isEmpty()) {
+    private boolean isResultOkay(List<Publication> publicationList) {
+        if (publicationList.isEmpty()) {
             return true;
         }
 
-        Iterator<Hybridization> i = hybridizationList.iterator();
+        Iterator<Publication> i = publicationList.iterator();
         while (i.hasNext()) {
-            Hybridization retrievedHybridization = i.next();
-            // Check if retrieved hybridization matches requested search criteria.
-            if (!hybridizationName.equals(retrievedHybridization.getName())) {
+            Publication retrievedPublication = i.next();
+            // Check if retrieved publication matches requested search criteria.
+            if ((!publicationStatus.equals(retrievedPublication.getStatus().getValue())) || (!publicationType.equals(retrievedPublication.getType().getValue()))) {
                 return false;
             }
         }
