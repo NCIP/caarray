@@ -10,11 +10,23 @@
     <c:if test="${pageContext.request.remoteUser != null}">
         <div id="topsearch">
             <s:form action="/search/basicSearch.action" theme="simple">
-                <s:textfield required="true" name="keyword"/>
-                <s:select required="true" name="category"
-                          list="@gov.nih.nci.caarray.domain.search.SearchCategory@values()" listValue="%{getText(resourceKey)}"
-                          headerKey="" headerValue="(All Categories)"/>
-                <s:submit value="Search"/>
+                <table>
+                    <tr>
+                        <td colspan="3" class="alignright">
+                            <!-- <a href="search_advanced.htm">advanced search</a> -->
+                            &nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><s:textfield name="keyword"/></td>
+                        <td>
+                            <s:select name="category"
+                                      list="@gov.nih.nci.caarray.domain.search.SearchCategory@values()" listValue="%{getText(resourceKey)}"
+                                      headerKey="" headerValue="(All Categories)"/>
+                        </td>
+                        <td><s:submit value="Search"/></td>
+                    </tr>
+                </table>
             </s:form>
         </div>
     </c:if>

@@ -270,6 +270,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             @RequiredStringValidator(fieldName = "uploadFileName", key = "fileRequired", message = "")
         },
         requiredFields = {
+            @RequiredFieldValidator(fieldName = "arrayDesign.assayType", key = "errors.required", message = ""),
             @RequiredFieldValidator(fieldName = "arrayDesign.provider", key = "errors.required", message = ""),
             @RequiredFieldValidator(fieldName = "arrayDesign.technologyType", key = "errors.required", message = ""),
             @RequiredFieldValidator(fieldName = "arrayDesign.organism", key = "errors.required", message = "")

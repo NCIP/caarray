@@ -98,11 +98,14 @@ import org.displaytag.properties.SortOrderEnum;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.validator.annotations.RegexFieldValidator;
+import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
  * @author Winston Cheng
  *
  */
+@Validation
 public class SearchAction extends ActionSupport {
     private static final long serialVersionUID = -6250359716714235444L;
     private static final int SEARCH_PAGE_SIZE = 20;
@@ -125,6 +128,7 @@ public class SearchAction extends ActionSupport {
     /**
      * @return the keyword
      */
+    @RegexFieldValidator(expression = "[\\w \\-\\.]*", key = "search.error.keyword", message = "")
     public String getKeyword() {
         return keyword;
     }

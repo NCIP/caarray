@@ -83,6 +83,15 @@
 
 package gov.nih.nci.caarray.domain.array;
 
+import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.project.AssayType;
+import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.cabio.domain.Microarray;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -95,15 +104,6 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
-
-import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.file.AssayType;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.cabio.domain.Microarray;
 
 /**
  * The design details for a type of microarray.

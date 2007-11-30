@@ -1,7 +1,8 @@
 package gov.nih.nci.caarray.domain.array;
 
-import static org.junit.Assert.*;
-import gov.nih.nci.caarray.domain.file.AssayType;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import gov.nih.nci.caarray.domain.project.AssayType;
 
 import org.junit.Test;
 

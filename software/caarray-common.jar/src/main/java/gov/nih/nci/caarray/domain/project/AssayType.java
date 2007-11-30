@@ -88,14 +88,26 @@ import gov.nih.nci.caarray.domain.ResourceBasedEnum;
  * An enumeration of different assay types that an Experiment can perform.
  */
 public enum AssayType implements ResourceBasedEnum {
-    /** gene expression. */
+    /**
+     * Array design used to interrogate gene expression: transcription of genetically encoded information into an
+     * intermediary message (messenger RNA) and subsequent translation into a functional protein.
+     */
     GENE_EXPRESSION("assayType.geneExpression"),
-    /** SNP. */
+    /**
+     * Array design used to interrogate single nucleotide polymorphisms (SNPs): variations of a single nucleotide at a
+     * specific location of the genome due to base substitution, present at an appreciable frequency between individuals
+     * of a single interbreeding population.
+     */
     SNP("assayType.snp"),
-    /** DNA. */
-    DNA("assayType.dna"),
-    /** aCGH.*/
-    ACGH("assayType.acgh");
+    /**
+     * Array design used to interrogate aCGH.
+     */
+    ACGH("assayType.acgh"),
+    /**
+     * Array design used to interrogate exons; the sequences of a gene that are present in the final, mature, spliced
+     * messenger RNA molecule from that gene.
+     */
+    EXON("assayType.exon");
 
     private final String resourceKey;
 
@@ -104,8 +116,7 @@ public enum AssayType implements ResourceBasedEnum {
     }
 
     /**
-     * @return the resource key that should be used to retrieve a label
-     * for this AssayType in the UI
+     * @return the resource key that should be used to retrieve a label for this AssayType in the UI
      */
     public String getResourceKey() {
         return resourceKey;

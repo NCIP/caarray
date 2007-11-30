@@ -80,7 +80,7 @@
         </action>
         <action name="logout" class="gov.nih.nci.caarray.web.action.LogoutAction">
             <result name="success" type="redirect-action">
-            	<param name="namespace">/</param>
+                <param name="namespace">/</param>
                 <param name="actionName">home</param>
             </result>
         </action>
@@ -89,6 +89,7 @@
         </action>
         <action name="search/*" class="gov.nih.nci.caarray.web.action.SearchAction" method="{1}">
             <result name="success">/WEB-INF/pages/project/search/searchResults.jsp</result>
+            <result name="input" type="chain">home</result>
         </action>
         <action name="ajax/search/*" class="gov.nih.nci.caarray.web.action.SearchAction" method="{1}">
             <result name="tab">/WEB-INF/pages/project/search/searchTab.jsp</result>
