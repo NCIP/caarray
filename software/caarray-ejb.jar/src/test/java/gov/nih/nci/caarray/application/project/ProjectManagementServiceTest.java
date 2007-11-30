@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.project;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.GenericDataService;
@@ -392,17 +393,17 @@ public class ProjectManagementServiceTest {
         checkFile(file, f);
 
         try {
-            this.projectManagementService.prepareHybsForDownload(null, null);
-            fail();
+            f = this.projectManagementService.prepareHybsForDownload(null, null);
+            assertNull(f);
         } catch (IllegalArgumentException e) {
-            // expected
+            fail();
         }
 
         try {
             this.projectManagementService.prepareHybsForDownload(null, new ArrayList<Hybridization>());
-            fail();
+            assertNull(f);
         } catch (IllegalArgumentException e) {
-            // expected
+            fail();
         }
 
         Hybridization h = new Hybridization();

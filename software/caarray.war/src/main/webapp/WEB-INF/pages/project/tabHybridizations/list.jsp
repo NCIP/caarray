@@ -26,6 +26,7 @@
 				<c:url value="/ajax/project/listTab/Hybridizations/download.action" var="actionUrl">
 				    <c:param name="project.id" value="${project.id}" />
 				    <c:param name="currentHybridization.id" value="${row.id}" />
+                    <c:param name="editMode" value="${editMode}" />
 				</c:url>
 		        <a href="${actionUrl}">
 	            	<img src="<c:url value="/images/ico_download.gif"/>" alt="<fmt:message key="button.download"/>">

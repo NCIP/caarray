@@ -90,6 +90,7 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.util.io.FileClosingInputStream;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -162,6 +163,10 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
             ServiceLocatorFactory.getLocator().lookup(ProjectManagementService.JNDI_NAME);
         File zipFile = pms.prepareHybsForDownload(getProject(),
                                                   Collections.singleton(getCurrentHybridization()));
+        if (zipFile == null) {
+            ActionHelper.saveMessage(getText("experiment.hybridizations.noDataToDownload"));
+            return "noHybData";
+        }
         this.downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
         return "download";
     }

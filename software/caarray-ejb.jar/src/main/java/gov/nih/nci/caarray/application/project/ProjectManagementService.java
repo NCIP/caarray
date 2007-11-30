@@ -233,7 +233,8 @@ public interface ProjectManagementService {
      *
      * @param p the project to restrict files to
      * @param hybridizations the hybridizations to download files for
-     * @return the single zip archive with all files
+     * @return the single zip archive with all files related to these hybridizations, or null
+     * if there are no data files associated with any of the hybridizations
      * @throws IOException on I/O error
      */
     File prepareHybsForDownload(Project p, Collection<Hybridization> hybridizations) throws IOException;

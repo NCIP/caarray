@@ -90,7 +90,6 @@ import gov.nih.nci.caarray.dao.ContactDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
@@ -530,14 +529,15 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         Collection<CaArrayFile> files = new HashSet<CaArrayFile>();
         if (hybridizations != null && !hybridizations.isEmpty()) {
             for (Hybridization h : hybridizations) {
-                if (h.getArrayData() != null) {
-                    files.add(h.getArrayData().getDataFile());
-                }
-                for (DerivedArrayData dad : h.getDerivedDataCollection()) {
-                    files.add(dad.getDataFile());
-                }
+                files.addAll(h.getAllDataFiles());
             }
         }
+
+        if (files.isEmpty()) {
+            LogUtil.logSubsystemExit(LOG);
+            return null;
+        }
+
         File result = prepareForDownload(p, files);
         LogUtil.logSubsystemExit(LOG);
         return result;

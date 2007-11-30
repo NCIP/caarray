@@ -88,13 +88,11 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.sample.Extract;
-import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.util.io.FileClosingInputStream;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -102,7 +100,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
@@ -152,14 +149,11 @@ public class ProjectSamplesAction extends AbstractProjectAnnotationsListTabActio
     public String download() throws IOException {
         ProjectManagementService pms = (ProjectManagementService)
             ServiceLocatorFactory.getLocator().lookup(ProjectManagementService.JNDI_NAME);
-        Collection<Hybridization> hibs = new HashSet<Hybridization>();
-        for (Extract e : getCurrentSample().getExtracts()) {
-            for (LabeledExtract le : e.getLabeledExtracts()) {
-                hibs.addAll(le.getHybridizations());
-            }
+        File zipFile = pms.prepareHybsForDownload(getProject(), getCurrentSample().getRelatedHybs());
+        if (zipFile == null) {
+            ActionHelper.saveMessage(getText("experiment.samples.noDataToDownload"));
+            return "noSampleData";
         }
-
-        File zipFile = pms.prepareHybsForDownload(getProject(), hibs);
         this.downloadStream = new FileClosingInputStream(new FileInputStream(zipFile), zipFile);
         return "download";
     }

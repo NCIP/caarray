@@ -101,12 +101,12 @@
         </action>
 
         <action name="project/details" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="details">
-            <result name="workspace" type="redirect-action">project/workspace</result>
+            <result name="workspace" type="redirect-action">/protected/project/workspace</result>
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
         </action>
 
         <action name="project/browse" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="browse">
-            <result name="workspace" type="redirect-action">project/workspace</result>
+            <result name="workspace" type="redirect-action">/protected/project/workspace</result>
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
             <result name="browse">/WEB-INF/pages/project/browse.jsp</result>
         </action>
@@ -138,6 +138,8 @@
                 <param name="contentDisposition">filename="caArrayFiles.zip"</param>
                 <param name="bufferSize">4096</param>
             </result>
+            <result name="noSampleData" type="redirect-action">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=samples</result>
+            <result name="noHybData" type="redirect-action">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=hybridizations</result>
         </action>
 
         <action name="project/files/*" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="{1}">

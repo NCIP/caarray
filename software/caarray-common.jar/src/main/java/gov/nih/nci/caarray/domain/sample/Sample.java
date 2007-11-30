@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.sample;
 
 import edu.wustl.catissuecore.domain.Specimen;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.security.AttributePolicy;
 import gov.nih.nci.caarray.security.Protectable;
@@ -100,6 +101,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
@@ -235,5 +237,19 @@ public class Sample extends AbstractBioMaterial implements Protectable {
      */
     public void setExternalSampleId(String externalSampleId) {
         this.externalSampleId = externalSampleId;
+    }
+    
+    /**
+     * @return the set of hybridizations related to this sample (via extract-labeled extract linkages)
+     */
+    @Transient
+    public Set<Hybridization> getRelatedHybs() {
+        Set<Hybridization> hybs = new HashSet<Hybridization>();
+        for (Extract e : getExtracts()) {
+            for (LabeledExtract le : e.getLabeledExtracts()) {
+                hybs.addAll(le.getHybridizations());
+            }
+        }
+        return hybs;
     }
 }

@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
@@ -108,6 +109,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
@@ -378,6 +380,21 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      */
     public void setLabel(Term label) {
         this.label = label;
+    }
+    
+    /**
+     * @return all the data files related to this hybridization (raw or derived)
+     */
+    @Transient
+    public Set<CaArrayFile> getAllDataFiles() {
+        Set<CaArrayFile> files = new HashSet<CaArrayFile>();
+        if (getArrayData() != null) {
+            files.add(getArrayData().getDataFile());
+        }
+        for (DerivedArrayData dad : getDerivedDataCollection()) {
+            files.add(dad.getDataFile());
+        }
+        return files;
     }
 
     /**
