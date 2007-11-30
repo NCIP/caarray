@@ -752,12 +752,16 @@ public class ProjectDaoTest extends AbstractDaoTest {
             saveSupportingObjects();
             assertTrue(SecurityUtils.canWrite(DUMMY_PROJECT_1, UsernameHolder.getCsmUser()));
             HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+            Long experimentId = DUMMY_PROJECT_1.getExperiment().getId();
             tx.commit();
+            assertNotNull(experimentId);
 
             tx = HibernateUtil.beginTransaction();
             UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
             Project p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNull(p);
+            Experiment e = SEARCH_DAO.retrieve(Experiment.class, experimentId);
+            assertNull(e);
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
@@ -769,6 +773,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
             assertEquals(p.getPublicProfile().getSecurityLevel(), SecurityLevel.NONE);
             assertEquals(p.getHostProfile().getSecurityLevel(), SecurityLevel.READ_WRITE_SELECTIVE);
             assertFalse(p.isBrowsable());
+            e = SEARCH_DAO.retrieve(Experiment.class, experimentId);
+            assertNotNull(e);
 
             List<UserGroupRoleProtectionGroup> list = SecurityUtils.getUserGroupRoleProtectionGroups(p);
             assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsUserPredicate(), new HasRolePredicate(
@@ -804,7 +810,13 @@ public class ProjectDaoTest extends AbstractDaoTest {
             HibernateUtil.getCurrentSession().clear();
             tx.commit();
 
-
+            tx = HibernateUtil.beginTransaction();
+            e = SEARCH_DAO.retrieve(Experiment.class, experimentId);
+            assertNotNull(e);
+            assertNull(e.getAssayType());
+            HibernateUtil.getCurrentSession().clear();
+            tx.commit();
+            
             tx = HibernateUtil.beginTransaction();
             UsernameHolder.setUser(STANDARD_USER);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
