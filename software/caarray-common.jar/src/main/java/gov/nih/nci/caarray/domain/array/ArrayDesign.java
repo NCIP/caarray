@@ -94,11 +94,11 @@ import gov.nih.nci.cabio.domain.Microarray;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
@@ -312,7 +312,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     /**
      * @return the designFile
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "DESIGN_FILE_FK")
     public CaArrayFile getDesignFile() {
@@ -329,7 +329,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     /**
      * @return the annotationFile
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "ANNOTATION_FILE_FK")
     public CaArrayFile getAnnotationFile() {
@@ -348,7 +348,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return name;
     }
 
     /**
@@ -429,7 +429,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     /**
      * @return the designDetails
      */
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @Cascade(CascadeType.ALL)
     @ForeignKey(name = "ARRAYDESIGN_DETAILS_FK")
     public ArrayDesignDetails getDesignDetails() {

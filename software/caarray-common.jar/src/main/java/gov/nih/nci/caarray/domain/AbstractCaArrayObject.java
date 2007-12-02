@@ -156,7 +156,7 @@ public abstract class AbstractCaArrayObject implements PersistentObject {
         }
 
         AbstractCaArrayObject e = (AbstractCaArrayObject) o;
-        return (id.equals(e.id) && getClass().equals(e.getClass()));
+        return (id.equals(e.getId()) && getClass().isInstance(e));
     }
 
     /**

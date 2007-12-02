@@ -86,6 +86,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -126,7 +127,7 @@ public class LogicalProbe extends AbstractProbe {
     /**
      * @return the physicalProbes
      */
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "LOGICALPROBE_PHYSICALPROBE",
             joinColumns = { @JoinColumn(name = "LOGICAL_PROBE_ID") },
@@ -144,7 +145,7 @@ public class LogicalProbe extends AbstractProbe {
     /**
      * @return the design details
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(updatable = false, nullable = false)
     @ForeignKey(name = "LOGICALPROBE_DETAILS_FK")
     public ArrayDesignDetails getArrayDesignDetails() {

@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.domain.array;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
@@ -184,7 +185,7 @@ public class Feature extends AbstractDesignElement {
     /**
      * @return the design details
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(updatable = false, nullable = false)
     @ForeignKey(name = "FEATURE_DETAILS_FK")
     public ArrayDesignDetails getArrayDesignDetails() {

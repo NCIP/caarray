@@ -89,6 +89,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -133,7 +134,7 @@ public class PhysicalProbe extends AbstractProbe {
     /**
      * @return the probeGroup
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(updatable = false, nullable = false)
     @ForeignKey(name = "PROBE_GROUP_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
@@ -148,7 +149,7 @@ public class PhysicalProbe extends AbstractProbe {
     /**
      * @return the features
      */
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
             name = "PROBEFEATURE",
             joinColumns = { @JoinColumn(name = "PHYSICAL_PROBE_ID") },
@@ -166,7 +167,7 @@ public class PhysicalProbe extends AbstractProbe {
     /**
      * @return the design details
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(updatable = false, nullable = false)
     @ForeignKey(name = "PHYSICALPROBE_DETAILS_FK")
     public ArrayDesignDetails getArrayDesignDetails() {
@@ -180,7 +181,7 @@ public class PhysicalProbe extends AbstractProbe {
     /**
      * @return the controlType
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @ForeignKey(name = "PHYSICALPROBE_CONTROLTYPE_FK")
     public Term getControlType() {
         return controlType;

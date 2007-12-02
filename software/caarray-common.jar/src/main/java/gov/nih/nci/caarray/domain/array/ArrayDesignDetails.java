@@ -88,9 +88,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -115,7 +115,7 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
      * @return the features
      */
     @Cascade(CascadeType.ALL)
-    @OneToMany(mappedBy = MAPPED_BY)
+    @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.LAZY)
     public Set<Feature> getFeatures() {
         return features;
     }
@@ -128,7 +128,7 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
     /**
      * @return the pysicalProbes
      */
-    @OneToMany(mappedBy = MAPPED_BY)
+    @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.LAZY)
     @Cascade(CascadeType.ALL)
     public Set<PhysicalProbe> getProbes() {
         return probes;
@@ -142,7 +142,7 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
     /**
      * @return the logicalProbes
      */
-    @OneToMany(mappedBy = MAPPED_BY)
+    @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.LAZY)
     @Cascade(CascadeType.ALL)
     public Set<LogicalProbe> getLogicalProbes() {
         return logicalProbes;
@@ -156,7 +156,7 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
     /**
      * @return the probeGroups
      */
-    @OneToMany(mappedBy = MAPPED_BY)
+    @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.LAZY)
     @Cascade(CascadeType.ALL)
     public Set<ProbeGroup> getProbeGroups() {
         return probeGroups;
@@ -172,6 +172,6 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
      */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return "id=" + getId();
     }
 }
