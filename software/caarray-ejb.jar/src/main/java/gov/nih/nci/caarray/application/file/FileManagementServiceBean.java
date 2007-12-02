@@ -90,6 +90,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
@@ -142,6 +143,7 @@ public class FileManagementServiceBean implements FileManagementService {
         clearValidationMessages(fileSet);
         updateFileStatus(fileSet, FileStatus.IMPORTING);
         sendImportJobMessage(targetProject, fileSet);
+        clearHibernateCache();
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -165,6 +167,7 @@ public class FileManagementServiceBean implements FileManagementService {
         clearValidationMessages(fileSet);
         updateFileStatus(fileSet, FileStatus.VALIDATING);
         sendValidationJobMessage(project, fileSet);
+        clearHibernateCache();
     }
 
     private void sendValidationJobMessage(Project project, CaArrayFileSet fileSet) {
@@ -185,6 +188,7 @@ public class FileManagementServiceBean implements FileManagementService {
             getDaoFactory().getArrayDao().remove(arrayDesign);
             throw new InvalidDataFileException(designFile.getValidationResult());
         }
+        clearHibernateCache();
     }
     
     /**
@@ -194,6 +198,12 @@ public class FileManagementServiceBean implements FileManagementService {
         arrayDesign.getDesignFile().setFileStatus(FileStatus.IMPORTING);
         ArrayDesignFileImportJob job = new ArrayDesignFileImportJob(UsernameHolder.getUser(), arrayDesign);
         getSubmitter().submitJob(job);
+        clearHibernateCache();
+    }
+
+    private void clearHibernateCache() {
+        HibernateUtil.getCurrentSession().flush();
+        HibernateUtil.getCurrentSession().clear();
     }
 
     private void updateFileStatus(CaArrayFileSet fileSet, FileStatus status) {
