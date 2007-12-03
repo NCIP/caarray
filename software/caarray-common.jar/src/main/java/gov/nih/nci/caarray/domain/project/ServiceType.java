@@ -88,12 +88,10 @@ package gov.nih.nci.caarray.domain.project;
 public enum ServiceType {
     /** request full service from a lab.*/
     FULL("serviceType.full"),
-    /** request partial service - PI has already done some of the lab work.  */
-    PARTIAL("serviceType.partial"),
-    /** request analysis only - PI has already done the experiment. */
-    ANALYSIS("serviceType.analysis"),
     /** no service requested - purely a publishing of results. */
     PUBLISH("serviceType.publish");
+    
+    // two service types : partial and analysis - have been deferred until post 2.0
 
     private final String resourceKey;
 

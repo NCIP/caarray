@@ -115,12 +115,6 @@ insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Str
 insert into contact(discriminator, name) values ('O', 'Affymetrix');
 insert into contact(discriminator, name) values ('O', 'Illumina');
 
-insert into array_design(name, version, provider) select 'Sentrix', '1.0', id from contact where discriminator='O' and name='Affymetrix';
-insert into array_design(name, version, provider) select 'Moohaa', '1.0', id from contact where discriminator='O' and name='Affymetrix';
-insert into array_design(name, version, provider) select 'Ishtarti', '1.0', id from contact where discriminator='O' and name='Affymetrix';
-insert into array_design(name, version, provider) select 'Illuminati', '1.0', id from contact where discriminator='O' and name='Illumina';
-insert into array_design(name, version, provider) select 'Dojo', '1.0', id from contact where discriminator='O' and name='Illumina';
-
 insert into country (code, name, printable_name, iso3, numcode) values ('AF','AFGHANISTAN','Afghanistan','AFG','004');
 insert into country (code, name, printable_name, iso3, numcode) values ('AL','ALBANIA','Albania','ALB','008');
 insert into country (code, name, printable_name, iso3, numcode) values ('DZ','ALGERIA','Algeria','DZA','012');

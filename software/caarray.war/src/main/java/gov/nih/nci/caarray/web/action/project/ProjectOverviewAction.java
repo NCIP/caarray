@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getArrayDesignService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
+import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getVocabularyService;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
@@ -162,7 +162,7 @@ public class ProjectOverviewAction extends ProjectTabAction {
     @SkipValidation
     public String retrieveArrayDesigns() {
         if (this.manufacturerId != null) {
-            Organization provider = getProjectManagementService().getOrganization(this.manufacturerId);
+            Organization provider = getGenericDataService().retrieveEnity(Organization.class, this.manufacturerId);
             this.arrayDesigns = getArrayDesignService().getArrayDesignsForProvider(provider);
         }
         return "xmlArrayDesigns";

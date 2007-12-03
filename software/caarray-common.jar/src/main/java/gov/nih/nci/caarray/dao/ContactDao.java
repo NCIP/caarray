@@ -82,19 +82,18 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.domain.contact.AbstractContact;
+import gov.nih.nci.caarray.domain.contact.Organization;
+
+import java.util.List;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.contact</code> package.
  *
  * @author Dan Kokotov
  */
-public interface ContactDao extends CaArrayDao {
+public interface ContactDao extends CaArrayDao {    
     /**
-     * Returns the <code>Contact</code> with the id given.
-     *
-     * @param id get <code>Contact</code> matching this id
-     * @return the <code>Contact</code>.
+     * @return all Organizations in system.
      */
-    AbstractContact getContact(long id);    
+    List<Organization> getAllOrganizations();
 }

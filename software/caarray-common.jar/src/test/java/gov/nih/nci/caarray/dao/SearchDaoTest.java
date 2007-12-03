@@ -372,7 +372,7 @@ public class SearchDaoTest {
             Project project = new Project();
             project.getExperiment().setTitle("test experiment.");
             project.getExperiment().setAssayType(AssayType.ACGH);
-            project.getExperiment().setServiceType(ServiceType.ANALYSIS);
+            project.getExperiment().setServiceType(ServiceType.FULL);
             project.getExperiment().setOrganism(new Organism());
             project.getExperiment().setManufacturer(new Organization());
             Source source = new Source();

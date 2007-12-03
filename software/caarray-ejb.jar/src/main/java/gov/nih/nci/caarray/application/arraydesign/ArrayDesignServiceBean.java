@@ -271,6 +271,16 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             throw new IllegalArgumentException("Unsupported array design file type: " + type);
         }
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public List<Organization> getAllOrganizations() {
+        LogUtil.logSubsystemEntry(LOG);
+        List<Organization> orgs = getDaoFactory().getContactDao().getAllOrganizations();
+        LogUtil.logSubsystemExit(LOG);
+        return orgs;
+    }
 
     /**
      * {@inheritDoc}

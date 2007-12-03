@@ -404,6 +404,7 @@
 				<pathelement location="${caarray-client.classes.dir}" />
 				<pathelement location="${caarray-common.classes.dir}" />
 				<pathelement location="${commons-beanutils.jar}" />
+				<pathelement location="${commons-collections.jar}" />
 				<pathelement location="${commons-lang.jar}" />
 				<pathelement location="${commons-io.jar}" />
 				<pathelement location="${cacore32-client.jar}" />
@@ -771,6 +772,7 @@
 				<pathelement location="${test.data.classes.dir}" />
 				<pathelement location="${affxfusion.jar}" />
 				<pathelement location="${cacore32-client.jar}" />
+				<pathelement location="${commons-collections.jar}" />
 				<pathelement location="${commons-lang.jar}" />
 				<pathelement location="${commons-io.jar}" />
 				<pathelement location="${javaee.jar}" />

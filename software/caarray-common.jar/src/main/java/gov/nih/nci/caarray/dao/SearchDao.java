@@ -96,7 +96,7 @@ import java.util.List;
  *
  * @author Rashmi Srinivasa
  */
-public interface SearchDao {
+public interface SearchDao extends CaArrayDao {
     /**
      * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity
      * and its associations, or null if none exists.

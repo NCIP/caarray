@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.application.project;
 
 import gov.nih.nci.caarray.domain.PersistentObject;
-import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
@@ -97,7 +96,6 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
-import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.io.File;
 import java.io.IOException;
@@ -122,14 +120,6 @@ public interface ProjectManagementService {
      * @return the corresponding project.
      */
     Project getProject(long id);
-
-    /**
-     * Returns the organization corresponding to the id given.
-     * 
-     * @param id the organization id
-     * @return the corresponding organization.
-     */
-    Organization getOrganization(long id);
 
     /**
      * Associates a single file with a project. After calling this method, clients can expect a new

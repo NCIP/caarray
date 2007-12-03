@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common.jar
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-common.jar Software License (the License) is between NCI and You. You (or
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-common.jar Software to (i) use, install, access, operate,
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common.jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-common.jar Software and any
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -82,30 +82,40 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.util.HibernateUtil;
 
-import java.util.List;
-
-import org.apache.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.junit.Test;
 
 /**
- * DAO for entities in the <code>gov.nih.nci.caarray.domain.contact</code> package.
- * 
- * @author Dan Kokotov
+ * Test cases
  */
-class ContactDaoImpl extends AbstractCaArrayDaoImpl implements ContactDao {
-    private static final Logger LOG = Logger.getLogger(ContactDaoImpl.class);
+public class ContactDaoTest extends AbstractDaoTest {
 
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    public List<Organization> getAllOrganizations() {
-        return getCurrentSession().createQuery("FROM " + Organization.class.getName()).list();
-    }
+    private static final ContactDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getContactDao();
 
-    @Override
-    Logger getLog() {
-        return LOG;
+    @Test
+    public void testGetAll() {
+        Transaction tx = HibernateUtil.beginTransaction();
+        assertEquals(0, DAO_OBJECT.getAllOrganizations().size());
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        Session s = HibernateUtil.getCurrentSession();
+        Organization o = new Organization();
+        o.setName("Foo");
+        o.setEmail("foo@bar.org");
+        s.save(o);
+        tx.commit();
+
+
+        tx = HibernateUtil.beginTransaction();
+        s = HibernateUtil.getCurrentSession();
+        assertEquals(1, DAO_OBJECT.getAllOrganizations().size());
+        assertEquals("Foo", DAO_OBJECT.getAllOrganizations().get(0).getName());
+        tx.commit();
     }
 }

@@ -142,6 +142,11 @@ public interface ArrayDesignService {
     ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign);
 
     /**
+     * @return the list of all Organizations  in the system.
+     */
+    List<Organization> getAllOrganizations();
+
+    /**
      * Returns the list of Organizations that are a provider for at least
      * one ArrayDesign in the system.
      * @return the List&lt;Organization&gt; of Organizations where for each

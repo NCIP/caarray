@@ -91,11 +91,17 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.ContactDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
+import gov.nih.nci.caarray.dao.stub.ContactDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
@@ -104,9 +110,13 @@ import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.PredicateUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -265,10 +275,21 @@ public class ArrayDesignServiceTest {
         caArrayFile.setFileType(type);
         return caArrayFile;
     }
+    
+    @Test
+    public void testOrganizations() {
+        assertEquals(0, arrayDesignService.getAllOrganizations().size());
+        Organization o = new Organization();
+        o.setName("Foo");
+        caArrayDaoFactoryStub.getSearchDao().save(o);
+        assertEquals(1, arrayDesignService.getAllOrganizations().size());
+        assertEquals("Foo", arrayDesignService.getAllOrganizations().get(0).getName());
+    }
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
-        
+        private Long nextId = 1L;
         private Map<String, ArrayDesign> lsidDesignMap = new HashMap<String, ArrayDesign>();
+        private Map<Long, PersistentObject> objectMap = new HashMap<Long, PersistentObject>();
 
         @Override
         public ArrayDao getArrayDao() {
@@ -288,6 +309,43 @@ public class ArrayDesignServiceTest {
                 }
             };
         }
-    }
+        
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public SearchDao getSearchDao() {
+            return new SearchDaoStub() {
+                @Override
+                @SuppressWarnings("unchecked")
+                public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
+                    return (T) objectMap.get(entityId);
+                }
 
+                @SuppressWarnings("deprecation")
+                public void save(PersistentObject object) {
+                    objectMap.put(object.getId(), object);
+                }
+                
+            };
+        }
+        
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public ContactDao getContactDao() {
+            return new ContactDaoStub() {
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public List<Organization> getAllOrganizations() {
+                    List<Organization> orgs = new ArrayList<Organization>();
+                    CollectionUtils.select(objectMap.values(), PredicateUtils.instanceofPredicate(Organization.class), orgs);
+                    return orgs;
+                }
+            };
+        }
+    }    
 }

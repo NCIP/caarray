@@ -141,4 +141,11 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
     public FileValidationResult validateDesign(ArrayDesign design) {
         return null;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public List<Organization> getAllOrganizations() {
+        return new ArrayList<Organization>();
+    }
 }

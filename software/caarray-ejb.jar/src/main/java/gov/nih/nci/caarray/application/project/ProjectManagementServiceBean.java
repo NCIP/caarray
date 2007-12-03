@@ -86,10 +86,8 @@ import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.ContactDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.PersistentObject;
-import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
@@ -151,10 +149,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         return this.daoFactory.getProjectDao();
     }
 
-    private ContactDao getContactDao() {
-        return this.daoFactory.getContactDao();
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -163,16 +157,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         Project project = getDaoFactory().getSearchDao().retrieve(Project.class, id);
         LogUtil.logSubsystemExit(LOG);
         return project;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Organization getOrganization(long id) {
-        LogUtil.logSubsystemEntry(LOG, id);
-        Organization organization = (Organization) getContactDao().getContact(id);
-        LogUtil.logSubsystemExit(LOG);
-        return organization;
     }
 
     /**

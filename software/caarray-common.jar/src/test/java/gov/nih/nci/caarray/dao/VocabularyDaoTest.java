@@ -516,7 +516,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
             tx = HibernateUtil.beginTransaction();
             Experiment e = new Experiment();
             e.setTitle("test title");
-            e.setServiceType(ServiceType.ANALYSIS);
+            e.setServiceType(ServiceType.FULL);
             e.setAssayType(AssayType.ACGH);
             e.setManufacturer(new Organization());
             e.setOrganism(new Organism());
