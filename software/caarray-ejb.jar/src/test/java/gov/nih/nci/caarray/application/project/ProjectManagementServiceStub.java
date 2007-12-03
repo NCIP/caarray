@@ -100,6 +100,7 @@ import gov.nih.nci.caarray.domain.search.SearchCategory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -148,17 +149,18 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public List<Project> getMyNonPublicProjects() {
-        return null;
+    public int getMyProjectCount(boolean showPublic) {
+        return 0;
     }
 
     /**
      * {@inheritDoc}
      */
-    public List<Project> getPublicProjects() {
-        return null;
+    public List<Project> getMyProjects(boolean showPublic) {
+        return new ArrayList<Project>();
     }
 
+    
     @SuppressWarnings("deprecation")
     public Project getProject(long id) {
         this.projectByIdCount++;

@@ -162,7 +162,7 @@ public class ProjectManagementServiceTest {
 
     @Test
     public void testGetWorkspaceProjects() {
-        List<Project> projects = this.projectManagementService.getMyNonPublicProjects();
+        List<Project> projects = this.projectManagementService.getMyProjects(false);
         assertNotNull(projects);
     }
 
@@ -480,21 +480,13 @@ public class ProjectManagementServiceTest {
          * {@inheritDoc}
          */
         @Override
-        public List<Project> getNonPublicProjectsForUser() {
+        public List<Project> getProjectsForCurrentUser(boolean showPublic) {
             return new ArrayList<Project>();
         }
-
+        
         @Override
         public void remove(PersistentObject caArrayEntity) {
             this.lastDeleted = caArrayEntity;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public List<Project> getPublicProjects() {
-            return new ArrayList<Project>();
         }
 
         public PersistentObject getLastDeleted() {

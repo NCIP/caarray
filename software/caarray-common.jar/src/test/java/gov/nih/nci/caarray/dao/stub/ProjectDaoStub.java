@@ -97,16 +97,15 @@ public class ProjectDaoStub extends AbstractDaoStub implements ProjectDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
-    public List<Project> getNonPublicProjectsForUser() {
-        return Collections.EMPTY_LIST;
+    public int getProjectCountForCurrentUser(boolean showPublic) {
+        return 0;
     }
-
+    
     /**
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public List<Project> getPublicProjects() {
+    public List<Project> getProjectsForCurrentUser(boolean showPublic) {
         return Collections.EMPTY_LIST;
     }
 

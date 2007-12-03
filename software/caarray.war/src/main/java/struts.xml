@@ -166,8 +166,8 @@
     </package>
 
     <package name="protected" namespace="/protected" extends="default">
-        <action name="project/workspace">
-            <result>/WEB-INF/pages/project/workspace/tabs.jsp</result>
+        <action name="project/workspace" class="gov.nih.nci.caarray.web.action.project.ProjectWorkspaceAction" method="workspace">
+            <result name="success">/WEB-INF/pages/project/workspace/tabs.jsp</result>
         </action>
 
         <action name="ajax/project/workspace/*" class="gov.nih.nci.caarray.web.action.project.ProjectWorkspaceAction" method="{1}">

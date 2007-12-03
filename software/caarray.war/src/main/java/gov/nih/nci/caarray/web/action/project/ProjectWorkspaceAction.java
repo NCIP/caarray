@@ -94,30 +94,46 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * Class to handle the workspace pages.
+ * 
  * @author Scott Miller
  */
 public class ProjectWorkspaceAction {
 
     private List<Project> projects = new ArrayList<Project>();
+    private int publicCount;
+    private int workQueueCount;
+
+    /**
+     * Renders the workspace page.
+     * 
+     * @return path String
+     */
+    @SkipValidation
+    public String workspace() {
+        this.publicCount = getProjectManagementService().getMyProjectCount(true);
+        this.workQueueCount = getProjectManagementService().getMyProjectCount(false);
+        return Action.SUCCESS;
+    }
 
     /**
      * Retrieve list of public projects.
-     *
+     * 
      * @return path String
      */
     @SkipValidation
     public String publicProjects() {
-        setProjects(getProjectManagementService().getPublicProjects());
+        setProjects(getProjectManagementService().getMyProjects(true));
         return Action.SUCCESS;
     }
 
     /**
      * Retrieve the list of my experiments.
+     * 
      * @return path string.
      */
     @SkipValidation
     public String myProjects() {
-        setProjects(getProjectManagementService().getMyNonPublicProjects());
+        setProjects(getProjectManagementService().getMyProjects(false));
         return Action.SUCCESS;
     }
 
@@ -133,5 +149,19 @@ public class ProjectWorkspaceAction {
      */
     public void setProjects(List<Project> projects) {
         this.projects = projects;
+    }
+
+    /**
+     * @return the publicCount
+     */
+    public int getPublicCount() {
+        return publicCount;
+    }
+
+    /**
+     * @return the workQueueCount
+     */
+    public int getWorkQueueCount() {
+        return workQueueCount;
     }
 }

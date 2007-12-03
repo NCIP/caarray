@@ -15,8 +15,8 @@
     <div class="padme">
         <ajax:tabPanel panelStyleId="tabs" panelStyleClass="tabs2" currentStyleClass="active" contentStyleId="tabboxwrapper" contentStyleClass="tabboxwrapper"
                 postFunction="TabUtils.setSelectedTab" preFunction="TabUtils.showLoadingText">
-            <ajax:tab caption="${myProjectsTitle}" baseUrl="${myProjectsUrl}" defaultTab="${param.initialTab == null || param.initialTab == 'myProjects'}" />
-            <ajax:tab caption="${publicProjectsTitle}" baseUrl="${publicProjectsUrl}" defaultTab="${param.initialTab == 'publicProjects'}" />
+            <ajax:tab caption="${myProjectsTitle} (${workQueueCount})" baseUrl="${myProjectsUrl}" defaultTab="${param.initialTab == null || param.initialTab == 'myProjects'}" />
+            <ajax:tab caption="${publicProjectsTitle} (${publicCount})" baseUrl="${publicProjectsUrl}" defaultTab="${param.initialTab == 'publicProjects'}" />
         </ajax:tabPanel>
     </div>
 </body>

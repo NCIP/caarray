@@ -97,6 +97,7 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.io.File;
 import java.io.IOException;
@@ -177,18 +178,28 @@ public interface ProjectManagementService {
     void changeProjectStatus(long projectId, ProposalStatus newStatus) throws ProposalWorkflowException;
 
     /**
-     * Gets all projects belonging to the current user.
+     * Gets projects belonging to the current user. Either public or non-public projects directly related to the 
+     * current user are returned. A project is directly related to a user if the user is either the data owner
+     * or in a collaboration group which has been granted access to the project.
      * 
-     * @return all projects belonging to the user.
+     * @param showPublic if true, then only projects in the "Public" workflow status are returned; if false,
+     * then only projects in workflow statuses other than "Public" are returned. 
+     * 
+     * @return public or non-public projects directly related to the current user, as described above
      */
-    List<Project> getMyNonPublicProjects();
+    List<Project> getMyProjects(boolean showPublic);
 
     /**
-     * Gets all public projects.
+     * Gets the count of projects belonging to the current user. The count of either public or non-public projects 
+     * directly related to the current user are returned. A project is directly related to a user if the user is 
+     * either the data owner or in a collaboration group which has been granted access to the project.
      * 
-     * @return allpublic projects
-     */
-    List<Project> getPublicProjects();
+     * @param showPublic if true, then only projects in the "Public" workflow status are included; if false,
+     * then only projects in workflow statuses other than "Public" are included in the count. 
+     * 
+     * @return the count of public or non-public projects directly related to the current user, as described above
+     */    
+    int getMyProjectCount(boolean showPublic);
 
     /**
      * Toggles the browsable status for the given project.

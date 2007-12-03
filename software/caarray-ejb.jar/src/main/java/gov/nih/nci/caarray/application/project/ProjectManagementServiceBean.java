@@ -141,7 +141,6 @@ import org.apache.log4j.Logger;
 @Interceptors(ExceptionLoggingInterceptor.class)
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class ProjectManagementServiceBean implements ProjectManagementService {
-
     private static final Logger LOG = Logger.getLogger(ProjectManagementServiceBean.class);
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
@@ -269,15 +268,21 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public List<Project> getMyNonPublicProjects() {
-        return getProjectDao().getNonPublicProjectsForUser();
+    public List<Project> getMyProjects(boolean showPublic) {
+        LogUtil.logSubsystemEntry(LOG, showPublic);
+        List<Project> result = getProjectDao().getProjectsForCurrentUser(showPublic);
+        LogUtil.logSubsystemExit(LOG);
+        return result;
     }
-
+    
     /**
      * {@inheritDoc}
      */
-    public List<Project> getPublicProjects() {
-        return getProjectDao().getPublicProjects();
+    public int getMyProjectCount(boolean showPublic) {
+        LogUtil.logSubsystemEntry(LOG, showPublic);
+        int result = getProjectDao().getProjectCountForCurrentUser(showPublic);
+        LogUtil.logSubsystemExit(LOG);
+        return result;
     }
 
     /**

@@ -445,7 +445,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         try {
             tx = HibernateUtil.beginTransaction();
             saveSupportingObjects();
-            int size = DAO_OBJECT.getNonPublicProjectsForUser().size();
+            int size = DAO_OBJECT.getProjectCountForCurrentUser(false);
 
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
@@ -460,7 +460,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             } else {
                 fail("Retrieved project is different from saved project.");
             }
-            assertEquals(size + 1, DAO_OBJECT.getNonPublicProjectsForUser().size());
+            assertEquals(size + 1, DAO_OBJECT.getProjectCountForCurrentUser(false));
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
@@ -486,14 +486,14 @@ public class ProjectDaoTest extends AbstractDaoTest {
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
-            assertEquals(1, DAO_OBJECT.getNonPublicProjectsForUser().size());
-            assertEquals(0, DAO_OBJECT.getPublicProjects().size());
+            assertEquals(1, DAO_OBJECT.getProjectsForCurrentUser(false).size());
+            assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(true).size());
             tx.commit();
 
             UsernameHolder.setUser("caarrayuser");
             tx = HibernateUtil.beginTransaction();
-            assertEquals(0, DAO_OBJECT.getNonPublicProjectsForUser().size());
-            assertEquals(0, DAO_OBJECT.getPublicProjects().size());
+            assertEquals(0, DAO_OBJECT.getProjectCountForCurrentUser(false));
+            assertEquals(0, DAO_OBJECT.getProjectCountForCurrentUser(true));
             tx.commit();
 
             UsernameHolder.setUser(AbstractDaoTest.STANDARD_USER);
@@ -504,20 +504,20 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
             UsernameHolder.setUser("caarrayuser");
             tx = HibernateUtil.beginTransaction();
-            assertEquals(0, DAO_OBJECT.getNonPublicProjectsForUser().size());
-            assertEquals(0, DAO_OBJECT.getPublicProjects().size());
+            assertEquals(0, DAO_OBJECT.getProjectCountForCurrentUser(false));
+            assertEquals(0, DAO_OBJECT.getProjectCountForCurrentUser(true));
             tx.commit();
 
             UsernameHolder.setUser(AbstractDaoTest.STANDARD_USER);
             tx = HibernateUtil.beginTransaction();
-            p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
+             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             p.getPublicProfile().setSecurityLevel(SecurityLevel.READ);
             tx.commit();
 
             UsernameHolder.setUser("caarrayuser");
             tx = HibernateUtil.beginTransaction();
-            assertEquals(0, DAO_OBJECT.getNonPublicProjectsForUser().size());
-            assertEquals(0, DAO_OBJECT.getPublicProjects().size());
+            assertEquals(0, DAO_OBJECT.getProjectCountForCurrentUser(false));
+            assertEquals(0, DAO_OBJECT.getProjectCountForCurrentUser(true));
             tx.commit();
 
             UsernameHolder.setUser(AbstractDaoTest.STANDARD_USER);
@@ -538,8 +538,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
             UsernameHolder.setUser("caarrayuser");
             tx = HibernateUtil.beginTransaction();
-            assertEquals(1, DAO_OBJECT.getNonPublicProjectsForUser().size());
-            assertEquals(0, DAO_OBJECT.getPublicProjects().size());
+            assertEquals(1, DAO_OBJECT.getProjectsForCurrentUser(false).size());
+            assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(true).size());
             tx.commit();
 
             UsernameHolder.setUser(AbstractDaoTest.STANDARD_USER);
@@ -549,20 +549,20 @@ public class ProjectDaoTest extends AbstractDaoTest {
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
-            assertEquals(0, DAO_OBJECT.getNonPublicProjectsForUser().size());
-            assertEquals(1, DAO_OBJECT.getPublicProjects().size());
+            assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(false).size());
+            assertEquals(1, DAO_OBJECT.getProjectsForCurrentUser(true).size());
             tx.commit();
 
             UsernameHolder.setUser("caarrayuser");
             tx = HibernateUtil.beginTransaction();
-            assertEquals(0, DAO_OBJECT.getNonPublicProjectsForUser().size());
-            assertEquals(1, DAO_OBJECT.getPublicProjects().size());
+            assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(false).size());
+            assertEquals(1, DAO_OBJECT.getProjectsForCurrentUser(true).size());
             tx.commit();
 
             UsernameHolder.setUser("biostatistician");
             tx = HibernateUtil.beginTransaction();
-            assertEquals(0, DAO_OBJECT.getNonPublicProjectsForUser().size());
-            assertEquals(0, DAO_OBJECT.getPublicProjects().size());
+            assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(false).size());
+            assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(true).size());
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);

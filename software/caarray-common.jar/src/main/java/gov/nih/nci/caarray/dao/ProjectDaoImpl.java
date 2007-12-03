@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -128,22 +129,21 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         return LOG;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public List<Project> getNonPublicProjectsForUser() {
-        return getProjectsForUser(false);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<Project> getPublicProjects() {
-        return getProjectsForUser(true);
-    }
-
     @SuppressWarnings("unchecked")
-    private List<Project> getProjectsForUser(boolean showPublic) {
+    public List<Project> getProjectsForCurrentUser(boolean showPublic) {
+        Query q = getProjectsForUserQuery(UsernameHolder.getCsmUser(), showPublic, false);
+        return q.list();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public int getProjectCountForCurrentUser(boolean showPublic) {
+        Query q = getProjectsForUserQuery(UsernameHolder.getCsmUser(), showPublic, true);
+        return ((Number) q.uniqueResult()).intValue();        
+    }
+    
+    private Query getProjectsForUserQuery(User user, boolean showPublic, boolean count) {
         String ownerSubqueryStr =
                 "(select pe.value from " + ProtectionElement.class.getName()
                         + " pe where pe.objectId = :objectId and pe.attribute = :attribute and "
@@ -154,8 +154,9 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
                         + " ap join ap.group cg, Group g "
                         + " where ap.securityLevelInternal != :noneSecLevel and cg.groupId = g.groupId "
                         + " and :user in elements(g.users))";
+        String selectClause = count ? "SELECT COUNT(DISTINCT p)" : "SELECT DISTINCT p";
         String queryStr =
-                "from " + Project.class.getName() + " p " + " where p.statusInternal "
+                selectClause + " from " + Project.class.getName() + " p " + " where p.statusInternal "
                         + (showPublic ? " = " : " != ") + " :status and (p.id in " + ownerSubqueryStr
                         + " or p.id in " + collabSubqueryStr + ")";
         
@@ -164,11 +165,11 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         query.setString("objectId", Project.class.getName());
         query.setString("attribute", "id");
         query.setEntity("application", SecurityUtils.getApplication());
-        query.setEntity("user", UsernameHolder.getCsmUser());
+        query.setEntity("user", user);
         query.setParameter("noneSecLevel", SecurityLevel.NONE);
-        return query.list();
+        return query;
     }
-
+    
     /**
      * {@inheritDoc}
      */

@@ -18,47 +18,33 @@
 to become a caArray user.
                     </p>
 
-                    <form method="post" id="login" action="<c:url value='/j_security_check'/>">
-                        <table class="form">
-            <c:if test="${param.error != null}">
-            <tr>
-                <td colspan="2" class="centered">
-                    <br />
-                    <img align="top" src="<c:url value="/images/iconWarning.gif"/>" alt="<fmt:message key='icon.warning'/>" class="icon"/>
-                    <fmt:message key="errors.password.mismatch"/>
-                </td>
-            </tr>
-            </c:if>
-            <tr>
-                <td colspan="2" class="space">&nbsp;</td>
-            </tr>
+                    <s:form method="post" id="login" action="/j_security_check" cssClass="form">
+                        <c:if test="${param.error != null}">
                             <tr>
-                                <td scope="row" class="label">
-                                    <label for="j_username">Username:</label>
-                                </td>
-                                <td class="value">
-                                    <input type="text" id="j_username" name="j_username" maxlength="100" size="15"/>                                    
+                                <td colspan="2" class="centered">
+                                    <br/>
+                                    <img align="top" src="<c:url value="/images/iconWarning.gif"/>" alt="<fmt:message key='icon.warning'/>" class="icon"/>
+                                    <fmt:message key="errors.password.mismatch"/>
                                 </td>
                             </tr>
-                            <tr>
-                                <td scope="row" class="label">
-                                    <label for="j_password">Password:</label>
-                                </td>
-                                <td class="value">
-                                    <input type="password" id="j_password" name="j_password" maxlength="100" size="15"/>
-                                    <br />
-                                    <a href="<c:url value="/notYetImplemented.jsp" />">Forgot your password?</a>
-                                </td>
-                            </tr>
-                        </table>
-
-                        <caarray:actions>
-                            <caarray:action actionClass="cancel" text="Cancel">
-                                <jsp:attribute name="url"><c:url value="/home.action"/></jsp:attribute>
-                            </caarray:action>
-                            <caarray:action actionClass="register" text="Login" onclick="document.getElementById('login').submit();"/>
-                        </caarray:actions>
-                    </form>
+                        </c:if>
+                        <tr>
+                            <td colspan="2" class="space">&nbsp;</td>
+                        </tr>
+                        <s:textfield name="j_username" label="Username" maxlength="100" size="15"/>
+                        <s:password name="j_password" label="Password" maxlength="100" size="15">
+                            <s:param name="after">
+                                <br />
+                                <a href="<c:url value="/notYetImplemented.jsp" />">Forgot your password?</a>
+                            </s:param>                    
+                        </s:password>
+                    </s:form>
+                    <caarray:actions>
+                        <caarray:action actionClass="cancel" text="Cancel">
+                            <jsp:attribute name="url"><c:url value="/home.action"/></jsp:attribute>
+                        </caarray:action>
+                        <caarray:action actionClass="register" text="Login" onclick="document.getElementById('login').submit();"/>
+                    </caarray:actions>
                 </div>
             </div>
         </div>
