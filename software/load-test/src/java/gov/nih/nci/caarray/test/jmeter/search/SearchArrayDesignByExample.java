@@ -82,12 +82,8 @@
  */
 package gov.nih.nci.caarray.test.jmeter.search;
 
-import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.sample.Sample;
-import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
