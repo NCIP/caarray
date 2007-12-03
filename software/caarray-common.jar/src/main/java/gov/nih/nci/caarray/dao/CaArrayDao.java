@@ -145,7 +145,9 @@ public interface CaArrayDao {
 
     /**
      * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity
-     * and its associations, or null if none exists.
+     * and its associations, or null if none exists.  This method ignores collection associations
+     * (ie, one-to-many), but handles non-collection associatations such as many-to-one or
+     * one-to-one.
      *
      * @param <T> entity type
      * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity

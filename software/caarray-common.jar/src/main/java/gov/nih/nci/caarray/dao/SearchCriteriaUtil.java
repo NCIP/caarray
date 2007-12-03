@@ -110,10 +110,14 @@ public final class SearchCriteriaUtil {
     }
 
     /**
-     * @param entityToMatch
-     * @param criteria
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
+     * Update the provided criteria object with values from the associated entites.
+     * Ignores collection properties (ie, one-to-many), but handles all other association types (ie,
+     * many-to-one, one-to-one, etc.)
+     *
+     * @param entityToMatch the entity to match
+     * @param criteria the criteria to modify
+     * @throws IllegalAccessException if unable to call setter
+     * @throws InvocationTargetException if unable to call setter
      */
     @SuppressWarnings("unchecked")
     static void addCriteriaForAssociations(PersistentObject entityToMatch, Criteria criteria)
