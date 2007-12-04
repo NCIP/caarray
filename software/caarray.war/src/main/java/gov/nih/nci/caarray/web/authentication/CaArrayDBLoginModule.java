@@ -91,6 +91,9 @@ import java.util.Map;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 /**
  * Performs authentication services in the jaas environment.  caArray needs
  * both CSM authentication, using the CSM tables with encrypted passwords,
@@ -101,6 +104,7 @@ import javax.security.auth.callback.CallbackHandler;
 public class CaArrayDBLoginModule extends RDBMSLoginModule {
 
     private Map<String, Object> state;
+    private static final Logger LOG = Logger.getLogger(CaArrayDBLoginModule.class);
 
     /**
      * {@inheritDoc}
@@ -120,6 +124,17 @@ public class CaArrayDBLoginModule extends RDBMSLoginModule {
     @Override
     protected boolean validate(Map options, String user, char[] password, Subject subject)
             throws CSInternalConfigurationException, CSInternalInsufficientAttributesException {
+        String passwdStr = new String(password);
+        if (StringUtils.isBlank(passwdStr)) {
+            // If the user-supplied password is blank, don't bother asking CSM.  This is because
+            // LDAP installations will likely choose not to set a CSM password, and the validate
+            // method accepts blanks.  Thus we'd be in a situation where LDAP said the user was
+            // not validated, and CSM, which is only used for authorization (not authentication),
+            // incorrectly accepts the password.
+            LOG.debug("Rejecting blank password login attempt for user: " + user);
+            return false;
+        }
+
         boolean result = super.validate(options, user, password, subject);
 
         if (result) {
