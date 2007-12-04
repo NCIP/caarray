@@ -86,7 +86,7 @@
         </HTTPSampler>
         <hashTree/>
         <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for One Second" enabled="true">
-          <stringProp name="ConstantTimer.delay">60000</stringProp>
+          <stringProp name="ConstantTimer.delay">1000</stringProp>
         </ConstantTimer>
         <hashTree/>
         <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="Login" enabled="true">
@@ -126,7 +126,7 @@
         </HTTPSampler>
         <hashTree/>
         <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for One Second" enabled="true">
-          <stringProp name="ConstantTimer.delay">60000</stringProp>
+          <stringProp name="ConstantTimer.delay">1000</stringProp>
         </ConstantTimer>
         <hashTree/>
         <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -149,7 +149,7 @@
             </elementProp>
             <stringProp name="HTTPSampler.domain"></stringProp>
             <stringProp name="HTTPSampler.port"></stringProp>
-            <stringProp name="HTTPSampler.protocol">http</stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/caarray/protected/project/create.action</stringProp>
@@ -165,7 +165,7 @@
           </HTTPSampler>
           <hashTree/>
           <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for One Second" enabled="true">
-            <stringProp name="ConstantTimer.delay">60000</stringProp>
+            <stringProp name="ConstantTimer.delay">1000</stringProp>
           </ConstantTimer>
           <hashTree/>
           <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="Save Project" enabled="true">
@@ -271,7 +271,7 @@
             <hashTree/>
           </hashTree>
           <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for One Second" enabled="true">
-            <stringProp name="ConstantTimer.delay">60000</stringProp>
+            <stringProp name="ConstantTimer.delay">1000</stringProp>
           </ConstantTimer>
           <hashTree/>
           <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="Submit Project Proposal" enabled="true">
@@ -311,7 +311,7 @@
           </HTTPSampler>
           <hashTree/>
           <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for One Second" enabled="true">
-            <stringProp name="ConstantTimer.delay">60000</stringProp>
+            <stringProp name="ConstantTimer.delay">1000</stringProp>
           </ConstantTimer>
           <hashTree/>
           <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Simple Controller" enabled="true"/>
@@ -330,7 +330,7 @@
               </elementProp>
               <stringProp name="HTTPSampler.domain"></stringProp>
               <stringProp name="HTTPSampler.port"></stringProp>
-              <stringProp name="HTTPSampler.protocol">http</stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
               <stringProp name="HTTPSampler.method">POST</stringProp>
               <stringProp name="HTTPSampler.contentEncoding"></stringProp>
               <stringProp name="HTTPSampler.path">/caarray/project/files/upload.action</stringProp>
@@ -339,15 +339,16 @@
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
               <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
               <stringProp name="HTTPSampler.mimetype">application/x-zip-compressed</stringProp>
-              <stringProp name="HTTPSampler.FILE_NAME">@loadtest.data.dir.path@affy_magetab.zip</stringProp>
+              <stringProp name="HTTPSampler.FILE_NAME">@loadtest.data.dir.path@specification.zip</stringProp>
               <stringProp name="HTTPSampler.FILE_FIELD">upload</stringProp>
               <stringProp name="HTTPSampler.monitor">false</stringProp>
               <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+              <stringProp name="TestPlan.comments">Temporarily uploading smaller data set until Large Import defect is fixed.</stringProp>
             </HTTPSampler>
             <hashTree/>
           </hashTree>
           <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for One Second" enabled="true">
-            <stringProp name="ConstantTimer.delay">60000</stringProp>
+            <stringProp name="ConstantTimer.delay">1000</stringProp>
           </ConstantTimer>
           <hashTree/>
           <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="Make Project Public" enabled="true">

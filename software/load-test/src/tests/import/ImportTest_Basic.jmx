@@ -86,7 +86,7 @@
         </HTTPSampler>
         <hashTree/>
         <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for One Second" enabled="true">
-          <stringProp name="ConstantTimer.delay">60000</stringProp>
+          <stringProp name="ConstantTimer.delay">1000</stringProp>
         </ConstantTimer>
         <hashTree/>
         <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="Login" enabled="true">
@@ -126,7 +126,7 @@
         </HTTPSampler>
         <hashTree/>
         <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for One Second" enabled="true">
-          <stringProp name="ConstantTimer.delay">60000</stringProp>
+          <stringProp name="ConstantTimer.delay">1000</stringProp>
         </ConstantTimer>
         <hashTree/>
         <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -165,7 +165,7 @@
           </HTTPSampler>
           <hashTree/>
           <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for One Second" enabled="true">
-            <stringProp name="ConstantTimer.delay">60000</stringProp>
+            <stringProp name="ConstantTimer.delay">1000</stringProp>
           </ConstantTimer>
           <hashTree/>
           <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="Save Project" enabled="true">
@@ -271,7 +271,7 @@
             <hashTree/>
           </hashTree>
           <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for One Second" enabled="true">
-            <stringProp name="ConstantTimer.delay">60000</stringProp>
+            <stringProp name="ConstantTimer.delay">1000</stringProp>
           </ConstantTimer>
           <hashTree/>
           <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="Submit Project Proposal" enabled="true">
@@ -311,7 +311,7 @@
           </HTTPSampler>
           <hashTree/>
           <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for One Second" enabled="true">
-            <stringProp name="ConstantTimer.delay">60000</stringProp>
+            <stringProp name="ConstantTimer.delay">1000</stringProp>
           </ConstantTimer>
           <hashTree/>
           <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Simple Controller" enabled="true"/>
@@ -330,7 +330,7 @@
               </elementProp>
               <stringProp name="HTTPSampler.domain"></stringProp>
               <stringProp name="HTTPSampler.port"></stringProp>
-              <stringProp name="HTTPSampler.protocol">http</stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
               <stringProp name="HTTPSampler.method">POST</stringProp>
               <stringProp name="HTTPSampler.contentEncoding"></stringProp>
               <stringProp name="HTTPSampler.path">/caarray/project/files/upload.action</stringProp>
@@ -339,13 +339,14 @@
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
               <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
               <stringProp name="HTTPSampler.mimetype">application/x-zip-compressed</stringProp>
-              <stringProp name="HTTPSampler.FILE_NAME">@loadtest.data.dir.path@affy_magetab.zip</stringProp>
+              <stringProp name="HTTPSampler.FILE_NAME">@loadtest.data.dir.path@specification.zip</stringProp>
               <stringProp name="HTTPSampler.FILE_FIELD">upload</stringProp>
               <stringProp name="HTTPSampler.monitor">false</stringProp>
               <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+              <stringProp name="TestPlan.comments">Temporarily uploading smaller data set until Large Import defect is fixed.</stringProp>
             </HTTPSampler>
             <hashTree/>
-            <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="List Files" enabled="true">
+            <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="List Uploaded Files" enabled="true">
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
                 <collectionProp name="Arguments.arguments">
                   <elementProp name="" elementType="HTTPArgument">
@@ -355,6 +356,13 @@
                     <boolProp name="HTTPArgument.use_equals">true</boolProp>
                     <stringProp name="Argument.name">project.id</stringProp>
                   </elementProp>
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">true</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                    <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                    <stringProp name="Argument.name">editMode</stringProp>
+                  </elementProp>
                 </collectionProp>
               </elementProp>
               <stringProp name="HTTPSampler.domain"></stringProp>
@@ -362,7 +370,7 @@
               <stringProp name="HTTPSampler.protocol"></stringProp>
               <stringProp name="HTTPSampler.method">GET</stringProp>
               <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-              <stringProp name="HTTPSampler.path">/caarray/protected/ajax/project/files/list.action</stringProp>
+              <stringProp name="HTTPSampler.path">/caarray/protected/ajax/project/files/listUnimported.action</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">true</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -379,7 +387,7 @@
                 <stringProp name="RegexExtractor.refname">fileId01</stringProp>
                 <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
-                <stringProp name="RegexExtractor.default"></stringProp>
+                <stringProp name="RegexExtractor.default">null</stringProp>
                 <stringProp name="RegexExtractor.match_number">1</stringProp>
               </RegexExtractor>
               <hashTree/>
@@ -388,7 +396,7 @@
                 <stringProp name="RegexExtractor.refname">fileId02</stringProp>
                 <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
-                <stringProp name="RegexExtractor.default"></stringProp>
+                <stringProp name="RegexExtractor.default">null</stringProp>
                 <stringProp name="RegexExtractor.match_number">2</stringProp>
               </RegexExtractor>
               <hashTree/>
@@ -397,7 +405,7 @@
                 <stringProp name="RegexExtractor.refname">fileId03</stringProp>
                 <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
-                <stringProp name="RegexExtractor.default"></stringProp>
+                <stringProp name="RegexExtractor.default">null</stringProp>
                 <stringProp name="RegexExtractor.match_number">3</stringProp>
               </RegexExtractor>
               <hashTree/>
@@ -406,7 +414,7 @@
                 <stringProp name="RegexExtractor.refname">fileId04</stringProp>
                 <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
-                <stringProp name="RegexExtractor.default"></stringProp>
+                <stringProp name="RegexExtractor.default">null</stringProp>
                 <stringProp name="RegexExtractor.match_number">4</stringProp>
               </RegexExtractor>
               <hashTree/>
@@ -415,7 +423,7 @@
                 <stringProp name="RegexExtractor.refname">fileId05</stringProp>
                 <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
-                <stringProp name="RegexExtractor.default"></stringProp>
+                <stringProp name="RegexExtractor.default">null</stringProp>
                 <stringProp name="RegexExtractor.match_number">5</stringProp>
               </RegexExtractor>
               <hashTree/>
@@ -424,7 +432,7 @@
                 <stringProp name="RegexExtractor.refname">fileId06</stringProp>
                 <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
-                <stringProp name="RegexExtractor.default"></stringProp>
+                <stringProp name="RegexExtractor.default">null</stringProp>
                 <stringProp name="RegexExtractor.match_number">6</stringProp>
               </RegexExtractor>
               <hashTree/>
@@ -433,7 +441,7 @@
                 <stringProp name="RegexExtractor.refname">fileId07</stringProp>
                 <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
-                <stringProp name="RegexExtractor.default"></stringProp>
+                <stringProp name="RegexExtractor.default">null</stringProp>
                 <stringProp name="RegexExtractor.match_number">7</stringProp>
               </RegexExtractor>
               <hashTree/>
@@ -442,7 +450,7 @@
                 <stringProp name="RegexExtractor.refname">fileId08</stringProp>
                 <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
-                <stringProp name="RegexExtractor.default"></stringProp>
+                <stringProp name="RegexExtractor.default">null</stringProp>
                 <stringProp name="RegexExtractor.match_number">8</stringProp>
               </RegexExtractor>
               <hashTree/>
@@ -451,7 +459,7 @@
                 <stringProp name="RegexExtractor.refname">fileId09</stringProp>
                 <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
-                <stringProp name="RegexExtractor.default"></stringProp>
+                <stringProp name="RegexExtractor.default">null</stringProp>
                 <stringProp name="RegexExtractor.match_number">9</stringProp>
               </RegexExtractor>
               <hashTree/>
@@ -460,13 +468,13 @@
                 <stringProp name="RegexExtractor.refname">fileId10</stringProp>
                 <stringProp name="RegexExtractor.regex">name=&quot;selectedFiles&quot; value=&quot;(.+?)&quot;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
-                <stringProp name="RegexExtractor.default"></stringProp>
+                <stringProp name="RegexExtractor.default">null</stringProp>
                 <stringProp name="RegexExtractor.match_number">10</stringProp>
               </RegexExtractor>
               <hashTree/>
             </hashTree>
             <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for One Second" enabled="true">
-              <stringProp name="ConstantTimer.delay">60000</stringProp>
+              <stringProp name="ConstantTimer.delay">1000</stringProp>
             </ConstantTimer>
             <hashTree/>
             <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="Import Files" enabled="true">
@@ -645,11 +653,120 @@
               <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
             </HTTPSampler>
             <hashTree/>
+            <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for One Second" enabled="true">
+              <stringProp name="ConstantTimer.delay">1000</stringProp>
+            </ConstantTimer>
+            <hashTree/>
+            <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="List Imported Files" enabled="true">
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">${projectId}</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                    <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                    <stringProp name="Argument.name">project.id</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">true</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                    <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                    <stringProp name="Argument.name">editMode</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/caarray/protected/ajax/project/files/listImported.action</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <stringProp name="HTTPSampler.mimetype"></stringProp>
+              <stringProp name="HTTPSampler.FILE_NAME"></stringProp>
+              <stringProp name="HTTPSampler.FILE_FIELD"></stringProp>
+              <stringProp name="HTTPSampler.monitor">false</stringProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSampler>
+            <hashTree>
+              <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Ten Files Imported" enabled="true">
+                <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+                <stringProp name="RegexExtractor.refname">filesImported</stringProp>
+                <stringProp name="RegexExtractor.regex">(10) items found</stringProp>
+                <stringProp name="RegexExtractor.template">$1$</stringProp>
+                <stringProp name="RegexExtractor.default">0</stringProp>
+                <stringProp name="RegexExtractor.match_number">1</stringProp>
+              </RegexExtractor>
+              <hashTree/>
+            </hashTree>
+            <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop 60 times waiting for Import to finish" enabled="true">
+              <boolProp name="LoopController.continue_forever">true</boolProp>
+              <stringProp name="LoopController.loops">60</stringProp>
+              <stringProp name="TestPlan.comments">If import doesn&apos;t finish in 60 seconds, we give up and assume that something went wrong (instead of looping forever).</stringProp>
+            </LoopController>
+            <hashTree>
+              <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller" enabled="true">
+                <stringProp name="IfController.condition">${filesImported} != 10</stringProp>
+                <stringProp name="IfController.evaluateAll">false</stringProp>
+              </IfController>
+              <hashTree>
+                <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="List Imported Files" enabled="true">
+                  <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
+                    <collectionProp name="Arguments.arguments">
+                      <elementProp name="" elementType="HTTPArgument">
+                        <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                        <stringProp name="Argument.value">${projectId}</stringProp>
+                        <stringProp name="Argument.metadata">=</stringProp>
+                        <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                        <stringProp name="Argument.name">project.id</stringProp>
+                      </elementProp>
+                      <elementProp name="" elementType="HTTPArgument">
+                        <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                        <stringProp name="Argument.value">true</stringProp>
+                        <stringProp name="Argument.metadata">=</stringProp>
+                        <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                        <stringProp name="Argument.name">editMode</stringProp>
+                      </elementProp>
+                    </collectionProp>
+                  </elementProp>
+                  <stringProp name="HTTPSampler.domain"></stringProp>
+                  <stringProp name="HTTPSampler.port"></stringProp>
+                  <stringProp name="HTTPSampler.protocol"></stringProp>
+                  <stringProp name="HTTPSampler.method">GET</stringProp>
+                  <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                  <stringProp name="HTTPSampler.path">/caarray/protected/ajax/project/files/listImported.action</stringProp>
+                  <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+                  <boolProp name="HTTPSampler.auto_redirects">true</boolProp>
+                  <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+                  <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                  <stringProp name="HTTPSampler.mimetype"></stringProp>
+                  <stringProp name="HTTPSampler.FILE_NAME"></stringProp>
+                  <stringProp name="HTTPSampler.FILE_FIELD"></stringProp>
+                  <stringProp name="HTTPSampler.monitor">false</stringProp>
+                  <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                </HTTPSampler>
+                <hashTree>
+                  <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Ten Files Imported" enabled="true">
+                    <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+                    <stringProp name="RegexExtractor.refname">filesImported</stringProp>
+                    <stringProp name="RegexExtractor.regex">(10) items found</stringProp>
+                    <stringProp name="RegexExtractor.template">$1$</stringProp>
+                    <stringProp name="RegexExtractor.default">0</stringProp>
+                    <stringProp name="RegexExtractor.match_number">1</stringProp>
+                  </RegexExtractor>
+                  <hashTree/>
+                </hashTree>
+                <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for One Second" enabled="true">
+                  <stringProp name="ConstantTimer.delay">1000</stringProp>
+                </ConstantTimer>
+                <hashTree/>
+              </hashTree>
+            </hashTree>
           </hashTree>
-          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for One Second" enabled="true">
-            <stringProp name="ConstantTimer.delay">60000</stringProp>
-          </ConstantTimer>
-          <hashTree/>
           <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="Make Project Public" enabled="true">
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments">
