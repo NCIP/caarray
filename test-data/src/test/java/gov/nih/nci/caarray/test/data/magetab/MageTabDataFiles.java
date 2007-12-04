@@ -86,6 +86,9 @@ import java.io.File;
 
 public class MageTabDataFiles {
 
+    public static final File AFFYMETRIC_TEST3_CDF =
+        new File(MageTabDataFiles.class.getResource("/arraydesign/affymetrix/Test3.CDF").getFile());
+    
     public static final File SPECIFICATION_EXAMPLE_IDF =
         new File(MageTabDataFiles.class.getResource("/magetab/specification/e-mexp-428_v1.0.idf").getFile());
 
