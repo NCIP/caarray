@@ -30,6 +30,7 @@
         <s:form action="/protected/collaborators/name.action" cssClass="form" id="newGroupForm">
           <s:textfield required="true" name="groupName" key="collaboration.group.name" size="50" tabindex="1" value="${targetGroup.group.groupName}"/>
           <s:hidden name="targetGroup" value="${targetGroup.id}"/>
+          <input type="submit" class="enableEnterSubmit"/>
         </s:form>
         <caarray:actions>
             <caarray:action onclick="document.getElementById('newGroupForm').submit();" actionClass="save" text="Save" />

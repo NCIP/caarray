@@ -45,6 +45,7 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(project.experiment.title)
             </c:if>
             <s:hidden name="project.id" />
             <s:hidden name="editMode" />
+            <input type="submit" class="enableEnterSubmit"/>
         </s:form>
 
         <script type="text/javascript">

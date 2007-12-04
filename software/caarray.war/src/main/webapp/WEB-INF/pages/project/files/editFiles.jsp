@@ -9,8 +9,8 @@
                       list="@gov.nih.nci.caarray.domain.file.FileType@values()" listValue="%{getText('experiment.files.filetype.' + name)}"
                       listKey="name" value="selectedFiles[${status.index}].fileType.name"/>
             </c:forEach>
-
             <s:hidden name="project.id" />
+            <input type="submit" class="enableEnterSubmit"/>
         </s:form>
         <caarray:actions>
             <caarray:action actionClass="save" text="Save" onclick="TabUtils.submitTabForm('projectForm', 'tabboxlevel2wrapper'); return false;"/>

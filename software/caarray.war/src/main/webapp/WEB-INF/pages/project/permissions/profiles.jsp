@@ -55,6 +55,7 @@
                                     <caarray:actions divclass="actionsthin">
                                         <caarray:action actionClass="save" text="Toggle" onclick="$('browsability_form').submit(); return false;"/>
                                     </caarray:actions>
+                                    <input type="submit" class="enableEnterSubmit"/>
                                 </s:form>
                             </td>
                         </tr>
@@ -72,6 +73,7 @@
                                 <s:form action="project/permissions/setTcgaPolicy" cssClass="form" id="policy_form">
                                     <s:hidden name="project.id"/>
                                     <s:checkbox name="useTcgaPolicy" value="%{project.useTcgaPolicy}" label="Use TCGA Policy" cssStyle="border: none"/>
+                                    <input type="submit" class="enableEnterSubmit"/>
                                 </s:form>
                                 <caarray:actions>
                                     <caarray:action actionClass="save" text="Save" onclick="$('policy_form').submit(); return false;"/>
@@ -125,6 +127,7 @@
                                                     listKey="id" listValue="group.groupName" headerKey="" headerValue="-- Select a Collaboration Group"/>
                                                 <s:hidden name="project.id"/>
                                                 <caarray:linkButton actionClass="add" text="Add" onclick="$('add_group_profile_form').submit(); return false;" style="margin-top: 3px"/>
+                                                <input type="submit" class="enableEnterSubmit"/>
                                             </s:form>
                                         </td>
                                     </tr>

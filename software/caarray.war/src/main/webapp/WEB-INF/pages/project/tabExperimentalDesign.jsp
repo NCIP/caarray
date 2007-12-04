@@ -20,6 +20,7 @@
             <s:textarea key="project.experiment.replicateDescription" cols="80" rows="8" tabindex="5"/>
             <s:hidden name="project.id" />
             <s:hidden name="editMode" />
+            <input type="submit" class="enableEnterSubmit"/>
         </s:form>
         <caarray:projectTabButtons tab="ExperimentalDesign" isSubtab="true"/>
     </div>

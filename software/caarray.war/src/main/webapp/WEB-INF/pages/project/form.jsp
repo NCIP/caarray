@@ -61,7 +61,7 @@
             </c:if>
         </c:if>
         </jsp:attribute>
-	</caarray:helpPrint>
+  </caarray:helpPrint>
 
 
     <c:url value="/ajax/project/tab/Overview/load.action" var="overviewUrl">

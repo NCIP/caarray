@@ -24,5 +24,6 @@
             headerValue="--Select a Publication Status--" />
         <s:hidden name="currentPublication.id" />
         <s:hidden name="project.id" />
+        <input type="submit" class="enableEnterSubmit"/>
     </caarray:projectListTabItemForm>
 </caarray:tabPane>

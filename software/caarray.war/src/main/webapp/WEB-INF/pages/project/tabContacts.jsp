@@ -26,7 +26,7 @@
             </tbody>
             <s:hidden name="project.id" />
             <s:hidden name="editMode" />
-            <input type="submit" class="enableEnterSubmit">
+            <input type="submit" class="enableEnterSubmit"/>
         </s:form>
         <caarray:projectTabButtons tab="Contacts"/>
     </div>

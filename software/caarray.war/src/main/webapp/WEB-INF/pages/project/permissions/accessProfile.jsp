@@ -1,9 +1,9 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
-<s:form action="ajax/project/permissions/saveAccessProfile" theme="simple" id="profileForm">
+<s:form action="ajax/project/permissions/saveAccessProfile" theme="simple" id="profileForm" onsubmit="PermissionUtils.saveProfile(); return false;">
     <s:hidden name="project.id"/>
     <s:hidden name="accessProfile.id"/>
-    
+
     <table class="searchresults" cellspacing="0">
         <tr>
             <th>Control Access to Experiment for ${profileOwnerName}</th>
@@ -24,7 +24,7 @@
     <div class="datatable" style="padding-bottom: 0px">
         <div class="scrolltable" style="height: auto; max-height: 170px; overflow-x: hidden">
         <table class="searchresults permissiontable" cellspacing="0">
-            <tbody id="access_profile_samples" 
+            <tbody id="access_profile_samples"
                 <c:if test="${!accessProfile.securityLevel.sampleLevelPermissionsAllowed}">style="display:none"</c:if>
             >
             <c:forEach items="${project.experiment.samples}" var="sample">
@@ -60,9 +60,9 @@
                 <caarray:actions divclass="actionsthin">
                     <caarray:action actionClass="cancel" text="Cancel" onclick="PermissionUtils.cancelEditProfile(); return false; " />
                     <caarray:action actionClass="save" text="Save" onclick="PermissionUtils.saveProfile(); return false;" />
-                </caarray:actions>                    
+                </caarray:actions>
             </td>
         </tr>
     </table>
-    
+    <input type="submit" class="enableEnterSubmit"/>
 </s:form>

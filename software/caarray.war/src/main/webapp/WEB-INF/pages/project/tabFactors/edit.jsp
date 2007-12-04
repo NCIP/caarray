@@ -11,5 +11,6 @@
             <s:hidden name="currentFactor.id" />
             <s:hidden name="editMode" />
             <s:hidden name="project.id" />
+            <input type="submit" class="enableEnterSubmit"/>
     </caarray:projectListTabItemForm>
 </caarray:tabPane>

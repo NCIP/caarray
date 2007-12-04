@@ -39,6 +39,7 @@
             <s:hidden name="returnInitialTab2" />
             <s:hidden name="returnInitialTab2Url" />
             <s:hidden name="returnToProjectOnCompletion" />
+            <input type="submit" class="enableEnterSubmit"/>
         </s:form>
         <caarray:actions>
             <s:if test="returnToProjectOnCompletion && returnProjectId == null">

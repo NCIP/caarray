@@ -9,5 +9,6 @@
         <s:hidden name="currentHybridization.id" />
         <s:hidden name="project.id" />
         <s:hidden name="editMode" />
+        <input type="submit" class="enableEnterSubmit"/>
     </caarray:projectListTabItemForm>
 </caarray:tabPane>

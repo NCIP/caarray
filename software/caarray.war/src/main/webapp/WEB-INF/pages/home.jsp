@@ -12,13 +12,13 @@
         <div id="browseboxhome" style="margin-bottom: 20px">
             <h2 class="tanbar">Browse caArray</h2>
             <div class="boxpad">
-                <table class="alttable" cellspacing="0">                
+                <table class="alttable" cellspacing="0">
                     <tr>
                         <th colspan="2">
                     <label for="location"><fmt:message key="search.location"/></label>
                     <s:select name="location" theme="simple"
                               list="#{'NCICB':'NCICB'}"
-                              headerKey="" headerValue="(All Locations)"/>                                            
+                              headerKey="" headerValue="(All Locations)"/>
                         </th>
                     </tr>
                     <c:forEach items="${browseItems}" var="row" varStatus="rowStatus">
@@ -31,7 +31,7 @@
                                     <a href="${browseLink}"><s:text name="${row.category.resourceKey}"/></a>
                                 </s:if><s:else>
                                     <s:text name="${row.resourceKey}"/>
-                                </s:else>                            
+                                </s:else>
                             </td>
                             <td>
                                 <s:if test="${!empty row.category}">
@@ -39,9 +39,9 @@
                                         <c:param name="category" value="${row.category}"/>
                                     </c:url>
                                     <a href="${browseLink}">${row.count}</a>
-                                </s:if><s:else>${row.count}</s:else>                            
-                            </td>                        
-                        </tr>                    
+                                </s:if><s:else>${row.count}</s:else>
+                            </td>
+                        </tr>
                     </c:forEach>
                 </table>
             </div>
@@ -61,11 +61,12 @@
                         <td colspan="2" class="centered">
                     <del class="btnwrapper">
                         <ul id="btnrow">
-                            <caarray:action onclick="$('searchform').submit(); return false;" actionClass="search" text="Search"/>                        
+                            <caarray:action onclick="$('searchform').submit(); return false;" actionClass="search" text="Search"/>
                          </ul>
                      </del>
                         </td>
                     </tr>
+                    <input type="submit" class="enableEnterSubmit"/>
                 </s:form>
             </div>
         </div>

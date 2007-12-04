@@ -61,10 +61,11 @@
         </table>
 
         <caarray:actions>
-			<c:url value="/home.action" var="homeUrl"/>
+            <c:url value="/home.action" var="homeUrl"/>
             <caarray:action actionClass="cancel" text="Cancel" url="${homeUrl}"/>
             <caarray:action actionClass="register" text="Submit Registration Request" onclick="$('regForm').submit()"/>
         </caarray:actions>
+        <input type="submit" class="enableEnterSubmit"/>
     </s:form>
 </div>
 </div>

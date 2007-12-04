@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp" %>
 
-<%-- 
-   DEVELOPER NOTE 
+<%--
+   DEVELOPER NOTE
    The servlet spec makes it hard to have a login widget on a public page that you just
    fill out, without first attempting to access a protected page. It will basically ignore
    the attempted login unless the user tries to access a protected page first. Therefore we
@@ -25,7 +25,7 @@ $('login').submit();
     <div id="login_progress" style="display: none; margin: 3px 3px">
        <img alt="Indicator" align="absmiddle" src="<c:url value="/images/indicator.gif"/>" /> Logging in
     </div>
-    <form id="login" action="<c:url value='/j_security_check'/>" >
+    <form id="login" action="<c:url value='/j_security_check'/>" onsubmit="startLogin(); return false;">
         <table class="login">
             <c:if test="${param.error != null}">
             <tr>
@@ -65,5 +65,6 @@ $('login').submit();
               </td>
           </tr>
       </table>
+      <input type="submit" class="enableEnterSubmit"/>
     </form>
 </div>

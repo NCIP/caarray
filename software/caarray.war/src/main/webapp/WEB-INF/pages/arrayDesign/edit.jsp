@@ -56,6 +56,7 @@
                             <s:file required="true" name="upload" label="Browse to File" tabindex="7"/>
                         </s:if>
                     </tbody>
+                    <input type="submit" class="enableEnterSubmit"/>
                 </s:form>
                 <caarray:actions>
                     <c:url value="/protected/arrayDesign/list.action" var="listUrl"/>

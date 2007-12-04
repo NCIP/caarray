@@ -36,8 +36,9 @@ to become a caArray user.
                             <s:param name="after">
                                 <br />
                                 <a href="<c:url value="/notYetImplemented.jsp" />">Forgot your password?</a>
-                            </s:param>                    
+                            </s:param>
                         </s:password>
+                        <input type="submit" class="enableEnterSubmit"/>
                     </s:form>
                     <caarray:actions>
                         <caarray:action actionClass="cancel" text="Cancel">

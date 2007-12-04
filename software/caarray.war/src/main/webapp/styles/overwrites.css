@@ -142,4 +142,4 @@ UL.selectedItemList LI:hover
 { display: block; float: right; margin-left: 10px }
 
 .enableEnterSubmit
-{ width: 0px; height: 0px; border: none }
+{ width: 0px; height: 0px; border: none; position: absolute }
