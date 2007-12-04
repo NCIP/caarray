@@ -1163,7 +1163,7 @@
 
 	<target name="redeploy" description="Developer undeploy, clean, redeploy" depends="undeploy, clean, database:reinitialize, deploy"/>
 
-	<property name="keyfile.file" value="caarray2-key.properties" />
+	<property name="property.template.file" value="caarray2-property-template.properties" />
 	<property name="jboss.start.sleep" value="10" />
 	<property name="jboss.stop.sleep" value="30" />
 
@@ -1173,7 +1173,7 @@
 				<pathelement location="${lib.dir}/ncicb-ant.jar" />
 			</classpath>
 		</taskdef>
-		<ncitask keyFile="${build.dir}/${keyfile.file}" compareFile="${envpropertyfile}" />
+		<ncitask keyFile="${build.dir}/${property.template.file}" compareFile="${envpropertyfile}" />
 	</target>
 
   <!-- Globus deployment begin -->
