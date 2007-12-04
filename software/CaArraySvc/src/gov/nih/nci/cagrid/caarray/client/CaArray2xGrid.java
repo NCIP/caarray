@@ -132,6 +132,7 @@ public class CaArray2xGrid extends TestCase {
         suite.addTest(new CaArray2xGrid("testFindAllCategorys"));
         suite.addTest(new CaArray2xGrid("testFindAllExperiments"));
         suite.addTest(new CaArray2xGrid("testFindAllProjects"));
+        suite.addTest(new CaArray2xGrid("testFindAllAbstractBioMaterials"));
         return suite;
     }
 
@@ -157,6 +158,10 @@ public class CaArray2xGrid extends TestCase {
 
     public void testFindAllExperiments() throws Exception {
         findAllHelper("gov.nih.nci.caarray.domain.project.Experiment");
+    }
+
+    public void testFindAllAbstractBioMaterials() throws Exception {
+        findAllHelper("gov.nih.nci.caarray.domain.sample.AbstractBioMaterial");
     }
 
     private void findAllHelper(String target) throws Exception {

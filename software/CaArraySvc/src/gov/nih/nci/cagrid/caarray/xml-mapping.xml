@@ -242,11 +242,8 @@
       <bind-xml name="Term" type="gov.nih.nci.caarray.domain.vocabulary.Term" location="surfaceType" node="element" />
     </field>
   </class>
-  <class name="gov.nih.nci.caarray.domain.array.AbstractDesignElement" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
+  <class name="gov.nih.nci.caarray.domain.array.AbstractDesignElement" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayObject">
     <map-to xml="AbstractDesignElement" ns-uri="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.array" />
-    <field name="name" type="string">
-      <bind-xml name="name" node="attribute" />
-    </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.AbstractProbeAnnotation" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
     <map-to xml="AbstractProbeAnnotation" ns-uri="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.array" />
@@ -577,8 +574,8 @@
     <field name="value" type="string">
       <bind-xml name="value" node="attribute" />
     </field>
-    <field name="unit" type="gov.nih.nci.caarray.domain.vocabulary.Term">
-      <bind-xml name="Term" type="gov.nih.nci.caarray.domain.vocabulary.Term" location="unit" node="element" />
+    <field name="unit" type="string">
+      <bind-xml name="unit" node="attribute" />
     </field>
     <field name="parameter" type="gov.nih.nci.caarray.domain.protocol.Parameter">
       <bind-xml name="Parameter" type="gov.nih.nci.caarray.domain.protocol.Parameter" location="parameter" node="element" />
@@ -645,6 +642,15 @@
     </field>
     <field name="materialType" type="gov.nih.nci.caarray.domain.vocabulary.Term">
       <bind-xml name="Term" type="gov.nih.nci.caarray.domain.vocabulary.Term" location="materialType" node="element" />
+    </field>
+    <field name="tissueSite" type="gov.nih.nci.caarray.domain.vocabulary.Term">
+      <bind-xml name="Term" type="gov.nih.nci.caarray.domain.vocabulary.Term" location="tissueSite" node="element" />
+    </field>
+    <field name="cellType" type="gov.nih.nci.caarray.domain.vocabulary.Term">
+      <bind-xml name="Term" type="gov.nih.nci.caarray.domain.vocabulary.Term" location="cellType" node="element" />
+    </field>
+    <field name="diseaseState" type="gov.nih.nci.caarray.domain.vocabulary.Term">
+      <bind-xml name="Term" type="gov.nih.nci.caarray.domain.vocabulary.Term" location="diseaseState" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.sample.AbstractCharacteristic" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
@@ -736,27 +742,27 @@
   </class>
   <class name="gov.nih.nci.caarray.domain.array.Feature" identity="id" extends="gov.nih.nci.caarray.domain.array.AbstractDesignElement">
     <map-to xml="Feature" ns-uri="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.array" />
-    <field name="blockColumn" type="int">
+    <field name="blockColumn" type="short">
       <bind-xml name="blockColumn" node="attribute" />
     </field>
-    <field name="blockRow" type="int">
+    <field name="blockRow" type="short">
       <bind-xml name="blockRow" node="attribute" />
     </field>
-    <field name="column" type="int">
+    <field name="column" type="short">
       <bind-xml name="column" node="attribute" />
     </field>
-    <field name="row" type="int">
+    <field name="row" type="short">
       <bind-xml name="row" node="attribute" />
     </field>
     <field name="arrayDesignDetails" type="gov.nih.nci.caarray.domain.array.ArrayDesignDetails">
       <bind-xml name="ArrayDesignDetails" type="gov.nih.nci.caarray.domain.array.ArrayDesignDetails" location="arrayDesignDetails" node="element" />
     </field>
-    <field name="probes" type="gov.nih.nci.caarray.domain.array.PhysicalProbe" collection="collection">
-      <bind-xml name="PhysicalProbe" type="gov.nih.nci.caarray.domain.array.PhysicalProbe" location="probes" node="element" />
-    </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.AbstractProbe" identity="id" extends="gov.nih.nci.caarray.domain.array.AbstractDesignElement">
     <map-to xml="AbstractProbe" ns-uri="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.array" />
+    <field name="name" type="string">
+      <bind-xml name="name" node="attribute" />
+    </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.SNPProbeAnnotation" identity="id" extends="gov.nih.nci.caarray.domain.array.AbstractProbeAnnotation">
     <map-to xml="SNPProbeAnnotation" ns-uri="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.array" />
@@ -912,9 +918,6 @@
     </field>
     <field name="controlType" type="gov.nih.nci.caarray.domain.vocabulary.Term">
       <bind-xml name="Term" type="gov.nih.nci.caarray.domain.vocabulary.Term" location="controlType" node="element" />
-    </field>
-    <field name="logicalProbes" type="gov.nih.nci.caarray.domain.array.LogicalProbe" collection="collection">
-      <bind-xml name="LogicalProbe" type="gov.nih.nci.caarray.domain.array.LogicalProbe" location="logicalProbes" node="element" />
     </field>
     <field name="probeGroup" type="gov.nih.nci.caarray.domain.array.ProbeGroup">
       <bind-xml name="ProbeGroup" type="gov.nih.nci.caarray.domain.array.ProbeGroup" location="probeGroup" node="element" />

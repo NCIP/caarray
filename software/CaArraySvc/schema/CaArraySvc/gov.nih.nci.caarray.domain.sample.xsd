@@ -32,6 +32,9 @@
           <xs:element name="protocolApplications" minOccurs="0" maxOccurs="unbounded" type="gov.nih.nci.caarray.domain.protocol:ProtocolApplication" />
           <xs:element name="characteristics" minOccurs="0" maxOccurs="unbounded" type="AbstractCharacteristic" />
           <xs:element name="materialType" minOccurs="0" maxOccurs="1" type="gov.nih.nci.caarray.domain.vocabulary:Term" />
+          <xs:element name="tissueSite" minOccurs="0" maxOccurs="1" type="gov.nih.nci.caarray.domain.vocabulary:Term" />
+          <xs:element name="cellType" minOccurs="0" maxOccurs="1" type="gov.nih.nci.caarray.domain.vocabulary:Term" />
+          <xs:element name="diseaseState" minOccurs="0" maxOccurs="1" type="gov.nih.nci.caarray.domain.vocabulary:Term" />
           <xs:element name="organism" minOccurs="0" maxOccurs="1" type="edu.georgetown.pir:Organism" />
         </xs:sequence>
         <xs:attribute name="description" type="xs:string" />
