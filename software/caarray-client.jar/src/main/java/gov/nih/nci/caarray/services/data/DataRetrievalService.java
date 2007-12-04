@@ -98,6 +98,10 @@ public interface DataRetrievalService {
 
     /**
      * Returns the data associated with the given <code>AbstractArrayData</code> object.
+     * 
+     * The returned <code>DataSet</code> and the associated object graph will be fully populated
+     * up to any associated <code>Hybridizations</code> which will have their attributes populated but
+     * their associations trimmed (i.e. all <code>Hybridizations</code> will be leaf nodes.
      *
      * @param arrayData retrieve data contents for this set of data.
      * @return the corresponding data values.
@@ -106,6 +110,10 @@ public interface DataRetrievalService {
 
     /**
      * Returns the requested data as configured within the request object.
+     * 
+     * The returned <code>DataSet</code> and the associated object graph will be fully populated
+     * up to any associated <code>Hybridizations</code> which will have their attributes populated but
+     * their associations trimmed (i.e. all <code>Hybridizations</code> will be leaf nodes.
      *
      * @param request specifies precisely which data to retrieve.
      * @return the corresponding data values.
