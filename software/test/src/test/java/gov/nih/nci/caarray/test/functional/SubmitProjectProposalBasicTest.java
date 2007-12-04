@@ -86,34 +86,28 @@ import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
 
 /**
  * Test case #8141.
+ * 
+ * UC7218: Submit Experiment Proposal - Basic Flow
  */
 public class SubmitProjectProposalBasicTest extends AbstractSeleniumTest {
 
     public void testBasicFlow() throws Exception {
-
+        String title = "test" + System.currentTimeMillis();
+        
         // - Open the PI user workspace
         loginAsPrincipalInvestigator();
 
-        // - Choose the menu item "Propose Project"
-        selenium.click("link=Create/Propose Experiment");
-        waitForElementWithId("projectForm_project_experiment_title");
-
-        // - Provide a unique project title
-        String title = "test" + System.currentTimeMillis();
-        selenium.type("projectForm_project_experiment_title", title);
-
-        // - Submit the proposal
-        selenium.click("link=Save");
-        waitForAction();
-
+        //  create an experiment
+        createExperiment(title);
+        
         // - The system returns to the workspace page (verify)
         clickAndWait("link=My Experiment Workspace");
         waitForTab();
         // - Verify that the new project is listed in the workspace
-        // - Page thru the experiments till is found
+        // - Page thru the experiments till it is found
         findTitleAcrossMultiPages(title);
     }
-    protected void findTitleAcrossMultiPages(String text) {
+    protected void findTitleAcrossMultiPages(String text) throws Exception {
         for (int loop = 0;; loop++) {
             if (selenium.isTextPresent(text)) {
                 assertTrue(selenium.isTextPresent(text));
@@ -121,7 +115,7 @@ public class SubmitProjectProposalBasicTest extends AbstractSeleniumTest {
             } else {
                 // Moving to next page
                 selenium.click("link=Next");
-                waitForAction();
+                Thread.sleep(3000);
             }
         }
     }

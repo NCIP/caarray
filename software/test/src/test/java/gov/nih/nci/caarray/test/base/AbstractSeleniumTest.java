@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.test.base;
 
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -96,9 +98,12 @@ import com.thoughtworks.selenium.SeleneseTestCase;
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     private static final int PAGE_TIMEOUT_SECONDS = 180;
+    private static final String LOGIN_BUTTON = "//div[2]/form/table/tbody/tr[4]/td/del/ul/li/a/span/span";
     protected static final String TAB_KEY = "\\009";
     protected static int RECORD_TIMEOUT_SECONDS = 240;
     protected static final int PAGE_SIZE = 20;
+    protected static final String REFRESH_BUTTON = "//a[6]/span/span";
+    private static final String UPLOAD_BUTTON = "//ul/a[3]/span/span";
 
     @Override
     public void setUp() throws Exception {
@@ -128,7 +133,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
         selenium.type("j_username", "caarrayadmin");
         selenium.type("j_password", "caArray2!");
-        clickAndWait("//span/span");
+        clickAndWait(LOGIN_BUTTON);
     }
 
     protected void  upload(File file) throws IOException {
@@ -138,7 +143,8 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected void upload(File file, int timeoutSeconds) throws IOException {
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
         selenium.type("upload", filePath);
-        selenium.click("link=Upload");
+       // selenium.click("link=Upload");
+        selenium.click(UPLOAD_BUTTON);
         waitForAction(timeoutSeconds);
         assertTrue(selenium.isTextPresent(file.getName()));
     }
@@ -225,18 +231,26 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.select("projectForm_project_experiment_assayType", "label=Gene Expression");
         // - Provider
         selenium.select("projectForm_project_experiment_manufacturer", "label=Affymetrix");
+        waitForDiv("progressMsg");
         // - Organism
         selenium.select("projectForm_project_experiment_organism", "label=Xenopus");
-        // - Tissue Site
-        selenium.setCursorPosition("id=tissueSiteSearchInput", "0");
-        selenium.keyPress("id=tissueSiteSearchInput", TAB_KEY);
-        // - Tissue Types
-        selenium.setCursorPosition("id=tissueTypeSearchInput", "0");
-        selenium.keyPress("id=tissueTypeSearchInput", TAB_KEY);
         // - Save the Experiment
         selenium.click("link=Save");
         waitForAction();
     
+    }
+    protected void addArrayDesign(String arrayDesignName) {
+        selenium.click("link=Import a New Array Design");
+        waitForText("Array Design Details");
+        selenium.type("arrayDesignForm_arrayDesign_name", arrayDesignName);
+        selenium.select("arrayDesignForm_arrayDesign_assayType", "label=Gene Expression");
+        selenium.select("arrayDesignForm_arrayDesign_provider", "label=Affymetrix");
+        selenium.type("arrayDesignForm_arrayDesign_version", "100");
+        selenium.select("arrayDesignForm_arrayDesign_technologyType", "label=spotted_ds_DNA_features");
+        selenium.select("arrayDesignForm_arrayDesign_organism", "label=Bovine");
+        selenium.type("arrayDesignForm_upload", MageTabDataFiles.AFFYMETRIC_TEST3_CDF.toString());
+        selenium.click("link=Save");
+        waitForText("Array Designs");
     }
 
 }

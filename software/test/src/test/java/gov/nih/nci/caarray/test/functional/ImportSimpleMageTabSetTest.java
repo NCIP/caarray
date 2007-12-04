@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.test.functional;
 
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
@@ -99,32 +98,34 @@ import org.junit.Test;
 
 /**
  * Test case #7959.
- *
+ * 
  * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
  */
 public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 10;
+    private static final int SECOND_COLUMN = 2;
+    private static final int THIRD_COLUMN = 3;
 
     @Test
     public void testImportAndRetrieval() throws Exception {
+        String title = "files" + System.currentTimeMillis();
+
+        // - Login
         loginAsPrincipalInvestigator();
 
-        String title = "test" + System.currentTimeMillis();
+        // - Add the array design
+        importArrayDesign();
+
         // Create project
-        selenium.click("link=Create/Propose Experiment");
-        waitForElementWithId("projectForm_project_experiment_title");
-        // - type in the Experiment name
-        selenium.type("projectForm_project_experiment_title", title);
-        // - save
-        selenium.click("link=Save");
-        waitForAction();
-        assertTrue(selenium.isTextPresent("has been successfully saved"));
+        createExperiment(title);
+
         // - go to the data tab
         selenium.click("link=Data");
         waitForTab();
 
         selenium.click("link=Upload New File(s)");
+
         // Upload the following files:
         // - MAGE-TAB IDF
         // - MAGE-TAB SDRF (with references to included native CEL files and corresponding Affymetrix array design)
@@ -143,25 +144,107 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         for (File celFile : MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY.listFiles(celFilter)) {
             upload(celFile);
         }
-        checkFileStatus("Uploaded", 3);
+        // - Check if they are uploaded
+        checkFileStatus("Uploaded", THIRD_COLUMN);
         waitForAction();
         assertTrue(selenium.isTextPresent("files uploaded"));
+
+        // - Import files
         selenium.click("selectAllCheckbox");
-        // - import files
         selenium.click("link=Import");
         waitForAction();
-        assertTrue(selenium.isTextPresent("files imported"));
+
+        assertTrue(selenium.isTextPresent("Importing"));
+
+        // - hit the refresh button until files are imported
+        waitForImport();
 
         // - click on the Imported data tab
         selenium.click("link=Imported Data");
         waitForSecondLevelTab();
+
         // - validate the status
-        checkFileStatus("Imported", 2);
+        checkFileStatus("Imported", SECOND_COLUMN);
+
+        // Submit the experiment
+        submitExperiment();
 
         clickAndWait("link=My Experiment Workspace");
         waitForTab();
+
         assertTrue(selenium.isTextPresent(title));
+        // - Make the experiment public
+        int row = getExperimentRow(title);
+        // - Click on the image to enter the edit mode again
+        selenium.click("//tr[" + row + "]/td[7]/a/img");
+        waitForText("Overall Experiment Characteristics");
+
+        // make experiment public
+        makeExperimentPublic();
+
+        // - Get the data thru the API
         verifyDataViaApi(title);
+    }
+
+    private void makeExperimentPublic() {
+        selenium.click("link=Make Experiment Public");
+        selenium.waitForPageToLoad("30000");
+        assertTrue(selenium.getConfirmation().matches("^Are you sure you want to change the project's status[\\s\\S]$"));
+    }
+
+    private void submitExperiment() {
+        selenium.click("link=Submit Experiment Proposal");
+        selenium.waitForPageToLoad("30000");
+        assertTrue(selenium.getConfirmation().matches("^Are you sure you want to change the project's status[\\s\\S]$"));
+        waitForText("Permissions");
+    }
+
+    protected int getExperimentRow(String text) {
+        for (int loop = 1;; loop++) {
+            if (loop % PAGE_SIZE != 0) {
+                if (text.equalsIgnoreCase(selenium.getTable("row." + loop + ".1"))) {
+                    return loop;
+                }
+            } else {
+                // Moving to next page
+                selenium.click("link=Next");
+                waitForAction();
+                loop = 1;
+            }
+        }
+    }
+
+    private void importArrayDesign() throws Exception {
+        String arrayDesignName = "Test3";
+        selenium.click("link=Manage Array Designs");
+        selenium.waitForPageToLoad("30000");
+        if (!doesArrayDesignExists(arrayDesignName)) {
+            addArrayDesign(arrayDesignName);
+        }
+    }
+
+    private boolean doesArrayDesignExists(String arrayDesignName) {
+        return selenium.isTextPresent(arrayDesignName);
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    private boolean waitForImport() throws Exception {
+        for (int loop = 1;; loop++) {
+            if (loop == 20) {
+                fail();
+                return false;
+            }
+            selenium.click(REFRESH_BUTTON);
+            if (selenium.isTextPresent("Importing")) {
+                Thread.sleep(3000);
+            } else {
+                // done
+                return true;
+            }
+        }
     }
 
     private void verifyDataViaApi(String experimentTitle) throws ServerConnectionException {
@@ -177,15 +260,11 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         assertEquals(6, experiment.getExtracts().size());
         assertEquals(6, experiment.getLabeledExtracts().size());
         assertEquals(6, experiment.getHybridizations().size());
-        for (Hybridization hybridization : experiment.getHybridizations()) {
-            assertNotNull(hybridization.getArrayData());
-            assertNotNull(hybridization.getArrayData().getDataSet());
-        }
     }
 
     private void checkFileStatus(String status, int column) {
         for (int i = 1; i < NUMBER_OF_FILES; i++) {
-            assertEquals(status, selenium.getTable("row."+i+"."+column));
+            assertEquals(status, selenium.getTable("row." + i + "." + column));
         }
     }
 

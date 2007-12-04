@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The test
+ * source code form and machine readable, binary, object code form. The caArray
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This test Software License (the License) is between NCI and You. You (or
+ * This caArray Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the test Software to (i) use, install, access, operate,
+ * its rights in the caArray Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the test Software; (ii) distribute and
- * have distributed to and by third parties the test Software and any
+ * and prepare derivative works of the caArray Software; (ii) distribute and
+ * have distributed to and by third parties the caArray Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -83,94 +83,84 @@
 package gov.nih.nci.caarray.test.functional;
 
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import org.junit.Test;
 
-public class LoginBasicFlowTest extends AbstractSeleniumTest {
+/**
+ * Test case #10320. UC7231 - Browse Repository - Basic Flow
+ * 
+ * Requirements: Anonymous user access a public experiment.
+ */
+public class BrowseExperimentTest extends AbstractSeleniumTest {
+    private String experimentId;
 
-    private static final String EXPERIMENT_WORKSPACE = "Experiment Workspace";
-
-    /*
-     * TC 8661
-     * Login use case basic flow.  user logs in and has the provided access
-     */
     @Test
-    public void testBasicFlow() throws Exception {
-        loginAsPrincipalInvestigator();
-        // page after login is Experiment Workspace
-        assertTrue(selenium.isTextPresent(EXPERIMENT_WORKSPACE));
-   }
-
-    /*
-     * login, create a project, try to upload without entering a file name.
-     * Covers TC9491 -  7218: Submit Experiment Proposal - AF
-     *   The method createExperiment creates a draft experiment
-     */
-    @Test
-    public void testEmptyUpload() throws Exception {
-        String title = "empty Upload" + System.currentTimeMillis();
+    public void testNew() throws Exception {
+        int row;
+        String title = "browsable " + System.currentTimeMillis();
+        // - Login
         loginAsPrincipalInvestigator();
 
-        // Create project
+        // - Create an Experiment
         createExperiment(title);
-        // go to the data tab
-        selenium.click("link=Data");
-        waitForTab();
+        // - Submit Experiment Proposal
+        selenium.click("link=Submit Experiment Proposal");
+        selenium.waitForPageToLoad("30000");
+        assertTrue(selenium.getConfirmation().matches("^Are you sure you want to change the project's status[\\s\\S]$"));
+        waitForText("Permissions");
+        
+        // - Find the row number that has the experiment
+        row = getExperimentRow(title);
+        
+        // - Get the Experiment Id for use later when doing an anonymous search
+        experimentId = selenium.getTable("row." + row + ".0");
+        // - Click on the image to enter the edit mode again
+        selenium.click("//tr[" + row + "]/td[7]/a/img");
+        waitForText("Overall Experiment Characteristics");
 
-        // - Click upload link with no files
-        selenium.click("link=Upload New File(s)");
-        selenium.click("link=Upload");
-        waitForAction();
         
-        assertTrue(selenium.isTextPresent("0 files uploaded"));
-    }
-    /*
-     * login, create a project, import a file with validation errors, validate the error page
-     */
-    @Test
-    public void testImportIDFWithValidationErrors() throws Exception {
-        loginAsPrincipalInvestigator();
+        // make experiment public
+        selenium.click("link=Make Experiment Public");
+        selenium.waitForPageToLoad("30000");
+        assertTrue(selenium.getConfirmation().matches("^Are you sure you want to change the project's status[\\s\\S]$"));
 
-        String title = "test" + System.currentTimeMillis();
-        // - Create project
-        createExperiment(title);
-        // - go to the data tab
-        selenium.click("link=Data");
-        waitForTab();
-        
-        // - Upload file
-        selenium.click("link=Upload New File(s)");
-        upload(MageTabDataFiles.TCGA_BROAD_IDF);
-        
-        // - Import file
-        selenium.click("selectAllCheckbox");
-        selenium.click("link=Import"); 
+        // - logout
+        selenium.click("link=Logout");
+        waitForText("Browse caArray");
 
-        // wait for file to upload
-        refreshImport("Failed Validation");
-        
-        // - Click failed validation link
-        selenium.click("link=Failed Validation");
-        waitForText("Validation Messages");
-        
-        assertTrue(selenium.isTextPresent("Publication Title value is missing"));
-       
+        // - Click on Experiments link on the login page
+        selenium.click("link=Experiments");
+        waitForText("found");
+
+        // - Assert the Experiment is visible without logging in
+        findTitleAcrossMultiPages(experimentId);
     }
 
-    private boolean refreshImport(String waitForText) throws InterruptedException{
+    protected int getExperimentRow(String text) {
         for (int loop = 1;; loop++) {
-            // security from run away loop
-            if (loop == 20){
-                fail();
-                return false;
+            if (loop % PAGE_SIZE != 0) {
+                if (text.equalsIgnoreCase(selenium.getTable("row." + loop + ".1"))) {
+                    return loop;
+                }
+            } else {
+                // Moving to next page
+                selenium.click("link=Next");
+                waitForAction();
+                loop = 1;
             }
-            selenium.click(REFRESH_BUTTON); // refresh
-            Thread.sleep(3000);
-            if (selenium.isTextPresent(waitForText)) {
-                 return true;
-            } 
         }
-     
     }
+    private void findTitleAcrossMultiPages(String text) {
+        for (int loop = 1;; loop++) {
+            if (selenium.isTextPresent(text)) {
+                assertTrue(1==1);
+                break;
+            } else {
+                // Moving to next page
+                selenium.click("link=Next");
+                waitForAction();
+            }
+        }
+    }
+
 }

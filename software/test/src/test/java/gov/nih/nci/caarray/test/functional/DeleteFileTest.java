@@ -87,38 +87,32 @@ import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import org.junit.Test;
 
-/**
- * Test case #7959.
- *
- * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
- */
 public class DeleteFileTest extends AbstractSeleniumTest {
 
     @Test
     public void testNew() throws Exception {
         String title = "test" + System.currentTimeMillis();
+        
         loginAsPrincipalInvestigator();
 
-        // Create project
-        selenium.click("link=Create/Propose Experiment");
-        waitForElementWithId("projectForm_project_experiment_title");
-        // type in the Experiment anme
-        selenium.type("projectForm_project_experiment_title", title);
-        // save
-        selenium.click("link=Save");
-        waitForAction();
-        // go to the data tab
+        createExperiment(title);
+        
+        // - Go to the data tab
         selenium.click("link=Data");
-
         waitForTab();
+        
+        // Upload IDF file
         selenium.click("link=Upload New File(s)");
-
         upload(MageTabDataFiles.TCGA_BROAD_IDF);
+        
         // - file is present
         assertTrue(selenium.isTextPresent(MageTabDataFiles.TCGA_BROAD_IDF.getName()));
-        selenium.click("selectFilesForm_selectedFiles");      
+        
+        // - Delete file
+        selenium.click("selectAllCheckbox");   
         selenium.click("link=Delete");
         waitForAction();
+        
         // - File is deleted
         assertFalse(selenium.isTextPresent(MageTabDataFiles.TCGA_BROAD_IDF.getName()));
     }
