@@ -167,7 +167,6 @@ public class FileManagementServiceBean implements FileManagementService {
         clearValidationMessages(fileSet);
         updateFileStatus(fileSet, FileStatus.VALIDATING);
         sendValidationJobMessage(project, fileSet);
-        clearHibernateCache();
     }
 
     private void sendValidationJobMessage(Project project, CaArrayFileSet fileSet) {
