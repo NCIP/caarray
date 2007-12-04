@@ -91,7 +91,6 @@ import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
@@ -114,9 +113,9 @@ import org.jboss.annotation.ejb.TransactionTimeout;
 /*
  * Transaction required for these "getter" methods because database changes may occur as a side effect.
  */
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+@TransactionAttribute(TransactionAttributeType.REQUIRED)
 @TransactionTimeout(DataRetrievalServiceBean.TIMEOUT_SECONDS)
-@Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
+@Interceptors({ DataSetConfiguringInterceptor.class, HibernateSessionInterceptor.class })
 public class DataRetrievalServiceBean implements DataRetrievalService {
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
