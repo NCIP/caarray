@@ -521,10 +521,6 @@ function DownloadMgr(dUrl, iUrl) {
   this.downloadIds = new Array();
   this.downloadSizeArray = new Array();
   this.count = 0;
-
-  this.allIds = new Array();
-  this.allNames = new Array();
-  this.allSizes = new Array();
 }
 
 DownloadMgr.prototype.downloadUrl;
@@ -532,10 +528,6 @@ DownloadMgr.prototype.imageUrl;
 DownloadMgr.prototype.downloadIds;
 DownloadMgr.prototype.downloadSizeArray;
 DownloadMgr.prototype.count;
-// These three support the "Add All" functionality.
-DownloadMgr.prototype.allIds;
-DownloadMgr.prototype.allNames;
-DownloadMgr.prototype.allSizes;
 
 DownloadMgr.prototype.addDownloadRow = function(name, id, size) {
   this.addDownloadRow(name, id, size, null);
@@ -623,21 +615,14 @@ DownloadMgr.prototype.doDownloadFiles = function() {
 }
 
 DownloadMgr.prototype.addAll = function() {
-  for (j = 0; j < this.allNames.length; j++) {
-    this.addDownloadRow(this.allNames[j], this.allIds[j], this.allSizes[j], false);
-  }
-}
-
-DownloadMgr.prototype.populateAll = function(name, id, size) {
-  this.allNames.push(name);
-  this.allIds.push(id);
-  this.allSizes.push(size);
-}
-
-DownloadMgr.prototype.resetAddAll = function() {
-  this.allIds = new Array();
-  this.allNames = new Array();
-  this.allSizes = new Array();
+    var x = document.getElementsByName("todownload");
+    for (var ii = 0; ii < x.length; ++ii) {
+        if (/MSIE/.test(navigator.userAgent)) {
+            x[ii].click();
+        } else {
+            x[ii].onclick();
+        }
+    }
 }
 
 

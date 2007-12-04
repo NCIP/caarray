@@ -11,10 +11,7 @@
         requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="project.id">
         <caarray:displayTagProperties/>
         <display:column title="${addAll}">
-          <script type="text/javascript"><!--
-            downloadMgr.populateAll('${row.name}', '${row.id}', ${row.compressedSize});
-          --></script>
-          <a href="#" onclick="downloadMgr.addDownloadRow('${row.name}', '${row.id}', ${row.compressedSize})">
+          <a href="#" name="todownload" onclick="downloadMgr.addDownloadRow('${row.name}', '${row.id}', ${row.compressedSize})">
             <img src="<c:url value="/images/ico_add.gif"/>" alt="Add ${row.name}"/>
           </a>
         </display:column>
