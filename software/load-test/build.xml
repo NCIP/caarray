@@ -106,6 +106,16 @@
 
     <target name="tests:run" depends="test:setup-filter-files">
         <mkdir dir="${tests.out.dir}" />
+
+        <!-- ******************************************************************* -->
+        <!-- ** LOAD DATA FOR TESTS TO USE                                    ** -->
+        <!-- ******************************************************************* -->
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/setup/ArrayDesignImporter.jmx" resultlog="${tests.out.dir}/setup/ArrayDesignImporter.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+        </jmeter>
         <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/setup/ExperimentDataImporter.jmx" resultlog="${tests.out.dir}/setup/ExperimentDataImporter.jtl">
             <jvmarg value="-Xms512m" />
             <jvmarg value="-Xmx1024m" />
@@ -116,6 +126,18 @@
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
+
+        <!-- ******************************************************************* -->
+        <!-- ** RUN API TESTS                                                 ** -->
+        <!-- ******************************************************************* -->
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/SearchByExampleTest.jmx" resultlog="${tests.out.dir}/apitest/SearchByExampleTest.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jndi.port" value="${server.jndi.port}" />
+        </jmeter>
+
+        <!-- ******************************************************************* -->
+        <!-- ** RUN LOAD TESTS                                                ** -->
+        <!-- ******************************************************************* -->
         <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/BrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseTest_Basic.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
