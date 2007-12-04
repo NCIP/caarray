@@ -82,46 +82,47 @@
  */
 package gov.nih.nci.caarray.test.jmeter.arraydata;
 
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
-
-import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
+import gov.nih.nci.caarray.domain.data.BooleanColumn;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.DoubleColumn;
+import gov.nih.nci.caarray.domain.data.FloatColumn;
+import gov.nih.nci.caarray.domain.data.HybridizationData;
+import gov.nih.nci.caarray.domain.data.IntegerColumn;
+import gov.nih.nci.caarray.domain.data.LongColumn;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
-
+import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.data.ShortColumn;
+import gov.nih.nci.caarray.domain.data.StringColumn;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
-import gov.nih.nci.caarray.services.data.DataRetrievalService;
-import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
 import gov.nih.nci.caarray.test.jmeter.base.CaArrayJmeterSampler;
 
+import java.util.List;
+import java.util.Set;
+
+import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
-import org.apache.jmeter.config.Arguments;
+
 
 /**
- * A custom JMeter Sampler that acts as a client downloading array data through CaArray's Remote Java API.
- *
- * @author Rashmi Srinivasa
+ * A client downloading a full data set corresponding to one data file through CaArray's Remote Java API.
  */
-public class DataDownloadClient extends CaArrayJmeterSampler implements JavaSamplerClient {
-    private static final String EXPERIMENT_NAMES_PARAM = "experimentNamesCsv";
-    private static final String QUANTITATION_TYPES_PARAM = "quantitationTypesCsv";
 
-    private static final String DEFAULT_EXPERIMENT_NAME = "Glioblastoma Affymetrix 01";
-    private static final String DEFAULT_QUANTITATION_TYPE = "CELintensity";
+public class FullDataSetDownloadClient extends CaArrayJmeterSampler implements JavaSamplerClient {
+    private static final String EXPERIMENT_NAME_PARAM = "experimentName";
+    private static final String DEFAULT_EXPERIMENT_NAME = "Affymetrix Mouse with Data 01";
 
-    private String experimentTitlesCsv;
-    private String quantitationTypesCsv;
     private String hostName;
     private int jndiPort;
 
     /**
-     * Sets up the data download test by initializing the server connection parameters.
+     * Sets up the data set download test by initializing the server connection parameters.
      *
      * @param context the <code>JavaSamplerContext</code> which contains the arguments passed in.
      */
@@ -137,47 +138,86 @@ public class DataDownloadClient extends CaArrayJmeterSampler implements JavaSamp
      */
     public Arguments getDefaultParameters() {
         Arguments params = new Arguments();
-        params.addArgument(EXPERIMENT_NAMES_PARAM, DEFAULT_EXPERIMENT_NAME);
-        params.addArgument(QUANTITATION_TYPES_PARAM, DEFAULT_QUANTITATION_TYPE);
+        params.addArgument(EXPERIMENT_NAME_PARAM, DEFAULT_EXPERIMENT_NAME);
         params.addArgument(getHostNameParam(), getDefaultHostName());
         params.addArgument(getJndiPortParam(), getDefaultJndiPort());
         return params;
     }
 
     /**
-     * Runs the data download test and returns the result.
+     * Runs the data set download test and returns the result.
      *
      * @param context the <code>JavaSamplerContext</code> to read arguments from.
      * @param the <code>SampleResult</code> containing the success/failure and timing results of the test.
      */
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
-        experimentTitlesCsv = context.getParameter(EXPERIMENT_NAMES_PARAM, DEFAULT_EXPERIMENT_NAME);
-        quantitationTypesCsv = context.getParameter(QUANTITATION_TYPES_PARAM, DEFAULT_QUANTITATION_TYPE);
+        String experimentTitle = context.getParameter(EXPERIMENT_NAME_PARAM, DEFAULT_EXPERIMENT_NAME);
 
-        DataRetrievalRequest request = new DataRetrievalRequest();
         try {
             CaArrayServer server = new CaArrayServer(hostName, jndiPort);
             server.connect();
             CaArraySearchService searchService = server.getSearchService();
-            lookupExperiments(searchService, request);
-            lookupQuantitationTypes(searchService, request);
-            DataRetrievalService dataService = server.getDataRetrievalService();
-            results.sampleStart();
-            DataSet dataSet = dataService.getDataSet(request);
-            results.sampleEnd();
-            // Check if the retrieved number of hybridizations and quantitation types are as requested.
-            if ((dataSet != null) && (request.getHybridizations().size() == dataSet.getHybridizationDataList().size())) {
-                if ((request.getQuantitationTypes().size() == 0)
-                        || (request.getQuantitationTypes().size()) == dataSet.getQuantitationTypes().size()) {
-                    results.setSuccessful(true);
-                    results.setResponseCodeOK();
-                    results.setResponseMessage("Retrieved " + request.getHybridizations().size() + " hybridizations and "
-                            + dataSet.getQuantitationTypes().size() + " quantitation types.");
+
+            Experiment experiment = lookupExperiment(searchService, experimentTitle);
+            if (experiment != null) {
+                Hybridization hybridization = getFirstHybridization(searchService, experiment);
+                if (hybridization != null) {
+                    DataSet dataSet = getRawDataSet(searchService, hybridization);
+                    if (dataSet != null) {
+                        int numValuesRetrieved = 0;
+                        // Get each HybridizationData in the DataSet.
+                        for (HybridizationData oneHybData : dataSet.getHybridizationDataList()) {
+                            HybridizationData populatedHybData = searchService.search(oneHybData).get(0);
+                            // Get each column in the HybridizationData.
+                            for (AbstractDataColumn column : populatedHybData.getColumns()) {
+                                AbstractDataColumn populatedColumn = searchService.search(column).get(0);
+                                // Find the type of the column.
+                                QuantitationType qType = populatedColumn.getQuantitationType();
+                                Class typeClass = qType.getTypeClass();
+                                // Retrieve the appropriate data depending on the type of the column.
+                                if (typeClass == String.class) {
+                                    String[] values = ((StringColumn) populatedColumn).getValues();
+                                    numValuesRetrieved += values.length;
+                                } else if (typeClass == Float.class) {
+                                    float[] values = ((FloatColumn) populatedColumn).getValues();
+                                    numValuesRetrieved += values.length;
+                                } else if (typeClass == Short.class) {
+                                    short[] values = ((ShortColumn) populatedColumn).getValues();
+                                    numValuesRetrieved += values.length;
+                                } else if (typeClass == Boolean.class) {
+                                    boolean[] values = ((BooleanColumn) populatedColumn).getValues();
+                                    numValuesRetrieved += values.length;
+                                } else if (typeClass == Double.class) {
+                                    double[] values = ((DoubleColumn) populatedColumn).getValues();
+                                    numValuesRetrieved += values.length;
+                                } else if (typeClass == Integer.class) {
+                                    int[] values = ((IntegerColumn) populatedColumn).getValues();
+                                    numValuesRetrieved += values.length;
+                                } else if (typeClass == Long.class) {
+                                    long[] values = ((LongColumn) populatedColumn).getValues();
+                                    numValuesRetrieved += values.length;
+                                } else {
+                                    // Should never get here.
+                                }
+                            }
+                        }
+                        results.sampleEnd();
+                        results.setSuccessful(true);
+                        results.setResponseCodeOK();
+                        results.setResponseMessage("Retrieved " + dataSet.getQuantitationTypes().size()
+                                + " quantitation types and " + numValuesRetrieved + " values.");
+                    } else {
+                        results.setSuccessful(false);
+                        results.setResponseCode("Error: Retrieved null data set.");
+                    }
+                } else {
+                    results.setSuccessful(false);
+                    results.setResponseCode("Error: Retrieved null hybridization.");
                 }
             } else {
                 results.setSuccessful(false);
-                results.setResponseCode("Error: Response did not match request.");
+                results.setResponseCode("Error: Could not find experiment.");
             }
         } catch (ServerConnectionException e) {
             results.setSuccessful(false);
@@ -193,51 +233,35 @@ public class DataDownloadClient extends CaArrayJmeterSampler implements JavaSamp
         return results;
     }
 
-    private void lookupExperiments(CaArraySearchService service, DataRetrievalRequest request) {
-        String[] experimentTitles = experimentTitlesCsv.split(",");
-        if (experimentTitles == null) {
-            return;
-        }
-
-        // Locate each experiment, and add its hybridizations to the request.
+    private Experiment lookupExperiment(CaArraySearchService service, String experimentName) {
         Experiment exampleExperiment = new Experiment();
-        for (int i = 0; i < experimentTitles.length; i++) {
-            String experimentTitle = experimentTitles[i];
-            exampleExperiment.setTitle(experimentTitle);
-            List<Experiment> experimentList = service.search(exampleExperiment);
-            Set<Hybridization> allHybs = getAllHybridizations(experimentList);
-            request.getHybridizations().addAll(allHybs);
+        exampleExperiment.setTitle(experimentName);
+
+        List<Experiment> experimentList = service.search(exampleExperiment);
+        if (experimentList.size() == 0) {
+            return null;
         }
+        Experiment experiment = experimentList.get(0);
+        return experiment;
     }
 
-    private void lookupQuantitationTypes(CaArraySearchService service, DataRetrievalRequest request) {
-        String[] quantitationTypeNames = quantitationTypesCsv.split(",");
-        if (quantitationTypeNames == null) {
-            return;
+    private Hybridization getFirstHybridization(CaArraySearchService service, Experiment experiment) {
+        Set<Hybridization> allHybridizations = experiment.getHybridizations();
+        for (Hybridization hybridization : allHybridizations) {
+            Hybridization populatedHybridization = service.search(hybridization).get(0);
+            // Yes, we're returning only the first hybridization.
+            return populatedHybridization;
         }
-
-        // Locate each quantitation type and add it to the request.
-        QuantitationType exampleQuantitationType = new QuantitationType();
-        for (int i = 0; i < quantitationTypeNames.length; i++) {
-            String quantitationTypeName = quantitationTypeNames[i];
-            exampleQuantitationType.setName(quantitationTypeName);
-            List<QuantitationType> quantitationTypeList = service.search(exampleQuantitationType);
-            request.getQuantitationTypes().addAll(quantitationTypeList);
-        }
+        return null;
     }
 
-    private Set<Hybridization> getAllHybridizations(List<Experiment> experimentList) {
-        Set<Hybridization> hybridizations = new HashSet<Hybridization>();
-        for (Experiment experiment : experimentList) {
-            hybridizations.addAll(getAllHybridizations(experiment));
+    private DataSet getRawDataSet(CaArraySearchService service, Hybridization hybridization) {
+        RawArrayData rawArrayData = hybridization.getArrayData();
+        if (rawArrayData == null) {
+            return null;
         }
-        return hybridizations;
-    }
-
-    private Set<Hybridization> getAllHybridizations(Experiment experiment) {
-        Set<Hybridization> hybridizations = new HashSet<Hybridization>();
-        hybridizations.addAll(experiment.getHybridizations());
-        return hybridizations;
+        RawArrayData populatedRawArrayData = service.search(rawArrayData).get(0);
+        return populatedRawArrayData.getDataSet();
     }
 
     /**

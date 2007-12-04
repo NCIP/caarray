@@ -82,37 +82,47 @@
  */
 package gov.nih.nci.caarray.test.jmeter.arraydata;
 
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
-
-import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
+import gov.nih.nci.caarray.domain.data.BooleanColumn;
+import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.DoubleColumn;
+import gov.nih.nci.caarray.domain.data.FloatColumn;
+import gov.nih.nci.caarray.domain.data.HybridizationData;
+import gov.nih.nci.caarray.domain.data.IntegerColumn;
+import gov.nih.nci.caarray.domain.data.LongColumn;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
-
+import gov.nih.nci.caarray.domain.data.ShortColumn;
+import gov.nih.nci.caarray.domain.data.StringColumn;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
-import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.services.data.DataRetrievalService;
-import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
+import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.jmeter.base.CaArrayJmeterSampler;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
-import org.apache.jmeter.config.Arguments;
+
 
 /**
- * A custom JMeter Sampler that acts as a client downloading array data through CaArray's Remote Java API.
+ * A custom JMeter Sampler that acts as a client downloading an array data set through CaArray's Remote Java API.
+ * The DataSet can contain data from multiple experiments, hybridizations and a subset of quantitation types.
  *
  * @author Rashmi Srinivasa
  */
-public class DataDownloadClient extends CaArrayJmeterSampler implements JavaSamplerClient {
+public class DataSetDownloadClient extends CaArrayJmeterSampler implements JavaSamplerClient {
     private static final String EXPERIMENT_NAMES_PARAM = "experimentNamesCsv";
     private static final String QUANTITATION_TYPES_PARAM = "quantitationTypesCsv";
 
-    private static final String DEFAULT_EXPERIMENT_NAME = "Glioblastoma Affymetrix 01";
+    private static final String DEFAULT_EXPERIMENT_NAME = "Affymetrix Mouse with Data 01";
     private static final String DEFAULT_QUANTITATION_TYPE = "CELintensity";
 
     private String experimentTitlesCsv;
@@ -121,7 +131,7 @@ public class DataDownloadClient extends CaArrayJmeterSampler implements JavaSamp
     private int jndiPort;
 
     /**
-     * Sets up the data download test by initializing the server connection parameters.
+     * Sets up the data set download test by initializing the server connection parameters.
      *
      * @param context the <code>JavaSamplerContext</code> which contains the arguments passed in.
      */
@@ -145,7 +155,7 @@ public class DataDownloadClient extends CaArrayJmeterSampler implements JavaSamp
     }
 
     /**
-     * Runs the data download test and returns the result.
+     * Runs the data set download test and returns the result.
      *
      * @param context the <code>JavaSamplerContext</code> to read arguments from.
      * @param the <code>SampleResult</code> containing the success/failure and timing results of the test.
@@ -160,22 +170,60 @@ public class DataDownloadClient extends CaArrayJmeterSampler implements JavaSamp
             CaArrayServer server = new CaArrayServer(hostName, jndiPort);
             server.connect();
             CaArraySearchService searchService = server.getSearchService();
+
             lookupExperiments(searchService, request);
             lookupQuantitationTypes(searchService, request);
             DataRetrievalService dataService = server.getDataRetrievalService();
             results.sampleStart();
             DataSet dataSet = dataService.getDataSet(request);
-            results.sampleEnd();
+            int numValuesRetrieved = 0;
+
             // Check if the retrieved number of hybridizations and quantitation types are as requested.
-            if ((dataSet != null) && (request.getHybridizations().size() == dataSet.getHybridizationDataList().size())) {
-                if ((request.getQuantitationTypes().size() == 0)
-                        || (request.getQuantitationTypes().size()) == dataSet.getQuantitationTypes().size()) {
-                    results.setSuccessful(true);
-                    results.setResponseCodeOK();
-                    results.setResponseMessage("Retrieved " + request.getHybridizations().size() + " hybridizations and "
-                            + dataSet.getQuantitationTypes().size() + " quantitation types.");
+            if ((dataSet != null) && (request.getHybridizations().size() == dataSet.getHybridizationDataList().size())
+                    && (request.getQuantitationTypes().size() == dataSet.getQuantitationTypes().size())) {
+                // Get each HybridizationData in the DataSet.
+                for (HybridizationData oneHybData : dataSet.getHybridizationDataList()) {
+                    HybridizationData populatedHybData = searchService.search(oneHybData).get(0);
+                    // Get each column in the HybridizationData.
+                    for (AbstractDataColumn column : populatedHybData.getColumns()) {
+                        AbstractDataColumn populatedColumn = searchService.search(column).get(0);
+                        // Find the type of the column.
+                        QuantitationType qType = populatedColumn.getQuantitationType();
+                        Class typeClass = qType.getTypeClass();
+                        // Retrieve the appropriate data depending on the type of the column.
+                        if (typeClass == String.class) {
+                            String[] values = ((StringColumn) populatedColumn).getValues();
+                            numValuesRetrieved += values.length;
+                        } else if (typeClass == Float.class) {
+                            float[] values = ((FloatColumn) populatedColumn).getValues();
+                            numValuesRetrieved += values.length;
+                        } else if (typeClass == Short.class) {
+                            short[] values = ((ShortColumn) populatedColumn).getValues();
+                            numValuesRetrieved += values.length;
+                        } else if (typeClass == Boolean.class) {
+                            boolean[] values = ((BooleanColumn) populatedColumn).getValues();
+                            numValuesRetrieved += values.length;
+                        } else if (typeClass == Double.class) {
+                            double[] values = ((DoubleColumn) populatedColumn).getValues();
+                            numValuesRetrieved += values.length;
+                        } else if (typeClass == Integer.class) {
+                            int[] values = ((IntegerColumn) populatedColumn).getValues();
+                            numValuesRetrieved += values.length;
+                        } else if (typeClass == Long.class) {
+                            long[] values = ((LongColumn) populatedColumn).getValues();
+                            numValuesRetrieved += values.length;
+                        } else {
+                            // Should never get here.
+                        }
+                    }
                 }
+                results.sampleEnd();
+                results.setSuccessful(true);
+                results.setResponseCodeOK();
+                results.setResponseMessage("Retrieved " + request.getHybridizations().size() + " hybridizations, "
+                        + dataSet.getQuantitationTypes().size() + " quantitation types and " + numValuesRetrieved + " values.");
             } else {
+                results.sampleEnd();
                 results.setSuccessful(false);
                 results.setResponseCode("Error: Response did not match request.");
             }
@@ -248,3 +296,6 @@ public class DataDownloadClient extends CaArrayJmeterSampler implements JavaSamp
     public void teardownTest(JavaSamplerContext context) {
     }
 }
+
+
+

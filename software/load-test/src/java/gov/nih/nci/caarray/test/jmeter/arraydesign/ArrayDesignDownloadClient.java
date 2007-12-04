@@ -80,48 +80,41 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.test.jmeter.arraydata;
+package gov.nih.nci.caarray.test.jmeter.arraydesign;
 
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
-import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
-import gov.nih.nci.caarray.services.data.DataRetrievalService;
-import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
+import gov.nih.nci.caarray.services.arraydesign.ArrayDesignDetailsService;
 import gov.nih.nci.caarray.test.jmeter.base.CaArrayJmeterSampler;
 
+import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
-import org.apache.jmeter.config.Arguments;
 
 /**
- * A custom JMeter Sampler that acts as a client downloading array data through CaArray's Remote Java API.
+ * A custom JMeter Sampler that acts as a client downloading array design details through CaArray's Remote Java API.
  *
  * @author Rashmi Srinivasa
  */
-public class DataDownloadClient extends CaArrayJmeterSampler implements JavaSamplerClient {
-    private static final String EXPERIMENT_NAMES_PARAM = "experimentNamesCsv";
-    private static final String QUANTITATION_TYPES_PARAM = "quantitationTypesCsv";
+public class ArrayDesignDownloadClient extends CaArrayJmeterSampler implements JavaSamplerClient {
+    private static final String ARRAY_DESIGN_NAME_PARAM = "arrayDesignName";
+    private static final String DEFAULT_ARRAY_DESIGN_NAME = "Test3";
 
-    private static final String DEFAULT_EXPERIMENT_NAME = "Glioblastoma Affymetrix 01";
-    private static final String DEFAULT_QUANTITATION_TYPE = "CELintensity";
-
-    private String experimentTitlesCsv;
-    private String quantitationTypesCsv;
+    private String arrayDesignName;
     private String hostName;
     private int jndiPort;
 
     /**
-     * Sets up the data download test by initializing the server connection parameters.
+     * Sets up the array design download test by initializing the server connection parameters.
      *
      * @param context the <code>JavaSamplerContext</code> which contains the arguments passed in.
      */
@@ -137,47 +130,47 @@ public class DataDownloadClient extends CaArrayJmeterSampler implements JavaSamp
      */
     public Arguments getDefaultParameters() {
         Arguments params = new Arguments();
-        params.addArgument(EXPERIMENT_NAMES_PARAM, DEFAULT_EXPERIMENT_NAME);
-        params.addArgument(QUANTITATION_TYPES_PARAM, DEFAULT_QUANTITATION_TYPE);
+        params.addArgument(ARRAY_DESIGN_NAME_PARAM, DEFAULT_ARRAY_DESIGN_NAME);
         params.addArgument(getHostNameParam(), getDefaultHostName());
         params.addArgument(getJndiPortParam(), getDefaultJndiPort());
         return params;
     }
 
     /**
-     * Runs the data download test and returns the result.
+     * Runs the array design download test and returns the result.
      *
      * @param context the <code>JavaSamplerContext</code> to read arguments from.
      * @param the <code>SampleResult</code> containing the success/failure and timing results of the test.
      */
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
-        experimentTitlesCsv = context.getParameter(EXPERIMENT_NAMES_PARAM, DEFAULT_EXPERIMENT_NAME);
-        quantitationTypesCsv = context.getParameter(QUANTITATION_TYPES_PARAM, DEFAULT_QUANTITATION_TYPE);
+        arrayDesignName = context.getParameter(ARRAY_DESIGN_NAME_PARAM, DEFAULT_ARRAY_DESIGN_NAME);
 
-        DataRetrievalRequest request = new DataRetrievalRequest();
         try {
             CaArrayServer server = new CaArrayServer(hostName, jndiPort);
             server.connect();
             CaArraySearchService searchService = server.getSearchService();
-            lookupExperiments(searchService, request);
-            lookupQuantitationTypes(searchService, request);
-            DataRetrievalService dataService = server.getDataRetrievalService();
-            results.sampleStart();
-            DataSet dataSet = dataService.getDataSet(request);
-            results.sampleEnd();
-            // Check if the retrieved number of hybridizations and quantitation types are as requested.
-            if ((dataSet != null) && (request.getHybridizations().size() == dataSet.getHybridizationDataList().size())) {
-                if ((request.getQuantitationTypes().size() == 0)
-                        || (request.getQuantitationTypes().size()) == dataSet.getQuantitationTypes().size()) {
+
+            ArrayDesign arrayDesign = lookupArrayDesign(searchService, arrayDesignName);
+            if (arrayDesign != null) {
+                ArrayDesignDetailsService arrayDesignDetailsService = server.getArrayDesignDetailsService();
+                results.sampleStart();
+                ArrayDesignDetails details = arrayDesignDetailsService.getDesignDetails(arrayDesign);
+                results.sampleEnd();
+                if (details != null) {
                     results.setSuccessful(true);
                     results.setResponseCodeOK();
-                    results.setResponseMessage("Retrieved " + request.getHybridizations().size() + " hybridizations and "
-                            + dataSet.getQuantitationTypes().size() + " quantitation types.");
+                    results.setResponseMessage("Retrieved " + details.getFeatures().size() + " features, "
+                            + details.getProbeGroups().size() + " probe groups, " + details.getProbes().size()
+                            + " probes and " + details.getLogicalProbes().size() + " logical probes.");
+                } else {
+                    results.setSuccessful(false);
+                    results.setResponseCode("Error: Array Design Details was null.");
                 }
             } else {
+                results.sampleEnd();
                 results.setSuccessful(false);
-                results.setResponseCode("Error: Response did not match request.");
+                results.setResponseCode("Error: Array Design was null.");
             }
         } catch (ServerConnectionException e) {
             results.setSuccessful(false);
@@ -193,51 +186,17 @@ public class DataDownloadClient extends CaArrayJmeterSampler implements JavaSamp
         return results;
     }
 
-    private void lookupExperiments(CaArraySearchService service, DataRetrievalRequest request) {
-        String[] experimentTitles = experimentTitlesCsv.split(",");
-        if (experimentTitles == null) {
-            return;
-        }
+    private ArrayDesign lookupArrayDesign(CaArraySearchService service, String arrayDesignName) {
+        ArrayDesign exampleArrayDesign = new ArrayDesign();
+        exampleArrayDesign.setName(arrayDesignName);
 
-        // Locate each experiment, and add its hybridizations to the request.
-        Experiment exampleExperiment = new Experiment();
-        for (int i = 0; i < experimentTitles.length; i++) {
-            String experimentTitle = experimentTitles[i];
-            exampleExperiment.setTitle(experimentTitle);
-            List<Experiment> experimentList = service.search(exampleExperiment);
-            Set<Hybridization> allHybs = getAllHybridizations(experimentList);
-            request.getHybridizations().addAll(allHybs);
+        List<ArrayDesign> arrayDesignList = service.search(exampleArrayDesign);
+        int numArrayDesignsFound = arrayDesignList.size();
+        if (numArrayDesignsFound == 0) {
+            return null;
         }
-    }
-
-    private void lookupQuantitationTypes(CaArraySearchService service, DataRetrievalRequest request) {
-        String[] quantitationTypeNames = quantitationTypesCsv.split(",");
-        if (quantitationTypeNames == null) {
-            return;
-        }
-
-        // Locate each quantitation type and add it to the request.
-        QuantitationType exampleQuantitationType = new QuantitationType();
-        for (int i = 0; i < quantitationTypeNames.length; i++) {
-            String quantitationTypeName = quantitationTypeNames[i];
-            exampleQuantitationType.setName(quantitationTypeName);
-            List<QuantitationType> quantitationTypeList = service.search(exampleQuantitationType);
-            request.getQuantitationTypes().addAll(quantitationTypeList);
-        }
-    }
-
-    private Set<Hybridization> getAllHybridizations(List<Experiment> experimentList) {
-        Set<Hybridization> hybridizations = new HashSet<Hybridization>();
-        for (Experiment experiment : experimentList) {
-            hybridizations.addAll(getAllHybridizations(experiment));
-        }
-        return hybridizations;
-    }
-
-    private Set<Hybridization> getAllHybridizations(Experiment experiment) {
-        Set<Hybridization> hybridizations = new HashSet<Hybridization>();
-        hybridizations.addAll(experiment.getHybridizations());
-        return hybridizations;
+        ArrayDesign arrayDesign = arrayDesignList.get(0);
+        return arrayDesign;
     }
 
     /**
