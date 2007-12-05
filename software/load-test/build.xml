@@ -27,6 +27,8 @@
     <property name="csm.jar" value="../lib/csmapi.jar" />
     <property name="jmeter.core.jar" value="${lib.dir}/ApacheJMeter_core.jar" />
     <property name="jmeter.java.jar" value="${lib.dir}/ApacheJMeter_java.jar" />
+    <property name="javassist.jar" value="${lib.dir}/javassist.jar" />
+    <property name="log4j.jar" value="${lib.dir}/log4j-1.2.13.jar" />
 
     <!-- ******************************************************************* -->
     <!-- ** TASKDEFS                                                      ** -->
@@ -76,6 +78,8 @@
         <copy file="${caarray.client.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
         <copy file="${cacore.client.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
         <copy file="${csm.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
+        <copy file="${javassist.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
+        <copy file="${log4j.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
     </target>
 
     <!-- ******************************************************************* -->

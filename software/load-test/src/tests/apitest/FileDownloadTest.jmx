@@ -30,8 +30,8 @@
           <stringProp name="delimiter">\t</stringProp>
           <stringProp name="fileEncoding"></stringProp>
           <stringProp name="filename">API_experiments_100M.csv</stringProp>
-          <boolProp name="recycle">true</boolProp>
-          <boolProp name="stopThread">false</boolProp>
+          <boolProp name="recycle">false</boolProp>
+          <boolProp name="stopThread">true</boolProp>
           <stringProp name="variableNames">experimentName</stringProp>
         </CSVDataSet>
         <hashTree/>
