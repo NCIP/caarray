@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
 import gov.nih.nci.caarray.test.base.TestProperties;
+import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import java.io.File;
@@ -219,7 +220,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         selenium.click("link=Manage Array Designs");
         selenium.waitForPageToLoad("30000");
         if (!doesArrayDesignExists(arrayDesignName)) {
-            addArrayDesign(arrayDesignName);
+            addArrayDesign(arrayDesignName, AffymetrixArrayDesignFiles.TEST3_CDF);
         }
     }
 

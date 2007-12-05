@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.test.base;
 
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 
 import java.io.File;
 import java.io.IOException;
@@ -111,7 +111,12 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         String hostname = TestProperties.getServerHostname();
         int port = TestProperties.getServerPort();
         String browser = System.getProperty("test.browser", "*chrome");
-        super.setUp("http://" + hostname + ":" + port, browser);
+        if (port == 0){
+            super.setUp("http://" + hostname, browser);
+        }else{
+            super.setUp("http://" + hostname + ":" + port, browser);
+            
+        }
         selenium.setTimeout(toMillisecondsString(PAGE_TIMEOUT_SECONDS));
     }
 
@@ -239,7 +244,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         waitForAction();
     
     }
-    protected void addArrayDesign(String arrayDesignName) {
+    protected void addArrayDesign(String arrayDesignName, File arrayDesign) {
         selenium.click("link=Import a New Array Design");
         waitForText("Array Design Details");
         selenium.type("arrayDesignForm_arrayDesign_name", arrayDesignName);
@@ -248,7 +253,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.type("arrayDesignForm_arrayDesign_version", "100");
         selenium.select("arrayDesignForm_arrayDesign_technologyType", "label=spotted_ds_DNA_features");
         selenium.select("arrayDesignForm_arrayDesign_organism", "label=Bovine");
-        selenium.type("arrayDesignForm_upload", MageTabDataFiles.AFFYMETRIC_TEST3_CDF.toString());
+        selenium.type("arrayDesignForm_upload", arrayDesign.toString());
         selenium.click("link=Save");
         waitForText("Array Designs");
     }
