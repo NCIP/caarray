@@ -82,10 +82,10 @@
  */
 package gov.nih.nci.caarray.security;
 
-import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.logging.api.logger.hibernate.HibernateSessionFactoryHelper;
 import gov.nih.nci.security.authorization.domainobjects.Application;
 import gov.nih.nci.security.exceptions.CSException;
+import gov.nih.nci.security.system.ApplicationSessionFactory;
 import gov.nih.nci.security.util.StringUtilities;
 
 import java.sql.Connection;
@@ -158,7 +158,7 @@ public final class AuthorizationManagerExtensions {
 
         try {
 
-            s = HibernateSessionFactoryHelper.getAuditSession(HibernateUtil.getSessionFactory());
+            s = HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory.getSessionFactory("caarray"));
 
             connection = s.connection();
 
@@ -208,7 +208,7 @@ public final class AuthorizationManagerExtensions {
         ResultSet rs = null;
 
         try {
-            s = HibernateSessionFactoryHelper.getAuditSession(HibernateUtil.getSessionFactory());
+            s = HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory.getSessionFactory("caarray"));
 
             connection = s.connection();
 

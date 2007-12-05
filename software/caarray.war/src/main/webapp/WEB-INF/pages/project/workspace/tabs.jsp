@@ -1,10 +1,10 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 <html>
 <head>
-    <title>Experiment Workspace</title>
+    <title>My Experiment Workspace</title>
 </head>
 <body>
-    <h1>Experiment Workspace</h1>
+    <h1>My Experiment Workspace</h1>
     <caarray:helpPrint/>
     <c:url value="/protected/ajax/project/workspace/myProjects.action" var="myProjectsUrl" />
     <c:url value="/protected/ajax/project/workspace/publicProjects.action" var="publicProjectsUrl" />

@@ -11,14 +11,12 @@
                     <c:url var="viewUrl" value="/project/details.action">
                         <c:param name="project.id" value="${row.id}"/>
                     </c:url>
+                    <a title="View experiment ${row.experiment.publicIdentifier} in read only mode" href="${viewUrl}">${row.experiment.publicIdentifier}</a>
                 </c:when>
                 <c:otherwise>
-                    <c:url var="viewUrl" value="/project/browse.action">
-                        <c:param name="project.id" value="${row.id}"/>
-                    </c:url>
+                    ${row.experiment.publicIdentifier}
                 </c:otherwise>
             </c:choose>
-            <a href="${viewUrl}">${row.experiment.publicIdentifier}</a>
         </display:column>
         <display:column property="experiment.title" titleKey="search.result.experimentTitle" sortable="true"/>
         <display:column property="experiment.assayType" titleKey="search.result.assayType" sortable="true" />
@@ -32,12 +30,14 @@
             </c:forEach>
         </display:column>
         <display:column titleKey="search.result.numSamples">
-            <c:url value="/project/details.action" var="editSamplesUrl">
-                <c:param name="project.id" value="${row.id}" />
-                <c:param name="initialTab" value="annotations" />
-                <c:param name="initialTab2" value="samples" />
-            </c:url>
-            <a href="${editSamplesUrl}">${row.experiment.sampleCount}</a>
+            <c:if test="${caarrayfn:canRead(row, caarrayfn:currentUser())}">
+                <c:url value="/project/details.action" var="viewSamplesUrl">
+                    <c:param name="project.id" value="${row.id}" />
+                    <c:param name="initialTab" value="annotations" />
+                    <c:param name="initialTab2" value="samples" />
+                </c:url>
+                <a href="${viewSamplesUrl}">${row.experiment.sampleCount}</a>
+            </c:if>
         </display:column>
         <display:column sortProperty="lastUpdated" titleKey="search.result.updated" sortable="true">
             <fmt:formatDate value="${row.lastUpdated}" pattern="M/d/yyyy"/>

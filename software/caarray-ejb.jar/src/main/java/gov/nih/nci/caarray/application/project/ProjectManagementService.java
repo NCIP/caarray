@@ -192,15 +192,6 @@ public interface ProjectManagementService {
     int getMyProjectCount(boolean showPublic);
 
     /**
-     * Toggles the browsable status for the given project.
-     * 
-     * @param projectId the id of the project
-     * @return the modified project
-     * @throws ProposalWorkflowException if the browsability status cannot be modified in the project's current state
-     */
-    Project toggleBrowsableStatus(long projectId) throws ProposalWorkflowException;
-
-    /**
      * sets whether the project with given id uses the tcga policy.
      * 
      * @param projectId the id of the project

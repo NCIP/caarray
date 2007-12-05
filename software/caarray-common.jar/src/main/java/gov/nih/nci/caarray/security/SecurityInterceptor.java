@@ -94,7 +94,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
@@ -122,8 +121,6 @@ public class SecurityInterceptor extends EmptyInterceptor {
     // Objects being deleted
     private static final ThreadLocal<Collection<Protectable>> DELETEDOBJS =
             new ThreadLocal<Collection<Protectable>>();
-    // Projects whose browsable status changed
-    private static final ThreadLocal<Collection<Project>> BROWSABLE_CHANGES = new ThreadLocal<Collection<Project>>();
     // Projects whose biomaterial collections have changed
     private static final ThreadLocal<Collection<Project>> BIOMATERIAL_CHANGES =
             new ThreadLocal<Collection<Project>>();
@@ -227,15 +224,6 @@ public class SecurityInterceptor extends EmptyInterceptor {
         if (entity instanceof ProtectableDescendent) {
             verifyWritePrivilege((ProtectableDescendent) entity, UsernameHolder.getCsmUser());
         }
-
-        if (entity instanceof Project && previousState != null) {
-            // figure out if browsable changed
-            for (int i = 0; i < propertyNames.length; ++i) {
-                if (propertyNames[i].equals("browsable") && !ObjectUtils.equals(currentState[i], previousState[i])) {
-                    saveEntityForProcessing(BROWSABLE_CHANGES, new ArrayList<Project>(), (Project) entity);
-                }
-            }
-        }
         if (entity instanceof AccessProfile) {
             saveEntityForProcessing(PROFILES, new ArrayList<AccessProfile>(), (AccessProfile) entity);
         }
@@ -296,13 +284,11 @@ public class SecurityInterceptor extends EmptyInterceptor {
 
         try {
             SecurityUtils.handleNewProtectables(NEWOBJS.get());
-            SecurityUtils.handleBrowsableChanges(BROWSABLE_CHANGES.get());
             SecurityUtils.handleBiomaterialChanges(BIOMATERIAL_CHANGES.get());
             SecurityUtils.handleDeleted(DELETEDOBJS.get());
             SecurityUtils.handleAccessProfiles(PROFILES.get());
         } finally {
             NEWOBJS.set(null);
-            BROWSABLE_CHANGES.set(null);
             BIOMATERIAL_CHANGES.set(null);
             DELETEDOBJS.set(null);
             PROFILES.set(null);

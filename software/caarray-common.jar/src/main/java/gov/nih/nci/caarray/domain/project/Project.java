@@ -148,10 +148,9 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private SortedSet<CaArrayFile> importedFiles = new TreeSet<CaArrayFile>();
     private SortedSet<CaArrayFile> supplementalFiles = new TreeSet<CaArrayFile>();
     private SortedSet<CaArrayFile> unImportedFiles = new TreeSet<CaArrayFile>();
-    private AccessProfile publicProfile = new AccessProfile();
-    private AccessProfile hostProfile = new AccessProfile();
+    private AccessProfile publicProfile = new AccessProfile(SecurityLevel.VISIBLE);
+    private AccessProfile hostProfile = new AccessProfile(SecurityLevel.READ_WRITE_SELECTIVE);
     private Map<CollaboratorGroup, AccessProfile> groupProfiles = new HashMap<CollaboratorGroup, AccessProfile>();
-    private boolean browsable = false;
     private boolean useTcgaPolicy = false;
     private transient Set<User> owners;
     private Date lastUpdated = new Date();
@@ -161,7 +160,6 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     public Project() {
         // hibernate & castor-only constructor
-        this.hostProfile.setSecurityLevel(SecurityLevel.READ_WRITE_SELECTIVE);
         this.publicProfile.setProjectForPublicProfile(this);
         this.hostProfile.setProjectForHostProfile(this);
     }
@@ -206,8 +204,9 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     public void setStatus(ProposalStatus status) {
         setStatusInternal(status);
         // in progress projects get automatically set to browsable, if they weren't before
-        if (status == ProposalStatus.IN_PROGRESS) {
-            setBrowsable(true);
+        if (status == ProposalStatus.IN_PROGRESS
+                && getPublicProfile().getSecurityLevel() == SecurityLevel.NO_VISIBILITY) {
+            getPublicProfile().setSecurityLevel(SecurityLevel.VISIBLE);
         }
 
         // public projects are effectively read rights to all and write rights to no one
@@ -215,7 +214,6 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         // to in progress status. prohibition against writing is enforced in the application
         // layer based on workflow status
         if (status == ProposalStatus.PUBLIC) {
-            setBrowsable(true);
             getPublicProfile().setSecurityLevel(SecurityLevel.READ);
         }
     }
@@ -225,7 +223,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @Transient
     public boolean isSaveAllowed() {
-        return !getStatus().equals(ProposalStatus.PUBLIC);
+        return !isPublic();
     }
 
     /**
@@ -249,15 +247,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @Transient
     public boolean isPermissionsEditingAllowed() {
-        return getStatus() == ProposalStatus.IN_PROGRESS;
-    }
-
-    /**
-     * @return whether the project's browsability status can be changed in its current state
-     */
-    @Transient
-    public boolean isBrowsabilityEditingAllowed() {
-        return getStatus() != ProposalStatus.PUBLIC;
+        return !isPublic();
     }
 
     /**
@@ -266,6 +256,14 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @Transient
     public boolean isPublic() {
         return getStatus() == ProposalStatus.PUBLIC;
+    }
+
+    /**
+     * @return whether the project is currently in draft status
+     */
+    @Transient
+    public boolean isDraft() {
+        return getStatus() == ProposalStatus.DRAFT;
     }
 
     /**
@@ -406,6 +404,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @ManyToOne(cascade = {CascadeType.ALL })
     @JoinColumn(unique = true)
     @ForeignKey(name = "PROJECT_PUBLICACCESS_FK")
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public AccessProfile getPublicProfile() {
         return this.publicProfile;
     }
@@ -462,7 +461,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      * new profile is added and returned
      */
     public AccessProfile addGroupProfile(CollaboratorGroup group) {
-        AccessProfile profile = new AccessProfile();
+        AccessProfile profile = new AccessProfile(SecurityLevel.NONE);
         this.groupProfiles.put(group, profile);
         profile.setProjectForGroupProfile(this);
         profile.setGroup(group);
@@ -478,22 +477,6 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
                 new ArrayList<AccessProfile>(Arrays.asList(this.publicProfile, this.hostProfile));
         profiles.addAll(this.groupProfiles.values());
         return profiles;
-    }
-
-    /**
-     * @return whether this project is browsable to any user in the system, including anonymous users
-     */
-    @Column(nullable = false)
-    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
-    public boolean isBrowsable() {
-        return this.browsable;
-    }
-
-    /**
-     * @param browsable whether this project is browsable to any user in the sytem, including anonymous users
-     */
-    public void setBrowsable(boolean browsable) {
-        this.browsable = browsable;
     }
 
     /**
@@ -573,6 +556,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      * @return the last date this experiment was updated
      */
     @Temporal(TemporalType.TIMESTAMP)
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public Date getLastUpdated() {
         return this.lastUpdated;
     }
@@ -608,6 +592,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      * @param user the user for whom to check the policies
      * @return the set of policies that apply for that user for this project
      */
+    @SuppressWarnings("PMD.CyclomaticComplexity")
     public Set<SecurityPolicy> getApplicablePolicies(User user) {
         Set<SecurityPolicy> policies = new HashSet<SecurityPolicy>();
         if (!SecurityUtils.canRead(this, user)) {
@@ -618,7 +603,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         }
         return policies;
     }
-
+    
     /**
      * {@inheritDoc}
      */

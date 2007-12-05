@@ -106,6 +106,7 @@ import gov.nih.nci.security.exceptions.CSConfigurationException;
 import gov.nih.nci.security.exceptions.CSException;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
+import gov.nih.nci.security.system.ApplicationSessionFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -196,34 +197,6 @@ public final class SecurityUtils {
             return AUTH_MGR.getApplication(APPLICATION_NAME);
         } catch (CSObjectNotFoundException e) {
             throw new IllegalStateException("CSM Misconfigured - Caarray application not found", e);
-        }
-    }
-
-    static void handleBrowsableChanges(Collection<Project> projects) {
-        if (projects == null) {
-            return;
-        }
-
-        for (Project p : projects) {
-            LOG.debug("Modifying browsable status for project: " + p.getId());
-            try {
-                if (p.isBrowsable()) {
-                    assignAnonymousAccess(getProtectionGroup(p));
-                    handleAccessProfile(p.getHostProfile());
-                    handleAccessProfile(p.getPublicProfile());
-                    for (AccessProfile ap : p.getGroupProfiles().values()) {
-                        handleAccessProfile(ap);
-                    }
-                } else {
-                    rescindAllNonOwnerAccess(p);
-                    // and don't forget to rescind sample access as well
-                    for (Sample s : p.getExperiment().getSamples()) {
-                        rescindAllNonOwnerAccess(s);
-                    }
-                }
-            } catch (CSTransactionException e) {
-                LOG.warn("Unable to change browsable status: " + e.getMessage(), e);
-            }
         }
     }
 
@@ -353,7 +326,9 @@ public final class SecurityUtils {
             case WRITE:
                 sampleSecLevel = SampleSecurityLevel.READ_WRITE;
                 break;
+            case VISIBLE:
             case NONE:
+            case NO_VISIBILITY:
                 sampleSecLevel = SampleSecurityLevel.NONE;
                 break;
             default:
@@ -369,7 +344,7 @@ public final class SecurityUtils {
     private static void handleProjectSecurity(Group targetGroup, Project project, SecurityLevel securityLevel) {
         ProtectionGroup pg = getProtectionGroup(project);
         List<String> roleIds = new ArrayList<String>();
-        if (project.isBrowsable()) {
+        if (securityLevel != SecurityLevel.NONE && securityLevel != SecurityLevel.NO_VISIBILITY) {
             roleIds.add(getRoleByName(BROWSE_ROLE).getId().toString());
         }
         if (securityLevel.isAllowsRead()) {
@@ -470,7 +445,7 @@ public final class SecurityUtils {
     }
 
     private static void handleNewProject(Project p, ProtectionGroup pg) throws CSTransactionException {
-        if (p.isBrowsable()) {
+        if (p.getPublicProfile().getSecurityLevel() != SecurityLevel.NO_VISIBILITY) {
             assignAnonymousAccess(pg);
         }
     }
@@ -481,18 +456,6 @@ public final class SecurityUtils {
         Group group = getAnonymousGroup();
         AUTH_MGR.assignGroupRoleToProtectionGroup(pg.getProtectionGroupId().toString(),
                 group.getGroupId().toString(), new String[]{getRoleByName(BROWSE_ROLE).getId().toString() });
-    }
-
-    @SuppressWarnings("unchecked")
-    private static void rescindAllNonOwnerAccess(Protectable p) throws CSTransactionException {
-        List<UserGroupRoleProtectionGroup> l = getUserGroupRoleProtectionGroups(p);
-        for (UserGroupRoleProtectionGroup ugrp : l) {
-            if (ugrp.getGroup() != null) {
-                AUTH_MGR.removeGroupRoleFromProtectionGroup(ugrp.getProtectionGroup().getProtectionGroupId()
-                        .toString(), ugrp.getGroup().getGroupId().toString(), new String[]{ugrp.getRole().getId()
-                        .toString() });
-            }
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -535,12 +498,16 @@ public final class SecurityUtils {
                         + " pe " + "WHERE pe in elements(pg.protectionElements) " + "  AND pe.objectId = :objectId "
                         + "  AND pe.attribute = 'id' " + "  AND pe.value = :value "
                         + "  AND pg.protectionGroupName LIKE 'PE(%) group'";
-        Query q =
-                HibernateSessionFactoryHelper.getAuditSession(HibernateUtil.getSessionFactory()).createQuery(
-                        queryString);
-        q.setString("objectId", getNonGLIBClass(p).getName());
-        q.setString("value", p.getId().toString());
-        return (ProtectionGroup) q.uniqueResult();
+        try {
+            Query q =
+                    HibernateSessionFactoryHelper.getAuditSession(
+                            ApplicationSessionFactory.getSessionFactory(APPLICATION_NAME)).createQuery(queryString);
+            q.setString("objectId", getNonGLIBClass(p).getName());
+            q.setString("value", p.getId().toString());
+            return (ProtectionGroup) q.uniqueResult();
+        } catch (CSConfigurationException e) {
+            throw new IllegalStateException("couldn't execute hibernate query: " + e);
+        }
     }
 
     /**

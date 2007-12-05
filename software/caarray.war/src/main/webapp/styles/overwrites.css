@@ -141,5 +141,13 @@ UL.selectedItemList LI:hover
 .pagehelp A.print
 { display: block; float: right; margin-left: 10px }
 
+#profile_legend li {
+    color: #333;
+    font-size: 100%;
+}
+#profile_legend .bigbold {
+    padding: 0px;
+}
+
 .enableEnterSubmit
 { width: 0px; height: 0px; border: none; position: absolute }

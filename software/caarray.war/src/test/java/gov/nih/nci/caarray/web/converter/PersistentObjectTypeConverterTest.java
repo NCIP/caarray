@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocator;
 
 import org.junit.Test;
@@ -110,7 +111,7 @@ public class PersistentObjectTypeConverterTest {
         assertEquals(null, p);
 
         p = (Project) converter.convertFromString(null, new String[] {"1"}, Project.class);
-        assertEquals(false, p.isBrowsable());
+        assertEquals("FOO", p.getBigid());
 
         String idString = converter.convertToString(null, p);
         assertEquals("1", idString);
@@ -166,7 +167,7 @@ public class PersistentObjectTypeConverterTest {
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
             if (Project.class.equals(entityClass) && Long.valueOf(1L).equals(entityId)) {
                 Project p = new Project();
-                p.setBrowsable(false);
+                p.setBigid("FOO");
                 p.setId(1l);
                 return (T) p;
             }

@@ -471,6 +471,7 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @Enumerated(EnumType.STRING)
     @NotNull
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public AssayType getAssayType() {
         return this.assayType;
     }
@@ -493,6 +494,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "EXPERIMENT_MANUFACTURER_FK")
     @NotNull
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public Organization getManufacturer() {
         return this.manufacturer;
     }
@@ -515,6 +517,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @ForeignKey(name = "EXPERIMENT_ORGANISM_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @NotNull
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public Organism getOrganism() {
         return this.organism;
     }
@@ -733,6 +736,7 @@ public class Experiment extends AbstractCaArrayEntity {
             inverseJoinColumns = {@JoinColumn(name = "ARRAYDESIGN_ID") })
     @ForeignKey(name = "INVESTARRAYDESIGN_INVEST_FK", inverseName = "INVESTARRAYDESIGN_ARRAYDESIGN_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public Set<ArrayDesign> getArrayDesigns() {
         return this.arrayDesigns;
     }
@@ -754,6 +758,7 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.LAZY)
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public Set<ExperimentContact> getExperimentContacts() {
         return this.experimentContacts;
     }

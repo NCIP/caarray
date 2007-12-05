@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.ProjectDaoStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Project;
 
 import java.util.ArrayList;
@@ -125,7 +126,7 @@ public class GenericDataServiceTest {
         assertEquals(null, obj);
 
         obj = this.service.retrieveEnity(Project.class, 1l);
-        assertEquals(false, ((Project) obj).isBrowsable());
+        assertEquals(SecurityLevel.VISIBLE, ((Project) obj).getPublicProfile().getSecurityLevel());
     }
 
     @Test
@@ -212,7 +213,6 @@ public class GenericDataServiceTest {
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
             if (Project.class.equals(entityClass) && Long.valueOf(1L).equals(entityId)) {
                 Project p = new Project();
-                p.setBrowsable(false);
                 return (T) p;
             }
             return null;

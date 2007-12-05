@@ -38,101 +38,96 @@
                     Assign specific access rules down to the sample level in the box on the right.
                 </p>
 
-                <div class="datatable" style="margin-top: 10px">
-                    <table class="searchresults" cellspacing="0">
-                        <tr>
-                            <th>Browsability</th>
-                        </tr>
-                        <tr>
-                            <td>
-                                This project is currently <em>${!project.browsable ? 'not' : ''}</em> browsable
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <s:form action="project/permissions/toggleBrowsability" theme="simple" id="browsability_form">
-                                    <s:hidden name="project.id"/>
-                                    <caarray:actions divclass="actionsthin">
-                                        <caarray:action actionClass="save" text="Toggle" onclick="$('browsability_form').submit(); return false;"/>
-                                    </caarray:actions>
-                                    <input type="submit" class="enableEnterSubmit"/>
-                                </s:form>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+                <caarray:successMessages />
+                <div class="message" id="ajax_success_messages" style="display: none">
+                </div>                
+                
 
-                <div class="datatable" style="margin-top: 10px">
-                    <table class="searchresults" cellspacing="0">
-                        <tr>
-                            <th>Policies</th>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="boxpad">
-                                <s:form action="project/permissions/setTcgaPolicy" cssClass="form" id="policy_form">
-                                    <s:hidden name="project.id"/>
-                                    <s:checkbox name="useTcgaPolicy" value="%{project.useTcgaPolicy}" label="Use TCGA Policy" cssStyle="border: none"/>
-                                    <input type="submit" class="enableEnterSubmit"/>
-                                </s:form>
-                                <caarray:actions>
-                                    <caarray:action actionClass="save" text="Save" onclick="$('policy_form').submit(); return false;"/>
-                                </caarray:actions>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-
-                <c:if test="${project.browsable && project.permissionsEditingAllowed}">
-                    <div class="line" style="margin-bottom: 10px"></div>
-                    <div style="padding-bottom: 20px; min-height: 500px;">
-                            <div class="leftsidetable" style="width: 305px; float: left">
+                <c:if test="${project.permissionsEditingAllowed}">
+                    <div style="padding-bottom: 20px; min-height: 500px; margin-top: 10px">
+                            <div class="leftsidetable" style="width: 350px; float: left">
                             <table class="searchresults permissiontable" cellspacing="0">
                                 <tr>
-                                    <th>Access Profiles</th>
+                                    <th>Who May Access this Experiment</th>
                                 </tr>
                             </table>
                             <div class="datatable" id="access_profile_owners" style="padding-bottom: 0px">
-                                <div class="scrolltable" style="height: auto; max-height: 200px; margin: 0px; overflow-x: hidden">
+                                <div class="scrolltable" style="height: auto">
                                 <table class="searchresults permissiontable" cellspacing="0">
-                                    <c:url var="loadPublicProfileUrl" value="/protected/ajax/project/permissions/loadPublicProfile.action">
-                                        <c:param name="project.id" value="${project.id}"/>
-                                    </c:url>
-                                    <caarray:projectAccessProfileOwner name="The Public" loadProfileUrl="${loadPublicProfileUrl}"
-                                        description="Control access to the experiment by anonymous users"/>
-                                    <c:forEach items="${project.groupProfiles}" var="groupMapping">
-                                        <c:url var="loadGroupProfileUrl" value="/protected/ajax/project/permissions/loadGroupProfile.action">
-                                            <c:param name="project.id" value="${project.id}"/>
-                                            <c:param name="collaboratorGroup.id" value="${groupMapping.key.id}"/>
-                                        </c:url>
-                                        <caarray:projectAccessProfileOwner loadProfileUrl="${loadGroupProfileUrl}"
-                                            name="Collaboration Group: ${groupMapping.key.group.groupName}"
-                                            description="Control access to the experiment by members of this group"/>
-                                    </c:forEach>
-                                </table>
-                                </div>
-                            </div>
-                            <table class="searchresults" cellspacing="0">
-                                <c:if test="${!empty collaboratorGroupsWithoutProfiles}">
                                     <tr>
-                                        <th>
-                                            Add New Collaboration Group Access Profile
-                                        </th>
+                                        <td>
+                                            <div class="bigbold">The Public</div>
+                                            <c:url var="loadPublicProfileUrl" value="/protected/ajax/project/permissions/loadPublicProfile.action">
+                                                <c:param name="project.id" value="${project.id}"/>
+                                            </c:url>        
+                                            <caarray:linkButton actionClass="edit" text="Edit Access Control" style="margin-left: 0px" onclick="PermissionUtils.loadProfile('${loadPublicProfileUrl}');"/>                                            
+                                            <p class="nopad" style="clear: both"><br>Edit access to the experiment by anonymous users</p>
+                                            <p>
+                                            The following access profiles can be managed to grant visibility into the summary 
+                                            and/or contents of an experiment prior to it's publication. The profiles are:
+                                            </p>
+                                            <ul id="profile_legend">
+                                                <li>
+                                                    <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@VISIBLE.resourceKey"/></fmt:message></span> 
+                                                    - applied by default to each experiment upon creation, this profile exposes summary information without access to annotation and array data.
+                                                 </li>
+                                                <li>
+                                                    <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@READ.resourceKey"/></fmt:message></span> 
+                                                    - grants read access to the experiment as a whole - providing a preview into its content
+                                                </li>
+                                                <li>
+                                                    <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@READ_SELECTIVE.resourceKey"/></fmt:message></span> 
+                                                    - grants selective access to specific sample annotation and data
+                                                </li>
+                                                <li>
+                                                    <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@NO_VISIBILITY.resourceKey"/></fmt:message></span> 
+                                                    - completely removes the experiment summary information from view
+                                                </li>
+                                            </ul> 
+                                            <br/>
+                                            <s:form action="project/permissions/setTcgaPolicy" cssClass="form" theme="simple" id="policy_form">
+                                                <s:hidden name="project.id"/>
+                                                <s:checkbox name="useTcgaPolicy" value="%{project.useTcgaPolicy}" cssStyle="border: none"/>
+                                                <s:label for="policy_form_useTcgaPolicy" value="Use TCGA Policy (applies only to Human SNP data)"/>
+                                                <input type="submit" class="enableEnterSubmit"/>
+                                            </s:form>
+                                            <caarray:linkButton actionClass="save" text="Save" style="margin-left: 0px" onclick="$('policy_form').submit(); return false;"/>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <s:form action="project/permissions/addGroupProfile" cssClass="form" theme="simple" cssStyle="display: inline" id="add_group_profile_form">
-                                                <s:select name="collaboratorGroup" label="Collaboration Group" list="collaboratorGroupsWithoutProfiles"
-                                                    listKey="id" listValue="group.groupName" headerKey="" headerValue="-- Select a Collaboration Group"/>
-                                                <s:hidden name="project.id"/>
-                                                <caarray:linkButton actionClass="add" text="Add" onclick="$('add_group_profile_form').submit(); return false;" style="margin-top: 3px"/>
-                                                <input type="submit" class="enableEnterSubmit"/>
-                                            </s:form>
+                                            <div class="bigbold">Collaboration Groups</div>
+                                            <c:choose>
+                                                <c:when test="${!project.draft}">
+                                                    <c:choose>
+                                                        <c:when test="${!empty collaboratorGroups}">
+                                                            <p class="nopad">Edit access to the experiment by members of selected group</p>
+                                                            <s:form action="ajax/project/permissions/loadGroupProfile" cssClass="form" theme="simple" id="collaborators_form" onsubmit="PermissionUtils.loadProfileFromForm('collaborators_form'); return false;">
+                                                                <s:hidden name="project.id"/>
+                                                                <s:label for="collaborators_form_collaboratorGroup_id" value="Collaboration Group"/>
+                                                                <s:select required="true" name="collaboratorGroup.id" tabindex="1" label="Collaboration Group"
+                                                                          list="collaboratorGroups" listKey="id" listValue="group.groupName"/>
+                                                                <caarray:linkButton actionClass="edit" text="Edit Access Control" style="margin-left: 0px" onclick="PermissionUtils.loadProfileFromForm('collaborators_form');"/>
+                                                                <input type="submit" class="enableEnterSubmit"/>
+                                                            </s:form>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            There are no collaboration groups defined.
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                    <caarray:linkButton actionClass="add" text="Add New Group" style="margin-left: 0px">
+                                                        <jsp:attribute name="url"><c:url value="/protected/collaborators/edit.action"/></jsp:attribute>      
+                                                    </caarray:linkButton>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    Access to collaboration groups can only be granted once the experiment has been submitted.
+                                                </c:otherwise>
+                                            </c:choose>
                                         </td>
                                     </tr>
-                                </c:if>
-                            </table>
+                                </table>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="rightsidetable" style="width: 305px; float: left">
@@ -143,10 +138,9 @@
                                 <div id="access_profile_saving" style="display: none">
                                     <img alt="Indicator" align="absmiddle" src="<c:url value="/images/indicator.gif"/>" /> Saving access profile
                                 </div>
-                                <div id="access_profile_instructions">
-                                    Select an Access Profile to edit its specific access rules
-                                </div>
-                                <div id="access_profile_details"></div>
+                                <div id="access_profile_details">
+                                    <caarray:accessProfileDetails accessProfile="${project.publicProfile}" readOnly="true"/>
+                                </div> 
                             </div>
                         </div>
                     </div>

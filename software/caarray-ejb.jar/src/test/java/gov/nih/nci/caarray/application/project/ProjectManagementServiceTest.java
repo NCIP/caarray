@@ -291,42 +291,6 @@ public class ProjectManagementServiceTest {
         assertEquals("Test", abm.getDescription());
     }
 
-
-
-    @Test
-    public void testToggleBrowsable() {
-        Project project = this.projectManagementService.getProject(123L);
-        UsernameHolder.setUser("caarrayadmin");
-        createProtectionGroup(project);
-        assertFalse(project.isBrowsable());
-        try {
-            this.projectManagementService.toggleBrowsableStatus(123L);
-        } catch (ProposalWorkflowException e) {
-            fail("Should have been able to set browsable status");
-        }
-        project = this.projectManagementService.getProject(123L);
-        assertTrue(project.isBrowsable());
-        try {
-            this.projectManagementService.toggleBrowsableStatus(123L);
-        } catch (ProposalWorkflowException e) {
-            fail("Should have been able to set browsable status");
-        }
-        project = this.projectManagementService.getProject(123L);
-        assertFalse(project.isBrowsable());
-        try {
-            this.projectManagementService.changeProjectStatus(123L, ProposalStatus.IN_PROGRESS);
-            this.projectManagementService.changeProjectStatus(123L, ProposalStatus.PUBLIC);
-        } catch (ProposalWorkflowException e) {
-            fail("Should have been able to update project status");
-        }
-        try {
-            this.projectManagementService.toggleBrowsableStatus(123L);
-            fail("Should not have been able to set browsable status");
-        } catch (ProposalWorkflowException e) {
-            // expected
-        }
-    }
-
     /**
      * @param project
      */

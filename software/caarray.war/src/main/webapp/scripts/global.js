@@ -469,7 +469,6 @@ var PermissionUtils = {
     SAMPLE_DROPDOWN_SELECTOR: 'select.sample_security_level',
     PROFILE_LOADING_ID: 'access_profile_loading',
     PROFILE_SAVING_ID: 'access_profile_saving',
-    PROFILE_INSTRUCTIONS_ID: 'access_profile_instructions',
     PROFILE_DETAILS_ID: 'access_profile_details',
     PROFILE_FORM_ID: 'profileForm',
 
@@ -493,16 +492,27 @@ var PermissionUtils = {
     },
 
     loadProfile: function(url) {
-        $(PermissionUtils.PROFILE_INSTRUCTIONS_ID).hide();
         $(PermissionUtils.PROFILE_LOADING_ID).show();
+        this.oldDetails = $(PermissionUtils.PROFILE_DETAILS_ID).innerHTML;
         new Ajax.Updater(PermissionUtils.PROFILE_DETAILS_ID, url,
               {evalScripts: true, onComplete: function() { $(PermissionUtils.PROFILE_LOADING_ID).hide();}});
         return false;
     },
 
+    loadProfileFromForm: function(formId) {
+        $(PermissionUtils.PROFILE_LOADING_ID).show();
+        this.oldDetails = $(PermissionUtils.PROFILE_DETAILS_ID).innerHTML;
+
+        var formData = Form.serialize(formId);
+        var url = $(formId).action;
+        
+        new Ajax.Updater(PermissionUtils.PROFILE_DETAILS_ID, url,
+              {parameters: formData, evalScripts: true, onComplete: function() { $(PermissionUtils.PROFILE_LOADING_ID).hide();}});
+        return false;
+    },
+
     cancelEditProfile: function() {
-        $(PermissionUtils.PROFILE_DETAILS_ID).update('');
-        $(PermissionUtils.PROFILE_INSTRUCTIONS_ID).show();
+        $(PermissionUtils.PROFILE_DETAILS_ID).update(this.oldDetails);
     },
 
     saveProfile: function() {

@@ -9,14 +9,12 @@
                     <c:url var="viewUrl" value="/project/details.action">
                         <c:param name="project.id" value="${row.id}"/>
                     </c:url>
+                    <a href="${viewUrl}" title="View experiment ${row.experiment.publicIdentifier} in read only mode">${row.experiment.publicIdentifier}</a>
                 </c:when>
                 <c:otherwise>
-                    <c:url var="viewUrl" value="/project/browse.action">
-                        <c:param name="project.id" value="${row.id}"/>
-                    </c:url>
+                    ${row.experiment.publicIdentifier}
                 </c:otherwise>
             </c:choose>
-            <a href="${viewUrl}" title="View experiment ${row.experiment.publicIdentifier} in read only mode">${row.experiment.publicIdentifier}</a>
         </display:column>
         <display:column property="experiment.title" title="Experiment Title" escapeXml="true" sortable="true"/>
         <display:column sortProperty="experiment.assayType" title="Assay Type" sortable="true" >

@@ -273,28 +273,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public Project toggleBrowsableStatus(long projectId) throws ProposalWorkflowException {
-        LogUtil.logSubsystemEntry(LOG, projectId);
-        Project p = getProject(projectId);
-        if (!p.isBrowsabilityEditingAllowed()) {
-            LogUtil.logSubsystemExit(LOG);
-            throw new ProposalWorkflowException("Cannot change browsability of project in current state");
-        }
-        if (!p.canModifyPermissions(UsernameHolder.getCsmUser())) {
-            LogUtil.logSubsystemExit(LOG);
-            throw new PermissionDeniedException(p, SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder
-                    .getUser());
-        }
-        p.setBrowsable(!p.isBrowsable());
-        getProjectDao().save(p);
-        LogUtil.logSubsystemExit(LOG);
-        return p;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Project setUseTcgaPolicy(long projectId, boolean useTcgaPolicy) {
         LogUtil.logSubsystemEntry(LOG, projectId);
         Project project = getProject(projectId);

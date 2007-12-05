@@ -112,18 +112,34 @@ import org.hibernate.annotations.MapKeyManyToMany;
  * Container class that models the read and write permissions to samples.
  */
 @Entity
-@SuppressWarnings("PMD.AvoidDuplicateLiterals")
+@SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.CyclomaticComplexity" })
 public class AccessProfile implements PersistentObject, Serializable {
 
     private static final long serialVersionUID = -7994016784349522735L;
 
     private Long id;
-    private SecurityLevel securityLevel = SecurityLevel.NONE;
+    private SecurityLevel securityLevel;
     private Map<Sample, SampleSecurityLevel> sampleSecurityLevels = new HashMap<Sample, SampleSecurityLevel>();
     private Project projectForPublicProfile;
     private Project projectForHostProfile;
     private Project projectForGroupProfile;
     private CollaboratorGroup group;
+    
+    /**
+     * Hibernate-only constructor.
+     */
+    @SuppressWarnings("unused")
+    private AccessProfile() { 
+        // no body        
+    }
+    
+    /**
+     * Creates a new profile with given initial security level.
+     * @param securityLevel initial security level
+     */
+    public AccessProfile(SecurityLevel securityLevel) { 
+        this.securityLevel = securityLevel;
+    }        
 
     /**
      * @return database identifier
@@ -174,6 +190,7 @@ public class AccessProfile implements PersistentObject, Serializable {
     /**
      * @param securityLevel the securityLevel to set
      */
+    @SuppressWarnings("PMD.CyclomaticComplexity")
     public void setSecurityLevel(SecurityLevel securityLevel) {
         setSecurityLevelInternal(securityLevel);
         if (!securityLevel.isSampleLevelPermissionsAllowed()) {
@@ -184,6 +201,13 @@ public class AccessProfile implements PersistentObject, Serializable {
                     sampleEntry.setValue(SampleSecurityLevel.READ);
                 }
             }
+        }
+        if (!securityLevel.isAvailableToPublic() && isPublicProfile()) {
+            throw new IllegalArgumentException("Security level not legal for a public profile: " + securityLevel);
+        }
+        if (!securityLevel.isAvailableToGroups() && isGroupProfile()) {
+            throw new IllegalArgumentException("Security level not legal for a collaborator group profile: "
+                    + securityLevel);
         }
     }
 

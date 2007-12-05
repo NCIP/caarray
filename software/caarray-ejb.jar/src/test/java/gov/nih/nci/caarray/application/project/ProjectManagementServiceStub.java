@@ -190,10 +190,6 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         return null;
     }
 
-    public Project toggleBrowsableStatus(long projectId) {
-        return null;
-    }
-
     public Project setUseTcgaPolicy(long projectId, boolean useTcgaPolicy) throws ProposalWorkflowException {
         return null;
     }

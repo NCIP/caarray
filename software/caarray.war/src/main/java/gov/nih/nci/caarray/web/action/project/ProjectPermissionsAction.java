@@ -8,6 +8,7 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
+import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 
@@ -29,11 +30,9 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     private static final long serialVersionUID = 1L;
 
-    private List<CollaboratorGroup> collaboratorGroupsWithoutProfiles = new ArrayList<CollaboratorGroup>();
+    private List<CollaboratorGroup> collaboratorGroups = new ArrayList<CollaboratorGroup>();
     private CollaboratorGroup collaboratorGroup = new CollaboratorGroup();
-    private AccessProfile accessProfile = new AccessProfile();
-    private boolean publicProfile;
-    private String profileOwnerName;
+    private AccessProfile accessProfile = new AccessProfile(SecurityLevel.NONE);
     private Map<Long, SampleSecurityLevel> sampleSecurityLevels = new HashMap<Long, SampleSecurityLevel>();
     private boolean useTcgaPolicy;
     
@@ -44,9 +43,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     public void prepare() throws VocabularyServiceException {
         super.prepare();
 
-        this.collaboratorGroupsWithoutProfiles = getPermissionsManagementService().getCollaboratorGroups();
-        this.collaboratorGroupsWithoutProfiles.removeAll(getProject().getGroupProfiles().keySet());
-
+        this.collaboratorGroups = getPermissionsManagementService().getCollaboratorGroups();
         if (this.collaboratorGroup.getId() != null) {
             this.collaboratorGroup = getGenericDataService().retrieveEnity(CollaboratorGroup.class,
                                                                            this.collaboratorGroup.getId());
@@ -67,24 +64,6 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     }
 
     /**
-     * Toggles the browsability status.
-     *
-     * @return success
-     */
-    @SkipValidation
-    public String toggleBrowsability() {
-        try {
-            getProjectManagementService().toggleBrowsableStatus(getProject().getId());
-            return SUCCESS;
-        } catch (ProposalWorkflowException e) {
-            List<String> args = new ArrayList<String>();
-            args.add(getProject().getExperiment().getTitle());
-            ActionHelper.saveMessage(getText("project.permissionsSaveProblem", args));
-            return INPUT;
-        }
-    }
-
-    /**
      * Saves whether to use tcga policy.
      *
      * @return success
@@ -93,24 +72,8 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     public String setTcgaPolicy() {
         try {
             getProjectManagementService().setUseTcgaPolicy(getProject().getId(), this.useTcgaPolicy);
-            return SUCCESS;
-        } catch (ProposalWorkflowException e) {
-            List<String> args = new ArrayList<String>();
-            args.add(getProject().getExperiment().getTitle());
-            ActionHelper.saveMessage(getText("project.permissionsSaveProblem", args));
-            return INPUT;
-        }
-    }
-
-    /**
-     * Creates an access profile for a new collaboration group.
-     *
-     * @return success
-     */
-    public String addGroupProfile() {
-        try {
-            getProjectManagementService().addGroupProfile(getProject(), this.collaboratorGroup);
-            this.collaboratorGroupsWithoutProfiles.remove(this.collaboratorGroup);
+            ActionHelper.saveMessage(getText("project.tcgaPolicyUpdated", new String[]{getText("project.tcgaPolicy."
+                    + (this.useTcgaPolicy ? "enabled" : "disabled")) }));
             return SUCCESS;
         } catch (ProposalWorkflowException e) {
             List<String> args = new ArrayList<String>();
@@ -128,8 +91,6 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     @SkipValidation
     public String loadPublicProfile() {
         this.accessProfile = getProject().getPublicProfile();
-        this.publicProfile = true;
-        this.profileOwnerName = getText("project.permissions.publicProfile");
         setupSamplePermissions();
         return "accessProfile";
     }
@@ -142,9 +103,11 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     @SkipValidation
     public String loadGroupProfile() {
         this.accessProfile = getProject().getGroupProfiles().get(this.collaboratorGroup);
-        this.publicProfile = false;
-        this.profileOwnerName = getText("project.permissions.groupProfile", new String[] {this.collaboratorGroup
-                .getGroup().getGroupName() });
+        if (this.accessProfile == null) {
+            this.accessProfile = new AccessProfile(SecurityLevel.NONE);
+            this.accessProfile.setGroup(this.collaboratorGroup);
+            this.accessProfile.setProjectForGroupProfile(getProject());
+        }
         setupSamplePermissions();
         return "accessProfile";
     }
@@ -177,10 +140,24 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
      */
     @SkipValidation
     public String saveAccessProfile() {
-        saveSamplePermissions();
-        getPermissionsManagementService().saveAccessProfile(this.accessProfile);
-        ActionHelper.saveMessage(getText("project.permissionsSaved"));
-        return SUCCESS;
+        try {
+            if (this.accessProfile.getId() == null && this.collaboratorGroup != null) {
+                // must be a new access profile
+                AccessProfile newProfile =
+                        getProjectManagementService().addGroupProfile(getProject(), this.collaboratorGroup);
+                newProfile.setSecurityLevel(this.accessProfile.getSecurityLevel());
+                this.accessProfile = newProfile;
+            }
+            saveSamplePermissions();
+            getPermissionsManagementService().saveAccessProfile(this.accessProfile);
+            ActionHelper.saveMessage(getText("project.permissionsSaved"));
+            return SUCCESS;
+        } catch (ProposalWorkflowException e) {
+            List<String> args = new ArrayList<String>();
+            args.add(getProject().getExperiment().getTitle());
+            ActionHelper.saveMessage(getText("project.permissionsSaveProblem", args));
+            return INPUT;
+        }
     }
 
     /**
@@ -195,20 +172,6 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
      */
     public void setCollaboratorGroup(CollaboratorGroup collaboratorGroup) {
         this.collaboratorGroup = collaboratorGroup;
-    }
-
-    /**
-     * @return the collaboratorGroupsWithoutProfiles
-     */
-    public List<CollaboratorGroup> getCollaboratorGroupsWithoutProfiles() {
-        return this.collaboratorGroupsWithoutProfiles;
-    }
-
-    /**
-     * @param collaboratorGroupsWithoutProfiles the collaboratorGroupsWithoutProfiles to set
-     */
-    public void setCollaboratorGroupsWithoutProfiles(List<CollaboratorGroup> collaboratorGroupsWithoutProfiles) {
-        this.collaboratorGroupsWithoutProfiles = collaboratorGroupsWithoutProfiles;
     }
 
     /**
@@ -240,34 +203,6 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     }
 
     /**
-     * @return the profileOwnerName
-     */
-    public String getProfileOwnerName() {
-        return this.profileOwnerName;
-    }
-
-    /**
-     * @param profileOwnerName the profileOwnerName to set
-     */
-    public void setProfileOwnerName(String profileOwnerName) {
-        this.profileOwnerName = profileOwnerName;
-    }
-
-    /**
-     * @return the publicProfile
-     */
-    public boolean isPublicProfile() {
-        return this.publicProfile;
-    }
-
-    /**
-     * @param publicProfile the publicProfile to set
-     */
-    public void setPublicProfile(boolean publicProfile) {
-        this.publicProfile = publicProfile;
-    }
-
-    /**
      * @return the useTcgaPolicy
      */
     public boolean isUseTcgaPolicy() {
@@ -279,5 +214,12 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
      */
     public void setUseTcgaPolicy(boolean useTcgaPolicy) {
         this.useTcgaPolicy = useTcgaPolicy;
+    }
+
+    /**
+     * @return the collaboratorGroups
+     */
+    public List<CollaboratorGroup> getCollaboratorGroups() {
+        return collaboratorGroups;
     }
 }
