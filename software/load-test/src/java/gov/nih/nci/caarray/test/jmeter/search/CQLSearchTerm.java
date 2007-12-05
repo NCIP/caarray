@@ -82,11 +82,16 @@
  */
 package gov.nih.nci.caarray.test.jmeter.search;
 
-import gov.nih.nci.caarray.domain.contact.Person;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.jmeter.base.CaArrayJmeterSampler;
+import gov.nih.nci.system.query.cql.CQLAssociation;
+import gov.nih.nci.system.query.cql.CQLAttribute;
+import gov.nih.nci.system.query.cql.CQLObject;
+import gov.nih.nci.system.query.cql.CQLPredicate;
+import gov.nih.nci.system.query.cql.CQLQuery;
 
 import java.util.Iterator;
 import java.util.List;
@@ -97,21 +102,21 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
 /**
- * A custom JMeter Sampler that acts as a client searching for persons by example through CaArray's Remote Java API.
+ * A custom JMeter Sampler that acts as a client searching for terms using CQL through CaArray's Remote Java API.
  *
  * @author Rashmi Srinivasa
  */
-public class SearchPersonByExample extends CaArrayJmeterSampler implements JavaSamplerClient {
-    private static final String LAST_NAME_PARAM = "lastName";
+public class CQLSearchTerm extends CaArrayJmeterSampler implements JavaSamplerClient {
+    private static final String CATEGORY_PARAM = "category";
 
-    private static final String DEFAULT_LAST_NAME = "User";
+    private static final String DEFAULT_CATEGORY = "OrganismPart";
 
-    private String lastName;
+    private String categoryName;
     private String hostName;
     private int jndiPort;
 
     /**
-     * Sets up the search-by-example test by initializing the connection parameters.
+     * Sets up the search-by-example test by initializing the search criteria to use.
      *
      * @param context the <code>JavaSamplerContext</code> which contains the arguments passed in.
      */
@@ -127,37 +132,37 @@ public class SearchPersonByExample extends CaArrayJmeterSampler implements JavaS
      */
     public Arguments getDefaultParameters() {
         Arguments params = new Arguments();
-        params.addArgument(LAST_NAME_PARAM, DEFAULT_LAST_NAME);
+        params.addArgument(CATEGORY_PARAM, DEFAULT_CATEGORY);
         params.addArgument(getHostNameParam(), getDefaultHostName());
         params.addArgument(getJndiPortParam(), getDefaultJndiPort());
         return params;
     }
 
     /**
-     * Runs the search-by-example test and returns the result.
+     * Runs the CQL search test and returns the result.
      *
      * @param context the <code>JavaSamplerContext</code> to read arguments from.
      * @param the <code>SampleResult</code> containing the success/failure and timing results of the test.
      */
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
-        lastName = context.getParameter(LAST_NAME_PARAM, DEFAULT_LAST_NAME);
+        categoryName = context.getParameter(CATEGORY_PARAM, DEFAULT_CATEGORY);
 
-        Person examplePerson = createExamplePerson();
+        CQLQuery cqlQuery = createCqlQuery();
         try {
             CaArrayServer server = new CaArrayServer(hostName, jndiPort);
             server.connect();
             CaArraySearchService searchService = server.getSearchService();
             results.sampleStart();
-            List<Person> personList = searchService.search(examplePerson);
+            List termList = searchService.search(cqlQuery);
             results.sampleEnd();
-            if (isResultOkay(personList)) {
+            if (isResultOkay(termList)) {
                 results.setSuccessful(true);
                 results.setResponseCodeOK();
-                results.setResponseMessage("Retrieved " + personList.size() + " persons.");
+                results.setResponseMessage("Retrieved " + termList.size() + " terms.");
             } else {
                 results.setSuccessful(false);
-                results.setResponseCode("Error: Response did not match request. Retrieved " + personList.size() + " persons.");
+                results.setResponseCode("Error: Response did not match request. Retrieved " + termList.size() + " terms.");
             }
         } catch (ServerConnectionException e) {
             results.setSuccessful(false);
@@ -173,22 +178,35 @@ public class SearchPersonByExample extends CaArrayJmeterSampler implements JavaS
         return results;
     }
 
-    private Person createExamplePerson() {
-        Person examplePerson = new Person();
-        examplePerson.setLastName(lastName);
-        return examplePerson;
+    private CQLQuery createCqlQuery() {
+        CQLQuery cqlQuery = new CQLQuery();
+        CQLObject target = new CQLObject();
+        target.setName("gov.nih.nci.caarray.domain.vocabulary.Term");
+
+        CQLAssociation categoryAssociation = new CQLAssociation();
+        categoryAssociation.setName("gov.nih.nci.caarray.domain.vocabulary.Category");
+        CQLAttribute categoryAttribute = new CQLAttribute();
+        categoryAttribute.setName("name");
+        categoryAttribute.setValue(categoryName);
+        categoryAttribute.setPredicate(CQLPredicate.EQUAL_TO);
+        categoryAssociation.setAttribute(categoryAttribute);
+
+        target.setAssociation(categoryAssociation);
+
+        cqlQuery.setTarget(target);
+        return cqlQuery;
     }
 
-    private boolean isResultOkay(List<Person> personList) {
-        if (personList.isEmpty()) {
+    private boolean isResultOkay(List termList) {
+        if (termList.isEmpty()) {
             return true;
         }
 
-        Iterator<Person> i = personList.iterator();
+        Iterator i = termList.iterator();
         while (i.hasNext()) {
-            Person retrievedPerson = i.next();
-            // Check if retrieved person matches requested search criteria.
-            if (!lastName.equals(retrievedPerson.getLastName())) {
+            Term retrievedTerm = (Term) i.next();
+            // Check if retrieved term matches requested search criteria.
+            if (!categoryName.equals(retrievedTerm.getCategory().getName())) {
                 return false;
             }
         }

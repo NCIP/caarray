@@ -202,7 +202,7 @@ public class CQLSearchQuantitationType extends CaArrayJmeterSampler implements J
         while (i.hasNext()) {
             QuantitationType retrievedQuantitationType = (QuantitationType) i.next();
             // Check if retrieved quantitation type matches requested search criteria.
-            if (!quantitationTypeType.equals(retrievedQuantitationType.getName())) {
+            if (!quantitationTypeType.equals(retrievedQuantitationType.getType())) {
                 return false;
             }
         }

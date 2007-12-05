@@ -108,11 +108,11 @@ import org.apache.jmeter.samplers.SampleResult;
  * @author Rashmi Srinivasa
  */
 public class CQLSearchPerson extends CaArrayJmeterSampler implements JavaSamplerClient {
-    private static final String ORGANIZATION_PARAM = "organizationName";
+    private static final String LAST_NAME_PARAM = "lastName";
 
-    private static final String DEFAULT_ORGANIZATION = "Broad Institue, MIT";
+    private static final String DEFAULT_LAST_NAME = "User";
 
-    private String organizationName;
+    private String lastName;
     private String hostName;
     private int jndiPort;
 
@@ -133,7 +133,7 @@ public class CQLSearchPerson extends CaArrayJmeterSampler implements JavaSampler
      */
     public Arguments getDefaultParameters() {
         Arguments params = new Arguments();
-        params.addArgument(ORGANIZATION_PARAM, DEFAULT_ORGANIZATION);
+        params.addArgument(LAST_NAME_PARAM, DEFAULT_LAST_NAME);
         params.addArgument(getHostNameParam(), getDefaultHostName());
         params.addArgument(getJndiPortParam(), getDefaultJndiPort());
         return params;
@@ -147,7 +147,7 @@ public class CQLSearchPerson extends CaArrayJmeterSampler implements JavaSampler
      */
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
-        organizationName = context.getParameter(ORGANIZATION_PARAM, DEFAULT_ORGANIZATION);
+        lastName = context.getParameter(LAST_NAME_PARAM, DEFAULT_LAST_NAME);
 
         CQLQuery cqlQuery = createCqlQuery();
         try {
@@ -185,15 +185,12 @@ public class CQLSearchPerson extends CaArrayJmeterSampler implements JavaSampler
         CQLObject target = new CQLObject();
         target.setName("gov.nih.nci.caarray.domain.contact.Person");
 
-        CQLAssociation affiliationAssociation = new CQLAssociation();
-        affiliationAssociation.setName("gov.nih.nci.caarray.domain.contact.Organization");
         CQLAttribute affiliationAttribute = new CQLAttribute();
-        affiliationAttribute.setName("name");
-        affiliationAttribute.setValue(organizationName);
+        affiliationAttribute.setName("lastName");
+        affiliationAttribute.setValue(lastName);
         affiliationAttribute.setPredicate(CQLPredicate.EQUAL_TO);
-        affiliationAssociation.setAttribute(affiliationAttribute);
 
-        target.setAssociation(affiliationAssociation);
+        target.setAttribute(affiliationAttribute);
 
         cqlQuery.setTarget(target);
         return cqlQuery;
@@ -208,14 +205,7 @@ public class CQLSearchPerson extends CaArrayJmeterSampler implements JavaSampler
         while (i.hasNext()) {
             Person retrievedPerson = (Person) i.next();
             // Check if retrieved person matches requested search criteria.
-            boolean foundOrganization = false;
-            Iterator<Organization> j = retrievedPerson.getAffiliations().iterator();
-            while (j.hasNext()) {
-                if (organizationName.equals(j.next().getName())) {
-                    foundOrganization = true;
-                }
-            }
-            if (!foundOrganization) {
+            if (!lastName.equals(retrievedPerson.getLastName())) {
                 return false;
             }
         }

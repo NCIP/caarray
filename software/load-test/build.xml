@@ -134,6 +134,28 @@
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jndi.port" value="${server.jndi.port}" />
         </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/CQLSearchTest.jmx" resultlog="${tests.out.dir}/apitest/CQLSearchTest.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jndi.port" value="${server.jndi.port}" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/DataSetDownloadTest.jmx" resultlog="${tests.out.dir}/apitest/DataSetDownloadTest.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jndi.port" value="${server.jndi.port}" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/FullDataSetDownloadTest.jmx" resultlog="${tests.out.dir}/apitest/FullDataSetDownloadTest.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jndi.port" value="${server.jndi.port}" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/FileDownloadTest.jmx" resultlog="${tests.out.dir}/apitest/FileDownloadTest.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jndi.port" value="${server.jndi.port}" />
+        </jmeter>
 
         <!-- ******************************************************************* -->
         <!-- ** RUN LOAD TESTS                                                ** -->

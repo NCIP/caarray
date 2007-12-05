@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jmeterTestPlan version="1.2" properties="1.8">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Caarray Search by Example via API Test" enabled="true">
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Caarray CQL Search via API Test" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
@@ -65,7 +65,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.search.SearchExperimentByExample</stringProp>
+            <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.search.CQLSearchExperiment</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>
@@ -124,7 +124,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.search.SearchSampleByExample</stringProp>
+            <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.search.CQLSearchSample</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>
@@ -178,7 +178,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.search.SearchArrayDesignByExample</stringProp>
+            <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.search.CQLSearchArrayDesign</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>
@@ -237,7 +237,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.search.SearchPublicationByExample</stringProp>
+            <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.search.CQLSearchPublication</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>
@@ -291,7 +291,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.search.SearchHybridizationByExample</stringProp>
+            <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.search.CQLSearchHybridization</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>
@@ -345,7 +345,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.search.SearchPersonByExample</stringProp>
+            <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.search.CQLSearchPerson</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>
@@ -382,8 +382,8 @@
           <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Search Request" enabled="true">
             <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments">
-                <elementProp name="categoryName" elementType="Argument">
-                  <stringProp name="Argument.name">categoryName</stringProp>
+                <elementProp name="category" elementType="Argument">
+                  <stringProp name="Argument.name">category</stringProp>
                   <stringProp name="Argument.value">${categoryName}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
@@ -399,7 +399,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.search.SearchTermByExample</stringProp>
+            <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.search.CQLSearchTerm</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>
@@ -453,7 +453,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.search.SearchQuantitationTypesByExample</stringProp>
+            <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.search.CQLSearchQuantitationType</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>
