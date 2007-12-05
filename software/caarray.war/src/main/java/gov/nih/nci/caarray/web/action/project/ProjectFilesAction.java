@@ -126,7 +126,7 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
  * @author Scott Miller
  *
  */
-@SuppressWarnings({"unchecked", "PMD.ExcessiveClassLength" })
+@SuppressWarnings({"unchecked", "PMD.ExcessiveClassLength", "PMD.CyclomaticComplexity" })
 @Validation
 @Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.",
                                                 expression = "selectedFiles.size() > 0"))
@@ -366,9 +366,12 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     public String validateFiles() {
         int validatedFiles = 0;
         int skippedFiles = 0;
+        int arrayDesignFiles = 0;
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
         for (CaArrayFile file : getSelectedFiles()) {
-            if (file.getFileStatus().isValidatable()) {
+            if (file.getFileType().isArrayDesign()) {
+                arrayDesignFiles++;
+            } else if (file.getFileStatus().isValidatable()) {
                 fileSet.add(file);
                 validatedFiles++;
             } else {
@@ -378,9 +381,15 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         if (!fileSet.getFiles().isEmpty()) {
             getFileManagementService().validateFiles(getProject(), fileSet);
         }
-        ActionHelper.saveMessage(validatedFiles + " files validating.");
+        ActionHelper.saveMessage(getText("project.fileValidate.success",
+                new String[] {String.valueOf(validatedFiles)}));
+        if (arrayDesignFiles > 0) {
+            ActionHelper.saveMessage(getText("project.fileValidate.error.arrayDesign",
+                    new String[] {String.valueOf(arrayDesignFiles)}));
+        }
         if (skippedFiles > 0) {
-            ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for validation.");
+            ActionHelper.saveMessage(getText("project.fileValidate.error.invalidStatus",
+                    new String[] {String.valueOf(skippedFiles)}));
         }
         return prepListUnimportedPage();
     }
@@ -392,9 +401,12 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     public String importFiles() {
         int importedFiles = 0;
         int skippedFiles = 0;
+        int arrayDesignFiles = 0;
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
         for (CaArrayFile file : getSelectedFiles()) {
-            if (file.getFileStatus().isImportable()) {
+            if (file.getFileType().isArrayDesign()) {
+                arrayDesignFiles++;
+            } else if (file.getFileStatus().isImportable()) {
                 fileSet.add(file);
                 importedFiles++;
             } else {
@@ -404,9 +416,15 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         if (!fileSet.getFiles().isEmpty()) {
             getFileManagementService().importFiles(getProject(), fileSet);
         }
-        ActionHelper.saveMessage(importedFiles + " files importing.");
+        ActionHelper.saveMessage(getText("project.fileImport.success",
+                new String[] {String.valueOf(importedFiles)}));
+        if (arrayDesignFiles > 0) {
+            ActionHelper.saveMessage(getText("project.fileImport.error.arrayDesign",
+                    new String[] {String.valueOf(arrayDesignFiles)}));
+        }
         if (skippedFiles > 0) {
-            ActionHelper.saveMessage(skippedFiles + " files were not in a status that allows for importing.");
+            ActionHelper.saveMessage(getText("project.fileImport.error.invalidStatus",
+                    new String[] {String.valueOf(skippedFiles)}));
         }
         refreshProject();
         return prepListUnimportedPage();
