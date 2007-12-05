@@ -84,6 +84,9 @@ package gov.nih.nci.caarray.application;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.security.Protectable;
+import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.util.Collection;
@@ -96,6 +99,7 @@ import javax.ejb.TransactionAttributeType;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.criterion.Order;
 
 /**
  * Implementation of the GenericDataService.
@@ -138,6 +142,25 @@ public class GenericDataServiceBean implements GenericDataService {
             maxSuffix = Math.max(maxSuffix, Integer.parseInt(suffix));
         }
         return alphaPrefix + (maxSuffix + 1);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void save(PersistentObject entity) {
+        if (entity instanceof Protectable && !SecurityUtils.canWrite(entity, UsernameHolder.getCsmUser())) {
+            throw new IllegalArgumentException("The current user does not have the rights to edit the given object.");
+        }
+        this.daoFactory.getSearchDao().save(entity);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public <T extends PersistentObject> List<T> retriveAll(Class<T> entityClass, Order... orders)
+            throws IllegalAccessException, InstantiationException {
+        return this.daoFactory.getSearchDao().queryEntityByExample(entityClass.newInstance(), orders);
     }
 
     /**

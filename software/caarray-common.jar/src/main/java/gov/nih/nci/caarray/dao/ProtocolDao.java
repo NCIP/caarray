@@ -83,6 +83,9 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+
+import java.util.List;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.protocol</code> package.
@@ -97,4 +100,10 @@ public interface ProtocolDao extends CaArrayDao {
      */
     Protocol getProtocol(long id);
 
+    /**
+     * Get the protocols with the given type.
+     * @param type the type.
+     * @return the list of protocols.
+     */
+    List<Protocol> getProtocolsByType(Term type);
 }

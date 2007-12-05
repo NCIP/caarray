@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.business.vocabulary;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -201,6 +202,13 @@ public class VocabularyServiceStub implements VocabularyService {
      * {@inheritDoc}
      */
     public List<Term> getTissueSitesForExperiment(Experiment experiment) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Protocol> getProtocolByProtocolType(Term type) {
         return null;
     }
 }

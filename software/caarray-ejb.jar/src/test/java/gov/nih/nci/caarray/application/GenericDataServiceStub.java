@@ -85,6 +85,8 @@ package gov.nih.nci.caarray.application;
 import java.util.Collection;
 import java.util.List;
 
+import org.hibernate.criterion.Order;
+
 import gov.nih.nci.caarray.domain.PersistentObject;
 
 /**
@@ -93,6 +95,7 @@ import gov.nih.nci.caarray.domain.PersistentObject;
  */
 public class GenericDataServiceStub implements GenericDataService {
     private PersistentObject deletedObject = null;
+    private PersistentObject savedObject = null;
 
     /**
      * {@inheritDoc}
@@ -127,5 +130,27 @@ public class GenericDataServiceStub implements GenericDataService {
      */
     public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property, String value) {
         return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public <T extends PersistentObject> List<T> retriveAll(Class<T> entityClass, Order... orders)
+            throws IllegalAccessException, InstantiationException {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void save(PersistentObject object) {
+        this.savedObject = object;
+    }
+
+    /**
+     * @return the savedObject
+     */
+    public PersistentObject getSavedObject() {
+        return this.savedObject;
     }
 }

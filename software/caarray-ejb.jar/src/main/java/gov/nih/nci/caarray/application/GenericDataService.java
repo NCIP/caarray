@@ -85,6 +85,8 @@ package gov.nih.nci.caarray.application;
 import java.util.Collection;
 import java.util.List;
 
+import org.hibernate.criterion.Order;
+
 import gov.nih.nci.caarray.domain.PersistentObject;
 
 /**
@@ -108,12 +110,30 @@ public interface GenericDataService {
     <T extends PersistentObject> T retrieveEnity(Class<T> entityClass, Long entityId);
 
     /**
+     * Retrieves all instances of the given class.
+     * @param <T> the type of the entity to retrieve
+     * @param entityClass the class of the entity to retrieve
+     * @param orders the order by clauses
+     * @return the list of t's
+     * @throws IllegalAccessException if entityClass.newInstance fails
+     * @throws InstantiationException if entityClass.newInstance fails
+     */
+    <T extends PersistentObject> List<T> retriveAll(Class<T> entityClass, Order... orders)
+        throws IllegalAccessException, InstantiationException;
+
+    /**
      * Deletes an object from the database.  May throw exceptions if the object is referenced
      * by other objects in the system.
      *
      * @param object the object to delete
      */
     void delete(PersistentObject object);
+
+    /**
+     * Save an object.
+     * @param object the object to save.
+     */
+    void save(PersistentObject object);
 
     /**
      * Generate a name suitable for assignment to a copy of an entity with the given name.

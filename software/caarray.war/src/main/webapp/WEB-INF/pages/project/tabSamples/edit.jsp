@@ -14,10 +14,12 @@
         <caarray:annotationAssociationPicker baseId="sourcePicker" entityName="Sample" associatedEntityName="Source" itemId="${currentSample.id}" tabIndex="4" />
         <caarray:termSelector baseId="materialType" category="<%= ExperimentOntologyCategory.MATERIAL_TYPE %>" termField="${currentSample.materialType}"
             tabIndex="5" termFieldName="currentSample.materialType" returnInitialTab1="annotations" returnInitialTab2="samples" returnInitialTab2Url="${thisUrl}" />
+        <caarray:protocolSelector returnInitialTab1="annotations" returnInitialTab2="samples" returnInitialTab2Url="${thisUrl}" tabIndex1="6" tabIndex2="7" />
         <caarray:annotationCharacteristics item="${currentSource}"/>
         <s:hidden name="currentSample.id" />
         <s:hidden name="project.id" />
         <s:hidden name="editMode" />
         <input type="submit" class="enableEnterSubmit"/>
     </caarray:projectListTabItemForm>
+    <caarray:protocolSelectorAjaxInit />
 </caarray:tabPane>

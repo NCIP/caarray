@@ -11,6 +11,7 @@ insert into category (name) value ('PublicationType');
 insert into category (name) value ('PublicationStatus');
 insert into category (name) value ('TechnologyType');
 insert into category (name) value ('ComplexAction');
+insert into category (name) value ('ExperimentalProtocolType');
 
 insert into termsource (name, url, version) values ('MGED', 'http://mged.sourceforge.net/ontologies/MGEDontology.php', '1.3.1.1');
 insert into termsource (name, url, version) values ('Caarray', 'http://caarray.nci.nih.gov/ontologies/UserDefined.html', '0.1');
@@ -95,6 +96,44 @@ insert into term (value, source, category) select 'store', termsource.id, catego
 insert into term (value, source, category) select 'timepoint', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
 insert into term (value, source, category) select 'transfect', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
 insert into term (value, source, category) select 'wash', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
+
+-- ExperimentalProtocolTypes
+insert into term (value, source, category) select 'PCR_amplification', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'acclimatization', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'array_manufacturing', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'behavioral_stimulus', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'biological_fluid_collection', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'change_biomaterial_characteristics', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'compound_based_treatment', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'decontaminate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'dissect', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'element_design', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'feature_extraction', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'fractionate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'genetic_modification', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'grow', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'harvest', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'histological_slide_preparation', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'hybridization', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'image_acquisition', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'incubate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'inoculate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'irradiate', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'labeling', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'linear_amplification', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'nucleic_acid_extraction', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'pool', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'preservation', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'purify', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'reverse_transcription', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'sacrifice', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'specified_biomaterial_action', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'split', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'starvation', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'store', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'transfect', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'unknown_protocol_type', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+insert into term (value, source, category) select 'wash', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
 
 insert into organism (common_name, scientific_name, taxonomy_rank, ethnicity_strain) values ('Bovine', '', '', '');
 insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Canine', '', '', '');

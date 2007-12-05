@@ -82,163 +82,195 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
-import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
+import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.web.action.ActionHelper;
 
-import java.util.Collection;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.ajaxtags.xml.AjaxXmlBuilder;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
-import com.opensymphony.xwork2.validator.annotations.Validation;
+import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
- * Class that manages the annotation tabs.
  * @author Scott Miller
- * @param <T> the class of the annotations are being managed.
+ * @param <T> type of objects managed by this class
  */
-@Validation
-public abstract class AbstractProjectAnnotationsListTabAction<T extends PersistentObject> extends
-    AbstractProjectListTabAction {
+public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends AbstractBioMaterial> extends
+        AbstractProjectAnnotationsListTabAction<T> {
 
-    private String associatedValueName;
-    private Collection<T> unassociatedValues;
+    private Term protocolType;
+    private Set<Term> protocolTypes;
+    private Protocol protocol;
+    private List<Protocol> protocols = new ArrayList<Protocol>();
+
 
     /**
      * default constructor.
+     *
      * @param resourceKey the base resouce key.
      */
-    public AbstractProjectAnnotationsListTabAction(String resourceKey) {
+    public AbstractProjectProtocolAnnotationListTabAction(String resourceKey) {
         super(resourceKey);
+    }
+
+    private void initForm() {
+        setProtocolTypes(ActionHelper.getVocabularyService().getTerms(
+                ExperimentOntologyCategory.PROTOCOL_TYPE.getCategoryName()));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
-    @FieldExpressionValidator(fieldName = "associatedValueName",
-            message = "You must select at least one annotation to associate.",
-            expression = "currentAssociationsCollection.size() - itemsToRemove.size() + itemsToAssociate.size() > 0")
-    public String save() {
-        // ideally this logic, along with the itemsToAssociate collection would be int he base class, but the
-        // struts 2 type converter for persistent entity wasn't liking the generic collection.
-        getCurrentAssociationsCollection().removeAll(getItemsToRemove());
-        for (T item : getItemsToRemove()) {
-            getAnnotationCollectionToUpdate(item).remove(getItem());
+    @SkipValidation
+    public String edit() {
+        Protocol p = getCurrentProtocol();
+        if (p != null) {
+            setProtocolType(p.getType());
+            setProtocol(p);
         }
+        initForm();
+        return super.edit();
+    }
 
-        getCurrentAssociationsCollection().addAll(getItemsToAssociate());
-        for (T item : getItemsToAssociate()) {
-            getAnnotationCollectionToUpdate(item).add(getItem());
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Validations(fieldExpressions = @FieldExpressionValidator(message = "",
+            fieldName = "protocolType", key = "protocolType.protocol.mismatch",
+            expression = "(protocolType == null && protocol == null) || (protocolType == protocol.type)"))
+    public String save() {
+        AbstractBioMaterial bioMaterial = (AbstractBioMaterial) getItem();
+        if (getProtocol() != null && !getProtocol().equals(getCurrentProtocol())) {
+            ProtocolApplication protocolApplication = new ProtocolApplication();
+            if (getCurrentProtocol() != null) {
+                protocolApplication = bioMaterial.getProtocolApplications().iterator().next();
+            }
+            protocolApplication.setBioMaterial(bioMaterial);
+            protocolApplication.setProtocol(getProtocol());
+            bioMaterial.getProtocolApplications().add(protocolApplication);
+        } else if (getProtocol() == null && getCurrentProtocol() != null) {
+            addOrphan(bioMaterial.getProtocolApplications().iterator().next());
+            bioMaterial.getProtocolApplications().clear();
         }
         return super.save();
     }
 
     /**
+     * Retrieve the XML protocol list.
+     * @return the string
+     */
+    @SkipValidation
+    public String retrieveXmlProtocolList() {
+        setProtocols(ActionHelper.getVocabularyService().getProtocolByProtocolType(getProtocolType()));
+        return "xmlProtocolList";
+    }
+
+    /**
+     * get the list of protocols in an xml stream.
+     * @return the input stream.
+     * @throws IllegalAccessException on error
+     * @throws NoSuchMethodException on error
+     * @throws InvocationTargetException on error
+     * @throws UnsupportedEncodingException on error
+     */
+    public InputStream getXmlProtocolList() throws IllegalAccessException, NoSuchMethodException,
+        InvocationTargetException, UnsupportedEncodingException {
+        AjaxXmlBuilder xmlBuilder = new AjaxXmlBuilder().addItems(this.protocols, "name", "id");
+        return new ByteArrayInputStream(xmlBuilder.toString().getBytes("UTF-8"));
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
-    public String delete() {
-        addOrphan(getItem());
-        handleDelete();
-        return super.delete();
-    }
-
-    /**
-     * Action to search for associated annotations.
-     * @return the string matching the result to follow
-     */
-    @SkipValidation
-    public String searchForAssociationValues() {
-        if (getAssociatedValueName() ==  null) {
-            setAssociatedValueName("");
+    public void validate() {
+        super.validate();
+        if (hasErrors()) {
+            initForm();
         }
-        Collection<T> possibleValues = getGenericDataService().filterCollection(getPossibleAssociationsCollection(),
-                "name", getAssociatedValueName());
-        setUnassociatedValues(possibleValues);
-        return "associationValues";
     }
 
     /**
-     * Gets the set of initialSavedAssociations.
-     * @return the set of items.
+     * @return the protocolType
      */
-    public Collection getInitialSavedAssociations() {
-        return CollectionUtils.subtract(getCurrentAssociationsCollection(), getItemsToRemove());
+    public Term getProtocolType() {
+        return this.protocolType;
     }
 
     /**
-     * does nothing, here to conform to java bean rules for the jsp.
-     * @param c the param that will be ignored
+     * @param protocolType the protocolType to set
      */
-    public void setInitialSavedAssociations(Collection c) {
-        // here to conform to java bean rules for jsp
+    public void setProtocolType(Term protocolType) {
+        this.protocolType = protocolType;
     }
 
     /**
-     * Return the collection to filter when searching for associated values.
-     * @return the collection to filter
+     * @return the protocol
      */
-    protected abstract Collection<T> getPossibleAssociationsCollection();
-
-    /**
-     * Retrieve the collection that contains the current Associations.
-     * @return the collection of the current associations.
-     */
-    public abstract Collection<T> getCurrentAssociationsCollection();
-
-    /**
-     * MEthod to get the collection of annotations on the association to update when changes are persisted.
-     * @param item the item to retrieve the collection from.
-     * @return the collection to update
-     */
-    public abstract Collection getAnnotationCollectionToUpdate(T item);
-
-    /**
-     * Handles deletion of the current item.  Implementations should remove the current T
-     * from the left association class.
-     */
-    protected abstract void handleDelete();
-
-    /**
-     * @return the itemsToAssociate
-     */
-    public abstract List<T> getItemsToAssociate();
-
-    /**
-     * @return the itemsToRemove
-     */
-    public abstract List<T> getItemsToRemove();
-
-
-    /**
-     * @return the associatedValueName
-     */
-    public String getAssociatedValueName() {
-        return this.associatedValueName;
+    public Protocol getProtocol() {
+        return this.protocol;
     }
 
     /**
-     * @param associatedValueName the associatedValueName to set
+     * @param protocol the protocol to set
      */
-    public void setAssociatedValueName(String associatedValueName) {
-        this.associatedValueName = associatedValueName;
+    public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
     }
 
     /**
-     * @return the unassociatedValues
+     * @return the protocolTypes
      */
-    public Collection<T> getUnassociatedValues() {
-        return this.unassociatedValues;
+    public Set<Term> getProtocolTypes() {
+        return this.protocolTypes;
     }
 
     /**
-     * @param unassociatedValues the unassociatedValues to set
+     * @param protocolTypes the protocolTypes to set
      */
-    public void setUnassociatedValues(Collection<T> unassociatedValues) {
-        this.unassociatedValues = unassociatedValues;
+    public void setProtocolTypes(Set<Term> protocolTypes) {
+        this.protocolTypes = protocolTypes;
+    }
+
+    /**
+     * @return the protocols
+     */
+    public List<Protocol> getProtocols() {
+        return this.protocols;
+    }
+
+    /**
+     * @param protocols the protocols to set
+     */
+    public void setProtocols(List<Protocol> protocols) {
+        this.protocols = protocols;
+    }
+
+    /**
+     * The current protocol on the selected item.
+     * @return the protocol
+     */
+    private Protocol getCurrentProtocol() {
+        if (getItem() instanceof AbstractBioMaterial) {
+            AbstractBioMaterial bioMaterial = (AbstractBioMaterial) getItem();
+            for (ProtocolApplication protocolApplication : bioMaterial.getProtocolApplications()) {
+                return protocolApplication.getProtocol();
+            }
+        }
+        return null;
     }
 }

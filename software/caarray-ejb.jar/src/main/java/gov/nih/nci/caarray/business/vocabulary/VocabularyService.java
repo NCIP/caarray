@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.business.vocabulary;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -213,4 +214,11 @@ public interface VocabularyService {
      * @return the list of terms
      */
     List<Term> getDiseaseStatesForExperiment(Experiment experiment);
+
+    /**
+     * Get the list of protocols with the given type.
+     * @param type the type.
+     * @return the list of protocols.
+     */
+    List<Protocol> getProtocolByProtocolType(Term type);
 }

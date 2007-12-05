@@ -156,7 +156,12 @@ public enum ExperimentOntologyCategory {
     /**
      * ComplextAction category, used for experimental factors.
      */
-    COMPLEX_ACTION("ComplexAction");
+    COMPLEX_ACTION("ComplexAction"),
+
+    /**
+     * ProtocolType category, used for protocol types.
+     */
+    PROTOCOL_TYPE("ExperimentalProtocolType");
 
     private final String categoryName;
 

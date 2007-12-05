@@ -31,7 +31,7 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 @Validation
 public class ProjectTabAction extends AbstractBaseProjectAction {
     private static final long serialVersionUID = 1L;
-    private PersistentObject orphan;
+    private final List<PersistentObject> orphans = new ArrayList<PersistentObject>();;
 
     /**
      * load a given tab in the submit experiment workflow.
@@ -64,7 +64,8 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
             getExperiment().getExperimentContacts().add(pi);
         }
         try {
-            getProjectManagementService().saveProject(getProject(), this.orphan);
+            getProjectManagementService().saveProject(getProject(),
+                    this.orphans.toArray(new PersistentObject[this.orphans.size()]));
             List<String> args = new ArrayList<String>();
             args.add(getProject().getExperiment().getTitle());
             ActionHelper.saveMessage(getText("project.saved", args));
@@ -81,7 +82,7 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
     /**
      * @param orphan object orphaned during this operation
      */
-    public void setOrphan(PersistentObject orphan) {
-        this.orphan = orphan;
+    public void addOrphan(PersistentObject orphan) {
+        this.orphans.add(orphan);
     }
 }

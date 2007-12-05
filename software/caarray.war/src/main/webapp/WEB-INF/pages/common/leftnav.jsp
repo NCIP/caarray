@@ -5,20 +5,21 @@
         <c:when test="${pageContext.request.remoteUser != null}">
             <div class="navheader">Welcome to caArray</div>
             <ul class="caarraymenu">
-            	<li class="liheader">Home</li>
-             	<li><a href="<c:url value="/home.action" />">Browse</a></li>
+              <li class="liheader">Home</li>
+               <li><a href="<c:url value="/home.action" />">Browse</a></li>
                 <li class="liheader">Experiment Management</li>
                 <li><a href="<c:url value="/protected/project/workspace.action" />">My Experiment Workspace</a></li>
                 <li><a href="<c:url value="/protected/project/create.action" />">Create/Propose Experiment</a></li>
 
                 <li class="liheader">User Management</li>
                 <c:if test="${isSystemAdministrator}">
-	                <li><a href="<c:out value='${initParam["uptUrl"]}'/>" target="_blank">Manage Users</a></li>
+                  <li><a href="<c:out value='${initParam["uptUrl"]}'/>" target="_blank">Manage Users</a></li>
                 </c:if>
                 <li><a href="<c:url value="/protected/collaborators/listGroups.action" />">Manage Collaboration Groups</a></li>
 
                 <li class="liheader">Curation</li>
                 <li><a href="<c:url value="/protected/arrayDesign/list.action" />">Manage Array Designs</a></li>
+                <li><a href="<c:url value="/protected/protocol/manage.action" />">Manage Protocols</a></li>
                 <li><a href="<c:url value="/protected/vocabulary/manage.action" />">Manage Vocabulary</a></li>
             </ul>
 

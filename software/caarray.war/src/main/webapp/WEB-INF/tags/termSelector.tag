@@ -13,6 +13,7 @@
 <%@ attribute name="returnInitialTab1" required="false" type="java.lang.String" %>
 <%@ attribute name="returnInitialTab2" required="false" type="java.lang.String" %>
 <%@ attribute name="returnInitialTab2Url" required="false" type="java.lang.String" %>
+<%@ attribute name="hideAddButton" required="false" type="java.lang.String" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="/struts-tags" prefix="s" %>
@@ -46,9 +47,11 @@
                             <c:param name="returnInitialTab2" value="${returnInitialTab2}" />
                             <c:param name="returnInitialTab2Url" value="${returnInitialTab2Url}" />
                         </c:url>
+                        <c:if test="${hideAddButton != 'true'}">
                         <span style="position: relative; left: 15px; margin-top: -24px; float: right;">
                             <caarray:linkButton actionClass="add" text="Add" url="${addTermUrl}" onclick="return TabUtils.confirmNavigateFromForm()"/>
                         </span>
+                        </c:if>
                     </div>
                     <div id="${baseId}AutocompleteDiv"></div>
                 </div>

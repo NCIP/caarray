@@ -13,10 +13,12 @@
         <caarray:annotationAssociationPicker baseId="extractPicker" entityName="LabeledExtract" associatedEntityName="Extract" itemId="${currentLabeledExtract.id}" tabIndex="3" />
         <caarray:termSelector baseId="materialType" category="<%= ExperimentOntologyCategory.MATERIAL_TYPE %>" termField="${currentLabeledExtract.materialType}"
             tabIndex="4" termFieldName="currentLabeledExtract.materialType" returnInitialTab1="annotations" returnInitialTab2="labeledExtracts" returnInitialTab2Url="${thisUrl}" />
+        <caarray:protocolSelector returnInitialTab1="annotations" returnInitialTab2="labeledExtracts" returnInitialTab2Url="${thisUrl}" tabIndex1="5" tabIndex2="6" />
         <caarray:annotationCharacteristics item="${currentSource}"/>
         <s:hidden name="currentLabeledExtract.id" />
         <s:hidden name="project.id" />
         <s:hidden name="editMode" />
         <input type="submit" class="enableEnterSubmit"/>
     </caarray:projectListTabItemForm>
+    <caarray:protocolSelectorAjaxInit />
 </caarray:tabPane>

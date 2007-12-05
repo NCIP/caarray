@@ -85,43 +85,47 @@ package gov.nih.nci.caarray.domain.protocol;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.security.Protectable;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import org.apache.commons.lang.builder.ToStringBuilder;
+
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.validator.Length;
+import org.hibernate.validator.NotNull;
 
-  /**
-
-   */
+/**
+ * Class representing a protocol.
+ * @author Scott Miller
+ */
 @Entity
-public class Protocol extends AbstractCaArrayEntity {
-    /**
-     * The serial version UID for serialization.
-     */
+public class Protocol extends AbstractCaArrayEntity implements Protectable {
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The contact String.
-     */
     private String contact;
+    private String description;
+    private String hardware;
+    private String name;
+    private String software;
+    private Term type;
+    private String url;
+    private Set<Parameter> parameters = new HashSet<Parameter>();
 
     /**
      * Gets the contact.
      *
      * @return the contact
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
     public String getContact() {
-        return contact;
+        return this.contact;
     }
 
     /**
@@ -132,19 +136,15 @@ public class Protocol extends AbstractCaArrayEntity {
     public void setContact(final String contactVal) {
         this.contact = contactVal;
     }
-    /**
-     * The description String.
-     */
-    private String description;
 
     /**
      * Gets the description.
      *
      * @return the description
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     /**
@@ -155,19 +155,15 @@ public class Protocol extends AbstractCaArrayEntity {
     public void setDescription(final String descriptionVal) {
         this.description = descriptionVal;
     }
-    /**
-     * The hardware String.
-     */
-    private String hardware;
 
     /**
      * Gets the hardware.
      *
      * @return the hardware
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
     public String getHardware() {
-        return hardware;
+        return this.hardware;
     }
 
     /**
@@ -178,19 +174,16 @@ public class Protocol extends AbstractCaArrayEntity {
     public void setHardware(final String hardwareVal) {
         this.hardware = hardwareVal;
     }
-    /**
-     * The name String.
-     */
-    private String name;
 
     /**
      * Gets the name.
      *
      * @return the name
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
+    @NotNull
     public String getName() {
-        return name;
+        return this.name;
     }
 
     /**
@@ -201,19 +194,15 @@ public class Protocol extends AbstractCaArrayEntity {
     public void setName(final String nameVal) {
         this.name = nameVal;
     }
-    /**
-     * The software String.
-     */
-    private String software;
 
     /**
      * Gets the software.
      *
      * @return the software
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
     public String getSoftware() {
-        return software;
+        return this.software;
     }
 
     /**
@@ -224,10 +213,6 @@ public class Protocol extends AbstractCaArrayEntity {
     public void setSoftware(final String softwareVal) {
         this.software = softwareVal;
     }
-    /**
-     * The type gov.nih.nci.caarray.domain.vocabulary.Term.
-     */
-    private Term type;
 
     /**
      * Gets the type.
@@ -237,8 +222,9 @@ public class Protocol extends AbstractCaArrayEntity {
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "PROTOCOL_TYPE_FK")
+    @NotNull
     public Term getType() {
-        return type;
+        return this.type;
     }
 
     /**
@@ -249,19 +235,15 @@ public class Protocol extends AbstractCaArrayEntity {
     public void setType(final Term typeVal) {
         this.type = typeVal;
     }
-    /**
-     * The url String.
-     */
-    private String url;
 
     /**
      * Gets the url.
      *
      * @return the url
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
     public String getUrl() {
-        return url;
+        return this.url;
     }
 
     /**
@@ -274,11 +256,6 @@ public class Protocol extends AbstractCaArrayEntity {
     }
 
     /**
-     * The parameters set.
-     */
-    private Set<Parameter> parameters = new HashSet<Parameter>();
-
-    /**
      * Gets the parameters.
      *
      * @return the parameters
@@ -286,7 +263,7 @@ public class Protocol extends AbstractCaArrayEntity {
     @OneToMany(mappedBy = "protocol", fetch = FetchType.LAZY)
     @Cascade(CascadeType.SAVE_UPDATE)
     public Set<Parameter> getParameters() {
-        return parameters;
+        return this.parameters;
     }
 
     /**
@@ -297,13 +274,5 @@ public class Protocol extends AbstractCaArrayEntity {
     @SuppressWarnings("unused")
     private void setParameters(final Set<Parameter> parametersVal) { // NOPMD
         this.parameters = parametersVal;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
     }
 }

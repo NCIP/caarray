@@ -123,6 +123,11 @@
                 <param name="inputName">arrayDesignsAsXml</param>
                 <param name="bufferSize">4096</param>
             </result>
+            <result name="xmlProtocolList" type="stream">
+                <param name="contentType">text/xml;charset=UTF-8</param>
+                <param name="inputName">xmlProtocolList</param>
+                <param name="bufferSize">4096</param>
+            </result>
         </action>
 
         <action name="ajax/project/listTab/*/*"
@@ -230,6 +235,16 @@
             <result name="input">/WEB-INF/pages/vocabulary/edit.jsp</result>
             <result name="success">/WEB-INF/pages/vocabulary/list.jsp</result>
             <result name="termAutoCompleterValues">/WEB-INF/pages/vocabulary/termAutoCompleterValues.jsp</result>
+            <result name="projectEdit">/WEB-INF/pages/vocabulary/reloadProject.jsp</result>
+        </action>
+
+        <action name="protocol/manage" class="gov.nih.nci.caarray.web.action.protocol.ProtocolManagementAction" method="manage">
+            <result name="success">/WEB-INF/pages/protocol/manage.jsp</result>
+        </action>
+
+        <action name="ajax/protocol/*" class="gov.nih.nci.caarray.web.action.protocol.ProtocolManagementAction" method="{1}">
+            <result name="input">/WEB-INF/pages/protocol/edit.jsp</result>
+            <result name="success">/WEB-INF/pages/protocol/list.jsp</result>
             <result name="projectEdit">/WEB-INF/pages/vocabulary/reloadProject.jsp</result>
         </action>
 
