@@ -124,6 +124,8 @@ public class VocabularyAction extends ActionSupport implements Preparable {
     private boolean createNewSource = false;
     private TermSource newSource;
 
+    private boolean editMode = false;
+
     /**
      * {@inheritDoc}
      */
@@ -182,6 +184,18 @@ public class VocabularyAction extends ActionSupport implements Preparable {
      */
     @SkipValidation
     public String edit() {
+        setEditMode(true);
+        setSources(ActionHelper.getVocabularyService().getAllSources());
+        return INPUT;
+    }
+
+    /**
+     * Action for loading a term to view.
+     *
+     * @return the string indicating which result to follow.
+     */
+    public String details() {
+        setEditMode(false);
         setSources(ActionHelper.getVocabularyService().getAllSources());
         return INPUT;
     }
@@ -391,5 +405,19 @@ public class VocabularyAction extends ActionSupport implements Preparable {
      */
     public void setNewSource(TermSource newSource) {
         this.newSource = newSource;
+    }
+
+    /**
+     * @return the editMode
+     */
+    public boolean isEditMode() {
+        return this.editMode;
+    }
+
+    /**
+     * @param editMode the editMode to set
+     */
+    public void setEditMode(boolean editMode) {
+        this.editMode = editMode;
     }
 }

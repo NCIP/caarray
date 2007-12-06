@@ -21,7 +21,15 @@
             <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${terms}"
                 requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="category">
                 <caarray:displayTagProperties/>
-                <display:column title="Value" property="value" sortable="true" />
+                <display:column title="Value" sortProperty="value" sortable="true">
+                    <c:url value="/protected/ajax/vocabulary/details.action" var="viewTermUrl">
+                        <c:param name="category" value="${category}" />
+                        <c:param name="currentTerm.id" value="${row.id}" />
+                    </c:url>
+                    <ajax:anchors target="tabboxwrapper">
+                        <a href="${viewTermUrl}">${row.value}</a>
+                    </ajax:anchors>
+                </display:column>
                 <display:column title="Description" property="description" sortable="true" />
                 <display:column title="Source" property="source.name" sortable="true" />
                  <display:column titleKey="button.edit" class="centered" headerClass="centered">

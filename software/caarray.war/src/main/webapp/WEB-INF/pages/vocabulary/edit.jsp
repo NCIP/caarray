@@ -7,6 +7,9 @@
              $('termForm_currentTerm_source').selectedIndex = 0;
     }
 </script>
+<c:if test="${!editMode}">
+    <c:set var="theme" value="readonly" scope="request"/>
+</c:if>
 <caarray:tabPane>
     <div class="boxpad2">
         <h3>Manage <fmt:message key="vocabulary.tabs.${category}" /></h3>
@@ -18,8 +21,10 @@
             <s:textfield key="currentTerm.value" required="true" size="80" tabindex="1"/>
             <s:textfield key="currentTerm.description" size="80" tabindex="2"/>
             <tr><th colspan="2">Source</th></tr>
+            <c:if test="${editMode}">
             <s:radio name="createNewSource" label="Create a new Source?" list="#{true: 'Yes', false: 'No'}"
                 tabindex="3" onclick="displayCorrectSourceEditingUi();" />
+            </c:if>
             <tbody id="selectSource" <s:if test="createNewSource == true">style="display: none"</s:if>>
                 <s:select list="sources" key="currentTerm.source" headerKey="" headerValue="-- Select A Source --"
                     listKey="id" listValue="name" value="currentTerm.source.id" tabindex="4" required="true" />
@@ -39,22 +44,40 @@
             <s:hidden name="returnInitialTab2" />
             <s:hidden name="returnInitialTab2Url" />
             <s:hidden name="returnToProjectOnCompletion" />
+            <s:hidden name="editMode" />
             <input type="submit" class="enableEnterSubmit"/>
         </s:form>
         <caarray:actions>
             <s:if test="returnToProjectOnCompletion && returnProjectId == null">
                 <c:url value="/protected/project/create.action" var="returnUrl" />
+                <caarray:action actionClass="cancel" text="Cancel" onclick="TabUtils.submitTabFormToUrl('termForm', '${returnUrl}','tabboxwrapper'); return false;" tabindex="10" />
             </s:if>
             <s:elseif test="returnToProjectOnCompletion">
                 <c:url value="/protected/ajax/vocabulary/projectEdit.action" var="returnUrl" />
+                <caarray:action actionClass="cancel" text="Cancel" onclick="TabUtils.submitTabFormToUrl('termForm', '${returnUrl}','tabboxwrapper'); return false;" tabindex="10" />
             </s:elseif>
             <s:else>
                 <c:url value="/protected/ajax/vocabulary/list.action" var="returnUrl">
                     <c:param name="category" value="${category}" />
                 </c:url>
+                <ajax:anchors target="tabboxwrapper">
+                    <caarray:action actionClass="cancel" text="Cancel" url="${returnUrl}" tabindex="10" />
+                </ajax:anchors>
             </s:else>
-            <caarray:action actionClass="cancel" text="Cancel" onclick="TabUtils.submitTabFormToUrl('termForm', '${returnUrl}','tabboxwrapper'); return false;" tabindex="10" />
-            <caarray:action actionClass="save" text="Save" onclick="TabUtils.submitTabForm('termForm', 'tabboxwrapper'); return false;" tabindex="11" />
+            <c:choose>
+                <c:when test="${editMode}">
+                    <caarray:action actionClass="save" text="Save" onclick="TabUtils.submitTabForm('termForm', 'tabboxwrapper'); return false;" tabindex="11" />
+                </c:when>
+                <c:when test="${caarrayfn:canWrite(protocol, caarrayfn:currentUser())}">
+                    <c:url value="/protected/ajax/vocabulary/edit.action" var="actionUrl">
+                        <c:param name="category" value="${category}" />
+                        <c:param name="currentTerm.id" value="${currentTerm.id}" />
+                    </c:url>
+                    <ajax:anchors target="tabboxwrapper">
+                        <caarray:action actionClass="edit" text="Edit" url="${actionUrl}" />
+                    </ajax:anchors>
+                </c:when>
+            </c:choose>
         </caarray:actions>
     </div>
 </caarray:tabPane>

@@ -1,5 +1,8 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 <%@page import="gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory"%>
+<c:if test="${!editMode}">
+    <c:set var="theme" value="readonly" scope="request"/>
+</c:if>
 <caarray:tabPane>
     <div class="boxpad2">
         <h3><fmt:message key="protocols.mamage" /></h3>
@@ -21,6 +24,7 @@
             <s:hidden name="returnInitialTab2" />
             <s:hidden name="returnInitialTab2Url" />
             <s:hidden name="returnToProjectOnCompletion" />
+            <s:hidden name="editMode" />
             <input type="submit" class="enableEnterSubmit"/>
         </s:form>
         <caarray:actions>
@@ -34,7 +38,19 @@
                 <c:url value="/protected/ajax/protocol/list.action" var="returnUrl" />
             </s:else>
             <caarray:action actionClass="cancel" text="Cancel" onclick="TabUtils.submitTabFormToUrl('protocolForm', '${returnUrl}','tabboxwrapper'); return false;" tabindex="10" />
-            <caarray:action actionClass="save" text="Save" onclick="TabUtils.submitTabForm('protocolForm', 'tabboxwrapper'); return false;" tabindex="9" />
+            <c:choose>
+                <c:when test="${editMode}">
+                    <caarray:action actionClass="save" text="Save" onclick="TabUtils.submitTabForm('protocolForm', 'tabboxwrapper'); return false;" tabindex="9" />
+                </c:when>
+                <c:when test="${caarrayfn:canWrite(protocol, caarrayfn:currentUser())}">
+                    <c:url value="/protected/ajax/protocol/edit.action" var="actionUrl">
+                        <c:param name="protocol.id" value="${protocol.id}" />
+                    </c:url>
+                    <ajax:anchors target="tabboxwrapper">
+                        <caarray:action actionClass="edit" text="Edit" url="${actionUrl}" tabindex="9" />
+                    </ajax:anchors>
+                </c:when>
+            </c:choose>
         </caarray:actions>
     </div>
 </caarray:tabPane>

@@ -111,7 +111,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
     private static final long serialVersionUID = 1L;
     private List<Protocol> protocols;
     private Protocol protocol;
-    private boolean editMode = true;
+    private boolean editMode = false;
 
     private boolean returnToProjectOnCompletion = false;
     private Long returnProjectId;
@@ -151,6 +151,16 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
      */
     @SkipValidation
     public String edit() {
+        setEditMode(true);
+        return INPUT;
+    }
+
+    /**
+     * Action for loading a protocol to view.
+     * @return the string indicating which result to follow.
+     */
+    public String details() {
+        setEditMode(false);
         return INPUT;
     }
 
