@@ -114,7 +114,7 @@ import org.apache.jmeter.samplers.SampleResult;
  * A client downloading a full data set corresponding to one data file through CaArray's Remote Java API.
  */
 
-public class FullDataSetDownloadClient extends CaArrayJmeterSampler implements JavaSamplerClient {
+public class OneFileDataSetDownloadClient extends CaArrayJmeterSampler implements JavaSamplerClient {
     private static final String EXPERIMENT_NAME_PARAM = "experimentName";
     private static final String DEFAULT_EXPERIMENT_NAME = "Affymetrix Mouse with Data 01";
 
@@ -205,7 +205,8 @@ public class FullDataSetDownloadClient extends CaArrayJmeterSampler implements J
                         results.sampleEnd();
                         results.setSuccessful(true);
                         results.setResponseCodeOK();
-                        results.setResponseMessage("Retrieved " + dataSet.getQuantitationTypes().size()
+                        results.setResponseMessage("Retrieved DataSet ID=" + dataSet.getId() + ", "
+                                + dataSet.getQuantitationTypes().size()
                                 + " quantitation types and " + numValuesRetrieved + " values.");
                     } else {
                         results.setSuccessful(false);
@@ -261,7 +262,11 @@ public class FullDataSetDownloadClient extends CaArrayJmeterSampler implements J
             return null;
         }
         RawArrayData populatedRawArrayData = service.search(rawArrayData).get(0);
-        return populatedRawArrayData.getDataSet();
+        DataSet dataSet = populatedRawArrayData.getDataSet();
+        if (dataSet == null) {
+            return null;
+        }
+        return service.search(dataSet).get(0);
     }
 
     /**
