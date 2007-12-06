@@ -86,6 +86,12 @@ import java.io.File;
 
 public class MageTabDataFiles {
 
+    public static final File MISSING_TERMSOURCE_IDF =
+        new File(MageTabDataFiles.class.getResource("/magetab/baddata/missing_term_source.idf").getFile());
+
+    public static final File MISSING_TERMSOURCE_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/baddata/missing_term_source.sdrf").getFile());
+
     public static final File SPECIFICATION_EXAMPLE_IDF =
         new File(MageTabDataFiles.class.getResource("/magetab/specification/e-mexp-428_v1.0.idf").getFile());
 
