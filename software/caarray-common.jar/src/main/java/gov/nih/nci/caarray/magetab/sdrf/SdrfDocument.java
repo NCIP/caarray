@@ -491,6 +491,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleParameterValue(String value) {
         ParameterValue parameterValue = new ParameterValue();
         parameterValue.setValue(value);
+        currentUnitable = parameterValue;
         currentProtocolApp.getParameterValues().add(parameterValue);
     }
 
