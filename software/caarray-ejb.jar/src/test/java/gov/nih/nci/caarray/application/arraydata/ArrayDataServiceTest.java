@@ -369,6 +369,7 @@ public class ArrayDataServiceTest {
         assertNull(celData.getDataSet());
         arrayDataService.importData(celData.getDataFile(), false);
         assertEquals(FileStatus.IMPORTED, celData.getDataFile().getFileStatus());
+        assertEquals(AffymetrixArrayDataFiles.TEST3_CEL.getName(), celData.getName());
         assertNotNull(celData.getDataSet());
         DataSet dataSet = celData.getDataSet();
         assertNotNull(dataSet.getHybridizationDataList());

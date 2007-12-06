@@ -105,6 +105,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Handles import of array data by creating the associated <code>DataSet</code> and
  * <code>AbstractDataColumn</code> instances.
@@ -129,7 +131,10 @@ abstract class AbstractDataSetImporter {
         addHybridizationDatas();
         addColumns();
         getArrayData().getDataFile().setFileStatus(FileStatus.IMPORTED);
-        return getArrayData();
+        if (StringUtils.isBlank(getArrayData().getName())) {
+            getArrayData().setName(getCaArrayFile().getName());
+        }
+        return getArrayData(); 
     }
 
     private void lookupOrCreateArrayData(boolean createAnnnotation) {
