@@ -358,7 +358,7 @@ var TabUtils = {
     },
 
     confirmNavigateFromForm : function(confirmMessage) {
-        confirmMessage = confirmMessage || 'There are unsaved changed in your form, are you sure you want to continue?';
+        confirmMessage = confirmMessage || 'There are unsaved changes in your form, are you sure you want to continue?';
         if (TabUtils.hasFormChanges()) {
             if (!confirm(confirmMessage)) {
                 return false;

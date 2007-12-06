@@ -275,9 +275,10 @@ public class SecurityInterceptor extends EmptyInterceptor {
         
         // punt any access profiles who belong to deleted projects
         if (PROFILES.get() != null && DELETEDOBJS.get() != null) {
-            for (AccessProfile ap : PROFILES.get()) {
-                if (DELETEDOBJS.get().contains(ap.getProject())) {
-                    PROFILES.get().remove(ap);
+            for (Iterator<AccessProfile> it = PROFILES.get().iterator(); it.hasNext();) {
+                AccessProfile ap = it.next();
+                if (DELETEDOBJS.get().contains(ap.getProject()) || DELETEDOBJS.get().contains(ap.getGroup())) {
+                    it.remove();
                 }
             }
         }

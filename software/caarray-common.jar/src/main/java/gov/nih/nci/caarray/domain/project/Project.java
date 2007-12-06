@@ -469,6 +469,16 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     }
 
     /**
+     * remove the access profile for given collaborator group from this project.
+     *
+     * @param group to remove profile for
+     * @return the profile previously associated with given group, or null if there weren't any
+     */
+    public AccessProfile removeGroupProfile(CollaboratorGroup group) {
+        return this.groupProfiles.remove(group);
+    }
+
+    /**
      * @return all the access profiles associated with this project (public, host, and the various group ones)
      */
     @Transient

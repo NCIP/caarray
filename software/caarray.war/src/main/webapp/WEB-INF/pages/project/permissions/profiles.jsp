@@ -45,7 +45,7 @@
 
                 <c:if test="${project.permissionsEditingAllowed}">
                     <div style="padding-bottom: 20px; min-height: 500px; margin-top: 10px">
-                            <div class="leftsidetable" style="width: 350px; float: left">
+                        <div class="leftsidetable" style="width: 350px; float: left">
                             <table class="searchresults permissiontable" cellspacing="0">
                                 <tr>
                                     <th>Who May Access this Experiment</th>

@@ -136,8 +136,13 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
                     String.format("%s cannot delete group %s, because they are not the group owner.",
                                   UsernameHolder.getUser(), group.getGroup().getGroupName()));
         }
-        getGenericDataService().delete(group);
+
         AuthorizationManager am = SecurityUtils.getAuthorizationManager();
+        for (AccessProfile ap : group.getAccessProfiles()) {
+            ap.getProject().removeGroupProfile(group);
+            getGenericDataService().delete(ap);            
+        }
+        getGenericDataService().delete(group);
         am.removeGroup(group.getGroup().getGroupId().toString());
 
         LogUtil.logSubsystemExit(LOG);

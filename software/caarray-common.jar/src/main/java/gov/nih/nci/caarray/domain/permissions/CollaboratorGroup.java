@@ -88,11 +88,15 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
@@ -115,6 +119,7 @@ public class CollaboratorGroup implements PersistentObject, Protectable {
     private Long id;
     private Group group;
     private User owner;
+    private Set<AccessProfile> accessProfiles = new HashSet<AccessProfile>();
 
     /**
      * @param group CSM group
@@ -200,4 +205,20 @@ public class CollaboratorGroup implements PersistentObject, Protectable {
     private void setOwnerId(long ownerId) { // NOPMD
         owner = (User) HibernateUtil.getCurrentSession().load(User.class, ownerId);
     }
+
+    /**
+     * @return the access profiles that have been created for this group
+     */
+    @OneToMany(mappedBy = "group")
+    public Set<AccessProfile> getAccessProfiles() {
+        return accessProfiles;
+    }
+
+    /**
+     * @param accessProfiles the accessProfiles to set
+     */
+    @SuppressWarnings("unused")
+    private void setAccessProfiles(Set<AccessProfile> accessProfiles) { //NOPMD
+        this.accessProfiles = accessProfiles;
+    }    
 }
