@@ -190,7 +190,8 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             result.addMessage(Type.ERROR, "Array design file type was unrecognized");
         } else if (!designFile.getFileType().isArrayDesign()) {
             result = new FileValidationResult(fileAccessService.getFile(designFile));
-            result.addMessage(Type.ERROR, "File type " + designFile.getFileType().getName() + " was unrecognized");
+            result.addMessage(Type.ERROR, "File type " + designFile.getFileType().getName() 
+                    + " is not an array design type.");
         } else {
             result = getHandler(designFile, fileAccessService).validate();
         }
