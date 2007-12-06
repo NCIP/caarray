@@ -123,7 +123,7 @@ final class TermSourceTranslator extends AbstractTranslator {
     }
 
     private gov.nih.nci.caarray.domain.vocabulary.TermSource getExistingSource(TermSource termSource) {
-        return vocabularyService.getSource(termSource.getName());
+        return this.vocabularyService.getSource(termSource.getName());
     }
 
     private gov.nih.nci.caarray.domain.vocabulary.TermSource createSource(TermSource termSource) {

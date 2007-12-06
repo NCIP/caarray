@@ -117,24 +117,20 @@ final class TermTranslator extends AbstractTranslator {
     }
 
     private void translateTerm(OntologyTerm ontologyTerm) {
-        String sourceName;
-        if (ontologyTerm.getTermSource() == null || StringUtils.isEmpty(ontologyTerm.getTermSource().getName())) {
-            // TODO Create enum to hold known term sources (MGED and local caArray)
-            sourceName = "caarray";
-        } else {
-            sourceName = ontologyTerm.getTermSource().getName();
-        }
-        TermSource source = getOrCreateSource(sourceName);
+        TermSource source = getSource(ontologyTerm.getTermSource());
         Category category = getOrCreateCategory(source, ontologyTerm.getCategory());
         Term term = getOrCreateTerm(source, category, ontologyTerm.getValue());
         getTranslationResult().addTerm(ontologyTerm, term);
     }
 
-    private TermSource getOrCreateSource(String name) {
-        TermSource source = this.service.getSource(name);
+    private TermSource getSource(gov.nih.nci.caarray.magetab.TermSource mageTabSource) {
+        if (mageTabSource == null || StringUtils.isBlank(mageTabSource.getName())) {
+            // TODO Create enum to hold known term sources (MGED and local caArray)
+            return this.service.getSource("caarray");
+        }
+        TermSource source = getTranslationResult().getSource(mageTabSource);
         if (source == null) {
-            source = new TermSource();
-            source.setName(name);
+            source = this.service.getSource(mageTabSource.getName());
         }
         return source;
     }
