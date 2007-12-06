@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
+import gov.nih.nci.caarray.services.file.FileRetrievalService;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.jmeter.base.CaArrayJmeterSampler;
 
@@ -155,21 +156,18 @@ public class FileDownloadClient extends CaArrayJmeterSampler implements JavaSamp
                 if (hybridization != null) {
                     CaArrayFile dataFile = getRawDataFile(searchService, hybridization);
                     if (dataFile != null) {
-                        // Section commented out because FileRetrievalService is not yet available/fully-implemented.
-                        //FileRetrievalService fileRetrievalService = server.getFileRetrievalService();
-                        //results.sampleStart();
-                        //byte[] byteArray = fileRetrievalService.readFile(dataFile);
-                        //if (byteArray != null) {
-                            //results.setSuccessful(true);
-                            //results.setResponseCodeOK();
-                            //results.setResponseMessage("Retrieved " + byteArray.length + " bytes.");
-                        //} else {
-                            //results.setSuccessful(false);
-                            //results.setResponseCode("Error: Retrieved null byte array.");
-                        //}
-                        //results.sampleEnd();
-                        results.setSuccessful(false);
-                        results.setResponseCode("FileRetrievalService not yet implemented.");
+                        FileRetrievalService fileRetrievalService = server.getFileRetrievalService();
+                        results.sampleStart();
+                        byte[] byteArray = fileRetrievalService.readFile(dataFile);
+                        if (byteArray != null) {
+                            results.setSuccessful(true);
+                            results.setResponseCodeOK();
+                            results.setResponseMessage("Retrieved " + byteArray.length + " bytes.");
+                        } else {
+                            results.setSuccessful(false);
+                           results.setResponseCode("Error: Retrieved null byte array.");
+                        }
+                        results.sampleEnd();
                     } else {
                         results.setSuccessful(false);
                         results.setResponseCode("Error: Retrieved null data file.");
