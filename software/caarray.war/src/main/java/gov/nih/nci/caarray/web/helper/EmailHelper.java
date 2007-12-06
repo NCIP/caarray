@@ -94,6 +94,7 @@ import java.util.Collections;
 import javax.mail.MessagingException;
 
 import org.apache.commons.configuration.DataConfiguration;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author John Hedden (Amentra, Inc.)
@@ -168,6 +169,8 @@ public final class EmailHelper {
         Person pi = (Person) project.getExperiment().getPrimaryInvestigator().getContact();
         String mailBody = MessageFormat.format(mailBodyPattern, pi.getName(), project.getExperiment().getTitle());
 
-        EmailUtil.sendMail(Collections.singletonList(pi.getEmail()), from, subject, mailBody);
+        if (!StringUtils.isEmpty(pi.getEmail())) {
+            EmailUtil.sendMail(Collections.singletonList(pi.getEmail()), from, subject, mailBody);            
+        }
     }    
 }
