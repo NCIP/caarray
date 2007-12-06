@@ -95,6 +95,7 @@ import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
+import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
@@ -258,7 +259,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -418,6 +419,12 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         to.setCellType(from.getCellType());
         to.setDiseaseState(from.getDiseaseState());
         to.setOrganism(from.getOrganism());
+        for (ProtocolApplication pa : from.getProtocolApplications()) {
+            ProtocolApplication newPa = new ProtocolApplication();
+            newPa.setBioMaterial(to);
+            newPa.setProtocol(pa.getProtocol());
+            to.getProtocolApplications().add(newPa);
+        }
     }
 
     /**
