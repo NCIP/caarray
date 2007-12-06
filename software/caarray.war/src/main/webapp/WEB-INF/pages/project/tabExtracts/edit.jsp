@@ -14,7 +14,7 @@
         <caarray:termSelector baseId="materialType" category="<%= ExperimentOntologyCategory.MATERIAL_TYPE %>" termField="${currentExtract.materialType}"
             tabIndex="4" termFieldName="currentExtract.materialType" returnInitialTab1="annotations" returnInitialTab2="extracts" returnInitialTab2Url="${thisUrl}" />
         <caarray:protocolSelector returnInitialTab1="annotations" returnInitialTab2="extracts" returnInitialTab2Url="${thisUrl}" tabIndex1="5" tabIndex2="6" />
-        <caarray:annotationCharacteristics item="${currentSource}"/>
+        <caarray:annotationCharacteristics item="${currentExtract}"/>
         <s:hidden name="currentExtract.id" />
         <s:hidden name="project.id" />
         <s:hidden name="editMode" />

@@ -264,7 +264,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
      * The current protocol on the selected item.
      * @return the protocol
      */
-    private Protocol getCurrentProtocol() {
+    public Protocol getCurrentProtocol() {
         if (getItem() instanceof AbstractBioMaterial) {
             AbstractBioMaterial bioMaterial = (AbstractBioMaterial) getItem();
             for (ProtocolApplication protocolApplication : bioMaterial.getProtocolApplications()) {
@@ -272,5 +272,13 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
             }
         }
         return null;
+    }
+
+    /**
+     * does nothing, only here so it can be referenced in the jsp as a bean property.
+     * @param p ignored
+     */
+    public void setCurrentProtocol(Protocol p) {
+        // does nothing, only here so it can be referenced in the jsp as a bean property
     }
 }

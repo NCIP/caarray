@@ -7,6 +7,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="/struts-tags" prefix="s" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="caarray" %>
+<s:if test="${editMode}">
 <c:url var="addProtocolUrl" value="/protected/protocol/manage.action" >
     <c:param name="startWithEdit" value="true" />
     <c:param name="returnProjectId" value="${project.id}" />
@@ -25,3 +26,7 @@
         <caarray:linkButton style="margin-left: 305px; margin-top: -20px;" actionClass="add" text="Add" url="${addProtocolUrl}" onclick="return TabUtils.confirmNavigateFromForm()"/>
     </s:param>
 </s:select>
+</s:if>
+<s:else>
+    <s:textfield name="currentProtocol.name" key="protocol" />
+</s:else>
