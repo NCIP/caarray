@@ -98,6 +98,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.FactorValue;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
@@ -111,6 +112,7 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
 import gov.nih.nci.caarray.domain.sample.ValueBasedCharacteristic;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode;
@@ -276,8 +278,24 @@ final class SdrfTranslator extends AbstractTranslator {
         for (Characteristic sdrfCharacteristic : sdrfBiomaterial.getCharacteristics()) {
             AbstractCharacteristic characteristic =
                 translateCharacteristic(sdrfCharacteristic);
-            bioMaterial.getCharacteristics().add(characteristic);
-            characteristic.setBioMaterial(bioMaterial);
+            if (characteristic instanceof TermBasedCharacteristic) {
+                TermBasedCharacteristic tbCharacteristic = (TermBasedCharacteristic) characteristic;
+                Term term = tbCharacteristic.getTerm();
+                String category = term.getCategory().getName();
+                if (ExperimentOntologyCategory.ORGANISM_PART.getCategoryName().equals(category)) {
+                    bioMaterial.setTissueSite(term);
+                } else if (ExperimentOntologyCategory.CELL_TYPE.getCategoryName().equals(category)) {
+                    bioMaterial.setCellType(term);
+                } else if (ExperimentOntologyCategory.DISEASE_STATE.getCategoryName().equals(category)) {
+                    bioMaterial.setDiseaseState(term);
+                } else {
+                    bioMaterial.getCharacteristics().add(characteristic);                    
+                    characteristic.setBioMaterial(bioMaterial);
+                }
+            } else {
+                bioMaterial.getCharacteristics().add(characteristic);                                    
+                characteristic.setBioMaterial(bioMaterial);
+            }
         }
     }
 
