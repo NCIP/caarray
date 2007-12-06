@@ -243,25 +243,6 @@ public class ArrayDesignServiceTest {
         this.arrayDesignService.importDesign(design);
     }
 
-    @Test
-    public void testGetDesignDetails_IlluminaHumanWG6() {
-        CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
-        ArrayDesign arrayDesign = this.arrayDesignService.importDesign(designFile);
-        assertEquals("Human_WG-6", arrayDesign.getName());
-        ArrayDesignDetails details = this.arrayDesignService.getDesignDetails(arrayDesign);
-        assertNotNull(details);
-        assertEquals(arrayDesign.getNumberOfFeatures(), details.getLogicalProbes().size());
-    }
-
-    @Test
-    public void testGetDesignDetails_AffymetrixTest3() {
-        CaArrayFile caArrayFile = getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF);
-        ArrayDesign arrayDesign = this.arrayDesignService.importDesign(caArrayFile);
-        ArrayDesignDetails details = this.arrayDesignService.getDesignDetails(arrayDesign);
-        assertNotNull(details);
-        assertEquals(15876, details.getFeatures().size());
-    }
-
     private CaArrayFile getAffymetrixCaArrayFile(File file) {
         return getCaArrayFile(file, FileType.AFFYMETRIX_CDF);
     }

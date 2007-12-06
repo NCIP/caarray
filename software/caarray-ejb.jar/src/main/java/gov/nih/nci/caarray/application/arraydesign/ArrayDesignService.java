@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.application.arraydesign;
 
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -131,15 +130,6 @@ public interface ArrayDesignService {
      * @param arrayDesign the design to import details for.
      */
     void importDesign(ArrayDesign arrayDesign);
-
-    /**
-     * Returns the element-level details (features, probes, and logical probes) for
-     * an array design.
-     *
-     * @param arrayDesign retrieve details for this array design
-     * @return the design details.
-     */
-    ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign);
 
     /**
      * @return the list of all Organizations  in the system.

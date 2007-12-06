@@ -82,13 +82,12 @@
  */
 package gov.nih.nci.caarray.services.arraydesign;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
+import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
+import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -97,31 +96,48 @@ import org.junit.Test;
 public class ArrayDesignDetailsServiceBeanTest {
 
     private ArrayDesignDetailsService arrayDesignDetailsService;
-    private LocalArrayDesignServiceStub arrayDesignServiceStub = new LocalArrayDesignServiceStub();
+    private LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     
     @Before
     public void setUp() {
         ArrayDesignDetailsServiceBean arrayDesignDetailsServiceBean = new ArrayDesignDetailsServiceBean();
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
-        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, arrayDesignServiceStub);
+        arrayDesignDetailsServiceBean.setDaoFactory(daoFactoryStub);
         arrayDesignDetailsService = arrayDesignDetailsServiceBean;
     }
     
     @Test
+    @SuppressWarnings("deprecation")
     public void testGetDesignDetails() {
         ArrayDesign design = new ArrayDesign();
-        assertNotNull(arrayDesignDetailsService.getDesignDetails(design));
-        assertTrue(arrayDesignServiceStub.calledInternalService);
+        design.setId(1L);
+        ArrayDesignDetails designDetails = new ArrayDesignDetails();
+        design.setDesignDetails(designDetails);
+        daoFactoryStub.setDesignForRetrieval(design);
+        assertEquals(designDetails, arrayDesignDetailsService.getDesignDetails(design));
     }
 
-    private static class LocalArrayDesignServiceStub extends ArrayDesignServiceStub {
+    static class LocalDaoFactoryStub extends DaoFactoryStub {
+        
+        LocalArrayDao arrayDao = new LocalArrayDao();
 
-        private boolean calledInternalService;
+        void setDesignForRetrieval(ArrayDesign design) {
+            arrayDao.design = design;
+        }
 
         @Override
-        public ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign) {
-            calledInternalService = true;
-            return new ArrayDesignDetails();
+        public ArrayDao getArrayDao() {
+            return arrayDao;
+        }
+
+    }
+    
+    static class LocalArrayDao extends ArrayDaoStub {
+        
+        private ArrayDesign design;
+
+        @Override
+        public ArrayDesign getArrayDesign(long id) {
+            return design;
         }
         
     }

@@ -82,12 +82,11 @@
  */
 package gov.nih.nci.caarray.services.arraydesign;
 
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -100,17 +99,27 @@ import javax.interceptor.Interceptors;
 @Remote(ArrayDesignDetailsService.class)
 @Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
 public class ArrayDesignDetailsServiceBean implements ArrayDesignDetailsService {
+    
+    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
     /**
      * {@inheritDoc}
      */
     public ArrayDesignDetails getDesignDetails(ArrayDesign design) {
-        return getArrayDesignService().getDesignDetails(design);
+        ArrayDesign retrievedDesign = getDaoFactory().getArrayDao().getArrayDesign(design.getId());
+        if (retrievedDesign != null) {
+            return retrievedDesign.getDesignDetails();
+        } else {
+            return null;
+        }
     }
 
-    
-    private ArrayDesignService getArrayDesignService() {
-        return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
+    CaArrayDaoFactory getDaoFactory() {
+        return daoFactory;
+    }
+
+    void setDaoFactory(CaArrayDaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
     }
 
 }

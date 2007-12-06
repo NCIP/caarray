@@ -87,7 +87,6 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
@@ -246,18 +245,6 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         getArrayDao().save(designFile);
         getArrayDao().save(design);
         return design;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign) {
-        LogUtil.logSubsystemEntry(LOG, arrayDesign);
-        FileAccessService fileAccessService = getFileAccessService();
-        AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile(), fileAccessService);
-        fileAccessService.closeFiles();
-        LogUtil.logSubsystemExit(LOG);
-        return handler.getDesignDetails(arrayDesign);
     }
 
     private AbstractArrayDesignHandler getHandler(CaArrayFile designFile, FileAccessService fileAccessService) {
