@@ -25,19 +25,31 @@
         </display:column>
         <display:column property="experiment.organism.commonName" titleKey="search.result.organism" sortable="true"/>
         <display:column titleKey="search.result.diseaseState">
-            <c:forEach var="condition" items="${row.experiment.sources}" varStatus="status">
-                ${condition.diseaseState.value}<c:if test="${!status.last}">,</c:if>
-            </c:forEach>
+            <c:choose>
+                <c:when test="${caarrayfn:canRead(row, caarrayfn:currentUser())}">
+                    <c:forEach var="condition" items="${row.experiment.sources}" varStatus="status">
+                        ${condition.diseaseState.value}<c:if test="${!status.last}">,</c:if>
+                    </c:forEach>
+                </c:when>
+                <c:otherwise>
+                    <fmt:message key="browse.notAvailable"/>
+                </c:otherwise>
+            </c:choose>
         </display:column>
         <display:column titleKey="search.result.numSamples">
-            <c:if test="${caarrayfn:canRead(row, caarrayfn:currentUser())}">
-                <c:url value="/project/details.action" var="viewSamplesUrl">
-                    <c:param name="project.id" value="${row.id}" />
-                    <c:param name="initialTab" value="annotations" />
-                    <c:param name="initialTab2" value="samples" />
-                </c:url>
-                <a href="${viewSamplesUrl}">${row.experiment.sampleCount}</a>
-            </c:if>
+            <c:choose>
+                <c:when test="${caarrayfn:canRead(row, caarrayfn:currentUser())}">
+                    <c:url value="/project/details.action" var="viewSamplesUrl">
+                        <c:param name="project.id" value="${row.id}" />
+                        <c:param name="initialTab" value="annotations" />
+                        <c:param name="initialTab2" value="samples" />
+                    </c:url>
+                    <a href="${viewSamplesUrl}">${row.experiment.sampleCount}</a>
+                </c:when>
+                <c:otherwise>
+                    <fmt:message key="browse.notAvailable"/>
+                </c:otherwise>
+            </c:choose>
         </display:column>
         <display:column sortProperty="lastUpdated" titleKey="search.result.updated" sortable="true">
             <fmt:formatDate value="${row.lastUpdated}" pattern="M/d/yyyy"/>

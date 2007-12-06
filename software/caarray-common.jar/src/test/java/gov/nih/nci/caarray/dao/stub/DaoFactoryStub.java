@@ -92,7 +92,6 @@ import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.dao.OrganismDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.ProtocolDao;
-import gov.nih.nci.caarray.dao.RegistrationDao;
 import gov.nih.nci.caarray.dao.SampleDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.StateDao;
@@ -164,13 +163,6 @@ public class DaoFactoryStub implements CaArrayDaoFactory {
      */
     public OrganismDao getOrganismDao() {
         return new OrganismDaoStub();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public RegistrationDao getRegistrationDao() {
-        return new RegistrationDaoStub();
     }
 
     /**

@@ -22,7 +22,7 @@
             <caarray:action actionClass="save" text="Save" onclick="TabUtils.submitTabForm('projectForm', '${tabAnchor}'); return false;"/>
         </c:when>
         <c:when test="${project.saveAllowed && caarrayfn:canWrite(item, caarrayfn:currentUser()) && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
-            <caarray:projectListTabActionLink entityName="${entityName}" action="edit" itemId="${item.id}" isSubtab="true">
+            <caarray:projectListTabActionLink entityName="${entityName}" action="edit" itemId="${item.id}" isSubtab="${isSubtab}">
                 <jsp:attribute name="linkRenderer">
                     <caarray:action actionClass="edit" text="Edit" onclick="TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}'); return false;"/>
                 </jsp:attribute>

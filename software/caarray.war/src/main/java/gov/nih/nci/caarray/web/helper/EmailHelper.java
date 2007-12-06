@@ -82,15 +82,18 @@
  */
 package gov.nih.nci.caarray.web.helper;
 
-import gov.nih.nci.caarray.domain.register.ConfigParamEnum;
+import gov.nih.nci.caarray.domain.ConfigParamEnum;
+import gov.nih.nci.caarray.domain.contact.Person;
+import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.register.RegistrationRequest;
 import gov.nih.nci.caarray.util.EmailUtil;
-import gov.nih.nci.caarray.web.action.ActionHelper;
 
+import java.text.MessageFormat;
 import java.util.Collections;
-import java.util.Map;
 
 import javax.mail.MessagingException;
+
+import org.apache.commons.configuration.DataConfiguration;
 
 /**
  * @author John Hedden (Amentra, Inc.)
@@ -107,15 +110,15 @@ public final class EmailHelper {
      * @throws MessagingException on other error
      */
     public static void registerEmail(RegistrationRequest registrationRequest) throws MessagingException {
-        Map<ConfigParamEnum, Object> props = getRegistrationProperties();
+        DataConfiguration config = ConfigurationHelper.getConfiguration();
 
-        if (!((Boolean) props.get(ConfigParamEnum.SEND_CONFIRM_EMAIL)).booleanValue()) {
+        if (!config.getBoolean(ConfigParamEnum.SEND_CONFIRM_EMAIL.name())) {
             return;
         }
 
-        String subject = (String) props.get(ConfigParamEnum.CONFIRM_EMAIL_SUBJECT);
-        String from = (String) props.get(ConfigParamEnum.EMAIL_FROM);
-        String mailBody = (String) props.get(ConfigParamEnum.CONFIRM_EMAIL_CONTENT);
+        String subject = config.getString(ConfigParamEnum.CONFIRM_EMAIL_SUBJECT.name());
+        String from = config.getString(ConfigParamEnum.EMAIL_FROM.name());
+        String mailBody = config.getString(ConfigParamEnum.CONFIRM_EMAIL_CONTENT.name());
 
         EmailUtil.sendMail(Collections.singletonList(registrationRequest.getEmail()), from, subject, mailBody);
     }
@@ -125,10 +128,11 @@ public final class EmailHelper {
      * @throws MessagingException on error
      */
     public static void registerEmailAdmin(RegistrationRequest registrationRequest) throws MessagingException {
-        Map<ConfigParamEnum, Object> props = getRegistrationProperties();
-        String admin = (String) props.get(ConfigParamEnum.REG_EMAIL_TO);
-        String subject = (String) props.get(ConfigParamEnum.REG_EMAIL_SUBJECT);
-        String from = (String) props.get(ConfigParamEnum.EMAIL_FROM);
+        DataConfiguration config = ConfigurationHelper.getConfiguration();
+        
+        String subject = config.getString(ConfigParamEnum.REG_EMAIL_SUBJECT.name());
+        String from = config.getString(ConfigParamEnum.EMAIL_FROM.name());
+        String admin = config.getString(ConfigParamEnum.REG_EMAIL_TO.name());
 
         String mailBody = "Registration Request:\n"
             + "First Name: " + registrationRequest.getFirstName() + "\n"
@@ -149,11 +153,21 @@ public final class EmailHelper {
 
         EmailUtil.sendMail(Collections.singletonList(admin), from, subject, mailBody);
     }
-
+    
     /**
-     * @return reg props
+     * @param project the newly created project
+     * @throws MessagingException on other error
      */
-    public static Map<ConfigParamEnum, Object> getRegistrationProperties() {
-        return ActionHelper.getRegistrationService().getParams();
-    }
+    public static void sendSubmitExperimentEmail(Project project) throws MessagingException {
+        DataConfiguration config = ConfigurationHelper.getConfiguration();
+        
+        String subject = config.getString(ConfigParamEnum.SUBMIT_EXPERIMENT_EMAIL_SUBJECT.name());
+        String from = config.getString(ConfigParamEnum.EMAIL_FROM.name());
+        String mailBodyPattern = config.getString(ConfigParamEnum.SUBMIT_EXPERIMENT_EMAIL_CONTENT.name());
+        
+        Person pi = (Person) project.getExperiment().getPrimaryInvestigator().getContact();
+        String mailBody = MessageFormat.format(mailBodyPattern, pi.getName(), project.getExperiment().getTitle());
+
+        EmailUtil.sendMail(Collections.singletonList(pi.getEmail()), from, subject, mailBody);
+    }    
 }

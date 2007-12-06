@@ -170,15 +170,6 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
     }
 
     /**
-     * Returns a <code>RegistrationDao</code>.
-     *
-     * @return a <code>RegistrationDao</code>.
-     */
-    public RegistrationDao getRegistrationDao() {
-        return new RegistrationDaoImpl();
-    }
-
-    /**
      * Returns a <code>CountryDao</code>.
      *
      * @return a <code>CountryDao</code>.

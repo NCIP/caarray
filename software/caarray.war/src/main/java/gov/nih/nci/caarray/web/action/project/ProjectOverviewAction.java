@@ -92,12 +92,14 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.web.util.LabelValue;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.ajaxtags.xml.AjaxXmlBuilder;
@@ -133,7 +135,7 @@ public class ProjectOverviewAction extends ProjectTabAction {
         this.organisms = vocabService.getOrganisms();
 
         ArrayDesignService arrayDesignService = getArrayDesignService();
-        this.manufacturers = arrayDesignService.getArrayDesignProviders();
+        this.manufacturers = arrayDesignService.getAllOrganizations();
         if (getExperiment().getManufacturer() != null) {
             this.arrayDesigns = getArrayDesignService().getArrayDesignsForProvider(getExperiment().getManufacturer());
         }
@@ -290,7 +292,13 @@ public class ProjectOverviewAction extends ProjectTabAction {
      */
     public InputStream getArrayDesignsAsXml() throws IllegalAccessException, NoSuchMethodException,
         InvocationTargetException, UnsupportedEncodingException {
-        AjaxXmlBuilder xmlBuilder = new AjaxXmlBuilder().addItems(this.arrayDesigns, "name", "id");
+        AjaxXmlBuilder xmlBuilder = new AjaxXmlBuilder();
+        if (this.arrayDesigns.isEmpty()) {
+            xmlBuilder.addItems(Arrays.asList(new LabelValue(getText("experiment.overview.noArrayDesigns"), "")),
+                    "label", "value");
+        } else {
+            xmlBuilder.addItems(this.arrayDesigns, "name", "id");            
+        }
         return new ByteArrayInputStream(xmlBuilder.toString().getBytes("UTF-8"));
     }
 }

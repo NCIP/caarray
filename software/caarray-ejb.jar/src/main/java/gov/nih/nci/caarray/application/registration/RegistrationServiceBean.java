@@ -83,15 +83,8 @@
 package gov.nih.nci.caarray.application.registration;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.RegistrationDao;
-import gov.nih.nci.caarray.domain.register.ConfigParamEnum;
-import gov.nih.nci.caarray.domain.register.RegistrationParameter;
 import gov.nih.nci.caarray.domain.register.RegistrationRequest;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -116,24 +109,8 @@ public class RegistrationServiceBean implements RegistrationService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void register(RegistrationRequest registrationRequest) {
         LogUtil.logSubsystemEntry(LOG, registrationRequest);
-        getRegistrationDao().save(registrationRequest);
+        getDaoFactory().getSearchDao().save(registrationRequest);
         LogUtil.logSubsystemExit(LOG);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Map<ConfigParamEnum, Object> getParams() {
-        LogUtil.logSubsystemEntry(LOG);
-
-        Map<ConfigParamEnum, Object> result = new HashMap<ConfigParamEnum, Object>();
-        List<RegistrationParameter> l = getRegistrationDao().getRegistrationParameters();
-        for (RegistrationParameter rp : l) {
-            result.put(rp.getParam(), rp.getValue());
-        }
-
-        LogUtil.logSubsystemExit(LOG);
-        return result;
     }
 
     CaArrayDaoFactory getDaoFactory() {
@@ -142,9 +119,5 @@ public class RegistrationServiceBean implements RegistrationService {
 
     void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
-    }
-
-    private RegistrationDao getRegistrationDao() {
-        return daoFactory.getRegistrationDao();
     }
 }

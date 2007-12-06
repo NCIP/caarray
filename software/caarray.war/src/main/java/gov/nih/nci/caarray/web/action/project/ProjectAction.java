@@ -5,10 +5,13 @@ import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.helper.EmailHelper;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.mail.MessagingException;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
@@ -121,11 +124,15 @@ public class ProjectAction extends AbstractBaseProjectAction {
      */
     public String changeWorkflowStatus() {
         try {
+            ProposalStatus oldStatus = getProject().getStatus();
             getProjectManagementService().changeProjectStatus(getProject().getId(), this.workflowStatus);
             List<String> args = new ArrayList<String>();
             args.add(getProject().getExperiment().getTitle());
             args.add(getText(this.workflowStatus.getResourceKey()));
             ActionHelper.saveMessage(getText("project.workflowStatusUpdated", args));
+            if (oldStatus == ProposalStatus.DRAFT && this.workflowStatus == ProposalStatus.IN_PROGRESS) {
+                EmailHelper.sendSubmitExperimentEmail(getProject());
+            }
             return WORKSPACE_RESULT;
         } catch (ProposalWorkflowException e) {
             List<String> args = new ArrayList<String>();
@@ -133,6 +140,9 @@ public class ProjectAction extends AbstractBaseProjectAction {
             args.add(getText(this.workflowStatus.getResourceKey()));
             ActionHelper.saveMessage(getText("project.workflowProblem", args));
             return INPUT;
+        } catch (MessagingException e) {
+            LOG.warn("Could not send email for experiment submission", e);
+            return WORKSPACE_RESULT;
         }
     }
 

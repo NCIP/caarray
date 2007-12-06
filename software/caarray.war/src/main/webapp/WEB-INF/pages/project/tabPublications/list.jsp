@@ -13,10 +13,10 @@
             requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="project.id">
             <caarray:displayTagProperties/>
             <display:column titleKey="experiment.publications.title" sortable="true" sortProperty="title">
-                <caarray:projectListTabActionLink linkContent="${row.title}" entityName="Publication" action="view" itemId="${row.id}" isSubtab="true"/>
+                <caarray:projectListTabActionLink linkContent="${row.title}" entityName="Publication" action="view" itemId="${row.id}"/>
             </display:column>
             <display:column property="authors" titleKey="experiment.publications.authors" sortable="true" />
-            <display:column property="uri" titleKey="experiment.publications.uri" sortable="true" />
+            <display:column property="uri" autolink="true" titleKey="experiment.publications.uri" sortable="true"/>
             <caarray:projectListTabActionColumns entityName="Publication" item="${row}" actions="!edit,!delete"/>
         </display:table>
     </ajax:displayTag>

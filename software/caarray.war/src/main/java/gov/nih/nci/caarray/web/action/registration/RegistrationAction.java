@@ -82,11 +82,12 @@
  */
 package gov.nih.nci.caarray.web.action.registration;
 
+import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.country.Country;
-import gov.nih.nci.caarray.domain.register.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.register.RegistrationRequest;
 import gov.nih.nci.caarray.domain.state.State;
 import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.helper.ConfigurationHelper;
 import gov.nih.nci.caarray.web.helper.EmailHelper;
 import gov.nih.nci.caarray.web.util.CacheManager;
 import gov.nih.nci.security.authentication.helper.LDAPHelper;
@@ -168,8 +169,7 @@ public class RegistrationAction extends ActionSupport implements Preparable {
             LOGGER.debug("done saving registration request; sending email");
             EmailHelper.registerEmail(getRegistrationRequest());
             EmailHelper.registerEmailAdmin(getRegistrationRequest());
-            setSuccessMessage(ActionHelper.getRegistrationService()
-                                          .getParams().get(ConfigParamEnum.THANKS_MESSAGE).toString());
+            setSuccessMessage(ConfigurationHelper.getConfiguration().getString(ConfigParamEnum.THANKS_MESSAGE.name()));
 
             return Action.SUCCESS;
         } catch (MessagingException me) {

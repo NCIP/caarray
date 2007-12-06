@@ -82,10 +82,7 @@
  */
 package gov.nih.nci.caarray.application.registration;
 
-import gov.nih.nci.caarray.domain.register.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.register.RegistrationRequest;
-
-import java.util.Map;
 
 /**
  * @author John Hedden (Amentra, Inc.)
@@ -98,12 +95,5 @@ public class RegistrationServiceStub implements RegistrationService {
      */
     public void register(RegistrationRequest registrationRequest) {
         //no service
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Map<ConfigParamEnum, Object> getParams() {
-        return null;
     }
 }

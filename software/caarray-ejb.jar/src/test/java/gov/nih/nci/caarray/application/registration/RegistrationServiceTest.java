@@ -84,8 +84,8 @@ package gov.nih.nci.caarray.application.registration;
 
 import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.country.Country;
-import gov.nih.nci.caarray.domain.register.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.register.RegistrationRequest;
 
 import java.util.Map;
@@ -124,14 +124,5 @@ public class RegistrationServiceTest {
         country.setCode("US");
         registrationRequest.setCountry(country);
         registrationService.register(registrationRequest);
-    }
-
-    @Test
-    public void testGetParams() throws Exception {
-        Map<ConfigParamEnum, Object> params = registrationService.getParams();
-        assertEquals(ConfigParamEnum.values().length, params.size());
-        for (ConfigParamEnum cpe : ConfigParamEnum.values()) {
-            assertEquals(cpe.getParamType(), params.get(cpe).getClass());
-        }
     }
 }

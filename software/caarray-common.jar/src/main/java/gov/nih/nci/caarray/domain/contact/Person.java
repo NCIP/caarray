@@ -94,6 +94,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
@@ -212,6 +213,18 @@ public class Person extends AbstractContact {
     @SuppressWarnings("unused")
     private void setAffiliations(final Set<Organization> affiliationsVal) { // NOPMD
         this.affiliations = affiliationsVal;
+    }
+    
+    /**
+     * @return the Person's full name
+     */
+    @Transient
+    public String getName() {
+        StringBuilder name = new StringBuilder(getLastName()).append(", ").append(getFirstName());
+        if (getMiddleInitials() != null) {
+            name.append(" ").append(getMiddleInitials());
+        }
+        return name.toString();
     }
 
     /**

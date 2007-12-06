@@ -82,10 +82,7 @@
  */
 package gov.nih.nci.caarray.application.registration;
 
-import gov.nih.nci.caarray.domain.register.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.register.RegistrationRequest;
-
-import java.util.Map;
 
 /**
  * Provides regisration management functionality to the application.
@@ -103,9 +100,4 @@ public interface RegistrationService {
      * @param registrationRequest the new registrationRequest to save
      */
     void register(RegistrationRequest registrationRequest);
-
-    /**
-     * @return all current configuration parameters.
-     */
-    Map<ConfigParamEnum, Object> getParams();
 }

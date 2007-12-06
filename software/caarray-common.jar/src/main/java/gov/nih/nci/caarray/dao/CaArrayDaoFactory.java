@@ -158,13 +158,6 @@ public interface CaArrayDaoFactory {
     OrganismDao getOrganismDao();
 
     /**
-     * Returns a <code>RegistrationDao</code>.
-     *
-     * @return a <code>RegistrationDao</code>.
-     */
-    RegistrationDao getRegistrationDao();
-
-    /**
      * Returns a <code>CountryDao</code>.
      *
      * @return a <code>CountryDao</code>.

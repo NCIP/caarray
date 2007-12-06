@@ -80,7 +80,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain.register;
+package gov.nih.nci.caarray.domain;
 
 /**
  * Various configuration parameters.
@@ -89,43 +89,38 @@ public enum ConfigParamEnum {
     /**
      * The email address to send email from.
      */
-    EMAIL_FROM(String.class),
+    EMAIL_FROM,
     /**
      * Boolean property on whether to send an confirmation email to the end user
      * after registering.
      */
-    SEND_CONFIRM_EMAIL(Boolean.class),
+    SEND_CONFIRM_EMAIL,
     /**
      * Subject line of the confirmation email.
      */
-    CONFIRM_EMAIL_SUBJECT(String.class),
+    CONFIRM_EMAIL_SUBJECT,
     /**
      * Content of the confirmation email.
      */
-    CONFIRM_EMAIL_CONTENT(String.class),
+    CONFIRM_EMAIL_CONTENT,
     /**
      * What email address to send registration information to (ie, the helpdesk email address).
      */
-    REG_EMAIL_TO(String.class),
+    REG_EMAIL_TO,
     /**
      * Subject line of the registration email.
      */
-    REG_EMAIL_SUBJECT(String.class),
+    REG_EMAIL_SUBJECT,
     /**
      * The thankyou for registering text that should appear after a user submits their registration.
      */
-    THANKS_MESSAGE(String.class);
-
-    private Class<?> paramType;
-
-    private ConfigParamEnum(Class<?> paramType) {
-        this.paramType = paramType;
-    }
-
+    THANKS_MESSAGE,    
     /**
-     * @return the type of config option
+     * the subject for the submit experiment email.
      */
-    public Class<?> getParamType() {
-        return paramType;
-    }
+    SUBMIT_EXPERIMENT_EMAIL_SUBJECT,    
+    /**
+     * the content for the submit experiment email.
+     */
+    SUBMIT_EXPERIMENT_EMAIL_CONTENT;
 }
