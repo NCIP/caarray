@@ -82,13 +82,9 @@
  */
 package gov.nih.nci.caarray.application.registration;
 
-import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
-import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.country.Country;
 import gov.nih.nci.caarray.domain.register.RegistrationRequest;
-
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -105,7 +101,7 @@ public class RegistrationServiceTest {
     public void setUp() {
         RegistrationServiceBean registrationServiceBean = new RegistrationServiceBean();
         registrationServiceBean.setDaoFactory(new DaoFactoryStub());
-        registrationService = registrationServiceBean;
+        this.registrationService = registrationServiceBean;
     }
 
     @Test
@@ -123,6 +119,6 @@ public class RegistrationServiceTest {
         Country country = new Country();
         country.setCode("US");
         registrationRequest.setCountry(country);
-        registrationService.register(registrationRequest);
+        this.registrationService.register(registrationRequest);
     }
 }

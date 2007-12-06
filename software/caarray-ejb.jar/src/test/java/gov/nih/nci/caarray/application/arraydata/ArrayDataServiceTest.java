@@ -172,10 +172,8 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -202,20 +200,20 @@ public class ArrayDataServiceTest {
     public void setUp() throws Exception {
         ArrayDataServiceBean arrayDataServiceBean = new ArrayDataServiceBean();
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
-        locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
+        locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
         ArrayDesignServiceBean arrayDesignServiceBean = new ArrayDesignServiceBean();
-        arrayDesignServiceBean.setDaoFactory(daoFactoryStub);
+        arrayDesignServiceBean.setDaoFactory(this.daoFactoryStub);
         locatorStub.addLookup(ArrayDesignService.JNDI_NAME, arrayDesignServiceBean);
-        arrayDataServiceBean.setDaoFactory(daoFactoryStub);
-        arrayDataService = arrayDataServiceBean;
+        arrayDataServiceBean.setDaoFactory(this.daoFactoryStub);
+        this.arrayDataService = arrayDataServiceBean;
     }
 
     @Test
     public void testInitialize() {
-        arrayDataService.initialize();
-        assertTrue(daoFactoryStub.dataTypeMap.containsKey(AffymetrixArrayDataTypes.AFFYMETRIX_CEL));
-        assertTrue(daoFactoryStub.quantitationTypeMap.keySet().containsAll(Arrays.asList(AffymetrixCelQuantitationType.values())));
+        this.arrayDataService.initialize();
+        assertTrue(this.daoFactoryStub.dataTypeMap.containsKey(AffymetrixArrayDataTypes.AFFYMETRIX_CEL));
+        assertTrue(this.daoFactoryStub.quantitationTypeMap.keySet().containsAll(Arrays.asList(AffymetrixCelQuantitationType.values())));
     }
 
     // IMPORT
@@ -243,27 +241,27 @@ public class ArrayDataServiceTest {
         celData.setHybridization(hybridization);
         hybridization.setArrayData(celData);
         celData.setDataFile(celFile);
-        daoFactoryStub.getArrayDao().save(celData);
-        arrayDataService.importData(celFile, true);
-        assertEquals(celData, daoFactoryStub.getArrayDao().getRawArrayData(celFile));
+        this.daoFactoryStub.getArrayDao().save(celData);
+        this.arrayDataService.importData(celFile, true);
+        assertEquals(celData, this.daoFactoryStub.getArrayDao().getRawArrayData(celFile));
         assertEquals(hybridization, celData.getHybridization());
     }
 
     private void testCreateAnnotationIllumina() throws InvalidDataFileException {
         CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6);
-        arrayDataService.importData(illuminaFile, true);
+        this.arrayDataService.importData(illuminaFile, true);
         checkAnnotation(illuminaFile, 19);
     }
 
     private void testCreateAnnotationCel() throws InvalidDataFileException {
         CaArrayFile celFile = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL);
-        arrayDataService.importData(celFile, true);
+        this.arrayDataService.importData(celFile, true);
         checkAnnotation(celFile, 1);
     }
 
     private void testCreateAnnotationChp() throws InvalidDataFileException {
         CaArrayFile chpFile = getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CHP);
-        arrayDataService.importData(chpFile, true);
+        this.arrayDataService.importData(chpFile, true);
         checkAnnotation(chpFile, 1);
     }
 
@@ -289,8 +287,8 @@ public class ArrayDataServiceTest {
 
     private void testImportGenepixFile(File gprFile, QuantitationTypeDescriptor[] expectedTypes, int expectedNumberOfSamples) throws InvalidDataFileException {
         CaArrayFile gprCaArrayFile = getGprCaArrayFile(gprFile);
-        arrayDataService.importData(gprCaArrayFile, true);
-        DerivedArrayData data = daoFactoryStub.getArrayDao().getDerivedArrayData(gprCaArrayFile);
+        this.arrayDataService.importData(gprCaArrayFile, true);
+        DerivedArrayData data = this.daoFactoryStub.getArrayDao().getDerivedArrayData(gprCaArrayFile);
         assertNotNull(data);
         checkAnnotation(gprCaArrayFile, expectedNumberOfSamples);
         checkColumnTypes(data.getDataSet(), expectedTypes);
@@ -305,7 +303,7 @@ public class ArrayDataServiceTest {
         DerivedArrayData chpData = getChpData(cdfFile, chpFile);
         assertEquals(FileStatus.UPLOADED, chpData.getDataFile().getFileStatus());
         assertNull(chpData.getDataSet());
-        arrayDataService.importData(chpData.getDataFile(), false);
+        this.arrayDataService.importData(chpData.getDataFile(), false);
         assertEquals(FileStatus.IMPORTED, chpData.getDataFile().getFileStatus());
         assertNotNull(chpData.getDataSet());
         DataSet dataSet = chpData.getDataSet();
@@ -344,7 +342,7 @@ public class ArrayDataServiceTest {
         DerivedArrayData chpData = getChpData(cdfFile, chpFile);
         assertEquals(FileStatus.UPLOADED, chpData.getDataFile().getFileStatus());
         assertNull(chpData.getDataSet());
-        arrayDataService.importData(chpData.getDataFile(), false);
+        this.arrayDataService.importData(chpData.getDataFile(), false);
         assertEquals(FileStatus.IMPORTED, chpData.getDataFile().getFileStatus());
         assertNotNull(chpData.getDataSet());
         DataSet dataSet = chpData.getDataSet();
@@ -367,7 +365,7 @@ public class ArrayDataServiceTest {
         RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
         assertEquals(FileStatus.UPLOADED, celData.getDataFile().getFileStatus());
         assertNull(celData.getDataSet());
-        arrayDataService.importData(celData.getDataFile(), false);
+        this.arrayDataService.importData(celData.getDataFile(), false);
         assertEquals(FileStatus.IMPORTED, celData.getDataFile().getFileStatus());
         assertEquals(AffymetrixArrayDataFiles.TEST3_CEL.getName(), celData.getName());
         assertNotNull(celData.getDataSet());
@@ -408,7 +406,7 @@ public class ArrayDataServiceTest {
 
     private void testValidFile(CaArrayFile caArrayFile) {
         assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
-        arrayDataService.validate(caArrayFile);
+        this.arrayDataService.validate(caArrayFile);
         if (FileStatus.VALIDATION_ERRORS.equals(caArrayFile.getFileStatus())) {
             System.out.println(caArrayFile.getValidationResult());
         }
@@ -418,7 +416,7 @@ public class ArrayDataServiceTest {
 
     private void testInvalidFile(CaArrayFile caArrayFile) {
         assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
-        arrayDataService.validate(caArrayFile);
+        this.arrayDataService.validate(caArrayFile);
         assertEquals(FileStatus.VALIDATION_ERRORS, caArrayFile.getFileStatus());
     }
 
@@ -451,9 +449,9 @@ public class ArrayDataServiceTest {
 
     private void testGenepixData() throws InvalidDataFileException {
         CaArrayFile gprFile = getGprCaArrayFile(GenepixArrayDataFiles.GPR_5_0_1);
-        arrayDataService.importData(gprFile, true);
-        DerivedArrayData gprData = daoFactoryStub.getArrayDao().getDerivedArrayData(gprFile);
-        DataSet dataSet = arrayDataService.getData(gprData);
+        this.arrayDataService.importData(gprFile, true);
+        DerivedArrayData gprData = this.daoFactoryStub.getArrayDao().getDerivedArrayData(gprFile);
+        DataSet dataSet = this.arrayDataService.getData(gprData);
         assertEquals(1, dataSet.getHybridizationDataList().size());
         HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
         assertEquals(51, hybridizationData.getColumns().size());
@@ -466,9 +464,9 @@ public class ArrayDataServiceTest {
 
     private void testIlluminaData() throws InvalidDataFileException {
         CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6_SMALL);
-        arrayDataService.importData(illuminaFile, true);
-        DerivedArrayData illuminaData = daoFactoryStub.getArrayDao().getDerivedArrayData(illuminaFile);
-        DataSet dataSet = arrayDataService.getData(illuminaData);
+        this.arrayDataService.importData(illuminaFile, true);
+        DerivedArrayData illuminaData = this.daoFactoryStub.getArrayDao().getDerivedArrayData(illuminaFile);
+        DataSet dataSet = this.arrayDataService.getData(illuminaData);
         assertEquals(19, dataSet.getHybridizationDataList().size());
         HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
         assertEquals(4, hybridizationData.getColumns().size());
@@ -481,17 +479,17 @@ public class ArrayDataServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetDataIllegalArguments() {
-        arrayDataService.getData(null);
+        this.arrayDataService.getData(null);
         RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
         celData.setDataFile(null);
-        arrayDataService.getData(celData);
+        this.arrayDataService.getData(celData);
 
     }
 
     private void testExpressionChpData() throws InvalidDataFileException {
         DerivedArrayData chpData = getChpData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CHP);
-        arrayDataService.importData(chpData.getDataFile(), false);
-        DataSet dataSet = arrayDataService.getData(chpData);
+        this.arrayDataService.importData(chpData.getDataFile(), false);
+        DataSet dataSet = this.arrayDataService.getData(chpData);
         checkExpressionData(AffymetrixArrayDataFiles.TEST3_CHP, dataSet);
     }
 
@@ -510,8 +508,8 @@ public class ArrayDataServiceTest {
 
     private void testSnpChpData() throws InvalidDataFileException {
         DerivedArrayData chpData = getChpData(AffymetrixArrayDesignFiles.TEN_K_CDF, AffymetrixArrayDataFiles.TEN_K_1_CHP);
-        arrayDataService.importData(chpData.getDataFile(), false);
-        DataSet dataSet = arrayDataService.getData(chpData);
+        this.arrayDataService.importData(chpData.getDataFile(), false);
+        DataSet dataSet = this.arrayDataService.getData(chpData);
         checkSnpData(AffymetrixArrayDataFiles.TEN_K_1_CHP, dataSet);
     }
 
@@ -530,39 +528,9 @@ public class ArrayDataServiceTest {
 
     private void testCelData() throws InvalidDataFileException {
         RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
-        arrayDataService.importData(celData.getDataFile(), false);
-        DataSet dataSet = arrayDataService.getData(celData);
+        this.arrayDataService.importData(celData.getDataFile(), false);
+        DataSet dataSet = this.arrayDataService.getData(celData);
         checkCelData(AffymetrixArrayDataFiles.TEST3_CEL, dataSet);
-    }
-
-    private void testCelDataForSelectedQuantitationTypes() throws InvalidDataFileException {
-        RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
-        arrayDataService.importData(celData.getDataFile(), false);
-        List<QuantitationType> types = new ArrayList<QuantitationType>();
-        types.add(daoFactoryStub.getArrayDao().getQuantitationType(AffymetrixCelQuantitationType.CEL_INTENSITY));
-        DataSet dataSet = arrayDataService.getData(celData, types);
-        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
-        ShortColumn xColumn = (ShortColumn) hybridizationData.getColumns().get(0);
-        ShortColumn yColumn = (ShortColumn) hybridizationData.getColumns().get(1);
-        FloatColumn intensityColumn = (FloatColumn) hybridizationData.getColumns().get(2);
-        FloatColumn stdDevColumn = (FloatColumn) hybridizationData.getColumns().get(3);
-        BooleanColumn isMaskedColumn = (BooleanColumn) hybridizationData.getColumns().get(4);
-        BooleanColumn isOutlierColumn = (BooleanColumn) hybridizationData.getColumns().get(5);
-        ShortColumn numPixelsColumn = (ShortColumn) hybridizationData.getColumns().get(6);
-        assertNull(xColumn.getValues());
-        assertNull(yColumn.getValues());
-        assertNull(stdDevColumn.getValues());
-        assertNull(isMaskedColumn.getValues());
-        assertNull(isOutlierColumn.getValues());
-        assertNull(numPixelsColumn.getValues());
-        FusionCELData fusionCelData = new FusionCELData();
-        fusionCelData.setFileName(AffymetrixArrayDataFiles.TEST3_CEL.getAbsolutePath());
-        fusionCelData.read();
-        FusionCELFileEntryType fusionCelEntry = new FusionCELFileEntryType();
-        for (int rowIndex = 0; rowIndex < fusionCelData.getCells(); rowIndex++) {
-            fusionCelData.getEntry(rowIndex, fusionCelEntry);
-            assertEquals(fusionCelEntry.getIntensity(), intensityColumn.getValues()[rowIndex]);
-        }
     }
 
     private void checkCelData(File celFile, DataSet dataSet) {
@@ -599,10 +567,10 @@ public class ArrayDataServiceTest {
     private RawArrayData getCelData(File cdf, File cel) {
         Hybridization hybridization = createAffyHybridization(cdf);
         RawArrayData celData = new RawArrayData();
-        celData.setType(daoFactoryStub.getArrayDao().getArrayDataType(AffymetrixArrayDataTypes.AFFYMETRIX_CEL));
+        celData.setType(this.daoFactoryStub.getArrayDao().getArrayDataType(AffymetrixArrayDataTypes.AFFYMETRIX_CEL));
         celData.setDataFile(getCelCaArrayFile(cel));
         celData.setHybridization(hybridization);
-        daoFactoryStub.addData(celData);
+        this.daoFactoryStub.addData(celData);
         hybridization.setArrayData(celData);
         return celData;
     }
@@ -613,7 +581,7 @@ public class ArrayDataServiceTest {
 
     private Hybridization createHybridization(File design, FileType type) {
         ArrayDesign arrayDesign = new ArrayDesign();
-        CaArrayFile designFile = fileAccessServiceStub.add(design);
+        CaArrayFile designFile = this.fileAccessServiceStub.add(design);
         designFile.setFileType(type);
         arrayDesign.setDesignFile(designFile);
         Array array = new Array();
@@ -626,11 +594,11 @@ public class ArrayDataServiceTest {
     private DerivedArrayData getChpData(File cdf, File file) {
         Hybridization hybridization = createAffyHybridization(cdf);
         DerivedArrayData chpData = new DerivedArrayData();
-        chpData.setType(daoFactoryStub.getArrayDao().getArrayDataType(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CHP));
+        chpData.setType(this.daoFactoryStub.getArrayDao().getArrayDataType(AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CHP));
         chpData.setDataFile(getChpCaArrayFile(file));
         chpData.getHybridizations().add(hybridization);
         hybridization.getDerivedDataCollection().add(chpData);
-        daoFactoryStub.addData(chpData);
+        this.daoFactoryStub.addData(chpData);
         return chpData;
     }
 
@@ -651,7 +619,7 @@ public class ArrayDataServiceTest {
     }
 
     private CaArrayFile getDataCaArrayFile(File file, FileType type) {
-        CaArrayFile caArrayFile = fileAccessServiceStub.add(file);
+        CaArrayFile caArrayFile = this.fileAccessServiceStub.add(file);
         caArrayFile.setFileType(type);
         caArrayFile.setProject(new Project());
         caArrayFile.getProject().setExperiment(new Experiment());
@@ -701,14 +669,14 @@ public class ArrayDataServiceTest {
 
                 @Override
                 public ArrayDataType getArrayDataType(ArrayDataTypeDescriptor descriptor) {
-                    if (dataTypeMap.containsKey(descriptor)) {
-                        return dataTypeMap.get(descriptor);
+                    if (LocalDaoFactoryStub.this.dataTypeMap.containsKey(descriptor)) {
+                        return LocalDaoFactoryStub.this.dataTypeMap.get(descriptor);
                     }
                     ArrayDataType arrayDataType = new ArrayDataType();
                     arrayDataType.setName(descriptor.getName());
                     arrayDataType.setVersion(descriptor.getVersion());
                     addQuantitationTypes(arrayDataType, descriptor);
-                    dataTypeMap.put(descriptor, arrayDataType);
+                    LocalDaoFactoryStub.this.dataTypeMap.put(descriptor, arrayDataType);
                     return arrayDataType;
                 }
 
@@ -720,24 +688,24 @@ public class ArrayDataServiceTest {
 
                 @Override
                 public QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor) {
-                    if (quantitationTypeMap.containsKey(descriptor)) {
-                        return quantitationTypeMap.get(descriptor);
+                    if (LocalDaoFactoryStub.this.quantitationTypeMap.containsKey(descriptor)) {
+                        return LocalDaoFactoryStub.this.quantitationTypeMap.get(descriptor);
                     }
                     QuantitationType quantitationType = new QuantitationType();
                     quantitationType.setName(descriptor.getName());
                     quantitationType.setTypeClass(descriptor.getDataType().getTypeClass());
-                    quantitationTypeMap.put(descriptor, quantitationType);
+                    LocalDaoFactoryStub.this.quantitationTypeMap.put(descriptor, quantitationType);
                     return quantitationType;
                 }
 
                 @Override
                 public RawArrayData getRawArrayData(CaArrayFile file) {
-                    return (RawArrayData) fileDataMap.get(file);
+                    return (RawArrayData) LocalDaoFactoryStub.this.fileDataMap.get(file);
                 }
 
                 @Override
                 public DerivedArrayData getDerivedArrayData(CaArrayFile file) {
-                    return (DerivedArrayData) fileDataMap.get(file);
+                    return (DerivedArrayData) LocalDaoFactoryStub.this.fileDataMap.get(file);
                 }
 
                 @Override
@@ -751,7 +719,7 @@ public class ArrayDataServiceTest {
         }
 
         void addData(AbstractArrayData arrayData) {
-            fileDataMap.put(arrayData.getDataFile(), arrayData);
+            this.fileDataMap.put(arrayData.getDataFile(), arrayData);
         }
     }
 
