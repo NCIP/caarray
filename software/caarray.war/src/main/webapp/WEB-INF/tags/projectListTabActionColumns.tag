@@ -6,6 +6,7 @@
 <%@ attribute name="actions" required="true"%>
 <%@ attribute name="item" required="true" type="gov.nih.nci.caarray.domain.PersistentObject"%>
 <%@ attribute name="isSubtab" required="false"%>
+<%@ attribute name="confirmText" required="false"%>
 
 <%@ include file="projectListTabCommon.tagf"%>
 
@@ -17,7 +18,7 @@
 	    </c:if>
 	    <display:column titleKey="button.${action}">
 	        <c:if test="${!editableOnly || project.saveAllowed && caarrayfn:canWrite(item, caarrayfn:currentUser()) && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
-	            <caarray:projectListTabActionLink entityName="${entityName}" action="${action}" itemId="${item.id}" isSubtab="${isSubtab}"/>            
+	            <caarray:projectListTabActionLink entityName="${entityName}" action="${action}" itemId="${item.id}" isSubtab="${isSubtab}" confirmText="${confirmText}"/>            
 	        </c:if>
 	    </display:column>    
 	</c:forTokens>

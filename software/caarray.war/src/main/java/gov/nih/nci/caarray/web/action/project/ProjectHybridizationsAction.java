@@ -276,9 +276,12 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
      * {@inheritDoc}
      */
     @Override
-    protected void handleDelete() {
+    protected boolean handleDelete() {
         for (LabeledExtract le : getCurrentAssociationsCollection()) {
             le.getHybridizations().remove(getCurrentHybridization());
         }
+        // clean up upstream associations to the subgraph of objects
+        getProject().getFiles().removeAll(getCurrentHybridization().getAllDataFiles());
+        return true;
     }
 }

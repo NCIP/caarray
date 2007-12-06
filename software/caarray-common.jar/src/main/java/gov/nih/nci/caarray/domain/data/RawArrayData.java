@@ -83,18 +83,19 @@
 
 package gov.nih.nci.caarray.domain.data;
 
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+
 import java.util.HashSet;
 import java.util.Set;
 
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-
-import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
 
 /**
@@ -122,7 +123,8 @@ public class RawArrayData extends AbstractArrayData {
     /**
      * @return the hybridization
      */
-    @OneToOne(cascade = { CascadeType.ALL })
+    @OneToOne()
+    @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "RAWDATA_HYBRIDIZATION_FK")
     public Hybridization getHybridization() {
         return hybridization;
@@ -139,6 +141,7 @@ public class RawArrayData extends AbstractArrayData {
      * @return source images
      */
     @OneToMany(mappedBy = "rawArrayData")
+    @Cascade(CascadeType.DELETE)
     public Set<Image> getSourceImages() {
         return sourceImages;
     }

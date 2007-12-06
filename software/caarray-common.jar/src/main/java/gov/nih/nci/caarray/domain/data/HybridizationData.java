@@ -116,7 +116,7 @@ public final class HybridizationData extends AbstractCaArrayObject {
      */
     @OneToMany(fetch = FetchType.EAGER)
     @IndexColumn(name = "COLUMN_INDEX")
-    @Cascade(CascadeType.ALL)
+    @Cascade({CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public List<AbstractDataColumn> getColumns() {
         return columns;
     }

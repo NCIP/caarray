@@ -123,7 +123,7 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
             message = "You must select at least one annotation to associate.",
             expression = "currentAssociationsCollection.size() - itemsToRemove.size() + itemsToAssociate.size() > 0")
     public String save() {
-        // ideally this logic, along with the itemsToAssociate collection would be int he base class, but the
+        // ideally this logic, along with the itemsToAssociate collection would be in the base class, but the
         // struts 2 type converter for persistent entity wasn't liking the generic collection.
         getCurrentAssociationsCollection().removeAll(getItemsToRemove());
         for (T item : getItemsToRemove()) {
@@ -143,8 +143,11 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
     @Override
     public String delete() {
         addOrphan(getItem());
-        handleDelete();
-        return super.delete();
+        boolean doDelete = handleDelete();
+        if (doDelete) {
+            return super.delete();
+        }
+        return "list";
     }
 
     /**
@@ -199,9 +202,13 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
 
     /**
      * Handles deletion of the current item.  Implementations should remove the current T
-     * from the left association class.
+     * from the left association class and perform any other model cleanup necessary for the
+     * delete to succeed.
+     *
+     * @return whether to proceed with the delete.  If false, will not delete.  Put a message
+     *         into scope explaining why.
      */
-    protected abstract void handleDelete();
+    protected abstract boolean handleDelete();
 
     /**
      * @return the itemsToAssociate

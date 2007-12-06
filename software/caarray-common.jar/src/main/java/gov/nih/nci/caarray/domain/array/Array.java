@@ -86,12 +86,13 @@ package gov.nih.nci.caarray.domain.array;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
 
 /**
@@ -154,7 +155,7 @@ public class Array extends AbstractCaArrayEntity {
      * @return the production
      */
     @ManyToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     @ForeignKey(name = "ARRAY_PRODUCTION_IDK")
     public ProtocolApplication getProduction() {
         return production;
@@ -175,7 +176,8 @@ public class Array extends AbstractCaArrayEntity {
      *
      * @return the design
      */
-    @ManyToOne(cascade = { CascadeType.ALL })
+    @ManyToOne()
+    @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "ARRAY_DESIGN_IDK")
     public ArrayDesign getDesign() {
         return design;

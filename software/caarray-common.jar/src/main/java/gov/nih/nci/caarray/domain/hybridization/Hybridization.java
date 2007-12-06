@@ -86,6 +86,7 @@ package gov.nih.nci.caarray.domain.hybridization;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
+import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -101,7 +102,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -113,6 +113,7 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Where;
 import org.hibernate.validator.Length;
@@ -139,6 +140,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     private Set<LabeledExtract> labeledExtract = new HashSet<LabeledExtract>();
     private Set<FactorValue> factorValues = new HashSet<FactorValue>();
     private Term label;
+    private Set<HybridizationData> hybridizationDatas = new HashSet<HybridizationData>();
 
     /**
      * Gets the name.
@@ -182,6 +184,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      * @return the images
      */
     @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.LAZY)
+    @Cascade(CascadeType.DELETE)
     public Set<Image> getImages() {
         return this.images;
     }
@@ -203,6 +206,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      * @return the derivedDatas
      */
     @ManyToMany(mappedBy = "hybridizations", fetch = FetchType.LAZY)
+    @Cascade(CascadeType.DELETE)
     public Set<DerivedArrayData> getDerivedDataCollection() {
         return this.derivedDataCollection;
     }
@@ -223,7 +227,8 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      *
      * @return the array
      */
-    @ManyToOne(cascade = { CascadeType.ALL })
+    @ManyToOne()
+    @Cascade(CascadeType.SAVE_UPDATE)  // Could eventually add DELETE cascade, but Arrays are shared
     @ForeignKey(name = "HYBRIDIZATION_ARRAY_FK")
     public Array getArray() {
         return this.array;
@@ -245,7 +250,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      * @return the arrayData
      */
     @OneToOne(mappedBy = MAPPED_BY)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     public RawArrayData getArrayData() {
         return this.arrayData;
     }
@@ -266,6 +271,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      * @return the factorValues
      */
     @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.LAZY)
+    @Cascade(CascadeType.DELETE)
     public Set<FactorValue> getFactorValues() {
         return this.factorValues;
     }
@@ -287,6 +293,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      * @return the protocolApplication
      */
     @ManyToOne
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     @ForeignKey(name = "HYBRIDIZATION_PROTOCOLAPP_FK")
     public ProtocolApplication getProtocolApplication() {
         return this.protocolApplication;
@@ -352,7 +359,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      * @return the amountOfMaterialUnit
      */
     @ManyToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "HYBRIDIZATIONAMOUNT_UNIT_FK")
     public Term getAmountOfMaterialUnit() {
         return this.amountOfMaterialUnit;
@@ -369,7 +376,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      * @return the label
      */
     @ManyToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "HYBRIDIZATION_LABEL_FK")
     public Term getLabel() {
         return this.label;
@@ -381,7 +388,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     public void setLabel(Term label) {
         this.label = label;
     }
-    
+
     /**
      * @return all the data files related to this hybridization (raw or derived)
      */
@@ -406,5 +413,17 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
             protectables.addAll(le.relatedProtectables());
         }
         return protectables;
+    }
+
+    @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.LAZY)
+    @Cascade(CascadeType.DELETE)
+    @SuppressWarnings({"PMD.UnusedPrivateMethod", "unused" })
+    private Set<HybridizationData> getHybridizationDatas() {
+        return hybridizationDatas;
+    }
+
+    @SuppressWarnings({"PMD.UnusedPrivateMethod", "unused" })
+    private void setHybridizationDatas(Set<HybridizationData> hybridizationDatas) {
+        this.hybridizationDatas = hybridizationDatas;
     }
 }

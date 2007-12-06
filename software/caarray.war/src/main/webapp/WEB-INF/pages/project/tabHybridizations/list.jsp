@@ -1,5 +1,7 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
+<s:set name="msgText" value="%{getText('experiment.hybridizations.confirmDelete')}"/>
+
 <caarray:tabPane subtab="true">
     <caarray:projectListTabHeader entityName="Hybridization" isSubtab="true"/>
 
@@ -21,7 +23,7 @@
             <display:column titleKey="experiment.files.uncompressedSize" sortable="true" sortProperty="arrayData.dataFile.uncompressedSize">
                 <fmt:formatNumber value="${row.arrayData.dataFile.uncompressedSize / 1024}" maxFractionDigits="0"/>
             </display:column>
-            <caarray:projectListTabActionColumns entityName="Hybridization" item="${row}" actions="!edit,!delete" isSubtab="true"/>
+            <caarray:projectListTabActionColumns entityName="Hybridization" item="${row}" actions="!edit,!delete" isSubtab="true" confirmText="${msgText}"/>
             <display:column titleKey="button.download">
 				<c:url value="/ajax/project/listTab/Hybridizations/download.action" var="actionUrl">
 				    <c:param name="project.id" value="${project.id}" />

@@ -91,7 +91,6 @@ import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -99,6 +98,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
 
   /**
@@ -139,6 +140,7 @@ public class Image extends AbstractCaArrayEntity {
      * @return the protocolApplications
      */
     @OneToMany(mappedBy = "image", fetch = FetchType.LAZY)
+    @Cascade(CascadeType.DELETE)
     public Set<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }
@@ -184,7 +186,8 @@ public class Image extends AbstractCaArrayEntity {
     /**
      * @return the hybridization
      */
-    @ManyToOne(cascade = { CascadeType.ALL })
+    @ManyToOne()
+    @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "IMAGE_HYBRIDIZATION_FK")
     public Hybridization getHybridization() {
         return hybridization;

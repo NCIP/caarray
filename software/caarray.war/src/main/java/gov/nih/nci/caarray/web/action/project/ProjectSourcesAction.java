@@ -88,8 +88,11 @@ import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.util.Collection;
+
+import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
@@ -171,4 +174,21 @@ public class ProjectSourcesAction extends AbstractProjectListTabAction {
     public void setCurrentSource(Source currentSource) {
         this.currentSource = currentSource;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SkipValidation
+    @Override
+    public String delete() {
+        if (!getCurrentSource().getSamples().isEmpty()) {
+            ActionHelper.saveMessage(getText("experiment.annotations.cantdelete",
+                    new String[] {getText("experiment.source"),
+                                  getText("experiment.sample") }));
+            return "list";
+        }
+        return super.delete();
+    }
+
+
 }

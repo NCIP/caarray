@@ -230,9 +230,16 @@ public class ProjectExtractsAction extends AbstractProjectProtocolAnnotationList
      * {@inheritDoc}
      */
     @Override
-    protected void handleDelete() {
+    protected boolean handleDelete() {
+        if (!getCurrentExtract().getLabeledExtracts().isEmpty()) {
+            ActionHelper.saveMessage(getText("experiment.annotations.cantdelete",
+                    new String[] {getText("experiment.extract"),
+                                  getText("experiment.labeledExtract") }));
+            return false;
+        }
         for (Sample s : getCurrentAssociationsCollection()) {
             s.getExtracts().remove(getCurrentExtract());
         }
+        return true;
     }
 }

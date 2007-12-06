@@ -109,6 +109,7 @@ import javax.persistence.Table;
 import org.apache.commons.collections.Closure;
 import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
@@ -137,7 +138,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      * @return the tissueSite
      */
     @ManyToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "BIOMATERIAL_SITE_FK")
     public Term getTissueSite() {
         return this.tissueSite;
@@ -156,7 +157,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      * @return the materialType
      */
     @ManyToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "BIOMATERIAL_MAT_TYPE_FK")
     public Term getMaterialType() {
         return this.materialType;
@@ -175,7 +176,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      * @return the cellType
      */
     @ManyToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "BIOMATERIAL_CELL_TYPE_FK")
     public Term getCellType() {
         return this.cellType;
@@ -192,7 +193,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      * @return the diseaseState
      */
     @ManyToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "BIOMATERIAL_DIS_STATE_FK")
     public Term getDiseaseState() {
         return this.diseaseState;
@@ -251,7 +252,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      * @return the characteristics
      */
     @OneToMany(mappedBy = "bioMaterial", fetch = FetchType.LAZY)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     @AttributePolicy(mutators = @AttributeMutator(policies = SecurityPolicy.TCGA_POLICY_NAME,
             mutator = TcgaCharacteristicFilter.class))
     public Set<AbstractCharacteristic> getCharacteristics() {
@@ -274,7 +275,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      * @return the protocolApplications
      */
     @OneToMany(mappedBy = "bioMaterial", fetch = FetchType.LAZY)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade(CascadeType.SAVE_UPDATE)
     public Set<ProtocolApplication> getProtocolApplications() {
         return this.protocolApplications;
     }
@@ -293,7 +294,7 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      * @return the organism
      */
     @ManyToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "BIOMATERIAL_ORGANISM_FK")
     @AttributePolicy(deny = SecurityPolicy.TCGA_POLICY_NAME)
     public Organism getOrganism() {

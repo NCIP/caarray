@@ -229,9 +229,16 @@ public class ProjectLabeledExtractsAction extends AbstractProjectProtocolAnnotat
      * {@inheritDoc}
      */
     @Override
-    protected void handleDelete() {
+    protected boolean handleDelete() {
+        if (!getCurrentLabeledExtract().getHybridizations().isEmpty()) {
+            ActionHelper.saveMessage(getText("experiment.annotations.cantdelete",
+                                     new String[] {getText("experiment.labeledExtract"),
+                                                   getText("experiment.hybridization") }));
+            return false;
+        }
         for (Extract e : getCurrentAssociationsCollection()) {
             e.getLabeledExtracts().remove(getCurrentLabeledExtract());
         }
+        return true;
     }
 }

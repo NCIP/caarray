@@ -264,9 +264,16 @@ public class ProjectSamplesAction extends AbstractProjectProtocolAnnotationListT
      * {@inheritDoc}
      */
     @Override
-    protected void handleDelete() {
+    protected boolean handleDelete() {
+        if (!getCurrentSample().getExtracts().isEmpty()) {
+            ActionHelper.saveMessage(getText("experiment.annotations.cantdelete",
+                    new String[] {getText("experiment.sample"),
+                                  getText("experiment.extract") }));
+            return false;
+        }
         for (Source s : getCurrentAssociationsCollection()) {
             s.getSamples().remove(getCurrentSample());
         }
+        return true;
     }
 }

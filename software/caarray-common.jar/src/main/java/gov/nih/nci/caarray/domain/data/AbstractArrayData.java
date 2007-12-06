@@ -103,6 +103,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
 
 /**
@@ -130,7 +131,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      * @return the dataFile
      */
     @ManyToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     @ForeignKey(name = "ARRAYDATA_FILE_FK")
     public CaArrayFile getDataFile() {
         return dataFile;
@@ -170,6 +171,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      * @return the protocolApplications
      */
     @OneToMany(mappedBy = "arrayData", fetch = FetchType.LAZY)
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     public Set<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }
@@ -188,7 +190,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      * @return the type
      */
     @ManyToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "ARRAYDATA_TYPE_FK")
     public ArrayDataType getType() {
         return type;
@@ -205,7 +207,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      * @return the dataSet
      */
     @OneToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     public DataSet getDataSet() {
         return dataSet;
     }

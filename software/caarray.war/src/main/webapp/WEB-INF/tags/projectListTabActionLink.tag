@@ -8,6 +8,8 @@
 <%@ attribute name="isSubtab" required="false"%>
 <%@ attribute name="linkContent" required="false" %>
 <%@ attribute name="linkRenderer" required="false" fragment="true"%>
+<%@ attribute name="confirmText" required="false"%>
+
 
 <%@ variable name-given="actionUrl"%>
 <%@ variable name-given="loadTabFunction"%>
@@ -21,6 +23,7 @@
 </c:url>
 
 <c:set var="loadTabFunction" value="${isSubtab ? 'loadLinkInSubTab' : 'loadLinkInTab' }"/>
+<c:set var="showPopup" value="${action ne 'delete' || empty confirmText ? 'false' : 'true'}"/>
 <fmt:message key="project.tabs.${pluralLower}" var="tabCaption" />
 
 <c:choose>
@@ -28,7 +31,7 @@
         <c:if test="${empty linkContent}">
             <c:set var="linkContent"><img src="<c:url value="/images/ico_${action}.gif"/>" alt="<fmt:message key="button.${action}"/>"></c:set>
         </c:if>
-        <a href="#" onclick="TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}'); return false;">
+        <a href="#" onclick="if (!${showPopup} || confirm('${confirmText}')) { TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}');} return false;">
             <c:out value="${linkContent}" escapeXml="false"/>
         </a>
     </c:when>
