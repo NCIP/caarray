@@ -97,6 +97,8 @@ import org.hibernate.criterion.Order;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
+import com.opensymphony.xwork2.validator.annotations.UrlValidator;
+import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
  * @author Scott Miller
@@ -133,6 +135,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
      * load the protocol management ui.
      * @return the string indicating what result to follow.
      */
+    @SkipValidation
     public String manage() {
         if (Boolean.valueOf(ServletActionContext.getRequest().getParameter(START_WITH_EDIT))) {
             HttpSession session = ServletActionContext.getRequest().getSession();
@@ -159,6 +162,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
      * Action for loading a protocol to view.
      * @return the string indicating which result to follow.
      */
+    @SkipValidation
     public String details() {
         setEditMode(false);
         return INPUT;
@@ -170,6 +174,11 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
      * @throws IllegalAccessException on error
      * @throws InstantiationException on error
      */
+    @Validations(
+            urls = {
+                    @UrlValidator(message = "", fieldName = "protocol.url", key = "struts.validator.url")
+            }
+        )
     public String save() throws InstantiationException, IllegalAccessException {
         ActionHelper.getGenericDataService().save(getProtocol());
         if (isReturnToProjectOnCompletion()) {

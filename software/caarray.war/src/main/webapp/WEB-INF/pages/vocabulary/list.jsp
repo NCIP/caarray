@@ -31,7 +31,12 @@
                     </ajax:anchors>
                 </display:column>
                 <display:column title="Description" property="description" sortable="true" />
-                <display:column title="Source" property="source.name" sortable="true" />
+                <display:column title="Source" sortProperty="source.name" sortable="true">
+                    <c:choose>
+                        <c:when test="${not empty row.source.url}"><a href="${row.source.url}">${row.source.name}</a></c:when>
+                        <c:otherwise>${row.source.name}</c:otherwise>
+                    </c:choose>
+                </display:column>
                  <display:column titleKey="button.edit" class="centered" headerClass="centered">
                     <c:url value="/protected/ajax/vocabulary/edit.action" var="editTermUrl">
                         <c:param name="category" value="${category}" />

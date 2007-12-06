@@ -35,7 +35,7 @@
             <s:textfield key="newSource.version" size="80" tabindex="7"/>
             </tbody>
             <tr><th colspan="2">Accession</th></tr>
-            <s:textfield name="currentTerm.accession.url" label="Accession URL" size="80" tabindex="8"/>
+            <s:textfield key="currentTerm.accession.url" size="80" tabindex="8"/>
             <s:textfield name="currentTerm.accession.value" label="Accession Value" size="80" tabindex="9"/>
             <s:hidden name="category" />
             <s:hidden name="currentTerm.id" />
@@ -68,7 +68,7 @@
                 <c:when test="${editMode}">
                     <caarray:action actionClass="save" text="Save" onclick="TabUtils.submitTabForm('termForm', 'tabboxwrapper'); return false;" tabindex="11" />
                 </c:when>
-                <c:when test="${caarrayfn:canWrite(protocol, caarrayfn:currentUser())}">
+                <c:otherwise>
                     <c:url value="/protected/ajax/vocabulary/edit.action" var="actionUrl">
                         <c:param name="category" value="${category}" />
                         <c:param name="currentTerm.id" value="${currentTerm.id}" />
@@ -76,7 +76,7 @@
                     <ajax:anchors target="tabboxwrapper">
                         <caarray:action actionClass="edit" text="Edit" url="${actionUrl}" />
                     </ajax:anchors>
-                </c:when>
+                </c:otherwise>
             </c:choose>
         </caarray:actions>
     </div>

@@ -101,8 +101,10 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
+import com.opensymphony.xwork2.validator.annotations.UrlValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
+import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
  * Action class for managing a vocabulary.
@@ -194,6 +196,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
      *
      * @return the string indicating which result to follow.
      */
+    @SkipValidation
     public String details() {
         setEditMode(false);
         setSources(ActionHelper.getVocabularyService().getAllSources());
@@ -205,6 +208,12 @@ public class VocabularyAction extends ActionSupport implements Preparable {
      *
      * @return the string indicating which result to follow.
      */
+    @Validations(
+        urls = {
+                @UrlValidator(message = "", fieldName = "currentTerm.accession.url", key = "struts.validator.url"),
+                @UrlValidator(message = "", fieldName = "newSource.url", key = "struts.validator.url")
+        }
+    )
     public String save() {
         if (getCurrentTerm().getCategory() == null) {
             getCurrentTerm().setCategory(
