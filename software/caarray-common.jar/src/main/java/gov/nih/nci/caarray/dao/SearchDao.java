@@ -89,6 +89,8 @@ import gov.nih.nci.system.query.cql.CQLQuery;
 import java.util.Collection;
 import java.util.List;
 
+import org.hibernate.criterion.Order;
+
 /**
  * DAO to search for entities using different criteria.
  * Supports searching by example, CQL, HQL (Hibernate Query Language) string and
@@ -127,6 +129,16 @@ public interface SearchDao extends CaArrayDao {
      * @return the entity.
      */
     <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId);
+
+
+    /**
+     * Method to get all the entities of a given type.
+     * @param <T> the type
+     * @param entityClass the class
+     * @param orders the order by clauses
+     * @return the list of objects
+     */
+    <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders);
 
     /**
      * Filters the given collection where the given property = the given value.

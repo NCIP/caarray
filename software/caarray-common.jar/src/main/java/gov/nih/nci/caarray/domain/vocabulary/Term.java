@@ -98,7 +98,7 @@ import org.hibernate.validator.NotNull;
 
    */
 @Entity
-public class Term extends AbstractCaArrayEntity {
+public class Term extends AbstractCaArrayEntity implements Comparable<Term> {
     /**
      * The serial version UID for serialization.
      */
@@ -242,4 +242,16 @@ public class Term extends AbstractCaArrayEntity {
             .append("description", this.description)
             .toString();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public int compareTo(Term o) {
+        if (o == null) {
+            return 1;
+        }
+        return this.getValue().compareToIgnoreCase(o.getValue());
+    }
+
+
 }

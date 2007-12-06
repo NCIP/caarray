@@ -122,10 +122,10 @@ public class GenericDataServiceTest {
 
     @Test
     public void testRetrieveProject() {
-        Object obj = this.service.retrieveEnity(Project.class, 999l);
+        Object obj = this.service.retrieveEntity(Project.class, 999l);
         assertEquals(null, obj);
 
-        obj = this.service.retrieveEnity(Project.class, 1l);
+        obj = this.service.retrieveEntity(Project.class, 1l);
         assertEquals(SecurityLevel.VISIBLE, ((Project) obj).getPublicProfile().getSecurityLevel());
     }
 
@@ -212,8 +212,7 @@ public class GenericDataServiceTest {
         @Override
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
             if (Project.class.equals(entityClass) && Long.valueOf(1L).equals(entityId)) {
-                Project p = new Project();
-                return (T) p;
+                return (T) new Project();
             }
             return null;
         }

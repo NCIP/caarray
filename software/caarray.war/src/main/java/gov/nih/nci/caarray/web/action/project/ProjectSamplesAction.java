@@ -136,7 +136,7 @@ public class ProjectSamplesAction extends AbstractProjectProtocolAnnotationListT
     public void prepare() throws VocabularyServiceException {
         super.prepare();
         if (this.currentSample.getId() != null) {
-            this.currentSample = getGenericDataService().retrieveEnity(Sample.class, this.currentSample.getId());
+            this.currentSample = getGenericDataService().retrieveEntity(Sample.class, this.currentSample.getId());
         }
     }
 

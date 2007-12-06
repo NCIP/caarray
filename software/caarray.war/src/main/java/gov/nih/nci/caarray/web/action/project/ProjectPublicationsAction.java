@@ -124,7 +124,7 @@ public class ProjectPublicationsAction extends AbstractProjectListTabAction {
         super.prepare();
 
         if (this.currentPublication.getId() != null) {
-            this.currentPublication = getGenericDataService().retrieveEnity(Publication.class,
+            this.currentPublication = getGenericDataService().retrieveEntity(Publication.class,
                     this.currentPublication.getId());
         }
 

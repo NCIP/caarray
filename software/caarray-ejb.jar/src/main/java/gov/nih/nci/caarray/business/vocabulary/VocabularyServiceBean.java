@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -224,7 +225,12 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     public List<Protocol> getProtocolByProtocolType(Term type) {
-        return this.daoFactory.getProtocolDao().getProtocolsByType(type);
+        if (type == null) {
+            return new ArrayList<Protocol>();
+        }
+        Protocol p = new Protocol();
+        p.setType(type);
+        return getVocabularyDao().queryEntityAndAssociationsByExample(p);
     }
 
     /**

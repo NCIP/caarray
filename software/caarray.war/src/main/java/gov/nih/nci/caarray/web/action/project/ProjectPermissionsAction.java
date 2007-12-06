@@ -35,7 +35,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     private AccessProfile accessProfile = new AccessProfile(SecurityLevel.NONE);
     private Map<Long, SampleSecurityLevel> sampleSecurityLevels = new HashMap<Long, SampleSecurityLevel>();
     private boolean useTcgaPolicy;
-    
+
     /**
      * {@inheritDoc}
      */
@@ -45,11 +45,12 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
 
         this.collaboratorGroups = getPermissionsManagementService().getCollaboratorGroups();
         if (this.collaboratorGroup.getId() != null) {
-            this.collaboratorGroup = getGenericDataService().retrieveEnity(CollaboratorGroup.class,
+            this.collaboratorGroup = getGenericDataService().retrieveEntity(CollaboratorGroup.class,
                                                                            this.collaboratorGroup.getId());
         }
         if (this.accessProfile.getId() != null) {
-            this.accessProfile = getGenericDataService().retrieveEnity(AccessProfile.class, this.accessProfile.getId());
+            this.accessProfile = getGenericDataService().retrieveEntity(AccessProfile.class,
+                    this.accessProfile.getId());
         }
     }
 
@@ -125,7 +126,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
         this.accessProfile.getSampleSecurityLevels().clear();
         if (this.accessProfile.getSecurityLevel().isSampleLevelPermissionsAllowed()) {
             for (Map.Entry<Long, SampleSecurityLevel> sampleEntry : this.sampleSecurityLevels.entrySet()) {
-                Sample sample = getGenericDataService().retrieveEnity(Sample.class, sampleEntry.getKey());
+                Sample sample = getGenericDataService().retrieveEntity(Sample.class, sampleEntry.getKey());
                 if (this.accessProfile.getSecurityLevel().getSampleSecurityLevels().contains(sampleEntry.getValue())) {
                     this.accessProfile.getSampleSecurityLevels().put(sample, sampleEntry.getValue());
                 }
@@ -206,7 +207,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
      * @return the useTcgaPolicy
      */
     public boolean isUseTcgaPolicy() {
-        return useTcgaPolicy;
+        return this.useTcgaPolicy;
     }
 
     /**
@@ -220,6 +221,6 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
      * @return the collaboratorGroups
      */
     public List<CollaboratorGroup> getCollaboratorGroups() {
-        return collaboratorGroups;
+        return this.collaboratorGroups;
     }
 }

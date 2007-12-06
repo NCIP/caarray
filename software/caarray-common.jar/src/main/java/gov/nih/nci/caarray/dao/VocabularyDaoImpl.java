@@ -60,7 +60,6 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -143,14 +142,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
      */
     public Set<Term> getTermsRecursive(String categoryName, String value) {
         Session mySession = HibernateUtil.getCurrentSession();
-        Set<Term> matchingTerms = new TreeSet<Term>(new Comparator<Term>() {
-            /**
-             * {@inheritDoc}
-             */
-            public int compare(Term o1, Term o2) {
-                return o1.getValue().compareToIgnoreCase(o2.getValue());
-            }
-        });
+        Set<Term> matchingTerms = new TreeSet<Term>();
 
         // Get the parent category. Add it along with its children to a set of ids.
         Category category = getCategoryByName(categoryName, mySession);
@@ -222,11 +214,11 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
         List hibernateReturnedTerms = null;
 
         Criteria criteria = mySession.createCriteria(Term.class);
-        criteria = criteria.addOrder(Order.asc("value"));
+        criteria.addOrder(Order.asc("value"));
         if (value != null) {
-            criteria = criteria.add(Restrictions.like("value", value, MatchMode.START).ignoreCase());
+            criteria.add(Restrictions.like("value", value, MatchMode.START).ignoreCase());
         }
-        criteria = criteria.createCriteria("category").add(Restrictions.eq("id", categoryId));
+        criteria.createCriteria("category").add(Restrictions.eq("id", categoryId));
 
         hibernateReturnedTerms = criteria.list();
         if (hibernateReturnedTerms != null) {

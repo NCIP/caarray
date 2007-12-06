@@ -83,13 +83,8 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.protocol.Protocol;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.protocol</code> package.
@@ -108,20 +103,6 @@ class ProtocolDaoImpl extends AbstractCaArrayDaoImpl implements ProtocolDao {
      */
     public Protocol getProtocol(long id) {
         return (Protocol) getCurrentSession().get(Protocol.class, id);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    public List<Protocol> getProtocolsByType(Term type) {
-        if (type == null) {
-            return new ArrayList<Protocol>();
-        }
-        Query q = getCurrentSession().createQuery("from " + Protocol.class.getName()
-                + " where type = :type order by name");
-        q.setParameter("type", type);
-        return q.list();
     }
 
     @Override

@@ -128,7 +128,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
         super.prepare();
 
         if (this.currentFactor.getId() != null) {
-            this.currentFactor = getGenericDataService().retrieveEnity(Factor.class, this.currentFactor.getId());
+            this.currentFactor = getGenericDataService().retrieveEntity(Factor.class, this.currentFactor.getId());
         }
     }
 

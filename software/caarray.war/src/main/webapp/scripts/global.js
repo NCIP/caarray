@@ -351,17 +351,20 @@ var TabUtils = {
     savedFormData : null,
 
     preFunction : function(confirmMessage) {
-        TabUtils.confirmNavigateFromForm(confirmMessage);
+        if (!TabUtils.confirmNavigateFromForm(confirmMessage)) {
+            return false;
+        }
         TabUtils.showLoadingText();
     },
-    
+
     confirmNavigateFromForm : function(confirmMessage) {
         confirmMessage = confirmMessage || 'There are unsaved changed in your form, are you sure you want to continue?';
         if (TabUtils.hasFormChanges()) {
             if (!confirm(confirmMessage)) {
                 return false;
             }
-        }    
+        }
+        return true;
     },
 
     hasFormChanges : function() {
@@ -505,7 +508,7 @@ var PermissionUtils = {
 
         var formData = Form.serialize(formId);
         var url = $(formId).action;
-        
+
         new Ajax.Updater(PermissionUtils.PROFILE_DETAILS_ID, url,
               {parameters: formData, evalScripts: true, onComplete: function() { $(PermissionUtils.PROFILE_LOADING_ID).hide();}});
         return false;

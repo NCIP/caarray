@@ -82,11 +82,8 @@
  */
 package gov.nih.nci.caarray.dao.stub;
 
-import java.util.List;
-
 import gov.nih.nci.caarray.dao.ProtocolDao;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 /**
  *
@@ -97,14 +94,6 @@ public class ProtocolDaoStub extends AbstractDaoStub implements ProtocolDao {
      * {@inheritDoc}
      */
     public Protocol getProtocol(long id) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<Protocol> getProtocolsByType(Term type) {
-        // TODO Auto-generated method stub
         return null;
     }
 }

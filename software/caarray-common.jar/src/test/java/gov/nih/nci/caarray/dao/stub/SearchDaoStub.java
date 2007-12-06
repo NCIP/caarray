@@ -91,6 +91,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.hibernate.criterion.Order;
+
 /**
  *
  */
@@ -144,5 +146,12 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
 
     public void reset() {
         this.callsToFiltercollection = 0;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders) {
+        return null;
     }
 }

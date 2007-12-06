@@ -107,7 +107,7 @@ public interface GenericDataService {
      * @param entityId the id of the enity to retrieve
      * @return the entity.
      */
-    <T extends PersistentObject> T retrieveEnity(Class<T> entityClass, Long entityId);
+    <T extends PersistentObject> T retrieveEntity(Class<T> entityClass, Long entityId);
 
     /**
      * Retrieves all instances of the given class.
@@ -118,7 +118,7 @@ public interface GenericDataService {
      * @throws IllegalAccessException if entityClass.newInstance fails
      * @throws InstantiationException if entityClass.newInstance fails
      */
-    <T extends PersistentObject> List<T> retriveAll(Class<T> entityClass, Order... orders)
+    <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders)
         throws IllegalAccessException, InstantiationException;
 
     /**

@@ -107,7 +107,7 @@ public class GenericDataServiceStub implements GenericDataService {
     /**
      * {@inheritDoc}
      */
-    public <T extends PersistentObject> T retrieveEnity(Class<T> entityClass, Long entityId) {
+    public <T extends PersistentObject> T retrieveEntity(Class<T> entityClass, Long entityId) {
         return null;
     }
 
@@ -135,7 +135,7 @@ public class GenericDataServiceStub implements GenericDataService {
     /**
      * {@inheritDoc}
      */
-    public <T extends PersistentObject> List<T> retriveAll(Class<T> entityClass, Order... orders)
+    public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders)
             throws IllegalAccessException, InstantiationException {
         return null;
     }

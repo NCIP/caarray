@@ -162,7 +162,7 @@ public class ProjectOverviewAction extends ProjectTabAction {
     @SkipValidation
     public String retrieveArrayDesigns() {
         if (this.manufacturerId != null) {
-            Organization provider = getGenericDataService().retrieveEnity(Organization.class, this.manufacturerId);
+            Organization provider = getGenericDataService().retrieveEntity(Organization.class, this.manufacturerId);
             this.arrayDesigns = getArrayDesignService().getArrayDesignsForProvider(provider);
         }
         return "xmlArrayDesigns";

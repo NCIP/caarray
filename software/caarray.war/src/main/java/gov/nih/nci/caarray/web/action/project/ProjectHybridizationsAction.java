@@ -138,7 +138,7 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
         super.prepare();
 
         if (this.currentHybridization.getId() != null) {
-            this.currentHybridization = getGenericDataService().retrieveEnity(Hybridization.class,
+            this.currentHybridization = getGenericDataService().retrieveEntity(Hybridization.class,
                                                                               this.currentHybridization.getId());
         }
     }

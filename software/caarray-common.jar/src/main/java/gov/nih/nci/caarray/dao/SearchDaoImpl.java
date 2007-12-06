@@ -97,9 +97,11 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 
 /**
  * DAO to search for entities using various types of criteria.
@@ -178,6 +180,18 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         Query q = HibernateUtil.getCurrentSession().createQuery("from " + entityClass.getName() + " where id = :id");
         q.setLong("id", entityId);
         return (T) q.uniqueResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders) {
+        Criteria crit = HibernateUtil.getCurrentSession().createCriteria(entityClass);
+        for (Order o : orders) {
+            crit.addOrder(o);
+        }
+        return crit.list();
     }
 
     /**

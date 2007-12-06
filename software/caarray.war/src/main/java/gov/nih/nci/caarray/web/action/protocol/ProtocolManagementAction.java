@@ -124,7 +124,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
      */
     public void prepare() {
         if (this.getProtocol() != null && this.getProtocol().getId() != null) {
-            this.setProtocol(ActionHelper.getGenericDataService().retrieveEnity(Protocol.class,
+            this.setProtocol(ActionHelper.getGenericDataService().retrieveEntity(Protocol.class,
                     this.getProtocol().getId()));
         }
     }
@@ -202,7 +202,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
         if (getProtocol() != null) {
             HibernateUtil.getCurrentSession().evict(getProtocol());
         }
-        setProtocols(ActionHelper.getGenericDataService().retriveAll(Protocol.class, Order.asc("name")));
+        setProtocols(ActionHelper.getGenericDataService().retrieveAll(Protocol.class, Order.asc("name")));
         return SUCCESS;
     }
 

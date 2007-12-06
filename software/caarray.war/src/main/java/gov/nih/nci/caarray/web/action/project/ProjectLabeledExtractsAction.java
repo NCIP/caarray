@@ -126,7 +126,7 @@ public class ProjectLabeledExtractsAction extends AbstractProjectProtocolAnnotat
         super.prepare();
 
         if (this.currentLabeledExtract.getId() != null) {
-            this.currentLabeledExtract = getGenericDataService().retrieveEnity(LabeledExtract.class,
+            this.currentLabeledExtract = getGenericDataService().retrieveEntity(LabeledExtract.class,
                                                                                this.currentLabeledExtract.getId());
         }
     }

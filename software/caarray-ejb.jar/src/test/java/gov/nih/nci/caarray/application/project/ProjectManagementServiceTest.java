@@ -105,7 +105,6 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -447,7 +446,7 @@ public class ProjectManagementServiceTest {
         public List<Project> getProjectsForCurrentUser(boolean showPublic) {
             return new ArrayList<Project>();
         }
-        
+
         @Override
         public void remove(PersistentObject caArrayEntity) {
             this.lastDeleted = caArrayEntity;

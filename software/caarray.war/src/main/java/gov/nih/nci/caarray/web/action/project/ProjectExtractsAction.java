@@ -128,7 +128,7 @@ public class ProjectExtractsAction extends AbstractProjectProtocolAnnotationList
         super.prepare();
 
         if (this.currentExtract.getId() != null) {
-            this.currentExtract = getGenericDataService().retrieveEnity(Extract.class, this.currentExtract.getId());
+            this.currentExtract = getGenericDataService().retrieveEntity(Extract.class, this.currentExtract.getId());
         }
     }
 

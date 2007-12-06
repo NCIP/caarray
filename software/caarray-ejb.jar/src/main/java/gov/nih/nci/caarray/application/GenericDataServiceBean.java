@@ -117,7 +117,7 @@ public class GenericDataServiceBean implements GenericDataService {
     /**
      * {@inheritDoc}
      */
-    public <T extends PersistentObject> T retrieveEnity(Class<T> entityClass, Long entityId) {
+    public <T extends PersistentObject> T retrieveEntity(Class<T> entityClass, Long entityId) {
         LogUtil.logSubsystemEntry(LOG, entityClass, entityId);
         T result = this.daoFactory.getSearchDao().retrieve(entityClass, entityId);
         LogUtil.logSubsystemExit(LOG);
@@ -158,7 +158,7 @@ public class GenericDataServiceBean implements GenericDataService {
     /**
      * {@inheritDoc}
      */
-    public <T extends PersistentObject> List<T> retriveAll(Class<T> entityClass, Order... orders)
+    public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders)
             throws IllegalAccessException, InstantiationException {
         return this.daoFactory.getSearchDao().queryEntityByExample(entityClass.newInstance(), orders);
     }

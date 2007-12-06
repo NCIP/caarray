@@ -127,7 +127,7 @@ public class ProjectSourcesAction extends AbstractProjectListTabAction {
         super.prepare();
 
         if (this.currentSource.getId() != null) {
-            this.currentSource = getGenericDataService().retrieveEnity(Source.class, this.currentSource.getId());
+            this.currentSource = getGenericDataService().retrieveEntity(Source.class, this.currentSource.getId());
         }
     }
 
