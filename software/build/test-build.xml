@@ -110,9 +110,9 @@
     <condition property="jboss.running">
       <socket port="${jboss.server.port}" server="${jboss.server.hostname}" />
     </condition>
-	<property name="globus.url" value="http://${jboss.server.hostname}/wsrf/services/cagrid/CaArraySvc?wsdl"/>
+	<property name="gridservice.url" value="http://${domain.name}/wsrf/services/cagrid/CaArraySvc?wsdl"/>
     <condition property="globus.running">
-      <http url="${globus.url}"/>
+      <http url="${gridservice.url}"/>
     </condition>
     <property name="app.url" value="http://${jboss.server.hostname}:${jboss.server.port}/caarray/"/>
 	<condition property="webapp.running">
@@ -135,10 +135,10 @@
   </target>
 
   <target name="testGridServiceOnline">
-	<echo>Testing if ${globus.url} (Globus) availability...</echo>
-	<au:assertEquals message="Unable to reach ${globus.url}" expected="true"
+	<echo>Testing if ${gridservice.url} (Globus) availability...</echo>
+	<au:assertEquals message="Unable to reach ${gridservice.url}" expected="true"
                       actual="${globus.running}" casesensitive="true"/>
-    <echo>${globus.url} is Online...</echo>
+    <echo>${gridservice.url} is Online...</echo>
   </target>
 
   <target name="testWebAppOnline">
