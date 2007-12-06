@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.services;
 
 import gov.nih.nci.caarray.services.arraydesign.ArrayDesignDetailsService;
 import gov.nih.nci.caarray.services.data.DataRetrievalService;
+import gov.nih.nci.caarray.services.file.FileRetrievalService;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
 
 import java.util.Hashtable;
@@ -107,6 +108,7 @@ public final class CaArrayServer {
     private CaArraySearchService searchService;
     private DataRetrievalService dataRetrievalService;
     private ArrayDesignDetailsService arrayDesignDetailsService;
+    private FileRetrievalService fileRetrievalService;
 
     /**
      * Creates a new instance configured to attach to the provided hostname and port.
@@ -168,6 +170,7 @@ public final class CaArrayServer {
             arrayDesignDetailsService = (ArrayDesignDetailsService)
                                 initialContext.lookup(ArrayDesignDetailsService.JNDI_NAME);
             dataRetrievalService = (DataRetrievalService) initialContext.lookup(DataRetrievalService.JNDI_NAME);
+            fileRetrievalService = (FileRetrievalService) initialContext.lookup(FileRetrievalService.JNDI_NAME);
         } catch (NamingException e) {
             throw new ServerConnectionException("Couldn't connect to the caArray server", e);
         }
@@ -212,4 +215,10 @@ public final class CaArrayServer {
         return dataRetrievalService;
     }
 
+    /**
+     * @return the fileRetrievalService
+     */
+    public FileRetrievalService getFileRetrievalService() {
+        return fileRetrievalService;
+    }
 }
