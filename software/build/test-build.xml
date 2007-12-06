@@ -110,7 +110,7 @@
     <condition property="jboss.running">
       <socket port="${jboss.server.port}" server="${jboss.server.hostname}" />
     </condition>
-	<property name="globus.url" value="http://${jboss.server.hostname}:8080/wsrf/services/cagrid/CaArraySvc?wsdl"/>
+	<property name="globus.url" value="http://${jboss.server.hostname}/wsrf/services/cagrid/CaArraySvc?wsdl"/>
     <condition property="globus.running">
       <http url="${globus.url}"/>
     </condition>
