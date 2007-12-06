@@ -469,7 +469,10 @@ public final class IdfDocument extends AbstractMageTabDocument {
         } else {
             Iterator<Protocol> protocols = investigation.getProtocols().iterator();
             while (protocols.hasNext()) {
-                protocols.next().getType().setTermSource(getTermSource(value));
+                Protocol protocol = protocols.next();
+                if (protocol.getType() != null) {
+                    protocol.getType().setTermSource(getTermSource(value));
+                }
             }
 
         }

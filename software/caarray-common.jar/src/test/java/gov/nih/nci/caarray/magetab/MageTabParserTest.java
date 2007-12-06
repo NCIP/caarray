@@ -147,6 +147,15 @@ public class MageTabParserTest {
             assertTrue(message.getMessage().startsWith("Referenced SDRF file "));
             assertTrue(message.getMessage().endsWith( " was not included in the MAGE-TAB document set"));
     }
+
+    @Test
+    public void testValidateProtocolWithoutType() throws MageTabParsingException  {
+            MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
+            inputFileSet.addIdf(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
+            inputFileSet.addSdrf(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
+            ValidationResult result = parser.validate(inputFileSet);
+            assertNotNull(result);
+    }
     
     @Test
     public void testValidateMissingDataFiles() throws MageTabParsingException {
