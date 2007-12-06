@@ -443,7 +443,9 @@ public class ArrayDataServiceTest {
         testSnpChpData();
         testIlluminaData();
         testGenepixData();
-        testCelDataForSelectedQuantitationTypes();
+        // The following test is commented out due to the change to parse on import.
+        // It may be re-incorporated when parse on demand is re-instituted.
+        // testCelDataForSelectedQuantitationTypes();
     }
 
     private void testGenepixData() throws InvalidDataFileException {

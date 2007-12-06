@@ -76,7 +76,6 @@ import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
-import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
@@ -88,8 +87,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.hibernate.Transaction;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -99,7 +96,6 @@ public class FileManagementServiceTest {
     private final LocalFileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
     private final LocalArrayDesignServiceStub arrayDesignServiceStub = new LocalArrayDesignServiceStub();
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
-    private Transaction transaction;
 
     @Before
     public void setUp() {
@@ -116,13 +112,6 @@ public class FileManagementServiceTest {
         locatorStub.addLookup(ArrayDesignService.JNDI_NAME, arrayDesignServiceStub);
         locatorStub.addLookup(MageTabTranslator.JNDI_NAME, new MageTabTranslatorStub());
         fileManagementService = fileManagementServiceBean;
-        HibernateUtil.enableFilters(false);
-        transaction = HibernateUtil.getCurrentSession().beginTransaction();
-    }
-    
-    @After
-    public void tearDown() {
-        transaction.rollback();
     }
 
     @Test

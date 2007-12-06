@@ -123,12 +123,13 @@ abstract class AbstractDataSetImporter {
         this.fileAccessService = fileAccessService;
     }
 
-    void importData(boolean createAnnnotation) {
+    AbstractArrayData importData(boolean createAnnnotation) {
         lookupOrCreateArrayData(createAnnnotation);
         getArrayData().setDataSet(new DataSet());
         addHybridizationDatas();
         addColumns();
         getArrayData().getDataFile().setFileStatus(FileStatus.IMPORTED);
+        return getArrayData();
     }
 
     private void lookupOrCreateArrayData(boolean createAnnnotation) {

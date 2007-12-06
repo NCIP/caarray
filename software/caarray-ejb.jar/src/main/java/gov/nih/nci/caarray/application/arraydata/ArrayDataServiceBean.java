@@ -173,7 +173,8 @@ public class ArrayDataServiceBean implements ArrayDataService {
         FileAccessService fileAccessService = getFileAccessService();
         AbstractDataSetImporter abstractDataSetImporter =
             AbstractDataSetImporter.create(caArrayFile, getDaoFactory(), fileAccessService);
-        abstractDataSetImporter.importData(createAnnnotation);
+        AbstractArrayData arrayData = abstractDataSetImporter.importData(createAnnnotation);
+        loadDataSet(arrayData, fileAccessService);
         fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
     }

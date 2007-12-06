@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.application.file;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
-import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 
 import java.io.Serializable;
@@ -158,8 +157,6 @@ public class FileManagementMDB implements MessageListener {
                 job.setDaoFactory(getDaoFactory());
                 job.execute();
                 transaction.commit();
-                HibernateUtil.getCurrentSession().flush();
-                HibernateUtil.getCurrentSession().clear();
                 System.gc();
                 LOG.info("Successfully completed job");
             }
