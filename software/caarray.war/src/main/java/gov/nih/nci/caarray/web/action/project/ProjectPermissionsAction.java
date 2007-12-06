@@ -10,6 +10,9 @@ import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
+import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.util.ArrayList;
@@ -45,12 +48,24 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
 
         this.collaboratorGroups = getPermissionsManagementService().getCollaboratorGroups();
         if (this.collaboratorGroup.getId() != null) {
-            this.collaboratorGroup = getGenericDataService().retrieveEntity(CollaboratorGroup.class,
+            CollaboratorGroup retrieved = getGenericDataService().retrieveEntity(CollaboratorGroup.class,
                                                                            this.collaboratorGroup.getId());
+            if (retrieved == null) {
+                throw new PermissionDeniedException(this.collaboratorGroup,
+                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+            } else {
+                this.collaboratorGroup = retrieved;
+            }
         }
         if (this.accessProfile.getId() != null) {
-            this.accessProfile = getGenericDataService().retrieveEntity(AccessProfile.class,
+            AccessProfile retrieved = getGenericDataService().retrieveEntity(AccessProfile.class,
                     this.accessProfile.getId());
+            if (retrieved == null) {
+                throw new PermissionDeniedException(this.accessProfile,
+                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+            } else {
+                this.accessProfile = retrieved;
+            }
         }
     }
 

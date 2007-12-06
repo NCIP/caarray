@@ -86,6 +86,9 @@ import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementSe
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
+import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.util.UsernameHolder;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
@@ -126,7 +129,13 @@ public abstract class AbstractBaseProjectAction extends ActionSupport implements
      */
     public void prepare() throws VocabularyServiceException {
         if (this.project.getId() != null) {
-            this.project = getProjectManagementService().getProject(this.project.getId());
+            Project retrieved = getProjectManagementService().getProject(this.project.getId());
+            if (retrieved == null) {
+                throw new PermissionDeniedException(this.project,
+                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+            } else {
+                this.project = retrieved;
+            }
         }
     }
 

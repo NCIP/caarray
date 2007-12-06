@@ -173,7 +173,7 @@
     <login-config>
         <auth-method>FORM</auth-method>
         <form-login-config>
-            <form-login-page>/login.action</form-login-page>
+            <form-login-page>/login.jsp</form-login-page>
             <form-error-page>/login.action?error=true</form-error-page>
         </form-login-config>
     </login-config>

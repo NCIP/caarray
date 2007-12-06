@@ -83,7 +83,10 @@
 package gov.nih.nci.caarray.web.action.protocol;
 
 import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.util.List;
@@ -126,8 +129,14 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
      */
     public void prepare() {
         if (this.getProtocol() != null && this.getProtocol().getId() != null) {
-            this.setProtocol(ActionHelper.getGenericDataService().retrieveEntity(Protocol.class,
-                    this.getProtocol().getId()));
+            Protocol retrieved = ActionHelper.getGenericDataService().retrieveEntity(Protocol.class,
+                    this.getProtocol().getId());
+            if (retrieved == null) {
+                throw new PermissionDeniedException(this.protocol,
+                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+            } else {
+                this.setProtocol(retrieved);
+            }
         }
     }
 

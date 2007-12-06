@@ -67,11 +67,13 @@
         <default-interceptor-ref name="caarrayParamsPrepareParamsStack" />
 
         <global-results>
+            <result name="permissionDenied">/permissionDenied.jsp</result>
             <result name="error">/error.jsp</result>
             <result name="notYetImplemented">/notYetImplemented.jsp</result>
         </global-results>
 
         <global-exception-mappings>
+            <exception-mapping result="permissionDenied" exception="gov.nih.nci.caarray.security.PermissionDeniedException"/>
             <exception-mapping result="error" exception="java.lang.Throwable"/>
         </global-exception-mappings>
 

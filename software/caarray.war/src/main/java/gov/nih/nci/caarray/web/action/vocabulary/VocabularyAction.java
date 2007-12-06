@@ -85,6 +85,9 @@ package gov.nih.nci.caarray.web.action.vocabulary;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
+import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.util.ArrayList;
@@ -133,7 +136,13 @@ public class VocabularyAction extends ActionSupport implements Preparable {
      */
     public void prepare() {
         if (getCurrentTerm() != null && getCurrentTerm().getId() != null) {
-            setCurrentTerm(ActionHelper.getVocabularyService().getTerm(getCurrentTerm().getId()));
+            Term retrieved = ActionHelper.getVocabularyService().getTerm(getCurrentTerm().getId());
+            if (retrieved == null) {
+                throw new PermissionDeniedException(getCurrentTerm(),
+                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+            } else {
+                setCurrentTerm(retrieved);
+            }
         }
     }
 

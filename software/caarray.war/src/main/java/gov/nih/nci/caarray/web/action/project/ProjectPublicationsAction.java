@@ -90,6 +90,9 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
+import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.util.UsernameHolder;
 
 import java.util.Collection;
 import java.util.Set;
@@ -124,8 +127,14 @@ public class ProjectPublicationsAction extends AbstractProjectListTabAction {
         super.prepare();
 
         if (this.currentPublication.getId() != null) {
-            this.currentPublication = getGenericDataService().retrieveEntity(Publication.class,
+            Publication retrieved = getGenericDataService().retrieveEntity(Publication.class,
                     this.currentPublication.getId());
+            if (retrieved == null) {
+                throw new PermissionDeniedException(this.currentPublication,
+                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+            } else {
+                this.currentPublication = retrieved;
+            }
         }
 
         VocabularyService vocabService = getVocabularyService();

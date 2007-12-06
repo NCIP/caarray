@@ -88,6 +88,9 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
+import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.FileClosingInputStream;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import gov.nih.nci.caarray.web.action.ActionHelper;
@@ -138,8 +141,14 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
         super.prepare();
 
         if (this.currentHybridization.getId() != null) {
-            this.currentHybridization = getGenericDataService().retrieveEntity(Hybridization.class,
+            Hybridization retrieved = getGenericDataService().retrieveEntity(Hybridization.class,
                                                                               this.currentHybridization.getId());
+            if (retrieved == null) {
+                throw new PermissionDeniedException(this.currentHybridization,
+                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+            } else {
+                this.currentHybridization = retrieved;
+            }
         }
     }
 

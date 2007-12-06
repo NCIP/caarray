@@ -90,6 +90,9 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
+import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.FileClosingInputStream;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import gov.nih.nci.caarray.web.action.ActionHelper;
@@ -136,7 +139,13 @@ public class ProjectSamplesAction extends AbstractProjectProtocolAnnotationListT
     public void prepare() throws VocabularyServiceException {
         super.prepare();
         if (this.currentSample.getId() != null) {
-            this.currentSample = getGenericDataService().retrieveEntity(Sample.class, this.currentSample.getId());
+            Sample retrieved = getGenericDataService().retrieveEntity(Sample.class, this.currentSample.getId());
+            if (retrieved == null) {
+                throw new PermissionDeniedException(this.currentSample,
+                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+            } else {
+                this.currentSample = retrieved;
+            }
         }
     }
 

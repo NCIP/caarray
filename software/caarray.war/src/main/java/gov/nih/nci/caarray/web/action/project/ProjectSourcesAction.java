@@ -88,6 +88,9 @@ import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
+import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.util.Collection;
@@ -130,7 +133,13 @@ public class ProjectSourcesAction extends AbstractProjectListTabAction {
         super.prepare();
 
         if (this.currentSource.getId() != null) {
-            this.currentSource = getGenericDataService().retrieveEntity(Source.class, this.currentSource.getId());
+            Source retrieved = getGenericDataService().retrieveEntity(Source.class, this.currentSource.getId());
+            if (retrieved == null) {
+                throw new PermissionDeniedException(this.currentSource,
+                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+            } else {
+                this.currentSource = retrieved;
+            }
         }
     }
 

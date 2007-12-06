@@ -1,5 +1,4 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
-<page:applyDecorator name="default">
 <html>
     <head>
     </head>
@@ -18,7 +17,22 @@
 to become a caArray user.
                     </p>
 
-                    <s:form method="post" id="login" action="/j_security_check" cssClass="form">
+                    <script type="text/javascript">
+                      function startLogin() {
+                        $('login_progress').show();
+                        new Ajax.Request('<c:url value="/protected/project/workspace.action"/>', { onSuccess: completeLogin });
+                      }
+
+                      function completeLogin() {
+                        $('login').submit();
+                      }
+                    </script>
+
+                    <div id="login_progress" style="display: none; margin: 3px 3px">
+                       <img alt="Indicator" align="absmiddle" src="<c:url value="/images/indicator.gif"/>" /> Logging in
+                    </div>
+
+                    <s:form method="post" id="login" action="/j_security_check" onsubmit="startLogin(); return false;" cssClass="form">
                         <c:if test="${param.error != null}">
                             <tr>
                                 <td colspan="2" class="centered">
@@ -44,11 +58,10 @@ to become a caArray user.
                         <caarray:action actionClass="cancel" text="Cancel">
                             <jsp:attribute name="url"><c:url value="/home.action"/></jsp:attribute>
                         </caarray:action>
-                        <caarray:action actionClass="register" text="Login" onclick="document.getElementById('login').submit();"/>
+                        <caarray:action actionClass="register" text="Login" onclick="startLogin();"/>
                     </caarray:actions>
                 </div>
             </div>
         </div>
     </body>
 </html>
-</page:applyDecorator>

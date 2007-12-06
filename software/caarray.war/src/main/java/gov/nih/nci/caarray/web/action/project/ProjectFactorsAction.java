@@ -90,6 +90,9 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
+import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.util.Collection;
@@ -128,7 +131,13 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
         super.prepare();
 
         if (this.currentFactor.getId() != null) {
-            this.currentFactor = getGenericDataService().retrieveEntity(Factor.class, this.currentFactor.getId());
+            Factor retrieved = getGenericDataService().retrieveEntity(Factor.class, this.currentFactor.getId());
+            if (retrieved == null) {
+                throw new PermissionDeniedException(this.currentFactor,
+                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+            } else {
+                this.currentFactor = retrieved;
+            }
         }
     }
 

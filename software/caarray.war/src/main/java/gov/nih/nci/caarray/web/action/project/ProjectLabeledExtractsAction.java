@@ -88,6 +88,9 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
+import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.util.ArrayList;
@@ -126,8 +129,14 @@ public class ProjectLabeledExtractsAction extends AbstractProjectProtocolAnnotat
         super.prepare();
 
         if (this.currentLabeledExtract.getId() != null) {
-            this.currentLabeledExtract = getGenericDataService().retrieveEntity(LabeledExtract.class,
+            LabeledExtract retrieved = getGenericDataService().retrieveEntity(LabeledExtract.class,
                                                                                this.currentLabeledExtract.getId());
+            if (retrieved == null) {
+                throw new PermissionDeniedException(this.currentLabeledExtract,
+                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+            } else {
+                this.currentLabeledExtract = retrieved;
+            }
         }
     }
 
