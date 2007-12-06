@@ -82,6 +82,9 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
@@ -102,6 +105,7 @@ final class TermTranslator extends AbstractTranslator {
     private static final Logger LOG = Logger.getLogger(TermTranslator.class);
 
     private final VocabularyService service;
+    private final Map<String, Category> nameToCategoryMap = new HashMap<String, Category>();
 
     TermTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
             VocabularyService service, CaArrayDaoFactory daoFactory) {
@@ -138,8 +142,12 @@ final class TermTranslator extends AbstractTranslator {
     private Category getOrCreateCategory(TermSource source, String categoryName) {
         Category category = this.service.getCategory(source, categoryName);
         if (category == null) {
+            category = this.nameToCategoryMap.get(categoryName);
+        }
+        if (category == null) {
             category =  new Category();
             category.setName(categoryName);
+            this.nameToCategoryMap.put(categoryName, category);
         }
         return category;
     }

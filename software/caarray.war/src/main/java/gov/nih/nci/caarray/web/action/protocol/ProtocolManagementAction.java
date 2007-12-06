@@ -100,6 +100,7 @@ import org.hibernate.criterion.Order;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
+import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.UrlValidator;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 
@@ -184,10 +185,13 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
      * @throws InstantiationException on error
      */
     @Validations(
-            urls = {
-                    @UrlValidator(message = "", fieldName = "protocol.url", key = "struts.validator.url")
-            }
-        )
+        urls = {
+            @UrlValidator(message = "", fieldName = "protocol.url", key = "struts.validator.url")
+        },
+        requiredFields = {
+            @RequiredFieldValidator(message = "", fieldName = "protocol.type", key = "struts.validator.requiredString")
+        }
+    )
     public String save() throws InstantiationException, IllegalAccessException {
         ActionHelper.getGenericDataService().save(getProtocol());
         if (isReturnToProjectOnCompletion()) {
