@@ -164,11 +164,11 @@ public class CaArraySearchServiceBean implements CaArraySearchService {
     }
 
     /**
-    * Returns a DAO for accessing Vocabulary domain objects.
+    * Returns a DAO for searching domain objects.
     *
-    * @return VocabularyDao
+    * @return SearchDao
     */
-   public SearchDao getSearchDao() {
+   private SearchDao getSearchDao() {
        return CaArrayDaoFactory.INSTANCE.getSearchDao();
    }
 }

@@ -83,6 +83,8 @@
 package gov.nih.nci.caarray.services.file;
 
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
@@ -118,7 +120,10 @@ public class FileRetrievalServiceBean implements FileRetrievalService {
     /**
      * {@inheritDoc}
      */
-    public byte[] readFile(final CaArrayFile caArrayFile) {
+    public byte[] readFile(final CaArrayFile caArrayFileArg) {
+        // Look up the fully-populated CaArray object since the one passed in by remote clients will have contents set
+        // to null (not serializable).
+        CaArrayFile caArrayFile = getSearchDao().query(caArrayFileArg).get(0);
         InputStream is = null;
         FileAccessService fileAccessService = getFileAccessService();
         try {
@@ -146,4 +151,12 @@ public class FileRetrievalServiceBean implements FileRetrievalService {
         }
     }
 
+    /**
+    * Returns a DAO for searching domain objects.
+    *
+    * @return SearchDao
+    */
+   private SearchDao getSearchDao() {
+       return CaArrayDaoFactory.INSTANCE.getSearchDao();
+   }
 }
