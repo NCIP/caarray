@@ -118,6 +118,10 @@
 	<condition property="webapp.running">
 	    <http url="${app.url}"/>
 	</condition>
+	    <property name="jndi.url" value="http://${jboss.server.hostname}:${jboss.server.jndi.port}"/>
+	<condition property="jndi.running">
+	    <http url="${jndi.url}"/>
+	</condition>
   </target>
 
   <target name="testMySQLOnline">
@@ -148,6 +152,13 @@
 	<au:assertEquals message="Unable to reach ${app.url}" expected="true"
                       actual="${webapp.running}" casesensitive="true"/>
     <echo>${app.url} is Online...</echo>
+  </target>
+
+  <target name="testJndiOnline">
+	<echo>Testing if ${jndi.url} (Jndi) availability...</echo>
+	<au:assertEquals message="Unable to reach ${jndi.url}" expected="true"
+                      actual="${jndi.running}" casesensitive="true"/>
+    <echo>${jndi.url} is Online...</echo>
   </target>
 
 </project>
