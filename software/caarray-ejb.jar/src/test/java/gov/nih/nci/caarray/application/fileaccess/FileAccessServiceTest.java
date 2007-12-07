@@ -86,17 +86,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Transaction;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -108,16 +109,19 @@ import org.junit.Test;
 public class FileAccessServiceTest {
 
     private FileAccessServiceBean fileAccessService;
+    private Transaction transaction;
 
     @Before
     public void setUp() {
         fileAccessService = new FileAccessServiceBean();
-        fileAccessService.setDaoFactory(new DaoFactoryStub());
+        HibernateUtil.enableFilters(false);
+        transaction = HibernateUtil.beginTransaction();
     }
 
     @After
     public void tearDown() {
         fileAccessService.closeFiles();
+        transaction.rollback();
     }
 
     @Test
@@ -145,6 +149,7 @@ public class FileAccessServiceTest {
     public void testGetFile() throws FileAccessException {
         File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF;
         CaArrayFile caArrayFile = fileAccessService.add(file);
+        HibernateUtil.getCurrentSession().save(caArrayFile);
         File retrievedFile = fileAccessService.getFile(caArrayFile);
         assertEquals(file.getName(), retrievedFile.getName());
         assertEquals(file.length(), retrievedFile.length());

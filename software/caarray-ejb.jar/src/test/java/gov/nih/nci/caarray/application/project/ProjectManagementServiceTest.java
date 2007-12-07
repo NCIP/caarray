@@ -113,6 +113,7 @@ import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -135,6 +136,8 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.hibernate.Transaction;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -146,6 +149,7 @@ public class ProjectManagementServiceTest {
     private final FileAccessService fileAccessService = new FileAccessServiceStub();
     private final GenericDataService genericDataService = new GenericDataServiceStub();
     private final LocalSessionContextStub sessionContextStub = new LocalSessionContextStub();
+    private Transaction transaction;
 
     @Before
     public void setUpService() {
@@ -157,6 +161,13 @@ public class ProjectManagementServiceTest {
         locatorStub.addLookup(GenericDataService.JNDI_NAME, this.genericDataService);
         projectManagementServiceBean.setSessionContext(this.sessionContextStub);
         this.projectManagementService = projectManagementServiceBean;
+        HibernateUtil.enableFilters(false);
+        transaction = HibernateUtil.beginTransaction();
+    }
+    
+    @After
+    public void tearDown() {
+        transaction.rollback();
     }
 
     @Test
