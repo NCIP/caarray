@@ -17,6 +17,8 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     private static final int PAGE_TIMEOUT_SECONDS = 180;
 
+	private static final int PAGE_SIZE = 20;
+
 	protected static int RECORD_TIMEOUT_SECONDS = 240;
     @Override
     public void setUp() throws Exception {
@@ -35,7 +37,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     
     protected void waitForText(String theText){
 	for (int second = 0;; second++) {
-		if (second >= 60) fail("timeout");
+		if (second >= 10) fail("timeout");
 		try { if (theText.equals(selenium.getText(theText))) break; } catch (Exception e) {}
 		try {
 			Thread.sleep(1000);
@@ -45,6 +47,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 		}
 	}
     }
+    
     protected void waitForPageToLoad() {
         selenium.waitForPageToLoad(toMillisecondsString(PAGE_TIMEOUT_SECONDS));
     }
@@ -124,4 +127,19 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
 
+
+protected void findTextOnPages(String theText) {`
+    int row = 3;
+    for (int i = 1; i < PAGE_SIZE; i++) {
+        if (i % PAGE_SIZE == 20) {
+            // - switch to next page
+            selenium.click("link=Next");
+            waitForAction();
+            row = 1;
+        }
+        assertEquals(theText, selenium.getTable("row."+(row++)+".1"));
+//      assertEquals("qa experiment", selenium.getTable("row.9.1"));
+    }
 }
+}
+//}
