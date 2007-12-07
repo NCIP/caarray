@@ -43,6 +43,7 @@
                             </td>
                         </tr>
                     </c:forEach>
+                    <tr><td colspan="2">* Counts updated hourly</td></tr>
                 </table>
             </div>
         </div>

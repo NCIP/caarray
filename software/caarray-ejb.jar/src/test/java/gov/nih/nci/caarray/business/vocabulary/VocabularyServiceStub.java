@@ -181,28 +181,44 @@ public class VocabularyServiceStub implements VocabularyService {
      * {@inheritDoc}
      */
     public List<Term> getCellTypesForExperiment(Experiment experiment) {
-        return null;
+        List<Term> terms = new ArrayList<Term>();
+        Term t1 = new Term();
+        t1.setId(1L);
+        terms.add(t1);
+        return terms;
     }
 
     /**
      * {@inheritDoc}
      */
     public List<Term> getDiseaseStatesForExperiment(Experiment experiment) {
-        return null;
+        List<Term> terms = new ArrayList<Term>();
+        Term t1 = new Term();
+        t1.setId(1L);
+        terms.add(t1);
+        return terms;
     }
 
     /**
      * {@inheritDoc}
      */
     public List<Term> getMaterialTypesForExperiment(Experiment experiment) {
-        return null;
+        List<Term> terms = new ArrayList<Term>();
+        Term t1 = new Term();
+        t1.setId(1L);
+        terms.add(t1);
+        return terms;
     }
 
     /**
      * {@inheritDoc}
      */
     public List<Term> getTissueSitesForExperiment(Experiment experiment) {
-        return null;
+        List<Term> terms = new ArrayList<Term>();
+        Term t1 = new Term();
+        t1.setId(1L);
+        terms.add(t1);
+        return terms;
     }
 
     /**
