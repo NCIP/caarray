@@ -397,4 +397,11 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
         // (ie it is an array design file or some such)
         return getProject() != null ? Collections.singleton(getProject()) : null;
     }
+
+    /**
+     * Clear the file contents from memory.
+     */
+    public void clearContents() {
+        setContents(null);
+    }
 }
