@@ -105,6 +105,7 @@ import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
@@ -191,6 +192,9 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         caArrayFile.setProject(project);
         getProjectDao().save(caArrayFile);
         getProjectDao().save(project);
+        HibernateUtil.getCurrentSession().flush();
+        HibernateUtil.getCurrentSession().evict(caArrayFile);
+        caArrayFile.clearContents();
         return caArrayFile;
     }
 

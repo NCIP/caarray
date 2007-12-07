@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.fileaccess;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.io.BufferedOutputStream;
@@ -220,11 +221,14 @@ public class FileAccessServiceBean implements FileAccessService {
     private File openFile(CaArrayFile caArrayFile) {
         File file = new File(getSessionWorkingDirectory(), caArrayFile.getName());
         try {
+            HibernateUtil.getCurrentSession().refresh(caArrayFile);
             InputStream inputStream = caArrayFile.readContents();
             OutputStream outputStream = FileUtils.openOutputStream(file);
             IOUtils.copy(inputStream, outputStream);
             IOUtils.closeQuietly(inputStream);
             IOUtils.closeQuietly(outputStream);
+            HibernateUtil.getCurrentSession().evict(caArrayFile);
+            caArrayFile.clearContents();
         } catch (IOException e) {
             throw new FileAccessException("Couldn't access file contents " + caArrayFile.getName(), e);
         }
