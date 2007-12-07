@@ -108,7 +108,7 @@ class OrganismDaoImpl extends AbstractCaArrayDaoImpl implements OrganismDao {
      */
     @SuppressWarnings("unchecked")
     public List<Organism> getAllOrganisms() {
-        String query = "from " + Organism.class.getName() + " order by commonName asc";
+        String query = "from " + Organism.class.getName() + " order by id asc";
         return getCurrentSession().createQuery(query).list();
     }
 

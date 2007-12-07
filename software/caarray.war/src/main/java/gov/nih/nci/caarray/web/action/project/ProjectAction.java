@@ -12,7 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.validator.annotations.Validation;
@@ -131,7 +134,7 @@ public class ProjectAction extends AbstractBaseProjectAction {
             args.add(getText(this.workflowStatus.getResourceKey()));
             ActionHelper.saveMessage(getText("project.workflowStatusUpdated", args));
             if (oldStatus == ProposalStatus.DRAFT && this.workflowStatus == ProposalStatus.IN_PROGRESS) {
-                EmailHelper.sendSubmitExperimentEmail(getProject());
+                sendSubmitExperimentEmail();
             }
             return WORKSPACE_RESULT;
         } catch (ProposalWorkflowException e) {
@@ -144,6 +147,32 @@ public class ProjectAction extends AbstractBaseProjectAction {
             LOG.warn("Could not send email for experiment submission", e);
             return WORKSPACE_RESULT;
         }
+    }
+
+    /**
+     * @throws MessagingException 
+     * 
+     */
+    private void sendSubmitExperimentEmail() throws MessagingException {
+        HttpServletRequest request = ServletActionContext.getRequest();
+        String ctxPath = request.getContextPath();
+        String requestUri = request.getRequestURI();
+        String fullUrl = request.getRequestURL().toString();
+        String projectLink =
+                getProjectDetailsLink(StringUtils.substringBefore(fullUrl, requestUri) + ctxPath, getProject()
+                        .getId());
+        EmailHelper.sendSubmitExperimentEmail(getProject(), projectLink);
+    }
+
+    /**
+     * Returns the view details link for a project with given id.
+     * @param urlBase the URL Base - this should include everything up to and including the context path, e.g.
+     * http://array.dev.nih.gov/carray
+     * @param projectId the id of the project to link to
+     * @return the link URL
+     */
+    public static String getProjectDetailsLink(String urlBase, Long projectId) {
+        return urlBase + "/project/details.action?project.id=" + projectId;        
     }
 
     /**

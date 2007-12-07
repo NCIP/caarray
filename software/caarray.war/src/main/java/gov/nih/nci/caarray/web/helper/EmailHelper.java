@@ -157,20 +157,28 @@ public final class EmailHelper {
     
     /**
      * @param project the newly created project
+     * @param projectLink the link to view the details of the project
      * @throws MessagingException on other error
      */
-    public static void sendSubmitExperimentEmail(Project project) throws MessagingException {
+    public static void sendSubmitExperimentEmail(Project project, String projectLink) throws MessagingException {
         DataConfiguration config = ConfigurationHelper.getConfiguration();
         
         String subject = config.getString(ConfigParamEnum.SUBMIT_EXPERIMENT_EMAIL_SUBJECT.name());
         String from = config.getString(ConfigParamEnum.EMAIL_FROM.name());
-        String mailBodyPattern = config.getString(ConfigParamEnum.SUBMIT_EXPERIMENT_EMAIL_CONTENT.name());
-        
+        String plainMailBodyPattern = config.getString(ConfigParamEnum.SUBMIT_EXPERIMENT_EMAIL_PLAIN_CONTENT.name());
+        String htmlMailBodyPattern = config.getString(ConfigParamEnum.SUBMIT_EXPERIMENT_EMAIL_HTML_CONTENT.name());
+                
         Person pi = (Person) project.getExperiment().getPrimaryInvestigator().getContact();
-        String mailBody = MessageFormat.format(mailBodyPattern, pi.getName(), project.getExperiment().getTitle());
-
+        String plainMailBody =
+                MessageFormat.format(plainMailBodyPattern, pi.getName(), project.getExperiment().getTitle(),
+                        projectLink);
+        String htmlMailBody =
+                MessageFormat.format(htmlMailBodyPattern, pi.getName(), project.getExperiment().getTitle(),
+                        projectLink);
+        
         if (!StringUtils.isEmpty(pi.getEmail())) {
-            EmailUtil.sendMail(Collections.singletonList(pi.getEmail()), from, subject, mailBody);            
+            EmailUtil.sendMultipartMail(Collections.singletonList(pi.getEmail()), from, subject, htmlMailBody,
+                    plainMailBody);            
         }
     }    
 }

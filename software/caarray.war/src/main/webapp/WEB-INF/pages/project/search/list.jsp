@@ -23,7 +23,7 @@
         <display:column titleKey="search.result.pi">
             <a href="mailto:${row.experiment.mainPointOfContact.contact.email}?subject=${row.experiment.title}" class="email">${row.experiment.mainPointOfContact.contact.lastName}<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a>
         </display:column>
-        <display:column property="experiment.organism.commonName" titleKey="search.result.organism" sortable="true"/>
+        <display:column property="experiment.organism.scientificName" titleKey="search.result.organism" sortable="true"/>
         <display:column titleKey="search.result.diseaseState">
             <c:choose>
                 <c:when test="${caarrayfn:canRead(row, caarrayfn:currentUser())}">

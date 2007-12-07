@@ -25,7 +25,7 @@
                         <display:column property="assayType" titleKey="arrayDesign.assayType" sortable="true"/>
                         <display:column property="version" titleKey="arrayDesign.version" sortable="true"/>
                         <display:column property="technologyType.value" titleKey="arrayDesign.technologyType" sortable="true"/>
-                        <display:column property="organism.commonName" titleKey="arrayDesign.organism" sortable="true"/>
+                        <display:column property="organism.scientificName" titleKey="arrayDesign.organism" sortable="true"/>
                         <display:column titleKey="button.edit" class="centered" headerClass="centered">
                             <c:url value="/protected/arrayDesign/edit.action" var="editDesignUrl">
                                 <c:param name="arrayDesign.id" value="${row.id}" />

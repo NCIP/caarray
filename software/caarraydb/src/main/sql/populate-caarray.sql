@@ -135,21 +135,41 @@ insert into term (value, source, category) select 'transfect', termsource.id, ca
 insert into term (value, source, category) select 'unknown_protocol_type', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
 insert into term (value, source, category) select 'wash', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
 
-insert into organism (common_name, scientific_name, taxonomy_rank, ethnicity_strain) values ('Bovine', '', '', '');
-insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Canine', '', '', '');
-insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Chicken', '', '', '');
-insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Drosophila', '', '', '');
-insert into organism (common_name, scientific_name, taxonomy_rank, ethnicity_strain) values ('E-coli', '', '', '');
-insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Homo Sapiens', '', '', '');
-insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Mouse', '', '', '');
-insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Plasmodium/Anopheles', '', '', '');
-insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Rat', '', '', '');
-insert into organism (common_name, scientific_name, taxonomy_rank, ethnicity_strain) values ('S. Aureous', '', '', '');
-insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Songbird', '', '', '');
-insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Xenopus', '', '', '');
-insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Yeast', '', '', '');
-insert into organism (common_name, scientific_name, taxonomy_rank, ethnicity_strain) values ('Zebra finch', '', '', '');
-insert into organism (common_name, scientific_name, taxonomy_Rank, ethnicity_Strain) values ('Zebrafish', '', '', '');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (9606, 'human', 'Homo sapiens', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (10090, 'house mouse', 'Mus musculus', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (10116, 'norway rat', 'Rattus norvegicus', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (10117, 'black rat', 'Rattus rattus', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (3702, 'thale cress', 'Arabidopsis thaliana', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (1423, null, 'Bacillus subtilis', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (9913, 'cattle', 'Bos taurus', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (9615, 'dog', 'Canis familiaris', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (10141, 'domestic guinea pig', 'Cavia porcellus', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (6213, 'nematode', 'Caenorhabditis elegans', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (3055, null, 'Chlamydomonas reinhardtii', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (7955, 'zebrafish', 'Danio rerio', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (44689, null, 'Dictyostelium discoideum', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (7227, 'fruit fly', 'Drosophila melanogaster', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (562, null, 'Escherichia coli', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (9685, 'domestic cat', 'Felis catus', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (9031, 'chicken', 'Gallus gallus', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (11103, null, 'Hepatitis C virus', 'species');
+
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (9544, 'rhesus monkey', 'Macaca mulatta', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (10036, 'golden hamster', 'Mesocricetus auratus', 'species');
+
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (2104, null, 'Mycoplasma pneumoniae', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (4530, 'rice', 'Oryza sativa', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (5833, 'malaria parasite', 'Plasmodium falciparum', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (4754, null, 'Pneumocystis carinii', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (287, null, 'Pseudomonas aeruginosa', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (4932, 'baker''s yeast', 'Saccharomyces cerevisiae', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (9823, 'Pig', 'Sus scrofa', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (4896, 'fission yeast', 'Schizosaccharomyces pombe', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (1280, null, 'Staphylococcus aureus', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (31033, 'torafugu', 'Takifugu rubripes', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (8355, 'african clawed frog', 'Xenopus laevis', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (8364, 'western clawed frog', 'Xenopus tropicalis', 'species');
+insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (4577, null, 'Zea mays', 'species');
 
 insert into contact(discriminator, name) values ('O', 'Affymetrix');
 insert into contact(discriminator, name) values ('O', 'Illumina');
@@ -462,4 +482,5 @@ insert into config_parameter (param, raw_value) values ('REG_EMAIL_SUBJECT', 'ca
 insert into config_parameter (param, raw_value) values ('THANKS_MESSAGE', '<p>Thank you for registering with caArray. You should receive an email confirmation message shortly. Your account, with the roles you requested, will be activated within 48-72 hours. Expect to hear from the helpdesk within this time frame. You can continue to use caArray without an account to browse and search available experiments, and download data, while your account is activated.<p>If you have questions, please contact NCICB Application Support by email <a href="mailto:NCICB@pop.nci.nih.gov">NCICB@pop.nci.nih.gov</a> or by phone Phone: 888-478-4423 (toll-free) or 301-451-4384 (local).');
 
 insert into config_parameter (param, raw_value) values ('SUBMIT_EXPERIMENT_EMAIL_SUBJECT', 'caArray Experiment Submitted');
-insert into config_parameter (param, raw_value) values ('SUBMIT_EXPERIMENT_EMAIL_CONTENT', 'Dear {0}\n\nThank you for submitting experiment {1} to caArray.');
+insert into config_parameter (param, raw_value) values ('SUBMIT_EXPERIMENT_EMAIL_PLAIN_CONTENT', 'Dear {0}\n\nThank you for submitting experiment {1} to caArray. You may access this experiment at {2}.');
+insert into config_parameter (param, raw_value) values ('SUBMIT_EXPERIMENT_EMAIL_HTML_CONTENT', '<p>Dear {0}</p><p>Thank you for submitting experiment {1} to caArray. You may access this experiment at <a href="{2}">{2}</a>.');

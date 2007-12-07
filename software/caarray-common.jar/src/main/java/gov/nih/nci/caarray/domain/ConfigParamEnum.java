@@ -120,7 +120,11 @@ public enum ConfigParamEnum {
      */
     SUBMIT_EXPERIMENT_EMAIL_SUBJECT,    
     /**
-     * the content for the submit experiment email.
+     * the html content for the submit experiment email.
      */
-    SUBMIT_EXPERIMENT_EMAIL_CONTENT;
+    SUBMIT_EXPERIMENT_EMAIL_HTML_CONTENT,
+    /**
+     * the plain-text content for the submit experiment email.
+     */
+    SUBMIT_EXPERIMENT_EMAIL_PLAIN_CONTENT;
 }
