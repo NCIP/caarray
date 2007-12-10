@@ -288,7 +288,7 @@ public class ProjectFilesActionTest {
         selectedFiles.add(file);
         assertEquals(LIST_UNIMPORTED, this.action.importFiles());
         assertEquals(LIST_UNIMPORTED, this.action.getListAction());
-        assertEquals(2, fileManagementServiceStub.getImportedFilecCount());
+        assertEquals(3, fileManagementServiceStub.getImportedFilecCount());
     }
 
     @Test

@@ -135,7 +135,7 @@ public class FileManagementServiceTest {
     @Test(expected = IllegalArgumentException.class)
     public void testImportIllegalState() {
         Project project = getTgaBroadTestProject();
-        project.getFiles().iterator().next().setFileStatus(FileStatus.VALIDATION_ERRORS);
+        project.getFiles().iterator().next().setFileStatus(FileStatus.VALIDATING);
         fileManagementService.importFiles(project, project.getFileSet());
     }
 
@@ -212,8 +212,8 @@ public class FileManagementServiceTest {
         daoFactoryStub.searchDaoStub.save(caArrayFile);
         fileManagementService.importFiles(project, project.getFileSet());
         assertTrue(arrayDesignServiceStub.importCalled);
-    } 
-    
+    }
+
     @Test(expected = InvalidDataFileException.class)
     public void testImportArrayDesignFileInvalid() throws InvalidDataFileException {
         ArrayDesign design = new ArrayDesign();
@@ -243,7 +243,7 @@ public class FileManagementServiceTest {
         public FileValidationResult validateDesign(ArrayDesign design) {
             return validateDesign(design.getDesignFile());
         }
-        
+
         @Override
         public FileValidationResult validateDesign(CaArrayFile designFile) {
             FileValidationResult result = new FileValidationResult(new File(designFile.getName()));
@@ -260,7 +260,7 @@ public class FileManagementServiceTest {
         public void importDesign(ArrayDesign arrayDesign) {
             importCalled = true;
         }
-        
+
         @Override
         public ArrayDesign importDesign(CaArrayFile designFile) {
             importCalled = true;
