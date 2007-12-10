@@ -106,6 +106,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
  * Handles import of array data by creating the associated <code>DataSet</code> and
@@ -113,12 +114,14 @@ import org.apache.commons.lang.StringUtils;
  */
 abstract class AbstractDataSetImporter {
 
+    private static final Logger LOG = Logger.getLogger(AbstractDataSetImporter.class);
+
     private final CaArrayDaoFactory daoFactory;
     private AbstractDataFileHandler dataFileHandler;
     private final FileAccessService fileAccessService;
     private final CaArrayFile caArrayFile;
 
-    AbstractDataSetImporter(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory, 
+    AbstractDataSetImporter(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory,
             FileAccessService fileAccessService) {
         this.caArrayFile = caArrayFile;
         this.daoFactory = daoFactory;
@@ -134,7 +137,7 @@ abstract class AbstractDataSetImporter {
         if (StringUtils.isBlank(getArrayData().getName())) {
             getArrayData().setName(getCaArrayFile().getName());
         }
-        return getArrayData(); 
+        return getArrayData();
     }
 
     private void lookupOrCreateArrayData(boolean createAnnnotation) {
@@ -168,7 +171,13 @@ abstract class AbstractDataSetImporter {
     private List<QuantitationType> getQuantitationTypes() {
         List<QuantitationType> quantitationTypes = new ArrayList<QuantitationType>();
         for (QuantitationTypeDescriptor descriptor : getDataFileHandler().getQuantitationTypeDescriptors(getFile())) {
-            quantitationTypes.add(getQuantitationType(descriptor));
+            QuantitationType quantitationType = getQuantitationType(descriptor);
+            if (quantitationType == null) {
+                LOG.info("Reloading QuantitationTypes.  Descriptor was: " + descriptor);
+                new TypeRegistrationManager(getArrayDao()).registerNewTypes();
+                quantitationType = getQuantitationType(descriptor);
+            }
+            quantitationTypes.add(quantitationType);
         }
         return quantitationTypes;
     }
@@ -191,7 +200,7 @@ abstract class AbstractDataSetImporter {
         return getDaoFactory().getArrayDao();
     }
 
-    static AbstractDataSetImporter create(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory, 
+    static AbstractDataSetImporter create(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory,
             FileAccessService fileAccessService) {
         if (caArrayFile == null) {
             throw new IllegalArgumentException("arrayData was null");
