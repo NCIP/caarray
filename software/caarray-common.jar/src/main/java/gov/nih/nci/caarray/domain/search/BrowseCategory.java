@@ -100,7 +100,7 @@ public enum BrowseCategory implements ResourceBasedEnum {
     /**
      * Array providers.
      */
-    ARRAY_PROVIDERS("browse.category.arrayProviders", "p.experiment.arrayDesigns a", "a.provider"),
+    ARRAY_PROVIDERS("browse.category.arrayProviders", null, "p.experiment.manufacturer"),
     /**
      * Array designs.
      */

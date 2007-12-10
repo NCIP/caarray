@@ -205,8 +205,8 @@ public class BrowseDaoImpl implements BrowseDao {
             queryStr = "SELECT o.commonName, o.id, COUNT(p) FROM " + Project.class.getName()
             + " p JOIN p.experiment.organism o GROUP BY o";
         } else if (BrowseCategory.ARRAY_PROVIDERS.equals(cat)) {
-            queryStr = "SELECT pr.name, pr.id, count(p) FROM " + Project.class.getName()
-            + " p JOIN p.experiment.arrayDesigns a JOIN a.provider pr GROUP BY pr";
+            queryStr = "SELECT m.name, m.id, count(p) FROM " + Project.class.getName()
+            + " p JOIN p.experiment.manufacturer m GROUP BY m";
         } else if (BrowseCategory.ARRAY_DESIGNS.equals(cat)) {
             queryStr = "SELECT a.name, a.id, count(p) FROM " + Project.class.getName()
             + " p JOIN p.experiment.arrayDesigns a GROUP BY a";
