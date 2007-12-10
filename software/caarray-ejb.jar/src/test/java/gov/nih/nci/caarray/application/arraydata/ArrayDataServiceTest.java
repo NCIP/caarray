@@ -663,6 +663,7 @@ public class ArrayDataServiceTest {
                             details.getFeatures().add(feature);
                         }
                     }
+                    arrayDesign.setNumberOfFeatures(details.getFeatures().size());
                     arrayDesign.setDesignDetails(details);
                     return arrayDesign;
                 }
