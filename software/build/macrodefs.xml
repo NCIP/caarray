@@ -67,5 +67,25 @@
             </sql>
         </sequential>
     </macrodef>
+	
+    <macrodef name="remote-ssh" description="This is a remote SSH procedure. It will use SSH connection defaults as defined in the environment property file to initiate SSH connections and execure remote unix commands. The command is a mandatory attribute to this macrodef.">
+    	<attribute name="remote-ssh.command" />
+    	<attribute name="remote-ssh.port" default="${ssh.port}" />
+    	<attribute name="remote-ssh.host" default="${ssh.server.hostname}" />
+    	<attribute name="remote-ssh.user" default="${ssh.server.username}" />
+    	<attribute name="remote-ssh.keyfile" default="${ssh.key.file}" />
+    	<attribute name="remote-ssh.sleep" default="5" />
+    	<sequential>
+    	    <sshexec port="@{remote-ssh.port}" 
+    	    	   host="@{remote-ssh.host}" 
+    	    	   username="@{remote-ssh.user}"
+    	    	   keyfile="@{remote-ssh.keyfile}"
+    	    	   trust="true" 
+    	    	   passphrase="" 
+    	    	   verbose="true" 
+    	    	   command="@{remote-ssh.command}" />
+    		<sleep seconds="@{remote-ssh.sleep}" />
+        </sequential>
+    </macrodef>
 
 </project>

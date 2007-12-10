@@ -1179,67 +1179,14 @@
     <ncitask keyFile="${build.dir}/${property.template.file}" compareFile="${envpropertyfile}" />
   </target>
 
-  <!-- Globus deployment begin -->
-  <property name="remote.globus.home" value="/usr/local/ws-core-4.0.3" />
-  <property name="caarray.gar.file" value="${caaray-svc.dir}/cagrid_CaArraySvc.gar" />
-
-  <target name="remote-globus:createDeploymentGar"
-    depends="build:caarray-svc,prepare:create-local.properties">
-    <ant dir="${caaray-svc.dir}" target="createDeploymentGar"
-      inheritall="false"/>
-  </target>
-
-  <target name="remote-globus:copy-caarray-gar">
-    <echo
-      message="Copying caarray gar globus server at ${ssh.server.hostname}..."/>
-    <scp file="${caaray-svc.dir}/cagrid_CaArraySvc.gar"
-      keyfile="${ssh.key.file}" passphrase="" trust="true" verbose="true"
-      todir="${ssh.server.username}@${ssh.server.hostname}:${jboss.temp.dir}"/>
-  </target>
-
-  <target name="remote-globus:deploy-remote-globus">
-    <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true"
-        username="globus" keyfile="${ssh.key.file}"
-        passphrase="" verbose="true"
-        command="export GLOBUS_LOCATION=/usr/local/ws-core-4.0.3;
-              export ANT_HOME=/usr/local/ant-1.7.0/; export JAVA_HOME=/usr/jdk1.5.0_10/;
-              /usr/local/ws-core-4.0.3/bin/globus-deploy-gar /tmp/cagrid_CaArraySvc.gar" />
-  </target>
-
-  <target name="remote-globus:stop-remote-globus">
-    <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true"
-        username="globus" keyfile="${ssh.key.file}"
-        passphrase="" verbose="true"
-        command="export JAVA_HOME=/usr/jdk1.5.0_10/;nohup /usr/local/ws-core-4.0.3/bin/globus-stop-container -s http://localhost:8080/wsrf/services/ShutdownService -nosec &gt;/tmp/globus_shutdown.log 2&gt;&amp;1 &amp;" />
-  </target>
-
-  <target name="remote-globus:start-remote-globus">
-    <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true"
-        username="globus" keyfile="${ssh.key.file}"
-        passphrase="" verbose="true"
-        command="export JAVA_HOME=/usr/jdk1.5.0_10/;nohup /usr/local/ws-core-4.0.3/bin/globus-start-container -nosec &gt;/tmp/globus_startup.log 2&gt;&amp;1 &amp;" />
-  </target>
-
-  <target name="remote-globus:deploy" unless="noglobus">
-        <antcall target="remote-globus:createDeploymentGar" />
-        <antcall target="remote-globus:copy-caarray-gar" />
-    <antcall target="remote-globus:deploy-remote-globus" />
-    <antcall target="remote-globus:stop-remote-globus" />
-    <antcall target="remote-globus:start-remote-globus" />
-    </target>
-
-  <!-- Globus deployment end -->
-
   <target name="remote-jboss:stop">
     <echo message="Stopping jboss server at ${ssh.server.hostname}..." />
-    <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" keyfile="${ssh.key.file}" passphrase="" username="${ssh.server.username}" verbose="true" command="${jboss.home}/bin/stop_jboss" />
-    <sleep seconds="${jboss.stop.sleep}" />
+    <remote-ssh remote-ssh.command="${jboss.home}/bin/stop_jboss" remote-ssh.sleep="${jboss.stop.sleep}" />
   </target>
 
   <target name="remote-jboss:start">
     <echo message="Starting jboss server at ${ssh.server.hostname}..." />
-    <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" verbose="true" command="${jboss.home}/bin/start_jboss" />
-    <sleep seconds="${jboss.start.sleep}" />
+    <remote-ssh remote-ssh.command="${jboss.home}/bin/start_jboss" remote-ssh.sleep="${jboss.start.sleep}" />
   </target>
 
   <target name="remote-jboss:configure-jboss-ds">
@@ -1285,14 +1232,13 @@
   </target>
 
   <target name="remote-jboss:deploy-caarray" depends="remote-jboss:deploy-caarray-temp">
-    <echo message="Deploying caarray EAR to jboss server at ${ssh.server.hostname}..." />
-    <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" verbose="true" command="mv ${jboss.temp.dir}/caarray.ear ${jboss.home}/deploy/" />
-    <echo message="Caarray EAR successfully deployed to http://${jboss.server.hostname}:${jboss.server.port}/caarray" />
+    <echo message="Deploying caarray EAR to jboss at http://${jboss.server.hostname}:${jboss.server.port}/caarray" />
+    <remote-ssh remote-ssh.command="mv ${jboss.temp.dir}/caarray.ear ${jboss.home}/deploy/" />
   </target>
 
   <target name="remote-jboss:undeploy-caarray">
     <echo message="Undeploying caarray EAR, datasource and mail service config from jboss server at ${ssh.server.hostname}..." />
-    <sshexec port="${ssh.port}" host="${ssh.server.hostname}" trust="true" verbose="true" username="${ssh.server.username}" keyfile="${ssh.key.file}" passphrase="" command="rm -rf ${jboss.home}/deploy/caarray.ear ${jboss.home}/deploy/${mysql.datasource.file} ${jboss.home}/deploy/${jboss-mail-service.file}" />
+    <remote-ssh remote-ssh.command="rm -rf ${jboss.home}/deploy/caarray.ear ${jboss.home}/deploy/${mysql.datasource.file} ${jboss.home}/deploy/${jboss-mail-service.file}" />
   </target>
 
   <target name="remote-jboss:deploy" unless="nodeploy">
@@ -1307,27 +1253,22 @@
     <antcall target="remote-jboss:start" />
   </target>
 
-
-
   <target name="remote-grid:stop">
     <echo message="Stopping jboss server at ${ssh.grid.hostname}..." />
-    <sshexec port="${ssh.grid.port}" host="${ssh.grid.hostname}" trust="true" keyfile="${ssh.grid.key.file}" passphrase="" username="${ssh.grid.username}" verbose="true"
-      command="${globoss.server.instance.home}/bin/stop_jboss" />
-    <sleep seconds="${jboss.stop.sleep}" />
+    <remote-ssh remote-ssh.user="${ssh.grid.username}" 
+         remote-ssh.command="${globoss.server.instance.home}/bin/stop_jboss" 
+         remote-ssh.sleep="${jboss.stop.sleep}"/>
   </target>
 
   <target name="remote-grid:start">
     <echo message="Starting jboss server at ${ssh.grid.hostname}..." />
-    <sshexec port="${ssh.grid.port}" host="${ssh.grid.hostname}" trust="true" username="${ssh.grid.username}" keyfile="${ssh.grid.key.file}" passphrase="" verbose="true"
-      command="${globoss.server.instance.home}/bin/start_jboss" />
-    <sleep seconds="${jboss.start.sleep}" />
+    <remote-ssh remote-ssh.user="${ssh.grid.username}" remote-ssh.command="${globoss.server.instance.home}/bin/start_jboss" remote-ssh.sleep="${jboss.start.sleep}" />
   </target>
 
   <target name="remote-grid:configure-jboss-with-globus">
     <echo message="Installing Globus configuration into JBoss Grid server instance" />
-
     <scp file="${jboss-globus-serverinstance-config.zip}" keyfile="${ssh.grid.key.file}" passphrase="" trust="true" verbose="true" todir="${ssh.grid.username}@${ssh.grid.hostname}:${globoss.temp.dir}" />
-    <sshexec port="${ssh.grid.port}" host="${ssh.grid.hostname}" trust="true" username="${ssh.grid.username}" keyfile="${ssh.grid.key.file}" passphrase="" verbose="true" command="unzip -o ${globoss.temp.dir}/jboss-globus-serverinstance-config.zip -d ${globoss.server.instance.home}" />
+    <remote-ssh remote-ssh.user="${ssh.grid.username}" remote-ssh.command="unzip -o ${globoss.temp.dir}/jboss-globus-serverinstance-config.zip -d ${globoss.server.instance.home}" />
   </target>
 
   <target name="remote-grid:deploy-grid" >
@@ -1341,19 +1282,20 @@
       <property name="jboss.dir" value="${caarraysvc.temp.dir}"/>
     </ant>
     <property name="cagrid_CaArraySvc.zip" value="${caaray-svc.dir}/cagrid_CaArraySvc.zip"/>
+    
     <!-- SCP create archive to jboss404 server -->
     <scp file="${cagrid_CaArraySvc.zip}" keyfile="${ssh.grid.key.file}" passphrase="" trust="true" verbose="true" todir="${ssh.grid.username}@${ssh.grid.hostname}:${globoss.temp.dir}" />
 
     <!-- explode archive to ${globoss.server.instance.home}/deploy/wsrf.war -->
-    <sshexec port="${ssh.grid.port}" host="${ssh.grid.hostname}" trust="true" username="${ssh.grid.username}" keyfile="${ssh.grid.key.file}" passphrase="" verbose="true" command="unzip -o ${globoss.temp.dir}/cagrid_CaArraySvc.zip -d ${globoss.server.instance.home}/deploy/wsrf.war" />
-
+    <remote-ssh remote-ssh.user="${ssh.grid.username}" remote-ssh.command="unzip -o ${globoss.temp.dir}/cagrid_CaArraySvc.zip -d ${globoss.server.instance.home}/deploy/wsrf.war" />
+    
     <echo message="Caarray Grid successfully deployed to http://${globoss.server.hostname}:${globoss.server.http.port}/" />
   </target>
 
   <target name="remote-grid:undeploy">
     <echo message="Undeploying Grid instance from jboss server at ${ssh.grid.hostname}..." />
-    <property name="remote-grid-undeploy-cmd" value="rm -rf ${globoss.server.instance.home}/deploy/wsrf.war ${globoss.server.instance.home}/lib/cog-jglobus.jar ${globoss.server.instance.home}/lib/cog-tomcat.jar ${globoss.server.instance.home}/lib/cryptix32.jar ${globoss.server.instance.home}/lib/cryptix.jar ${globoss.server.instance.home}/lib/cryptix-asn1.jar ${globoss.server.instance.home}/lib/jce-jdk13-125.jar ${globoss.server.instance.home}/lib/log4j-1.2.8.jar ${globoss.server.instance.home}/lib/puretls.jar"/>
-    <sshexec port="${ssh.grid.port}" host="${ssh.grid.hostname}" trust="true" verbose="true" username="${ssh.grid.username}" keyfile="${ssh.grid.key.file}" passphrase="" command="${remote-grid-undeploy-cmd}" />
+    <remote-ssh remote-ssh.user="${ssh.grid.username}" 
+        remote-ssh.command="rm -rf ${globoss.server.instance.home}/deploy/wsrf.war ${globoss.server.instance.home}/lib/cog-jglobus.jar ${globoss.server.instance.home}/lib/cog-tomcat.jar ${globoss.server.instance.home}/lib/cryptix32.jar ${globoss.server.instance.home}/lib/cryptix.jar ${globoss.server.instance.home}/lib/cryptix-asn1.jar ${globoss.server.instance.home}/lib/jce-jdk13-125.jar ${globoss.server.instance.home}/lib/log4j-1.2.8.jar ${globoss.server.instance.home}/lib/puretls.jar" />
   </target>
 
   <target name="remote-grid:deploy" unless="nodeploy">
