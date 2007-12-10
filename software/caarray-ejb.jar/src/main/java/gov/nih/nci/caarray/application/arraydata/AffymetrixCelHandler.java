@@ -165,7 +165,7 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
 
     private void validateFeatures(FileValidationResult result, ArrayDesignService arrayDesignService) {
         ArrayDesign arrayDesign = getDesign(arrayDesignService);
-        if (celData.getCells() != arrayDesign.getDesignDetails().getFeatures().size()) {
+        if (celData.getCells() != arrayDesign.getNumberOfFeatures()) {
             result.addMessage(Type.ERROR, "The CEL file is inconsistent with the array design: "
                     + "the CEL file contains data for " + celData.getCells() + " features, but the "
                     + "array design contains " + arrayDesign.getNumberOfFeatures() + " features");

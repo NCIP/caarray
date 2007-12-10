@@ -109,7 +109,7 @@ import java.util.Map;
 /**
  * Simple stub implementation of locator -- allows clients to seed a lookup table with other stubs by JNDI name.
  */
-public class ServiceLocatorStub implements ServiceLocator {
+public final class ServiceLocatorStub implements ServiceLocator {
 
     private static final long serialVersionUID = 4520519885611921043L;
 

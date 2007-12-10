@@ -327,10 +327,12 @@ public class FileAccessServiceBean implements FileAccessService {
                         IOUtils.copy(fileInputStream, bufferedOutput);
 
                         bufferedOutput.flush();
+                        IOUtils.closeQuietly(bufferedOutput);
 
                         uploads.add(entryFile);
                         uploadFileNames.add(entry.getName());
                     }
+                    zipFile.close();
                     uploads.remove(index);
                     uploadFileNames.remove(index);
                 }
