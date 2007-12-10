@@ -105,7 +105,7 @@ public enum FileStatus {
     /**
      * Validation uncovered errors.
      */
-    VALIDATION_ERRORS(true, true, false),
+    VALIDATION_ERRORS(true, true, true),
 
     /**
      * In the process of importing.
