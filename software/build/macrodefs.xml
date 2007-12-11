@@ -69,7 +69,6 @@
     </macrodef>
 	
 	<!-- EXAMPLE: <remote-ssh remotesshcommand="mv ${jboss.temp.dir}/caarray.ear ${jboss.home}/deploy/" /> -->
-	<!-- TODO: Fail (call AntUnit tests) if required attributes are not passed to macrodef task -->
     <macrodef name="remote-ssh" description="This is a remote SSH procedure. It will use SSH connection defaults as defined in the environment property file to initiate SSH connections and execure remote unix commands. remoteSshCommand is a mandatory attribute to this macrodef.">
     	<attribute name="remoteSshCommand" />
     	<attribute name="remoteSshPort" default="${ssh.port}" />
@@ -87,13 +86,13 @@
     	    	   verbose="true" 
     	    	   command="@{remotesshcommand}" />
     		<sleep seconds="@{remoteSshSleep}" />
+			<echo message="Performed @{remoteSshCommand} command on @{remoteSshHost}:@{remoteSshPort} using SSH..." />
         </sequential>
     </macrodef>
 
 	<!-- EXAMPLE: <remote-scp remoteScpFileToCopy="${caarray.ear}" 
 	remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.temp.dir}" />
 	-->
-	<!-- TODO: Fail (call AntUnit tests) if required attributes are not passed to macrodef task -->
     <macrodef name="remote-scp" description="This task copies files in a secure manner using SCP. 
 	remoteScpToDir and remoteScpFileToCopy are required attributes to this macrodef.">
 		<attribute name="remoteScpFileToCopy" />
@@ -111,6 +110,7 @@
 		  verbose="@{remoteScpVerbose}" 
 		  todir="@{remoteScpToDir}" />
    		  <sleep seconds="@{remoteScpSleep}" />
+		  <echo message="Copied @{remoteScpFileToCopy} to @{remoteScpToDir} using SCP..." />
         </sequential>
     </macrodef>
 

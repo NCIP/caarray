@@ -4,6 +4,7 @@
 <property file="${envpropertyfile}" />
 <property name="antunit.jar" value="ant-antunit-1.0.jar"/>
 <property name="antunit.jar.location" value="${lib.dir}/${antunit.jar}"/>
+<import file="macrodefs.xml" />
 
 <taskdef uri="antlib:org.apache.ant.antunit"
   resource="org/apache/ant/antunit/antlib.xml">
@@ -43,7 +44,7 @@
 	  <echoproperties/>
   </target>
 
-  <target name="pre-build-checks" depends="testEnvPropertyFile,testPropertiesFileExists,testSshKeyFileExists, testSshConnection, testSvnLocalTrunk" />
+  <target name="pre-build-checks" depends="testEnvPropertyFile,testPropertiesFileExists,testSshKeyFileExists, testSshConnection, testSvnLocalTrunk, testRemoteProtocols" />
 
   <target name="post-build-checks"/>
 
@@ -99,33 +100,14 @@
 	<au:assertFileExists file="${jsch.jar.location}" message="Unable to find the file: ${jsch.jar.location}." />  
   </target>
 
-  <target name="testServersOnline" depends="display-properties, testEnvPropertyFile, -check-server-availability,testMySQLOnline, testJBossOnline,testGridServiceOnline, 
-  testWebAppOnline "/>
-
-  <target name="-check-server-availability">
-    <echo>Checking Servers' Availability...</echo>
-    <condition property="mysql.running">
-      <socket port="${database.port}" server="${database.server}" />
-    </condition>
-    <condition property="jboss.running">
-      <socket port="${jboss.server.port}" server="${jboss.server.hostname}" />
-    </condition>
-	<property name="gridservice.url" value="http://${globoss.server.hostname}:${globoss.server.http.port}/wsrf/services/cagrid/CaArraySvc?wsdl"/>
-    <condition property="globus.running">
-      <http url="${gridservice.url}"/>
-    </condition>
-    <property name="app.url" value="http://${jboss.server.hostname}:${jboss.server.port}/caarray/"/>
-	<condition property="webapp.running">
-	    <http url="${app.url}"/>
-	</condition>
-	    <property name="jndi.url" value="http://${jboss.server.hostname}:${jboss.server.jndi.port}"/>
-	<condition property="jndi.running">
-	    <http url="${jndi.url}"/>
-	</condition>
-  </target>
+  <target name="testServersOnline" depends="display-properties, testEnvPropertyFile,
+  testMySQLOnline, testJBossOnline,testGridServiceOnline, testWebAppOnline "/>
 
   <target name="testMySQLOnline">
     <echo>Checking ${database.server}:${database.port} (MySQL) availability...</echo>
+    <condition property="mysql.running">
+      <socket port="${database.port}" server="${database.server}" />
+    </condition>
 	<au:assertEquals message="Unable to reach ${database.server}:${database.port}" expected="true"
                       actual="${mysql.running}" casesensitive="true"/>
     <echo>${database.server}:${database.port} is Online...</echo>
@@ -133,6 +115,9 @@
 
   <target name="testJBossOnline">
     <echo>Checking ${jboss.server.hostname}:${jboss.server.port} (JBoss) availability...</echo>
+    <condition property="jboss.running">
+      <socket port="${jboss.server.port}" server="${jboss.server.hostname}" />
+    </condition>
 	<au:assertEquals message="Unable to reach ${jboss.server.hostname}:${jboss.server.port}" expected="true"
                       actual="${jboss.running}" casesensitive="true"/>
     <echo>${jboss.server.hostname}:${jboss.server.port} is Online...</echo>
@@ -140,15 +125,21 @@
 
   <target name="testGridServiceOnline">
 	<echo>Testing if ${gridservice.url} (Globus) availability...</echo>
+	<property name="gridservice.url" value="http://${globoss.server.hostname}:${globoss.server.http.port}/wsrf/services/cagrid/CaArraySvc?wsdl"/>
+    <condition property="globus.running">
+      <http url="${gridservice.url}"/>
+    </condition>
 	<au:assertEquals message="Unable to reach ${gridservice.url}" expected="true"
                       actual="${globus.running}" casesensitive="true"/>
     <echo>${gridservice.url} is Online...</echo>
   </target>
 
   <target name="testWebAppOnline">
-    <echo>Checking ${app.url} (Web Application) availability...</echo>    
+    <echo>Checking ${app.url} (Web Application) availability...</echo>  
     <property name="app.url" value="http://${jboss.server.hostname}:${jboss.server.port}/caarray/"/>
-	<echo>Testing if ${app.url} is Offline...</echo>
+	<condition property="webapp.running">
+	    <http url="${app.url}"/>
+	</condition>	
 	<au:assertEquals message="Unable to reach ${app.url}" expected="true"
                       actual="${webapp.running}" casesensitive="true"/>
     <echo>${app.url} is Online...</echo>
@@ -156,9 +147,19 @@
 
   <target name="testJndiOnline">
 	<echo>Testing if ${jndi.url} (Jndi) availability...</echo>
+    <property name="jndi.url" value="http://${jboss.server.hostname}:${jboss.server.jndi.port}"/>
+	<condition property="jndi.running">
+	    <http url="${jndi.url}"/>
+	</condition>
 	<au:assertEquals message="Unable to reach ${jndi.url}" expected="true"
                       actual="${jndi.running}" casesensitive="true"/>
     <echo>${jndi.url} is Online...</echo>
+  </target>
+
+  <target name="testRemoteProtocols">
+	<echo>Testing remote targets in macrodef.xml</echo>
+	<remote-scp remoteScpFileToCopy="${basedir}/default.properties" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.temp.dir}"/>
+    <remote-ssh remotesshcommand="ls" />
   </target>
 
 </project>
