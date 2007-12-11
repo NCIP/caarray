@@ -154,4 +154,14 @@ public interface CaArrayDao {
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
      */
     <T extends PersistentObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch);
+
+    /**
+     * Flushes the current Hibernate <code>Session</code>.
+     */
+    void flushSession();
+
+    /**
+     * Clears the current Hibernate <code>Session</code>.
+     */
+    void clearSession();
 }

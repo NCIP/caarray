@@ -147,4 +147,18 @@ public class AbstractDaoStub implements CaArrayDao {
         // no-op
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void flushSession() {
+        // no-op
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void clearSession() {
+        // no-op
+    }
+
 }

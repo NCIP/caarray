@@ -244,4 +244,18 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         return resultList;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void flushSession() {
+        HibernateUtil.getCurrentSession().flush();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void clearSession() {
+        HibernateUtil.getCurrentSession().clear();
+    }
+
 }
