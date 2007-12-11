@@ -183,6 +183,7 @@ public class SearchDaoTest {
      * Tests searching for an entity by example.
      */
     @Test
+    @SuppressWarnings("deprecation")
     public void testSearchByExample() {
         Transaction tx = null;
         try {

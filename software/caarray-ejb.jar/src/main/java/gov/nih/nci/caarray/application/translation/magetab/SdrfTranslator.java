@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.translation.magetab;
 
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
@@ -98,9 +99,12 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.FactorValue;
+import gov.nih.nci.caarray.domain.protocol.Parameter;
+import gov.nih.nci.caarray.domain.protocol.ParameterValue;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
@@ -112,7 +116,9 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
 import gov.nih.nci.caarray.domain.sample.ValueBasedCharacteristic;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode;
@@ -153,10 +159,13 @@ final class SdrfTranslator extends AbstractTranslator {
     private final List<Hybridization> allHybridizations = new ArrayList<Hybridization>();
     private final Map<String, AbstractCaArrayEntity> generatedNodes =
         new HashMap<String, AbstractCaArrayEntity>();
+    private final Map<String, Protocol> nameToProtocol = new HashMap<String, Protocol>();
+    private final VocabularyService vocabularyService;
 
     SdrfTranslator(MageTabDocumentSet documentSet, CaArrayFileSet fileSet, MageTabTranslationResult translationResult,
-            CaArrayDaoFactory daoFactory) {
+            CaArrayDaoFactory daoFactory, VocabularyService vocabularyService) {
         super(documentSet, fileSet, translationResult, daoFactory);
+        this.vocabularyService = vocabularyService;
     }
 
     @Override
@@ -178,11 +187,11 @@ final class SdrfTranslator extends AbstractTranslator {
             String investigationTitle = document.getIdfDocument().getInvestigation().getTitle();
             for (Experiment investigation : getTranslationResult().getInvestigations()) {
                 if (investigationTitle.equals(investigation.getTitle())) {
-                    investigation.getSources().addAll(allSources);
-                    investigation.getSamples().addAll(allSamples);
-                    investigation.getExtracts().addAll(allExtracts);
-                    investigation.getLabeledExtracts().addAll(allLabeledExtracts);
-                    investigation.getHybridizations().addAll(allHybridizations);
+                    investigation.getSources().addAll(this.allSources);
+                    investigation.getSamples().addAll(this.allSamples);
+                    investigation.getExtracts().addAll(this.allExtracts);
+                    investigation.getLabeledExtracts().addAll(this.allLabeledExtracts);
+                    investigation.getHybridizations().addAll(this.allHybridizations);
                 }
             }
         }
@@ -210,8 +219,8 @@ final class SdrfTranslator extends AbstractTranslator {
                 organization = replaceIfExists(organization);
                 source.getProviders().add(organization);
             }
-            nodeTranslations.put(sdrfSource, source);
-            allSources.add(source);
+            this.nodeTranslations.put(sdrfSource, source);
+            this.allSources.add(source);
         }
     }
 
@@ -219,8 +228,8 @@ final class SdrfTranslator extends AbstractTranslator {
         for (gov.nih.nci.caarray.magetab.sdrf.Sample sdrfSample : document.getAllSamples()) {
             Sample sample = new Sample();
             translateBioMaterial(sample, sdrfSample);
-            nodeTranslations.put(sdrfSample, sample);
-            allSamples.add(sample);
+            this.nodeTranslations.put(sdrfSample, sample);
+            this.allSamples.add(sample);
         }
     }
 
@@ -228,8 +237,8 @@ final class SdrfTranslator extends AbstractTranslator {
         for (gov.nih.nci.caarray.magetab.sdrf.Extract sdrfExtract : document.getAllExtracts()) {
             Extract extract = new Extract();
             translateBioMaterial(extract, sdrfExtract);
-            nodeTranslations.put(sdrfExtract, extract);
-            allExtracts.add(extract);
+            this.nodeTranslations.put(sdrfExtract, extract);
+            this.allExtracts.add(extract);
         }
     }
 
@@ -238,8 +247,8 @@ final class SdrfTranslator extends AbstractTranslator {
             LabeledExtract labeledExtract = new LabeledExtract();
             translateBioMaterial(labeledExtract, sdrfLabeledExtract);
             labeledExtract.setLabel(getTerm(sdrfLabeledExtract.getLabel()));
-            nodeTranslations.put(sdrfLabeledExtract, labeledExtract);
-            allLabeledExtracts.add(labeledExtract);
+            this.nodeTranslations.put(sdrfLabeledExtract, labeledExtract);
+            this.allLabeledExtracts.add(labeledExtract);
         }
     }
 
@@ -251,8 +260,8 @@ final class SdrfTranslator extends AbstractTranslator {
                 FactorValue factorValue = translateFactor(sdrfFactorVal);
                 hybridization.getFactorValues().add(factorValue);
             }
-            allHybridizations.add(hybridization);
-            nodeTranslations.put(sdrfHybridization, hybridization);
+            this.allHybridizations.add(hybridization);
+            this.nodeTranslations.put(sdrfHybridization, hybridization);
         }
     }
 
@@ -289,14 +298,59 @@ final class SdrfTranslator extends AbstractTranslator {
                 } else if (ExperimentOntologyCategory.DISEASE_STATE.getCategoryName().equals(category)) {
                     bioMaterial.setDiseaseState(term);
                 } else {
-                    bioMaterial.getCharacteristics().add(characteristic);                    
+                    bioMaterial.getCharacteristics().add(characteristic);
                     characteristic.setBioMaterial(bioMaterial);
                 }
             } else {
-                bioMaterial.getCharacteristics().add(characteristic);                                    
+                bioMaterial.getCharacteristics().add(characteristic);
                 characteristic.setBioMaterial(bioMaterial);
             }
         }
+        for (gov.nih.nci.caarray.magetab.ProtocolApplication mageTabProtocolApplication
+                : sdrfBiomaterial.getProtocolApplications()) {
+            ProtocolApplication protocolApplication = new ProtocolApplication();
+            protocolApplication.setProtocol(getProtocolFromMageTabProtocol(mageTabProtocolApplication.getProtocol()));
+            protocolApplication.setBioMaterial(bioMaterial);
+            bioMaterial.getProtocolApplications().add(protocolApplication);
+            for (gov.nih.nci.caarray.magetab.ParameterValue mageTabValue
+                    : mageTabProtocolApplication.getParameterValues()) {
+                ParameterValue value = new ParameterValue();
+                if (mageTabValue.getParameter() != null) {
+                    Parameter param = new Parameter();
+                    param.setName(mageTabValue.getParameter().getName());
+                    value.setParameter(param);
+                }
+                value.setValue(mageTabValue.getValue());
+                value.setProtocolApplication(protocolApplication);
+                protocolApplication.getValues().add(value);
+            }
+        }
+    }
+
+    private Protocol getProtocolFromMageTabProtocol(gov.nih.nci.caarray.magetab.Protocol mageTabProtocol) {
+        Protocol p = this.nameToProtocol.get(mageTabProtocol.getName());
+        if (p == null) {
+            p = new Protocol();
+            p.setName(mageTabProtocol.getName());
+            p.setType(getTerm(mageTabProtocol.getType()));
+            if (p.getType() == null) {
+                // default tot he unknown protocol type if one is not in use.
+                TermSource source = this.vocabularyService.getSource(ExperimentOntology.CAARRAY.getOntologyName());
+                Category category = this.vocabularyService.getCategory(source,
+                        ExperimentOntologyCategory.PROTOCOL_TYPE.getCategoryName());
+                p.setType(this.vocabularyService.getTerm(source, category,
+                        VocabularyService.UNKNOWN_PROTOCOL_TYPE_NAME));
+            }
+            p = replaceIfExists(p);
+            if (p.getId() == null) {
+                p.setContact(mageTabProtocol.getContact());
+                p.setDescription(mageTabProtocol.getDescription());
+                p.setHardware(mageTabProtocol.getHardware());
+                p.setSoftware(mageTabProtocol.getSoftware());
+            }
+            this.nameToProtocol.put(p.getName(), p);
+        }
+        return p;
     }
 
     private AbstractCharacteristic translateCharacteristic(
@@ -330,7 +384,7 @@ final class SdrfTranslator extends AbstractTranslator {
             // Generate an array to link the hybridization to the arraydesign.
             Array array = new Array();
             array.setDesign(arrayDesign);
-            nodeTranslations.put(sdrfArrayDesign, array);
+            this.nodeTranslations.put(sdrfArrayDesign, array);
             getTranslationResult().getArrayDesigns().add(arrayDesign);
             if (getTranslationResult().getInvestigations().size() > 0) {
                 getTranslationResult().getInvestigations().iterator().next().getArrayDesigns().add(arrayDesign);
@@ -363,7 +417,7 @@ final class SdrfTranslator extends AbstractTranslator {
             image.setName(imageName);
             CaArrayFile imageFile = getFile(imageName);
             image.setImageFile(imageFile);
-            nodeTranslations.put(sdrfImage, image);
+            this.nodeTranslations.put(sdrfImage, image);
         }
     }
 
@@ -380,7 +434,7 @@ final class SdrfTranslator extends AbstractTranslator {
             for (Scan scan : sdrfData.getPredecessorScans()) {
                 associateScanWithData(caArrayData, scan);
             }
-            nodeTranslations.put(sdrfData, caArrayData);
+            this.nodeTranslations.put(sdrfData, caArrayData);
         }
         // Translate MAGE-TAB raw data matrix files.
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile sdrfData : document.getAllArrayDataMatrixFiles()) {
@@ -394,7 +448,7 @@ final class SdrfTranslator extends AbstractTranslator {
             for (Scan scan : sdrfData.getPredecessorScans()) {
                 associateScanWithData(caArrayData, scan);
             }
-            nodeTranslations.put(sdrfData, caArrayData);
+            this.nodeTranslations.put(sdrfData, caArrayData);
         }
     }
 
@@ -431,7 +485,7 @@ final class SdrfTranslator extends AbstractTranslator {
             for (Normalization normalization : sdrfData.getPredecessorNormalizations()) {
                 associateNormalizationWithData(caArrayData, normalization);
             }
-            nodeTranslations.put(sdrfData, caArrayData);
+            this.nodeTranslations.put(sdrfData, caArrayData);
         }
         // Translate MAGE-TAB derived data matrix files.
         for (gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataMatrixFile sdrfData
@@ -445,7 +499,7 @@ final class SdrfTranslator extends AbstractTranslator {
             for (Normalization normalization : sdrfData.getPredecessorNormalizations()) {
                 associateNormalizationWithData(caArrayData, normalization);
             }
-            nodeTranslations.put(sdrfData, caArrayData);
+            this.nodeTranslations.put(sdrfData, caArrayData);
         }
     }
 
@@ -472,7 +526,7 @@ final class SdrfTranslator extends AbstractTranslator {
     // can occur anywhere after Hybridization.
     private void linkNode(AbstractSampleDataRelationshipNode node) {
         // Check if we already linked this node before.
-        Boolean isLinked = isNodeLinked.get(node);
+        Boolean isLinked = this.isNodeLinked.get(node);
         if ((isLinked != null) && (isLinked.booleanValue())) {
             return;
         }
@@ -483,14 +537,14 @@ final class SdrfTranslator extends AbstractTranslator {
             linkTwoNodes(node, successor);
         }
         // Finished linking node. Mark it so that we don't do it again.
-        isNodeLinked.put(node, Boolean.TRUE);
+        this.isNodeLinked.put(node, Boolean.TRUE);
     }
 
     // Link a node with one successor.
     private void linkTwoNodes(AbstractSampleDataRelationshipNode leftNode,
         AbstractSampleDataRelationshipNode rightNode) {
-        AbstractCaArrayObject leftCaArrayNode = nodeTranslations.get(leftNode);
-        AbstractCaArrayObject rightCaArrayNode = nodeTranslations.get(rightNode);
+        AbstractCaArrayObject leftCaArrayNode = this.nodeTranslations.get(leftNode);
+        AbstractCaArrayObject rightCaArrayNode = this.nodeTranslations.get(rightNode);
         SdrfNodeType leftNodeType = leftNode.getNodeType();
         SdrfNodeType rightNodeType = rightNode.getNodeType();
         if (isBioMaterial(leftNodeType)) {
@@ -513,14 +567,14 @@ final class SdrfTranslator extends AbstractTranslator {
     private void linkHybridizationToArrays(gov.nih.nci.caarray.magetab.sdrf.Hybridization sdrfHybridization,
             Hybridization hybridization) {
 
-            Array array = (Array) nodeTranslations.get(sdrfHybridization.getArrayDesign());
+            Array array = (Array) this.nodeTranslations.get(sdrfHybridization.getArrayDesign());
             hybridization.setArray(array);
     }
 
     private void linkHybridizationToImages(gov.nih.nci.caarray.magetab.sdrf.Hybridization sdrfHybridization,
             Hybridization hybridization) {
         for (gov.nih.nci.caarray.magetab.sdrf.Image sdrfImage : sdrfHybridization.getSuccessorImages()) {
-            Image image = (Image) nodeTranslations.get(sdrfImage);
+            Image image = (Image) this.nodeTranslations.get(sdrfImage);
             hybridization.getImages().add(image);
         }
     }
@@ -530,26 +584,26 @@ final class SdrfTranslator extends AbstractTranslator {
         // Link raw array data
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile sdrfArrayData
                 : sdrfHybridization.getSuccessorArrayDataFiles()) {
-            RawArrayData arrayData = (RawArrayData) nodeTranslations.get(sdrfArrayData);
+            RawArrayData arrayData = (RawArrayData) this.nodeTranslations.get(sdrfArrayData);
             arrayData.setHybridization(hybridization);
             hybridization.setArrayData(arrayData);
         }
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile sdrfArrayData
                 : sdrfHybridization.getSuccessorArrayDataMatrixFiles()) {
-            RawArrayData arrayData = (RawArrayData) nodeTranslations.get(sdrfArrayData);
+            RawArrayData arrayData = (RawArrayData) this.nodeTranslations.get(sdrfArrayData);
             arrayData.setHybridization(hybridization);
             hybridization.setArrayData(arrayData);
         }
         // Link derived array data
         for (gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataFile sdrfArrayData
                 : sdrfHybridization.getSuccessorDerivedArrayDataFiles()) {
-            DerivedArrayData arrayData = (DerivedArrayData) nodeTranslations.get(sdrfArrayData);
+            DerivedArrayData arrayData = (DerivedArrayData) this.nodeTranslations.get(sdrfArrayData);
             arrayData.getHybridizations().add(hybridization);
             hybridization.getDerivedDataCollection().add(arrayData);
         }
         for (gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataMatrixFile sdrfArrayData
                 : sdrfHybridization.getSuccessorDerivedArrayDataMatrixFiles()) {
-            DerivedArrayData arrayData = (DerivedArrayData) nodeTranslations.get(sdrfArrayData);
+            DerivedArrayData arrayData = (DerivedArrayData) this.nodeTranslations.get(sdrfArrayData);
             arrayData.getHybridizations().add(hybridization);
             hybridization.getDerivedDataCollection().add(arrayData);
         }
@@ -601,12 +655,12 @@ final class SdrfTranslator extends AbstractTranslator {
     private Sample generateSampleAndLink(String baseGeneratedNodeName, Source source) {
         // Generate sample if not already generated.
         String sampleName = GENERATED_SAMPLE_PREFIX + baseGeneratedNodeName;
-        Sample generatedSample = (Sample) generatedNodes.get(sampleName);
+        Sample generatedSample = (Sample) this.generatedNodes.get(sampleName);
         if (generatedSample == null) {
             generatedSample = new Sample();
             generatedSample.setName(sampleName);
-            generatedNodes.put(sampleName, generatedSample);
-            allSamples.add(generatedSample);
+            this.generatedNodes.put(sampleName, generatedSample);
+            this.allSamples.add(generatedSample);
         }
         linkSourceAndSample(source, generatedSample);
         return generatedSample;
@@ -615,12 +669,12 @@ final class SdrfTranslator extends AbstractTranslator {
     private Extract generateExtractAndLink(String baseGeneratedNodeName, Sample generatedSample) {
         // Generate extract if not already generated.
         String extractName = GENERATED_EXTRACT_PREFIX + baseGeneratedNodeName;
-        Extract generatedExtract = (Extract) generatedNodes.get(extractName);
+        Extract generatedExtract = (Extract) this.generatedNodes.get(extractName);
         if (generatedExtract == null) {
             generatedExtract = new Extract();
             generatedExtract.setName(extractName);
-            generatedNodes.put(extractName, generatedExtract);
-            allExtracts.add(generatedExtract);
+            this.generatedNodes.put(extractName, generatedExtract);
+            this.allExtracts.add(generatedExtract);
         }
         linkSampleAndExtract(generatedSample, generatedExtract);
         return generatedExtract;
@@ -629,12 +683,12 @@ final class SdrfTranslator extends AbstractTranslator {
     private LabeledExtract generateLabeledExtractAndLink(String baseGeneratedNodeName, Extract generatedExtract) {
         // Generate labeled extract if not already generated.
         String labeledExtractName = GENERATED_LABELED_EXTRACT_PREFIX + baseGeneratedNodeName;
-        LabeledExtract generatedLabeledExtract = (LabeledExtract) generatedNodes.get(labeledExtractName);
+        LabeledExtract generatedLabeledExtract = (LabeledExtract) this.generatedNodes.get(labeledExtractName);
         if (generatedLabeledExtract == null) {
             generatedLabeledExtract = new LabeledExtract();
             generatedLabeledExtract.setName(labeledExtractName);
-            generatedNodes.put(labeledExtractName, generatedLabeledExtract);
-            allLabeledExtracts.add(generatedLabeledExtract);
+            this.generatedNodes.put(labeledExtractName, generatedLabeledExtract);
+            this.allLabeledExtracts.add(generatedLabeledExtract);
         }
         linkExtractAndLabeledExtract(generatedExtract, generatedLabeledExtract);
         return generatedLabeledExtract;

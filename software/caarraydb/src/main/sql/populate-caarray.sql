@@ -11,7 +11,11 @@ insert into category (name) value ('PublicationType');
 insert into category (name) value ('PublicationStatus');
 insert into category (name) value ('TechnologyType');
 insert into category (name) value ('ComplexAction');
-insert into category (name) value ('ExperimentalProtocolType');
+insert into category (name) value ('ProtocolType');
+insert into category (name, parent) select 'ExperimentalProtocolType', id from category where category.name='ProtocolType';
+insert into category (name, parent) select 'DataTransformationProtocolType', id from category where category.name='ProtocolType';
+insert into category (name, parent) select 'HigherLevelAnalysisProtocolType', id from category where category.name='ProtocolType';
+
 
 insert into termsource (name, url, version) values ('MGED', 'http://mged.sourceforge.net/ontologies/MGEDontology.php', '1.3.1.1');
 insert into termsource (name, url, version) values ('Caarray', 'http://caarray.nci.nih.gov/ontologies/UserDefined.html', '0.1');
@@ -98,6 +102,7 @@ insert into term (value, source, category) select 'transfect', termsource.id, ca
 insert into term (value, source, category) select 'wash', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ComplexAction';
 
 -- ExperimentalProtocolTypes
+insert into term (value, source, category) select 'Unknown', termsource.id, category.id from termsource, category where termsource.name='Caarray' and category.name='ExperimentalProtocolType';
 insert into term (value, source, category) select 'PCR_amplification', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
 insert into term (value, source, category) select 'acclimatization', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
 insert into term (value, source, category) select 'array_manufacturing', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
@@ -134,6 +139,31 @@ insert into term (value, source, category) select 'store', termsource.id, catego
 insert into term (value, source, category) select 'transfect', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
 insert into term (value, source, category) select 'unknown_protocol_type', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
 insert into term (value, source, category) select 'wash', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='ExperimentalProtocolType';
+
+-- DataTransformationProtocolType
+insert into term (value, source, category) select 'across_bioassay_data_set_function', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DataTransformationProtocolType';
+insert into term (value, source, category) select 'dye_swap_merge', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DataTransformationProtocolType';
+insert into term (value, source, category) select 'flag_filter', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DataTransformationProtocolType';
+insert into term (value, source, category) select 'linlog_transformation', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DataTransformationProtocolType';
+insert into term (value, source, category) select 'loess_global_normalization', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DataTransformationProtocolType';
+insert into term (value, source, category) select 'loess_group_normalization', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DataTransformationProtocolType';
+insert into term (value, source, category) select 'loess_scaled_group_normalization', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DataTransformationProtocolType';
+insert into term (value, source, category) select 'lowess_global_normalization', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DataTransformationProtocolType';
+insert into term (value, source, category) select 'lowess_group_normalization', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DataTransformationProtocolType';
+insert into term (value, source, category) select 'lowess_scaled_group_normalization', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DataTransformationProtocolType';
+insert into term (value, source, category) select 'mean_log_normalization', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DataTransformationProtocolType';
+insert into term (value, source, category) select 'median_log_normalization', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DataTransformationProtocolType';
+insert into term (value, source, category) select 'moving_average', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DataTransformationProtocolType';
+insert into term (value, source, category) select 'quantile_normalization_protocol_type', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DataTransformationProtocolType';
+insert into term (value, source, category) select 'replicate_analysis', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DataTransformationProtocolType';
+insert into term (value, source, category) select 'total_intensity_normalization_paired', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DataTransformationProtocolType';
+insert into term (value, source, category) select 'total_intensity_normalization_single', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DataTransformationProtocolType';
+insert into term (value, source, category) select 'within_bioassay_data_set_function', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='DataTransformationProtocolType';
+
+-- HigherLevelAnalysisProtocolType
+insert into term (value, source, category) select 'condition_specificity', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='HigherLevelAnalysisProtocolType';
+insert into term (value, source, category) select 'differential_expression', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='HigherLevelAnalysisProtocolType';
+insert into term (value, source, category) select 'multiple_testing_correction', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='HigherLevelAnalysisProtocolType';
 
 insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (9606, 'human', 'Homo sapiens', 'species');
 insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (10090, 'house mouse', 'Mus musculus', 'species');

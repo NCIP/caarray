@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.dao;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
 import java.util.List;
 import java.util.Set;
@@ -120,6 +121,15 @@ public interface VocabularyDao extends CaArrayDao {
      * @return all matching terms or an empty <code>Set</code> if no matches.
      */
     Set<Term> getTermsRecursive(String categoryName, String value);
+
+    /**
+     * Get the terms with the given criteria.
+     * @param source the source the term must have.
+     * @param category the returned terms will either be of this category or a descendant category.
+     * @param value the value of the term
+     * @return the list of terms
+     */
+    List<Term> getTerms(TermSource source, Category category, String value);
 
     /**
      * Returns the <code>Category</code> with the given name or null if none exists.

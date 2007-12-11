@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.services.file;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.dao.SearchDao;
@@ -107,15 +107,15 @@ public class FileRetrievalServiceBeanTest {
 
 
 
-    private FileRetrievalServiceBean bean = new FileRetrievalServiceBean();
-    private LocalFileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
-    private LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
+    private final FileRetrievalServiceBean bean = new FileRetrievalServiceBean();
+    private final LocalFileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
+    private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
 
     @Before
     public void setUp() throws Exception {
         ServiceLocatorStub serviceLocatorStub = ServiceLocatorStub.registerEmptyLocator();
-        serviceLocatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
-        bean.setDaoFactory(daoFactoryStub);
+        serviceLocatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
+        this.bean.setDaoFactory(this.daoFactoryStub);
     }
 
     /**
@@ -124,7 +124,7 @@ public class FileRetrievalServiceBeanTest {
     @Test
     public void testReadFile() {
         CaArrayFile caArrayFile = new CaArrayFile();
-        byte[] bytes = bean.readFile(caArrayFile);
+        byte[] bytes = this.bean.readFile(caArrayFile);
         assertEquals(AffymetrixArrayDesignFiles.TEST3_CDF.length(), (long) bytes.length);
     }
 

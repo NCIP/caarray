@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -137,7 +138,7 @@ public class GenericDataServiceStub implements GenericDataService {
      */
     public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders)
             throws IllegalAccessException, InstantiationException {
-        return null;
+        return new ArrayList<T>();
     }
 
     /**

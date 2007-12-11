@@ -194,9 +194,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             // Query database for list of entities matching the given entity's attributes.
             Criteria criteria = mySession.createCriteria(entityToMatch.getClass())
                                          .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-            criteria.add(Example.create(entityToMatch)
-                                 .enableLike(mode)
-                                 .ignoreCase()
+            criteria.add(Example.create(entityToMatch).enableLike(mode).ignoreCase()
                     );
             for (Order curretOrder : order) {
                 criteria.addOrder(curretOrder);

@@ -103,6 +103,11 @@ public interface VocabularyService {
     String JNDI_NAME = "caarray/VocabularyServiceBean/local";
 
     /**
+     * The name of the protocol type term for unknown protocol types.
+     */
+    String UNKNOWN_PROTOCOL_TYPE_NAME = "Unknown";
+
+    /**
      * Returns all terms that belong to the category for the name given (including all
      * subcategories).
      *

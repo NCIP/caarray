@@ -55,6 +55,7 @@ import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.text.MessageFormat;
@@ -81,6 +82,7 @@ import org.hibernate.criterion.Restrictions;
  */
 class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao {
 
+    private static final String VALUE_COLUMN_NAME = "value";
     private static final Logger LOG = Logger.getLogger(VocabularyDaoImpl.class);
     private static final String UNCHECKED = "unchecked";
     private static final String EXP_ID_PARAM = "expId";
@@ -162,6 +164,34 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public List<Term> getTerms(TermSource source, Category category, String value) {
+        List<Category> searchCategories = new ArrayList<Category>();
+        searchCategories.add(category);
+        addChildren(searchCategories, category);
+        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Term.class);
+        criteria.addOrder(Order.asc(VALUE_COLUMN_NAME));
+        criteria.add(Restrictions.eq(VALUE_COLUMN_NAME, value).ignoreCase());
+        criteria.add(Restrictions.eq("source", source));
+        criteria.add(Restrictions.in("category", searchCategories.toArray()));
+        return criteria.list();
+    }
+
+    /**
+     * Create a set of all of the descendants of the category.
+     * @param searchCategories the set to build
+     * @param category the category to process
+     */
+    private void addChildren(List<Category> searchCategories, Category category) {
+        for (Category child : category.getChildren()) {
+            searchCategories.add(child);
+            addChildren(searchCategories, child);
+        }
+    }
+
+    /**
      * Returns the <code>Category</code> with the given name or null if none exists.
      *
      * @param name get <code>Category</code> matching this name
@@ -214,9 +244,9 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
         List hibernateReturnedTerms = null;
 
         Criteria criteria = mySession.createCriteria(Term.class);
-        criteria.addOrder(Order.asc("value"));
+        criteria.addOrder(Order.asc(VALUE_COLUMN_NAME));
         if (value != null) {
-            criteria.add(Restrictions.like("value", value, MatchMode.START).ignoreCase());
+            criteria.add(Restrictions.like(VALUE_COLUMN_NAME, value, MatchMode.START).ignoreCase());
         }
         criteria.createCriteria("category").add(Restrictions.eq("id", categoryId));
 

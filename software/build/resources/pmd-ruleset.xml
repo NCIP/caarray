@@ -14,7 +14,9 @@
 
     <rule ref="rulesets/clone.xml" />
 
-    <rule ref="rulesets/codesize.xml" />
+    <rule ref="rulesets/codesize.xml" >
+        <exclude name="ExcessivePublicCount" />
+    </rule>
 
     <rule ref="rulesets/codesize.xml/ExcessiveMethodLength">
         <properties>
@@ -39,13 +41,6 @@
 
     <rule ref="rulesets/coupling.xml">
         <exclude name="ExcessiveImports" />
-    </rule>
-
-    <rule ref="rulesets/coupling.xml/ExcessiveImports">
-        <properties>
-            <!-- TODO remove this exception and refactor failing classes (SdrfTranslator and any others) -->
-            <property name="minimum" value="50" />
-        </properties>
     </rule>
 
     <rule ref="rulesets/design.xml">

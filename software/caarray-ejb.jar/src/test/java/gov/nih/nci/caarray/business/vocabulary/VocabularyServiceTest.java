@@ -58,6 +58,7 @@ import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -205,6 +206,13 @@ public class VocabularyServiceTest {
          * {@inheritDoc}
          */
         public List<Term> getTissueSitesForExperiment(Experiment experiment) {
+            return null;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public List<Term> getTerms(TermSource source, Category category, String value) {
             return null;
         }
     }

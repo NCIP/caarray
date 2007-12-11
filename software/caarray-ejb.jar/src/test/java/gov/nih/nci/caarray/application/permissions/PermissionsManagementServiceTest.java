@@ -122,56 +122,56 @@ public class PermissionsManagementServiceTest {
     @Before
     public void setup() {
         PermissionsManagementServiceBean bean = new PermissionsManagementServiceBean();
-        bean.setGenericDataService(genericDataServiceStub);
-        bean.setDaoFactory(daoFactoryStub);
+        bean.setGenericDataService(this.genericDataServiceStub);
+        bean.setDaoFactory(this.daoFactoryStub);
 
-        permissionsManagementService = bean;
+        this.permissionsManagementService = bean;
     }
 
     @Test
     public void testDelete() throws CSTransactionException, CSObjectNotFoundException {
-        CollaboratorGroup created = permissionsManagementService.create(TEST);
-        permissionsManagementService.delete(created);
-        assertEquals(created, genericDataServiceStub.getDeletedObject());
+        CollaboratorGroup created = this.permissionsManagementService.create(TEST);
+        this.permissionsManagementService.delete(created);
+        assertEquals(created, this.genericDataServiceStub.getDeletedObject());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testDeleteException() throws CSTransactionException {
         CollaboratorGroup cg = new CollaboratorGroup(new Group(), new User());
         cg.getOwner().setLoginName("anotheruser");
-        permissionsManagementService.delete(cg);
+        this.permissionsManagementService.delete(cg);
     }
 
     @Test
     public void testGetAll() {
-        CollaboratorGroupDaoStub stub = (CollaboratorGroupDaoStub) daoFactoryStub.getCollaboratorGroupDao();
+        CollaboratorGroupDaoStub stub = (CollaboratorGroupDaoStub) this.daoFactoryStub.getCollaboratorGroupDao();
         int count = stub.getNumGetAllCalls();
-        permissionsManagementService.getCollaboratorGroups();
+        this.permissionsManagementService.getCollaboratorGroups();
         assertEquals(count + 1, stub.getNumGetAllCalls());
     }
 
     @Test
     public void testCreate() throws CSException {
-        CollaboratorGroup created = permissionsManagementService.create(TEST);
-        CollaboratorGroupDaoStub stub = (CollaboratorGroupDaoStub) daoFactoryStub.getCollaboratorGroupDao();
+        CollaboratorGroup created = this.permissionsManagementService.create(TEST);
+        CollaboratorGroupDaoStub stub = (CollaboratorGroupDaoStub) this.daoFactoryStub.getCollaboratorGroupDao();
         assertEquals(created, stub.getSavedObject());
     }
 
     @Test(expected = CSException.class)
     public void testCreateException() throws CSException  {
-        permissionsManagementService.create(TEST);
-        permissionsManagementService.create(TEST);
+        this.permissionsManagementService.create(TEST);
+        this.permissionsManagementService.create(TEST);
     }
 
     @Test
-    public void testAddAndRemoveUsers() throws CSTransactionException, CSObjectNotFoundException {
-        CollaboratorGroup created = permissionsManagementService.create(TEST);
+    public void testAddAndRemoveUsers() throws CSTransactionException, CSObjectNotFoundException { // NOPMD - method length
+        CollaboratorGroup created = this.permissionsManagementService.create(TEST);
         List<String> toAdd = new ArrayList<String>();
         Long anonId = SecurityUtils.getAuthorizationManager().getUser(SecurityUtils.ANONYMOUS_USER).getUserId();
         toAdd.add(anonId.toString());
         toAdd.add("3");
         toAdd.add("4");
-        permissionsManagementService.addUsers(created, toAdd);
+        this.permissionsManagementService.addUsers(created, toAdd);
         // gymnastics here due to auth manager being it's own session
         Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
         Group g =  (Group) HibernateUtil.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
@@ -186,7 +186,7 @@ public class PermissionsManagementServiceTest {
 
         List<String> toRemove = new ArrayList<String>();
         toRemove.add("3");
-        permissionsManagementService.removeUsers(created, toRemove);
+        this.permissionsManagementService.removeUsers(created, toRemove);
         // go the other way or remove - make sure groups are set correctly
         tx = HibernateUtil.getCurrentSession().beginTransaction();
         HibernateUtil.getCurrentSession().refresh(u1);
@@ -201,9 +201,9 @@ public class PermissionsManagementServiceTest {
 
     @Test
     public void testRename() throws CSTransactionException, CSObjectNotFoundException {
-        CollaboratorGroup created = permissionsManagementService.create(TEST);
+        CollaboratorGroup created = this.permissionsManagementService.create(TEST);
         Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
-        permissionsManagementService.rename(created, "test2");
+        this.permissionsManagementService.rename(created, "test2");
         Group g = (Group) HibernateUtil.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
         assertEquals("test2", g.getGroupName());
         tx.commit();
@@ -211,7 +211,7 @@ public class PermissionsManagementServiceTest {
 
     @Test
     public void testGetUsers() {
-        List<User> users = permissionsManagementService.getUsers(null);
+        List<User> users = this.permissionsManagementService.getUsers(null);
         assertNotNull(users);
         assertTrue(users.isEmpty());
     }

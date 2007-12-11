@@ -127,7 +127,7 @@ public class VocabularyServiceStub implements VocabularyService {
         return term;
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("deprecation") // NOPMD - string constant
     public Term getTerm(Long id) {
         Term term = new Term();
         term.setId(id);
@@ -180,6 +180,7 @@ public class VocabularyServiceStub implements VocabularyService {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("deprecation")
     public List<Term> getCellTypesForExperiment(Experiment experiment) {
         List<Term> terms = new ArrayList<Term>();
         Term t1 = new Term();
@@ -191,6 +192,7 @@ public class VocabularyServiceStub implements VocabularyService {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("deprecation")
     public List<Term> getDiseaseStatesForExperiment(Experiment experiment) {
         List<Term> terms = new ArrayList<Term>();
         Term t1 = new Term();
@@ -202,6 +204,7 @@ public class VocabularyServiceStub implements VocabularyService {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("deprecation")
     public List<Term> getMaterialTypesForExperiment(Experiment experiment) {
         List<Term> terms = new ArrayList<Term>();
         Term t1 = new Term();
@@ -213,6 +216,7 @@ public class VocabularyServiceStub implements VocabularyService {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("deprecation")
     public List<Term> getTissueSitesForExperiment(Experiment experiment) {
         List<Term> terms = new ArrayList<Term>();
         Term t1 = new Term();

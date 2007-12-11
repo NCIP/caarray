@@ -179,11 +179,7 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     public Term getTerm(TermSource source, Category category, String value) {
-        Term queryTerm = new Term();
-        queryTerm.setCategory(category);
-        queryTerm.setSource(source);
-        queryTerm.setValue(value);
-        return uniqueResult(getVocabularyDao().queryEntityAndAssociationsByExample(queryTerm));
+        return uniqueResult(getVocabularyDao().getTerms(source, category, value));
     }
 
     /**

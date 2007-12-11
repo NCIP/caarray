@@ -80,148 +80,133 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.action.project;
+package gov.nih.nci.caarray.web.action.protocol;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
-import gov.nih.nci.caarray.application.project.ProjectManagementService;
-import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.PersistentObject;
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.opensymphony.xwork2.Action;
 
 /**
- * @author Winston Cheng
+ * @author Scott Miller
  *
  */
-public class ProjectOverviewActionTest {
-    private final ProjectOverviewAction action = new ProjectOverviewAction();
-    private static final LocalArrayDesignServiceStub arrayDesignServiceStub = new LocalArrayDesignServiceStub();
-    private static final LocalGenericDataServiceStub genericDataServiceStub = new LocalGenericDataServiceStub();
-    private static final LocalProjectManagementServiceStub projectManagementServiceStub = new LocalProjectManagementServiceStub();
-    private static final VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
+public class ProtocolManagementActionTest {
+
+    private static GenericDataService genericDataService;
+    ProtocolManagementAction action;
+
+    @BeforeClass
+    @SuppressWarnings("PMD")
+    public static void beforeClass() {
+        genericDataService = new GenericDataServiceStub() {
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            @SuppressWarnings({"unchecked", "deprecation"})
+            public <T extends PersistentObject> T retrieveEntity(Class<T> entityClass, Long entityId) {
+                if (entityClass.equals(Protocol.class) && entityId.equals(new Long(1))) {
+                    Protocol p = new Protocol();
+                    p.setId(1l);
+                    p.setName("test protocol");
+                    return (T) p;
+                }
+                return super.retrieveEntity(entityClass, entityId);
+            }
+
+        };
+        ServiceLocatorStub stub = ServiceLocatorStub.registerEmptyLocator();
+        stub.addLookup(GenericDataService.JNDI_NAME, genericDataService);
+    }
 
     @Before
-    public void setUp() throws Exception {
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
-        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, arrayDesignServiceStub);
-        locatorStub.addLookup(GenericDataService.JNDI_NAME, genericDataServiceStub);
-        locatorStub.addLookup(ProjectManagementService.JNDI_NAME, projectManagementServiceStub);
-        locatorStub.addLookup(VocabularyService.JNDI_NAME, vocabularyServiceStub);
+    public void before() {
+        this.action = new ProtocolManagementAction();
+        ServletActionContext.setRequest(new MockHttpServletRequest());
     }
 
-    @Test
-    public void testPrepare() throws Exception {
-        // no manufacturer
-        setProjectId(1L);
+    @Test(expected = PermissionDeniedException.class)
+    @SuppressWarnings("deprecation")
+    public void testPrepare() {
         this.action.prepare();
-        assertEquals(vocabularyServiceStub.getOrganisms().size(), this.action.getOrganisms().size());
-        assertEquals(arrayDesignServiceStub.getArrayDesignProviders().size(), this.action.getManufacturers().size());
-        assertEquals(0, this.action.getArrayDesigns().size());
-        // project with manufacturer
-        setProjectId(2L);
+        assertEquals(null, this.action.getProtocol());
+        this.action.setProtocol(new Protocol());
         this.action.prepare();
-        assertEquals(vocabularyServiceStub.getOrganisms().size(), this.action.getOrganisms().size());
-        assertEquals(arrayDesignServiceStub.getArrayDesignProviders().size(), this.action.getManufacturers().size());
-        assertEquals(1, this.action.getArrayDesigns().size());
-    }
-
-
-    @Test
-    public void testLoad() throws Exception {
-        this.action.setProject(projectManagementServiceStub.getProject(1L));
-        assertEquals(Action.INPUT, this.action.load());
-        assertEquals(vocabularyServiceStub.getTissueSitesForExperiment(null).size(), this.action.getTissueSites().size());
-        assertEquals(vocabularyServiceStub.getDiseaseStatesForExperiment(null).size(), this.action.getDiseaseState().size());
-        assertEquals(vocabularyServiceStub.getMaterialTypesForExperiment(null).size(), this.action.getMaterialTypes().size());
-        assertEquals(vocabularyServiceStub.getCellTypesForExperiment(null).size(), this.action.getCellTypes().size());
+        assertEquals(null, this.action.getProtocol().getId());
+        this.action.getProtocol().setId(1l);
+        this.action.prepare();
+        assertEquals("test protocol", this.action.getProtocol().getName());
+        this.action.getProtocol().setId(2l);
+        this.action.prepare();
     }
 
     @Test
-    public void testRetrieveArrayDesigns() throws Exception {
-        this.action.setManufacturerId(1L);
-        assertEquals("xmlArrayDesigns", this.action.retrieveArrayDesigns());
-        assertEquals(1, this.action.getArrayDesigns().size());
+    public void testManage() {
+        assertEquals(Action.SUCCESS, this.action.manage());
+        assertEquals(null, ServletActionContext.getRequest().getSession().getAttribute("returnProjectId"));
     }
 
-    @SuppressWarnings("deprecation") // NOPMD - string constant
-    private void setProjectId(Long id) {
-        Project proj = new Project();
-        proj.setId(id);
-        this.action.setProject(proj);
+    @Test
+    public void testStartOnEditPage() throws Exception {
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+        mockRequest.addParameter("startWithEdit", "true");
+        ServletActionContext.setRequest(mockRequest);
+        this.action.setReturnInitialTab1("test1");
+        this.action.setReturnInitialTab2("test2");
+        this.action.setReturnInitialTab2Url("test2Url");
+        this.action.setReturnProjectId(1L);
+        this.action.setReturnInitialTab1("test1");
+
+        assertEquals(Action.SUCCESS, this.action.manage());
+        assertEquals(1L, ServletActionContext.getRequest().getSession().getAttribute("returnProjectId"));
+        assertEquals("test1", ServletActionContext.getRequest().getSession().getAttribute("returnInitialTab1"));
+        assertEquals("test2", ServletActionContext.getRequest().getSession().getAttribute("returnInitialTab2"));
+        assertEquals("test2Url", ServletActionContext.getRequest().getSession().getAttribute("returnInitialTab2Url"));
+
+        mockRequest.removeParameter("startWithEdit");
+        this.action = new ProtocolManagementAction();
+        assertEquals(Action.INPUT, this.action.list());
+        assertTrue(this.action.isEditMode());
+        assertEquals(null, ServletActionContext.getRequest().getSession().getAttribute("returnProjectId"));
+        assertEquals(null, ServletActionContext.getRequest().getSession().getAttribute("returnInitialTab1"));
+        assertEquals(null, ServletActionContext.getRequest().getSession().getAttribute("returnInitialTab2"));
+        assertEquals(null, ServletActionContext.getRequest().getSession().getAttribute("returnInitialTab2Url"));
+
+        assertEquals(1L, this.action.getReturnProjectId());
+        assertEquals("test1", this.action.getReturnInitialTab1());
+        assertEquals("test2", this.action.getReturnInitialTab2());
+        assertEquals("test2Url", this.action.getReturnInitialTab2Url());
     }
 
-    @SuppressWarnings("deprecation")
-    private static class LocalArrayDesignServiceStub extends ArrayDesignServiceStub {
-        @Override
-        public List<Organization> getAllOrganizations() {
-            List<Organization> providers = new ArrayList<Organization>();
-            Organization p1 = new Organization();
-            p1.setId(1L);
-            providers.add(p1);
-            return providers;
-        }
-        @Override
-        public List<Organization> getArrayDesignProviders() {
-            List<Organization> providers = new ArrayList<Organization>();
-            Organization p1 = new Organization();
-            p1.setId(1L);
-            providers.add(p1);
-            return providers;
-        }
-        @Override
-        public List<ArrayDesign> getArrayDesignsForProvider(Organization provider) {
-            if (provider != null && Long.valueOf(1L).equals(provider.getId())) {
-                List<ArrayDesign> designs = new ArrayList<ArrayDesign>();
-                ArrayDesign d1 = new ArrayDesign();
-                d1.setId(1L);
-                designs.add(d1);
-                return designs;
-            }
-            return null;
-        }
+    @Test
+    public void testList() throws Exception {
+        assertEquals(Action.SUCCESS, this.action.list());
+        assertEquals(0, this.action.getProtocols().size());
     }
-    @SuppressWarnings("deprecation")
-    private static class LocalProjectManagementServiceStub extends ProjectManagementServiceStub {
-        @Override
-        public Project getProject(long id) {
-            Project p = new Project();
-            p.setId(id);
-            p.getExperiment().setId(1L);
-            if (2L == id) {
-                Organization o = new Organization();
-                o.setId(1L);
-                p.getExperiment().setManufacturer(o);
-            }
-            return p;
-        }
-    }
-    @SuppressWarnings("deprecation")
-    private static class LocalGenericDataServiceStub extends GenericDataServiceStub {
-        @Override
-        @SuppressWarnings("unchecked")
-        public <T extends PersistentObject> T retrieveEntity(Class<T> entityClass, Long entityId) {
-            if (Organization.class.equals(entityClass) && Long.valueOf(1L).equals(entityId)) {
-                Organization o = new Organization();
-                o.setId(1L);
-                return (T) o;
-            }
-            return null;
-        }
+
+    @Test
+    public void testEditAndDetailsAndProjectEdit() {
+        this.action.setEditMode(false);
+        assertEquals(Action.INPUT, this.action.edit());
+        assertTrue(this.action.isEditMode());
+        assertEquals(Action.INPUT, this.action.details());
+        assertFalse(this.action.isEditMode());
+
+        assertEquals("projectEdit", this.action.projectEdit());
     }
 }

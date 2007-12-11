@@ -124,21 +124,22 @@ public class MageTabTranslatorBean implements MageTabTranslator {
     }
 
     private void translateTermSources(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult) {
-        new TermSourceTranslator(documentSet, translationResult, getVocabularyService(), daoFactory).translate();
+        new TermSourceTranslator(documentSet, translationResult, getVocabularyService(), this.daoFactory).translate();
     }
 
     private void translateTerms(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
             VocabularyService service) {
-        new TermTranslator(documentSet, translationResult, service, daoFactory).translate();
+        new TermTranslator(documentSet, translationResult, service, this.daoFactory).translate();
     }
 
     private void translateIdfs(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult) {
-        new IdfTranslator(documentSet, translationResult, daoFactory).translate();
+        new IdfTranslator(documentSet, translationResult, this.daoFactory).translate();
     }
 
     private void translateSdrfs(MageTabDocumentSet documentSet, CaArrayFileSet fileSet,
             MageTabTranslationResult translationResult) {
-        new SdrfTranslator(documentSet, fileSet, translationResult, daoFactory).translate();
+        new SdrfTranslator(documentSet, fileSet, translationResult, this.daoFactory, getVocabularyService()).
+                translate();
     }
 
     private VocabularyService getVocabularyService() {
@@ -149,7 +150,7 @@ public class MageTabTranslatorBean implements MageTabTranslator {
      * @return the daoFactory
      */
     CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
+        return this.daoFactory;
     }
 
     /**

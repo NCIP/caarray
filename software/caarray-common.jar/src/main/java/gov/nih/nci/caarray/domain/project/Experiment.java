@@ -351,7 +351,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param publicIdentifier the publicIdentifier to set
      */
     @SuppressWarnings("unused") // NOPMD
-    private void setPublicIdentifier(String publicIdentifier) {
+    private void setPublicIdentifier(String publicIdentifier) { // NOPMD
         this.publicIdentifier = publicIdentifier;
     }
 
@@ -551,7 +551,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param qualityControlTypesVal the qualityControlTypes
      */
     @SuppressWarnings("unused")
-    public void setQualityControlTypes(final Set<Term> qualityControlTypesVal) {
+    public void setQualityControlTypes(final Set<Term> qualityControlTypesVal) { // NOPMD
         this.qualityControlTypes = qualityControlTypesVal;
     }
 
@@ -579,7 +579,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param publicationsVal the publications
      */
     @SuppressWarnings("unused")
-    private void setPublications(final Set<Publication> publicationsVal) {
+    private void setPublications(final Set<Publication> publicationsVal) { // NOPMD
         this.publications = publicationsVal;
     }
 
@@ -603,7 +603,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param replicateTypesVal the replicateTypes
      */
     @SuppressWarnings("unused")
-    public void setReplicateTypes(final Set<Term> replicateTypesVal) {
+    public void setReplicateTypes(final Set<Term> replicateTypesVal) { // NOPMD
         this.replicateTypes = replicateTypesVal;
     }
 
@@ -628,7 +628,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param sourcesVal the sources
      */
     @SuppressWarnings("unused")
-    private void setSources(final Set<Source> sourcesVal) {
+    private void setSources(final Set<Source> sourcesVal) { // NOPMD
         this.sources = sourcesVal;
     }
 
@@ -650,7 +650,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @LazyCollection(LazyCollectionOption.EXTRA)
     @ForeignKey(name = "EXPERIMENTSAMPLE_INVEST_FK", inverseName = "EXPERIMENTSAMPLE_SAMPLE_FK")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @Filter(name = "Project1", condition = SAMPLES_FILTER)
+    @Filter(name = "Project1", condition = SAMPLES_FILTER) // NOPMD
     public Set<Sample> getSamples() {
         return this.samples;
     }
@@ -669,7 +669,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param samplesVal the sources
      */
     @SuppressWarnings("unused")
-    private void setSamples(final Set<Sample> samplesVal) {
+    private void setSamples(final Set<Sample> samplesVal) { // NOPMD
         this.samples = samplesVal;
     }
 
@@ -695,7 +695,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param extractsVal the sources
      */
     @SuppressWarnings("unused")
-    private void setExtracts(final Set<Extract> extractsVal) {
+    private void setExtracts(final Set<Extract> extractsVal) { // NOPMD
         this.extracts = extractsVal;
     }
 
@@ -721,7 +721,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param labeledExtractsVal the sources
      */
     @SuppressWarnings("unused")
-    private void setLabeledExtracts(final Set<LabeledExtract> labeledExtractsVal) {
+    private void setLabeledExtracts(final Set<LabeledExtract> labeledExtractsVal) { // NOPMD
         this.labeledExtracts = labeledExtractsVal;
     }
 
@@ -747,7 +747,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param arrayDesignsVal the arrayDesigns
      */
     @SuppressWarnings("unused")
-    public void setArrayDesigns(final Set<ArrayDesign> arrayDesignsVal) {
+    public void setArrayDesigns(final Set<ArrayDesign> arrayDesignsVal) { // NOPMD
         this.arrayDesigns = arrayDesignsVal;
     }
 
@@ -769,7 +769,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param experimentContactsVal the experimentContacts
      */
     @SuppressWarnings("unused")
-    private void setExperimentContacts(final Set<ExperimentContact> experimentContactsVal) {
+    private void setExperimentContacts(final Set<ExperimentContact> experimentContactsVal) { // NOPMD
         this.experimentContacts = experimentContactsVal;
     }
 
@@ -853,7 +853,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param factorsVal the factors
      */
     @SuppressWarnings("unused")
-    private void setFactors(final Set<Factor> factorsVal) {
+    private void setFactors(final Set<Factor> factorsVal) { // NOPMD
         this.factors = factorsVal;
     }
 
@@ -878,7 +878,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param normalizationTypesVal the normalizationTypes
      */
     @SuppressWarnings("unused")
-    private void setNormalizationTypes(final Set<Term> normalizationTypesVal) {
+    private void setNormalizationTypes(final Set<Term> normalizationTypesVal) { // NOPMD
         this.normalizationTypes = normalizationTypesVal;
     }
 
@@ -903,7 +903,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param arraysVal the arrays
      */
     @SuppressWarnings("unused")
-    private void setArrays(final Set<Array> arraysVal) {
+    private void setArrays(final Set<Array> arraysVal) { // NOPMD
         this.arrays = arraysVal;
     }
 
@@ -920,7 +920,7 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     @SuppressWarnings("unused")
-    private void setHybridizations(final Set<Hybridization> hybridizations) {
+    private void setHybridizations(final Set<Hybridization> hybridizations) { // NOPMD
         this.hybridizations = hybridizations;
     }
 
@@ -937,7 +937,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param project the project to set
      */
     @SuppressWarnings("unused")
-    private void setProject(Project project) {
+    private void setProject(Project project) { // NOPMD
         this.project = project;
     }
 

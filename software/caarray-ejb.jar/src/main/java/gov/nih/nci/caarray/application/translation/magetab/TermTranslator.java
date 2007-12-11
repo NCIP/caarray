@@ -153,7 +153,10 @@ final class TermTranslator extends AbstractTranslator {
     }
 
     private Term getOrCreateTerm(TermSource source, Category category, String value) {
-        Term term = this.service.getTerm(source, category, value);
+        Term term = null;
+        if (source != null && source.getId() != null && category != null && category.getId() != null) {
+            term = this.service.getTerm(source, category, value);
+        }
         if (term == null) {
             term = new Term();
             term.setSource(source);

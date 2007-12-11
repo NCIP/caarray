@@ -114,11 +114,10 @@ public class Parameter extends AbstractCaArrayEntity {
     }
 
     /**
-     * @deprecated for castor & hibernate only
+     * Default constructor.
      */
-    @Deprecated
     public Parameter() {
-        // hibernate-only constructor
+        // empty constructor
     }
 
     /**
@@ -128,7 +127,7 @@ public class Parameter extends AbstractCaArrayEntity {
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
-        return name;
+        return this.name;
     }
 
     /**
@@ -150,7 +149,7 @@ public class Parameter extends AbstractCaArrayEntity {
     @JoinColumn(name = "DEFAULT_VALUE_ID")
     @ForeignKey(name = "PARAMETER_DEFAULTVALUE_FK")
     public ParameterValue getDefaultValue() {
-        return defaultValue;
+        return this.defaultValue;
     }
 
     /**
@@ -169,7 +168,7 @@ public class Parameter extends AbstractCaArrayEntity {
     @JoinColumn(nullable = false, updatable = false)
     @ForeignKey(name = "PARAMETER_PROTOCOL_FK")
     public Protocol getProtocol() {
-        return protocol;
+        return this.protocol;
     }
 
     /**
@@ -185,7 +184,7 @@ public class Parameter extends AbstractCaArrayEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-            .append("name", name)
+            .append("name", this.name)
             .toString();
     }
 }

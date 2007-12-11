@@ -253,6 +253,12 @@ public class MageTabTranslatorTest {
 
         @Override
         public Term getTerm(TermSource source, Category category, String value) {
+            if ("Unknown".equals(value)) {
+                Term t = new Term();
+                t.setValue(value);
+                t.setCategory(category);
+                return t;
+            }
             assertFalse(StringUtils.isEmpty(source.getName()));
             assertFalse(StringUtils.isEmpty(category.getName()));
             assertFalse(StringUtils.isEmpty(value));

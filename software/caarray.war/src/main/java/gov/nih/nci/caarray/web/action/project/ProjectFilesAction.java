@@ -267,7 +267,8 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     @SkipValidation
     public String downloadFiles() {
         for (CaArrayFile f : getProject().getFiles()) {
-            if (StringUtils.isBlank(extensionFilter) || EXTENSION_TRANSFORMER.transform(f).equals(extensionFilter)) {
+            if (StringUtils.isBlank(this.extensionFilter)
+                    || EXTENSION_TRANSFORMER.transform(f).equals(this.extensionFilter)) {
                 getFiles().add(f);
             }
         }
@@ -416,8 +417,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         if (!fileSet.getFiles().isEmpty()) {
             getFileManagementService().importFiles(getProject(), fileSet);
         }
-        ActionHelper.saveMessage(getText("project.fileImport.success",
-                new String[] {String.valueOf(importedFiles)}));
+        ActionHelper.saveMessage(getText("project.fileImport.success", new String[] {String.valueOf(importedFiles)}));
         if (arrayDesignFiles > 0) {
             ActionHelper.saveMessage(getText("project.fileImport.error.arrayDesign",
                     new String[] {String.valueOf(arrayDesignFiles)}));
@@ -662,7 +662,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * @return all extensions for the project files
      */
     public Set<String> getAllExtensions() {
-        return allExtensions;
+        return this.allExtensions;
     }
 
     /**
@@ -676,7 +676,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * @return extensions to filter for
      */
     public String getExtensionFilter() {
-        return extensionFilter;
+        return this.extensionFilter;
     }
 
     /**
@@ -690,7 +690,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * @return currently selected file type to filter for
      */
     public FileType getFileType() {
-        return fileType;
+        return this.fileType;
     }
 
     /**
