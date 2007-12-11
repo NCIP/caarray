@@ -95,7 +95,7 @@ public enum ExperimentOntology {
     /**
      * CAArray Local Ontology.
      */
-    CAARRAY("caarray");
+    CAARRAY("Caarray");
 
 
     private final String ontologyName;
@@ -108,7 +108,7 @@ public enum ExperimentOntology {
      * @return the ontologyName
      */
     public String getOntologyName() {
-        return ontologyName;
+        return this.ontologyName;
     }
 
 }
