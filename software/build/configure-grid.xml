@@ -52,7 +52,7 @@
 
   <target name="zip-wsrf-war">
     <!-- Zip the default/deploy/wsrf.sar directory -->
-    <zip file="${basedir}/target/deploy/zip-wsrf-war.zip">
+    <zip file="${basedir}/build/target/deploy/zip-wsrf-war.zip">
 	  <fileset dir="${jboss404.server.instance.home}/server/default/deploy">
 	    <include name="**/*.*" />
       </fileset>
@@ -61,7 +61,7 @@
 
   <target name="extract-zip-wsrf-war">
       <!-- (Optionally) software\build\resources\deploy\jboss-globus-serverinstance-config.zip to jboss4.0.4\default\deploy -->
-	  <unzip dest="${jboss404.server.instance.home}/server/default/deploy/wsrf.war" overwrite="true" src="${basedir}/target/deploy/zip-wsrf-war.zip" />
+	  <unzip dest="${jboss404.server.instance.home}/server/default/deploy/wsrf.war" overwrite="true" src="${basedir}/build/target/deploy/zip-wsrf-war.zip" />
   </target>
   
   <target name="stop-jboss404">
@@ -90,7 +90,7 @@
 	<antcall target="apply-globus-to-jboss404" />
 	<antcall target="zip-wsrf-war" />
 	<antcall target="extract-zip-wsrf-war" />
-	<antcall target="stop-jboss404" />
+	<!--<antcall target="stop-jboss404" />-->
 	<antcall target="start-jboss404" />
   </target>
 
