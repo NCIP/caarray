@@ -161,6 +161,7 @@ public enum AffymetrixCelQuantitationType implements QuantitationTypeDescriptor 
      */
     public boolean isEquivalent(QuantitationType quantitationType) {
         return quantitationType != null
+        && quantitationType.getName() != null
         && quantitationType.getName().equals(name);
     }
 
