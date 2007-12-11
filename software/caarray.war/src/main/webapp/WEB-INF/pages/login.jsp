@@ -1,4 +1,5 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
+<page:applyDecorator name="default">
 <html>
     <head>
     </head>
@@ -65,3 +66,4 @@ to become a caArray user.
         </div>
     </body>
 </html>
+</page:applyDecorator>

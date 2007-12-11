@@ -25,7 +25,7 @@ $('login').submit();
     <div id="login_progress" style="display: none; margin: 3px 3px">
        <img alt="Indicator" align="absmiddle" src="<c:url value="/images/indicator.gif"/>" /> Logging in
     </div>
-    <form id="login" action="<c:url value='/j_security_check'/>" onsubmit="startLogin(); return false;">
+    <form id="login" method="post" action="<c:url value='/j_security_check'/>" onsubmit="startLogin(); return false;">
         <table class="login">
             <c:if test="${param.error != null}">
             <tr>

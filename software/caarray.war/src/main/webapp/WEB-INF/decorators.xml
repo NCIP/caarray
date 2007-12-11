@@ -6,6 +6,7 @@
         <pattern>/struts/dojo/*</pattern>
         <pattern>/resources/*</pattern>
         <pattern>/help/*</pattern>
+        <pattern>/login.action</pattern>
     </excludes>
     <decorator name="default" page="/WEB-INF/pages/decorators/default.jsp">
         <pattern>/*</pattern>
