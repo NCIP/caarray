@@ -82,85 +82,75 @@
  */
 package gov.nih.nci.caarray.services.file;
 
+import static org.junit.Assert.*;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
-import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
-import javax.interceptor.Interceptors;
-
-import org.apache.log4j.Logger;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * Implementation of the remote API file retrieval subsystem.
+ *
  */
-@Stateless
-@Remote(FileRetrievalService.class)
-@Interceptors({ HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
-public class FileRetrievalServiceBean implements FileRetrievalService {
+public class FileRetrievalServiceBeanTest {
 
-    private static final Logger LOG = Logger.getLogger(FileRetrievalServiceBean.class);
-    private static final int CHUNK_SIZE = 4096;
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
-    final FileAccessService getFileAccessService() {
-        return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
+
+    private FileRetrievalServiceBean bean = new FileRetrievalServiceBean();
+    private LocalFileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
+    private LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
+
+    @Before
+    public void setUp() throws Exception {
+        ServiceLocatorStub serviceLocatorStub = ServiceLocatorStub.registerEmptyLocator();
+        serviceLocatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
+        bean.setDaoFactory(daoFactoryStub);
     }
 
     /**
-     * {@inheritDoc}
+     * Test method for {@link gov.nih.nci.caarray.services.file.FileRetrievalServiceBean#readFile(gov.nih.nci.caarray.domain.file.CaArrayFile)}.
      */
-    public byte[] readFile(final CaArrayFile caArrayFileArg) {
-        // Look up the fully-populated CaArray object since the one passed in by remote clients will have contents set
-        // to null (not serializable).
-        CaArrayFile caArrayFile = getSearchDao().query(caArrayFileArg).get(0);
-        InputStream is = null;
-        FileAccessService fileAccessService = getFileAccessService();
-        try {
-            File file = fileAccessService.getFile(caArrayFile);
-            is = new FileInputStream(file.getPath());
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            final byte[] bytes = new byte[CHUNK_SIZE];
-            int size = 0;
-            while ((size = is.read(bytes)) != -1) {
-                baos.write(bytes, 0, size);
-            }
-            return baos.toByteArray();
-        } catch (final IOException e) {
-            LOG.error("IOException: " + caArrayFile, e);
-            return null;
-        } finally {
-            try {
-                if (is != null) {
-                    is.close();
-                }
-            } catch (final IOException ioe) {
-                LOG.warn("IOException closing inputstream.", ioe);
-            }
-            fileAccessService.closeFiles();
+    @Test
+    public void testReadFile() {
+        CaArrayFile caArrayFile = new CaArrayFile();
+        byte[] bytes = bean.readFile(caArrayFile);
+        assertEquals(AffymetrixArrayDesignFiles.TEST3_CDF.length(), (long) bytes.length);
+    }
+
+    private static class LocalFileAccessServiceStub extends FileAccessServiceStub {
+
+        @Override
+        public File getFile(CaArrayFile caArrayFile) {
+            return AffymetrixArrayDesignFiles.TEST3_CDF;
         }
+
     }
 
-    private SearchDao getSearchDao() {
-        return getDaoFactory().getSearchDao();
-    }
+    private static class LocalDaoFactoryStub extends DaoFactoryStub {
 
-    CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
-    }
+        @Override
+        public SearchDao getSearchDao() {
+            return new SearchDaoStub () {
 
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
+                @Override
+                public List<AbstractCaArrayObject> query(final AbstractCaArrayObject entityToMatch) {
+                    List<AbstractCaArrayObject> list = new ArrayList<AbstractCaArrayObject>();
+                    list.add(entityToMatch);
+                    return list;
+                };
+
+            };
+        }
     }
 }
