@@ -99,6 +99,7 @@ import javax.persistence.ManyToOne;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.ForeignKey;
 
 /**
@@ -127,6 +128,7 @@ public class Source extends AbstractBioMaterial {
     )
     @ForeignKey(name = "SOURCESAMPLE_SOURCE_FK", inverseName = "SOURCESAMPLE_SAMPLE_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Filter(name = "Project1", condition = Experiment.SAMPLES_FILTER)
     public Set<Sample> getSamples() {
         return samples;
     }

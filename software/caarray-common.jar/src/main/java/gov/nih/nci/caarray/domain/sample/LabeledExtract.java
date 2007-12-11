@@ -103,8 +103,8 @@ import javax.persistence.ManyToOne;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Where;
 
 /**
  * 
@@ -147,7 +147,7 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
      * @return the extracts
      */
     @ManyToMany(mappedBy = "labeledExtracts")
-    @Where(clause = Experiment.EXTRACTS_FILTER)
+    @Filter(name = "Project1", condition = Experiment.EXTRACTS_FILTER)
     public Set<Extract> getExtracts() {
         return extracts;
     }

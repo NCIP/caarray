@@ -125,11 +125,11 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.MapKeyManyToMany;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
-import org.hibernate.annotations.Where;
 import org.hibernate.validator.NotNull;
 import org.hibernate.validator.Valid;
 
@@ -297,7 +297,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Sort(type = SortType.NATURAL)
-    @Where(clause = Experiment.FILES_FILTER)
+    @Filter(name = "Project1", condition = Experiment.FILES_FILTER)
     public SortedSet<CaArrayFile> getFiles() {
         return this.files;
     }
@@ -324,7 +324,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     @Sort(type = SortType.NATURAL)
-    @Where(clause = "status = 'IMPORTED' and " + Experiment.FILES_FILTER)
+    @Filter(name = "Project1", condition = "status = 'IMPORTED' and " + Experiment.FILES_FILTER)
     private SortedSet<CaArrayFile> getImportedFileSet() {
         return this.importedFiles;
     }
@@ -346,7 +346,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     @Sort(type = SortType.NATURAL)
-    @Where(clause = "status = 'SUPPLEMENTAL' and " + Experiment.FILES_FILTER)
+    @Filter(name = "Project1", condition = "status = 'SUPPLEMENTAL' and " + Experiment.FILES_FILTER)
     private SortedSet<CaArrayFile> getSupplementalFileSet() {
         return this.supplementalFiles;
     }
@@ -378,7 +378,8 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     @Sort(type = SortType.NATURAL)
-    @Where(clause = "status != 'IMPORTED' and status != 'SUPPLEMENTAL' and " + Experiment.FILES_FILTER)
+    @Filter(name = "Project1", condition = "status != 'IMPORTED' and status != 'SUPPLEMENTAL' and "
+            + Experiment.FILES_FILTER)
     private SortedSet<CaArrayFile> getUnImportedFileSet() {
         return this.unImportedFiles;
     }

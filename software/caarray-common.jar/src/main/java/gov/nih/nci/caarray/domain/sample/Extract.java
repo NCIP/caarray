@@ -104,8 +104,8 @@ import javax.persistence.OneToOne;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Where;
 
   /**
 
@@ -132,7 +132,7 @@ public class Extract extends AbstractBioMaterial implements ProtectableDescenden
      * @return the samples
      */
     @ManyToMany(mappedBy = "extracts")
-    @Where(clause = Experiment.SAMPLES_FILTER)
+    @Filter(name = "Project1", condition = Experiment.SAMPLES_FILTER)
     public Set<Sample> getSamples() {
         return samples;
     }

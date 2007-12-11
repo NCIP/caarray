@@ -114,8 +114,8 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.Where;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
@@ -316,7 +316,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      * @return the labeledExtract
      */
     @ManyToMany(mappedBy = "hybridizations", fetch = FetchType.LAZY)
-    @Where(clause = Experiment.LABELED_EXTRACTS_FILTER)
+    @Filter(name = "Project1", condition = Experiment.LABELED_EXTRACTS_FILTER)
     public Set<LabeledExtract> getLabeledExtracts() {
         return this.labeledExtract;
     }
