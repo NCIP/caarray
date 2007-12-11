@@ -166,7 +166,7 @@ public class ProtocolManagementActionTest {
         MockHttpServletRequest mockRequest = new MockHttpServletRequest();
         mockRequest.addParameter("startWithEdit", "true");
         ServletActionContext.setRequest(mockRequest);
-        this.action.setReturnInitialTab1("test1");
+        this.action.setReturnInitialTab1("test1");  // NOPMD
         this.action.setReturnInitialTab2("test2");
         this.action.setReturnInitialTab2Url("test2Url");
         this.action.setReturnProjectId(1L);
