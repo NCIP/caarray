@@ -113,14 +113,9 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
     private void doImport(FileAccessService fileAccessService, Project targetProject, CaArrayFileSet fileSet) {
         doValidate(fileAccessService, fileSet);
         if (fileSet.getStatus().equals(FileStatus.VALIDATED)) {
-            importArrayDesigns(fileSet);
             importAnnotation(fileAccessService, targetProject, fileSet);
             importArrayData(fileSet);
         }
-    }
-
-    private void importArrayDesigns(CaArrayFileSet fileSet) {
-        getArrayDesignImporter().importArrayDesigns(fileSet);
     }
 
     private void importAnnotation(FileAccessService fileAccessService, Project targetProject, CaArrayFileSet fileSet) {

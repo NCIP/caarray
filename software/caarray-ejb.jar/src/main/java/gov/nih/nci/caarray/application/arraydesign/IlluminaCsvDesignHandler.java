@@ -117,7 +117,7 @@ class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
     }
 
     @Override
-    ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign) {
+    ArrayDesignDetails createDesignDetails(ArrayDesign arrayDesign) {
         ArrayDesignDetails details = new ArrayDesignDetails();
         try {
             DelimitedFileReader reader = DelimitedFileReaderFactory.INSTANCE.getCsvReader(getFile());

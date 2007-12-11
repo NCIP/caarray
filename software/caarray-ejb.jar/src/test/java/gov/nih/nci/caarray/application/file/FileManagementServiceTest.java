@@ -201,19 +201,6 @@ public class FileManagementServiceTest {
         assertTrue(arrayDesignServiceStub.importCalled);
     }
 
-    @Test
-    public void testImportArrayDesign() {
-        Project project = getTgaBroadTestProject();
-        project.getFiles().clear();
-        CaArrayFile caArrayFile = fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
-        caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
-        caArrayFile.setProject(project);
-        project.getFiles().add(caArrayFile);
-        daoFactoryStub.searchDaoStub.save(caArrayFile);
-        fileManagementService.importFiles(project, project.getFileSet());
-        assertTrue(arrayDesignServiceStub.importCalled);
-    }
-
     @Test(expected = InvalidDataFileException.class)
     public void testImportArrayDesignFileInvalid() throws InvalidDataFileException {
         ArrayDesign design = new ArrayDesign();
@@ -259,12 +246,6 @@ public class FileManagementServiceTest {
         @Override
         public void importDesign(ArrayDesign arrayDesign) {
             importCalled = true;
-        }
-
-        @Override
-        public ArrayDesign importDesign(CaArrayFile designFile) {
-            importCalled = true;
-            return new ArrayDesign();
         }
 
     }

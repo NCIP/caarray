@@ -114,6 +114,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     private static final String LSID_AUTHORITY = "Affymetrix.com";
     private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
     private static final Logger LOG = Logger.getLogger(AffymetrixCdfHandler.class);
+    private static final int PROBE_SET_BATCH_SIZE = 25;
 
     private boolean[][] featureCreated;
 
@@ -144,11 +145,11 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
      * @param result
      */
     private void checkForDuplicateDesign(FileValidationResult result) {
-        ArrayDesign existingDesign = 
-            getDaoFactory().getArrayDao().getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, 
+        ArrayDesign existingDesign =
+            getDaoFactory().getArrayDao().getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE,
                     getFusionCDFData().getChipType());
         if (existingDesign != null) {
-            result.addMessage(Type.ERROR, "Affymetrix design " + getFusionCDFData().getChipType() 
+            result.addMessage(Type.ERROR, "Affymetrix design " + getFusionCDFData().getChipType()
                     + " has already been imported");
         }
     }
@@ -166,12 +167,17 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     void load(ArrayDesign arrayDesign) {
         arrayDesign.setName(getFusionCDFData().getChipType());
         arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + getFusionCDFData().getChipType());
+        int rows = getFusionCDFData().getHeader().getRows();
+        int cols = getFusionCDFData().getHeader().getCols();
+        arrayDesign.setNumberOfFeatures(rows * cols);
         closeCdf();
     }
 
     @Override
-    ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign) {
+    ArrayDesignDetails createDesignDetails(ArrayDesign arrayDesign) {
         ArrayDesignDetails designDetails = new ArrayDesignDetails();
+        getArrayDao().save(designDetails);
+        flushAndClearSession();
         probeGroup = new ProbeGroup(designDetails);
         probeGroup.setName(LSID_AUTHORITY + ":" + probeGroup.getClass().getSimpleName() + ":All."
                 + this.getFusionCDFData().getChipType());
@@ -181,6 +187,8 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
         createMissingFeatures(designDetails);
         closeCdf();
         arrayDesign.setNumberOfFeatures(designDetails.getFeatures().size());
+        getArrayDao().save(probeGroup);
+        flushAndClearSession();
         return designDetails;
     }
 
@@ -194,6 +202,11 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
         for (int index = 0; index < numProbeSets; index++) {
             fusionCDFData.getProbeSetInformation(index, probeSetInformation);
             handleProbeSet(probeSetInformation, fusionCDFData.getProbeSetName(index), designDetails);
+            if (index % PROBE_SET_BATCH_SIZE == 0) {
+                getArrayDao().save(probeGroup);
+                flushAndClearSession();
+                probeGroup = getArrayDao().queryEntityByExample(probeGroup).iterator().next();
+            }
         }
     }
 
@@ -202,11 +215,13 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
         LogicalProbe logicalProbe = new LogicalProbe(designDetails);
         logicalProbe.setName(probeSetName);
         designDetails.getLogicalProbes().add(logicalProbe);
+        getArrayDao().save(logicalProbe);
         int numLists = probeSetInformation.getNumLists();
         for (int listIndex = 0; listIndex < numLists; listIndex++) {
             PhysicalProbe probe = new PhysicalProbe(designDetails, probeGroup);
             probe.setName(probeSetName + ".ProbePair" + listIndex);
             designDetails.getProbes().add(probe);
+            getArrayDao().save(probe);
         }
         int numGroups = probeSetInformation.getNumGroups();
         FusionCDFProbeGroupInformation probeGroupInformation = new FusionCDFProbeGroupInformation();
@@ -236,6 +251,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
         feature.setColumn((short) x);
         feature.setRow((short) y);
         featureCreated[x][y] = true;
+        getArrayDao().save(feature);
         return feature;
     }
 

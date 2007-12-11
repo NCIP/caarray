@@ -140,13 +140,8 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     }
 
     void doValidate(FileAccessService fileAccessService, CaArrayFileSet fileSet) {
-        validateArrayDesigns(fileSet);
         validateAnnotation(fileAccessService, fileSet);
         validateArrayData(fileSet);
-    }
-
-    private void validateArrayDesigns(CaArrayFileSet fileSet) {
-        getArrayDesignImporter().validateFiles(fileSet);
     }
 
     private void validateAnnotation(FileAccessService fileAccessService, CaArrayFileSet fileSet) {

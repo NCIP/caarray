@@ -97,10 +97,6 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
         return null;
     }
 
-    public ArrayDesign importDesign(CaArrayFile designFile) {
-        return null;
-    }
-
     public FileValidationResult validateDesign(CaArrayFile designFile) {
         return null;
     }
@@ -141,7 +137,7 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
     public FileValidationResult validateDesign(ArrayDesign design) {
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */

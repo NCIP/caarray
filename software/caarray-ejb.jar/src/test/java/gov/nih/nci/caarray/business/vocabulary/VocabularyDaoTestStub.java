@@ -185,4 +185,18 @@ public class VocabularyDaoTestStub implements VocabularyDao {
     public List<Term> getTissueSitesForExperiment(Experiment experiment) {
         return null;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void flushSession() {
+        // no-op
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void clearSession() {
+        // no-op
+    }
 }

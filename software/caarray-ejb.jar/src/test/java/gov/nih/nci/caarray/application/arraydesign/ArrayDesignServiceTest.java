@@ -115,6 +115,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.PredicateUtils;
+import org.hibernate.criterion.Order;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -159,7 +160,9 @@ public class ArrayDesignServiceTest {
     @Test
     public void testImportDesign_AffymetrixTest3() {
         CaArrayFile designFile = getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF);
-        ArrayDesign arrayDesign = this.arrayDesignService.importDesign(designFile);
+        ArrayDesign arrayDesign = new ArrayDesign();
+        arrayDesign.setDesignFile(designFile);
+        arrayDesignService.importDesign(arrayDesign);
         assertEquals("Test3", arrayDesign.getName());
         assertEquals("Affymetrix.com", arrayDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
@@ -170,7 +173,9 @@ public class ArrayDesignServiceTest {
     @Test
     public void testImportDesign_AffymetrixMapping10K() {
         CaArrayFile designFile = getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEN_K_CDF);
-        ArrayDesign arrayDesign = this.arrayDesignService.importDesign(designFile);
+        ArrayDesign arrayDesign = new ArrayDesign();
+        arrayDesign.setDesignFile(designFile);
+        arrayDesignService.importDesign(arrayDesign);
         assertEquals("Mapping10K_Xba131-xda", arrayDesign.getName());
         assertEquals("Affymetrix.com", arrayDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
@@ -180,7 +185,9 @@ public class ArrayDesignServiceTest {
     @Test
     public void testImportDesign_IlluminaHumanWG6() {
         CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
-        ArrayDesign arrayDesign = this.arrayDesignService.importDesign(designFile);
+        ArrayDesign arrayDesign = new ArrayDesign();
+        arrayDesign.setDesignFile(designFile);
+        arrayDesignService.importDesign(arrayDesign);
         assertEquals("Human_WG-6", arrayDesign.getName());
         assertEquals("illumina.com", arrayDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
@@ -284,6 +291,13 @@ public class ArrayDesignServiceTest {
                 public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
                     // TODO Auto-generated method stub
                     return LocalDaoFactoryStub.this.lsidDesignMap.get("URN:LSID:" + lsidAuthority + ":" + lsidNamespace + ":" + lsidObjectId);
+                }
+
+                @Override
+                public <T> List<T> queryEntityByExample(T entityToMatch, Order... order) {
+                    List<T> entities = new ArrayList<T>();
+                    entities.add(entityToMatch);
+                    return entities;
                 }
             };
         }

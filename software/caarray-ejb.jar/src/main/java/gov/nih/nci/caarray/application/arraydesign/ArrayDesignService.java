@@ -116,14 +116,6 @@ public interface ArrayDesignService {
     FileValidationResult validateDesign(CaArrayFile designFile);
 
     /**
-     * Imports a new array design into the system from an array design file.
-     *
-     * @param designFile the native file containing the array design details
-     * @return the new array design.
-     */
-    ArrayDesign importDesign(CaArrayFile designFile);
-
-    /**
      * Imports details for an existing array design from associated files(s) including
      * <code>designFile</code> and <code>annotationFile</code>.
      *
@@ -169,12 +161,12 @@ public interface ArrayDesignService {
 
     /**
      * Retrieves an <code>ArrayDesign</code> by LSID.
-     * 
+     *
      * @param lsidAuthority the LSID authority
      * @param lsidNamespace the LSID namespace
      * @param lsidObjectId the LSID object ID
      * @return the matching design or null.
      */
     ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId);
-    
+
 }

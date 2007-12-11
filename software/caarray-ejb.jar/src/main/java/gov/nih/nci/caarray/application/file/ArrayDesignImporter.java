@@ -98,20 +98,8 @@ class ArrayDesignImporter {
         this.arrayDesignService = arrayDesignService;
     }
 
-    void importArrayDesigns(CaArrayFileSet fileSet) {
-        for (CaArrayFile file : fileSet.getFiles()) {
-            if (isArrayDesign(file)) {
-                importArrayDesign(file);
-            }
-        }
-    }
-
     private boolean isArrayDesign(CaArrayFile file) {
         return file.getFileType() != null && file.getFileType().isArrayDesign();
-    }
-
-    private void importArrayDesign(CaArrayFile file) {
-        arrayDesignService.importDesign(file);
     }
 
     void validateFiles(CaArrayFileSet fileSet) {
@@ -120,7 +108,6 @@ class ArrayDesignImporter {
                 validateFile(file);
             }
         }
-
     }
 
     private void validateFile(CaArrayFile file) {

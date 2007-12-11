@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.arraydesign;
 
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
@@ -122,16 +123,15 @@ abstract class AbstractArrayDesignHandler {
         return vocabularyService;
     }
 
-    final void loadDesignDetails(ArrayDesign arrayDesign) {
-        load(arrayDesign);
-        arrayDesign.setDesignDetails(getDesignDetails(arrayDesign));
+    final void saveDesignDetails(ArrayDesign arrayDesign) {
+        arrayDesign.setDesignDetails(createDesignDetails(arrayDesign));
     }
 
     final ArrayDesign getArrayDesign() {
         ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.setDesignFile(getDesignFile());
         load(arrayDesign);
-        arrayDesign.setDesignDetails(getDesignDetails(arrayDesign));
+        arrayDesign.setDesignDetails(createDesignDetails(arrayDesign));
         return arrayDesign;
     }
 
@@ -141,7 +141,7 @@ abstract class AbstractArrayDesignHandler {
 
     abstract void load(ArrayDesign arrayDesign);
 
-    abstract ArrayDesignDetails getDesignDetails(ArrayDesign arrayDesign);
+    abstract ArrayDesignDetails createDesignDetails(ArrayDesign arrayDesign);
 
     final FileValidationResult validate() {
         FileValidationResult result = new FileValidationResult(getFile());
@@ -160,6 +160,15 @@ abstract class AbstractArrayDesignHandler {
 
     CaArrayDaoFactory getDaoFactory() {
         return daoFactory;
+    }
+
+    ArrayDao getArrayDao() {
+        return getDaoFactory().getArrayDao();
+    }
+
+    void flushAndClearSession() {
+        getArrayDao().flushSession();
+        getArrayDao().clearSession();
     }
 
 }

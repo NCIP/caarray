@@ -161,7 +161,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     private FileValidationResult validateDesign(ArrayDesign arrayDesign, CaArrayFile designFile) {
         if (isDuplicate(arrayDesign))   {
             FileValidationResult result = new FileValidationResult(null);
-            result.addMessage(Type.ERROR, "An array design already exists with the name " 
+            result.addMessage(Type.ERROR, "An array design already exists with the name "
                     + arrayDesign.getName()
                     + " and provider " + arrayDesign.getProvider().getName());
             return result;
@@ -171,10 +171,10 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     }
 
     private boolean isDuplicate(ArrayDesign arrayDesign) {
-        List<ArrayDesign> providerDesigns = 
+        List<ArrayDesign> providerDesigns =
             getDaoFactory().getArrayDao().getArrayDesignsForProvider(arrayDesign.getProvider());
         for (ArrayDesign providerDesign : providerDesigns) {
-            if (!arrayDesign.equals(providerDesign) 
+            if (!arrayDesign.equals(providerDesign)
                     && arrayDesign.getName().equalsIgnoreCase(providerDesign.getName())) {
                 return true;
             }
@@ -189,28 +189,12 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             result.addMessage(Type.ERROR, "Array design file type was unrecognized");
         } else if (!designFile.getFileType().isArrayDesign()) {
             result = new FileValidationResult(fileAccessService.getFile(designFile));
-            result.addMessage(Type.ERROR, "File type " + designFile.getFileType().getName() 
+            result.addMessage(Type.ERROR, "File type " + designFile.getFileType().getName()
                     + " is not an array design type.");
         } else {
             result = getHandler(designFile, fileAccessService).validate();
         }
         return result;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public ArrayDesign importDesign(CaArrayFile designFile) {
-        FileAccessService fileAccessService = getFileAccessService();
-        ArrayDesign design = null;
-        LogUtil.logSubsystemEntry(LOG, designFile);
-        if (validateDesign(designFile).isValid()) {
-            design = doImport(designFile, fileAccessService);
-        }
-        fileAccessService.closeFiles();
-        LogUtil.logSubsystemExit(LOG);
-        return design;
     }
 
     /**
@@ -233,18 +217,10 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
 
     private void doImport(ArrayDesign arrayDesign, FileAccessService fileAccessService) {
         AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile(), fileAccessService);
-        handler.loadDesignDetails(arrayDesign);
+        handler.load(arrayDesign);
         arrayDesign.getDesignFile().setFileStatus(FileStatus.IMPORTED);
         getArrayDao().save(arrayDesign);
-    }
-
-    private ArrayDesign doImport(CaArrayFile designFile, FileAccessService fileAccessService) {
-        AbstractArrayDesignHandler handler = getHandler(designFile, fileAccessService);
-        ArrayDesign design = handler.getArrayDesign();
-        designFile.setFileStatus(FileStatus.IMPORTED);
-        getArrayDao().save(designFile);
-        getArrayDao().save(design);
-        return design;
+        handler.saveDesignDetails(arrayDesign);
     }
 
     private AbstractArrayDesignHandler getHandler(CaArrayFile designFile, FileAccessService fileAccessService) {
@@ -259,7 +235,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             throw new IllegalArgumentException("Unsupported array design file type: " + type);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -303,7 +279,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
         return getArrayDao().getArrayDesign(lsidAuthority, lsidNamespace, lsidObjectId);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -320,7 +296,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
 
     /**
      * Sets the DAO factory to use -- test support method.
-     * 
+     *
      * @param daoFactory the DAO factory
      */
     public void setDaoFactory(CaArrayDaoFactory daoFactory) {
