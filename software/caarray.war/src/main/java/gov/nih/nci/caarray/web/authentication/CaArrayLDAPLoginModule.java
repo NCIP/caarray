@@ -92,6 +92,9 @@ import java.util.Map;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 /**
  * Performs authentication services in the jaas environment.  caArray needs
  * both CSM authentication, using the CSM tables with encrypted passwords,
@@ -101,6 +104,7 @@ import javax.security.auth.callback.CallbackHandler;
  */
 public class CaArrayLDAPLoginModule extends LDAPLoginModule {
 
+    private static final Logger LOG = Logger.getLogger(CaArrayLDAPLoginModule.class);
     private Map<String, Object> state;
 
     /**
@@ -122,6 +126,13 @@ public class CaArrayLDAPLoginModule extends LDAPLoginModule {
     protected boolean validate(Map options, String user, char[] password, Subject subject)
             throws CSInternalConfigurationException, CSInternalInsufficientAttributesException,
                    CSInternalLoginException {
+        String passwdStr = new String(password);
+        if (StringUtils.isBlank(passwdStr)) {
+            // CSM incorrectly returns true for blank passwords
+            LOG.debug("Rejecting blank password login attempt for user: " + user);
+            return false;
+        }
+
         boolean result = super.validate(options, user, password, subject);
 
         if (result) {
