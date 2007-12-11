@@ -515,11 +515,10 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private void unzipFiles() throws IOException {
         Pattern p = Pattern.compile(".zip$");
         int index = 0;
-
-        for (int i = 0; i < getUploadFileName().size(); i++) {
-            Matcher m = p.matcher(getUploadFileName().get(i).toLowerCase());
+        while (index < getUploadFileName().size()) {
+            Matcher m = p.matcher(getUploadFileName().get(index).toLowerCase());
             if (m.find()) {
-                File uploadedFile = getUpload().get(i);
+                File uploadedFile = getUpload().get(index);
                 String uploadedFileName = uploadedFile.getAbsolutePath();
                 String directoryPath = uploadedFile.getParent();
                 ZipFile zipFile = new ZipFile(uploadedFileName);
@@ -537,8 +536,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 this.uploads.remove(index);
                 this.uploadFileNames.remove(index);
                 this.uploadContentTypes.remove(index);
+            } else {
+                index++;
             }
-            index++;
         }
     }
 
