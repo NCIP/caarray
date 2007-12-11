@@ -1,0 +1,72 @@
+<!-- *********************************************************************** -->
+<!-- ** PROJECT:   caArray                                                ** -->
+<!-- *********************************************************************** -->
+
+<!-- KLUDGE!!! - THIS IS UNDER DEVELOPMENT -->
+
+<project name="configure-carray-grid" default="driver" basedir="..">
+
+  <property name="build.dir" value="${basedir}/build" />
+  <property file="${build.dir}/local.properties" />
+  <property name="stelligent.svn.user.name" value="DEFINE IN .properties file" />
+  <property name="stelligent.svn.user.pwd" value="DEFINE IN .properties file" />
+
+  <target name="checkout-tools" unless="noscm">
+     <taskdef resource="svntask.properties" classpath="${basedir}/lib/svnant.jar;${basedir}/lib/svnClientAdapter.jar;${basedir}/lib/svnjavahl.jar"/>    
+    <svn username="${stelligent.svn.user.name}" password="${stelligent.svn.user.pwd}">
+	  <checkout url="http://build.jnetdirect.com/svn-repo/main/trunks/corporate/stelligent/projects/5am-nci/tools" revision="HEAD" destPath="C:/temp/cagrid" />
+    </svn>
+  </target>
+
+  <target name="checkout-cagrid">
+  </target>
+
+  <target name="extract-cagrid">
+  <!-- Extract caArray1.1Grid.zip to a local directory -->
+    <unzip dest="C:/temp/cagrid" overwrite="true" src="C:/temp/cagrid/caGrid-1.1.zip" />
+  </target>
+
+  <target name="checkout-jboss404">
+  </target>
+
+  <target name="extract-jboss404">
+    <unzip dest="C:/temp/cagrid" overwrite="true" src="C:/temp/cagrid/jboss-4.0.4.GA.zip" />
+  </target>
+
+  <target name="apply-globus-to-jboss404">
+   <!-- Run caGrid jboss.xml against the JBoss 4.0.4 -->
+   <exec executable="cmd" dir="C:/temp/cagrid/jboss-4.0.4.GA" spawn="true">
+      <arg line="/c ant -f C:\temp\cagrid\caGrid\antfiles\jboss\jboss.xml deployJBoss -Djboss.dir=C:\temp\cagrid\jboss-4.0.4.GA -DdefaultPort=18080" />
+    </exec>
+  </target>
+
+  <target name="zip-wsrf-war">
+    <!-- Zip the default/deploy/wsrf.sar directory -->
+  </target>
+
+  <target name="extract-zip-wsrf-war">
+      <!-- (Optionally) software\build\resources\deploy\jboss-globus-serverinstance-config.zip to jboss4.0.4\default\deploy -->
+  </target>
+
+  <target name="stop-jboss404">
+    <!-- Stop JBoss404 -->
+  </target>
+
+  <target name="start-jboss404">
+    <!-- Start JBoss404 -->
+  </target>
+
+  <target name="driver">
+    <antcall target="checkout-tools" />
+	<antcall target="checkout-cagrid" />
+	<antcall target="extract-cagrid" />
+	<antcall target="checkout-jboss404" />
+	<antcall target="extract-jboss404" />	
+	<antcall target="apply-globus-to-jboss404" />
+	<antcall target="zip-wsrf-war" />
+	<antcall target="extract-zip-wsrf-war" />
+	<antcall target="stop-jboss404" />
+	<antcall target="start-jboss404" />
+  </target>
+
+</project>
