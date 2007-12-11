@@ -68,23 +68,49 @@
         </sequential>
     </macrodef>
 	
-    <macrodef name="remote-ssh" description="This is a remote SSH procedure. It will use SSH connection defaults as defined in the environment property file to initiate SSH connections and execure remote unix commands. The command is a mandatory attribute to this macrodef.">
-    	<attribute name="remote-ssh.command" />
-    	<attribute name="remote-ssh.port" default="${ssh.port}" />
-    	<attribute name="remote-ssh.host" default="${ssh.server.hostname}" />
-    	<attribute name="remote-ssh.user" default="${ssh.server.username}" />
-    	<attribute name="remote-ssh.keyfile" default="${ssh.key.file}" />
-    	<attribute name="remote-ssh.sleep" default="5" />
+	<!-- EXAMPLE: <remote-ssh remotesshcommand="mv ${jboss.temp.dir}/caarray.ear ${jboss.home}/deploy/" /> -->
+	<!-- TODO: Fail (call AntUnit tests) if required attributes are not passed to macrodef task -->
+    <macrodef name="remote-ssh" description="This is a remote SSH procedure. It will use SSH connection defaults as defined in the environment property file to initiate SSH connections and execure remote unix commands. remoteSshCommand is a mandatory attribute to this macrodef.">
+    	<attribute name="remoteSshCommand" />
+    	<attribute name="remoteSshPort" default="${ssh.port}" />
+    	<attribute name="remoteSshHost" default="${ssh.server.hostname}" />
+    	<attribute name="remoteSshUser" default="${ssh.server.username}" />
+    	<attribute name="remoteSshKeyfile" default="${ssh.key.file}" />
+    	<attribute name="remoteSshSleep" default="5" />
     	<sequential>
-    	    <sshexec port="@{remote-ssh.port}" 
-    	    	   host="@{remote-ssh.host}" 
-    	    	   username="@{remote-ssh.user}"
-    	    	   keyfile="@{remote-ssh.keyfile}"
+    	    <sshexec port="@{remotesshport}" 
+    	    	   host="@{remotesshhost}" 
+    	    	   username="@{remoteSshUser}"
+    	    	   keyfile="@{remoteSshKeyfile}"
     	    	   trust="true" 
     	    	   passphrase="" 
     	    	   verbose="true" 
-    	    	   command="@{remote-ssh.command}" />
-    		<sleep seconds="@{remote-ssh.sleep}" />
+    	    	   command="@{remotesshcommand}" />
+    		<sleep seconds="@{remoteSshSleep}" />
+        </sequential>
+    </macrodef>
+
+	<!-- EXAMPLE: <remote-scp remoteScpFileToCopy="${caarray.ear}" 
+	remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.temp.dir}" />
+	-->
+	<!-- TODO: Fail (call AntUnit tests) if required attributes are not passed to macrodef task -->
+    <macrodef name="remote-scp" description="This task copies files in a secure manner using SCP. 
+	remoteScpToDir and remoteScpFileToCopy are required attributes to this macrodef.">
+		<attribute name="remoteScpFileToCopy" />
+		<attribute name="remoteScpToDir" />
+    	<attribute name="remoteScpKeyFile" default="${ssh.key.file}" />
+    	<attribute name="remoteScpPassphrase" default="" />
+    	<attribute name="remoteScpTrust" default="true" />
+    	<attribute name="remoteScpVerbose" default="true" />
+		<attribute name="remoteScpSleep" default="5" />
+    	<sequential>
+          <scp file="@{remoteScpFileToCopy}" 
+		  keyfile="@{remoteScpKeyFile}" 
+		  passphrase="@{remoteScpPassphrase}" 
+		  trust="@{remoteScpTrust}" 
+		  verbose="@{remoteScpVerbose}" 
+		  todir="@{remoteScpToDir}" />
+   		  <sleep seconds="@{remoteScpSleep}" />
         </sequential>
     </macrodef>
 
