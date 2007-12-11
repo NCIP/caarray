@@ -158,7 +158,8 @@
 
   <target name="testRemoteProtocols">
 	<echo>Testing remote targets in macrodef.xml</echo>
-	<remote-scp remoteScpFileToCopy="${basedir}/default.properties" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.temp.dir}"/>
+	<!-- TODO: COPY A JUNK FILE -->
+	<!--<remote-scp remoteScpFileToCopy="${basedir}/default.properties" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.temp.dir}"/>-->
     <remote-ssh remotesshcommand="ls" />
   </target>
 
