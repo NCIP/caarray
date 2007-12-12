@@ -23,7 +23,6 @@
     </and>
   </condition>
 
-  
 <target name="usage">
    <echo>ant -f test-build.xml -Denvpropertyfile=C:\dev\caarray2\software\build\DEV.properties</echo>
 </target>
@@ -146,7 +145,7 @@
   </target>
 
   <target name="testJndiOnline">
-	<echo>Testing if ${jndi.url} (Jndi) availability...</echo>
+	<echo>Testing if ${jndi.url} (JNDI) availability...</echo>
     <property name="jndi.url" value="http://${jboss.server.hostname}:${jboss.server.jndi.port}"/>
 	<condition property="jndi.running">
 	    <http url="${jndi.url}"/>
@@ -157,13 +156,13 @@
   </target>
 
   <target name="testRemoteProtocols">
-	<echo>Testing remote targets in macrodef.xml</echo>
+	<echo>Testing remote targets in macrodef.xml...</echo>
 	<remote-scp remoteScpFileToCopy="${basedir}/build/default.properties" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.temp.dir}"/>
     <remote-ssh remotesshcommand="ls" />
   </target>
 
   <target name="testPortAccess">
-    <echo>Testing access to required ports</echo>
+    <echo>Testing access to required ports...</echo>
     <condition property="jboss.server.port.running">
       <socket port="${jboss.server.port}" server="${jboss.server.hostname}" />
     </condition>
