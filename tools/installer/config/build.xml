@@ -8,6 +8,7 @@
 	<property name="mysql.home" value="${temp.dir}/mysql-5.0.45-win32" />
 	<property name="lib.dir" value="${temp.dir}/jars" />
 	<property name="db.dir" value="${temp.dir}/database" />
+	<property name="caarray-build.dir" value="${temp.dir}/caarray-build" />
 	<property name="caarray.ear" value="${temp.dir}/ear/caarray.ear" />
 	<property name="jboss.server.name" value="default" />
 	<property name="jboss.server.hostname" value="localhost" />
@@ -18,13 +19,12 @@
 	<property name="build.dir" value="../.." />
 	<property name="jboss.lib.dir" value="${jboss.home}/server/${jboss.server.name}/lib" />
 	<property name="jboss.server.jndi.port" value="1099" />
+	<property name="caarraydb.sql.dir" value="${db.dir}" />
 
 	<!-- used to configure the updater build -->
 	<property file="${temp.dir}/local.properties" />
 	<property file="${temp.dir}/default.properties" />
 
-
-	<echoproperties />
 
 	<tstamp>
 		<format property="touch.time" pattern="yyyy-MM-dd-HH-mm" />
@@ -34,17 +34,11 @@
 	<property file="${basedir}/ant.install.properties" />
 
 	<target name="auto-update">
-		<echoproperties />
+
 		<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
 		<echo />
 		<echo />
-		<echo />
-		<echo />
-		<echo />
 		<echo>Installing Caarray2...Please wait...</echo>
-		<echo />
-		<echo />
-		<echo />
 		<echo />
 		<echo />
 
@@ -123,12 +117,12 @@
 	<target name="mysql:db-integrate" description="Apply DB changes">
 		<run-sql-script database.url="${database.system.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${db.dir}/create_database_and_user.sql" />
 		<run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${db.dir}/create_schema.sql" />
+		<run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${db.dir}/init-caarray-schema.sql" />
 		<run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${db.dir}/init-csm-schema.sql" />
 		<run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${db.dir}/populate-csm.sql" />
 		<run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${db.dir}/populate-csm2.sql" />
 		<run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${db.dir}/populate-caarray.sql" />
 	</target>
-
 
 	<!-- ################################################# -->
 	<!-- #############   JBoss Deployment  ############### -->
