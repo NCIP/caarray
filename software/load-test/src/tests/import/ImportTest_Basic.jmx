@@ -703,10 +703,10 @@
               </RegexExtractor>
               <hashTree/>
             </hashTree>
-            <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop 60 times waiting for Import to finish" enabled="true">
+            <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop 600 times waiting for Import to finish" enabled="true">
               <boolProp name="LoopController.continue_forever">true</boolProp>
-              <stringProp name="LoopController.loops">60</stringProp>
-              <stringProp name="TestPlan.comments">If import doesn&apos;t finish in 60 seconds, we give up and assume that something went wrong (instead of looping forever).</stringProp>
+              <stringProp name="LoopController.loops">600</stringProp>
+              <stringProp name="TestPlan.comments">If import doesn&apos;t finish in 10 minutes, we give up and assume that something went wrong (instead of looping forever).</stringProp>
             </LoopController>
             <hashTree>
               <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller" enabled="true">

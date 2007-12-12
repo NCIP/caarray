@@ -1,6 +1,6 @@
-ORGANISM	Rat
+ORGANISM	black rat
 ARRAY_PROVIDER	Illumina
-ORGANISM	Mouse
+ORGANISM	house mouse
 ARRAY_PROVIDER	Affymetrix
-ORGANISM	Zebrafish
-ORGANISM	Homo Sapiens
+ORGANISM	zebrafish
+ORGANISM	human
