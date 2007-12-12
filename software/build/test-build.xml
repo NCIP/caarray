@@ -1,7 +1,8 @@
-<project name="test-build" default="setUp" basedir="." xmlns:au="antlib:org.apache.ant.antunit" xmlns="antlib:org.apache.tools.ant">
+<project name="test-build" default="pre-build-checks" basedir=".." xmlns:au="antlib:org.apache.ant.antunit" xmlns="antlib:org.apache.tools.ant">
 
 <property name="lib.dir" value="../lib"/>
 <property file="${envpropertyfile}" />
+<property file="${basedir}/build/default.properties" />
 <property name="antunit.jar" value="ant-antunit-1.0.jar"/>
 <property name="antunit.jar.location" value="${lib.dir}/${antunit.jar}"/>
 <import file="macrodefs.xml" />
@@ -44,7 +45,7 @@
 	  <echoproperties/>
   </target>
 
-  <target name="pre-build-checks" depends="testEnvPropertyFile,testPropertiesFileExists,testSshKeyFileExists, testSshConnection, testSvnLocalTrunk, testRemoteProtocols" />
+  <target name="pre-build-checks" depends="testPortAccess, testEnvPropertyFile, testPropertiesFileExists,testSshKeyFileExists, testSshConnection, testSvnLocalTrunk, testRemoteProtocols" />
 
   <target name="post-build-checks"/>
 
@@ -53,8 +54,7 @@
 
   <target name="testEnvPropertyFile">
       <echo> antunit.jar.location is ${antunit.jar.location} </echo>
-	<au:assertPropertySet name="envpropertyfile" message="Target environment file not found. 
-	Please set target environment file with -Denvpropertyfile=[FULLY QUALIFIED PATH TO PROPERTY FILE]" />  
+	<au:assertPropertySet name="envpropertyfile" message="Target environment file not found. Please set target environment file with -Denvpropertyfile=[FULLY QUALIFIED PATH TO PROPERTY FILE]" />  
   </target>
 
   <target name="testBuildNoTest">
@@ -158,9 +158,57 @@
 
   <target name="testRemoteProtocols">
 	<echo>Testing remote targets in macrodef.xml</echo>
-	<!-- TODO: COPY A JUNK FILE -->
-	<!--<remote-scp remoteScpFileToCopy="${basedir}/default.properties" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.temp.dir}"/>-->
+	<remote-scp remoteScpFileToCopy="${basedir}/build/default.properties" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.temp.dir}"/>
     <remote-ssh remotesshcommand="ls" />
+  </target>
+
+  <target name="testPortAccess">
+    <echo>Testing access to required ports</echo>
+    <condition property="jboss.server.port.running">
+      <socket port="${jboss.server.port}" server="${jboss.server.hostname}" />
+    </condition>
+    <condition property="jboss.server.jndi.port.running">
+      <socket port="${jboss.server.jndi.port}" server="${jboss.server.hostname}" />
+    </condition>
+    <condition property="database.port.running">
+      <socket port="${database.port}" server="${database.server}" />
+    </condition>
+    <condition property="globoss.server.http.port.running">
+      <socket port="${globoss.server.http.port}" server="${globoss.server.hostname}" />
+    </condition>
+    <condition property="globoss.server.jndi.port.running">
+      <socket port="${globoss.server.jndi.port}" server="${globoss.server.hostname}" />
+    </condition>
+    <condition property="mail.smtp.port.running">
+      <socket port="${mail.smtp.port}" server="${mail.smtp.host}" />
+    </condition>
+	<!-- TODO: Check for LDAP -->
+
+	<!-- DISPLAY ERROR MESSAGES -->
+	<au:assertEquals message="Unable to reach ${jboss.server.hostname}:${jboss.server.port}" 
+	  expected="true"
+	  actual="${jboss.server.port.running}" 
+	  casesensitive="true"/>
+	<au:assertEquals message="Unable to reach ${jboss.server.hostname}:${jboss.server.port}" 
+	  expected="true"
+	  actual="${jboss.server.port.running}"
+	  casesensitive="true"/>
+	<au:assertEquals message="Unable to reach ${database.server}:${database.port}" 
+	  expected="true"
+	  actual="${database.port.running}"
+	  casesensitive="true"/>
+	<au:assertEquals message="Unable to reach ${globoss.server.hostname}:${globoss.server.http.port}" 
+	  expected="true"
+	  actual="${globoss.server.http.port.running}"
+	  casesensitive="true"/>
+	<au:assertEquals message="Unable to reach ${globoss.server.hostname}:${globoss.server.jndi.port}" 
+	  expected="true"
+	  actual="${globoss.server.jndi.port.running}"
+	  casesensitive="true"/>
+	<au:assertEquals message="Unable to reach ${mail.smtp.host}:${mail.smtp.port}" 
+	  expected="true"
+	  actual="${mail.smtp.port.running}"
+	  casesensitive="true"/>
   </target>
 
 </project>
