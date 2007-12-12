@@ -87,6 +87,7 @@ import java.util.Map;
 
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -129,8 +130,7 @@ final class TermTranslator extends AbstractTranslator {
 
     private TermSource getSource(gov.nih.nci.caarray.magetab.TermSource mageTabSource) {
         if (mageTabSource == null || StringUtils.isBlank(mageTabSource.getName())) {
-            // TODO Create enum to hold known term sources (MGED and local caArray)
-            return this.service.getSource("caarray");
+            return this.service.getSource(ExperimentOntology.CAARRAY.getOntologyName());
         }
         TermSource source = getTranslationResult().getSource(mageTabSource);
         if (source == null) {

@@ -89,7 +89,6 @@ import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.ProtectableDescendent;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -141,7 +140,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
-        return name;
+        return this.name;
     }
 
     /**
@@ -199,7 +198,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     @JoinColumn(updatable = false)
     @ForeignKey(name = "CAARRAYFILE_PROJECT_FK")
     public Project getProject() {
-        return project;
+        return this.project;
     }
 
     /**
@@ -213,7 +212,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      * @return the uncompressed size, in bytes
      */
     public int getUncompressedSize() {
-        return uncompressedSize;
+        return this.uncompressedSize;
     }
 
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
@@ -225,7 +224,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      * @return the compressed size, in bytes
      */
     public int getCompressedSize() {
-        return compressedSize;
+        return this.compressedSize;
     }
 
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
@@ -253,9 +252,9 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     public String toString() {
         return new ToStringBuilder(this)
             .appendSuper(super.toString())
-            .append("name", name)
-            .append("fileStatus", status)
-            .append("type", type)
+            .append("name", this.name)
+            .append("fileStatus", this.status)
+            .append("type", this.type)
             .toString();
     }
 
@@ -264,7 +263,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getStatus() {
-        return status;
+        return this.status;
     }
 
     /**
@@ -286,7 +285,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getType() {
-        return type;
+        return this.type;
     }
 
     /**
@@ -309,7 +308,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     @OneToOne(cascade = CascadeType.ALL)
     @ForeignKey(name = "CAARRAYFILE_VALIDATION_RESULT_FK")
     public FileValidationResult getValidationResult() {
-        return validationResult;
+        return this.validationResult;
     }
 
     /**
@@ -338,17 +337,15 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      * @throws IOException if there is a problem writing the contents.
      */
     public void writeContents(InputStream inputStream) throws IOException {
-        byte[] fileBytes = IOUtils.toByteArray(inputStream);
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(fileBytes);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
-        IOUtils.copy(byteArrayInputStream, gzipOutputStream);
+        int uncompressedDataSize = IOUtils.copy(inputStream, gzipOutputStream);
         IOUtils.closeQuietly(gzipOutputStream);
         IOUtils.closeQuietly(byteArrayOutputStream);
         byte[] compressedBytes = byteArrayOutputStream.toByteArray();
-        if (contents == null) {
+        if (this.contents == null) {
             setContents(Hibernate.createBlob(compressedBytes));
-            setUncompressedSize(fileBytes.length);
+            setUncompressedSize(uncompressedDataSize);
             setCompressedSize(compressedBytes.length);
         } else {
             throw new IllegalStateException("Can't reset the contents of an existing CaArrayFile");
@@ -376,7 +373,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     @Column(columnDefinition = "LONGBLOB", updatable = false)
     @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
     private Blob getContents() {
-        return contents;
+        return this.contents;
     }
 
     /**
