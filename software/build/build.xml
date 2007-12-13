@@ -441,6 +441,7 @@
         <pathelement location="${javaee.jar}" />
         <pathelement location="${csmapi.jar}"/>
         <pathelement location="${log4j.jar}"/>
+        <pathelement location="${cglib.jar}" />
       </classpath>
     </javac>
   </target>
