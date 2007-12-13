@@ -119,7 +119,8 @@ public final class EmailHelper {
 
         String subject = config.getString(ConfigParamEnum.CONFIRM_EMAIL_SUBJECT.name());
         String from = config.getString(ConfigParamEnum.EMAIL_FROM.name());
-        String mailBody = config.getString(ConfigParamEnum.CONFIRM_EMAIL_CONTENT.name());
+        String mailBodyPattern = config.getString(ConfigParamEnum.CONFIRM_EMAIL_CONTENT.name());
+        String mailBody = MessageFormat.format(mailBodyPattern, registrationRequest.getId());
 
         EmailUtil.sendMail(Collections.singletonList(registrationRequest.getEmail()), from, subject, mailBody);
     }
@@ -130,9 +131,9 @@ public final class EmailHelper {
      */
     public static void registerEmailAdmin(RegistrationRequest registrationRequest) throws MessagingException {
         DataConfiguration config = ConfigurationHelper.getConfiguration();
-        
+
         String subject = config.getString(ConfigParamEnum.REG_EMAIL_SUBJECT.name());
-        String from = config.getString(ConfigParamEnum.EMAIL_FROM.name());
+        String from = registrationRequest.getEmail();
         String admin = config.getString(ConfigParamEnum.REG_EMAIL_TO.name());
 
         String mailBody = "Registration Request:\n"
@@ -154,7 +155,7 @@ public final class EmailHelper {
 
         EmailUtil.sendMail(Collections.singletonList(admin), from, subject, mailBody);
     }
-    
+
     /**
      * @param project the newly created project
      * @param projectLink the link to view the details of the project
@@ -162,12 +163,12 @@ public final class EmailHelper {
      */
     public static void sendSubmitExperimentEmail(Project project, String projectLink) throws MessagingException {
         DataConfiguration config = ConfigurationHelper.getConfiguration();
-        
+
         String subject = config.getString(ConfigParamEnum.SUBMIT_EXPERIMENT_EMAIL_SUBJECT.name());
         String from = config.getString(ConfigParamEnum.EMAIL_FROM.name());
         String plainMailBodyPattern = config.getString(ConfigParamEnum.SUBMIT_EXPERIMENT_EMAIL_PLAIN_CONTENT.name());
         String htmlMailBodyPattern = config.getString(ConfigParamEnum.SUBMIT_EXPERIMENT_EMAIL_HTML_CONTENT.name());
-                
+
         Person pi = (Person) project.getExperiment().getPrimaryInvestigator().getContact();
         String plainMailBody =
                 MessageFormat.format(plainMailBodyPattern, pi.getName(), project.getExperiment().getTitle(),
@@ -175,10 +176,10 @@ public final class EmailHelper {
         String htmlMailBody =
                 MessageFormat.format(htmlMailBodyPattern, pi.getName(), project.getExperiment().getTitle(),
                         projectLink);
-        
+
         if (!StringUtils.isEmpty(pi.getEmail())) {
             EmailUtil.sendMultipartMail(Collections.singletonList(pi.getEmail()), from, subject, htmlMailBody,
-                    plainMailBody);            
+                    plainMailBody);
         }
-    }    
+    }
 }
