@@ -83,14 +83,14 @@
 
 package gov.nih.nci.caarray.domain.data;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+
 import java.io.Serializable;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -100,8 +100,6 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.IndexColumn;
-
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
 /**
  * Subclasses of <code>AbstractDataColumn</code> contain the actual array data corresponding
