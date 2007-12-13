@@ -413,7 +413,6 @@
     <instrument verbose="true">
         <fileset dir="${caarray-common.classes.dir}/gov/nih/nci/caarray/domain">
             <include name="file/CaArrayFile.class"/>
-            <include name="data/AbstractDataColumn.class"/>
             <include name="project/Experiment.class"/>
         </fileset>
     </instrument>
@@ -743,13 +742,13 @@
 
   <!-- caarray-common.jar -->
 
-  <target name="test:instrument:caarray-common.jar" depends="compile:caarray-common.jar">
+  <target name="test:instrument:caarray-common.jar" depends="instrument:caarray-common.jar">
     <cobertura-instrument todir="${caarray-common.instrumented.classes.dir}" datafile="${cobertura.file}">
       <fileset dir="${caarray-common.classes.dir}" />
     </cobertura-instrument>
   </target>
 
-  <target name="test:compile:caarray-common.test.classes" depends="compile:caarray-common.jar,test:compile:test-data-classes">
+  <target name="test:compile:caarray-common.test.classes" depends="instrument:caarray-common.jar,test:compile:test-data-classes">
     <mkdir dir="${caarray-common.test.classes.dir}" />
     <javac srcdir="${caarray-common.test.src.dir}" destdir="${caarray-common.test.classes.dir}" debug="true">
       <classpath>
@@ -775,7 +774,7 @@
   </target>
 
   <target name="test:junit-caarray-common.jar" depends="test:compile:caarray-common.test.classes,test:instrument:caarray-common.jar,configure-datasource-for-test,test:unpack-test-data">
-    <run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${csmapi.jar};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-common.resources.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar};${javacsv.jar};${hibernate-annotations.jar};${ejb3-persistence.jar};${cacore32-client.jar};${log4j.jar};${clm.jar}:${cglib.jar}" />
+    <run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${csmapi.jar};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-common.resources.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar};${javacsv.jar};${hibernate-annotations.jar};${ejb3-persistence.jar};${cacore32-client.jar};${log4j.jar};${clm.jar}" />
   </target>
 
   <!-- caarray-ejb.jar -->

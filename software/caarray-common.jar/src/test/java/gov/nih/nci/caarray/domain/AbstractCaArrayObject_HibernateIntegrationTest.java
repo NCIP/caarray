@@ -109,7 +109,6 @@ public abstract class AbstractCaArrayObject_HibernateIntegrationTest {
 
     @Test
     public void testSave() {
-        HibernateUtil.beginTransaction();
         AbstractCaArrayObject caArrayObject = createTestObject();
         // Test once for insert
         setValues(caArrayObject);

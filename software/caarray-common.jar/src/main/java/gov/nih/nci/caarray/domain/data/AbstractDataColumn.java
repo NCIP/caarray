@@ -162,7 +162,6 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
         this.quantitationType = quantitationType;
     }
     
-    @Basic(fetch = FetchType.LAZY)
     @Column(columnDefinition = "LONGBLOB")
     byte[] getSerializedValues() {
         return valuesSerializer.getSerializedValues();
