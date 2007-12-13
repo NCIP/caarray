@@ -775,7 +775,7 @@
   </target>
 
   <target name="test:junit-caarray-common.jar" depends="test:compile:caarray-common.test.classes,test:instrument:caarray-common.jar,configure-datasource-for-test,test:unpack-test-data">
-    <run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${csmapi.jar};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-common.resources.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar};${javacsv.jar};${hibernate-annotations.jar};${ejb3-persistence.jar};${cacore32-client.jar};${log4j.jar};${clm.jar}" />
+    <run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${csmapi.jar};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-common.resources.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar};${javacsv.jar};${hibernate-annotations.jar};${ejb3-persistence.jar};${cacore32-client.jar};${log4j.jar};${clm.jar}:${cglib.jar}" />
   </target>
 
   <!-- caarray-ejb.jar -->
@@ -814,7 +814,7 @@
   </target>
 
   <target name="test:junit-caarray-ejb.jar" depends="test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:functional:compile-tests,test:unpack-test-data">
-    <run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};${cacore32-client.jar};${csmapi.jar};${affxfusion.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${javacsv.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-beanutils.jar};${commons-lang.jar};${commons-collections.jar};${commons-configuration.jar};${commons-io.jar};${commons-lang.jar};${javaee.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar};${hibernate.jar};${hibernate-annotations.jar};${clm.jar}" />
+    <run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};${cacore32-client.jar};${csmapi.jar};${affxfusion.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${javacsv.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-beanutils.jar};${commons-lang.jar};${commons-collections.jar};${commons-configuration.jar};${commons-io.jar};${commons-lang.jar};${javaee.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar};${hibernate.jar};${hibernate-annotations.jar};${clm.jar}:${cglib.jar}" />
   </target>
 
   <!-- caarray.war -->
@@ -856,7 +856,7 @@
   </target>
 
   <target name="test:junit-caarray.war" depends="test:compile:caarray-war.test.classes,test:instrument:caarray.war,compile:caarray-ejb.jar,compile:caarray-common.jar,test:compile:caarray-ejb.test.classes,test:unpack-test-data">
-    <run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-logging.jar};${caarray-common.test.classes.dir};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate.jar}:${hibernate-annotations.jar}:${commons-configuration.jar}:${commons-collections.jar};${displaytag.jar};${urlrewrite.jar};${dom4j.jar}" />
+    <run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-logging.jar};${caarray-common.test.classes.dir};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate.jar}:${hibernate-annotations.jar}:${commons-configuration.jar}:${commons-collections.jar};${displaytag.jar};${urlrewrite.jar};${dom4j.jar}:${cglib.jar}" />
   </target>
 
   <target name="test:junit-report">
@@ -939,7 +939,7 @@
 
   <target name="test:selenium:run-tests" depends="test:functional:compile-tests,test:unpack-test-data,build:caarray-client.jar,database:reinitialize">
     <antcall target="test:selenium:start-server" />
-    <run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit" classpath="${test.classes.dir};${caarray-client.jar};${test.data.classes.dir};${test.data.files.dir};${selenium-server.jar};${selenium-java-client-driver.jar};${selenium-java-client-driver-tests.jar};${junit.jar}" />
+    <run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit" classpath="${cglib.jar}:${test.classes.dir};${caarray-client.jar};${test.data.classes.dir};${test.data.files.dir};${selenium-server.jar};${selenium-java-client-driver.jar};${selenium-java-client-driver-tests.jar};${junit.jar}" />
     <antcall target="test:selenium:stop-server" />
   </target>
 
