@@ -364,13 +364,17 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * Method to validate the files.
      * @return the string matching the result to follow
      */
+    @SuppressWarnings("PMD.ExcessiveMethodLength")  // validation checks can't be easily refactored to smaller methods.
     public String validateFiles() {
         int validatedFiles = 0;
         int skippedFiles = 0;
         int arrayDesignFiles = 0;
+        int unknownFiles = 0;
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
         for (CaArrayFile file : getSelectedFiles()) {
-            if (file.getFileType().isArrayDesign()) {
+            if (file.getFileType() == null) {
+                unknownFiles++;
+            } else if (file.getFileType().isArrayDesign()) {
                 arrayDesignFiles++;
             } else if (file.getFileStatus().isValidatable()) {
                 fileSet.add(file);
@@ -392,6 +396,10 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             ActionHelper.saveMessage(getText("project.fileValidate.error.invalidStatus",
                     new String[] {String.valueOf(skippedFiles)}));
         }
+        if (unknownFiles > 0) {
+            ActionHelper.saveMessage(getText("project.fileValidate.error.unknownType",
+                    new String[] {String.valueOf(unknownFiles)}));
+        }
         return prepListUnimportedPage();
     }
 
@@ -399,13 +407,17 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * Method to import the files.
      * @return the string matching the result to follow
      */
+    @SuppressWarnings("PMD.ExcessiveMethodLength")  // validation checks can't be easily refactored to smaller methods.
     public String importFiles() {
         int importedFiles = 0;
         int skippedFiles = 0;
         int arrayDesignFiles = 0;
+        int unknownFiles = 0;
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
         for (CaArrayFile file : getSelectedFiles()) {
-            if (file.getFileType().isArrayDesign()) {
+            if (file.getFileType() == null) {
+                unknownFiles++;
+            } else if (file.getFileType().isArrayDesign()) {
                 arrayDesignFiles++;
             } else if (file.getFileStatus().isImportable()) {
                 fileSet.add(file);
@@ -425,6 +437,10 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         if (skippedFiles > 0) {
             ActionHelper.saveMessage(getText("project.fileImport.error.invalidStatus",
                     new String[] {String.valueOf(skippedFiles)}));
+        }
+        if (unknownFiles > 0) {
+            ActionHelper.saveMessage(getText("project.fileImport.error.unknownType",
+                    new String[] {String.valueOf(unknownFiles)}));
         }
         refreshProject();
         return prepListUnimportedPage();
