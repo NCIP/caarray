@@ -115,7 +115,7 @@ class ArrayDesignImporter {
     }
 
     void importArrayDesign(ArrayDesign arrayDesign) {
-        arrayDesignService.importDesign(arrayDesign);
+        arrayDesignService.importDesignDetails(arrayDesign);
     }
 
 }

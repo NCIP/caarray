@@ -245,6 +245,11 @@ public class FileManagementServiceTest {
 
         @Override
         public void importDesign(ArrayDesign arrayDesign) {
+            validateDesign(arrayDesign);
+        }
+
+        @Override
+        public void importDesignDetails(ArrayDesign arrayDesign) {
             importCalled = true;
         }
 

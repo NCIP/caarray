@@ -135,6 +135,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             designFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
         }
         getArrayDao().save(designFile);
+        getArrayDao().flushSession();
         fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
         return result;
@@ -154,6 +155,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             design.getDesignFile().setFileStatus(FileStatus.VALIDATION_ERRORS);
         }
         getArrayDao().save(design.getDesignFile());
+        getArrayDao().flushSession();
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -209,17 +211,35 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         }
         FileAccessService fileAccessService = getFileAccessService();
         if (validateDesign(arrayDesign, arrayDesign.getDesignFile()).isValid()) {
-            doImport(arrayDesign, fileAccessService);
+            AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile(), fileAccessService);
+            handler.load(arrayDesign);
+            getArrayDao().save(arrayDesign);
         }
         fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
     }
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void importDesignDetails(ArrayDesign arrayDesign) {
+        LogUtil.logSubsystemEntry(LOG, arrayDesign);
+        if (arrayDesign.getDesignFile() == null) {
+            LOG.warn("importDesignDetails called, but no design file provided. No updates made.");
+            return;
+        }
+        if (!arrayDesign.getDesignFile().getValidationResult().isValid()) {
+            throw new IllegalArgumentException("The array design provided for import is not valid");
+        }
+        FileAccessService fileAccessService = getFileAccessService();
+        doImportDesignDetails(arrayDesign, fileAccessService);
+        fileAccessService.closeFiles();
+        LogUtil.logSubsystemExit(LOG);
+    }
 
-    private void doImport(ArrayDesign arrayDesign, FileAccessService fileAccessService) {
+    private void doImportDesignDetails(ArrayDesign arrayDesign, FileAccessService fileAccessService) {
         AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile(), fileAccessService);
-        handler.load(arrayDesign);
         arrayDesign.getDesignFile().setFileStatus(FileStatus.IMPORTED);
-        getArrayDao().save(arrayDesign);
         handler.saveDesignDetails(arrayDesign);
     }
 

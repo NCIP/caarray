@@ -126,6 +126,10 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
         return new ArrayList<ArrayDesign>();
     }
 
+    public void importDesignDetails(ArrayDesign arrayDesign) {
+        // no-op
+    }
+
     public void importDesign(ArrayDesign arrayDesign) {
         // no-op
     }

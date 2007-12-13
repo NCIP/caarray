@@ -132,6 +132,7 @@ public class ArrayDesignServiceTest {
 
     @Before
     public void setUp() {
+        caArrayDaoFactoryStub.clear();
         this.arrayDesignService = createArrayDesignService(this.caArrayDaoFactoryStub, this.fileAccessServiceStub, this.vocabularyServiceStub);
     }
 
@@ -155,6 +156,18 @@ public class ArrayDesignServiceTest {
         assertEquals("Affymetrix.com", design.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
         assertEquals("Test3", design.getLsidObjectId());
+    }
+    @Test
+    public void testImportDesignDetails_ArrayDesign() {
+        ArrayDesign design = new ArrayDesign();
+        design.setDesignFile(getAffymetrixCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
+        this.arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesignDetails(design);
+        assertEquals("Test3", design.getName());
+        assertEquals("Affymetrix.com", design.getLsidAuthority());
+        assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
+        assertEquals("Test3", design.getLsidObjectId());
+        assertEquals(15876, design.getDesignDetails().getFeatures().size());
     }
 
     @Test
@@ -193,6 +206,16 @@ public class ArrayDesignServiceTest {
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
         assertEquals("Human_WG-6", arrayDesign.getLsidObjectId());
         assertEquals(47296, arrayDesign.getNumberOfFeatures());
+    }
+
+    @Test
+    public void testImportDesignDetails_IlluminaHumanWG6() {
+        CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
+        ArrayDesign arrayDesign = new ArrayDesign();
+        arrayDesign.setDesignFile(designFile);
+        arrayDesignService.importDesign(arrayDesign);
+        arrayDesignService.importDesignDetails(arrayDesign);
+        assertEquals(47296, arrayDesign.getDesignDetails().getLogicalProbes().size());
     }
 
     @Test
@@ -244,8 +267,6 @@ public class ArrayDesignServiceTest {
         FileValidationResult result = this.arrayDesignService.validateDesign(designFile);
         assertFalse(result.isValid());
         assertTrue(result.getMessages().iterator().next().getMessage().contains("has already been imported"));
-        design.setDesignFile(designFile);
-        this.arrayDesignService.importDesign(design);
     }
 
     private CaArrayFile getAffymetrixCaArrayFile(File file) {
@@ -300,6 +321,11 @@ public class ArrayDesignServiceTest {
                     return entities;
                 }
             };
+        }
+
+        public void clear() {
+            lsidDesignMap.clear();
+            objectMap.clear();
         }
 
         /**

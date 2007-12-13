@@ -180,13 +180,13 @@ public class FileManagementServiceBean implements FileManagementService {
         arrayDesign.setDesignFile(designFile);
         getDaoFactory().getProjectDao().save(designFile);
         getDaoFactory().getArrayDao().save(arrayDesign);
-        getArrayDesignService().validateDesign(arrayDesign);
+        getArrayDesignService().importDesign(arrayDesign);
         if (FileStatus.VALIDATION_ERRORS.equals(designFile.getFileStatus())) {
             getDaoFactory().getArrayDao().remove(arrayDesign);
             throw new InvalidDataFileException(designFile.getValidationResult());
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */

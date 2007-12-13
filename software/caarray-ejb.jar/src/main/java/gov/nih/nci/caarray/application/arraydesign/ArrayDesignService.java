@@ -116,12 +116,21 @@ public interface ArrayDesignService {
     FileValidationResult validateDesign(CaArrayFile designFile);
 
     /**
+     * Imports top-level attributes for an existing array design from the associated
+     * <code>designFile</code>, validating the design file and updating attributes
+     * if valid.
+     *
+     * @param arrayDesign the design to import details for.
+     */
+    void importDesign(ArrayDesign arrayDesign);
+
+    /**
      * Imports details for an existing array design from associated files(s) including
      * <code>designFile</code> and <code>annotationFile</code>.
      *
      * @param arrayDesign the design to import details for.
      */
-    void importDesign(ArrayDesign arrayDesign);
+    void importDesignDetails(ArrayDesign arrayDesign);
 
     /**
      * @return the list of all Organizations  in the system.
