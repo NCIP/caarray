@@ -93,6 +93,11 @@ public enum FileStatus {
     UPLOADED(true, true, true),
 
     /**
+     * In the queue awaiting validation or import.
+     */
+    IN_QUEUE(false, false, false),
+
+    /**
      * In the process of validating.
      */
     VALIDATING(false, false, false),
