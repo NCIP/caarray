@@ -51,6 +51,7 @@
 		<antcall target="deploy:stop-jboss" />
 		<antcall target="deploy:caarray.ear" />
 		<antcall target="deploy:start-jboss" />
+		<antcall target="launch-firefox" />
 	</target>
 
 	<target name="deploy:caarray.ear">
@@ -180,6 +181,11 @@
 	</target>
 
 	<target name="cleanuptarget" />
+
+	<target name="launch-firefox">
+		<sleep seconds="20" />
+		<exec command="${firefox.exe} http://localhost:8080/caarray" />
+	</target>
 
 	<!-- ################################################# -->
 	<!-- #############      Macrodefs      ############### -->
