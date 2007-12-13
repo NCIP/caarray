@@ -192,6 +192,7 @@ public class FileManagementServiceBean implements FileManagementService {
      */
     public void importArrayDesignDetails(ArrayDesign arrayDesign) {
         arrayDesign.getDesignFile().setFileStatus(FileStatus.IN_QUEUE);
+        getDaoFactory().getProjectDao().save(arrayDesign.getDesignFile());
         ArrayDesignFileImportJob job = new ArrayDesignFileImportJob(UsernameHolder.getUser(), arrayDesign);
         getSubmitter().submitJob(job);
     }

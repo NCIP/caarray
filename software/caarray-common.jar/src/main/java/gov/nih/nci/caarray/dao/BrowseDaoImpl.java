@@ -290,11 +290,11 @@ public class BrowseDaoImpl implements BrowseDao {
     }
 
     private synchronized CountEntry updateInstitutionCount() {
-        CountEntry entry = COUNT_CACHE.get(HYBRIDIZATION);
+        CountEntry entry = COUNT_CACHE.get(INSTITUTION);
         if (entry == null || entry.isExpired()) {
             // TODO fill in query when institutions are implemented
             entry = new CountEntry(0);
-            COUNT_CACHE.put(HYBRIDIZATION, entry);
+            COUNT_CACHE.put(INSTITUTION, entry);
         }
         return entry;
     }

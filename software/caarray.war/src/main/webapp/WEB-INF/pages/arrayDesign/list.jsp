@@ -32,6 +32,13 @@
                             </c:url>
                             <a href="${editDesignUrl}"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
                         </display:column>
+                        <display:column sortProperty="designFile.status" titleKey="experiment.files.status" sortable="true" >
+                            <ajax:anchors target="tabboxlevel2wrapper">
+                                <fmt:message key="experiment.files.filestatus.${row.designFile.status}">
+                                    <fmt:param><c:url value="/" /></fmt:param>
+                                </fmt:message>
+                            </ajax:anchors>
+                        </display:column>
                     </display:table>
                 </ajax:displayTag>
             </div>

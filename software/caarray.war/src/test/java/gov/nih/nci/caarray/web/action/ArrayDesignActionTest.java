@@ -95,6 +95,7 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import java.util.ArrayList;
@@ -127,6 +128,14 @@ public class ArrayDesignActionTest {
         locatorStub.addLookup(VocabularyService.JNDI_NAME, this.vocabularyServiceStub);
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
         locatorStub.addLookup(FileManagementService.JNDI_NAME, this.fileManagementServiceStub);
+    }
+
+    @Test
+    public void testPrepare() {
+        arrayDesignAction.prepare();
+        assertEquals(1, arrayDesignAction.getOrganisms().size());
+        assertEquals(1, arrayDesignAction.getProviders().size());
+        assertEquals(10, arrayDesignAction.getFeatureTypes().size());
     }
 
     @Test
@@ -181,6 +190,12 @@ public class ArrayDesignActionTest {
         @Override
         public ArrayDesign getArrayDesign(Long id) {
             return DESIGN_ID.equals(id) ? new ArrayDesign() : null;
+        }
+        @Override
+        public List<Organization> getAllOrganizations() {
+            List<Organization> orgs = new ArrayList<Organization>();
+            orgs.add(new Organization());
+            return orgs;
         }
     }
     private static class LocalVocabularyServiceStub extends VocabularyServiceStub {}

@@ -815,7 +815,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             e = SEARCH_DAO.retrieve(Experiment.class, experimentId);
             assertNull(e);
             tx.commit();
-            
+
             tx = HibernateUtil.beginTransaction();
             UsernameHolder.setUser(STANDARD_USER);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
@@ -962,7 +962,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNull(p);
             tx.commit();
-            
+
             tx = HibernateUtil.beginTransaction();
             UsernameHolder.setUser("caarrayuser");
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
@@ -971,7 +971,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             assertEquals(2, p.getExperiment().getSamples().size());
             assertTrue(SecurityUtils.canWrite(DUMMY_SAMPLE, UsernameHolder.getCsmUser()));
             assertFalse(SecurityUtils.canWrite(s, UsernameHolder.getCsmUser()));
-            tx.commit();            
+            tx.commit();
 
             tx = HibernateUtil.beginTransaction();
             UsernameHolder.setUser(STANDARD_USER);
@@ -987,7 +987,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             assertNull(p.getExperiment().getExperimentDesignDescription());
             HibernateUtil.getCurrentSession().clear();
             tx.commit();
-            
+
             tx = HibernateUtil.beginTransaction();
             UsernameHolder.setUser("caarrayuser");
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
@@ -996,8 +996,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
             assertEquals(2, p.getExperiment().getSamples().size());
             assertTrue(SecurityUtils.canWrite(DUMMY_SAMPLE, UsernameHolder.getCsmUser()));
             assertFalse(SecurityUtils.canWrite(s, UsernameHolder.getCsmUser()));
-            tx.commit();                        
-            
+            tx.commit();
+
             tx = HibernateUtil.beginTransaction();
             UsernameHolder.setUser(STANDARD_USER);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
@@ -1146,6 +1146,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         tx.commit();
     }
 
+    @Test
     public void testSearchByCategory() {
         Transaction tx = HibernateUtil.beginTransaction();
         saveSupportingObjects();
@@ -1167,6 +1168,12 @@ public class ProjectDaoTest extends AbstractDaoTest {
         psp.setPageSize(2);
         projects = DAO_OBJECT.searchByCategory(psp, "DummyExperiment", SearchCategory.values());
         assertEquals(2, projects.size());
+
+        psp.setIndex(2);
+        psp.setSortCriterion("experiment.title");
+        projects = DAO_OBJECT.searchByCategory(psp, "DummyExperiment", SearchCategory.values());
+        assertEquals(1, projects.size());
+        psp.setIndex(0);
 
         // test sorting
         psp.setPageSize(20);

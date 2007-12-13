@@ -262,7 +262,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      * @return success
      */
     // TODO remove this when the edit block is filled in
-    @SuppressWarnings({"PMD.EmptyIfStmt", "PMD.AvoidDuplicateLiterals" })
+    @SuppressWarnings({"PMD.EmptyIfStmt", "PMD.AvoidDuplicateLiterals", "deprecation" })
     @Validations(
         requiredStrings = {
             @RequiredStringValidator(fieldName = "arrayDesign.name", key = "errors.required", message = ""),
@@ -287,6 +287,8 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
                 for (ValidationMessage message : result.getMessages()) {
                     addFieldError("upload", message.getMessage());
                 }
+                // set to null because new array designs have no id
+                arrayDesign.setId(null);
                 editMode = true;
                 return Action.INPUT;
             }
