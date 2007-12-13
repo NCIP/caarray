@@ -14,8 +14,13 @@ function openHelpWindowWithNavigation(contextName) {
 	openWin(pageURL);
 }
 
-// Opens a new window without Left Navigation.
+// Opens a new window with Left Navigation.
 function openHelpWindow(contextName) {
+	openHelpWindowWithNavigation (contextName);
+}
+
+// Opens a new window without Left Navigation.
+function openHelpWindowWithoutNavigation(contextName) {
 	// Get the URL
 	var pageURL = makeHelpURL(contextName, false);
 	openWin(pageURL);
