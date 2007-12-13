@@ -89,8 +89,9 @@ import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.ProtectableDescendent;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
@@ -132,6 +133,10 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     private Blob contents;
     private int uncompressedSize;
     private int compressedSize;
+
+    // transient properties
+    private InputStream inputStreamToClose;
+    private File fileToDelete;
 
     /**
      * Gets the name.
@@ -337,16 +342,19 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      * @throws IOException if there is a problem writing the contents.
      */
     public void writeContents(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
-        int uncompressedDataSize = IOUtils.copy(inputStream, gzipOutputStream);
-        IOUtils.closeQuietly(gzipOutputStream);
-        IOUtils.closeQuietly(byteArrayOutputStream);
-        byte[] compressedBytes = byteArrayOutputStream.toByteArray();
         if (this.contents == null) {
-            setContents(Hibernate.createBlob(compressedBytes));
+            File tempFile = File.createTempFile("compressed", "tmp");
+            FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
+            GZIPOutputStream gzipOutputStream = new GZIPOutputStream(fileOutputStream);
+            int uncompressedDataSize = IOUtils.copy(inputStream, gzipOutputStream);
+            IOUtils.closeQuietly(gzipOutputStream);
+            IOUtils.closeQuietly(fileOutputStream);
+            FileInputStream compressedFile = new FileInputStream(tempFile);
+            setContents(Hibernate.createBlob(compressedFile));
             setUncompressedSize(uncompressedDataSize);
-            setCompressedSize(compressedBytes.length);
+            setCompressedSize((int) tempFile.length());
+            this.inputStreamToClose = compressedFile;
+            this.fileToDelete = tempFile;
         } else {
             throw new IllegalStateException("Can't reset the contents of an existing CaArrayFile");
         }
@@ -401,4 +409,25 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     public void clearContents() {
         setContents(null);
     }
+
+    /**
+     * Get the input stream that needs to be closed in postflush.
+     * @return the input stream
+     */
+    @Transient
+    public InputStream getInputStreamToClose() {
+        return this.inputStreamToClose;
+    }
+
+    /**
+     * Get the file the needs to be deleted in post flush.
+     * @return the file
+     */
+    @Transient
+    public File getFileToDelete() {
+        return this.fileToDelete;
+    }
+
+
+
 }

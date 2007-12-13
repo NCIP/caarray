@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.security;
 
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -94,6 +95,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
@@ -127,7 +129,9 @@ public class SecurityInterceptor extends EmptyInterceptor {
     // new, changed or otherwise needing processing access profiles
     private static final ThreadLocal<Collection<AccessProfile>> PROFILES =
             new ThreadLocal<Collection<AccessProfile>>();
-    
+
+    private static final ThreadLocal<Collection<CaArrayFile>> FILES = new ThreadLocal<Collection<CaArrayFile>>();
+
     /**
      * {@inheritDoc}
      */
@@ -176,7 +180,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
 
     /**
      * Finds protectables and queues them to have protection elements assigned.
-     * 
+     *
      * {@inheritDoc}
      */
     @Override
@@ -190,12 +194,16 @@ public class SecurityInterceptor extends EmptyInterceptor {
             saveEntityForProcessing(PROFILES, new ArrayList<AccessProfile>(), (AccessProfile) entity);
         }
 
+        if (entity instanceof CaArrayFile) {
+            saveEntityForProcessing(FILES, new ArrayList<CaArrayFile>(), (CaArrayFile) entity);
+        }
+
         return false;
     }
 
     /**
      * Finds deleted protectables and queues them to have associated protection elements removed.
-     * 
+     *
      * {@inheritDoc}
      */
     @Override
@@ -211,7 +219,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
 
     /**
      * Finds modified protectables and queues them for sync with CSM.
-     * 
+     *
      * {@inheritDoc}
      */
     @Override
@@ -234,7 +242,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
     /**
      * Helper method for handling a matched entity from any of the lifecycle listener methods, and placing it in the
      * appropriate ThreadLocal holder for later processing.
-     * 
+     *
      * @param threadLocal the holder for the appropriate list of entities
      * @param emptyCollection empty collection for initializing the holder
      * @param entity the entity
@@ -251,7 +259,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
     /**
      * Checks whether the given user has WRITE privilege to given object, and if not, throws a
      * PermissionDeniedException.
-     * 
+     *
      * @param o the Object to check
      * @param user the user to check
      */
@@ -272,13 +280,25 @@ public class SecurityInterceptor extends EmptyInterceptor {
             MARKER.set(null);
             return;
         }
-        
+
         // punt any access profiles who belong to deleted projects
         if (PROFILES.get() != null && DELETEDOBJS.get() != null) {
             for (Iterator<AccessProfile> it = PROFILES.get().iterator(); it.hasNext();) {
                 AccessProfile ap = it.next();
                 if (DELETEDOBJS.get().contains(ap.getProject()) || DELETEDOBJS.get().contains(ap.getGroup())) {
                     it.remove();
+                }
+            }
+        }
+
+        if (FILES.get() != null) {
+            for (CaArrayFile caArrayFile : FILES.get()) {
+                if (caArrayFile.getInputStreamToClose() != null) {
+                    IOUtils.closeQuietly(caArrayFile.getInputStreamToClose());
+                }
+
+                if (caArrayFile.getFileToDelete() != null) {
+                    caArrayFile.getFileToDelete().delete();
                 }
             }
         }
