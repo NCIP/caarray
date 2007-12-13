@@ -115,4 +115,10 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
         arrayDesign.getDesignFile().setFileStatus(FileStatus.IMPORTING);
     }
 
+    @Override
+    void setUploadedStatus() {
+        ArrayDesign arrayDesign = getDaoFactory().getArrayDao().getArrayDesign(getArrayDesignId());
+        arrayDesign.getDesignFile().setFileStatus(FileStatus.UPLOADED);
+    }
+
 }

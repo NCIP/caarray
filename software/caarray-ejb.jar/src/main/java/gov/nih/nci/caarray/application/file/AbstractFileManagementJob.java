@@ -130,4 +130,6 @@ abstract class AbstractFileManagementJob implements Serializable {
 
     abstract void setInProgressStatus();
 
+    abstract void setUploadedStatus();
+
 }

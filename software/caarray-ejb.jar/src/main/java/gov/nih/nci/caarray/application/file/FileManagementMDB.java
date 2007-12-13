@@ -91,6 +91,7 @@ import java.io.Serializable;
 
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
+import javax.ejb.EJBException;
 import javax.ejb.MessageDriven;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
@@ -118,10 +119,8 @@ import org.apache.log4j.Logger;
     })
 @Interceptors({ HibernateSessionInterceptor.class, ExceptionLoggingInterceptor.class })
 @TransactionManagement(TransactionManagementType.BEAN)
-@SuppressWarnings("PMD.CyclomaticComplexity") // requires multiple catch clauses in onMessage
 public class FileManagementMDB implements MessageListener {
 
-    private static final String ERROR_MANAGAGING_TRANSACTION = "Error managaging transaction";
     private static final Logger LOG = Logger.getLogger(FileManagementMDB.class);
     static final int TIMEOUT_SECONDS = 3600;
 
@@ -138,7 +137,6 @@ public class FileManagementMDB implements MessageListener {
      *
      * @param message the JMS message to handle.
      */
-    @SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.ExcessiveMethodLength" }) // requires multiple catch clauses
     public void onMessage(Message message) {
         if (!(message instanceof ObjectMessage)) {
             LOG.error("Invalid message type delivered: " + message.getClass().getName());
@@ -158,38 +156,76 @@ public class FileManagementMDB implements MessageListener {
             }
         } catch (JMSException e) {
             LOG.error("Error handling message", e);
-        } catch (SystemException e) {
-            LOG.error(ERROR_MANAGAGING_TRANSACTION, e);
-        } catch (NotSupportedException e) {
-            LOG.error(ERROR_MANAGAGING_TRANSACTION, e);
-        } catch (SecurityException e) {
-            LOG.error(ERROR_MANAGAGING_TRANSACTION, e);
-        } catch (IllegalStateException e) {
-            LOG.error(ERROR_MANAGAGING_TRANSACTION, e);
-        } catch (RollbackException e) {
-            LOG.error(ERROR_MANAGAGING_TRANSACTION, e);
-        } catch (HeuristicMixedException e) {
-            LOG.error(ERROR_MANAGAGING_TRANSACTION, e);
-        } catch (HeuristicRollbackException e) {
-            LOG.error(ERROR_MANAGAGING_TRANSACTION, e);
         }
     }
 
-    private void setInProgressStatus(AbstractFileManagementJob job) throws NotSupportedException, SystemException,
-    RollbackException, HeuristicMixedException, HeuristicRollbackException  {
-        transaction.begin();
-        job.setInProgressStatus();
-        transaction.commit();
+    private void beginTransaction() {
+        try {
+            transaction.setTransactionTimeout(TIMEOUT_SECONDS);
+            transaction.begin();
+        } catch (NotSupportedException e) {
+            LOG.error("Unexpected throwable -- transaction is supported", e);
+            throw new IllegalStateException(e);
+        } catch (SystemException e) {
+            LOG.error("Couldn't start transaction", e);
+            throw new EJBException(e);
+        }
     }
 
-    private void performJob(AbstractFileManagementJob job) throws SystemException,
-    NotSupportedException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
-        transaction.setTransactionTimeout(TIMEOUT_SECONDS);
-        transaction.begin();
+    private void commitTransaction()  {
+        try {
+            transaction.commit();
+        } catch (SecurityException e) {
+            LOG.error("Unexpected throwable -- transaction is supported", e);
+            throw new IllegalStateException(e);
+        } catch (RollbackException e) {
+            LOG.error("Received rollback condition", e);
+            rollbackTransaction();
+        } catch (HeuristicMixedException e) {
+            rollbackTransaction();
+        } catch (HeuristicRollbackException e) {
+            rollbackTransaction();
+        } catch (SystemException e) {
+            LOG.error("Couldn't commit transaction", e);
+            throw new EJBException(e);
+        }
+    }
+
+    private void rollbackTransaction() {
+        try {
+            transaction.rollback();
+        } catch (SecurityException e) {
+            LOG.error("Unexpected throwable -- transaction is supported", e);
+            throw new IllegalStateException(e);
+        } catch (SystemException e) {
+            LOG.error("Error rolling back transaction", e);
+            throw new EJBException(e);
+        }
+    }
+
+    private void performJob(AbstractFileManagementJob job) {
+        beginTransaction();
         LOG.info("Starting job of type: " + job.getClass().getSimpleName());
-        job.execute();
-        transaction.commit();
-        System.gc();
+        try {
+            job.execute();
+        } catch (RuntimeException e) {
+            rollbackTransaction();
+            setUploadedStatus(job);
+            throw e;
+        }
+        commitTransaction();
+    }
+
+    private void setInProgressStatus(AbstractFileManagementJob job)  {
+        beginTransaction();
+        job.setInProgressStatus();
+        commitTransaction();
+    }
+
+    private void setUploadedStatus(AbstractFileManagementJob job)  {
+        beginTransaction();
+        job.setUploadedStatus();
+        commitTransaction();
     }
 
     CaArrayDaoFactory getDaoFactory() {

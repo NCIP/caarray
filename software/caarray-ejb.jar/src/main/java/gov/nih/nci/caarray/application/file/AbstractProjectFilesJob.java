@@ -163,9 +163,18 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
 
     @Override
     void setInProgressStatus() {
+        setStatus(getInProgressStatus());
+    }
+
+    @Override
+    void setUploadedStatus() {
+        setStatus(FileStatus.UPLOADED);
+    }
+
+    private void setStatus(FileStatus status) {
         CaArrayFileSet fileSet = getFileSet(getProject());
         for (CaArrayFile caArrayFile : fileSet.getFiles()) {
-            caArrayFile.setFileStatus(getInProgressStatus());
+            caArrayFile.setFileStatus(status);
             getDaoFactory().getProjectDao().save(caArrayFile);
         }
     }

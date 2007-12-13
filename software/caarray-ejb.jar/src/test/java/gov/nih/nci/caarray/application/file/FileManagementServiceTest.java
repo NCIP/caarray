@@ -50,6 +50,7 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import static org.junit.Assert.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.UserTransactionStub;
@@ -203,6 +204,25 @@ public class FileManagementServiceTest {
         assertTrue(arrayDesignServiceStub.importCalled);
     }
 
+    @Test
+    public void testErrorHandling() throws InvalidDataFileException {
+        ArrayDesign design = new ArrayDesign();
+        design.setName("throw exception");
+        daoFactoryStub.searchDaoStub.save(design);
+        CaArrayFile caArrayFile = fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
+        caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
+        design.setDesignFile(caArrayFile);
+        fileManagementService.addArrayDesign(design, caArrayFile);
+        assertEquals(FileStatus.VALIDATED, caArrayFile.getFileStatus());
+        try {
+            fileManagementService.importArrayDesignDetails(design);
+            fail("Expected exception");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+        assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
+    }
+
     @Test(expected = InvalidDataFileException.class)
     public void testImportArrayDesignFileInvalid() throws InvalidDataFileException {
         ArrayDesign design = new ArrayDesign();
@@ -252,6 +272,9 @@ public class FileManagementServiceTest {
 
         @Override
         public void importDesignDetails(ArrayDesign arrayDesign) {
+            if ("throw exception".equals(arrayDesign.getName())) {
+                throw new IllegalArgumentException();
+            }
             importCalled = true;
         }
 
