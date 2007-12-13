@@ -140,7 +140,7 @@ public class FileManagementServiceBean implements FileManagementService {
         LogUtil.logSubsystemEntry(LOG, fileSet);
         checkForImport(fileSet);
         clearValidationMessages(fileSet);
-        updateFileStatus(fileSet, FileStatus.IMPORTING);
+        updateFileStatus(fileSet, FileStatus.IN_QUEUE);
         sendImportJobMessage(targetProject, fileSet);
         LogUtil.logSubsystemExit(LOG);
     }
@@ -163,7 +163,7 @@ public class FileManagementServiceBean implements FileManagementService {
     public void validateFiles(Project project, CaArrayFileSet fileSet) {
         checkForValidation(fileSet);
         clearValidationMessages(fileSet);
-        updateFileStatus(fileSet, FileStatus.VALIDATING);
+        updateFileStatus(fileSet, FileStatus.IN_QUEUE);
         sendValidationJobMessage(project, fileSet);
     }
 
@@ -191,7 +191,7 @@ public class FileManagementServiceBean implements FileManagementService {
      * {@inheritDoc}
      */
     public void importArrayDesignDetails(ArrayDesign arrayDesign) {
-        arrayDesign.getDesignFile().setFileStatus(FileStatus.IMPORTING);
+        arrayDesign.getDesignFile().setFileStatus(FileStatus.IN_QUEUE);
         ArrayDesignFileImportJob job = new ArrayDesignFileImportJob(UsernameHolder.getUser(), arrayDesign);
         getSubmitter().submitJob(job);
     }

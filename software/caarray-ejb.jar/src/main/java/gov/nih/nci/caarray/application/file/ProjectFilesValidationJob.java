@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
 
 /**
@@ -103,6 +104,12 @@ final class ProjectFilesValidationJob extends AbstractProjectFilesJob {
         Project project = getProject();
         doValidate(fileAccessService, getFileSet(project));
         fileAccessService.closeFiles();
+    }
+
+
+    @Override
+    FileStatus getInProgressStatus() {
+        return FileStatus.VALIDATING;
     }
 
 }

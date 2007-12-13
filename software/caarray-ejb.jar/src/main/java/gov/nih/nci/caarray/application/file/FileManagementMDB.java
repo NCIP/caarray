@@ -132,7 +132,7 @@ public class FileManagementMDB implements MessageListener {
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
     @Resource private UserTransaction transaction;
-    
+
     /**
      * Handles file management job message.
      *
@@ -149,15 +149,11 @@ public class FileManagementMDB implements MessageListener {
             if (!(contents instanceof AbstractFileManagementJob)) {
                 LOG.error("Invalid message contents: " + contents.getClass().getName());
             } else {
-                transaction.setTransactionTimeout(TIMEOUT_SECONDS);
-                transaction.begin();
                 AbstractFileManagementJob job = (AbstractFileManagementJob) contents;
-                LOG.info("Starting job of type: " + job.getClass().getSimpleName());
-                UsernameHolder.setUser(job.getUsername());
                 job.setDaoFactory(getDaoFactory());
-                job.execute();
-                transaction.commit();
-                System.gc();
+                UsernameHolder.setUser(job.getUsername());
+                setInProgressStatus(job);
+                performJob(job);
                 LOG.info("Successfully completed job");
             }
         } catch (JMSException e) {
@@ -177,6 +173,23 @@ public class FileManagementMDB implements MessageListener {
         } catch (HeuristicRollbackException e) {
             LOG.error(ERROR_MANAGAGING_TRANSACTION, e);
         }
+    }
+
+    private void setInProgressStatus(AbstractFileManagementJob job) throws NotSupportedException, SystemException,
+    RollbackException, HeuristicMixedException, HeuristicRollbackException  {
+        transaction.begin();
+        job.setInProgressStatus();
+        transaction.commit();
+    }
+
+    private void performJob(AbstractFileManagementJob job) throws SystemException,
+    NotSupportedException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+        transaction.setTransactionTimeout(TIMEOUT_SECONDS);
+        transaction.begin();
+        LOG.info("Starting job of type: " + job.getClass().getSimpleName());
+        job.execute();
+        transaction.commit();
+        System.gc();
     }
 
     CaArrayDaoFactory getDaoFactory() {

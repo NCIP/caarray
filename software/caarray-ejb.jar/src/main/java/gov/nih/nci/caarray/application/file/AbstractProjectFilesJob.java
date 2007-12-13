@@ -90,6 +90,7 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
@@ -160,4 +161,14 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
         return new MageTabImporter(fileAccessService, getMageTabTranslator(), getDaoFactory());
     }
 
+    @Override
+    void setInProgressStatus() {
+        CaArrayFileSet fileSet = getFileSet(getProject());
+        for (CaArrayFile caArrayFile : fileSet.getFiles()) {
+            caArrayFile.setFileStatus(getInProgressStatus());
+            getDaoFactory().getProjectDao().save(caArrayFile);
+        }
+    }
+
+    abstract FileStatus getInProgressStatus();
 }

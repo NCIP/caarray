@@ -128,4 +128,6 @@ abstract class AbstractFileManagementJob implements Serializable {
         return new ArrayDesignImporter(getArrayDesignService());
     }
 
+    abstract void setInProgressStatus();
+
 }

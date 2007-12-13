@@ -130,4 +130,10 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
         ArrayDataImporter arrayDataImporter = getArrayDataImporter();
         arrayDataImporter.importFiles(fileSet);
     }
+
+    @Override
+    FileStatus getInProgressStatus() {
+        return FileStatus.IMPORTING;
+    }
+
 }

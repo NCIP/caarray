@@ -240,6 +240,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     private void doImportDesignDetails(ArrayDesign arrayDesign, FileAccessService fileAccessService) {
         AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile(), fileAccessService);
         arrayDesign.getDesignFile().setFileStatus(FileStatus.IMPORTED);
+        getArrayDao().save(arrayDesign.getDesignFile());
         handler.saveDesignDetails(arrayDesign);
     }
 

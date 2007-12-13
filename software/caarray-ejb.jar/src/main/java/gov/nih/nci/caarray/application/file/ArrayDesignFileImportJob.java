@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 
 /**
  * Encapsulates the data to import array design details from a design file.
@@ -106,6 +107,12 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
     void execute() {
         ArrayDesign arrayDesign = getDaoFactory().getArrayDao().getArrayDesign(getArrayDesignId());
         getArrayDesignImporter().importArrayDesign(arrayDesign);
+    }
+
+    @Override
+    void setInProgressStatus() {
+        ArrayDesign arrayDesign = getDaoFactory().getArrayDao().getArrayDesign(getArrayDesignId());
+        arrayDesign.getDesignFile().setFileStatus(FileStatus.IMPORTING);
     }
 
 }

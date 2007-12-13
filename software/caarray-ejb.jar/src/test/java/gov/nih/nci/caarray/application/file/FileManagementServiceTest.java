@@ -61,7 +61,9 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorStub;
+import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
@@ -258,11 +260,33 @@ public class FileManagementServiceTest {
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
 
         private final LocalSearchDaoStub searchDaoStub = new LocalSearchDaoStub();
+        private final ArrayDao arrayDaoStub = new LocalArrayDao(searchDaoStub);
 
         @Override
         public SearchDao getSearchDao() {
             return searchDaoStub;
         }
+
+        @Override
+        public ArrayDao getArrayDao() {
+            return arrayDaoStub;
+        }
+
+    }
+
+    private static class LocalArrayDao extends ArrayDaoStub {
+
+        private final LocalSearchDaoStub searchDaoStub;
+
+        public LocalArrayDao(LocalSearchDaoStub searchDaoStub) {
+            this.searchDaoStub = searchDaoStub;
+        }
+
+        @Override
+        public ArrayDesign getArrayDesign(long id) {
+            return searchDaoStub.retrieve(ArrayDesign.class, id);
+        }
+
     }
 
     private static class LocalSearchDaoStub extends SearchDaoStub {
