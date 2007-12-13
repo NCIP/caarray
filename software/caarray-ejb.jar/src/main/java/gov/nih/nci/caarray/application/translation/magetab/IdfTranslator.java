@@ -183,6 +183,7 @@ final class IdfTranslator extends AbstractTranslator {
             Term typeTerm = getTerm(idfFactor.getType());
             factor.setType(typeTerm);
             factors.add(factor);
+            getTranslationResult().addFactor(idfFactor, factor);
         }
         investigation.getFactors().addAll(factors);
     }

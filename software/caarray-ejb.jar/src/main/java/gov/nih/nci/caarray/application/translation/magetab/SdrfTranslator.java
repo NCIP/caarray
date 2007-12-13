@@ -120,7 +120,6 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode;
 import gov.nih.nci.caarray.magetab.sdrf.Characteristic;
 import gov.nih.nci.caarray.magetab.sdrf.Normalization;
@@ -259,6 +258,7 @@ final class SdrfTranslator extends AbstractTranslator {
             for (gov.nih.nci.caarray.magetab.sdrf.FactorValue sdrfFactorVal : sdrfHybridization.getFactorValues()) {
                 FactorValue factorValue = translateFactor(sdrfFactorVal);
                 hybridization.getFactorValues().add(factorValue);
+                factorValue.setHybridization(hybridization);
             }
             this.allHybridizations.add(hybridization);
             this.nodeTranslations.put(sdrfHybridization, hybridization);
@@ -269,13 +269,9 @@ final class SdrfTranslator extends AbstractTranslator {
         FactorValue factorValue = new FactorValue();
         factorValue.setValue(sdrfFactorVal.getValue());
         factorValue.setUnit(getTerm(sdrfFactorVal.getUnit()));
-        Factor factor = new Factor();
-        ExperimentalFactor sdrfFactor = sdrfFactorVal.getFactor();
-        if (sdrfFactor != null) {
-            factor.setName(sdrfFactor.getName());
-            factor.setType(getTerm(sdrfFactor.getType()));
-        }
+        Factor factor = getTranslationResult().getFactor(sdrfFactorVal.getFactor());
         factorValue.setFactor(factor);
+        factor.getFactorValues().add(factorValue);
         return factorValue;
     }
 

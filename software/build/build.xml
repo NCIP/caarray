@@ -397,6 +397,28 @@
     </javac>
   </target>
 
+  <target name="instrument:caarray-common.jar" depends="compile:caarray-common.jar">
+    <taskdef name="instrument" classname="org.hibernate.tool.instrument.cglib.InstrumentTask">
+      <classpath>
+        <pathelement location="${hibernate.jar}" />
+        <pathelement location="${ejb3-persistence.jar}" />
+        <pathelement location="${hibernate-annotations.jar}" />
+        <pathelement location="${cglib.jar}" />
+        <pathelement location="${commons-logging.jar}" />
+        <pathelement location="${asm.jar}" />
+        <pathelement location="${asm-attrs.jar}" />
+      </classpath>
+    </taskdef>
+
+    <instrument verbose="true">
+        <fileset dir="${caarray-common.classes.dir}/gov/nih/nci/caarray/domain">
+            <include name="file/CaArrayFile.class"/>
+            <include name="data/AbstractDataColumn.class"/>
+            <include name="project/Experiment.class"/>
+        </fileset>
+    </instrument>
+  </target>
+
   <target name="compile:caarray-ejb.jar" depends="compile:caarray-common.jar,compile:caarray-client.jar">
     <mkdir dir="${caarray-ejb.classes.dir}" />
     <javac srcdir="${caarray-ejb.src.dir}" destdir="${caarray-ejb.classes.dir}" debug="true">
@@ -494,7 +516,7 @@
         </jar>
     </target>
 
-  <target name="build:caarray-common.jar" depends="compile:caarray-common.jar,configure-datasource-for-deploy">
+  <target name="build:caarray-common.jar" depends="instrument:caarray-common.jar,configure-datasource-for-deploy">
     <mkdir dir="${caarray-common.target.dir}" />
     <jar destfile="${caarray-common.jar}">
       <fileset dir="${caarray-common.classes.dir}" />

@@ -90,9 +90,11 @@ import java.util.Map;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.OntologyTerm;
 import gov.nih.nci.caarray.magetab.TermSource;
+import gov.nih.nci.caarray.magetab.idf.ExperimentalFactor;
 
 /**
  * Result of MAGE-TAB translation. Also used to pass-around and look up shared objects.
@@ -104,6 +106,7 @@ final class MageTabTranslationResult implements CaArrayTranslationResult {
     private final Map<OntologyTerm, Term> termMap = new HashMap<OntologyTerm, Term>();
     private final Map<TermSource, gov.nih.nci.caarray.domain.vocabulary.TermSource> termSourceMap =
         new HashMap<TermSource, gov.nih.nci.caarray.domain.vocabulary.TermSource>();
+    private final Map<ExperimentalFactor, Factor> factorMap = new HashMap<ExperimentalFactor, Factor>();
     private final Collection<Experiment> investigations = new HashSet<Experiment>();
     private final Collection<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
 
@@ -148,4 +151,11 @@ final class MageTabTranslationResult implements CaArrayTranslationResult {
         investigations.add(investigation);
     }
 
+    Factor getFactor(ExperimentalFactor factor) {
+        return factorMap.get(factor);
+    }
+
+    void addFactor(ExperimentalFactor mageTabFactor, Factor factor) {
+        factorMap.put(mageTabFactor, factor);
+    }
 }

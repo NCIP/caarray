@@ -127,7 +127,6 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private final List<AbstractSampleDataRelationshipNode> leftmostNodes =
         new ArrayList<AbstractSampleDataRelationshipNode>();
     private ProtocolApplication currentProtocolApp;
-    private final List<Characteristic> characteristicsList = new ArrayList<Characteristic>();
 
     private final List<ArrayDesign> allArrayDesigns = new ArrayList<ArrayDesign>();
     private final List<Comment> allComments = new ArrayList<Comment>();
@@ -275,7 +274,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             handleTermSourceRef(value);
             break;
         case UNIT:
-            handleUnit(column, value);
+            handleUnit(column, value, getNextColumn(column));
             break;
         case LABEL:
             handleLabel(column, value);
@@ -420,15 +419,18 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         }
     }
 
-    private void handleUnit(SdrfColumn column, String value) {
+    private void handleUnit(SdrfColumn column, String value, SdrfColumn nextColumn) {
         OntologyTerm unit = getOntologyTerm(column.getHeading().getQualifier(), value);
         unit.setValue(value);
-        currentUnitable.setUnit(unit);
+        currentUnitable.setUnit(unit);        
+        if (nextColumn != null && nextColumn.getType() == SdrfColumnType.TERM_SOURCE_REF) {
+            currentTermSourceable = unit;
+        }
     }
 
     private void handleMaterialType(SdrfColumn column, String value) {
         OntologyTerm materialType = getMgedOntologyTerm(MageTabOntologyCategory.MATERIAL_TYPE, value);
-        ((AbstractBioMaterial) currentNode).setTerm(materialType);
+        ((AbstractBioMaterial) currentNode).setMaterialType(materialType);
         currentTermSourceable = materialType;
     }
 
@@ -437,39 +439,23 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         if (term.getFile() == null) {
             addWarningMessage("Term Source " + value + " is not defined in the IDF document");
         }
-        for (Characteristic aCharacteristic : characteristicsList) {
-            aCharacteristic.getTerm().setTermSource(term);
-        }
-        characteristicsList.clear();
         currentTermSourceable.setTermSource(term);
     }
 
     private void handleCharacteristic(String value, SdrfColumn currentColumn, SdrfColumn nextColumn) {
         Characteristic characteristic = new Characteristic();
+        ((AbstractBioMaterial) currentNode).getCharacteristics().add(characteristic);
         characteristic.setValue(value);
-        // if the next column is a CHARACTERISTICS column add to the list
-        if (nextColumn != null && nextColumn.getType() == SdrfColumnType.CHARACTERISTICS) {
-            characteristicsList.add(characteristic);
-        } else {
-            if (nextColumn != null && nextColumn.getType() == SdrfColumnType.TERM_SOURCE_REF) {
-                characteristicsList.add(characteristic);
-                createCharacteristicTerms(currentColumn);
-            } else {
-                // no Term Source to add to this CHARACTERISTIC.
-                ((AbstractBioMaterial) currentNode).getCharacteristics().add(characteristic);
-            }
-        }
-    }
-
-    private void createCharacteristicTerms(SdrfColumn currentColumn) {
-        for (Characteristic aCharacteristic : characteristicsList) {
-            ((AbstractBioMaterial) currentNode).getCharacteristics().add(aCharacteristic);
-            // set the characteristic value as the term since the next column is a term source ref
-            OntologyTerm term = getOntologyTerm(currentColumn.getHeading().getQualifier(), aCharacteristic.getValue());
+        if (nextColumn != null && nextColumn.getType() == SdrfColumnType.TERM_SOURCE_REF) {
+            OntologyTerm term = getOntologyTerm(currentColumn.getHeading().getQualifier(), value);
             // the value becomes the term so clear out the value
-            aCharacteristic.setValue(null);
-            aCharacteristic.setTerm(term);
+            characteristic.setTerm(term);
             currentTermSourceable = term;
+        } else if (nextColumn != null && nextColumn.getType() == SdrfColumnType.UNIT) {
+            characteristic.setValue(value);
+            currentUnitable = characteristic;
+        } else {
+            characteristic.setValue(value);
         }
     }
 

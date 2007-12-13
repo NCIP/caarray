@@ -271,7 +271,7 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      * @return the factorValues
      */
     @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.LAZY)
-    @Cascade(CascadeType.DELETE)
+    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     public Set<FactorValue> getFactorValues() {
         return this.factorValues;
     }

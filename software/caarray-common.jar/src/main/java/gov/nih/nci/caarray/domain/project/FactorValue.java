@@ -175,7 +175,7 @@ public class FactorValue extends AbstractCaArrayEntity {
     /**
      * @return the hybridization
      */
-    @ManyToOne()
+    @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "FACTORVALUE_HYBRIDIZATATION_FK")
     public Hybridization getHybridization() {
