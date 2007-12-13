@@ -6,6 +6,7 @@
 
 	<property name="jboss.home" value="${temp.dir}/jboss-4.0.5.GA" />
 	<property name="mysql.home" value="${temp.dir}/mysql-5.0.45-win32" />
+	<property name="firefox.home" value="${temp.dir}/FirefoxPortable" />
 	<property name="lib.dir" value="${temp.dir}/jars" />
 	<property name="db.dir" value="${temp.dir}/database" />
 	<property name="caarray-build.dir" value="${temp.dir}/caarray-build" />
@@ -45,6 +46,7 @@
 		<unzip dest="${temp.dir}" overwrite="true" src="${basedir}/installpack.zip" />
 		<unzip dest="${temp.dir}" overwrite="true" src="${temp.dir}/tools/jboss-4.0.5.GA.zip" />
 		<unzip dest="${temp.dir}" overwrite="true" src="${temp.dir}/tools/mysql-noinstall-5.0.45-win32.zip" />
+		<unzip dest="${temp.dir}" overwrite="true" src="${temp.dir}/tools/firefox-portable.zip" />
 		<antcall target="mysql:stop" />
 		<antcall target="mysql:start" />
 		<antcall target="mysql:db-integrate" />
@@ -184,7 +186,7 @@
 
 	<target name="launch-firefox">
 		<sleep seconds="20" />
-		<exec command="${firefox.exe} http://localhost:8080/caarray" />
+		<exec command="${firefox.home}/FirefoxPortable.exe http://localhost:8080/caarray" />
 	</target>
 
 	<!-- ################################################# -->
