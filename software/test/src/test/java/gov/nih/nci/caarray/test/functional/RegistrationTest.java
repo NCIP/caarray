@@ -83,72 +83,50 @@
 package gov.nih.nci.caarray.test.functional;
 
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
-import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
-
-import java.io.File;
-
-import org.junit.Test;
 
 /**
- * Imports the largest Affy CEL files (HG-U133
+ * UC7244:Register for an Account Test case: #9486
  */
-public class MultipleCelFileImporter extends AbstractSeleniumTest {
+public class RegistrationTest extends AbstractSeleniumTest {
 
-    private static final int NUM_SETS_OF_TEN = 1;
-
-    @Test
-    public void testUploadFiles() throws Exception {
-        loginAsPrincipalInvestigator();
-        importArrayDesign("HG-U133_Plus_2", AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF);
-        for (int i = 0; i < NUM_SETS_OF_TEN; i++) {
-            importTenFiles();
-        }
+    public void testRegistration() throws Exception {
+        selenium.open("/caarray/home.action");
+        selenium.click("link=Register");
+        waitForText("Become a caArray User");
+        selenium.click("regForm_ldapAuthenticatefalse");
+        selenium.click("registrationRequest.role-3");
+        selenium.type("regForm_registrationRequest_firstName", "Lab");
+        selenium.type("regForm_registrationRequest_lastName", "Boy");
+        selenium.type("regForm_registrationRequest_email", "lab@boy.com");
+        selenium.type("regForm_registrationRequest_organization", "Organization");
+        selenium.type("regForm_registrationRequest_address1", "Address 1");
+        selenium.type("regForm_registrationRequest_city", "City");
+        selenium.select("regForm_registrationRequest_country", "label=United States");
+        selenium.select("state", "label=VA");
+        selenium.type("regForm_registrationRequest_zip", "22222");
+        selenium.type("regForm_registrationRequest_phone", "202-223-0987");
+        clickAndWait("link=Submit Registration Request");
+        
+        assertTrue(selenium.isTextPresent("Thank you for registering"));
     }
 
-    private void importArrayDesign(String arrayDesignName, File arrayDesign) throws Exception {
-        selenium.click("link=Manage Array Designs");
+    public void testFailedLdapCredentials() {
+        selenium.open("/caarray/home.action");
+        selenium.click("link=Register");
         selenium.waitForPageToLoad("30000");
-        if (doesArrayDesignExists(arrayDesignName)) {
-            assertTrue(arrayDesignName + " is present", 1==1);
-        }else{
-            addArrayDesign(arrayDesignName, arrayDesign);
-        }
-    }
-
-    private boolean doesArrayDesignExists(String arrayDesignName) {
-        return selenium.isTextPresent(arrayDesignName);
-    }
-
-    public void importTenFiles() throws Exception {
-        String title = "test" + System.currentTimeMillis();
-        // Create experiment
-        createExperiment(title);
-        // go to the data tab
-        selenium.click("link=Data");
-        waitForTab();
-
-        selenium.click("link=Upload New File(s)");
-
-        upload(MageTabDataFiles.PERFORMANCE_10_IDF);
-        upload(MageTabDataFiles.PERFORMANCE_10_SDRF);
-        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file1.CEL"));
-        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file2.CEL"));
-        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file3.CEL"));
-        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file4.CEL"));
-        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file5.CEL"));
-        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file6.CEL"));
-        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file7.CEL"));
-        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file8.CEL"));
-        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file9.CEL"));
-        upload(new File(MageTabDataFiles.PERFORMANCE_DIRECTORY, "file10.CEL"));
-
-        // Import the files.
-        selenium.click("selectAllCheckbox");
-        // import button
-        selenium.click("link=Import");
-        waitForAction();
-        clickAndWait("link=My Experiment Workspace");
+        selenium.type("loginName", "test");
+        selenium.type("password", "password");
+        selenium.click("registrationRequest.role-1");
+        selenium.type("regForm_registrationRequest_firstName", "Ldap");
+        selenium.type("regForm_registrationRequest_lastName", "User");
+        selenium.type("regForm_registrationRequest_email", "ldap@user.com");
+        selenium.type("regForm_registrationRequest_city", "city");
+        selenium.select("regForm_registrationRequest_country", "label=United States");
+        selenium.select("state", "label=VI");
+        selenium.type("regForm_registrationRequest_zip", "44444");
+        selenium.type("regForm_registrationRequest_phone", "879-098-9090");
+        clickAndWait("link=Submit Registration Request");
+        assertTrue(selenium.isTextPresent("Unable to lookup your credentials via LDAP"));
     }
 
 }

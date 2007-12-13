@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.test.base;
 
-import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -238,7 +236,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.select("projectForm_project_experiment_manufacturer", "label=Affymetrix");
         waitForDiv("progressMsg");
         // - Organism
-        selenium.select("projectForm_project_experiment_organism", "label=Xenopus");
+        selenium.select("projectForm_project_experiment_organism", "label=Homo sapiens");
         // - Save the Experiment
         selenium.click("link=Save");
         waitForAction();
@@ -252,10 +250,41 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.select("arrayDesignForm_arrayDesign_provider", "label=Affymetrix");
         selenium.type("arrayDesignForm_arrayDesign_version", "100");
         selenium.select("arrayDesignForm_arrayDesign_technologyType", "label=spotted_ds_DNA_features");
-        selenium.select("arrayDesignForm_arrayDesign_organism", "label=Bovine");
+        selenium.select("arrayDesignForm_arrayDesign_organism", "label=Homo sapiens");
         selenium.type("arrayDesignForm_upload", arrayDesign.toString());
         selenium.click("link=Save");
-        waitForText("Array Designs");
+        waitForText("Edit");
+        //Affymetrix design HG-U133_Plus_2 has already been imported
+        selenium.isTextPresent(arrayDesignName);
+    }
+    
+    protected void findTitleAcrossMultiPages(String text) throws Exception {
+        for (int page = 1;; page++) {
+            // - Safety catch
+            if (page == 50){
+                fail("Did not find title after searching " + page + " pages");
+                break;
+            }
+            if (selenium.isTextPresent(text)) {
+                assertTrue(1==1);
+                break;
+            } else {
+                // Moving to next page
+                selenium.click("link=Next");
+                Thread.sleep(4000); // TBD - figure out what to "wait" on.  All pages are similar. No "waiting" icon
+            }
+        }
+    }
+    protected void setExperimentPublic() {
+        selenium.click("link=Make Experiment Public");
+        selenium.waitForPageToLoad("30000");
+        assertTrue(selenium.getConfirmation().matches("^Are you sure you want to change the project's status[\\s\\S]$"));
     }
 
+    protected void submitExperiment() {
+        selenium.click("link=Submit Experiment Proposal");
+        selenium.waitForPageToLoad("30000");
+        assertTrue(selenium.getConfirmation().matches("^Are you sure you want to change the project's status[\\s\\S]$"));
+        waitForText("Permissions");
+    }
 }

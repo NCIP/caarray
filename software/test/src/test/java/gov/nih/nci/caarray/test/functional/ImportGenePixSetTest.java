@@ -82,73 +82,51 @@
  */
 package gov.nih.nci.caarray.test.functional;
 
-import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.FloatColumn;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
 import gov.nih.nci.caarray.test.base.TestProperties;
-import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
 
-/** 
+/**
  * Test case #7959.
  * 
  * Requirements: Loaded test data set includes test user and referenced Affymetrix array design.
  */
-public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
+public class ImportGenePixSetTest extends AbstractSeleniumTest {
 
-    private static final int NUMBER_OF_FILES = 30;
+    private static final int NUMBER_OF_FILES = 4;
     private static final int SECOND_COLUMN = 2;
     private static final int THIRD_COLUMN = 3;
 
-
     @Test
     public void testImportAndRetrieval() throws Exception {
-        String title = "Bill standard mage" + System.currentTimeMillis();
-        
+        String title = "gpr files" + System.currentTimeMillis();
+
+        // - Login
         loginAsPrincipalInvestigator();
-        importArrayDesign("HT_HG-U133A", AffymetrixArrayDesignFiles.HT_HG_U133A_CDF);
-        // - Create Experiment
+
+        // Create project
         createExperiment(title);
-        
+
         // - go to the data tab
-        this.selenium.click("link=Data");
+        selenium.click("link=Data");
         waitForTab();
 
-        // - start the upload
-        this.selenium.click("link=Upload New File(s)");
+        selenium.click("link=Upload New File(s)");
 
-        // Upload the following files:
-        // - MAGE-TAB IDF
-        // - MAGE-TAB SDRF (with references to included native CEL files and corresponding Affymetrix array design)
-        // - MAGE-TAB Derived Data Matrix
-        // - CEL files referenced in SDRF
-        upload(MageTabDataFiles.TCGA_BROAD_IDF);
-        upload(MageTabDataFiles.TCGA_BROAD_SDRF);
-        upload(MageTabDataFiles.TCGA_BROAD_DATA_MATRIX);
-        FileFilter celFilter = new FileFilter() {
-            public boolean accept(File pathname) {
-                return pathname.getName().toLowerCase().endsWith(".cel");
-            }
-        };
-        for (File celFile : MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY.listFiles(celFilter)) {
-            upload(celFile);
-        }
+        // Upload the following GenePix files:
 
+        upload(GenepixArrayDataFiles.GPR_3_0_6);
+        upload(GenepixArrayDataFiles.GPR_4_0_1);
+        upload(GenepixArrayDataFiles.GPR_4_1_1);
+        upload(GenepixArrayDataFiles.GPR_5_0_1);
         // - Check if they are uploaded
         checkFileStatus("Uploaded", THIRD_COLUMN);
         waitForAction();
@@ -171,19 +149,20 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         // - validate the status
         checkFileStatus("Imported", SECOND_COLUMN);
 
-        // make experiment public
+        // Submit the experiment
         makeExperimentPublic(title);
-
+ 
         // - Get the data thru the API
-        verifyDataViaJavaApi(title);
+        verifyDataViaApi(title);
     }
-    private void makeExperimentPublic(String title){
+
+    private void makeExperimentPublic(String title) throws Exception{
         submitExperiment();
 
         clickAndWait("link=My Experiment Workspace");
         waitForTab();
 
-        assertTrue(selenium.isTextPresent(title));
+        findTitleAcrossMultiPages(title);
         // - Make the experiment public
         int row = getExperimentRow(title);
         // - Click on the image to enter the edit mode again
@@ -194,7 +173,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         setExperimentPublic();
     }
 
-    protected int getExperimentRow(String text) {
+    private int getExperimentRow(String text) {
         for (int loop = 1;; loop++) {
             if (loop % PAGE_SIZE != 0) {
                 if (text.equalsIgnoreCase(selenium.getTable("row." + loop + ".1"))) {
@@ -208,80 +187,43 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
             }
         }
     }
+
     private boolean waitForImport() throws Exception {
         for (int loop = 1;; loop++) {
-            if (loop == 300) {
-                fail("Timeout");
+            if (loop == 40) {
+                fail();
                 return false;
             }
             selenium.click(REFRESH_BUTTON);
-            waitForAction();
             if (selenium.isTextPresent("Importing")) {
-                Thread.sleep(20000);
+                Thread.sleep(10000);
             } else {
                 // done
                 return true;
             }
         }
     }
-    private void importArrayDesign(String arrayDesignName, File arrayDesign) throws Exception {
-        selenium.click("link=Manage Array Designs");
-        selenium.waitForPageToLoad("30000");
-        if (doesArrayDesignExists(arrayDesignName)) {
-            assertTrue(arrayDesignName + " is present", 1==1);
-        }else{
-            addArrayDesign(arrayDesignName, arrayDesign);
-        }
-    }
-    private boolean doesArrayDesignExists(String arrayDesignName) {
-        return selenium.isTextPresent(arrayDesignName);
-    }
 
-    private void checkFileStatus(String status, int column) {
-        System.out.println("statu = " + status);
-        for (int row = 1; row < NUMBER_OF_FILES; row++) {
-            System.out.println("row = " + row);
-            assertEquals(status, selenium.getTable("row." + row + "." + column));
-        }
-    }
-
-
-    private void verifyDataViaJavaApi(String title) throws ServerConnectionException {
+    private void verifyDataViaApi(String experimentTitle) throws ServerConnectionException {
         CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties.getServerJndiPort());
         server.connect();
         CaArraySearchService searchService = server.getSearchService();
         Experiment searchExperiment = new Experiment();
-        searchExperiment.setTitle(title);
+        searchExperiment.setTitle(experimentTitle);
         List<Experiment> matches = searchService.search(searchExperiment);
-        assertEquals(1, matches.size());
         Experiment experiment = matches.get(0);
-
-        Set<RawArrayData> celDatas = getAllRawArrayData(experiment);
-        assertEquals(26, celDatas.size());
-
-        RawArrayData celData = celDatas.iterator().next();
-        DataSet dataSet = server.getDataRetrievalService().getDataSet(celData);
-        assertNotNull(dataSet);
-        FloatColumn signalColumn = (FloatColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(2);
-        assertNotNull(signalColumn.getValues());
-        assertEquals(553536, signalColumn.getValues().length);
+        assertEquals(8, experiment.getSources().size());
+        assertEquals(8, experiment.getSamples().size());
+//        assertEquals(8, experiment.getExtracts().size());
+//        assertEquals(8, experiment.getLabeledExtracts().size());
+        assertEquals(4, experiment.getHybridizations().size());
+        System.out.println("Verified thru the Java API");
     }
 
-    private Set<RawArrayData> getAllRawArrayData(Experiment experiment) {
-        Set<RawArrayData> datas = new HashSet<RawArrayData>();
-        Set<Hybridization> hybridizations = getAllHybridizations(experiment);
-        for (Hybridization hybridization : hybridizations) {
-            datas.add(hybridization.getArrayData());
+    private void checkFileStatus(String status, int column) {
+        for (int i = 1; i < NUMBER_OF_FILES; i++) {
+            assertEquals(status, selenium.getTable("row." + i + "." + column));
         }
-        return datas;
-    }
-
-    private Set<Hybridization> getAllHybridizations(Experiment experiment) {
-        Set<Hybridization> hybridizations = new HashSet<Hybridization>();
-        for (LabeledExtract labeledExtract : experiment.getLabeledExtracts()) {
-            hybridizations.addAll(labeledExtract.getHybridizations());
-        }
-        return hybridizations;
     }
 
 }

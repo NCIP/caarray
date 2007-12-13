@@ -116,7 +116,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         loginAsPrincipalInvestigator();
 
         // - Add the array design
-        importArrayDesign();
+        importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
 
         // Create project
         createExperiment(title);
@@ -162,12 +162,19 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
 
         // - click on the Imported data tab
         selenium.click("link=Imported Data");
-        waitForSecondLevelTab();
+        waitForText("10 items found, displaying all items");
 
         // - validate the status
         checkFileStatus("Imported", SECOND_COLUMN);
 
-        // Submit the experiment
+        // - Make public so it can be searched thru API
+        makeExperimentPublic(title);
+
+        // - Get the data thru the API
+        verifyDataViaApi(title);
+    }
+
+    private void makeExperimentPublic(String title) {
         submitExperiment();
 
         clickAndWait("link=My Experiment Workspace");
@@ -181,26 +188,10 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         waitForText("Overall Experiment Characteristics");
 
         // make experiment public
-        makeExperimentPublic();
-
-        // - Get the data thru the API
-        verifyDataViaApi(title);
+        setExperimentPublic();
     }
 
-    private void makeExperimentPublic() {
-        selenium.click("link=Make Experiment Public");
-        selenium.waitForPageToLoad("30000");
-        assertTrue(selenium.getConfirmation().matches("^Are you sure you want to change the project's status[\\s\\S]$"));
-    }
-
-    private void submitExperiment() {
-        selenium.click("link=Submit Experiment Proposal");
-        selenium.waitForPageToLoad("30000");
-        assertTrue(selenium.getConfirmation().matches("^Are you sure you want to change the project's status[\\s\\S]$"));
-        waitForText("Permissions");
-    }
-
-    protected int getExperimentRow(String text) {
+    private int getExperimentRow(String text) {
         for (int loop = 1;; loop++) {
             if (loop % PAGE_SIZE != 0) {
                 if (text.equalsIgnoreCase(selenium.getTable("row." + loop + ".1"))) {
@@ -215,12 +206,12 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         }
     }
 
-    private void importArrayDesign() throws Exception {
+    private void importArrayDesign(File arrayDesign) throws Exception {
         String arrayDesignName = "Test3";
         selenium.click("link=Manage Array Designs");
         selenium.waitForPageToLoad("30000");
         if (!doesArrayDesignExists(arrayDesignName)) {
-            addArrayDesign(arrayDesignName, AffymetrixArrayDesignFiles.TEST3_CDF);
+            addArrayDesign(arrayDesignName, arrayDesign);
         }
     }
 
@@ -234,13 +225,13 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
      */
     private boolean waitForImport() throws Exception {
         for (int loop = 1;; loop++) {
-            if (loop == 20) {
-                fail();
+            if (loop == 40) {
+                fail("Timeout");
                 return false;
             }
             selenium.click(REFRESH_BUTTON);
             if (selenium.isTextPresent("Importing")) {
-                Thread.sleep(3000);
+                Thread.sleep(10000);
             } else {
                 // done
                 return true;

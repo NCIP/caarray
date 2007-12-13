@@ -87,42 +87,26 @@ import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
 import org.junit.Test;
 
 /**
- * Test case #10320. UC7231 - Browse Repository - Basic Flow
  * 
- * Requirements: Anonymous user access a public experiment.
+ * Use Case UC#7231.
+ * Test Case #10320, #10321, #10324, #10325
+ * Requirements: Browse by Experiments, Organism, Array Providers, and Unique Array Designs
+ *
  */
 public class BrowseExperimentTest extends AbstractSeleniumTest {
     private String experimentId;
 
     @Test
     public void testNew() throws Exception {
-        int row;
         String title = "browsable " + System.currentTimeMillis();
         // - Login
         loginAsPrincipalInvestigator();
 
         // - Create an Experiment
         createExperiment(title);
-        // - Submit Experiment Proposal
-        selenium.click("link=Submit Experiment Proposal");
-        selenium.waitForPageToLoad("30000");
-        assertTrue(selenium.getConfirmation().matches("^Are you sure you want to change the project's status[\\s\\S]$"));
-        waitForText("Permissions");
-        
-        // - Find the row number that has the experiment
-        row = getExperimentRow(title);
-        
-        // - Get the Experiment Id for use later when doing an anonymous search
-        experimentId = selenium.getTable("row." + row + ".0");
-        // - Click on the image to enter the edit mode again
-        selenium.click("//tr[" + row + "]/td[7]/a/img");
-        waitForText("Overall Experiment Characteristics");
 
-        
-        // make experiment public
-        selenium.click("link=Make Experiment Public");
-        selenium.waitForPageToLoad("30000");
-        assertTrue(selenium.getConfirmation().matches("^Are you sure you want to change the project's status[\\s\\S]$"));
+        // - Submit Experiment Proposal
+        makeExperimentPublic(title);
 
         // - logout
         selenium.click("link=Logout");
@@ -131,12 +115,55 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         // - Click on Experiments link on the login page
         selenium.click("link=Experiments");
         waitForText("found");
-
         // - Assert the Experiment is visible without logging in
         findTitleAcrossMultiPages(experimentId);
+
+        // - Browse by Organisms
+        selenium.click("link=Login");
+        selenium.waitForPageToLoad("3000");
+        selenium.click("link=Organisms");
+        waitForText("found");
+        // - Assert the Experiment is visible without logging in
+        findTitleAcrossMultiPages(experimentId);
+
+        // - Browse by Unique Array Providers
+        selenium.click("link=Login");
+        selenium.waitForPageToLoad("3000");
+        selenium.click("link=Array Providers");
+        waitForText("found");
+        // - Assert the Experiment is visible without logging in
+        findTitleAcrossMultiPages(experimentId);
+
+        // - Browse by Unique Array Designs
+        selenium.click("link=Login");
+        selenium.waitForPageToLoad("3000");
+        selenium.click("link=Unique Array Designs");
+        waitForText("found");
+        // - Assert the Experiment is visible without logging in
+        findTitleAcrossMultiPages(experimentId);
+
     }
 
-    protected int getExperimentRow(String text) {
+    private void makeExperimentPublic(String title) throws Exception {
+        submitExperiment();
+
+        clickAndWait("link=My Experiment Workspace");
+        waitForTab();
+
+        findTitleAcrossMultiPages(title);
+        // - Need the table row to click on the edit icon
+        int row = getExperimentRow(title);
+        // - Get the Experiment Id for use later when doing an anonymous search
+        experimentId = selenium.getTable("row." + row + ".0");
+        // - Click on the image to enter the edit mode again
+        selenium.click("//tr[" + row + "]/td[7]/a/img");
+        waitForText("Overall Experiment Characteristics");
+
+        // make experiment public
+        setExperimentPublic();
+    }
+
+    private int getExperimentRow(String text) {
         for (int loop = 1;; loop++) {
             if (loop % PAGE_SIZE != 0) {
                 if (text.equalsIgnoreCase(selenium.getTable("row." + loop + ".1"))) {
@@ -147,18 +174,6 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
                 selenium.click("link=Next");
                 waitForAction();
                 loop = 1;
-            }
-        }
-    }
-    private void findTitleAcrossMultiPages(String text) {
-        for (int loop = 1;; loop++) {
-            if (selenium.isTextPresent(text)) {
-                assertTrue(1==1);
-                break;
-            } else {
-                // Moving to next page
-                selenium.click("link=Next");
-                waitForAction();
             }
         }
     }
