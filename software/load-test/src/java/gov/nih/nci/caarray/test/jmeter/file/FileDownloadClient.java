@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.test.jmeter.file;
 
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
@@ -154,7 +155,7 @@ public class FileDownloadClient extends CaArrayJmeterSampler implements JavaSamp
             if (experiment != null) {
                 Hybridization hybridization = getFirstHybridization(searchService, experiment);
                 if (hybridization != null) {
-                    CaArrayFile dataFile = getRawDataFile(searchService, hybridization);
+                    CaArrayFile dataFile = getDataFile(searchService, hybridization);
                     if (dataFile != null) {
                         FileRetrievalService fileRetrievalService = server.getFileRetrievalService();
                         results.sampleStart();
@@ -215,13 +216,22 @@ public class FileDownloadClient extends CaArrayJmeterSampler implements JavaSamp
         return null;
     }
 
-    private CaArrayFile getRawDataFile(CaArraySearchService service, Hybridization hybridization) {
+    private CaArrayFile getDataFile(CaArraySearchService service, Hybridization hybridization) {
+        // Try to find raw data
         RawArrayData rawArrayData = hybridization.getArrayData();
-        if (rawArrayData == null) {
-            return null;
+        if (rawArrayData != null) {
+            // Return the file associated with the first raw data.
+            RawArrayData populatedArrayData = service.search(rawArrayData).get(0);
+            return populatedArrayData.getDataFile();
         }
-        RawArrayData populatedRawArrayData = service.search(rawArrayData).get(0);
-        return populatedRawArrayData.getDataFile();
+        // If raw data doesn't exist, try to find derived data
+        Set<DerivedArrayData> derivedArrayDataSet = hybridization.getDerivedDataCollection();
+        for (DerivedArrayData derivedArrayData : derivedArrayDataSet) {
+            // Return the file associated with the first derived data.
+            DerivedArrayData populatedArrayData = service.search(derivedArrayData).get(0);
+            return populatedArrayData.getDataFile();
+        }
+        return null;
     }
 
     /**

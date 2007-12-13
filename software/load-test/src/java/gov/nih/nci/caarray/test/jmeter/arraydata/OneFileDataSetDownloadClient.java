@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.test.jmeter.arraydata;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.BooleanColumn;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.DoubleColumn;
 import gov.nih.nci.caarray.domain.data.FloatColumn;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
@@ -163,7 +164,7 @@ public class OneFileDataSetDownloadClient extends CaArrayJmeterSampler implement
             if (experiment != null) {
                 Hybridization hybridization = getFirstHybridization(searchService, experiment);
                 if (hybridization != null) {
-                    DataSet dataSet = getRawDataSet(searchService, hybridization);
+                    DataSet dataSet = getDataSet(searchService, hybridization);
                     if (dataSet != null) {
                         int numValuesRetrieved = 0;
                         // Get each HybridizationData in the DataSet.
@@ -256,17 +257,29 @@ public class OneFileDataSetDownloadClient extends CaArrayJmeterSampler implement
         return null;
     }
 
-    private DataSet getRawDataSet(CaArraySearchService service, Hybridization hybridization) {
+    private DataSet getDataSet(CaArraySearchService service, Hybridization hybridization) {
+        DataSet dataSet = null;
+        // Try to find raw data
         RawArrayData rawArrayData = hybridization.getArrayData();
-        if (rawArrayData == null) {
-            return null;
+        if (rawArrayData != null) {
+            // Return the data set associated with the first raw data.
+            RawArrayData populatedArrayData = service.search(rawArrayData).get(0);
+            dataSet = populatedArrayData.getDataSet();
+        } else {
+            // If raw data doesn't exist, try to find derived data
+            Set<DerivedArrayData> derivedArrayDataSet = hybridization.getDerivedDataCollection();
+            for (DerivedArrayData derivedArrayData : derivedArrayDataSet) {
+                // Return the data set associated with the first derived data.
+                DerivedArrayData populatedArrayData = service.search(derivedArrayData).get(0);
+                dataSet = populatedArrayData.getDataSet();
+                break;
+            }
         }
-        RawArrayData populatedRawArrayData = service.search(rawArrayData).get(0);
-        DataSet dataSet = populatedRawArrayData.getDataSet();
         if (dataSet == null) {
             return null;
+        } else {
+            return service.search(dataSet).get(0);
         }
-        return service.search(dataSet).get(0);
     }
 
     /**
