@@ -20,7 +20,7 @@
 	<classpathentry kind="lib" path="/lib/hibernate-annotations.jar" sourcepath="/lib/src/hibernate-annotations-3.3.0.GA-src.jar"/>
 	<classpathentry kind="lib" path="/lib/antlr-2.7.6.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/test-data"/>
-	<classpathentry kind="lib" path="/lib/csmapi.jar" sourcepath="/lib/src/csmapi-4.0-src.jar"/>
+	<classpathentry kind="lib" path="/lib/csmapi.jar" sourcepath="/lib/src/csmapi-4.0.1-src.jar"/>
 	<classpathentry kind="lib" path="/lib/cacore32-client.jar"/>
 	<classpathentry kind="lib" path="/lib/log4j-1.2.13.jar" sourcepath="/lib/src/log4j-1.2.13-src.jar"/>
 	<classpathentry kind="lib" path="/lib/clm.jar"/>
