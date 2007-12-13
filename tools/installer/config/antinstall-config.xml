@@ -1,15 +1,35 @@
 <?xml version="1.0"?>
 <!DOCTYPE installer PUBLIC "-//tp23 //DTD Ant Installer Config//EN" "http://antinstaller.sf.net/dtd/antinstall-config-0.8.dtd">
-<installer ui="swing,text" verbose="false"
+<installer ui="swing,text" verbose="true"
 	lookAndFeel="org.tp23.jgoodies.plaf.plastic.PlasticXPLookAndFeel"
 	name="Caarray2 Installer"
-	windowIcon="/resources/gkmain_inv.png"
+	windowIcon="/resources/caarray-icon-64x64.png"
 	defaultImageResource="/resources/banner_caarray.png"
 	minJavaVersion="1.5" finishButtonText="Install" wide="600:375"
-	debug="false">
+	version="2.0" debug="true">
 
-	<!--  each page element represents a page of the installer -->
-	<page type="input" name="intro"
+
+<!-- Caarray2 -->
+    <page type="input" name="lsd_intro"
+        displayText="Welcome to the LSD Bundle installer">
+
+        <comment displayText="Installation Information:" bold="true" />
+        <comment
+            displayText="This installer will install the LSD Bundle software on your machine."
+            bold="false" />
+
+        <select defaultValue="caarray2" property="select.application"
+            displayText="Please select an application to install:">
+            <option text="Install Caarray2" value="caarray2" />
+            <option text="Install CTODS" value="ctods" />
+            <option text="Install NCIA" value="ncia" />
+            <option text="Install caGWAS" value="cagwas" />
+        </select>
+    </page>
+
+
+	<!-- Caarray2 -->
+	<page type="input" name="intro" ifProperty="${select.application}==caarray2"
 		displayText="Welcome to the Caarray2 installer">
 
 		<comment displayText="Installation Information:" bold="true" />
@@ -17,15 +37,30 @@
 			displayText="This installer will install the Caarray2 software with JBoss 4.0.05-GA (with JEMS Installer-1.2.0.GA) and MySQL 5.0.45"
 			bold="false" />
 	</page>
+
+
+	<!-- CTODS -->
+	<page ifProperty="${select.application}==ctods" type="input" name="ctods_intro"
+		displayText="Welcome to the CTODS installer">
+		<comment displayText="Installation Information:" bold="true" />
+		<comment
+			displayText="This installer will install the CTODS application on your local machine with JBoss 4.0.4-GA and MySQL 5.0.27"
+			bold="false" />
+	</page>
+
+	<!-- NCIA -->
+
+	<!-- caGWAS -->
+
 	<!--  type="license" shows a license page to click through -->
 	<page type="license" name="license" displayText="License conditions"
 		resource="/resources/LICENSE.txt">
 	</page>
-	<!--  type="license" shows a license page to click through
-	-->
-	<page type="text" name="release_notes" displayText="Release Notes" htmlResource="/resources/release_notes.html" textResource="/resources/release_notes.txt">
-	</page>
-	<!--  type="input" shows a list of editable options for the installer -->
+
+	<page type="text" name="release_notes" displayText="Release Notes"
+		htmlResource="/resources/release_notes.html"
+		textResource="/resources/release_notes.txt" />
+
 	<page type="input" name="input.file"
 		displayText="Installation Folder">
 		<comment displayText="" bold="true" />
@@ -33,17 +68,14 @@
 			displayText="Please enter the destination folder for the Caarray2 application:"
 			bold="true" />
 		<comment displayText="" bold="true" />
-			
-		<text displayText="Installation folder" 
-			defaultValue="C:\caarray-app" 
-			property="temp.dir"/>
-			
-    </page>
-	
+
+		<text displayText="Installation folder"
+			defaultValue="C:\caarray-app" property="temp.dir" />
+
+	</page>
+
 	<page type="input" name="patchOptions" displayText="Confirmation">
-		<comment
-			displayText="Install Caarray2?"
-			bold="true" />
+		<comment displayText="Install Caarray2?" bold="true" />
 		<comment displayText="" bold="true" />
 		<target displayText="Please confirm the Caarray2 installation."
 			target="auto-update" defaultValue="Yes" />
@@ -52,9 +84,8 @@
 	<!--  page type="progress" shows a progress page with the install button
 		Its target is set to cleanuptarget since it is the last page this target will be run last-->
 	<page type="progress" name="progress" showTargets="false"
-		displayText="Installation progress" target="cleanuptarget">
+		displayText="Installation progress" target="cleanuptarget" />
 
-	</page>
+
+
 </installer>
-
-

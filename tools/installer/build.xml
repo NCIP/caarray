@@ -18,7 +18,7 @@
 	<property name="antcontrib.jar" value="ant-contrib-1.0b3.jar" />
 	<property name="application.name" value="pmd-tmp" />
 
-	<available file="${lib.dir}/${antcontrib.jar}" property="antcontrib.jar.present"/>
+	<available file="${lib.dir}/${antcontrib.jar}" property="antcontrib.jar.present" />
 
 	<!-- This file should either not exist or contain a property that points to a valid ./antlib${ant.lib.version} directory -->
 	<property file="${installer.basedir}/version.properties" />
@@ -68,13 +68,13 @@
 		<echo message="${installer.basedir}" />
 
 		<installer file="${installer.dist.dir}/${installer.file.name}" compress="true" extractType="SelfExtractor" installConfig="${installer.cofig.dir}/${installer.installConfig.name}" buildFile="${installer.cofig.dir}/${installer.buildFile.name}" antInstallLib="${installer.basedir}/lib" antLib="${installer.basedir}/antlib${ant.lib.version}" validateConfig="true" failOnError="true" icons="eclipse" duplicate="preserve">
-
 			<fileset dir="${installer.dist.dir}" includes="installpack.zip" description="caArray artifacts. Used by installer's build script" />
 			<fileset dir="${installer.build.dir}" includes="resources/*" description="Used by installer antinstall-config.xml" />
 			<zipgroupfileset dir="${installer.basedir}/antlib${ant.lib.version}" includes="*.jar" excludes="ant.jar, ant-launcher.jar" description="Used by installers build script" />
 			<zipgroupfileset dir="${lib.dir}" includes="${antcontrib.jar}" description="Used by installers build script" />
 			<zipgroupfileset dir="${installer.basedir}/ext" includes="jaxen-1.1.1.jar, xmlconfig.jar, jdom.jar" description="Used by installers build script to perform XML file manipulation w/in Ant (levent gurses)" />
 		</installer>
+		
 	</target>
 
 	<target name="clean">
@@ -105,7 +105,9 @@
 		<copy file="${installer.basedir}/LICENSE.txt" todir="${installer.build.dir}/resources" />
 		<copy file="${docs.dir}/release_notes.txt" todir="${installer.build.dir}/resources" />
 		<copy file="${installer.basedir}/config/images/banner_caarray.png" todir="${installer.build.dir}/resources" />
-		<copy file="${installer.basedir}/config/images/banner_caarray.png" tofile="${installer.build.dir}/resources/extract-image.jpg" />
+		<copy file="${installer.basedir}/config/images/extract-image.png" tofile="${installer.build.dir}/resources/extract-image.png" />
+		<copy file="${installer.basedir}/config/images/banner_caarray.bmp" tofile="${installer.build.dir}/resources/banner_caarray.bmp" />
+		<copy file="${installer.basedir}/config/images/caarray-icon-64x64.png" tofile="${installer.build.dir}/resources/caarray-icon-64x64.png" />
 	</target>
 
 	<target name="-configure-jboss-ds">
@@ -166,25 +168,28 @@
 				<include name="**/clm.jar" />
 			</fileset>
 		</copy>
-		
+
 		<!-- Copy property files to temp -->
 		<copy file="${basedir}/local.properties" todir="${installer.basedir}/target/dist/temp" />
 		<copy file="${basedir}/default.properties" todir="${installer.basedir}/target/dist/temp" />
 
 		<!-- Get/Copy JBoss zip 	-->
 		<mkdir dir="${installer.dist.dir.temp}/tools" />
-		<available file="${tools.dir}" type="dir" property="tools.dir.present"/>
-		<available file="${tools.dir}/jboss-4.0.5.GA.zip" type="file" property="local.jboss.present"/>
-		<available file="${tools.dir}/mysql-noinstall-5.0.45-win32.zip" type="file" property="local.mysql.present"/>
+		<available file="${tools.dir}" type="dir" property="tools.dir.present" />
+		<available file="${tools.dir}/jboss-4.0.5.GA.zip" type="file" property="local.jboss.present" />
+		<available file="${tools.dir}/mysql-noinstall-5.0.45-win32.zip" type="file" property="local.mysql.present" />
 
 		<antcall target="create-tools-dir" />
 		<antcall target="get-jboss-bin" />
 		<antcall target="get-mysql-bin" />
-
+		
+		
+	    <!--
 		<copy file="${tools.dir}/jboss-4.0.5.GA.zip" todir="${installer.dist.dir.temp}/tools" />
 		<copy file="${tools.dir}/mysql-noinstall-5.0.45-win32.zip" todir="${installer.dist.dir.temp}/tools" />
 		<copy file="${tools.dir}/firefox-portable.zip" todir="${installer.dist.dir.temp}/tools" />
-
+        -->
+		
 		<!-- Configure JBoss MySQL datasource -->
 		<antcall target="-configure-jboss-ds" />
 
@@ -200,12 +205,12 @@
 		<delete dir="${tools.dir}" />
 		<mkdir dir="${tools.dir}" />
 	</target>
-	
-	<target name="get-jboss-bin" unless="local.jboss.present" >
+
+	<target name="get-jboss-bin" unless="local.jboss.present">
 		<get dest="${tools.dir}/jboss-4.0.5.GA.zip" usetimestamp="true" ignoreerrors="false" src="http://www.integratebutton.com/downloads/ncicb/jboss-4.0.5.GA.zip" />
 	</target>
 
-	<target name="get-mysql-bin" unless="local.mysql.present" >
+	<target name="get-mysql-bin" unless="local.mysql.present">
 		<get dest="${tools.dir}/mysql-noinstall-5.0.45-win32.zip" usetimestamp="true" ignoreerrors="false" src="http://mysql.mirrors.pair.com/Downloads/MySQL-5.0/mysql-noinstall-5.0.45-win32.zip" />
 	</target>
 
