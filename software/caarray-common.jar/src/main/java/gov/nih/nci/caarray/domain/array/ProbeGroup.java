@@ -142,8 +142,8 @@ public class ProbeGroup extends AbstractCaArrayEntity {
         return probes;
     }
 
-    @SuppressWarnings("unused")
-    private void setProbes(Set<PhysicalProbe> probes) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setProbes(Set<PhysicalProbe> probes) {
         this.probes = probes;
     }
 

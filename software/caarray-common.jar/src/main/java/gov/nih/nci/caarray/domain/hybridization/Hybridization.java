@@ -123,8 +123,9 @@ import org.hibernate.validator.NotNull;
  * The act of hybridizing extracted genetic material to the probes on a microarray.
  */
 @Entity
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class Hybridization extends AbstractCaArrayEntity implements ProtectableDescendent {
-    private static final String UNUSED = "unused";
+
     private static final long serialVersionUID = 1234567890L;
     private static final String MAPPED_BY = "hybridization";
 
@@ -195,8 +196,8 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      * @param imagesVal
      *            the images
      */
-    @SuppressWarnings(UNUSED)
-    private void setImages(final Set<Image> imagesVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setImages(final Set<Image> imagesVal) {
         this.images = imagesVal;
     }
 
@@ -217,8 +218,8 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      * @param derivedDatasVal
      *            the derivedDatasVal
      */
-    @SuppressWarnings(UNUSED)
-    private void setDerivedDataCollection(final Set<DerivedArrayData> derivedDatasVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setDerivedDataCollection(final Set<DerivedArrayData> derivedDatasVal) {
         this.derivedDataCollection = derivedDatasVal;
     }
 
@@ -282,8 +283,8 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      * @param factorValuesVal
      *            the factorValues
      */
-    @SuppressWarnings(UNUSED)
-    private void setFactorValues(final Set<FactorValue> factorValuesVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setFactorValues(final Set<FactorValue> factorValuesVal) {
         this.factorValues = factorValuesVal;
     }
 
@@ -327,8 +328,8 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
      * @param labeledExtractVal
      *            the labeledExtract
      */
-    @SuppressWarnings(UNUSED)
-    private void setLabeledExtracts(final Set<LabeledExtract> labeledExtractVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setLabeledExtracts(final Set<LabeledExtract> labeledExtractVal) {
         this.labeledExtract = labeledExtractVal;
     }
 

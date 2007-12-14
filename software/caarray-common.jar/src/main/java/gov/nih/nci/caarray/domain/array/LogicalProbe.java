@@ -137,8 +137,8 @@ public class LogicalProbe extends AbstractProbe {
         return probes;
     }
 
-    @SuppressWarnings("unused")
-    private void setProbes(Set<PhysicalProbe> physicalProbes) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setProbes(Set<PhysicalProbe> physicalProbes) {
         this.probes = physicalProbes;
     }
 

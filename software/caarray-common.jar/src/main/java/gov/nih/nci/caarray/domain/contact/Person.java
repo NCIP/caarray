@@ -210,11 +210,11 @@ public class Person extends AbstractContact {
      *
      * @param affiliationsVal the affiliations
      */
-    @SuppressWarnings("unused")
-    private void setAffiliations(final Set<Organization> affiliationsVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setAffiliations(final Set<Organization> affiliationsVal) {
         this.affiliations = affiliationsVal;
     }
-    
+
     /**
      * @return the Person's full name
      */

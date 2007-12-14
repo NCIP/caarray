@@ -270,8 +270,8 @@ public class Protocol extends AbstractCaArrayEntity implements Protectable {
      *
      * @param parametersVal the parameters
      */
-    @SuppressWarnings("unused")
-    private void setParameters(final Set<Parameter> parametersVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setParameters(final Set<Parameter> parametersVal) {
         this.parameters = parametersVal;
     }
 }

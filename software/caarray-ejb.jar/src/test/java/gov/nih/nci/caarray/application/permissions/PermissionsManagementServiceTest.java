@@ -112,6 +112,7 @@ import org.junit.Test;
 /**
  * Test cases for service.
  */
+@SuppressWarnings("PMD")
 public class PermissionsManagementServiceTest {
 
     private static final String TEST = "test";
@@ -164,7 +165,7 @@ public class PermissionsManagementServiceTest {
     }
 
     @Test
-    public void testAddAndRemoveUsers() throws CSTransactionException, CSObjectNotFoundException { // NOPMD - method length
+    public void testAddAndRemoveUsers() throws CSTransactionException, CSObjectNotFoundException {
         CollaboratorGroup created = this.permissionsManagementService.create(TEST);
         List<String> toAdd = new ArrayList<String>();
         Long anonId = SecurityUtils.getAuthorizationManager().getUser(SecurityUtils.ANONYMOUS_USER).getUserId();

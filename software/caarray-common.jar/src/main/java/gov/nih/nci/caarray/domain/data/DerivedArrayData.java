@@ -130,8 +130,8 @@ public class DerivedArrayData extends AbstractArrayData {
      *
      * @param hybridizationsVal the hybridizations
      */
-    @SuppressWarnings("unused")
-    private void setHybridizations(final Set<Hybridization> hybridizationsVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setHybridizations(final Set<Hybridization> hybridizationsVal) {
         this.hybridizations = hybridizationsVal;
     }
     /**

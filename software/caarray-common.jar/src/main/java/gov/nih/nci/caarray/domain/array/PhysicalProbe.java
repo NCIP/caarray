@@ -159,8 +159,8 @@ public class PhysicalProbe extends AbstractProbe {
         return features;
     }
 
-    @SuppressWarnings("unused")
-    private void setFeatures(Set<Feature> features) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setFeatures(Set<Feature> features) {
         this.features = features;
     }
 

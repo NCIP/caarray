@@ -100,10 +100,10 @@ import org.hibernate.annotations.CascadeType;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable = false)
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class ArrayDesignDetails extends AbstractCaArrayObject {
 
     private static final long serialVersionUID = -4810002388725364910L;
-    private static final String UNUSED = "unused";
     private static final String MAPPED_BY = "arrayDesignDetails";
 
     private Set<Feature> features = new HashSet<Feature>();
@@ -120,8 +120,8 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
         return features;
     }
 
-    @SuppressWarnings(UNUSED)
-    private void setFeatures(Set<Feature> features) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setFeatures(Set<Feature> features) {
         this.features = features;
     }
 
@@ -134,8 +134,8 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
         return probes;
     }
 
-    @SuppressWarnings(UNUSED)
-    private void setProbes(Set<PhysicalProbe> pysicalProbes) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setProbes(Set<PhysicalProbe> pysicalProbes) {
         this.probes = pysicalProbes;
     }
 
@@ -148,8 +148,8 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
         return logicalProbes;
     }
 
-    @SuppressWarnings(UNUSED)
-    private void setLogicalProbes(Set<LogicalProbe> logicalProbes) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setLogicalProbes(Set<LogicalProbe> logicalProbes) {
         this.logicalProbes = logicalProbes;
     }
 
@@ -162,8 +162,8 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
         return probeGroups;
     }
 
-    @SuppressWarnings(UNUSED)
-    private void setProbeGroups(Set<ProbeGroup> probeGroups) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setProbeGroups(Set<ProbeGroup> probeGroups) {
         this.probeGroups = probeGroups;
     }
 

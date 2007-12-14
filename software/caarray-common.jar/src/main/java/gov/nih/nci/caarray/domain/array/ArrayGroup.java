@@ -123,8 +123,8 @@ public class ArrayGroup extends AbstractCaArrayObject {
         return arrays;
     }
 
-    @SuppressWarnings("unused")
-    private void setArrays(Set<Array> arrays) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setArrays(Set<Array> arrays) {
         this.arrays = arrays;
     }
 

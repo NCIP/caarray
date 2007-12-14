@@ -186,8 +186,8 @@ public class Factor extends AbstractCaArrayEntity {
      *
      * @param factorValuesVal the factorValues
      */
-    @SuppressWarnings("unused")
-    private void setFactorValues(final Set<FactorValue> factorValuesVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setFactorValues(final Set<FactorValue> factorValuesVal) {
         this.factorValues = factorValuesVal;
     }
 

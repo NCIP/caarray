@@ -156,7 +156,7 @@ public class CollaboratorGroup implements PersistentObject, Protectable {
      * @deprecated should only be used by castor, hibernate and struts
      */
     @Deprecated
-    public void setId(Long id) { // NOPMD
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -184,25 +184,25 @@ public class CollaboratorGroup implements PersistentObject, Protectable {
         this.owner = owner;
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     @Column(name = "CSM_GROUP", nullable = false)
-    private long getGroupId() { // NOPMD
+    private long getGroupId() {
         return group.getGroupId();
     }
 
-    @SuppressWarnings("unused")
-    private void setGroupId(long groupId) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setGroupId(long groupId) {
         group = (Group) HibernateUtil.getCurrentSession().load(Group.class, groupId);
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     @Column(name = "CSM_USER", nullable = false)
-    private long getOwnerId() { // NOPMD
+    private long getOwnerId() {
         return owner.getUserId();
     }
 
-    @SuppressWarnings("unused")
-    private void setOwnerId(long ownerId) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setOwnerId(long ownerId) {
         owner = (User) HibernateUtil.getCurrentSession().load(User.class, ownerId);
     }
 
@@ -217,8 +217,8 @@ public class CollaboratorGroup implements PersistentObject, Protectable {
     /**
      * @param accessProfiles the accessProfiles to set
      */
-    @SuppressWarnings("unused")
-    private void setAccessProfiles(Set<AccessProfile> accessProfiles) { //NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setAccessProfiles(Set<AccessProfile> accessProfiles) {
         this.accessProfiles = accessProfiles;
-    }    
+    }
 }

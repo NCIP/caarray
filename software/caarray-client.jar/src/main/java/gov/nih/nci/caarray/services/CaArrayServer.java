@@ -104,7 +104,6 @@ public final class CaArrayServer {
 
     private final String hostname;
     private final int jndiPort;
-    private InitialContext initialContext;
     private CaArraySearchService searchService;
     private DataRetrievalService dataRetrievalService;
     private ArrayDesignDetailsService arrayDesignDetailsService;
@@ -159,13 +158,14 @@ public final class CaArrayServer {
         loginContext.login();
     }
 
+    @SuppressWarnings("PMD.ReplaceHashtableWithMap") // needed for API compatability
     private void connectToServer() throws ServerConnectionException {
-        final Hashtable<String, String> namingProperties = new Hashtable<String, String>(); // NOPMD -- need Hashtable
+        final Hashtable<String, String> namingProperties = new Hashtable<String, String>();
         namingProperties.put("java.naming.factory.initial", "org.jnp.interfaces.NamingContextFactory");
         namingProperties.put("java.naming.factory.url.pkgs", "org.jboss.naming:org.jnp.interfaces");
         namingProperties.put("java.naming.provider.url", getJndiUrl());
         try {
-            initialContext = new InitialContext(namingProperties);
+            InitialContext initialContext = new InitialContext(namingProperties);
             searchService = (CaArraySearchService) initialContext.lookup(CaArraySearchService.JNDI_NAME);
             arrayDesignDetailsService = (ArrayDesignDetailsService)
                                 initialContext.lookup(ArrayDesignDetailsService.JNDI_NAME);

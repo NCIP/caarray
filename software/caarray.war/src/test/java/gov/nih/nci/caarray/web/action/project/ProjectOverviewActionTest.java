@@ -109,6 +109,7 @@ import com.opensymphony.xwork2.Action;
  * @author Winston Cheng
  *
  */
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class ProjectOverviewActionTest {
     private final ProjectOverviewAction action = new ProjectOverviewAction();
     private static final LocalArrayDesignServiceStub arrayDesignServiceStub = new LocalArrayDesignServiceStub();
@@ -159,7 +160,7 @@ public class ProjectOverviewActionTest {
         assertEquals(1, this.action.getArrayDesigns().size());
     }
 
-    @SuppressWarnings("deprecation") // NOPMD - string constant
+    @SuppressWarnings("deprecation")
     private void setProjectId(Long id) {
         Project proj = new Project();
         proj.setId(id);

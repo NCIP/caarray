@@ -134,7 +134,8 @@ import org.hibernate.validator.NotNull;
  *
  */
 @Entity
-@SuppressWarnings({"PMD.TooManyFields", "PMD.ExcessiveClassLength", "PMD.ExcessivePublicCount" })
+@SuppressWarnings({"PMD.TooManyFields", "PMD.ExcessiveClassLength",
+                   "PMD.ExcessivePublicCount", "PMD.AvoidDuplicateLiterals" })
 public class Experiment extends AbstractCaArrayEntity {
     // Experiment is central object -- can't reduce set of linked entities
 
@@ -350,8 +351,8 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @param publicIdentifier the publicIdentifier to set
      */
-    @SuppressWarnings("unused") // NOPMD
-    private void setPublicIdentifier(String publicIdentifier) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setPublicIdentifier(String publicIdentifier) {
         this.publicIdentifier = publicIdentifier;
     }
 
@@ -550,8 +551,8 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @param qualityControlTypesVal the qualityControlTypes
      */
-    @SuppressWarnings("unused")
-    public void setQualityControlTypes(final Set<Term> qualityControlTypesVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    public void setQualityControlTypes(final Set<Term> qualityControlTypesVal) {
         this.qualityControlTypes = qualityControlTypesVal;
     }
 
@@ -578,8 +579,8 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @param publicationsVal the publications
      */
-    @SuppressWarnings("unused")
-    private void setPublications(final Set<Publication> publicationsVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setPublications(final Set<Publication> publicationsVal) {
         this.publications = publicationsVal;
     }
 
@@ -602,8 +603,8 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @param replicateTypesVal the replicateTypes
      */
-    @SuppressWarnings("unused")
-    public void setReplicateTypes(final Set<Term> replicateTypesVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    public void setReplicateTypes(final Set<Term> replicateTypesVal) {
         this.replicateTypes = replicateTypesVal;
     }
 
@@ -627,8 +628,8 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @param sourcesVal the sources
      */
-    @SuppressWarnings("unused")
-    private void setSources(final Set<Source> sourcesVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setSources(final Set<Source> sourcesVal) {
         this.sources = sourcesVal;
     }
 
@@ -650,7 +651,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @LazyCollection(LazyCollectionOption.EXTRA)
     @ForeignKey(name = "EXPERIMENTSAMPLE_INVEST_FK", inverseName = "EXPERIMENTSAMPLE_SAMPLE_FK")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @Filter(name = "Project1", condition = SAMPLES_FILTER) // NOPMD
+    @Filter(name = "Project1", condition = SAMPLES_FILTER)
     public Set<Sample> getSamples() {
         return this.samples;
     }
@@ -668,8 +669,8 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @param samplesVal the sources
      */
-    @SuppressWarnings("unused")
-    private void setSamples(final Set<Sample> samplesVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setSamples(final Set<Sample> samplesVal) {
         this.samples = samplesVal;
     }
 
@@ -694,8 +695,8 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @param extractsVal the sources
      */
-    @SuppressWarnings("unused")
-    private void setExtracts(final Set<Extract> extractsVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setExtracts(final Set<Extract> extractsVal) {
         this.extracts = extractsVal;
     }
 
@@ -720,8 +721,8 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @param labeledExtractsVal the sources
      */
-    @SuppressWarnings("unused")
-    private void setLabeledExtracts(final Set<LabeledExtract> labeledExtractsVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setLabeledExtracts(final Set<LabeledExtract> labeledExtractsVal) {
         this.labeledExtracts = labeledExtractsVal;
     }
 
@@ -746,8 +747,8 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @param arrayDesignsVal the arrayDesigns
      */
-    @SuppressWarnings("unused")
-    public void setArrayDesigns(final Set<ArrayDesign> arrayDesignsVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    public void setArrayDesigns(final Set<ArrayDesign> arrayDesignsVal) {
         this.arrayDesigns = arrayDesignsVal;
     }
 
@@ -768,8 +769,8 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @param experimentContactsVal the experimentContacts
      */
-    @SuppressWarnings("unused")
-    private void setExperimentContacts(final Set<ExperimentContact> experimentContactsVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setExperimentContacts(final Set<ExperimentContact> experimentContactsVal) {
         this.experimentContacts = experimentContactsVal;
     }
 
@@ -852,8 +853,8 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @param factorsVal the factors
      */
-    @SuppressWarnings("unused")
-    private void setFactors(final Set<Factor> factorsVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setFactors(final Set<Factor> factorsVal) {
         this.factors = factorsVal;
     }
 
@@ -877,8 +878,8 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @param normalizationTypesVal the normalizationTypes
      */
-    @SuppressWarnings("unused")
-    private void setNormalizationTypes(final Set<Term> normalizationTypesVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setNormalizationTypes(final Set<Term> normalizationTypesVal) {
         this.normalizationTypes = normalizationTypesVal;
     }
 
@@ -902,8 +903,8 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @param arraysVal the arrays
      */
-    @SuppressWarnings("unused")
-    private void setArrays(final Set<Array> arraysVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setArrays(final Set<Array> arraysVal) {
         this.arrays = arraysVal;
     }
 
@@ -919,8 +920,8 @@ public class Experiment extends AbstractCaArrayEntity {
         return this.hybridizations;
     }
 
-    @SuppressWarnings("unused")
-    private void setHybridizations(final Set<Hybridization> hybridizations) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setHybridizations(final Set<Hybridization> hybridizations) {
         this.hybridizations = hybridizations;
     }
 
@@ -936,8 +937,8 @@ public class Experiment extends AbstractCaArrayEntity {
     /**
      * @param project the project to set
      */
-    @SuppressWarnings("unused")
-    private void setProject(Project project) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setProject(Project project) {
         this.project = project;
     }
 

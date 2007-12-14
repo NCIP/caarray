@@ -107,7 +107,7 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.ForeignKey;
 
 /**
- * 
+ *
  */
 @Entity
 @DiscriminatorValue("LA")
@@ -157,8 +157,8 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
      *
      * @param extractsVal the extracts
      */
-    @SuppressWarnings("unused")
-    private void setExtracts(final Set<Extract> extractsVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setExtracts(final Set<Extract> extractsVal) {
         this.extracts = extractsVal;
     }
 
@@ -173,7 +173,7 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
             joinColumns = { @javax.persistence.JoinColumn(name = "LABELEDEXTRACT_ID") },
             inverseJoinColumns = { @javax.persistence.JoinColumn(name = "HYBRIDIZATION_ID") }
     )
-    @ForeignKey(name = "LABELEDEXTRACTHYBRIDIZATION_LABELEDEXTRACT_FK", 
+    @ForeignKey(name = "LABELEDEXTRACTHYBRIDIZATION_LABELEDEXTRACT_FK",
             inverseName = "LABELEDEXTRACTHYBRIDIZATION_HYBRIDIZATION_FK")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Hybridization> getHybridizations() {
@@ -185,8 +185,8 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
      *
      * @param hybridizationsVal the hybridizations
      */
-    @SuppressWarnings("unused")
-    private void setHybridizations(final Set<Hybridization> hybridizationsVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setHybridizations(final Set<Hybridization> hybridizationsVal) {
         this.hybridizations = hybridizationsVal;
     }
 
@@ -194,7 +194,7 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
      * @return the experiment to which this source belongs
      */
     @ManyToOne
-    @JoinTable(name = "EXPERIMENTLABELEDEXTRACT", 
+    @JoinTable(name = "EXPERIMENTLABELEDEXTRACT",
             joinColumns = {@JoinColumn(name = "LABELED_EXTRACT_ID", insertable = false, updatable = false) },
             inverseJoinColumns = {@JoinColumn(name = "EXPERIMENT_ID", insertable = false, updatable = false) })
     public Experiment getExperiment() {

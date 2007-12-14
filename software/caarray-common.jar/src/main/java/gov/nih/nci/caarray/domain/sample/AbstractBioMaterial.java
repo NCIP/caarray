@@ -264,8 +264,8 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      *
      * @param characteristicsVal the characteristics
      */
-    @SuppressWarnings("unused")
-    private void setCharacteristics(final Set<AbstractCharacteristic> characteristicsVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setCharacteristics(final Set<AbstractCharacteristic> characteristicsVal) {
         this.characteristics = characteristicsVal;
     }
 
@@ -285,8 +285,8 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
      *
      * @param protocolApplicationsVal the protocolApplications
      */
-    @SuppressWarnings("unused")
-    private void setProtocolApplications(final Set<ProtocolApplication> protocolApplicationsVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setProtocolApplications(final Set<ProtocolApplication> protocolApplicationsVal) {
         this.protocolApplications = protocolApplicationsVal;
     }
 

@@ -86,20 +86,20 @@ import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
 
 /**
  * Test case #8141.
- * 
+ *
  * UC7218: Submit Experiment Proposal - Basic Flow
  */
 public class SubmitProjectProposalBasicTest extends AbstractSeleniumTest {
 
     public void testBasicFlow() throws Exception {
         String title = "test" + System.currentTimeMillis();
-        
+
         // - Open the PI user workspace
         loginAsPrincipalInvestigator();
 
         //  create an experiment
         createExperiment(title);
-        
+
         // - The system returns to the workspace page (verify)
         clickAndWait("link=My Experiment Workspace");
         waitForTab();
@@ -107,6 +107,7 @@ public class SubmitProjectProposalBasicTest extends AbstractSeleniumTest {
         // - Page thru the experiments till it is found
         findTitleAcrossMultiPages(title);
     }
+    @Override
     protected void findTitleAcrossMultiPages(String text) throws Exception {
         for (int loop = 0;; loop++) {
             if (selenium.isTextPresent(text)) {

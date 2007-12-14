@@ -103,7 +103,7 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.ForeignKey;
 
 /**
- * 
+ *
  */
 @Entity
 @DiscriminatorValue("SO")
@@ -138,8 +138,8 @@ public class Source extends AbstractBioMaterial {
      *
      * @param samplesVal the samples
      */
-    @SuppressWarnings("unused")
-    private void setSamples(final Set<Sample> samplesVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setSamples(final Set<Sample> samplesVal) {
         this.samples = samplesVal;
     }
 
@@ -165,8 +165,8 @@ public class Source extends AbstractBioMaterial {
      *
      * @param providersVal the providers
      */
-    @SuppressWarnings("unused")
-    private void setProviders(final Set<AbstractContact> providersVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setProviders(final Set<AbstractContact> providersVal) {
         this.providers = providersVal;
     }
 
@@ -174,7 +174,7 @@ public class Source extends AbstractBioMaterial {
      * @return the experiment to which this source belongs
      */
     @ManyToOne
-    @JoinTable(name = "EXPERIMENTSOURCE", 
+    @JoinTable(name = "EXPERIMENTSOURCE",
             joinColumns = {@JoinColumn(name = "SOURCE_ID", insertable = false, updatable = false) },
             inverseJoinColumns = {@JoinColumn(name = "EXPERIMENT_ID", insertable = false, updatable = false) })
     public Experiment getExperiment() {

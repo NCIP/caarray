@@ -83,8 +83,8 @@
 package gov.nih.nci.caarray.web.action.protocol;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.domain.PersistentObject;
@@ -104,6 +104,7 @@ import com.opensymphony.xwork2.Action;
  * @author Scott Miller
  *
  */
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class ProtocolManagementActionTest {
 
     private static GenericDataService genericDataService;
@@ -166,7 +167,7 @@ public class ProtocolManagementActionTest {
         MockHttpServletRequest mockRequest = new MockHttpServletRequest();
         mockRequest.addParameter("startWithEdit", "true");
         ServletActionContext.setRequest(mockRequest);
-        this.action.setReturnInitialTab1("test1");  // NOPMD
+        this.action.setReturnInitialTab1("test1");
         this.action.setReturnInitialTab2("test2");
         this.action.setReturnInitialTab2Url("test2Url");
         this.action.setReturnProjectId(1L);

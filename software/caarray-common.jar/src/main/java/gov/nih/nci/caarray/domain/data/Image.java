@@ -150,8 +150,8 @@ public class Image extends AbstractCaArrayEntity {
      *
      * @param protocolApplicationsVal the protocolApplications
      */
-    @SuppressWarnings("unused")
-    private void setProtocolApplications(final Set<ProtocolApplication> protocolApplicationsVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setProtocolApplications(final Set<ProtocolApplication> protocolApplicationsVal) {
         this.protocolApplications = protocolApplicationsVal;
     }
 

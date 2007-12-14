@@ -197,8 +197,8 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      *
      * @param rolesVal the roles
      */
-    @SuppressWarnings("unused")
-    private void setRoles(final Set<Term> rolesVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setRoles(final Set<Term> rolesVal) {
         this.roles = rolesVal;
     }
 

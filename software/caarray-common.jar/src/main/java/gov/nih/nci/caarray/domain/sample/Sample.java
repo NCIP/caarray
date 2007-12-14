@@ -144,8 +144,8 @@ public class Sample extends AbstractBioMaterial implements Protectable {
      *
      * @param sourcesVal the sources
      */
-    @SuppressWarnings("unused")
-    private void setSources(final Set<Source> sourcesVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setSources(final Set<Source> sourcesVal) {
         this.sources = sourcesVal;
     }
 
@@ -176,8 +176,8 @@ public class Sample extends AbstractBioMaterial implements Protectable {
      *
      * @param extractsVal the extracts
      */
-    @SuppressWarnings("unused")
-    private void setExtracts(final Set<Extract> extractsVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setExtracts(final Set<Extract> extractsVal) {
         this.extracts = extractsVal;
     }
 
@@ -238,7 +238,7 @@ public class Sample extends AbstractBioMaterial implements Protectable {
     public void setExternalSampleId(String externalSampleId) {
         this.externalSampleId = externalSampleId;
     }
-    
+
     /**
      * @return the set of hybridizations related to this sample (via extract-labeled extract linkages)
      */

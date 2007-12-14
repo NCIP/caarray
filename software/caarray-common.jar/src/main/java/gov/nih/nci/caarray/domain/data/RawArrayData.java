@@ -146,8 +146,8 @@ public class RawArrayData extends AbstractArrayData {
         return sourceImages;
     }
 
-    @SuppressWarnings("unused")
-    private void setSourceImages(Set<Image> sourceImages) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setSourceImages(Set<Image> sourceImages) {
         this.sourceImages = sourceImages;
     }
 }

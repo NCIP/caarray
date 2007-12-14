@@ -177,8 +177,8 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      *
      * @param valuesVal the values
      */
-    @SuppressWarnings("unused")
-    private void setValues(final Set<ParameterValue> valuesVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setValues(final Set<ParameterValue> valuesVal) {
         this.values = valuesVal;
     }
 

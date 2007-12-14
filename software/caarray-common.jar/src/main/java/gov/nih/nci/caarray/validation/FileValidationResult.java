@@ -105,6 +105,7 @@ import javax.persistence.Transient;
  * Contains all the validation messsages for a single file.
  */
 @Entity
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public final class FileValidationResult implements Serializable, Comparable<FileValidationResult> {
 
     private static final long serialVersionUID = -5402207496806890698L;
@@ -137,7 +138,7 @@ public final class FileValidationResult implements Serializable, Comparable<File
         return this.file;
     }
 
-    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" }) // NOPMD
+    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" })
     private void setFile(File file) {
         this.file = file;
     }

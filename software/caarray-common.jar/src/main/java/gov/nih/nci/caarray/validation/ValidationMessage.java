@@ -188,12 +188,12 @@ public final class ValidationMessage implements Serializable, Comparable<Validat
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" }) // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private Long getId() {
         return id;
     }
 
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" }) // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private void setId(Long id) {
         this.id = id;
     }

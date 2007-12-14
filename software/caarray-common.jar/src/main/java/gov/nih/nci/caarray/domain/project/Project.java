@@ -302,8 +302,8 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         return this.files;
     }
 
-    @SuppressWarnings("unused")
-    private void setFiles(final SortedSet<CaArrayFile> filesVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setFiles(final SortedSet<CaArrayFile> filesVal) {
         this.files = filesVal;
     }
 
@@ -351,13 +351,13 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         return this.supplementalFiles;
     }
 
-    @SuppressWarnings("unused")
-    private void setSupplementalFileSet(final SortedSet<CaArrayFile> filesVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setSupplementalFileSet(final SortedSet<CaArrayFile> filesVal) {
         this.supplementalFiles = filesVal;
     }
 
-    @SuppressWarnings("unused")
-    private void setImportedFileSet(final SortedSet<CaArrayFile> filesVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setImportedFileSet(final SortedSet<CaArrayFile> filesVal) {
         this.importedFiles = filesVal;
     }
 
@@ -384,8 +384,8 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         return this.unImportedFiles;
     }
 
-    @SuppressWarnings("unused")
-    private void setUnImportedFileSet(final SortedSet<CaArrayFile> filesVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setUnImportedFileSet(final SortedSet<CaArrayFile> filesVal) {
         this.unImportedFiles = filesVal;
     }
 
@@ -410,8 +410,8 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         return this.publicProfile;
     }
 
-    @SuppressWarnings("unused")
-    private void setPublicProfile(AccessProfile profile) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setPublicProfile(AccessProfile profile) {
         this.publicProfile = profile;
     }
 
@@ -425,8 +425,8 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         return this.hostProfile;
     }
 
-    @SuppressWarnings("unused")
-    private void setHostProfile(AccessProfile profile) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setHostProfile(AccessProfile profile) {
         this.hostProfile = profile;
     }
 
@@ -441,8 +441,8 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         return this.groupProfiles;
     }
 
-    @SuppressWarnings("unused")
-    private void setGroupProfilesMap(Map<CollaboratorGroup, AccessProfile> profiles) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setGroupProfilesMap(Map<CollaboratorGroup, AccessProfile> profiles) {
         this.groupProfiles = profiles;
     }
 
@@ -614,7 +614,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         }
         return policies;
     }
-    
+
     /**
      * {@inheritDoc}
      */

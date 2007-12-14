@@ -97,6 +97,7 @@ import java.util.Set;
 /**
  * Basic stub for tests.
  */
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class VocabularyServiceStub implements VocabularyService {
 
     public Set<Term> getTerms(String categoryName) {
@@ -127,7 +128,7 @@ public class VocabularyServiceStub implements VocabularyService {
         return term;
     }
 
-    @SuppressWarnings("deprecation") // NOPMD - string constant
+    @SuppressWarnings("deprecation")
     public Term getTerm(Long id) {
         Term term = new Term();
         term.setId(id);

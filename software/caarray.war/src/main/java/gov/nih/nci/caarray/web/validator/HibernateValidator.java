@@ -164,18 +164,19 @@ public class HibernateValidator extends FieldValidatorSupport {
 
         if (validationMessages.length > 0) {
             for (InvalidValue message : validationMessages) {
-                String errorField = fieldName;
-                String errorFieldKey = fieldName;
+                StringBuffer errorField = new StringBuffer(fieldName);
+                StringBuffer errorFieldKey = new StringBuffer(fieldName);
                 if (StringUtils.isNotBlank(getResourceKeyBase())) {
-                    errorFieldKey = getResourceKeyBase();
+                    errorFieldKey = new StringBuffer(getResourceKeyBase());
                 }
                 String msg = message.getMessage();
                 if (StringUtils.isNotBlank(message.getPropertyPath())) {
-                    errorField = fieldName + "." + message.getPropertyPath();
-                    errorFieldKey = errorFieldKey + "." + message.getPropertyPath();
-                    msg = StringUtils.replace(msg, "(fieldName)",  getValidatorContext().getText(errorFieldKey));
+                    errorField = new StringBuffer(fieldName).append(".").append(message.getPropertyPath());
+                    errorFieldKey = new StringBuffer(errorFieldKey).append(".").append(message.getPropertyPath());
+                    msg = StringUtils.replace(msg, "(fieldName)",
+                                              getValidatorContext().getText(errorFieldKey.toString()));
                 }
-                getValidatorContext().addFieldError(errorField, msg);
+                getValidatorContext().addFieldError(errorField.toString(), msg);
             }
         }
     }

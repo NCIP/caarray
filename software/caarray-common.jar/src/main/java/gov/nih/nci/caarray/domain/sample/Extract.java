@@ -142,8 +142,8 @@ public class Extract extends AbstractBioMaterial implements ProtectableDescenden
      *
      * @param samplesVal the samples
      */
-    @SuppressWarnings("unused")
-    private void setSamples(final Set<Sample> samplesVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setSamples(final Set<Sample> samplesVal) {
         this.samples = samplesVal;
     }
 
@@ -174,8 +174,8 @@ public class Extract extends AbstractBioMaterial implements ProtectableDescenden
      *
      * @param labeledExtractsVal the labeledExtracts
      */
-    @SuppressWarnings("unused")
-    private void setLabeledExtracts(final Set<LabeledExtract> labeledExtractsVal) { // NOPMD
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setLabeledExtracts(final Set<LabeledExtract> labeledExtractsVal) {
         this.labeledExtracts = labeledExtractsVal;
     }
 
@@ -204,12 +204,12 @@ public class Extract extends AbstractBioMaterial implements ProtectableDescenden
     public void setMolecularSpecimen(MolecularSpecimen molecularSpecimen) {
         this.molecularSpecimen = molecularSpecimen;
     }
-    
+
     /**
      * @return the experiment to which this source belongs
      */
     @ManyToOne
-    @JoinTable(name = "EXPERIMENTEXTRACT", 
+    @JoinTable(name = "EXPERIMENTEXTRACT",
             joinColumns = {@JoinColumn(name = "EXTRACT_ID", insertable = false, updatable = false) },
             inverseJoinColumns = {@JoinColumn(name = "EXPERIMENT_ID", insertable = false, updatable = false) })
     public Experiment getExperiment() {
@@ -222,7 +222,7 @@ public class Extract extends AbstractBioMaterial implements ProtectableDescenden
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
     }
-    
+
     /**
      * {@inheritDoc}
      */
