@@ -124,8 +124,6 @@ final class ArrayDataImporter {
             file.setValidationResult(e.getFileValidationResult());
         }
         daoFactory.getProjectDao().save(file);
-        daoFactory.getProjectDao().flushSession();
-        daoFactory.getProjectDao().clearSession();
     }
 
     private boolean isDataFile(CaArrayFile file) {
