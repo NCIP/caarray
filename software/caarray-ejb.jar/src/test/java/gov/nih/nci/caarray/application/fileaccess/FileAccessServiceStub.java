@@ -137,6 +137,13 @@ public class FileAccessServiceStub implements FileAccessService {
     public void closeFiles() {
         // do nothing
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void closeFile(CaArrayFile caarrayFile) {
+        // do nothing
+    }
 
     public void save(CaArrayFile caArrayFile) {
         this.savedFileCount++;

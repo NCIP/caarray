@@ -97,8 +97,10 @@ import java.io.OutputStream;
 import java.rmi.server.UID;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -276,21 +278,37 @@ public class FileAccessServiceBean implements FileAccessService {
     }
 
     /**
-     * Deletes any files opened during the session.
+     * {@inheritDoc}
      */
     public void closeFiles() {
+        Set<CaArrayFile> filesToClose = new HashSet<CaArrayFile>(this.openFiles.keySet());        
+        for (CaArrayFile caarrayFile : filesToClose) {
+            closeFile(caarrayFile);
+        }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void closeFile(CaArrayFile caarrayFile) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Removing session files in directory: " + getSessionWorkingDirectory());
+            LOG.debug("Removing session file in directory: " + getSessionWorkingDirectory() + " for caarray file "
+                    + caarrayFile.getName());
         }
         if (this.sessionWorkingDirectory == null) {
             return;
         }
-        for (File file : this.openFiles.values()) {
+        File file = getOpenFile(caarrayFile);
+        if (file != null) {            
             delete(file);
         }
-        delete(getSessionWorkingDirectory());
-        this.openFiles.clear();
+        this.openFiles.remove(caarrayFile);
+        if (this.openFiles.isEmpty()) {
+            delete(getSessionWorkingDirectory());
+            this.sessionWorkingDirectory = null;
+        }
     }
+    
 
     private void delete(File file) {
         LOG.debug("Deleting file: " + file.getAbsolutePath());

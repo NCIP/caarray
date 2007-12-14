@@ -177,18 +177,16 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     ArrayDesignDetails createDesignDetails(ArrayDesign arrayDesign) {
         ArrayDesignDetails designDetails = new ArrayDesignDetails();
         getArrayDao().save(designDetails);
-        flushAndClearSession();
         probeGroup = new ProbeGroup(designDetails);
         probeGroup.setName(LSID_AUTHORITY + ":" + probeGroup.getClass().getSimpleName() + ":All."
                 + this.getFusionCDFData().getChipType());
+        getDaoFactory().getSearchDao().save(probeGroup);
         initializeFeaturesCreated(getFusionCDFHeader());
+
         handleProbeSets(designDetails);
         handleQCProbeSets(designDetails);
         createMissingFeatures(designDetails);
         closeCdf();
-        arrayDesign.setNumberOfFeatures(designDetails.getFeatures().size());
-        getArrayDao().save(probeGroup);
-        flushAndClearSession();
         return designDetails;
     }
 
@@ -203,9 +201,8 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
             fusionCDFData.getProbeSetInformation(index, probeSetInformation);
             handleProbeSet(probeSetInformation, fusionCDFData.getProbeSetName(index), designDetails);
             if (index % PROBE_SET_BATCH_SIZE == 0) {
-                getArrayDao().save(probeGroup);
                 flushAndClearSession();
-                probeGroup = getArrayDao().queryEntityByExample(probeGroup).iterator().next();
+                this.probeGroup = getDaoFactory().getSearchDao().retrieve(ProbeGroup.class, probeGroup.getId());        
             }
         }
     }
@@ -214,13 +211,11 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
             ArrayDesignDetails designDetails) {
         LogicalProbe logicalProbe = new LogicalProbe(designDetails);
         logicalProbe.setName(probeSetName);
-        designDetails.getLogicalProbes().add(logicalProbe);
         getArrayDao().save(logicalProbe);
         int numLists = probeSetInformation.getNumLists();
         for (int listIndex = 0; listIndex < numLists; listIndex++) {
             PhysicalProbe probe = new PhysicalProbe(designDetails, probeGroup);
             probe.setName(probeSetName + ".ProbePair" + listIndex);
-            designDetails.getProbes().add(probe);
             getArrayDao().save(probe);
         }
         int numGroups = probeSetInformation.getNumGroups();
@@ -242,8 +237,7 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     }
 
     private void handleProbe(FusionCDFProbeInformation probeInformation, ArrayDesignDetails designDetails) {
-        Feature feature = createFeature(probeInformation.getX(), probeInformation.getY(), designDetails);
-        designDetails.getFeatures().add(feature);
+        createFeature(probeInformation.getX(), probeInformation.getY(), designDetails);
     }
 
     private Feature createFeature(int x, int y, ArrayDesignDetails details) {
@@ -261,6 +255,10 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
         for (int index = 0; index < numQCProbeSets; index++) {
             getFusionCDFData().getQCProbeSetInformation(index, qcProbeSetInformation);
             handleQCProbeSet(qcProbeSetInformation, designDetails);
+            if (index % PROBE_SET_BATCH_SIZE == 0) {
+                flushAndClearSession();
+                this.probeGroup = getDaoFactory().getSearchDao().retrieve(ProbeGroup.class, probeGroup.getId());        
+            }
         }
     }
 
@@ -275,17 +273,18 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     }
 
     private void handleQCProbe(FusionCDFQCProbeInformation qcProbeInformation, ArrayDesignDetails designDetails) {
-        Feature feature = createFeature(qcProbeInformation.getX(), qcProbeInformation.getY(), designDetails);
-        designDetails.getFeatures().add(feature);
+        createFeature(qcProbeInformation.getX(), qcProbeInformation.getY(), designDetails);
     }
 
     private void createMissingFeatures(ArrayDesignDetails designDetails) {
         for (int x = 0; x < featureCreated.length; x++) {
             for (int y = 0; y < featureCreated[x].length; y++) {
                 if (!featureCreated[x][y]) {
-                    designDetails.getFeatures().add(createFeature(x, y, designDetails));
+                    createFeature(x, y, designDetails);
                 }
             }
+            flushAndClearSession();
+            this.probeGroup = getDaoFactory().getSearchDao().retrieve(ProbeGroup.class, probeGroup.getId());
         }
     }
 
