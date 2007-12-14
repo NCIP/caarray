@@ -241,6 +241,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile(), fileAccessService);
         arrayDesign.getDesignFile().setFileStatus(FileStatus.IMPORTED);
         getArrayDao().save(arrayDesign.getDesignFile());
+        getArrayDao().flushSession();
         handler.saveDesignDetails(arrayDesign);
     }
 
