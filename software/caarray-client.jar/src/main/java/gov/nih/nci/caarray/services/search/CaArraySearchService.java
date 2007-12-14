@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.services.search;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.system.query.cql.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
 import java.util.List;
 
@@ -116,7 +116,8 @@ public interface CaArraySearchService {
      *
      * @param cqlQuery the HQL (Hibernate Query Language) string to use as search criteria.
      *
-     * @return the matching entities.
+     * @return the result for the provided query.  May be the list of objects, list of attribute values, or
+     * the count, depending upon the query modifiers.
      */
-    List<? extends AbstractCaArrayObject> search(CQLQuery cqlQuery);
+    List<?> search(CQLQuery cqlQuery);
 }

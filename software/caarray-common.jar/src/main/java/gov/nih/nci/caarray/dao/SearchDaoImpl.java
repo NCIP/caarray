@@ -85,22 +85,18 @@ package gov.nih.nci.caarray.dao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.common.util.CQL2HQL;
-import gov.nih.nci.common.util.HibernateQueryWrapper;
-import gov.nih.nci.system.dao.QueryException;
-import gov.nih.nci.system.query.cql.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.data.QueryProcessingException;
+import gov.nih.nci.cagrid.data.sdk32query.CQL2HQL;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 
 /**
@@ -129,47 +125,17 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     }
 
     /**
-     * Returns the list of <code>AbstractCaArrayEntity</code> retrieved based on the
-     * given CQL query.
-     *
-     * @param cqlQuery CQL query to use as search criteria.
-     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
+     * {@inheritDoc}
      */
-    public List<AbstractCaArrayObject> query(final CQLQuery cqlQuery) {
-        HibernateQueryWrapper hqlWrapper = null;
+    public List<?> query(final CQLQuery cqlQuery) {
         try {
-            hqlWrapper = CQL2HQL.translate(cqlQuery, false, true);
-        } catch (QueryException e) {
-          getLog().error("Unable to parse CQL query", e);
-          throw new DAOException("Unable to parse CQL query", e);
+            String s = CQL2HQL.translate(cqlQuery, false, true);
+            Query hqlquery = HibernateUtil.getCurrentSession().createQuery(s);
+            return hqlquery.list();
+        } catch (QueryProcessingException e) {
+            getLog().error("Unable to parse CQL query", e);
+            throw new DAOException("Unable to parse CQL query", e);
         }
-        String hqlString = hqlWrapper.getHql();
-        List<?> params = hqlWrapper.getParameters();
-
-        return (runHqlQuery(hqlString, params));
-    }
-
-    @SuppressWarnings(UNCHECKED)
-    private List<AbstractCaArrayObject> runHqlQuery(final String hqlString, final List<?> params) {
-        Session mySession = HibernateUtil.getCurrentSession();
-        List<AbstractCaArrayObject> matchingEntities = new ArrayList<AbstractCaArrayObject>();
-        List hibernateReturnedEntities = null;
-
-        try {
-            Query hqlQuery = mySession.createQuery(hqlString);
-            for (int i = 0; i < params.size(); i++) {
-                hqlQuery.setParameter(i, params.get(i));
-            }
-            hibernateReturnedEntities = hqlQuery.list();
-        } catch (HibernateException he) {
-            getLog().error("Unable to retrieve entities", he);
-            throw new DAOException("Unable to retrieve entities", he);
-        }
-
-        if (hibernateReturnedEntities != null) {
-            matchingEntities.addAll(hibernateReturnedEntities);
-        }
-        return matchingEntities;
     }
 
     /**

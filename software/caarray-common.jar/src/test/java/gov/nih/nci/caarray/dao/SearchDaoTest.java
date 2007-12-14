@@ -87,7 +87,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
@@ -99,11 +98,12 @@ import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.system.query.cql.CQLAssociation;
-import gov.nih.nci.system.query.cql.CQLAttribute;
-import gov.nih.nci.system.query.cql.CQLObject;
-import gov.nih.nci.system.query.cql.CQLPredicate;
-import gov.nih.nci.system.query.cql.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Association;
+import gov.nih.nci.cagrid.cqlquery.Attribute;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Group;
+import gov.nih.nci.cagrid.cqlquery.LogicalOperator;
+import gov.nih.nci.cagrid.cqlquery.Predicate;
 
 import java.util.List;
 
@@ -258,7 +258,7 @@ public class SearchDaoTest {
         try {
             tx = HibernateUtil.beginTransaction();
             Protocol retrievedProtocol = null;
-            List<? extends AbstractCaArrayObject> matchingProtocols = SEARCH_DAO.query(cqlQuery);
+            List<?> matchingProtocols = SEARCH_DAO.query(cqlQuery);
             if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
                 retrievedProtocol = (Protocol) matchingProtocols.get(0);
             }
@@ -286,7 +286,7 @@ public class SearchDaoTest {
         try {
             tx = HibernateUtil.beginTransaction();
             Protocol retrievedProtocol = null;
-            List<? extends AbstractCaArrayObject> matchingProtocols = SEARCH_DAO.query(cqlQuery);
+            List<?> matchingProtocols = SEARCH_DAO.query(cqlQuery);
             if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
                 retrievedProtocol = (Protocol) matchingProtocols.get(0);
             }
@@ -305,12 +305,12 @@ public class SearchDaoTest {
 
     private CQLQuery formulateCqlQuery() {
         CQLQuery cqlQuery = new CQLQuery();
-        CQLObject target = new CQLObject();
+        gov.nih.nci.cagrid.cqlquery.Object target = new gov.nih.nci.cagrid.cqlquery.Object();
         target.setName("gov.nih.nci.caarray.domain.protocol.Protocol");
-        CQLAttribute attribute = new CQLAttribute();
+        Attribute attribute = new Attribute();
         attribute.setName("name");
         attribute.setValue(DUMMY_PROTOCOL_1.getName());
-        attribute.setPredicate(CQLPredicate.LIKE);
+        attribute.setPredicate(Predicate.LIKE);
         target.setAttribute(attribute);
         cqlQuery.setTarget(target);
         return cqlQuery;
@@ -320,16 +320,16 @@ public class SearchDaoTest {
         CQLQuery cqlQuery = new CQLQuery();
 
         // Set the target object to Protocol.
-        CQLObject target = new CQLObject();
+        gov.nih.nci.cagrid.cqlquery.Object target = new gov.nih.nci.cagrid.cqlquery.Object();
         target.setName("gov.nih.nci.caarray.domain.protocol.Protocol");
 
         // Set the protocol's "type" association to a Term with a certain value.
-        CQLAssociation type = new CQLAssociation();
+        Association type = new Association();
         type.setName("gov.nih.nci.caarray.domain.vocabulary.Term");
-        CQLAttribute termValue = new CQLAttribute();
+        Attribute termValue = new Attribute();
         termValue.setName("value");
         termValue.setValue(DUMMY_TERM_1.getValue());
-        termValue.setPredicate(CQLPredicate.EQUAL_TO);
+        termValue.setPredicate(Predicate.EQUAL_TO);
         type.setAttribute(termValue);
 
         // Set the target for the query.
@@ -401,6 +401,49 @@ public class SearchDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during search by example: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testDefect10709() {
+        CQLQuery cqlQuery = new CQLQuery();
+        gov.nih.nci.cagrid.cqlquery.Object target = new gov.nih.nci.cagrid.cqlquery.Object();
+        target.setName("gov.nih.nci.caarray.domain.sample.Sample");
+
+        Attribute sampleNameAttribute = new Attribute();
+        sampleNameAttribute.setName("name");
+        String sampleName = "sampleName";
+        sampleNameAttribute.setValue(sampleName );
+        sampleNameAttribute.setPredicate(Predicate.EQUAL_TO);
+
+        Association tissueSiteAssociation = new Association();
+        tissueSiteAssociation.setName("gov.nih.nci.caarray.domain.vocabulary.Term");
+        Attribute tissueSiteAttribute = new Attribute();
+        tissueSiteAttribute.setName("value");
+        String tissueSite = "tissueSite";
+        tissueSiteAttribute.setValue(tissueSite);
+        tissueSiteAttribute.setPredicate(Predicate.EQUAL_TO);
+        tissueSiteAssociation.setAttribute(tissueSiteAttribute);
+        tissueSiteAssociation.setRoleName(tissueSite); // This is the key line
+
+        Group associations = new Group();
+        associations.setAttribute(new Attribute[] {sampleNameAttribute});
+        associations.setAssociation(new Association[] {tissueSiteAssociation});
+        associations.setLogicRelation(LogicalOperator.AND);
+        target.setGroup(associations);
+
+        cqlQuery.setTarget(target);
+
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.beginTransaction();
+            List<?> matchingProtocols = SEARCH_DAO.query(cqlQuery);
+            // just making sure it ran through w/o exception or null return
+            assertNotNull(matchingProtocols);
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            throw e;
         }
     }
 }

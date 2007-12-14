@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.PersistentObject;
-import gov.nih.nci.system.query.cql.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
 import java.util.Collection;
 import java.util.List;
@@ -116,9 +116,9 @@ public interface SearchDao extends CaArrayDao {
      * given CQL query.
      *
      * @param cqlQuery CQL query to use as search criteria.
-     * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
+     * @return the List of objects, values, or the count, depending on query modifier.
      */
-    List<? extends AbstractCaArrayObject> query(CQLQuery cqlQuery);
+    List<?> query(CQLQuery cqlQuery);
 
 
     /**

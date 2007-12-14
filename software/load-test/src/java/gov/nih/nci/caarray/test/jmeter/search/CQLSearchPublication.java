@@ -87,13 +87,13 @@ import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.jmeter.base.CaArrayJmeterSampler;
-import gov.nih.nci.system.query.cql.CQLAssociation;
-import gov.nih.nci.system.query.cql.CQLAttribute;
-import gov.nih.nci.system.query.cql.CQLGroup;
-import gov.nih.nci.system.query.cql.CQLLogicalOperator;
-import gov.nih.nci.system.query.cql.CQLObject;
-import gov.nih.nci.system.query.cql.CQLPredicate;
-import gov.nih.nci.system.query.cql.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Association;
+import gov.nih.nci.cagrid.cqlquery.Attribute;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Group;
+import gov.nih.nci.cagrid.cqlquery.LogicalOperator;
+import gov.nih.nci.cagrid.cqlquery.Object;
+import gov.nih.nci.cagrid.cqlquery.Predicate;
 
 import java.util.Iterator;
 import java.util.List;
@@ -187,29 +187,28 @@ public class CQLSearchPublication extends CaArrayJmeterSampler implements JavaSa
 
     private CQLQuery createCqlQuery() {
         CQLQuery cqlQuery = new CQLQuery();
-        CQLObject target = new CQLObject();
+        Object target = new Object();
         target.setName("gov.nih.nci.caarray.domain.publication.Publication");
 
-        CQLAssociation statusAssociation = new CQLAssociation();
+        Association statusAssociation = new Association();
         statusAssociation.setName("gov.nih.nci.caarray.domain.vocabulary.Term");
-        CQLAttribute statusAttribute = new CQLAttribute();
+        Attribute statusAttribute = new Attribute();
         statusAttribute.setName("value");
         statusAttribute.setValue(publicationStatus);
-        statusAttribute.setPredicate(CQLPredicate.EQUAL_TO);
+        statusAttribute.setPredicate(Predicate.EQUAL_TO);
         statusAssociation.setAttribute(statusAttribute);
 
-        CQLAssociation typeAssociation = new CQLAssociation();
+        Association typeAssociation = new Association();
         typeAssociation.setName("gov.nih.nci.caarray.domain.vocabulary.Term");
-        CQLAttribute typeAttribute = new CQLAttribute();
+        Attribute typeAttribute = new Attribute();
         typeAttribute.setName("value");
         typeAttribute.setValue(publicationType);
-        typeAttribute.setPredicate(CQLPredicate.EQUAL_TO);
+        typeAttribute.setPredicate(Predicate.EQUAL_TO);
         typeAssociation.setAttribute(typeAttribute);
 
-        CQLGroup associations = new CQLGroup();
-        associations.addAssociation(statusAssociation);
-        associations.addAssociation(typeAssociation);
-        associations.setLogicOperator(CQLLogicalOperator.AND);
+        Group associations = new Group();
+        associations.setAssociation(new Association[] {statusAssociation, typeAssociation});
+        associations.setLogicRelation(LogicalOperator.AND);
         target.setGroup(associations);
 
         cqlQuery.setTarget(target);

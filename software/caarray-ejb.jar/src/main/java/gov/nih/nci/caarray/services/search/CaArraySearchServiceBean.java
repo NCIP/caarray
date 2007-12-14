@@ -88,7 +88,7 @@ import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
-import gov.nih.nci.system.query.cql.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -145,8 +145,8 @@ public class CaArraySearchServiceBean implements CaArraySearchService {
      *
      * @return the matching entities.
      */
-    public List<? extends AbstractCaArrayObject> search(final CQLQuery cqlQuery) {
-        List<? extends AbstractCaArrayObject> retrievedList = new ArrayList<AbstractCaArrayObject>();
+    public List<?> search(final CQLQuery cqlQuery) {
+        List<?> retrievedList = new ArrayList<Object>();
         if (cqlQuery == null) {
             LOG.error("Search was called with null CQL query.");
             return retrievedList;

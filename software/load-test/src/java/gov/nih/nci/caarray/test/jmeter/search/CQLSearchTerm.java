@@ -87,11 +87,11 @@ import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.jmeter.base.CaArrayJmeterSampler;
-import gov.nih.nci.system.query.cql.CQLAssociation;
-import gov.nih.nci.system.query.cql.CQLAttribute;
-import gov.nih.nci.system.query.cql.CQLObject;
-import gov.nih.nci.system.query.cql.CQLPredicate;
-import gov.nih.nci.system.query.cql.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Association;
+import gov.nih.nci.cagrid.cqlquery.Attribute;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Object;
+import gov.nih.nci.cagrid.cqlquery.Predicate;
 
 import java.util.Iterator;
 import java.util.List;
@@ -180,15 +180,15 @@ public class CQLSearchTerm extends CaArrayJmeterSampler implements JavaSamplerCl
 
     private CQLQuery createCqlQuery() {
         CQLQuery cqlQuery = new CQLQuery();
-        CQLObject target = new CQLObject();
+        Object target = new Object();
         target.setName("gov.nih.nci.caarray.domain.vocabulary.Term");
 
-        CQLAssociation categoryAssociation = new CQLAssociation();
+        Association categoryAssociation = new Association();
         categoryAssociation.setName("gov.nih.nci.caarray.domain.vocabulary.Category");
-        CQLAttribute categoryAttribute = new CQLAttribute();
+        Attribute categoryAttribute = new Attribute();
         categoryAttribute.setName("name");
         categoryAttribute.setValue(categoryName);
-        categoryAttribute.setPredicate(CQLPredicate.EQUAL_TO);
+        categoryAttribute.setPredicate(Predicate.EQUAL_TO);
         categoryAssociation.setAttribute(categoryAttribute);
 
         target.setAssociation(categoryAssociation);

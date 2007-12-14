@@ -82,17 +82,15 @@
  */
 package gov.nih.nci.caarray.test.jmeter.search;
 
-import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.jmeter.base.CaArrayJmeterSampler;
-import gov.nih.nci.system.query.cql.CQLAssociation;
-import gov.nih.nci.system.query.cql.CQLAttribute;
-import gov.nih.nci.system.query.cql.CQLObject;
-import gov.nih.nci.system.query.cql.CQLPredicate;
-import gov.nih.nci.system.query.cql.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Attribute;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Object;
+import gov.nih.nci.cagrid.cqlquery.Predicate;
 
 import java.util.Iterator;
 import java.util.List;
@@ -182,13 +180,13 @@ public class CQLSearchPerson extends CaArrayJmeterSampler implements JavaSampler
 
     private CQLQuery createCqlQuery() {
         CQLQuery cqlQuery = new CQLQuery();
-        CQLObject target = new CQLObject();
+        Object target = new Object();
         target.setName("gov.nih.nci.caarray.domain.contact.Person");
 
-        CQLAttribute affiliationAttribute = new CQLAttribute();
+        Attribute affiliationAttribute = new Attribute();
         affiliationAttribute.setName("lastName");
         affiliationAttribute.setValue(lastName);
-        affiliationAttribute.setPredicate(CQLPredicate.EQUAL_TO);
+        affiliationAttribute.setPredicate(Predicate.EQUAL_TO);
 
         target.setAttribute(affiliationAttribute);
 

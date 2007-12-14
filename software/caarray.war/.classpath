@@ -22,7 +22,6 @@
 	<classpathentry kind="lib" path="/lib/axis.jar"/>
 	<classpathentry kind="lib" path="/lib/backport-util-concurrent.jar"/>
 	<classpathentry kind="lib" path="/lib/c3p0-0.9.0.jar"/>
-	<classpathentry kind="lib" path="/lib/cacore32-client.jar"/>
 	<classpathentry kind="lib" path="/lib/cargo-ant-0.9.jar"/>
 	<classpathentry kind="lib" path="/lib/cargo-core-uberjar-0.9.jar"/>
 	<classpathentry kind="lib" path="/lib/castor-1.0.2.jar"/>

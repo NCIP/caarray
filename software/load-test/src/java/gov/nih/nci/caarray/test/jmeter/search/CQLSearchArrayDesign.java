@@ -87,11 +87,11 @@ import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.jmeter.base.CaArrayJmeterSampler;
-import gov.nih.nci.system.query.cql.CQLAssociation;
-import gov.nih.nci.system.query.cql.CQLAttribute;
-import gov.nih.nci.system.query.cql.CQLObject;
-import gov.nih.nci.system.query.cql.CQLPredicate;
-import gov.nih.nci.system.query.cql.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Association;
+import gov.nih.nci.cagrid.cqlquery.Attribute;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Object;
+import gov.nih.nci.cagrid.cqlquery.Predicate;
 
 import java.util.Iterator;
 import java.util.List;
@@ -180,15 +180,15 @@ public class CQLSearchArrayDesign extends CaArrayJmeterSampler implements JavaSa
 
     private CQLQuery createCqlQuery() {
         CQLQuery cqlQuery = new CQLQuery();
-        CQLObject target = new CQLObject();
+        gov.nih.nci.cagrid.cqlquery.Object target = new Object();
         target.setName("gov.nih.nci.caarray.domain.array.ArrayDesign");
 
-        CQLAssociation providerAssociation = new CQLAssociation();
+        Association providerAssociation = new Association();
         providerAssociation.setName("gov.nih.nci.caarray.domain.contact.Organization");
-        CQLAttribute providerAttribute = new CQLAttribute();
+        Attribute providerAttribute = new Attribute();
         providerAttribute.setName("name");
         providerAttribute.setValue(provider);
-        providerAttribute.setPredicate(CQLPredicate.EQUAL_TO);
+        providerAttribute.setPredicate(Predicate.EQUAL_TO);
         providerAssociation.setAttribute(providerAttribute);
 
         target.setAssociation(providerAssociation);

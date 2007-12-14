@@ -87,13 +87,13 @@ import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.jmeter.base.CaArrayJmeterSampler;
-import gov.nih.nci.system.query.cql.CQLAssociation;
-import gov.nih.nci.system.query.cql.CQLAttribute;
-import gov.nih.nci.system.query.cql.CQLGroup;
-import gov.nih.nci.system.query.cql.CQLLogicalOperator;
-import gov.nih.nci.system.query.cql.CQLObject;
-import gov.nih.nci.system.query.cql.CQLPredicate;
-import gov.nih.nci.system.query.cql.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Association;
+import gov.nih.nci.cagrid.cqlquery.Attribute;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Group;
+import gov.nih.nci.cagrid.cqlquery.LogicalOperator;
+import gov.nih.nci.cagrid.cqlquery.Object;
+import gov.nih.nci.cagrid.cqlquery.Predicate;
 
 import java.util.Iterator;
 import java.util.List;
@@ -187,29 +187,28 @@ public class CQLSearchExperiment extends CaArrayJmeterSampler implements JavaSam
 
     private CQLQuery createCqlQuery() {
         CQLQuery cqlQuery = new CQLQuery();
-        CQLObject target = new CQLObject();
+        Object target = new Object();
         target.setName("gov.nih.nci.caarray.domain.project.Experiment");
 
-        CQLAssociation manufacturerAssociation = new CQLAssociation();
+        Association manufacturerAssociation = new Association();
         manufacturerAssociation.setName("gov.nih.nci.caarray.domain.contact.Organization");
-        CQLAttribute manufacturerName = new CQLAttribute();
+        Attribute manufacturerName = new Attribute();
         manufacturerName.setName("name");
         manufacturerName.setValue(manufacturer);
-        manufacturerName.setPredicate(CQLPredicate.EQUAL_TO);
+        manufacturerName.setPredicate(Predicate.EQUAL_TO);
         manufacturerAssociation.setAttribute(manufacturerName);
 
-        CQLAssociation organismAssociation = new CQLAssociation();
+        Association organismAssociation = new Association();
         organismAssociation.setName("edu.georgetown.pir.Organism");
-        CQLAttribute organismName = new CQLAttribute();
+        Attribute organismName = new Attribute();
         organismName.setName("commonName");
         organismName.setValue(organism);
-        organismName.setPredicate(CQLPredicate.EQUAL_TO);
+        organismName.setPredicate(Predicate.EQUAL_TO);
         organismAssociation.setAttribute(organismName);
 
-        CQLGroup associations = new CQLGroup();
-        associations.addAssociation(manufacturerAssociation);
-        associations.addAssociation(organismAssociation);
-        associations.setLogicOperator(CQLLogicalOperator.AND);
+        Group associations = new Group();
+        associations.setAssociation(new Association[] {manufacturerAssociation, organismAssociation});
+        associations.setLogicRelation(LogicalOperator.AND);
         target.setGroup(associations);
 
         cqlQuery.setTarget(target);

@@ -21,10 +21,13 @@
 	<classpathentry kind="lib" path="/lib/antlr-2.7.6.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/test-data"/>
 	<classpathentry kind="lib" path="/lib/csmapi.jar" sourcepath="/lib/src/csmapi-4.0.1-src.jar"/>
-	<classpathentry kind="lib" path="/lib/cacore32-client.jar"/>
 	<classpathentry kind="lib" path="/lib/log4j-1.2.13.jar" sourcepath="/lib/src/log4j-1.2.13-src.jar"/>
 	<classpathentry kind="lib" path="/lib/clm.jar"/>
 	<classpathentry kind="lib" path="/lib/commons-lang-2.3.jar"/>
 	<classpathentry kind="lib" path="/lib/commons-configuration-1.4.jar"/>
+	<classpathentry kind="lib" path="/lib/caGrid-1.1-data-stubs.jar"/>
+	<classpathentry kind="lib" path="/lib/caGrid-1.1-sdkQuery32-core.jar"/>
+	<classpathentry kind="lib" path="/lib/caGrid-1.1-data-common.jar"/>
+	<classpathentry kind="lib" path="/lib/axis.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

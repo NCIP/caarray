@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.dao.stub;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.PersistentObject;
-import gov.nih.nci.system.query.cql.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
 import java.util.ArrayList;
 import java.util.Collection;

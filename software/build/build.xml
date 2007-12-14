@@ -87,7 +87,9 @@
   <property name="asm-attrs.jar" value="${lib.dir}/asm-attrs.jar" />
   <property name="backport-util-concurrent" value="${lib.dir}/backport-util-concurrent" />
   <property name="c3p0.jar" value="${lib.dir}/c3p0-0.9.0.jar" />
-  <property name="cacore32-client.jar" value="${lib.dir}/cacore32-client.jar" />
+  <property name="caGrid-1.1-data-stubs.jar" value="${lib.dir}/caGrid-1.1-data-stubs.jar"/>
+  <property name="caGrid-1.1-data-common.jar" value="${lib.dir}/caGrid-1.1-data-common.jar"/>
+  <property name="caGrid-1.1-sdkQuery32-core.jar" value="${lib.dir}/caGrid-1.1-sdkQuery32-core.jar"/>
   <property name="cglib.jar" value="${lib.dir}/cglib-2.1.3.jar" />
   <property name="checkstyle.jar" value="${lib.dir}/checkstyle-all-4.3.jar" />
   <property name="cobertura.jar" value="${lib.dir}/cobertura.jar" />
@@ -135,6 +137,7 @@
   <property name="ognl-2.6.11.jar" value="${lib.dir}/ognl-2.6.11.jar" />
   <property name="displaytag.jar" value="${lib.dir}/displaytag-1.1.1.jar"/>
   <property name="urlrewrite.jar" value="${lib.dir}/urlrewrite-2.6.0.jar"/>
+  <property name="axis.jar" value="${lib.dir}/axis.jar"/>
 
   <!-- Test-related properties -->
   <property name="test.dir" value="${basedir}/test" />
@@ -367,7 +370,7 @@
         <pathelement location="${commons-lang.jar}" />
         <pathelement location="${caarray-common.resources.dir}" />
         <pathelement location="${hibernate-annotations.jar}" />
-        <pathelement location="${cacore32-client.jar}"/>
+        <pathelement location="${caGrid-1.1-data-stubs.jar}"/>
       </classpath>
     </javac>
   </target>
@@ -390,7 +393,9 @@
         <pathelement location="${caarray-common.test.files.dir}" />
         <pathelement location="${csmapi.jar}" />
         <pathelement location="${clm.jar}" />
-        <pathelement location="${cacore32-client.jar}"/>
+        <pathelement location="${caGrid-1.1-data-stubs.jar}"/>
+        <pathelement location="${caGrid-1.1-data-common.jar}"/>
+        <pathelement location="${caGrid-1.1-sdkQuery32-core.jar}"/>
         <pathelement location="${commons-configuration.jar}" />
         <pathelement location="${log4j.jar}" />
       </classpath>
@@ -429,7 +434,7 @@
         <pathelement location="${commons-configuration.jar}" />
         <pathelement location="${commons-lang.jar}" />
         <pathelement location="${commons-io.jar}" />
-        <pathelement location="${cacore32-client.jar}" />
+        <pathelement location="${caGrid-1.1-data-stubs.jar}"/>
         <pathelement location="${javaee.jar}" />
         <pathelement location="${affxfusion.jar}" />
         <pathelement location="${netcdf.jar}" />
@@ -459,7 +464,7 @@
     </javac>
   </target>
 
-  <target name="compile:caarray-svc" depends="compile:caarray-common.jar,compile:caarray-client.jar,compile:caarray-ejb.jar">
+  <target name="compile:caarray-svc" depends="compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-client.jar">
     <ant dir="${caaray-svc.dir}" target="compile" inheritall="false">
       <property name="jboss.server.hostname" value="${jboss.server.hostname}"/>
       <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}"/>
@@ -638,7 +643,6 @@
         <include name="asm.jar" />
         <include name="asm-attrs.jar" />
         <include name="axis.jar" />
-        <include name="cacore32-client.jar" />
         <include name="castor-1.0.2.jar" />
         <include name="jdbc-se2.0.jar" />
         <include name="xerces-J_1.4.0.jar" />
@@ -664,6 +668,9 @@
         <include name="xml-apis.jar" />
         <include name="netcdf.jar" />
         <include name="csmapi.jar" />
+        <include name="caGrid-1.1-data-stubs.jar"/>
+        <include name="caGrid-1.1-data-common.jar"/>
+        <include name="caGrid-1.1-sdkQuery32-core.jar"/>
       </fileset>
     </ear>
   </target>
@@ -765,7 +772,7 @@
         <pathelement location="${ejb3-persistence.jar}" />
         <pathelement location="${hibernate-annotations.jar}" />
         <pathelement location="${javaee.jar}" />
-        <pathelement location="${cacore32-client.jar}"/>
+        <pathelement location="${caGrid-1.1-data-stubs.jar}"/>
         <pathelement location="${csmapi.jar}"/>
         <pathelement location="${log4j.jar}" />
         <pathelement location="${cglib.jar}" />
@@ -774,7 +781,7 @@
   </target>
 
   <target name="test:junit-caarray-common.jar" depends="test:compile:caarray-common.test.classes,test:instrument:caarray-common.jar,configure-datasource-for-test,test:unpack-test-data">
-    <run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${csmapi.jar};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-common.resources.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar};${javacsv.jar};${hibernate-annotations.jar};${ejb3-persistence.jar};${cacore32-client.jar};${log4j.jar};${clm.jar}" />
+    <run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${csmapi.jar};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-common.resources.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar};${javacsv.jar};${hibernate-annotations.jar};${ejb3-persistence.jar};${caGrid-1.1-data-common.jar};${caGrid-1.1-data-stubs.jar};${caGrid-1.1-sdkQuery32-core.jar};${log4j.jar};${clm.jar};${axis.jar};${javaee.jar}" />
   </target>
 
   <!-- caarray-ejb.jar -->
@@ -795,7 +802,6 @@
         <pathelement location="${caarray-common.test.classes.dir}" />
         <pathelement location="${test.data.classes.dir}" />
         <pathelement location="${affxfusion.jar}" />
-        <pathelement location="${cacore32-client.jar}" />
         <pathelement location="${commons-collections.jar}" />
         <pathelement location="${commons-lang.jar}" />
         <pathelement location="${commons-io.jar}" />
@@ -813,7 +819,7 @@
   </target>
 
   <target name="test:junit-caarray-ejb.jar" depends="test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:functional:compile-tests,test:unpack-test-data">
-    <run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};${cacore32-client.jar};${csmapi.jar};${affxfusion.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${javacsv.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-beanutils.jar};${commons-lang.jar};${commons-collections.jar};${commons-configuration.jar};${commons-io.jar};${commons-lang.jar};${javaee.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar};${hibernate.jar};${hibernate-annotations.jar};${clm.jar}:${cglib.jar}" />
+    <run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};${csmapi.jar};${affxfusion.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${javacsv.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-beanutils.jar};${commons-lang.jar};${commons-collections.jar};${commons-configuration.jar};${commons-io.jar};${commons-lang.jar};${javaee.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar};${hibernate.jar};${hibernate-annotations.jar};${clm.jar}:${cglib.jar}" />
   </target>
 
   <!-- caarray.war -->
@@ -928,7 +934,7 @@
         <pathelement location="${hibernate-annotations.jar}" />
         <pathelement location="${ejb3-persistence.jar}" />
         <pathelement location="${junit.jar}" />
-        <pathelement location="${cacore32-client.jar}"/>
+        <pathelement location="${caGrid-1.1-data-stubs.jar}"/>
         <pathelement location="${cglib.jar}" />
       </classpath>
     </javac>
@@ -963,7 +969,6 @@
         <pathelement location="${caarray-common.jar}" />
         <pathelement location="${caarray-ejb.jar}" />
         <pathelement location="${caarray-war.classes.dir}" />
-        <pathelement location="${cacore32-client.jar}" />
         <pathelement location="${csmapi.jar}" />
         <pathelement location="${commons-configuration.jar}" />
         <pathelement location="${commons-lang.jar}" />

@@ -1,9 +1,7 @@
 package gov.nih.nci.cagrid.caarray.stubs.cql;
 
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.cagrid.caarray.service.CaArraySvcImpl;
-import gov.nih.nci.cagrid.caarray.util.CQL2CQL;
 import gov.nih.nci.cagrid.common.Utils;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import gov.nih.nci.cagrid.cqlquery.QueryModifier;
@@ -15,18 +13,12 @@ import gov.nih.nci.cagrid.data.mapping.Mappings;
 import gov.nih.nci.cagrid.data.service.ServiceConfigUtil;
 import gov.nih.nci.cagrid.data.utilities.CQLResultsCreationUtil;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -63,7 +55,7 @@ public class CaArrayCQLQueryProcessor extends CQLQueryProcessor {
         LOG.debug("CaArrayCQLQueryProcessor::processQuery ...");
         CQLQueryResults results = null;
         try {
-            List<? extends AbstractCaArrayObject> coreResultsList = queryCaArrayService(cqlQuery);
+            List<?> coreResultsList = queryCaArrayService(cqlQuery);
             String targetName = cqlQuery.getTarget().getName();
 
             Mappings mappings = null;
@@ -87,7 +79,8 @@ public class CaArrayCQLQueryProcessor extends CQLQueryProcessor {
                 }
             } else if (mod.isCountOnly()) {
                 LOG.debug("invoking CQLResultsCreationUtil.createCountResults");
-                results = CQLResultsCreationUtil.createCountResults(coreResultsList.size(), targetName);
+                results = CQLResultsCreationUtil.createCountResults(((Number) coreResultsList.get(0)).longValue(),
+                                                                    targetName);
             } else {
 
                 // attributes distinct or otherwise
@@ -100,8 +93,7 @@ public class CaArrayCQLQueryProcessor extends CQLQueryProcessor {
                 }
                 try {
                     LOG.debug("invoking CQLResultsCreationUtil.createAttributeResults");
-                    List<Object[]> attributeList = convert(coreResultsList, names, distinct);
-                    results = CQLResultsCreationUtil.createAttributeResults(attributeList, targetName, names);
+                    results = CQLResultsCreationUtil.createAttributeResults(coreResultsList, targetName, names);
                 } catch (Exception ex) {
                     throw new RuntimeException("Error creating attribute results: " + ex.getMessage(), ex);
                 }
@@ -113,43 +105,14 @@ public class CaArrayCQLQueryProcessor extends CQLQueryProcessor {
         }
     }
 
-    private List<Object[]> convert(List<? extends AbstractCaArrayObject> objs, String[] names, boolean distinct)
-        throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException,
-               InvocationTargetException {
-        String[] upcaseNames = new String[names.length];
-        for (int i = 0; i < names.length; ++i) {
-            upcaseNames[i] = StringUtils.capitalize(names[i]);
-        }
-
-        Set<Object> seenObjs = new HashSet<Object>();
-
-        List<Object[]> result = new ArrayList<Object[]>();
-        for (AbstractCaArrayObject curObj : objs) {
-            Object[] row = new Object[names.length];
-            for (int i = 0; i < names.length; ++i) {
-                Method m = curObj.getClass().getMethod("get" + upcaseNames[i]);
-                row[i] = m.invoke(curObj);
-            }
-            if (distinct) {
-                if (!seenObjs.contains(row[0])) {
-                    result.add(row);
-                }
-                seenObjs.add(row[0]);
-            } else {
-                result.add(row);
-            }
-        }
-        return result;
-    }
-
     /**
      * Call out to the remote EJB that actually processes the query.
      * @param cqlQuery query to run
      * @return list of domain objects that match the query criteria
      */
-    protected List<? extends AbstractCaArrayObject> queryCaArrayService(final CQLQuery cqlQuery) {
+    protected List<?> queryCaArrayService(final CQLQuery cqlQuery) {
         LOG.debug("querying ....");
-        return searchService.search(CQL2CQL.convert(cqlQuery));
+        return searchService.search(cqlQuery);
     }
 
     /**

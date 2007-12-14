@@ -23,7 +23,7 @@
     <property name="caarray.jmeter.samplers.jar" value="${target.dir}/caarray-jmeter-samplers.jar" />
     <property name="caarray.common.jar" value="../caarray-common.jar/target/caarray-common.jar" />
     <property name="caarray.client.jar" value="../caarray-client.jar/target/caarray-client.jar" />
-    <property name="cacore.client.jar" value="../lib/cacore32-client.jar" />
+    <property name="caGrid-1.1-data-stubs.jar" value="${lib.dir}/caGrid-1.1-data-stubs.jar"/>
     <property name="csm.jar" value="../lib/csmapi.jar" />
     <property name="jmeter.core.jar" value="${lib.dir}/ApacheJMeter_core.jar" />
     <property name="jmeter.java.jar" value="${lib.dir}/ApacheJMeter_java.jar" />
@@ -56,7 +56,7 @@
             <classpath>
                 <pathelement location="${caarray.common.jar}" />
                 <pathelement location="${caarray.client.jar}" />
-                <pathelement location="${cacore.client.jar}" />
+                <pathelement location="${caGrid-1.1-data-stubs.jar}"/>
                 <pathelement location="${jmeter.core.jar}" />
                 <pathelement location="${jmeter.java.jar}" />
             </classpath>
@@ -76,7 +76,7 @@
         <copy file="${caarray.jmeter.samplers.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
         <copy file="${caarray.common.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
         <copy file="${caarray.client.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
-        <copy file="${cacore.client.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
+        <copy file="${caGrid-1.1-data-stubs.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
         <copy file="${csm.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
         <copy file="${javassist.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
         <copy file="${log4j.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />

@@ -87,13 +87,13 @@ import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.jmeter.base.CaArrayJmeterSampler;
-import gov.nih.nci.system.query.cql.CQLAssociation;
-import gov.nih.nci.system.query.cql.CQLAttribute;
-import gov.nih.nci.system.query.cql.CQLGroup;
-import gov.nih.nci.system.query.cql.CQLLogicalOperator;
-import gov.nih.nci.system.query.cql.CQLObject;
-import gov.nih.nci.system.query.cql.CQLPredicate;
-import gov.nih.nci.system.query.cql.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Association;
+import gov.nih.nci.cagrid.cqlquery.Attribute;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Group;
+import gov.nih.nci.cagrid.cqlquery.LogicalOperator;
+import gov.nih.nci.cagrid.cqlquery.Object;
+import gov.nih.nci.cagrid.cqlquery.Predicate;
 
 import java.util.Iterator;
 import java.util.List;
@@ -187,26 +187,26 @@ public class CQLSearchSample extends CaArrayJmeterSampler implements JavaSampler
 
     private CQLQuery createCqlQuery() {
         CQLQuery cqlQuery = new CQLQuery();
-        CQLObject target = new CQLObject();
+        Object target = new Object();
         target.setName("gov.nih.nci.caarray.domain.sample.Sample");
 
-        CQLAttribute sampleNameAttribute = new CQLAttribute();
+        Attribute sampleNameAttribute = new Attribute();
         sampleNameAttribute.setName("name");
         sampleNameAttribute.setValue(sampleName);
-        sampleNameAttribute.setPredicate(CQLPredicate.EQUAL_TO);
+        sampleNameAttribute.setPredicate(Predicate.EQUAL_TO);
 
-        CQLAssociation tissueSiteAssociation = new CQLAssociation();
+        Association tissueSiteAssociation = new Association();
         tissueSiteAssociation.setName("gov.nih.nci.caarray.domain.vocabulary.Term");
-        CQLAttribute tissueSiteAttribute = new CQLAttribute();
+        Attribute tissueSiteAttribute = new Attribute();
         tissueSiteAttribute.setName("value");
         tissueSiteAttribute.setValue(tissueSite);
-        tissueSiteAttribute.setPredicate(CQLPredicate.EQUAL_TO);
+        tissueSiteAttribute.setPredicate(Predicate.EQUAL_TO);
         tissueSiteAssociation.setAttribute(tissueSiteAttribute);
 
-        CQLGroup associations = new CQLGroup();
-        associations.addAttribute(sampleNameAttribute);
-        associations.addAssociation(tissueSiteAssociation);
-        associations.setLogicOperator(CQLLogicalOperator.AND);
+        Group associations = new Group();
+        associations.setAttribute(new Attribute[] {sampleNameAttribute});
+        associations.setAssociation(new Association[] {tissueSiteAssociation});
+        associations.setLogicRelation(LogicalOperator.AND);
         target.setGroup(associations);
 
         cqlQuery.setTarget(target);
