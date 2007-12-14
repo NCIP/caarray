@@ -215,9 +215,7 @@
       <format property="touch.time" pattern="MM/dd/yyyy hh:mm aa" unit="hour"/>
     </tstamp>
 	<echo> ${touch.time} </echo>
-    <exec executable="cmd" dir="C:/cygwin">
-      <arg line="/c cygwin.bat" />
-    </exec>
+    <exec executable="C:/dev/tools/automation-scripts/fetch-mail.bat" />
     <loadfile srcfile="C:/cygwin/var/spool/mail/Paul.Duvall" property="localBuild">
       <filterchain>
         <linecontains>
@@ -240,15 +238,15 @@
 
   <target name="runLocalBuild" depends="checkLogs" if="localBuild">
     <echo>Running the build...</echo>
-    <exec executable="cmd" dir="${basedir}">
-      <arg line="/c ant -f ${basedir}/build/build.xml -Dnotest=true -Dnodbintegration=true -DbuildNumber=JottToBuild -Dbuild.date_time='${touch.time}'" />
+    <exec executable="cmd" dir="C:\dev\ncicb\caarray2\software\build">
+      <arg line="/c ant -f C:\dev\ncicb\caarray2\software\build\build.xml -Dnotest=true -Denvpropertyfile=C:\dev\ncicb\scm-private\trunk\caarray2\properties\DEV.properties -Dnodbintegration=true -DbuildNumber=JottToBuild -Dbuild.date_time='${touch.time}'" />
     </exec>
   </target>
 
   <target name="runRemoteBuild" depends="checkLogs" if="remoteBuild">
     <echo>Running the build...</echo>
-    <exec executable="cmd" dir="${basedir}">
-      <arg line="/c ant -f ${basedir}/build/build.xml remote-deploy -Denvpropertyfile=C:\dev\ncicb\scm-private\trunk\caarray2\properties\DEV.properties -Dnotest=true -Dnodbintegration=true -DbuildNumber=JottToBuild -Dbuild.date_time='${touch.time}'" />
+    <exec executable="cmd" dir="C:\dev\ncicb\caarray2\software\build">
+      <arg line="/c ant -f C:\dev\ncicb\caarray2\software\build\build.xml remote-deploy -Denvpropertyfile=C:\dev\ncicb\scm-private\trunk\caarray2\properties\DEV.properties -Dnotest=true -Dnodbintegration=true -DbuildNumber=JottToBuild -Dbuild.date_time='${touch.time}'" />
     </exec>
   </target>
 
