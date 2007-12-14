@@ -190,6 +190,7 @@ public class CQLSearchArrayDesign extends CaArrayJmeterSampler implements JavaSa
         providerAttribute.setValue(provider);
         providerAttribute.setPredicate(Predicate.EQUAL_TO);
         providerAssociation.setAttribute(providerAttribute);
+        providerAssociation.setRoleName("provider");
 
         target.setAssociation(providerAssociation);
 

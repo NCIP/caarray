@@ -197,6 +197,7 @@ public class CQLSearchClient extends CaArrayJmeterSampler implements JavaSampler
         manufacturerName.setValue(manufacturer);
         manufacturerName.setPredicate(Predicate.EQUAL_TO);
         manufacturerAssociation.setAttribute(manufacturerName);
+        manufacturerAssociation.setRoleName("manufacturer");
 
         Association organismAssociation = new Association();
         organismAssociation.setName("edu.georgetown.pir.Organism");
@@ -205,6 +206,7 @@ public class CQLSearchClient extends CaArrayJmeterSampler implements JavaSampler
         organismName.setValue(organism);
         organismName.setPredicate(Predicate.EQUAL_TO);
         organismAssociation.setAttribute(organismName);
+        organismAssociation.setRoleName("organism");
 
         Group associations = new Group();
         associations.setAssociation(new Association[] {manufacturerAssociation, organismAssociation});

@@ -197,6 +197,7 @@ public class CQLSearchPublication extends CaArrayJmeterSampler implements JavaSa
         statusAttribute.setValue(publicationStatus);
         statusAttribute.setPredicate(Predicate.EQUAL_TO);
         statusAssociation.setAttribute(statusAttribute);
+        statusAssociation.setRoleName("status");
 
         Association typeAssociation = new Association();
         typeAssociation.setName("gov.nih.nci.caarray.domain.vocabulary.Term");
@@ -205,6 +206,7 @@ public class CQLSearchPublication extends CaArrayJmeterSampler implements JavaSa
         typeAttribute.setValue(publicationType);
         typeAttribute.setPredicate(Predicate.EQUAL_TO);
         typeAssociation.setAttribute(typeAttribute);
+        typeAssociation.setRoleName("type");
 
         Group associations = new Group();
         associations.setAssociation(new Association[] {statusAssociation, typeAssociation});

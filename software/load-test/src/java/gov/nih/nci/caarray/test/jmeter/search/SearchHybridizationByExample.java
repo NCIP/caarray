@@ -104,7 +104,7 @@ import org.apache.jmeter.samplers.SampleResult;
 public class SearchHybridizationByExample extends CaArrayJmeterSampler implements JavaSamplerClient {
     private static final String NAME_PARAM = "hybridizationName";
 
-    private static final String DEFAULT_NAME = "TCGA-02-0011-01B-01R-00177-01";
+    private static final String DEFAULT_NAME = null;
 
     private String hybridizationName;
     private String hostName;
@@ -154,7 +154,7 @@ public class SearchHybridizationByExample extends CaArrayJmeterSampler implement
             if (isResultOkay(hybridizationList)) {
                 results.setSuccessful(true);
                 results.setResponseCodeOK();
-                results.setResponseMessage("Retrieved " + hybridizationList.size() + " hybridizations.");
+                results.setResponseMessage("Retrieved " + hybridizationList.size() + " hybridizations of name " + hybridizationName);
             } else {
                 results.setSuccessful(false);
                 results.setResponseCode("Error: Response did not match request. Retrieved " + hybridizationList.size() + " hybridizations.");

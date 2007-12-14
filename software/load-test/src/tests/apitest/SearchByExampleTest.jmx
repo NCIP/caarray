@@ -70,7 +70,7 @@
           <hashTree/>
         </hashTree>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Sample Searcher" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Source Searcher" enabled="true">
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
@@ -90,26 +90,26 @@
           <intProp name="LoopController.loops">-1</intProp>
         </LoopController>
         <hashTree>
-          <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Sample Search Criteria CSV" enabled="true">
+          <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Source Search Criteria CSV" enabled="true">
             <stringProp name="delimiter">\t</stringProp>
             <stringProp name="fileEncoding"></stringProp>
-            <stringProp name="filename">sampleSearchCriteria.csv</stringProp>
+            <stringProp name="filename">sourceSearchCriteria.csv</stringProp>
             <boolProp name="recycle">false</boolProp>
             <boolProp name="stopThread">true</boolProp>
-            <stringProp name="variableNames">sampleName,tissueSite</stringProp>
+            <stringProp name="variableNames">sourceName,materialType</stringProp>
           </CSVDataSet>
           <hashTree/>
           <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Search Request" enabled="true">
             <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments">
                 <elementProp name="sampleName" elementType="Argument">
-                  <stringProp name="Argument.name">sampleName</stringProp>
-                  <stringProp name="Argument.value">${sampleName}</stringProp>
+                  <stringProp name="Argument.name">sourceName</stringProp>
+                  <stringProp name="Argument.value">${sourceName}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
                 <elementProp name="tissueSite" elementType="Argument">
-                  <stringProp name="Argument.name">tissueSite</stringProp>
-                  <stringProp name="Argument.value">${tissueSite}</stringProp>
+                  <stringProp name="Argument.name">materialType</stringProp>
+                  <stringProp name="Argument.value">${materialType}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
                 <elementProp name="host.name" elementType="Argument">
@@ -124,7 +124,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.search.SearchSampleByExample</stringProp>
+            <stringProp name="classname">gov.nih.nci.caarray.test.jmeter.search.SearchSourceByExample</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>

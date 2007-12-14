@@ -190,6 +190,7 @@ public class CQLSearchTerm extends CaArrayJmeterSampler implements JavaSamplerCl
         categoryAttribute.setValue(categoryName);
         categoryAttribute.setPredicate(Predicate.EQUAL_TO);
         categoryAssociation.setAttribute(categoryAttribute);
+        categoryAssociation.setRoleName("category");
 
         target.setAssociation(categoryAssociation);
 

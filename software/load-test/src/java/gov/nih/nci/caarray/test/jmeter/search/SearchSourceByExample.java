@@ -82,18 +82,13 @@
  */
 package gov.nih.nci.caarray.test.jmeter.search;
 
-import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.jmeter.base.CaArrayJmeterSampler;
-import gov.nih.nci.cagrid.cqlquery.Association;
-import gov.nih.nci.cagrid.cqlquery.Attribute;
-import gov.nih.nci.cagrid.cqlquery.CQLQuery;
-import gov.nih.nci.cagrid.cqlquery.Group;
-import gov.nih.nci.cagrid.cqlquery.LogicalOperator;
-import gov.nih.nci.cagrid.cqlquery.Object;
-import gov.nih.nci.cagrid.cqlquery.Predicate;
 
 import java.util.Iterator;
 import java.util.List;
@@ -104,19 +99,19 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
 /**
- * A custom JMeter Sampler that acts as a client searching for samples using CQL through CaArray's Remote Java API.
+ * A custom JMeter Sampler that acts as a client searching for sources by example through CaArray's Remote Java API.
  *
  * @author Rashmi Srinivasa
  */
-public class CQLSearchSample extends CaArrayJmeterSampler implements JavaSamplerClient {
-    private static final String NAME_PARAM = "sampleName";
-    private static final String TISSUE_SITE_PARAM = "tissueSite";
+public class SearchSourceByExample extends CaArrayJmeterSampler implements JavaSamplerClient {
+    private static final String NAME_PARAM = "sourceName";
+    private static final String MATERIAL_TYPE_PARAM = "materialType";
 
-    private static final String DEFAULT_NAME = "TCGA-02-0011-01B-01R-00177-01";
-    private static final String DEFAULT_TISSUE_SITE = "Brain";
+    private static final String DEFAULT_NAME = null;
+    private static final String DEFAULT_MATERIAL_TYPE = null;
 
-    private String sampleName;
-    private String tissueSite;
+    private String sourceName;
+    private String materialType;
     private String hostName;
     private int jndiPort;
 
@@ -138,38 +133,39 @@ public class CQLSearchSample extends CaArrayJmeterSampler implements JavaSampler
     public Arguments getDefaultParameters() {
         Arguments params = new Arguments();
         params.addArgument(NAME_PARAM, DEFAULT_NAME);
-        params.addArgument(TISSUE_SITE_PARAM, DEFAULT_TISSUE_SITE);
+        params.addArgument(MATERIAL_TYPE_PARAM, DEFAULT_MATERIAL_TYPE);
         params.addArgument(getHostNameParam(), getDefaultHostName());
         params.addArgument(getJndiPortParam(), getDefaultJndiPort());
         return params;
     }
 
     /**
-     * Runs the CQL search test and returns the result.
+     * Runs the search-by-example test and returns the result.
      *
      * @param context the <code>JavaSamplerContext</code> to read arguments from.
      * @param the <code>SampleResult</code> containing the success/failure and timing results of the test.
      */
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
-        sampleName = context.getParameter(NAME_PARAM, DEFAULT_NAME);
-        tissueSite = context.getParameter(TISSUE_SITE_PARAM, DEFAULT_TISSUE_SITE);
+        sourceName = context.getParameter(NAME_PARAM, DEFAULT_NAME);
+        materialType = context.getParameter(MATERIAL_TYPE_PARAM, DEFAULT_MATERIAL_TYPE);
 
-        CQLQuery cqlQuery = createCqlQuery();
+        Source exampleSource = createExampleSource();
         try {
             CaArrayServer server = new CaArrayServer(hostName, jndiPort);
             server.connect();
             CaArraySearchService searchService = server.getSearchService();
             results.sampleStart();
-            List sampleList = searchService.search(cqlQuery);
+            List<Source> sourceList = searchService.search(exampleSource);
             results.sampleEnd();
-            if (isResultOkay(sampleList)) {
+            if (isResultOkay(sourceList)) {
                 results.setSuccessful(true);
                 results.setResponseCodeOK();
-                results.setResponseMessage("Retrieved " + sampleList.size() + " samples.");
+                results.setResponseMessage("Retrieved " + sourceList.size() + " sources of name "
+                        + sourceName + " and material type " + materialType);
             } else {
                 results.setSuccessful(false);
-                results.setResponseCode("Error: Response did not match request. Retrieved " + sampleList.size() + " samples.");
+                results.setResponseCode("Error: Response did not match request. Retrieved " + sourceList.size() + " sources.");
             }
         } catch (ServerConnectionException e) {
             results.setSuccessful(false);
@@ -185,45 +181,38 @@ public class CQLSearchSample extends CaArrayJmeterSampler implements JavaSampler
         return results;
     }
 
-    private CQLQuery createCqlQuery() {
-        CQLQuery cqlQuery = new CQLQuery();
-        Object target = new Object();
-        target.setName("gov.nih.nci.caarray.domain.sample.Sample");
+    private Source createExampleSource() {
+        Source exampleSource = new Source();
 
-        Attribute sampleNameAttribute = new Attribute();
-        sampleNameAttribute.setName("name");
-        sampleNameAttribute.setValue(sampleName);
-        sampleNameAttribute.setPredicate(Predicate.EQUAL_TO);
+        exampleSource.setName(sourceName);
 
-        Association tissueSiteAssociation = new Association();
-        tissueSiteAssociation.setName("gov.nih.nci.caarray.domain.vocabulary.Term");
-        Attribute tissueSiteAttribute = new Attribute();
-        tissueSiteAttribute.setName("value");
-        tissueSiteAttribute.setValue(tissueSite);
-        tissueSiteAttribute.setPredicate(Predicate.EQUAL_TO);
-        tissueSiteAssociation.setAttribute(tissueSiteAttribute);
+        Term materialTypeTerm = new Term();
+        materialTypeTerm.setValue(materialType);
+        Category materialTypeCategory = new Category();
+        materialTypeCategory.setName("MaterialType");
+        materialTypeTerm.setCategory(materialTypeCategory);
+        exampleSource.setMaterialType(materialTypeTerm);
 
-        Group associations = new Group();
-        associations.setAttribute(new Attribute[] {sampleNameAttribute});
-        associations.setAssociation(new Association[] {tissueSiteAssociation});
-        associations.setLogicRelation(LogicalOperator.AND);
-        target.setGroup(associations);
-
-        cqlQuery.setTarget(target);
-        return cqlQuery;
+        return exampleSource;
     }
 
-    private boolean isResultOkay(List sampleList) {
-        if (sampleList.isEmpty()) {
+    private boolean isResultOkay(List<Source> sourceList) {
+        if (sourceList.isEmpty()) {
             return true;
         }
 
-        Iterator i = sampleList.iterator();
+        Iterator<Source> i = sourceList.iterator();
         while (i.hasNext()) {
-            Sample retrievedSample = (Sample) i.next();
-            // Check if retrieved sample matches requested search criteria.
-            if ((!sampleName.equals(retrievedSample.getName())) || (!tissueSite.equals(retrievedSample.getTissueSite().getValue()))) {
+            Source retrievedSource = i.next();
+            // Check if retrieved source matches requested search criteria.
+            if ((sourceName != null) && (!sourceName.equals(retrievedSource.getName()))) {
                 return false;
+            }
+            if (materialType != null) {
+                if ((retrievedSource.getMaterialType() == null)
+                        || (!materialType.equals(retrievedSource.getMaterialType().getValue()))) {
+                    return false;
+                }
             }
         }
         return true;
