@@ -156,9 +156,9 @@
   </target>
 
   <target name="testRemoteProtocols">
-	<echo>Testing remote targets in macrodef.xml...</echo>
+	<!--<echo>Testing remote targets in macrodef.xml...</echo>
 	<remote-scp remoteScpFileToCopy="${basedir}/build/default.properties" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.temp.dir}"/>
-    <remote-ssh remotesshcommand="ls" />
+    <remote-ssh remotesshcommand="ls" />-->
   </target>
 
   <target name="testPortAccess">
