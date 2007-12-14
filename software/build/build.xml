@@ -1101,8 +1101,8 @@
     <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/populate-caarray.sql" />
   </target>
 
-  <target name="database:env-specific-sql" if="env.specific.sql" description="populates db with initial data">
-    <run-sql-script database.url="${database.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${env.specific.sql}" />
+  <target name="database:env-specific-sql" description="populates db with initial data">
+    <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/${config.sql.file}" />
   </target>
 
   <target name="database:reinitialize" unless="nodbintegration"
