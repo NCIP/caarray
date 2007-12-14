@@ -101,11 +101,11 @@
 		</copy>
 	</target>
 	
-   <target name="remote-deployment" unless="create.tag">
+   <target name="remote-deployment" unless="create.tag">		
 		<antcall target="svn:scorch" />
 		<antcall target="svn:checkout-caarray" />
 		<antcall target="svn:checkout-caarray-tag" />
-		<antcall target="prepare-remote-properties" />
+		<antcall target="prepare-remote-properties" />		
 	    <ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml" target="remote-deploy"/>
 	</target>
 
@@ -114,7 +114,11 @@
 	</tstamp>
 	
 	<target name="remote-deployment-createtag" if="create.tag">
+        <tstamp>
+          <format property="touch.time" pattern="MM/dd/yyyy hh:mm aa" unit="hour"/>
+        </tstamp>	    
 	    <echo message="Deploying to ${ssh.server.hostname} and adding SVN tag ${svn.tag}..." />
+		<property name="build.date_time" value="'${touch.time}'" />
 	    <antcall target="svn:scorch" />
 		<antcall target="svn:checkout-caarray" />
 		<antcall target="svn:checkout-caarray-tag" />
