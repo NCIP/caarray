@@ -23,8 +23,11 @@
     <property name="caarray.jmeter.samplers.jar" value="${target.dir}/caarray-jmeter-samplers.jar" />
     <property name="caarray.common.jar" value="../caarray-common.jar/target/caarray-common.jar" />
     <property name="caarray.client.jar" value="../caarray-client.jar/target/caarray-client.jar" />
-    <property name="caGrid-1.1-data-stubs.jar" value="${lib.dir}/caGrid-1.1-data-stubs.jar"/>
+    <property name="cagrid-data-stubs.jar" value="../lib/caGrid-1.1-data-stubs.jar"/>
     <property name="csm.jar" value="../lib/csmapi.jar" />
+    <property name="cglib.jar" value="../lib/cglib-2.1.3.jar"/>
+    <property name="asm.jar" value="../lib/asm.jar"/>
+    <property name="axis.jar" value="../lib/axis.jar"/>
     <property name="jmeter.core.jar" value="${lib.dir}/ApacheJMeter_core.jar" />
     <property name="jmeter.java.jar" value="${lib.dir}/ApacheJMeter_java.jar" />
     <property name="javassist.jar" value="${lib.dir}/javassist.jar" />
@@ -56,7 +59,8 @@
             <classpath>
                 <pathelement location="${caarray.common.jar}" />
                 <pathelement location="${caarray.client.jar}" />
-                <pathelement location="${caGrid-1.1-data-stubs.jar}"/>
+                <pathelement location="${cagrid-data-stubs.jar}"/>
+                <pathelement location="${cglib.jar}"/>
                 <pathelement location="${jmeter.core.jar}" />
                 <pathelement location="${jmeter.java.jar}" />
             </classpath>
@@ -76,8 +80,11 @@
         <copy file="${caarray.jmeter.samplers.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
         <copy file="${caarray.common.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
         <copy file="${caarray.client.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
-        <copy file="${caGrid-1.1-data-stubs.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
+        <copy file="${cagrid-data-stubs.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
         <copy file="${csm.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
+        <copy file="${cglib.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
+        <copy file="${asm.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
+        <copy file="${axis.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
         <copy file="${javassist.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
         <copy file="${log4j.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
     </target>
@@ -114,6 +121,7 @@
         <!-- ******************************************************************* -->
         <!-- ** LOAD DATA FOR TESTS TO USE                                    ** -->
         <!-- ******************************************************************* -->
+	<!--
         <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/setup/ArrayDesignImporter.jmx" resultlog="${tests.out.dir}/setup/ArrayDesignImporter.jtl">
             <jvmarg value="-Xms512m" />
             <jvmarg value="-Xmx1024m" />
@@ -130,10 +138,12 @@
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
+	-->
 
         <!-- ******************************************************************* -->
         <!-- ** RUN API TESTS                                                 ** -->
         <!-- ******************************************************************* -->
+	<!--
         <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/SearchByExampleTest.jmx" resultlog="${tests.out.dir}/apitest/SearchByExampleTest.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jndi.port" value="${server.jndi.port}" />
@@ -160,10 +170,12 @@
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jndi.port" value="${server.jndi.port}" />
         </jmeter>
+	-->
 
         <!-- ******************************************************************* -->
         <!-- ** RUN LOAD TESTS                                                ** -->
         <!-- ******************************************************************* -->
+	<!--
         <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/BrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseTest_Basic.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
@@ -215,6 +227,7 @@
             <property name="server.jboss.port" value="${server.jboss.port}" />
             <property name="server.jndi.port" value="${server.jndi.port}" />
         </jmeter>
+	-->
 
         <!-- UNCOMMENT TO RUN TESTS WITH BIGGER DATABASE SIZES.
         <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/setup/FiveHundredExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/FiveHundredExperimentLoader.jtl">
