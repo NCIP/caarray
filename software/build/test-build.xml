@@ -178,9 +178,11 @@
     <condition property="globoss.server.jndi.port.running">
       <socket port="${globoss.server.jndi.port}" server="${globoss.server.hostname}" />
     </condition>
+	<!--
     <condition property="mail.smtp.port.running">
       <socket port="${mail.smtp.port}" server="${mail.smtp.host}" />
     </condition>
+	-->
 	<!-- TODO: Check for LDAP -->
 
 	<!-- DISPLAY ERROR MESSAGES -->
