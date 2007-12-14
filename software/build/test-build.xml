@@ -206,10 +206,10 @@
 	  expected="true"
 	  actual="${globoss.server.jndi.port.running}"
 	  casesensitive="true"/>
-	<au:assertEquals message="Unable to reach ${mail.smtp.host}:${mail.smtp.port}" 
+	<!--<au:assertEquals message="Unable to reach ${mail.smtp.host}:${mail.smtp.port}" 
 	  expected="true"
 	  actual="${mail.smtp.port.running}"
-	  casesensitive="true"/>
+	  casesensitive="true"/>-->
   </target>
 
   <target name="checkLogs">
