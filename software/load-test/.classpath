@@ -8,6 +8,6 @@
 	<classpathentry kind="lib" path="/caarray-common-jar/target/caarray-common.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/caarray-client-jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/caarray-common-jar"/>
-	<classpathentry kind="lib" path="/lib/caGrid-1.1-data-stubs.jar"/>
+	<classpathentry kind="lib" path="C:/ncicb_svn/caarray2/software/lib/caGrid-1.1-data-stubs.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
