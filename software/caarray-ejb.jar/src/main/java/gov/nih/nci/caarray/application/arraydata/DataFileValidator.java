@@ -82,14 +82,14 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import java.io.File;
+
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.validation.FileValidationResult;
-
-import java.io.File;
 
 /**
  * Responsible for validation of arbitrary array data files.
@@ -98,18 +98,21 @@ final class DataFileValidator {
 
     private final CaArrayFile arrayDataFile;
     private final CaArrayDaoFactory daoFactory;
+    private final FileAccessService fileAccessService;
     private final ArrayDesignService arrayDesignService;
 
-    DataFileValidator(CaArrayFile arrayDataFile, CaArrayDaoFactory daoFactory, ArrayDesignService arrayDesignService) {
+    DataFileValidator(CaArrayFile arrayDataFile, CaArrayDaoFactory daoFactory, FileAccessService fileAccessService, 
+            ArrayDesignService arrayDesignService) {
         this.arrayDataFile = arrayDataFile;
         this.daoFactory = daoFactory;
+        this.fileAccessService = fileAccessService;
         this.arrayDesignService = arrayDesignService;
     }
 
     void validate() {
         AbstractDataFileHandler handler =
             ArrayDataHandlerFactory.getInstance().getHandler(getArrayDataFile().getFileType());
-        File file = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(arrayDataFile);
+        File file = getFileAccessService().getFile(arrayDataFile);
         FileValidationResult result = handler.validate(arrayDataFile, file, arrayDesignService);
         getArrayDataFile().setValidationResult(result);
         if (result.isValid()) {
@@ -127,4 +130,9 @@ final class DataFileValidator {
     private CaArrayDaoFactory getDaoFactory() {
         return daoFactory;
     }
+
+    private FileAccessService getFileAccessService() {
+        return fileAccessService;
+    }
+
 }

@@ -60,10 +60,6 @@ import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheFactory;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStub;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
@@ -119,12 +115,6 @@ public class FileManagementServiceTest {
         locatorStub.addLookup(ArrayDesignService.JNDI_NAME, arrayDesignServiceStub);
         locatorStub.addLookup(MageTabTranslator.JNDI_NAME, new MageTabTranslatorStub());
         fileManagementService = fileManagementServiceBean;
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheFactory() {
-            public TemporaryFileCache createTempFileCache() {
-                return new TemporaryFileCacheStub(fileAccessServiceStub);            
-            }
-            
-        });
     }
 
     @Test

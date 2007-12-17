@@ -120,7 +120,7 @@ public class FileAccessServiceTest {
 
     @After
     public void tearDown() {
-        TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
+        fileAccessService.closeFiles();
         transaction.rollback();
     }
 
@@ -150,12 +150,12 @@ public class FileAccessServiceTest {
         File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF;
         CaArrayFile caArrayFile = fileAccessService.add(file);
         HibernateUtil.getCurrentSession().save(caArrayFile);
-        File retrievedFile = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caArrayFile);
+        File retrievedFile = fileAccessService.getFile(caArrayFile);
         assertEquals(file.getName(), retrievedFile.getName());
         assertEquals(file.length(), retrievedFile.length());
         assertTrue(file.exists());
         assertTrue(retrievedFile.exists());
-        TemporaryFileCacheLocator.getTemporaryFileCache().closeFile(caArrayFile);
+        fileAccessService.closeFiles();
         assertFalse(retrievedFile.exists());
     }
 

@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -111,8 +112,8 @@ class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
     private static final Logger LOG = Logger.getLogger(IlluminaCsvDesignHandler.class);
 
     IlluminaCsvDesignHandler(CaArrayFile designFile, VocabularyService vocabularyService,
-            CaArrayDaoFactory daoFactory) {
-        super(designFile, vocabularyService, daoFactory);
+            FileAccessService fileAccessService, CaArrayDaoFactory daoFactory) {
+        super(designFile, vocabularyService, fileAccessService, daoFactory);
     }
 
     @Override

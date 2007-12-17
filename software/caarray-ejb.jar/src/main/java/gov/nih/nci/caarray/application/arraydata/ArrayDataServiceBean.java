@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataSet;
@@ -129,14 +130,17 @@ public class ArrayDataServiceBean implements ArrayDataService {
      */
     public DataSet getData(AbstractArrayData arrayData) {
         LogUtil.logSubsystemEntry(LOG, arrayData);
+        FileAccessService fileAccessService = getFileAccessService();
         checkArguments(arrayData);
-        loadDataSet(arrayData);
+        loadDataSet(arrayData, fileAccessService);
+        fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
         return arrayData.getDataSet();
     }
 
-    private void loadDataSet(AbstractArrayData arrayData) {
-        DataSetLoader loader = new DataSetLoader(arrayData, getDaoFactory());
+    private void loadDataSet(AbstractArrayData arrayData, FileAccessService fileAccessService) {
+        DataSetLoader loader =
+            new DataSetLoader(arrayData, getDaoFactory(), fileAccessService);
         loader.load();
     }
 
@@ -145,14 +149,18 @@ public class ArrayDataServiceBean implements ArrayDataService {
      */
     public DataSet getData(AbstractArrayData arrayData, List<QuantitationType> types) {
         LogUtil.logSubsystemEntry(LOG, arrayData);
+        FileAccessService fileAccessService = getFileAccessService();
         checkArguments(arrayData);
-        loadDataSet(arrayData, types);
+        loadDataSet(arrayData, types, fileAccessService);
+        fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
         return arrayData.getDataSet();
     }
 
-    private void loadDataSet(AbstractArrayData arrayData, List<QuantitationType> types) {
-        DataSetLoader loader = new DataSetLoader(arrayData, getDaoFactory());
+    private void loadDataSet(AbstractArrayData arrayData, List<QuantitationType> types,
+            FileAccessService fileAccessService) {
+        DataSetLoader loader =
+            new DataSetLoader(arrayData, getDaoFactory(), fileAccessService);
         loader.load(types);
     }
 
@@ -162,10 +170,12 @@ public class ArrayDataServiceBean implements ArrayDataService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void importData(CaArrayFile caArrayFile, boolean createAnnnotation) throws InvalidDataFileException {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
+        FileAccessService fileAccessService = getFileAccessService();
         AbstractDataSetImporter abstractDataSetImporter =
-            AbstractDataSetImporter.create(caArrayFile, getDaoFactory());
+            AbstractDataSetImporter.create(caArrayFile, getDaoFactory(), fileAccessService);
         AbstractArrayData arrayData = abstractDataSetImporter.importData(createAnnnotation);
-        loadDataSet(arrayData);
+        loadDataSet(arrayData, fileAccessService);
+        fileAccessService.closeFile(caArrayFile);
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -183,9 +193,11 @@ public class ArrayDataServiceBean implements ArrayDataService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public FileValidationResult validate(CaArrayFile arrayDataFile) {
+        FileAccessService fileAccessService = getFileAccessService();
         DataFileValidator dataFileValidator =
-            new DataFileValidator(arrayDataFile, getDaoFactory(), getArrayDesignService());
+            new DataFileValidator(arrayDataFile, getDaoFactory(), fileAccessService, getArrayDesignService());
         dataFileValidator.validate();
+        fileAccessService.closeFiles();
         return arrayDataFile.getValidationResult();
     }
 
@@ -195,6 +207,10 @@ public class ArrayDataServiceBean implements ArrayDataService {
 
     void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
+    }
+
+    private FileAccessService getFileAccessService() {
+        return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
     }
 
     private ArrayDesignService getArrayDesignService() {

@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.dao.CaArrayDao;
@@ -109,10 +109,12 @@ import java.io.File;
  * Responsible for importing parsed MAGE-TAB data into caArray.
  */
 class MageTabImporter {
+    private final FileAccessService fileAccessService;
     private final CaArrayDaoFactory daoFactory;
     private final MageTabTranslator translator;
 
-    MageTabImporter(MageTabTranslator translator, CaArrayDaoFactory daoFactory) {
+    MageTabImporter(FileAccessService fileAccessService, MageTabTranslator translator, CaArrayDaoFactory daoFactory) {
+        this.fileAccessService = fileAccessService;
         this.translator = translator;
         this.daoFactory = daoFactory;
     }
@@ -215,7 +217,7 @@ class MageTabImporter {
     }
 
     private File getFile(CaArrayFile caArrayFile) {
-        return TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caArrayFile);
+        return fileAccessService.getFile(caArrayFile);
     }
 
     private void save(Project targetProject, CaArrayTranslationResult translationResult) {

@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
@@ -98,8 +99,9 @@ final class DerivedArrayDataImporter extends AbstractDataSetImporter {
 
     private DerivedArrayData derivedArrayData;
 
-    DerivedArrayDataImporter(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory) {
-        super(caArrayFile, daoFactory);
+    DerivedArrayDataImporter(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory, 
+            FileAccessService fileAccessService) {
+        super(caArrayFile, daoFactory, fileAccessService);
     }
 
     @Override

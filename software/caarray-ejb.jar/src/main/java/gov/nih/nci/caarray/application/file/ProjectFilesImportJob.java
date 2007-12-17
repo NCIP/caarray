@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -104,25 +104,23 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
 
     @Override
     void execute() {
+        FileAccessService fileAccessService = getFileAccessService();
         Project project = getProject();
-        try {
-            doImport(project, getFileSet(project));            
-        } finally {
-            TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
-        }
+        doImport(fileAccessService, project, getFileSet(project));
+        fileAccessService.closeFiles();
     }
 
-    private void doImport(Project targetProject, CaArrayFileSet fileSet) {
-        doValidate(fileSet);
+    private void doImport(FileAccessService fileAccessService, Project targetProject, CaArrayFileSet fileSet) {
+        doValidate(fileAccessService, fileSet);
         if (fileSet.getStatus().equals(FileStatus.VALIDATED)) {
-            importAnnotation(targetProject, fileSet);
+            importAnnotation(fileAccessService, targetProject, fileSet);
             importArrayData(fileSet);
         }
     }
 
-    private void importAnnotation(Project targetProject, CaArrayFileSet fileSet) {
+    private void importAnnotation(FileAccessService fileAccessService, Project targetProject, CaArrayFileSet fileSet) {
         try {
-            getMageTabImporter().importFiles(targetProject, fileSet);
+            getMageTabImporter(fileAccessService).importFiles(targetProject, fileSet);
         } catch (MageTabParsingException e) {
             LOG.error(e.getMessage(), e);
         }

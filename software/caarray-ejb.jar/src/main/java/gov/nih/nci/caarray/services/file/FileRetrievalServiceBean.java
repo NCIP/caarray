@@ -82,12 +82,13 @@
  */
 package gov.nih.nci.caarray.services.file;
 
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
+import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -113,6 +114,10 @@ public class FileRetrievalServiceBean implements FileRetrievalService {
     private static final int CHUNK_SIZE = 4096;
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
+    final FileAccessService getFileAccessService() {
+        return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -121,8 +126,9 @@ public class FileRetrievalServiceBean implements FileRetrievalService {
         // to null (not serializable).
         CaArrayFile caArrayFile = getSearchDao().query(caArrayFileArg).get(0);
         InputStream is = null;
+        FileAccessService fileAccessService = getFileAccessService();
         try {
-            File file = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caArrayFile);
+            File file = fileAccessService.getFile(caArrayFile);
             is = new FileInputStream(file.getPath());
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             final byte[] bytes = new byte[CHUNK_SIZE];
@@ -142,7 +148,7 @@ public class FileRetrievalServiceBean implements FileRetrievalService {
             } catch (final IOException ioe) {
                 LOG.warn("IOException closing inputstream.", ioe);
             }
-            TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
+            fileAccessService.closeFiles();
         }
     }
 

@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.fileaccess;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.io.BufferedOutputStream;
@@ -92,15 +93,23 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.rmi.server.UID;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.ejb.Local;
-import javax.ejb.Stateless;
+import javax.ejb.Stateful;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
 import org.apache.commons.io.FileUtils;
@@ -111,13 +120,17 @@ import org.apache.log4j.Logger;
 /**
  * Implementation of the FileAccess subsystem.
  */
-@Local(FileAccessService.class)
-@Stateless
+@Local
+@Stateful
 @Interceptors(ExceptionLoggingInterceptor.class)
 public class FileAccessServiceBean implements FileAccessService {
 
     private static final Logger LOG = Logger.getLogger(FileAccessServiceBean.class);
+    private static final String WORKING_DIRECTORY_PROPERTY_KEY = "caarray.working.directory";
+    private static final String TEMP_DIR_PROPERTY_KEY = "java.io.tmpdir";
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+    private final Map<CaArrayFile, File> openFiles = new HashMap<CaArrayFile, File>();
+    private File sessionWorkingDirectory;
 
     /**
      * {@inheritDoc}
@@ -191,12 +204,118 @@ public class FileAccessServiceBean implements FileAccessService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+    public File getFile(CaArrayFile caArrayFile) {
+        LogUtil.logSubsystemEntry(LOG, caArrayFile);
+        File file;
+        if (fileAlreadyOpened(caArrayFile)) {
+            file = getOpenFile(caArrayFile);
+        } else {
+            file = openFile(caArrayFile);
+        }
+        LogUtil.logSubsystemExit(LOG);
+        return file;
+    }
+
+    private File openFile(CaArrayFile caArrayFile) {
+        File file = new File(getSessionWorkingDirectory(), caArrayFile.getName());
+        try {
+            HibernateUtil.getCurrentSession().refresh(caArrayFile);
+            InputStream inputStream = caArrayFile.readContents();
+            OutputStream outputStream = FileUtils.openOutputStream(file);
+            IOUtils.copy(inputStream, outputStream);
+            IOUtils.closeQuietly(inputStream);
+            IOUtils.closeQuietly(outputStream);
+            HibernateUtil.getCurrentSession().evict(caArrayFile);
+            caArrayFile.clearContents();
+        } catch (IOException e) {
+            throw new FileAccessException("Couldn't access file contents " + caArrayFile.getName(), e);
+        }
+        this.openFiles.put(caArrayFile, file);
+        return file;
+    }
+
+    private File getSessionWorkingDirectory() {
+        if (this.sessionWorkingDirectory == null) {
+            createSessionWorkingDirectory();
+        }
+        return this.sessionWorkingDirectory;
+    }
+
+    private void createSessionWorkingDirectory() {
+        String sessionSubdirectoryName = new UID().toString().replace(':', '_');
+        this.sessionWorkingDirectory = new File(getWorkingDirectory(), sessionSubdirectoryName);
+        if (!this.sessionWorkingDirectory.mkdirs()) {
+            LOG.error("Couldn't create directory: " + this.sessionWorkingDirectory.getAbsolutePath());
+            throw new IllegalStateException("Couldn't create directory: "
+                    + this.sessionWorkingDirectory.getAbsolutePath());
+        }
+    }
+
+    private File getWorkingDirectory() {
+        String tempDir = System.getProperty(TEMP_DIR_PROPERTY_KEY);
+        String workingDirectoryPath = System.getProperty(WORKING_DIRECTORY_PROPERTY_KEY, tempDir);
+        return new File(workingDirectoryPath);
+    }
+
+    private boolean fileAlreadyOpened(CaArrayFile caArrayFile) {
+        return this.openFiles.containsKey(caArrayFile);
+    }
+
+    private File getOpenFile(CaArrayFile caArrayFile) {
+        return this.openFiles.get(caArrayFile);
+    }
+
     CaArrayDaoFactory getDaoFactory() {
         return this.daoFactory;
     }
 
     void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void closeFiles() {
+        Set<CaArrayFile> filesToClose = new HashSet<CaArrayFile>(this.openFiles.keySet());        
+        for (CaArrayFile caarrayFile : filesToClose) {
+            closeFile(caarrayFile);
+        }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void closeFile(CaArrayFile caarrayFile) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Removing session file in directory: " + getSessionWorkingDirectory() + " for caarray file "
+                    + caarrayFile.getName());
+        }
+        if (this.sessionWorkingDirectory == null) {
+            return;
+        }
+        File file = getOpenFile(caarrayFile);
+        if (file != null) {            
+            delete(file);
+        }
+        this.openFiles.remove(caarrayFile);
+        if (this.openFiles.isEmpty()) {
+            delete(getSessionWorkingDirectory());
+            this.sessionWorkingDirectory = null;
+        }
+    }
+    
+
+    private void delete(File file) {
+        LOG.debug("Deleting file: " + file.getAbsolutePath());
+        if (!file.delete()) {
+            LOG.warn("Couldn't delete file: " + file.getAbsolutePath());
+            file.deleteOnExit();
+        }
     }
 
     /**

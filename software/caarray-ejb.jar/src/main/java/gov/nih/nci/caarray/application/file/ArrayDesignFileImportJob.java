@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 
@@ -107,11 +106,7 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
     @Override
     void execute() {
         ArrayDesign arrayDesign = getDaoFactory().getArrayDao().getArrayDesign(getArrayDesignId());
-        try {            
-            getArrayDesignImporter().importArrayDesign(arrayDesign);
-        } finally {
-            TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
-        }
+        getArrayDesignImporter().importArrayDesign(arrayDesign);
     }
 
     @Override

@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
@@ -96,7 +96,6 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
-import java.io.File;
 import java.util.List;
 
 import javax.ejb.Local;
@@ -127,7 +126,17 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public FileValidationResult validateDesign(CaArrayFile designFile) {
         LogUtil.logSubsystemEntry(LOG, designFile);
-        FileValidationResult result = validateDesign(null, designFile);        
+        FileAccessService fileAccessService = getFileAccessService();
+        FileValidationResult result = validateDesign(designFile, fileAccessService);
+        designFile.setValidationResult(result);
+        if (result.isValid()) {
+            designFile.setFileStatus(FileStatus.VALIDATED);
+        } else {
+            designFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
+        }
+        getArrayDao().save(designFile);
+        getArrayDao().flushSession();
+        fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -138,37 +147,29 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public FileValidationResult validateDesign(ArrayDesign design) {
         LogUtil.logSubsystemEntry(LOG, design);
-        FileValidationResult result = validateDesign(design, design.getDesignFile());        
+        FileValidationResult result = validateDesign(design, design.getDesignFile());
+        design.getDesignFile().setValidationResult(result);
+        if (result.isValid()) {
+            design.getDesignFile().setFileStatus(FileStatus.VALIDATED);
+        } else {
+            design.getDesignFile().setFileStatus(FileStatus.VALIDATION_ERRORS);
+        }
+        getArrayDao().save(design.getDesignFile());
+        getArrayDao().flushSession();
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
 
     private FileValidationResult validateDesign(ArrayDesign arrayDesign, CaArrayFile designFile) {
-        FileValidationResult result;        
-        if (arrayDesign != null && isDuplicate(arrayDesign))   {
-            result = new FileValidationResult(null);
+        if (isDuplicate(arrayDesign))   {
+            FileValidationResult result = new FileValidationResult(null);
             result.addMessage(Type.ERROR, "An array design already exists with the name "
                     + arrayDesign.getName()
                     + " and provider " + arrayDesign.getProvider().getName());
-        } else if (designFile.getType() == null) {
-            result = new FileValidationResult(getFile(designFile));
-            result.addMessage(Type.ERROR, "Array design file type was unrecognized");
-        } else if (!designFile.getFileType().isArrayDesign()) {
-            result = new FileValidationResult(getFile(designFile));
-            result.addMessage(Type.ERROR, "File type " + designFile.getFileType().getName()
-                    + " is not an array design type.");
+            return result;
         } else {
-            result = getHandler(designFile).validate();
+            return validateDesign(designFile);
         }
-        designFile.setValidationResult(result);
-        if (result.isValid()) {
-            designFile.setFileStatus(FileStatus.VALIDATED);
-        } else {
-            designFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
-        }
-        getArrayDao().save(designFile);
-        getArrayDao().flushSession();
-        return result;
     }
 
     private boolean isDuplicate(ArrayDesign arrayDesign) {
@@ -182,9 +183,20 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         }
         return false;
     }
-    
-    private File getFile(CaArrayFile file) {
-        return TemporaryFileCacheLocator.getTemporaryFileCache().getFile(file);
+
+    private FileValidationResult validateDesign(CaArrayFile designFile, FileAccessService fileAccessService) {
+        FileValidationResult result;
+        if (designFile.getType() == null) {
+            result = new FileValidationResult(fileAccessService.getFile(designFile));
+            result.addMessage(Type.ERROR, "Array design file type was unrecognized");
+        } else if (!designFile.getFileType().isArrayDesign()) {
+            result = new FileValidationResult(fileAccessService.getFile(designFile));
+            result.addMessage(Type.ERROR, "File type " + designFile.getFileType().getName()
+                    + " is not an array design type.");
+        } else {
+            result = getHandler(designFile, fileAccessService).validate();
+        }
+        return result;
     }
 
     /**
@@ -197,11 +209,13 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             LOG.warn("importDesign called, but no design file provided. No updates made.");
             return;
         }
+        FileAccessService fileAccessService = getFileAccessService();
         if (validateDesign(arrayDesign, arrayDesign.getDesignFile()).isValid()) {
-            AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile());
+            AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile(), fileAccessService);
             handler.load(arrayDesign);
             getArrayDao().save(arrayDesign);
         }
+        fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
     }
     /**
@@ -217,26 +231,28 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         if (!arrayDesign.getDesignFile().getValidationResult().isValid()) {
             throw new IllegalArgumentException("The array design provided for import is not valid");
         }
-        doImportDesignDetails(arrayDesign);
+        FileAccessService fileAccessService = getFileAccessService();
+        doImportDesignDetails(arrayDesign, fileAccessService);
+        fileAccessService.closeFiles();
         LogUtil.logSubsystemExit(LOG);
     }
 
-    private void doImportDesignDetails(ArrayDesign arrayDesign) {
-        AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile());
+    private void doImportDesignDetails(ArrayDesign arrayDesign, FileAccessService fileAccessService) {
+        AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFile(), fileAccessService);
         arrayDesign.getDesignFile().setFileStatus(FileStatus.IMPORTED);
         getArrayDao().save(arrayDesign.getDesignFile());
         getArrayDao().flushSession();
         handler.saveDesignDetails(arrayDesign);
     }
 
-    private AbstractArrayDesignHandler getHandler(CaArrayFile designFile) {
+    private AbstractArrayDesignHandler getHandler(CaArrayFile designFile, FileAccessService fileAccessService) {
         FileType type = designFile.getFileType();
         if (type == null) {
             throw new IllegalArgumentException("FileType was null");
         } else if (FileType.AFFYMETRIX_CDF.equals(type)) {
-            return new AffymetrixCdfHandler(designFile, getVocabularyService(), daoFactory);
+            return new AffymetrixCdfHandler(designFile, getVocabularyService(), fileAccessService, daoFactory);
         } else if (FileType.ILLUMINA_DESIGN_CSV.equals(type)) {
-            return new IlluminaCsvDesignHandler(designFile, getVocabularyService(), daoFactory);
+            return new IlluminaCsvDesignHandler(designFile, getVocabularyService(), fileAccessService, daoFactory);
         } else {
             throw new IllegalArgumentException("Unsupported array design file type: " + type);
         }
@@ -316,4 +332,10 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     private VocabularyService getVocabularyService() {
         return (VocabularyService) ServiceLocatorFactory.getLocator().lookup(VocabularyService.JNDI_NAME);
     }
+
+
+    private FileAccessService getFileAccessService() {
+        return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
+    }
+
 }
