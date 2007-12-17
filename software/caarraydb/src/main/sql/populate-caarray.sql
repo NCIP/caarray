@@ -18,7 +18,7 @@ insert into category (name, parent) select 'HigherLevelAnalysisProtocolType', id
 
 
 insert into termsource (name, url, version) values ('MGED', 'http://mged.sourceforge.net/ontologies/MGEDontology.php', '1.3.1.1');
-insert into termsource (name, url, version) values ('Caarray', 'http://caarray.nci.nih.gov/ontologies/UserDefined.html', '0.1');
+insert into termsource (name, version) values ('Caarray', '0.1');
 
 insert into term (value, source, category) select 'Brain', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='OrganismPart';
 insert into term (value, source, category) select 'Leg', termsource.id, category.id from termsource, category where termsource.name='MGED' and category.name='OrganismPart';
