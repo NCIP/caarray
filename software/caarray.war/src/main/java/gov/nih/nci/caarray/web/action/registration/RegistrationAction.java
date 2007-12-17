@@ -195,8 +195,9 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     private void validateLdap() {
         try {
             if (ldapAuthenticate
-                    && !LDAPHelper.authenticate(ldapContextParams , registrationRequest.getLoginName(),
-                                                getPassword().toCharArray(), null)) {
+                    && (StringUtils.isBlank(getPassword())
+                            || !LDAPHelper.authenticate(ldapContextParams , registrationRequest.getLoginName(),
+                                                        getPassword().toCharArray(), null))) {
                 addActionError(getText("registration.ldapLookupFailure"));
             }
         } catch (CSInternalLoginException e) {
