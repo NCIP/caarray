@@ -15,26 +15,18 @@
 
         <comment displayText="Installation Information:" bold="true" />
         <comment
-            displayText="This installer will install the LSD Bundle software on your machine."
+            displayText="This installer will install the caArray 2 software on your machine."
             bold="false" />
-
-        <select defaultValue="caarray2" property="select.application"
-            displayText="Please select an application to install:">
-            <option text="Install Caarray2" value="caarray2" />
-            <option text="Install CTODS" value="ctods" />
-            <option text="Install NCIA" value="ncia" />
-            <option text="Install caGWAS" value="cagwas" />
-        </select>
     </page>
 
 
 	<!-- Caarray2 -->
 	<page type="input" name="intro" ifProperty="${select.application}==caarray2"
-		displayText="Welcome to the Caarray2 installer">
+		displayText="Welcome to the CaArray 2.0 installer">
 
 		<comment displayText="Installation Information:" bold="true" />
 		<comment
-			displayText="This installer will install the Caarray2 software with JBoss 4.0.05-GA (with JEMS Installer-1.2.0.GA) and MySQL 5.0.45"
+			displayText="This installer will install the CaArray 2.0 software with JBoss 4.0.05-GA (with JEMS Installer-1.2.0.GA) and MySQL 5.0.45"
 			bold="false" />
 	</page>
 
@@ -65,7 +57,7 @@
 		displayText="Installation Folder">
 		<comment displayText="" bold="true" />
 		<comment
-			displayText="Please enter the destination folder for the Caarray2 application:"
+			displayText="Please enter the destination folder for the caArray 2.0 application:"
 			bold="true" />
 		<comment displayText="" bold="true" />
 
@@ -75,9 +67,9 @@
 	</page>
 
 	<page type="input" name="patchOptions" displayText="Confirmation">
-		<comment displayText="Install Caarray2?" bold="true" />
+		<comment displayText="Install CaArray 2.0?" bold="true" />
 		<comment displayText="" bold="true" />
-		<target displayText="Please confirm the Caarray2 installation."
+		<target displayText="Please confirm the CaArray 2.0 installation."
 			target="auto-update" defaultValue="Yes" />
 	</page>
 
