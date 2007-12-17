@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -194,6 +195,9 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
     )
     public String save() throws InstantiationException, IllegalAccessException {
         ActionHelper.getGenericDataService().save(getProtocol());
+        List<String> args = new ArrayList<String>();
+        args.add(getProtocol().getName());
+        ActionHelper.saveMessage(getText("protocol.saved", args));
         if (isReturnToProjectOnCompletion()) {
             return "projectEdit";
         }
