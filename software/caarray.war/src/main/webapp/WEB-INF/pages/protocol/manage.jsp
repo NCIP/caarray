@@ -17,8 +17,8 @@
     <div class="padme">
         <ajax:tabPanel panelStyleId="tabs" panelStyleClass="tabs2" currentStyleClass="active" contentStyleId="tabboxwrapper" contentStyleClass="tabboxwrapper"
                 postFunction="TabUtils.setSelectedTab" preFunction="TabUtils.preFunction">
-            <ajax:tab caption="${protocolTitle}" baseUrl="${protocolUrl}" defaultTab="${param.initialTab == null || param.initialTab == 'protocol'}" />
-            <ajax:tab caption="${protocolTypeTitle}" baseUrl="${protocolTypeUrl}" defaultTab="${param.initialTab == 'PROTOCOL_TYPE'}" />
+            <caarray:tab caption="${protocolTitle}" baseUrl="${protocolUrl}" defaultTab="${param.initialTab == null || param.initialTab == 'protocol'}" />
+            <caarray:tab caption="${protocolTypeTitle}" baseUrl="${protocolTypeUrl}" defaultTab="${param.initialTab == 'PROTOCOL_TYPE'}" />
         </ajax:tabPanel>
     </div>
 </body>

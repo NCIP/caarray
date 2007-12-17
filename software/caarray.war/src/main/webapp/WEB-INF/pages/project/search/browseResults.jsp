@@ -15,7 +15,7 @@
                     <c:param name="id" value="${tab.id}"/>
                     <c:param name="category" value="${category}"/>
                 </c:url>
-                <ajax:tab caption="${tab.name} (${tab.count})" baseUrl="${tabUrl}" defaultTab="${myStatus.first}" />
+                <caarray:tab caption="${tab.name} (${tab.count})" baseUrl="${tabUrl}" defaultTab="${myStatus.first}" />
             </c:forEach>
         </ajax:tabPanel>
     </div>

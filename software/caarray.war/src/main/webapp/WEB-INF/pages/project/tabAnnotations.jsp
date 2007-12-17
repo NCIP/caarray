@@ -70,13 +70,13 @@
 
 <ajax:tabPanel panelStyleId="tablevel2" panelStyleClass="tablevel2" currentStyleClass="selected" contentStyleId="tabboxlevel2wrapper" contentStyleClass="tabboxlevel2wrapper"
         postFunction="TabUtils.setSelectedLevel2Tab" preFunction="TabUtils.preFunction">
-    <ajax:tab caption="${experimentalDesignTitle}" baseUrl="${experimentalDesignUrl}" defaultTab="${initTab == null || initTab == 'experimentalDesign'}" />
-    <ajax:tab caption="${factorsTitle}" baseUrl="${factorsUrl}" defaultTab="${initTab == 'factors'}" />
-    <ajax:tab caption="${sourcesTitle}" baseUrl="${sourcesUrl}" defaultTab="${initTab == 'sources'}" />
-    <ajax:tab caption="${samplesTitle}" baseUrl="${samplesUrl}" defaultTab="${initTab == 'samples'}" />
-    <ajax:tab caption="${extractsTitle}" baseUrl="${extractsUrl}" defaultTab="${initTab == 'extracts'}" />
-    <ajax:tab caption="${labeledExtractsTitle}" baseUrl="${labeledExtractsUrl}" defaultTab="${initTab == 'labeledExtracts'}" />
-    <ajax:tab caption="${hybridizationsTitle}" baseUrl="${hybridizationsUrl}" defaultTab="${initTab == 'hybridizations'}" />
+    <caarray:tab caption="${experimentalDesignTitle}" baseUrl="${experimentalDesignUrl}" defaultTab="${initTab == null || initTab == 'experimentalDesign'}" />
+    <caarary:tab caption="${factorsTitle}" baseUrl="${factorsUrl}" defaultTab="${initTab == 'factors'}" />
+    <caarray:tab caption="${sourcesTitle}" baseUrl="${sourcesUrl}" defaultTab="${initTab == 'sources'}" />
+    <caarray:tab caption="${samplesTitle}" baseUrl="${samplesUrl}" defaultTab="${initTab == 'samples'}" />
+    <caarray:tab caption="${extractsTitle}" baseUrl="${extractsUrl}" defaultTab="${initTab == 'extracts'}" />
+    <caarray:tab caption="${labeledExtractsTitle}" baseUrl="${labeledExtractsUrl}" defaultTab="${initTab == 'labeledExtracts'}" />
+    <caarray:tab caption="${hybridizationsTitle}" baseUrl="${hybridizationsUrl}" defaultTab="${initTab == 'hybridizations'}" />
 </ajax:tabPanel>
 
 <script type="text/javascript">

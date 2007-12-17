@@ -19,7 +19,7 @@
                 <fmt:message key="search.tab.${key}" var="tabTitle">
                     <fmt:param>${value}</fmt:param>
                 </fmt:message>
-                <ajax:tab caption="${tabTitle}" baseUrl="${tabUrl}" defaultTab="${myStatus.first}" />
+                <caarray:tab caption="${tabTitle}" baseUrl="${tabUrl}" defaultTab="${myStatus.first}" />
             </s:iterator>
         </ajax:tabPanel>
     </div>

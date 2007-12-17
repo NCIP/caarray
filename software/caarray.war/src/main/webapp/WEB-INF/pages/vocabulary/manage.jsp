@@ -37,10 +37,10 @@
     <div class="padme">
         <ajax:tabPanel panelStyleId="tabs" panelStyleClass="tabs2" currentStyleClass="active" contentStyleId="tabboxwrapper" contentStyleClass="tabboxwrapper"
                 postFunction="TabUtils.setSelectedTab" preFunction="TabUtils.preFunction">
-            <ajax:tab caption="${tissueSitesTitle}" baseUrl="${tissueSitesUrl}" defaultTab="${param.initialTab == null || param.initialTab == 'ORGANISM_PART'}" />
-            <ajax:tab caption="${tissueTypesTitle}" baseUrl="${tissueTypesUrl}" defaultTab="${param.initialTab == 'MATERIAL_TYPE'}" />
-            <ajax:tab caption="${cellTypesTitle}" baseUrl="${cellTypesUrl}" defaultTab="${param.initialTab == 'CELL_TYPE'}" />
-            <ajax:tab caption="${conditionsTitle}" baseUrl="${conditionsUrl}" defaultTab="${param.initialTab == 'DISEASE_STATE'}" />
+            <caarray:tab caption="${tissueSitesTitle}" baseUrl="${tissueSitesUrl}" defaultTab="${param.initialTab == null || param.initialTab == 'ORGANISM_PART'}" />
+            <caarray:tab caption="${tissueTypesTitle}" baseUrl="${tissueTypesUrl}" defaultTab="${param.initialTab == 'MATERIAL_TYPE'}" />
+            <caarray:tab caption="${cellTypesTitle}" baseUrl="${cellTypesUrl}" defaultTab="${param.initialTab == 'CELL_TYPE'}" />
+            <caarray:tab caption="${conditionsTitle}" baseUrl="${conditionsUrl}" defaultTab="${param.initialTab == 'DISEASE_STATE'}" />
         </ajax:tabPanel>
     </div>
 </body>
