@@ -87,6 +87,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheFactory;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStub;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
@@ -144,6 +148,12 @@ public class ArrayDesignServiceTest {
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
+        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheFactory() {
+            public TemporaryFileCache createTempFileCache() {
+                return new TemporaryFileCacheStub(fileAccessServiceStub);            
+            }
+            
+        });
         return bean;
     }
 

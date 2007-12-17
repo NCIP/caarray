@@ -115,26 +115,6 @@ public interface FileAccessService {
     CaArrayFile add(File file, String filename);
 
     /**
-     * Returns the underlying <code>java.io.File</code> for the <code>CaArrayFile</code> object provided.
-     *
-     * @param caArrayFile retrieve contents of this file
-     * @return the file
-     */
-    File getFile(CaArrayFile caArrayFile);
-
-    /**
-     * Closes all files opened in the current session and deletes the temproary directory used to store them.
-     */
-    void closeFiles();
-
-    /**
-     * Closes the file corresponding to the given logical file opened in the current session. If this was the only
-     * remaining open file, deletes the temporary directory used to store them.
-     * @param caarrayFile the logical file to close the filesystem file for
-     */
-    void closeFile(CaArrayFile caarrayFile);
-
-    /**
      * Removes a file from caArray file storage.
      *
      * @param caArrayFile the caArrayFile to remove
