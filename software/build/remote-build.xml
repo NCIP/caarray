@@ -117,6 +117,7 @@
         <tstamp>
           <format property="touch.time" pattern="MM/dd/yyyy hh:mm aa" unit="hour"/>
         </tstamp>	    
+	    <echo> svn.user.name is ${svn.user.name} and svn.user.pwd is ${svn.user.pwd} and touch.time is ${touch.time} </echo>
 	    <echo message="Deploying to ${ssh.server.hostname} and adding SVN tag ${svn.tag}..." />
 		<property name="build.date_time" value="'${touch.time}'" />
 	    <antcall target="svn:scorch" />
@@ -124,6 +125,7 @@
 		<antcall target="svn:checkout-caarray-tag" />
 		<antcall target="prepare-remote-properties" />
 	    <ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml" target="remote-deploy"/>
+		
 	    <svn username="${svn.user.name}" password="${svn.user.pwd}">
             <copy 
 				srcUrl="${svn.caarray.url}/${svn.trunk.folder}"
