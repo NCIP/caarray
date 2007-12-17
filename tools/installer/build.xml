@@ -177,18 +177,15 @@
 		<mkdir dir="${installer.dist.dir.temp}/tools" />
 		<available file="${tools.dir}" type="dir" property="tools.dir.present" />
 		<available file="${tools.dir}/jboss-4.0.5.GA.zip" type="file" property="local.jboss.present" />
-		<available file="${tools.dir}/mysql-noinstall-5.0.45-win32.zip" type="file" property="local.mysql.present" />
+		<available file="${tools.dir}/mysql-noinstall-5.0.27-win32.zip" type="file" property="local.mysql.present" />
 
 		<antcall target="create-tools-dir" />
 		<antcall target="get-jboss-bin" />
-		<antcall target="get-mysql-bin" />
+		<antcall target="get-mysql-bin" />		
 		
-		
-	    <!--
 		<copy file="${tools.dir}/jboss-4.0.5.GA.zip" todir="${installer.dist.dir.temp}/tools" />
-		<copy file="${tools.dir}/mysql-noinstall-5.0.45-win32.zip" todir="${installer.dist.dir.temp}/tools" />
+		<copy file="${tools.dir}/mysql-noinstall-5.0.27-win32.zip" todir="${installer.dist.dir.temp}/tools" />
 		<copy file="${tools.dir}/firefox-portable.zip" todir="${installer.dist.dir.temp}/tools" />
-        -->
 		
 		<!-- Configure JBoss MySQL datasource -->
 		<antcall target="-configure-jboss-ds" />
@@ -211,7 +208,7 @@
 	</target>
 
 	<target name="get-mysql-bin" unless="local.mysql.present">
-		<get dest="${tools.dir}/mysql-noinstall-5.0.45-win32.zip" usetimestamp="true" ignoreerrors="false" src="http://mysql.mirrors.pair.com/Downloads/MySQL-5.0/mysql-noinstall-5.0.45-win32.zip" />
+		<get dest="${tools.dir}/mysql-noinstall-5.0.27-win32.zip" usetimestamp="true" ignoreerrors="false" src="http://mysql.mirrors.pair.com/Downloads/MySQL-5.0/mysql-noinstall-5.0.27-win32.zip" />
 	</target>
 
 	<target name="run" depends="clean, selfextract">
