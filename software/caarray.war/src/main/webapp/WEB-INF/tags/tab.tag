@@ -21,5 +21,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <ajax:tab caption="${caption}" 
-          baseUrl="${fn:replace(newBaseUrl, '\\\'','\\\\\\\'')}" 
+          baseUrl="${fn:replace(baseUrl, '\\\'','\\\\\\\'')}" 
           defaultTab="${defaultTab}"/>
