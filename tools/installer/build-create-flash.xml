@@ -11,6 +11,10 @@
 <!-- TODO: Run the existing targets below to package the installer -->
 
 <target name="clean">
+  <available file="${basedir}/local.properties" property="local.properties.present"/>
+  <fail unless="local.properties.present" message="${basedir}/local.properties must be present to generate the installer"/>
+  <fail unless="database.system.user" message="${basedir}/local.properties must be present to generate the installer"/>
+  <fail unless="database.system.password" message="${basedir}/local.properties must be present to generate the installer"/>
   <delete dir="${flashdrive.dir}" />
   <delete dir="${svn.local.trunk}" />
 </target>
@@ -24,18 +28,16 @@
 </target>
 
 <target name="run-build-from-temp">
-<!-- TODO: Run build from temp.dir (like remote build) -->
-<copy file="${basedir}/local.properties" todir="${svn.local.trunk}/build" />
-<ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml">
-  <property name="notest" value="true"/>
-</ant>
-  <!-- TODO: Run installer using the EAR generated -->
-<ant inheritAll="false" inheritRefs="true" antfile="${basedir}/build.xml" target="selfextract"/>
+
+  <copy file="${basedir}/local.properties" todir="${svn.local.trunk}/build" />
+  <ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml">
+    <property name="notest" value="true"/>
+  </ant>
+  <ant inheritAll="false" inheritRefs="true" antfile="${basedir}/build.xml" target="selfextract"/>
 </target>
 
 <target name="copy-files" depends="clean, checkout-caarray, run-build-from-temp">
-  <available file="${basedir}/local.properties" property="local.properties.present"/>
-  <fail unless="local.properties.present" message="${basedir}/local.properties must be present to generate the installer"/>
+  
   <mkdir dir="${flashdrive.dir}" />
   <unzip dest="${flashdrive.dir}" overwrite="true" src="${basedir}/tools/jdk1.5.0_10.zip" />
   <copy file="${basedir}/install.bat" todir="${flashdrive.dir}" />
