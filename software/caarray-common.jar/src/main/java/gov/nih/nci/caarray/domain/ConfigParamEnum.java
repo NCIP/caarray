@@ -104,6 +104,11 @@ public enum ConfigParamEnum {
      */
     CONFIRM_EMAIL_CONTENT,
     /**
+     * Boolean property on whether to send an email to the administrator
+     * after registering.
+     */
+    SEND_ADMIN_EMAIL,
+    /**
      * What email address to send registration information to (ie, the helpdesk email address).
      */
     REG_EMAIL_TO,
@@ -114,11 +119,11 @@ public enum ConfigParamEnum {
     /**
      * The thankyou for registering text that should appear after a user submits their registration.
      */
-    THANKS_MESSAGE,    
+    THANKS_MESSAGE,
     /**
      * the subject for the submit experiment email.
      */
-    SUBMIT_EXPERIMENT_EMAIL_SUBJECT,    
+    SUBMIT_EXPERIMENT_EMAIL_SUBJECT,
     /**
      * the html content for the submit experiment email.
      */

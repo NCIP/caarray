@@ -131,6 +131,9 @@ public final class EmailHelper {
      */
     public static void registerEmailAdmin(RegistrationRequest registrationRequest) throws MessagingException {
         DataConfiguration config = ConfigurationHelper.getConfiguration();
+        if (!config.getBoolean(ConfigParamEnum.SEND_ADMIN_EMAIL.name())) {
+            return;
+        }
 
         String subject = config.getString(ConfigParamEnum.REG_EMAIL_SUBJECT.name());
         String from = registrationRequest.getEmail();

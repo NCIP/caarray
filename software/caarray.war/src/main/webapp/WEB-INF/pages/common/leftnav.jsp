@@ -43,8 +43,8 @@
     </ul>
     <ul class="quicklinks">
         <li class="liheader">Global Quick Links</li>
-        <li><a href="http://www.cancer.gov/" class="external">National Cancer Institute (NCI)</a></li>
-        <li><a href="http://ncicb.nci.nih.gov/" class="external">NCI Center for Bioinformatics (NCICB)</a></li>
-        <li><a href="https://cabig.nci.nih.gov/" class="external">caBIG&trade; - Cancer Biomedical Informatics Grid&trade;</a></li>
+        <li><a href="http://www.cancer.gov/" target="_blank" class="external">National Cancer Institute (NCI)</a></li>
+        <li><a href="http://ncicb.nci.nih.gov/" target="_blank" class="external">NCI Center for Bioinformatics (NCICB)</a></li>
+        <li><a href="https://cabig.nci.nih.gov/" target="_blank" class="external">caBIG&trade; - Cancer Biomedical Informatics Grid&trade;</a></li>
     </ul>
 </div>
