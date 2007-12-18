@@ -11,7 +11,7 @@
 
 <!-- Caarray2 -->
     <page type="input" name="lsd_intro"
-        displayText="Welcome to the LSD Bundle installer">
+        displayText="Welcome to the caArray 2.0 installer">
 
         <comment displayText="Installation Information:" bold="true" />
         <comment
