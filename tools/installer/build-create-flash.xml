@@ -41,6 +41,7 @@
   <mkdir dir="${flashdrive.dir}" />
   <unzip dest="${flashdrive.dir}" overwrite="true" src="${basedir}/tools/jdk1.5.0_10.zip" />
   <copy file="${basedir}/install.bat" todir="${flashdrive.dir}" />
+  <copy file="${basedir}/README.txt" todir="${flashdrive.dir}" />  
   <copy file="${basedir}/autorun.inf" todir="${flashdrive.dir}" />
   <copy file="${basedir}/target/dist/caarray-installer.jar" todir="${flashdrive.dir}" />
   <copy file="${basedir}/tools/jdk1.5.0_10.zip" todir="${flashdrive.dir}" />
