@@ -28,7 +28,9 @@
                 <display:column titleKey="protocol.type" property="type.value" sortable="true" />
                 <display:column titleKey="protocol.description" property="description" sortable="true" />
                 <display:column titleKey="protocol.contact" property="contact" sortable="true" />
-                <display:column titleKey="protocol.url" property="url" autolink="true" sortable="true" />
+                <display:column titleKey="protocol.url" sortable="true">
+                    <a href="${row.url}" target="_blank">${row.url}</a>
+                </display:column>
                 <display:column titleKey="button.edit" class="centered" headerClass="centered">
                     <c:if test="${caarrayfn:canWrite(row, caarrayfn:currentUser())}">
                         <c:url value="/protected/ajax/protocol/edit.action" var="editProtocolUrl">

@@ -16,7 +16,9 @@
                 <caarray:projectListTabActionLink linkContent="${row.title}" entityName="Publication" action="view" itemId="${row.id}"/>
             </display:column>
             <display:column property="authors" titleKey="experiment.publications.authors" sortable="true" />
-            <display:column property="uri" autolink="true" titleKey="experiment.publications.uri" sortable="true"/>
+            <display:column titleKey="experiment.publications.uri" sortable="true">
+                <a href="${row.uri}" target="_blank">${row.uri}</a>
+            </display:column>
             <caarray:projectListTabActionColumns entityName="Publication" item="${row}" actions="!edit,!delete"/>
         </display:table>
     </ajax:displayTag>
