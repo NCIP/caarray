@@ -158,6 +158,7 @@
                 <param name="contentDisposition">filename="caArrayFiles.zip"</param>
                 <param name="bufferSize">4096</param>
             </result>
+            <result name="input">/error.jsp</result>
         </action>
 
         <action name="ajax/project/files/*" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="{1}">

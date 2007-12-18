@@ -16,6 +16,7 @@
     <div id="page">
         <div id="content" class="clearfix">
             <div id="main">
+                <s:actionerror/>
                 <h1><fmt:message key="errorPage.heading"/></h1>
                 <% if (exception != null) { %>
                     <pre><% exception.printStackTrace(new java.io.PrintWriter(out)); %></pre>

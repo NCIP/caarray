@@ -112,8 +112,8 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.set.TransformedSet;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.lf5.util.StreamUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.Action;
@@ -542,13 +542,14 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 Enumeration<? extends ZipEntry> entries = zipFile.entries();
                 while (entries.hasMoreElements()) {
                     ZipEntry entry = entries.nextElement();
-
                     File entryFile = new File(directoryPath + "/" + entry.getName());
-                    StreamUtils.copy(zipFile.getInputStream(entry), new FileOutputStream(entryFile));
-
+                    FileOutputStream fos = new FileOutputStream(entryFile);
+                    IOUtils.copy(zipFile.getInputStream(entry), fos);
+                    IOUtils.closeQuietly(fos);
                     this.uploads.add(entryFile);
                     this.uploadFileNames.add(entry.getName());
                 }
+                zipFile.close();
                 this.uploads.remove(index);
                 this.uploadFileNames.remove(index);
                 this.uploadContentTypes.remove(index);
