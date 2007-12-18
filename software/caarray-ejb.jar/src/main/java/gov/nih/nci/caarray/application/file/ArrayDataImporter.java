@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -110,20 +111,24 @@ final class ArrayDataImporter {
             CaArrayFile file = fileIt.next();
             if (isDataFile(file)) {
                 importFile(file);
-            }            
+            }
             fileIt.remove();
         }
     }
 
     private void importFile(CaArrayFile file) {
         try {
-            arrayDataService.importData(file, true);
+            this.daoFactory.getSearchDao().refresh(file);
+            this.arrayDataService.importData(file, true);
             file.setFileStatus(FileStatus.IMPORTED);
         } catch (InvalidDataFileException e) {
             file.setFileStatus(FileStatus.VALIDATION_ERRORS);
             file.setValidationResult(e.getFileValidationResult());
         }
-        daoFactory.getProjectDao().save(file);
+        this.daoFactory.getProjectDao().save(file);
+        TemporaryFileCacheLocator.getTemporaryFileCache().closeFile(file);
+        this.daoFactory.getProjectDao().flushSession();
+        this.daoFactory.getProjectDao().clearSession();
     }
 
     private boolean isDataFile(CaArrayFile file) {
@@ -139,7 +144,6 @@ final class ArrayDataImporter {
     }
 
     private void validateFile(CaArrayFile file) {
-        arrayDataService.validate(file);
+        this.arrayDataService.validate(file);
     }
-
 }

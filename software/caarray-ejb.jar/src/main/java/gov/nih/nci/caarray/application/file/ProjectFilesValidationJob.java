@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -100,10 +100,12 @@ final class ProjectFilesValidationJob extends AbstractProjectFilesJob {
 
     @Override
     void execute() {
-        FileAccessService fileAccessService = getFileAccessService();
         Project project = getProject();
-        doValidate(fileAccessService, getFileSet(project));
-        fileAccessService.closeFiles();
+        try {            
+            doValidate(getFileSet(project));
+        } finally {
+            TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();            
+        }
     }
 
 

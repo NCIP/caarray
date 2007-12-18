@@ -50,9 +50,9 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import static org.junit.Assert.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.UserTransactionStub;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceStub;
@@ -60,6 +60,8 @@ import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
@@ -90,6 +92,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.hibernate.LockMode;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -115,6 +118,8 @@ public class FileManagementServiceTest {
         locatorStub.addLookup(ArrayDesignService.JNDI_NAME, arrayDesignServiceStub);
         locatorStub.addLookup(MageTabTranslator.JNDI_NAME, new MageTabTranslatorStub());
         fileManagementService = fileManagementServiceBean;
+        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(this.fileAccessServiceStub));
+        TemporaryFileCacheLocator.resetTemporaryFileCache();
     }
 
     @Test
@@ -320,6 +325,12 @@ public class FileManagementServiceTest {
         @Override
         @SuppressWarnings("unchecked")
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
+            return (T) objectMap.get(entityId);
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId, LockMode lockMode) {
             return (T) objectMap.get(entityId);
         }
 

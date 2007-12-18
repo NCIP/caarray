@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.project;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.PersistentObject;
@@ -332,10 +333,9 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         result.deleteOnExit();
 
         ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(result));
-        FileAccessService svc = getFileAccessService();
         for (CaArrayFile caf : files) {
             if (p == null || p.equals(caf.getProject())) {
-                File f = svc.getFile(caf);
+                File f = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caf);
                 InputStream is = new BufferedInputStream(new FileInputStream(f));
 
                 ZipEntry ze = new ZipEntry(f.getName());
@@ -346,8 +346,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             }
         }
         zos.close();
-
-        svc.closeFiles();
         return result;
     }
 

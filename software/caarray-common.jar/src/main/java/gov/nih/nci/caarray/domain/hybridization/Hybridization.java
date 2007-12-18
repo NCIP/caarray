@@ -86,7 +86,6 @@ package gov.nih.nci.caarray.domain.hybridization;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
-import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -141,7 +140,6 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
     private Set<LabeledExtract> labeledExtract = new HashSet<LabeledExtract>();
     private Set<FactorValue> factorValues = new HashSet<FactorValue>();
     private Term label;
-    private Set<HybridizationData> hybridizationDatas = new HashSet<HybridizationData>();
 
     /**
      * Gets the name.
@@ -414,17 +412,5 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
             protectables.addAll(le.relatedProtectables());
         }
         return protectables;
-    }
-
-    @OneToMany(mappedBy = MAPPED_BY, fetch = FetchType.LAZY)
-    @Cascade(CascadeType.DELETE)
-    @SuppressWarnings({"PMD.UnusedPrivateMethod", "unused" })
-    private Set<HybridizationData> getHybridizationDatas() {
-        return hybridizationDatas;
-    }
-
-    @SuppressWarnings({"PMD.UnusedPrivateMethod", "unused" })
-    private void setHybridizationDatas(Set<HybridizationData> hybridizationDatas) {
-        this.hybridizationDatas = hybridizationDatas;
     }
 }

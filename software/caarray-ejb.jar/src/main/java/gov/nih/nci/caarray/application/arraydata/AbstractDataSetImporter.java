@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
@@ -118,14 +118,11 @@ abstract class AbstractDataSetImporter {
 
     private final CaArrayDaoFactory daoFactory;
     private AbstractDataFileHandler dataFileHandler;
-    private final FileAccessService fileAccessService;
     private final CaArrayFile caArrayFile;
 
-    AbstractDataSetImporter(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory,
-            FileAccessService fileAccessService) {
+    AbstractDataSetImporter(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory) {
         this.caArrayFile = caArrayFile;
         this.daoFactory = daoFactory;
-        this.fileAccessService = fileAccessService;
     }
 
     AbstractArrayData importData(boolean createAnnnotation) {
@@ -183,7 +180,7 @@ abstract class AbstractDataSetImporter {
     }
 
     File getFile() {
-        return getFileAccessService().getFile(getCaArrayFile());
+        return TemporaryFileCacheLocator.getTemporaryFileCache().getFile(getCaArrayFile());
     }
 
     abstract AbstractArrayData getArrayData();
@@ -200,16 +197,15 @@ abstract class AbstractDataSetImporter {
         return getDaoFactory().getArrayDao();
     }
 
-    static AbstractDataSetImporter create(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory,
-            FileAccessService fileAccessService) {
+    static AbstractDataSetImporter create(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory) {
         if (caArrayFile == null) {
             throw new IllegalArgumentException("arrayData was null");
         }
         FileType fileType = caArrayFile.getFileType();
         if (fileType.isRawArrayData()) {
-            return new RawArrayDataImporter(caArrayFile, daoFactory, fileAccessService);
+            return new RawArrayDataImporter(caArrayFile, daoFactory);
         } else if (fileType.isDerivedArrayData()) {
-            return new DerivedArrayDataImporter(caArrayFile, daoFactory, fileAccessService);
+            return new DerivedArrayDataImporter(caArrayFile, daoFactory);
         } else {
             throw new IllegalArgumentException("The file " + caArrayFile.getName()
                     + " does not contain array data. The file type is " + caArrayFile.getFileType().name());
@@ -222,10 +218,6 @@ abstract class AbstractDataSetImporter {
             dataFileHandler = ArrayDataHandlerFactory.getInstance().getHandler(getCaArrayFile().getFileType());
         }
         return dataFileHandler;
-    }
-
-    private FileAccessService getFileAccessService() {
-        return fileAccessService;
     }
 
     ArrayDataType getArrayDataType(ArrayDataTypeDescriptor descriptor) {

@@ -89,6 +89,7 @@ import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import java.util.Collection;
 import java.util.List;
 
+import org.hibernate.LockMode;
 import org.hibernate.criterion.Order;
 
 /**
@@ -120,7 +121,6 @@ public interface SearchDao extends CaArrayDao {
      */
     List<?> query(CQLQuery cqlQuery);
 
-
     /**
      * Retrieves the object from the database.
      * @param <T> the class to retreieve
@@ -130,6 +130,22 @@ public interface SearchDao extends CaArrayDao {
      */
     <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId);
 
+    /**
+     * Retrieves the object from the database using given lock mode.
+     * @param <T> the class to retreieve
+     * @param entityClass the class of the object to retrieve
+     * @param entityId the id of the enity to retrieve
+     * @param lockMode the lock mode to use
+     * @return the entity.
+     */
+    <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId, LockMode lockMode);
+
+    /**
+     * Refreshes the object's state from the database.
+     * @param o the object whose state needs to be refreshed. This must be a persistent or detached object (ie its
+     * id must be non-null)
+     */
+    void refresh(PersistentObject o);
 
     /**
      * Method to get all the entities of a given type.

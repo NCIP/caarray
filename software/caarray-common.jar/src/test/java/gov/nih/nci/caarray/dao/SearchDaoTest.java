@@ -357,6 +357,11 @@ public class SearchDaoTest {
 
             obj = SEARCH_DAO.retrieve(Protocol.class, DUMMY_PROTOCOL_1.getId());
             assertEquals(DUMMY_PROTOCOL_1, obj);
+            
+            obj = SEARCH_DAO.retrieve(Term.class, DUMMY_TERM_1.getId());
+            assertEquals(DUMMY_TERM_1, obj);
+            ((Term) obj).setValue("Foo");
+            
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);

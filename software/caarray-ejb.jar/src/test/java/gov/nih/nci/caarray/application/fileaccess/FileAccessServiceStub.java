@@ -82,10 +82,12 @@
  */
 package gov.nih.nci.caarray.application.fileaccess;
 
+import static org.junit.Assert.*;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -95,15 +97,15 @@ import java.util.Set;
 /**
  * Stub implementation for testing.
  */
-public class FileAccessServiceStub implements FileAccessService {
+public class FileAccessServiceStub implements FileAccessService, TemporaryFileCache {
 
-    private final Map<String, File> nameToFile = new HashMap<String, File>();
+    private Map<String, File> nameToFile = new HashMap<String, File>();
     private int savedFileCount = 0;
     private int removedFileCount = 0;
 
     public CaArrayFile add(File file) {
         CaArrayFile caArrayFile = new CaArrayFile();
-        caArrayFile.setName(file.getName());
+        caArrayFile.setName(file.getName());            
         this.nameToFile.put(caArrayFile.getName(), file);
         return caArrayFile;
     }
@@ -134,16 +136,6 @@ public class FileAccessServiceStub implements FileAccessService {
         this.removedFileCount++;
     }
 
-    public void closeFiles() {
-        // do nothing
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public void closeFile(CaArrayFile caarrayFile) {
-        // do nothing
-    }
 
     public void save(CaArrayFile caArrayFile) {
         this.savedFileCount++;
@@ -171,5 +163,26 @@ public class FileAccessServiceStub implements FileAccessService {
      */
     public int getRemovedFileCount() {
         return this.removedFileCount;
+    }
+
+    /**
+     * @return the nameToFile
+     */
+    public Map<String, File> getNameToFile() {
+        return nameToFile;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void closeFile(CaArrayFile caarrayFile) {
+        // nothing to do
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void closeFiles() {
+        // nothing to do
     }
 }

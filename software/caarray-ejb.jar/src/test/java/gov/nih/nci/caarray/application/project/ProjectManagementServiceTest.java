@@ -93,6 +93,8 @@ import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.SessionContextStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
@@ -146,7 +148,7 @@ public class ProjectManagementServiceTest {
 
     private ProjectManagementService projectManagementService;
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
-    private final FileAccessService fileAccessService = new FileAccessServiceStub();
+    private final FileAccessServiceStub fileAccessService = new FileAccessServiceStub();
     private final GenericDataService genericDataService = new GenericDataServiceStub();
     private final LocalSessionContextStub sessionContextStub = new LocalSessionContextStub();
     private Transaction transaction;
@@ -163,6 +165,8 @@ public class ProjectManagementServiceTest {
         this.projectManagementService = projectManagementServiceBean;
         HibernateUtil.enableFilters(false);
         transaction = HibernateUtil.beginTransaction();
+        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(this.fileAccessService));
+        TemporaryFileCacheLocator.resetTemporaryFileCache();
     }
     
     @After

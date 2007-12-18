@@ -96,14 +96,14 @@ import java.util.Locale;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.criterion.Order;
 
 /**
- * DAO to search for entities using various types of criteria.
- * Supports searching by example, CQL, HQL (Hibernate Query Language) string and
- * Hibernate Detached Criteria.
- *
+ * DAO to search for entities using various types of criteria. Supports searching by example, CQL, HQL (Hibernate Query
+ * Language) string and Hibernate Detached Criteria.
+ * 
  * @author Rashmi Srinivasa
  */
 class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
@@ -147,6 +147,26 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         q.setLong("id", entityId);
         return (T) q.uniqueResult();
     }
+        
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId, LockMode lockMode) {
+        Query q =
+                HibernateUtil.getCurrentSession()
+                        .createQuery("from " + entityClass.getName() + " o where o.id = :id");
+        q.setLong("id", entityId);
+        q.setLockMode("o", lockMode);
+        return (T) q.uniqueResult();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void refresh(PersistentObject o) {
+        HibernateUtil.getCurrentSession().refresh(o);        
+    }
 
     /**
      * {@inheritDoc}
@@ -177,8 +197,8 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
      */
     @SuppressWarnings(UNCHECKED)
     public List<String> findValuesWithSamePrefix(Class<?> entityClass, String fieldName, String namePrefix) {
-        String queryStr = "select " + fieldName + " from " + entityClass.getName()
-                          + " where " + fieldName + " like :prefix";
+        String queryStr =
+                "select " + fieldName + " from " + entityClass.getName() + " where " + fieldName + " like :prefix";
         Query query = HibernateUtil.getCurrentSession().createQuery(queryStr);
         query.setString("prefix", namePrefix + "%");
         return query.list();

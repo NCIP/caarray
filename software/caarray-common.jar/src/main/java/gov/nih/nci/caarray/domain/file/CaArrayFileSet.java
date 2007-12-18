@@ -102,7 +102,7 @@ public final class CaArrayFileSet implements Serializable {
 
     private static final long serialVersionUID = -831461553674445009L;
     private final Set<CaArrayFile> files = new HashSet<CaArrayFile>();
-    private final Project project;
+    private final Long projectId;
 
     /**
      * @param p project this file set is associated with
@@ -111,14 +111,14 @@ public final class CaArrayFileSet implements Serializable {
         if (p == null) {
             throw new IllegalArgumentException("Project must be non-null");
         }
-        project = p;
+        projectId = p.getId();
     }
 
     /**
      * File set.  Only files <em>not</em> associated with a project can be added.
      */
     public CaArrayFileSet() {
-        project = null;
+        projectId = null;
     }
 
     /**
@@ -127,7 +127,8 @@ public final class CaArrayFileSet implements Serializable {
      * @param file the file to add
      */
     public void add(CaArrayFile file) {
-        if (!ObjectUtils.equals(file.getProject(), project)) {
+        Long fileProjectId = file.getProject() == null ? null : file.getProject().getId();
+        if (!ObjectUtils.equals(fileProjectId, projectId)) {
             throw new IllegalArgumentException("file's project and fileset project not the same");
         }
         files.add(file);

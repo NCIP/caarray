@@ -82,17 +82,18 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.hibernate.LockMode;
 
 /**
  * Encapsulates the data necessary for a project file management job.
@@ -140,13 +141,13 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
         return getDaoFactory().getSearchDao().retrieve(Project.class, projectId);
     }
 
-    void doValidate(FileAccessService fileAccessService, CaArrayFileSet fileSet) {
-        validateAnnotation(fileAccessService, fileSet);
+    void doValidate(CaArrayFileSet fileSet) {
+        validateAnnotation(fileSet);
         validateArrayData(fileSet);
     }
 
-    private void validateAnnotation(FileAccessService fileAccessService, CaArrayFileSet fileSet) {
-        getMageTabImporter(fileAccessService).validateFiles(fileSet);
+    private void validateAnnotation(CaArrayFileSet fileSet) {
+        getMageTabImporter().validateFiles(fileSet);
     }
 
     private void validateArrayData(CaArrayFileSet fileSet) {
@@ -157,8 +158,8 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
         return new ArrayDataImporter(getArrayDataService(), getDaoFactory());
     }
 
-    MageTabImporter getMageTabImporter(FileAccessService fileAccessService) {
-        return new MageTabImporter(fileAccessService, getMageTabTranslator(), getDaoFactory());
+    MageTabImporter getMageTabImporter() {
+        return new MageTabImporter(getMageTabTranslator(), getDaoFactory());
     }
 
     @Override
@@ -174,6 +175,8 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     private void setStatus(FileStatus status) {
         CaArrayFileSet fileSet = getFileSet(getProject());
         for (CaArrayFile caArrayFile : fileSet.getFiles()) {
+            caArrayFile =
+                    getDaoFactory().getSearchDao().retrieve(CaArrayFile.class, caArrayFile.getId(), LockMode.UPGRADE);
             caArrayFile.setFileStatus(status);
             getDaoFactory().getProjectDao().save(caArrayFile);
         }

@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
@@ -107,14 +107,12 @@ final class DataSetLoader {
     private static final Logger LOG = Logger.getLogger(DataSetLoader.class);
 
     private final CaArrayDaoFactory daoFactory;
-    private final FileAccessService fileAccessService;
     private final AbstractArrayData arrayData;
     private AbstractDataFileHandler dataFileHandler;
 
-    DataSetLoader(AbstractArrayData arrayData, CaArrayDaoFactory daoFactory, FileAccessService fileAccessService) {
+    DataSetLoader(AbstractArrayData arrayData, CaArrayDaoFactory daoFactory) {
         this.arrayData = arrayData;
         this.daoFactory = daoFactory;
-        this.fileAccessService = fileAccessService;
     }
 
     void load() {
@@ -135,7 +133,7 @@ final class DataSetLoader {
     }
 
     private File getFile() {
-        return getFileAccessService().getFile(getArrayData().getDataFile());
+        return TemporaryFileCacheLocator.getTemporaryFileCache().getFile(getArrayData().getDataFile());
     }
 
     private boolean isLoadRequired(DataSet dataSet, List<QuantitationType> types) {
@@ -166,10 +164,6 @@ final class DataSetLoader {
 
     private AbstractArrayData getArrayData() {
         return arrayData;
-    }
-
-    private FileAccessService getFileAccessService() {
-        return fileAccessService;
     }
 
     QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor) {

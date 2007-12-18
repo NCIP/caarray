@@ -91,6 +91,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.hibernate.LockMode;
 import org.hibernate.criterion.Order;
 
 /**
@@ -118,8 +119,21 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
      * {@inheritDoc}
      */
     public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
-        // TODO Auto-generated method stub
         return null;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId, LockMode lockMode) {
+        return null;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void refresh(PersistentObject o) {
+        //norhing to do
     }
 
     /**

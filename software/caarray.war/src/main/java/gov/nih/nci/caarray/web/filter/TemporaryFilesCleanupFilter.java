@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-war
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-war Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-war Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-war Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-war Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,127 +80,44 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydata;
+package gov.nih.nci.caarray.web.filter;
 
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.util.io.logging.LogUtil;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
-import gov.nih.nci.caarray.validation.FileValidationResult;
-import gov.nih.nci.caarray.validation.InvalidDataFileException;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 
-import java.util.List;
+import java.io.IOException;
 
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import org.apache.log4j.Logger;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 /**
- * Entry point to the ArrayDataService subsystem.
+ * Filter that ensures that temporary files used to hold data are cleaned up.
+ * @author Dan Kokotov
  */
-@Local
-@Stateless
-@TransactionAttribute(TransactionAttributeType.SUPPORTS)
-public class ArrayDataServiceBean implements ArrayDataService {
-
-    private static final Logger LOG = Logger.getLogger(ArrayDataServiceBean.class);
-
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-
+public class TemporaryFilesCleanupFilter implements Filter {    
     /**
      * {@inheritDoc}
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void initialize() {
-        LogUtil.logSubsystemEntry(LOG);
-        new TypeRegistrationManager(getDaoFactory().getArrayDao()).registerNewTypes();
-        LogUtil.logSubsystemExit(LOG);
+    public void destroy() {
+        // Do nothing
     }
 
     /**
      * {@inheritDoc}
      */
-    public DataSet getData(AbstractArrayData arrayData) {
-        LogUtil.logSubsystemEntry(LOG, arrayData);
-        checkArguments(arrayData);
-        loadDataSet(arrayData);
-        LogUtil.logSubsystemExit(LOG);
-        return arrayData.getDataSet();
-    }
-
-    private void loadDataSet(AbstractArrayData arrayData) {
-        DataSetLoader loader = new DataSetLoader(arrayData, getDaoFactory());
-        loader.load();
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
+        chain.doFilter(request, response);
+        TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
     }
 
     /**
      * {@inheritDoc}
      */
-    public DataSet getData(AbstractArrayData arrayData, List<QuantitationType> types) {
-        LogUtil.logSubsystemEntry(LOG, arrayData);
-        checkArguments(arrayData);
-        loadDataSet(arrayData, types);
-        LogUtil.logSubsystemExit(LOG);
-        return arrayData.getDataSet();
+    public void init(FilterConfig config) throws ServletException {
+        // Do nothing
     }
-
-    private void loadDataSet(AbstractArrayData arrayData, List<QuantitationType> types) {
-        DataSetLoader loader = new DataSetLoader(arrayData, getDaoFactory());
-        loader.load(types);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void importData(CaArrayFile caArrayFile, boolean createAnnnotation) throws InvalidDataFileException {
-        LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        AbstractDataSetImporter abstractDataSetImporter =
-            AbstractDataSetImporter.create(caArrayFile, getDaoFactory());
-        AbstractArrayData arrayData = abstractDataSetImporter.importData(createAnnnotation);
-        loadDataSet(arrayData);
-        LogUtil.logSubsystemExit(LOG);
-    }
-
-    private void checkArguments(AbstractArrayData arrayData) {
-        if (arrayData == null) {
-            throw new IllegalArgumentException("Argument arrayData was null");
-        }
-        if (arrayData.getDataFile() == null) {
-            throw new IllegalArgumentException("No data file is associated with array data object");
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public FileValidationResult validate(CaArrayFile arrayDataFile) {
-        DataFileValidator dataFileValidator =
-            new DataFileValidator(arrayDataFile, getDaoFactory(), getArrayDesignService());
-        dataFileValidator.validate();
-        return arrayDataFile.getValidationResult();
-    }
-
-    CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
-    }
-
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
-    }
-
-    private ArrayDesignService getArrayDesignService() {
-        return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
-    }
-
-
-
 }

@@ -134,6 +134,8 @@ import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceBean;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
@@ -207,6 +209,8 @@ public class ArrayDataServiceTest {
         locatorStub.addLookup(ArrayDesignService.JNDI_NAME, arrayDesignServiceBean);
         arrayDataServiceBean.setDaoFactory(this.daoFactoryStub);
         this.arrayDataService = arrayDataServiceBean;
+        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(this.fileAccessServiceStub));
+        TemporaryFileCacheLocator.resetTemporaryFileCache();
     }
 
     @Test

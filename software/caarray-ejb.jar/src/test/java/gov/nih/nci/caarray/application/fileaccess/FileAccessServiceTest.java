@@ -116,11 +116,13 @@ public class FileAccessServiceTest {
         fileAccessService = new FileAccessServiceBean();
         HibernateUtil.enableFilters(false);
         transaction = HibernateUtil.beginTransaction();
+        TemporaryFileCacheLocator.resetTemporaryFileCache();
+        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(TemporaryFileCacheLocator.DEFAULT);
     }
 
     @After
     public void tearDown() {
-        fileAccessService.closeFiles();
+        TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
         transaction.rollback();
     }
 
@@ -147,15 +149,16 @@ public class FileAccessServiceTest {
      */
     @Test
     public void testGetFile() throws FileAccessException {
+        String x = System.getProperty("java.io.tmpdir");
         File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF;
         CaArrayFile caArrayFile = fileAccessService.add(file);
         HibernateUtil.getCurrentSession().save(caArrayFile);
-        File retrievedFile = fileAccessService.getFile(caArrayFile);
+        File retrievedFile = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caArrayFile);
         assertEquals(file.getName(), retrievedFile.getName());
         assertEquals(file.length(), retrievedFile.length());
         assertTrue(file.exists());
         assertTrue(retrievedFile.exists());
-        fileAccessService.closeFiles();
+        TemporaryFileCacheLocator.getTemporaryFileCache().closeFile(caArrayFile);
         assertFalse(retrievedFile.exists());
     }
 

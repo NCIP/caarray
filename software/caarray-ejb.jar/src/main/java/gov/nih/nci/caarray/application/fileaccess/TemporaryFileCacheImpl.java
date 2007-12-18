@@ -82,163 +82,158 @@
  */
 package gov.nih.nci.caarray.application.fileaccess;
 
-import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.interceptor.Interceptors;
+import java.io.OutputStream;
+import java.rmi.server.UID;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 /**
- * Implementation of the FileAccess subsystem.
+ * Default implementation of TemporaryFileCache.
+ * @author dkokotov
  */
-@Local(FileAccessService.class)
-@Stateless
-@Interceptors(ExceptionLoggingInterceptor.class)
-public class FileAccessServiceBean implements FileAccessService {
+public final class TemporaryFileCacheImpl implements TemporaryFileCache {
+    private static final Logger LOG = Logger.getLogger(TemporaryFileCacheImpl.class);
+    private static final String WORKING_DIRECTORY_PROPERTY_KEY = "caarray.working.directory";
+    private static final String TEMP_DIR_PROPERTY_KEY = "java.io.tmpdir";    
 
-    private static final Logger LOG = Logger.getLogger(FileAccessServiceBean.class);
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-
-    /**
-     * {@inheritDoc}
-     */
-    public CaArrayFile add(File file) {
-        LogUtil.logSubsystemEntry(LOG, file);
-        CaArrayFile caArrayFile = doAddFile(file, file.getName());
-        LogUtil.logSubsystemExit(LOG);
-        return caArrayFile;
+    private final Map<CaArrayFile, File> openFiles = new HashMap<CaArrayFile, File>();
+    private File sessionWorkingDirectory;
+    
+    TemporaryFileCacheImpl() {
+        // nothing to do
     }
 
     /**
-     * {@inheritDoc}
+     * Returns a file <code>java.io.File</code> which will hold the uncompressed data for the 
+     * <code>CaArrayFile</code> object provided. The client should eventually call closeFile() for this
+     * <code>CaArrayFile</code> (or closeFiles()) to allow the temporary file to be cleanded up.
+     *
+     * @param caArrayFile logical file whose contents are needed
+     * @return the <code>java.io.File</code> pointing to the temporary file on the filesystem which will
+     * hold the uncompressed contents of the given logical file.
      */
-    public CaArrayFile add(File file, String filename) {
-        LogUtil.logSubsystemEntry(LOG, file);
-        CaArrayFile caArrayFile = doAddFile(file, filename);
+    public File getFile(CaArrayFile caArrayFile) {
+        LogUtil.logSubsystemEntry(LOG, caArrayFile);
+        File file;
+        if (fileAlreadyOpened(caArrayFile)) {
+            file = getOpenFile(caArrayFile);
+        } else {
+            file = openFile(caArrayFile);
+        }
         LogUtil.logSubsystemExit(LOG);
-        return caArrayFile;
+        return file;
     }
 
-    private CaArrayFile doAddFile(File file, String filename) {
-        CaArrayFile caArrayFile = createCaArrayFile(filename);
+    private File openFile(CaArrayFile caArrayFile) {
+        File file = new File(getSessionWorkingDirectory(), caArrayFile.getName());
         try {
-            InputStream inputStream = FileUtils.openInputStream(file);
-            caArrayFile.writeContents(inputStream);
+            HibernateUtil.getCurrentSession().refresh(caArrayFile);
+            InputStream inputStream = caArrayFile.readContents();
+            OutputStream outputStream = FileUtils.openOutputStream(file);
+            IOUtils.copy(inputStream, outputStream);
             IOUtils.closeQuietly(inputStream);
+            IOUtils.closeQuietly(outputStream);
+            HibernateUtil.getCurrentSession().evict(caArrayFile);
+            caArrayFile.clearContents();
         } catch (IOException e) {
-            throw new FileAccessException("File " + file.getAbsolutePath() + " couldn't be written", e);
+            throw new FileAccessException("Couldn't access file contents " + caArrayFile.getName(), e);
         }
-        return caArrayFile;
+        this.openFiles.put(caArrayFile, file);
+        return file;
     }
 
-    private CaArrayFile createCaArrayFile(String filename) {
-        CaArrayFile caArrayFile = new CaArrayFile();
-        caArrayFile.setName(filename);
-        setTypeFromExtension(caArrayFile, filename);
-        return caArrayFile;
+    private File getSessionWorkingDirectory() {
+        if (this.sessionWorkingDirectory == null) {
+            createSessionWorkingDirectory();
+        }
+        return this.sessionWorkingDirectory;
+    }
+
+    private void createSessionWorkingDirectory() {
+        String sessionSubdirectoryName = new UID().toString().replace(':', '_');
+        this.sessionWorkingDirectory = new File(getWorkingDirectory(), sessionSubdirectoryName);
+        if (!this.sessionWorkingDirectory.mkdirs()) {
+            LOG.error("Couldn't create directory: " + this.sessionWorkingDirectory.getAbsolutePath());
+            throw new IllegalStateException("Couldn't create directory: "
+                    + this.sessionWorkingDirectory.getAbsolutePath());
+        }
+    }
+
+    private File getWorkingDirectory() {
+        String tempDir = System.getProperty(TEMP_DIR_PROPERTY_KEY);
+        String workingDirectoryPath = System.getProperty(WORKING_DIRECTORY_PROPERTY_KEY, tempDir);
+        return new File(workingDirectoryPath);
+    }
+
+    private boolean fileAlreadyOpened(CaArrayFile caArrayFile) {
+        return this.openFiles.containsKey(caArrayFile);
+    }
+
+    private File getOpenFile(CaArrayFile caArrayFile) {
+        return this.openFiles.get(caArrayFile);
     }
 
     /**
-     * {@inheritDoc}
+     * Closes all temporary files opened in the current session and deletes the temporary directory used to store them.
+     * This method should always be called at the conclusion of a session of working with file data.
      */
-    public void remove(CaArrayFile caArrayFile) {
-        LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        if (!caArrayFile.getFileStatus().isDeletable()) {
-            throw new IllegalArgumentException("Illegal attempt to delete " + caArrayFile.getName()
-                    + ", status is " + caArrayFile.getFileStatus());
+    public void closeFiles() {
+        Set<CaArrayFile> filesToClose = new HashSet<CaArrayFile>(this.openFiles.keySet());        
+        for (CaArrayFile caarrayFile : filesToClose) {
+            closeFile(caarrayFile);
         }
-        if (caArrayFile.getProject() != null) {
-            caArrayFile.getProject().getFiles().remove(caArrayFile);
-        }
-        this.daoFactory.getFileDao().remove(caArrayFile);
-        LogUtil.logSubsystemExit(LOG);
+        delete(getSessionWorkingDirectory());
+        this.sessionWorkingDirectory = null;
     }
-
+    
+    /**
+     * Closes the file corresponding to the given logical file opened in the current session. Note that at the end
+     * of the session of working with file data, you should still call closeFiles() to perform final cleanup 
+     * even if all files had been previously closed via calls to this method
+     * @param caarrayFile the logical file to close the filesystem file for
+     */
+    public void closeFile(CaArrayFile caarrayFile) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Removing session file in directory: " + getSessionWorkingDirectory() + " for caarray file "
+                    + caarrayFile.getName());
+        }
+        if (this.sessionWorkingDirectory == null) {
+            return;
+        }
+        File file = getOpenFile(caarrayFile);
+        if (file != null) {            
+            delete(file);
+        }
+        this.openFiles.remove(caarrayFile);
+    }
+    
+    private void delete(File file) {
+        LOG.debug("Deleting file: " + file.getAbsolutePath());
+        if (!file.delete()) {
+            LOG.warn("Couldn't delete file: " + file.getAbsolutePath());
+            file.deleteOnExit();
+        }
+    }
+    
     /**
      * {@inheritDoc}
      */
-    public void save(CaArrayFile caArrayFile) {
-        LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        this.daoFactory.getFileDao().save(caArrayFile);
-        LogUtil.logSubsystemExit(LOG);
-    }
-
-    private void setTypeFromExtension(CaArrayFile caArrayFile, String filename) {
-        String extension = FilenameUtils.getExtension(filename);
-        FileExtension fileExtension = FileExtension.getByExtension(extension);
-        if (fileExtension != null) {
-            caArrayFile.setFileType(fileExtension.getType());
-        }
-    }
-
-    CaArrayDaoFactory getDaoFactory() {
-        return this.daoFactory;
-    }
-
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("PMD.ExcessiveMethodLength")
-    public void unzipFiles(List<File> uploads, List<String> uploadFileNames) {
-        try {
-            Pattern p = Pattern.compile(".zip$");
-            int index = 0;
-            for (int i = 0; i < uploadFileNames.size(); i++) {
-                Matcher m = p.matcher(uploadFileNames.get(i).toLowerCase());
-
-                if (m.find()) {
-                    File uploadedFile = uploads.get(i);
-                    String uploadedFileName = uploadedFile.getAbsolutePath();
-                    String directoryPath = uploadedFile.getParent();
-                    ZipFile zipFile = new ZipFile(uploadedFileName);
-                    Enumeration<? extends ZipEntry> entries = zipFile.entries();
-                    while (entries.hasMoreElements()) {
-                        ZipEntry entry = entries.nextElement();
-                        File entryFile = new File(directoryPath + "/" + entry.getName());
-
-                        InputStream fileInputStream = zipFile.getInputStream(entry);
-                        FileOutputStream fileOutputStream = new FileOutputStream(entryFile);
-                        BufferedOutputStream bufferedOutput = new BufferedOutputStream(fileOutputStream);
-                        IOUtils.copy(fileInputStream, bufferedOutput);
-
-                        bufferedOutput.flush();
-                        IOUtils.closeQuietly(bufferedOutput);
-
-                        uploads.add(entryFile);
-                        uploadFileNames.add(entry.getName());
-                    }
-                    zipFile.close();
-                    uploads.remove(index);
-                    uploadFileNames.remove(index);
-                }
-                index++;
-            }
-        } catch (IOException e) {
-            throw new FileAccessException("Couldn't unzip archive.", e);
-        }
+    @Override
+    protected void finalize() throws Throwable {
+        closeFiles();
+        super.finalize();
     }
 }

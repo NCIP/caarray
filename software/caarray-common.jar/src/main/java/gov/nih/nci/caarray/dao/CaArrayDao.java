@@ -163,5 +163,5 @@ public interface CaArrayDao {
     /**
      * Clears the current Hibernate <code>Session</code>.
      */
-    void clearSession();
+    void clearSession();    
 }

@@ -85,6 +85,8 @@ package gov.nih.nci.caarray.services.file;
 import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
@@ -116,6 +118,8 @@ public class FileRetrievalServiceBeanTest {
         ServiceLocatorStub serviceLocatorStub = ServiceLocatorStub.registerEmptyLocator();
         serviceLocatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
         this.bean.setDaoFactory(this.daoFactoryStub);
+        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(this.fileAccessServiceStub));
+        TemporaryFileCacheLocator.resetTemporaryFileCache();
     }
 
     /**

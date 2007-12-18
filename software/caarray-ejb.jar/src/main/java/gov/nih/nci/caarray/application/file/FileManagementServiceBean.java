@@ -100,6 +100,7 @@ import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 
 import org.apache.log4j.Logger;
+import org.hibernate.LockMode;
 
 /**
  * EJB implementation of the entry point to the FileManagement subsystem. Delegates functionality
@@ -144,7 +145,7 @@ public class FileManagementServiceBean implements FileManagementService {
         sendImportJobMessage(targetProject, fileSet);
         LogUtil.logSubsystemExit(LOG);
     }
-
+    
     private void clearValidationMessages(CaArrayFileSet fileSet) {
         for (CaArrayFile caArrayFile : fileSet.getFiles()) {
             caArrayFile.setValidationResult(null);
@@ -199,6 +200,7 @@ public class FileManagementServiceBean implements FileManagementService {
 
     private void updateFileStatus(CaArrayFileSet fileSet, FileStatus status) {
         for (CaArrayFile file : fileSet.getFiles()) {
+            file = getDaoFactory().getSearchDao().retrieve(CaArrayFile.class, file.getId(), LockMode.UPGRADE);
             file.setFileStatus(status);
             getDaoFactory().getProjectDao().save(file);
         }
