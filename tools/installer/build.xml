@@ -4,6 +4,7 @@
 <!-- To run, type ant from the command line -->
 <project name="caarrray-local-installer" default="run" basedir="../../software/build">
 
+    <property name="svn.local.trunk" value="${user.home}/caarray2/software" />
 	<property name="installer.basedir" value="${basedir}/../../tools/installer" />
 	<property name="target.dir" value="${installer.basedir}/target" />
 	<property name="tools.dir" value="${installer.basedir}/tools" />
@@ -33,7 +34,7 @@
 	<property name="build.dir" location="${basedir}/build" />
 	<property name="build.classes.dir" location="${build.dir}/classes" />
 	<property name="build.deploy.dir" location="${build.dir}/deploy" />
-	<property name="caarray.ear.location" location="${basedir}/../caarray.ear/target" />
+	<property name="caarray.ear.location" location="${svn.local.trunk}/caarray.ear/target" />
 	<property name="jboss.mysqlconfig.location" location="${basedir}/resources/deploy" />
 	<property name="database.dir" location="${basedir}/../caarraydb/target/sql" />
 	<property name="docs.dir" location="${installer.basedir}/docs" />
