@@ -123,7 +123,7 @@
         <hashTree/>
         <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Affy Import Loop" enabled="true">
           <boolProp name="LoopController.continue_forever">true</boolProp>
-          <intProp name="LoopController.loops">-1</intProp>
+          <stringProp name="LoopController.loops">10</stringProp>
         </LoopController>
         <hashTree>
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Experiment Data Attributes CSV Data Set" enabled="true">
@@ -777,7 +777,7 @@
         </hashTree>
         <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Illumina Import Loop" enabled="true">
           <boolProp name="LoopController.continue_forever">true</boolProp>
-          <intProp name="LoopController.loops">-1</intProp>
+          <stringProp name="LoopController.loops">2</stringProp>
         </LoopController>
         <hashTree>
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Experiment Data Attributes CSV Data Set" enabled="true">
@@ -1284,8 +1284,8 @@
               <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="One File Imported" enabled="true">
                 <stringProp name="RegexExtractor.useHeaders">false</stringProp>
                 <stringProp name="RegexExtractor.refname">filesImported</stringProp>
-                <stringProp name="RegexExtractor.regex">(1) items found</stringProp>
-                <stringProp name="RegexExtractor.template">$1$</stringProp>
+                <stringProp name="RegexExtractor.regex">One item found</stringProp>
+                <stringProp name="RegexExtractor.template">1</stringProp>
                 <stringProp name="RegexExtractor.default">0</stringProp>
                 <stringProp name="RegexExtractor.match_number">1</stringProp>
               </RegexExtractor>
@@ -1341,8 +1341,8 @@
                   <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="One File Imported" enabled="true">
                     <stringProp name="RegexExtractor.useHeaders">false</stringProp>
                     <stringProp name="RegexExtractor.refname">filesImported</stringProp>
-                    <stringProp name="RegexExtractor.regex">(1) items found</stringProp>
-                    <stringProp name="RegexExtractor.template">$1$</stringProp>
+                    <stringProp name="RegexExtractor.regex">One item found</stringProp>
+                    <stringProp name="RegexExtractor.template">1</stringProp>
                     <stringProp name="RegexExtractor.default">0</stringProp>
                     <stringProp name="RegexExtractor.match_number">1</stringProp>
                   </RegexExtractor>
@@ -1394,7 +1394,7 @@
         </hashTree>
         <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Genepix Import Loop" enabled="true">
           <boolProp name="LoopController.continue_forever">true</boolProp>
-          <intProp name="LoopController.loops">-1</intProp>
+          <stringProp name="LoopController.loops">1</stringProp>
         </LoopController>
         <hashTree>
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Experiment Data Attributes CSV Data Set" enabled="true">
@@ -1858,8 +1858,8 @@
               <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="One File Imported" enabled="true">
                 <stringProp name="RegexExtractor.useHeaders">false</stringProp>
                 <stringProp name="RegexExtractor.refname">filesImported</stringProp>
-                <stringProp name="RegexExtractor.regex">(1) items found</stringProp>
-                <stringProp name="RegexExtractor.template">$1$</stringProp>
+                <stringProp name="RegexExtractor.regex">One item found</stringProp>
+                <stringProp name="RegexExtractor.template">1</stringProp>
                 <stringProp name="RegexExtractor.default">0</stringProp>
                 <stringProp name="RegexExtractor.match_number">1</stringProp>
               </RegexExtractor>
@@ -1915,8 +1915,8 @@
                   <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="One File Imported" enabled="true">
                     <stringProp name="RegexExtractor.useHeaders">false</stringProp>
                     <stringProp name="RegexExtractor.refname">filesImported</stringProp>
-                    <stringProp name="RegexExtractor.regex">(1) items found</stringProp>
-                    <stringProp name="RegexExtractor.template">$1$</stringProp>
+                    <stringProp name="RegexExtractor.regex">One item found</stringProp>
+                    <stringProp name="RegexExtractor.template">1</stringProp>
                     <stringProp name="RegexExtractor.default">0</stringProp>
                     <stringProp name="RegexExtractor.match_number">1</stringProp>
                   </RegexExtractor>
