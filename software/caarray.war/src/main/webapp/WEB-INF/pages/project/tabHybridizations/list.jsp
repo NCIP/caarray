@@ -21,7 +21,7 @@
                 <caarray:projectListTabRelatedItemsLinks relatedItems="${row.labeledExtracts}" relatedEntityName="LabeledExtract" nameProperty="name" isSubtab="true"/>
             </display:column>
             <display:column titleKey="experiment.files.uncompressedSize" sortable="true" sortProperty="arrayData.dataFile.uncompressedSize">
-                <fmt:formatNumber value="${row.arrayData.dataFile.uncompressedSize / 1024}" maxFractionDigits="0"/>
+                <fmt:formatNumber value="${row.uncompressedSizeOfDataFiles / 1024}" maxFractionDigits="0"/>
             </display:column>
             <caarray:projectListTabActionColumns entityName="Hybridization" item="${row}" actions="!edit,!delete" isSubtab="true" confirmText="${msgText}"/>
             <display:column titleKey="button.download">
