@@ -116,8 +116,9 @@ class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
     }
 
     @Override
-    ArrayDesignDetails createDesignDetails(ArrayDesign arrayDesign) {
+    void createDesignDetails(ArrayDesign arrayDesign) {
         ArrayDesignDetails details = new ArrayDesignDetails();
+        arrayDesign.setDesignDetails(details);
         try {
             DelimitedFileReader reader = DelimitedFileReaderFactory.INSTANCE.getCsvReader(getFile());
             reader.nextLine();
@@ -127,7 +128,7 @@ class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
         } catch (IOException e) {
             throw new IllegalStateException("Couldn't read file " + getDesignFile().getName(), e);
         }
-        return details;
+        getArrayDao().save(arrayDesign);
     }
 
     private void addLogicalProbe(ArrayDesignDetails details, List<String> values) {

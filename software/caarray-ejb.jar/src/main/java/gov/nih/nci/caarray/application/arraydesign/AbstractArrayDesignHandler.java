@@ -87,7 +87,6 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
@@ -121,25 +120,13 @@ abstract class AbstractArrayDesignHandler {
         return vocabularyService;
     }
 
-    final void saveDesignDetails(ArrayDesign arrayDesign) {
-        arrayDesign.setDesignDetails(createDesignDetails(arrayDesign));
-    }
-
-    final ArrayDesign getArrayDesign() {
-        ArrayDesign arrayDesign = new ArrayDesign();
-        arrayDesign.setDesignFile(getDesignFile());
-        load(arrayDesign);
-        arrayDesign.setDesignDetails(createDesignDetails(arrayDesign));
-        return arrayDesign;
-    }
-
     final File getFile() {
         return TemporaryFileCacheLocator.getTemporaryFileCache().getFile(getDesignFile());
     }
 
     abstract void load(ArrayDesign arrayDesign);
 
-    abstract ArrayDesignDetails createDesignDetails(ArrayDesign arrayDesign);
+    abstract void createDesignDetails(ArrayDesign arrayDesign);
 
     final FileValidationResult validate() {
         FileValidationResult result = new FileValidationResult(getFile());

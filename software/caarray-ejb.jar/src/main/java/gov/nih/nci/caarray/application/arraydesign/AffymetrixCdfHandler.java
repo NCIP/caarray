@@ -173,9 +173,11 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     }
 
     @Override
-    ArrayDesignDetails createDesignDetails(ArrayDesign arrayDesign) {
+    void createDesignDetails(ArrayDesign arrayDesign) {
         ArrayDesignDetails designDetails = new ArrayDesignDetails();
-        getArrayDao().save(designDetails);
+        arrayDesign.setDesignDetails(designDetails);
+        getArrayDao().save(arrayDesign);
+        getArrayDao().flushSession();
         probeGroup = new ProbeGroup(designDetails);
         probeGroup.setName(LSID_AUTHORITY + ":" + probeGroup.getClass().getSimpleName() + ":All."
                 + this.getFusionCDFData().getChipType());
@@ -186,7 +188,6 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
         handleQCProbeSets(designDetails);
         createMissingFeatures(designDetails);
         closeCdf();
-        return designDetails;
     }
 
     private void initializeFeaturesCreated(FusionCDFHeader fusionCDFHeader) {

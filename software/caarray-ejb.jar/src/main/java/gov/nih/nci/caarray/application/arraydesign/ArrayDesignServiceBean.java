@@ -226,7 +226,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         arrayDesign.getDesignFile().setFileStatus(FileStatus.IMPORTED);
         getArrayDao().save(arrayDesign.getDesignFile());
         getArrayDao().flushSession();
-        handler.saveDesignDetails(arrayDesign);
+        handler.createDesignDetails(arrayDesign);
     }
 
     private AbstractArrayDesignHandler getHandler(CaArrayFile designFile) {
