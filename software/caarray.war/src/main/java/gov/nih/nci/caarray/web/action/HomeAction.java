@@ -161,7 +161,6 @@ public class HomeAction {
             browseItems.add(new BrowseItems(cat, bs.countByBrowseCategory(cat)));
         }
         browseItems.add(new BrowseItems("browse.report.hybridizations", bs.hybridizationCount()));
-        browseItems.add(new BrowseItems("browse.report.institutions", bs.institutionCount()));
         browseItems.add(new BrowseItems("browse.report.users", bs.userCount()));
         return Action.INPUT;
     }

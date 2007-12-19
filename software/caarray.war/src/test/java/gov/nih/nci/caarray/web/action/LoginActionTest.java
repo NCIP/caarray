@@ -115,7 +115,7 @@ public class LoginActionTest {
     public void testExecute() throws Exception {
         String result = this.loginAction.execute();
         List<BrowseItems> browseItems = loginAction.getBrowseItems();
-        assertEquals(BrowseCategory.values().length+3, browseItems.size());
+        assertEquals(BrowseCategory.values().length+2, browseItems.size());
         assertEquals(Action.INPUT, result);
     }
     private static class LocalBrowseServiceStub extends BrowseServiceStub { }

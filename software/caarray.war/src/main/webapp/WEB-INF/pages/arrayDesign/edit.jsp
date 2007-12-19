@@ -63,12 +63,7 @@
                     <caarray:action url="${listUrl}" actionClass="cancel" text="Cancel" tabindex="8" />
                     <s:if test="${editMode}">
                         <caarray:action onclick="document.getElementById('arrayDesignForm').submit();" actionClass="save" text="Save" tabindex="9"/>
-                    </s:if><s:else>
-                        <c:url value="/protected/arrayDesign/edit.action" var="editUrl">
-                            <c:param name="arrayDesign.id" value="${arrayDesign.id}"/>
-                        </c:url>
-                        <caarray:action url="${editUrl}" actionClass="edit" text="Edit" tabindex="9"/>
-                    </s:else>
+                    </s:if>
                 </caarray:actions>
             </div>
         </div>
