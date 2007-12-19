@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
+import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
@@ -125,7 +126,7 @@ public class SearchActionTest {
     @Test
     public void testExperiments() throws Exception {
         String result = this.searchAction.experiments();
-        PaginatedListImpl<Project> results = searchAction.getResults();
+        PaginatedListImpl<Project, ProjectSortCriterion> results = searchAction.getResults();
         assertEquals(SearchAction.EXPERIMENTS_TAB, searchAction.getCurrentTab());
         assertEquals(NUM_PROJECTS, results.getFullListSize());
         assertEquals(NUM_PROJECTS, results.getList().size());

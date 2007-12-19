@@ -9,14 +9,17 @@
 
     <div class="tableboxpad">
     <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
-        <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${project.experiment.sources}"
-            requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="project.id">
+        <display:table class="searchresults" cellspacing="0" list="${pagedItems}"
+            requestURI="${sortUrl}" id="row" excludedParams="project.id">
             <caarray:displayTagProperties/>
-            <display:column titleKey="experiment.sources.name" sortable="true" sortProperty="name">
+            <display:setProperty name="pagination.sort.param" value="pagedItems.sortCriterion" />
+            <display:setProperty name="pagination.sortdirection.param" value="pagedItems.sortDirection" />
+            <display:setProperty name="pagination.pagenumber.param" value="pagedItems.pageNumber" />
+            <display:column titleKey="experiment.sources.name" sortable="true" sortProperty="NAME">
                 <caarray:projectListTabActionLink linkContent="${row.name}" entityName="Source" action="view" itemId="${row.id}" isSubtab="true"/>
             </display:column>
-            <display:column property="description" titleKey="experiment.sources.description" sortable="true" />
-            <display:column property="tissueSite.value" titleKey="currentSource.tissueSite" sortable="true" />
+            <display:column property="description" sortProperty="DESCRIPTION" titleKey="experiment.sources.description" sortable="true" />
+            <display:column property="tissueSite.value" titleKey="currentSource.tissueSite"/>
             <display:column titleKey="experiment.sources.relatedSamples">
                 <caarray:projectListTabRelatedItemsLinks relatedItems="${row.samples}" relatedEntityName="Sample" nameProperty="name" isSubtab="true"/>
             </display:column>

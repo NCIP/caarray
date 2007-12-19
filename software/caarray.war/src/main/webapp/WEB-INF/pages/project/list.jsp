@@ -1,9 +1,12 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
-    <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${projects}" requestURI="${sortUrl}"
-        sort="list" id="row" pagesize="20" excludedParams="project.id" style="clear: none;">
+    <display:table class="searchresults" cellspacing="0" list="${projects}" requestURI="${sortUrl}"
+        id="row" excludedParams="project.id" style="clear: none;">
         <caarray:displayTagProperties/>
-        <display:column sortProperty="experiment.publicIdentifier" title="Experiment ID" sortable="true" >
+        <display:setProperty name="pagination.sort.param" value="projects.sortCriterion" />
+        <display:setProperty name="pagination.sortdirection.param" value="projects.sortDirection" />
+        <display:setProperty name="pagination.pagenumber.param" value="projects.pageNumber" />
+        <display:column sortProperty="PUBLIC_ID" title="Experiment ID" sortable="true" >
             <c:choose>
                 <c:when test="${caarrayfn:canRead(row, caarrayfn:currentUser()) }">
                     <c:url var="viewUrl" value="/project/details.action">
@@ -16,15 +19,15 @@
                 </c:otherwise>
             </c:choose>
         </display:column>
-        <display:column property="experiment.title" title="Experiment Title" escapeXml="true" sortable="true"/>
-        <display:column sortProperty="experiment.assayType" title="Assay Type" sortable="true" >
+        <display:column property="experiment.title" sortProperty="TITLE" title="Experiment Title" escapeXml="true" sortable="true"/>
+        <display:column sortProperty="ASSAY_TYPE" title="Assay Type" sortable="true" >
             <s:if test="${row.experiment.assayType != null}">
                 <fmt:message key="${row.experiment.assayType.resourceKey}" />
             </s:if>
             <s:else>&nbsp;
             </s:else>
         </display:column>
-        <display:column sortProperty="experiment.sampleCount" title="Samples" sortable="true">
+        <display:column title="Samples">
             <c:if test="${caarrayfn:canRead(row, caarrayfn:currentUser()) }">
                 <c:url value="/project/details.action" var="viewSamplesUrl">
                     <c:param name="project.id" value="${row.id}" />
@@ -34,7 +37,7 @@
                 <a href="${viewSamplesUrl}">${row.experiment.sampleCount}</a>
             </c:if>
         </display:column>
-        <display:column sortProperty="status" title="Status" sortable="true">
+        <display:column sortProperty="STATUS" title="Status" sortable="true">
             <fmt:message key="${row.status.resourceKey}" />
         </display:column>
         <c:if test="${!row.public}">

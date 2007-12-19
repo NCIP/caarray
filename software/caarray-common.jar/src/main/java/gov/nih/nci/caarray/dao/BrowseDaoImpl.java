@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
+import gov.nih.nci.caarray.domain.search.SortCriterion;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -140,7 +141,7 @@ public class BrowseDaoImpl implements BrowseDao {
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public List<Project> browseList(PageSortParams params, BrowseCategory cat, Number fieldId) {
+    public List<Project> browseList(PageSortParams<Project> params, BrowseCategory cat, Number fieldId) {
         Query q = browseQuery(false, params, cat, fieldId);
         q.setFirstResult(params.getIndex());
         q.setMaxResults(params.getPageSize());
@@ -217,10 +218,11 @@ public class BrowseDaoImpl implements BrowseDao {
     }
 
 
-    @SuppressWarnings("PMD.CyclomaticComplexity")
-    private Query browseQuery(boolean count, PageSortParams params, BrowseCategory cat, Number fieldId) {
+    @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
+    private Query browseQuery(boolean count, PageSortParams<Project> params, BrowseCategory cat, Number fieldId) {
         // The query is built dynamically, but is not vulnerable to SQL injection
         // because the fields are pulled from an enum.
+        SortCriterion<Project> sortCrit = params != null ? params.getSortCriterion() : null;
         boolean allProjects = BrowseCategory.EXPERIMENTS.equals(cat);
         StringBuffer sb = new StringBuffer();
         if (count) {
@@ -235,9 +237,11 @@ public class BrowseDaoImpl implements BrowseDao {
         if (!allProjects) {
             sb.append(" WHERE ").append(cat.getField()).append(".id = :id");
         }
-        if (!count && params.getSortCriterion() != null) {
-            sb.append(" ORDER BY p.").append(params.getSortCriterion());
-            if (params.isDesc()) { sb.append(" desc"); }
+        if (!count && sortCrit != null) {
+            sb.append(" ORDER BY p.").append(sortCrit.getOrderField());
+            if (params.isDesc()) { 
+                sb.append(" desc"); 
+            }
         }
         Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
         if (!allProjects) {

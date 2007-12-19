@@ -90,12 +90,14 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.search.SampleSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.FileClosingInputStream;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -128,7 +130,8 @@ public class ProjectSamplesAction extends AbstractProjectProtocolAnnotationListT
      * Default constructor.
      */
     public ProjectSamplesAction() {
-        super("sample");
+        super("sample", new PaginatedListImpl<Sample, SampleSortCriterion>(PAGE_SIZE,
+                SampleSortCriterion.NAME.name(), SampleSortCriterion.class));
     }
 
     /**

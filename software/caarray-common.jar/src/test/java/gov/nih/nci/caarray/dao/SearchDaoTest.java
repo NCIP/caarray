@@ -95,6 +95,8 @@ import gov.nih.nci.caarray.domain.project.ServiceType;
 import gov.nih.nci.caarray.domain.protocol.Parameter;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.search.PageSortParams;
+import gov.nih.nci.caarray.domain.search.SourceSortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.util.HibernateUtil;
@@ -369,7 +371,7 @@ public class SearchDaoTest {
         }
     }
     @Test
-    public void testCollectionFilter() {
+    public void testCollectionFilterPaging() {
         Transaction tx = null;
         try {
             // set up dummy data
@@ -383,10 +385,12 @@ public class SearchDaoTest {
             project.getExperiment().setManufacturer(new Organization());
             Source source = new Source();
             source.setName("Source 1 Name");
+            source.setDescription("ZZZ");
             project.getExperiment().getSources().add(source);
-            source = new Source();
-            source.setName("Source 2 Name");
-            project.getExperiment().getSources().add(source);
+            Source source2 = new Source();
+            source2.setName("Source 2 Name");
+            source2.setDescription("AAA");
+            project.getExperiment().getSources().add(source2);
             s.save(project);
             s.flush();
             s.clear();
@@ -403,6 +407,26 @@ public class SearchDaoTest {
 
             filteredList = SEARCH_DAO.filterCollection(retrievedExperiment.getSources(), "name", "SoUrce 3");
             assertEquals(0, filteredList.size());
+            
+            s.clear();
+            retrievedExperiment = SEARCH_DAO.retrieve(Experiment.class, project.getExperiment().getId());
+            int collSize = SEARCH_DAO.collectionSize(retrievedExperiment.getSources());
+            assertEquals(2, collSize);
+            
+            s.clear();
+            retrievedExperiment = SEARCH_DAO.retrieve(Experiment.class, project.getExperiment().getId());
+            PageSortParams<Source> params = new PageSortParams<Source>(1, 1, SourceSortCriterion.NAME, false);
+            filteredList = SEARCH_DAO.pageCollection(retrievedExperiment.getSources(), params);
+            assertEquals(1, filteredList.size());
+            assertEquals(source2, filteredList.get(0));
+            params.setDesc(true);
+            params.setSortCriterion(SourceSortCriterion.DESCRIPTION);
+            params.setPageSize(2);
+            params.setIndex(0);
+            filteredList = SEARCH_DAO.pageCollection(retrievedExperiment.getSources(), params);
+            assertEquals(2, filteredList.size());
+            assertEquals(source, filteredList.get(0));
+            assertEquals(source2, filteredList.get(1));
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during search by example: " + e.getMessage());

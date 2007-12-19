@@ -89,12 +89,14 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.caarray.domain.search.SortCriterion;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -107,6 +109,7 @@ import org.hibernate.Query;
  * 
  * @author Rashmi Srinivasa
  */
+@SuppressWarnings("PMD.CyclomaticComplexity")
 class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     private static final Logger LOG = Logger.getLogger(ProjectDaoImpl.class);
 
@@ -130,8 +133,10 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Project> getProjectsForCurrentUser(boolean showPublic) {
-        Query q = getProjectsForUserQuery(UsernameHolder.getCsmUser(), showPublic, false);
+    public List<Project> getProjectsForCurrentUser(boolean showPublic, PageSortParams pageSortParams) {
+        Query q = getProjectsForUserQuery(showPublic, false, pageSortParams);
+        q.setFirstResult(pageSortParams.getIndex());
+        q.setMaxResults(pageSortParams.getPageSize());
         return q.list();
     }
     
@@ -139,11 +144,15 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      * {@inheritDoc}
      */
     public int getProjectCountForCurrentUser(boolean showPublic) {
-        Query q = getProjectsForUserQuery(UsernameHolder.getCsmUser(), showPublic, true);
+        Query q = getProjectsForUserQuery(showPublic, true, null);
         return ((Number) q.uniqueResult()).intValue();        
     }
-    
-    private Query getProjectsForUserQuery(User user, boolean showPublic, boolean count) {
+
+    @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
+    private Query getProjectsForUserQuery(boolean showPublic, boolean count, 
+            PageSortParams<Project> pageSortParams) { 
+        User user  = UsernameHolder.getCsmUser();
+        SortCriterion<Project> sortCrit = pageSortParams != null ? pageSortParams.getSortCriterion() : null;
         String ownerSubqueryStr =
                 "(select pe.value from " + ProtectionElement.class.getName()
                         + " pe where pe.objectId = :objectId and pe.attribute = :attribute and "
@@ -155,12 +164,19 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
                         + " where ap.securityLevelInternal != :noneSecLevel and cg.groupId = g.groupId "
                         + " and :user in elements(g.users))";
         String selectClause = count ? "SELECT COUNT(DISTINCT p)" : "SELECT DISTINCT p";
-        String queryStr =
-                selectClause + " from " + Project.class.getName() + " p " + " where p.statusInternal "
-                        + (showPublic ? " = " : " != ") + " :status and (p.id in " + ownerSubqueryStr
-                        + " or p.id in " + collabSubqueryStr + ")";
+        StringBuilder queryStr =
+                new StringBuilder(selectClause).append(" from ").append(Project.class.getName()).append(" p ")
+                        .append(" where p.statusInternal ").append(showPublic ? " = " : " != ").append(
+                                " :status and (p.id in ").append(ownerSubqueryStr).append(" or p.id in ").append(
+                                collabSubqueryStr).append(")");
+        if (!count && sortCrit != null) {
+            queryStr.append(" ORDER BY p.").append(sortCrit.getOrderField());
+            if (pageSortParams.isDesc()) {
+                queryStr.append(" desc");
+            }
+        }
         
-        Query query = getCurrentSession().createQuery(queryStr);
+        Query query = getCurrentSession().createQuery(queryStr.toString());
         query.setParameter("status", ProposalStatus.PUBLIC);
         query.setString("objectId", Project.class.getName());
         query.setString("attribute", "id");
@@ -174,7 +190,8 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public List<Project> searchByCategory(PageSortParams params, String keyword, SearchCategory... categories) {
+    public List<Project> searchByCategory(PageSortParams<Project> params, String keyword,
+            SearchCategory... categories) {
         Query q = getSearchQuery(false, params, keyword, categories);
         q.setFirstResult(params.getIndex());
         q.setMaxResults(params.getPageSize());
@@ -189,7 +206,9 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         return ((Number) q.uniqueResult()).intValue();
     }
 
-    private Query getSearchQuery(boolean count, PageSortParams params, String keyword, SearchCategory... categories) {
+    private Query getSearchQuery(boolean count, PageSortParams<Project> params, String keyword,
+            SearchCategory... categories) {
+        SortCriterion<Project> sortCrit = params != null ? params.getSortCriterion() : null;
         StringBuffer sb = new StringBuffer();
         if (count) {
             sb.append("SELECT COUNT(DISTINCT p)");
@@ -199,8 +218,8 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         sb.append(" FROM ").append(Project.class.getName()).append(" p");
         sb.append(getJoinClause(categories));
         sb.append(getWhereClause(categories));
-        if (!count && params.getSortCriterion() != null) {
-            sb.append(" ORDER BY p.").append(params.getSortCriterion());
+        if (!count && sortCrit != null) {
+            sb.append(" ORDER BY p.").append(sortCrit.getOrderField());
             if (params.isDesc()) {
                 sb.append(" desc");
             }
@@ -209,15 +228,11 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         q.setString("keyword", "%" + keyword + "%");
         return q;
     }
-
-    private String getJoinClause(SearchCategory... categories) {
+    
+    private static String getJoinClause(SearchCategory... categories) {
         LinkedHashSet<String> joins = new LinkedHashSet<String>();
         for (SearchCategory category : categories) {
-            if (category.getJoins() != null) {
-                for (String join : category.getJoins()) {
-                    joins.add(join);
-                }
-            }
+            joins.addAll(Arrays.asList(category.getJoins()));
         }
         StringBuffer sb = new StringBuffer();
         for (String table : joins) {

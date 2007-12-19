@@ -455,11 +455,12 @@ var TabUtils = {
         executeAjaxTab_tablevel2(this.findTabByCaption('tablevel2', tabCaption), 'selected', url, '');
     },
 
-    findTabByCaption: function(containerId, caption) {
+    findTabByCaption: function(containerId, caption, isRegexp) {
         tabMenuItems = $(containerId).getElementsByTagName('li');
         for(var i = 0; i < tabMenuItems.length; i++) {
             tabLink = tabMenuItems[i].getElementsByTagName('a')[0];
-            if (tabLink.innerHTML == caption) {
+            var match = isRegexp ? caption.test(tablink.innerHTML) : caption == tabLink.innerHTML;
+            if (match) {
                 return tabLink;
             }
         }

@@ -88,10 +88,12 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.domain.search.LabeledExtractSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -117,7 +119,8 @@ public class ProjectLabeledExtractsAction extends AbstractProjectProtocolAnnotat
      * Default constructor.
      */
     public ProjectLabeledExtractsAction() {
-        super("labeledExtract");
+        super("labeledExtract", new PaginatedListImpl<LabeledExtract, LabeledExtractSortCriterion>(PAGE_SIZE,
+                LabeledExtractSortCriterion.NAME.name(), LabeledExtractSortCriterion.class));
     }
 
     /**

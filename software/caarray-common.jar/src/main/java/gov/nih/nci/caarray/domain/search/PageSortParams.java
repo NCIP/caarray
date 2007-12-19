@@ -84,23 +84,25 @@ package gov.nih.nci.caarray.domain.search;
 
 
 /**
+ * A simple bean for specifying the page and sorting parameters for paged / sorted lists.
+ * 
  * @author Winston Cheng
- *
+ * @param <T> the type of persistent class for which this defines page and sorting parameters
  */
-public class PageSortParams {
+public class PageSortParams<T> {
     private int pageSize;
     private int index;
-    private String sortCriterion;
+    private SortCriterion<T> sortCriterion;
     private boolean desc;
 
     /**
      * Constructor.
      * @param pageSize page size
      * @param index start index
-     * @param sortCriterion sort property
+     * @param sortCriterion sort criterion
      * @param desc true for descending sort
      */
-    public PageSortParams(int pageSize, int index, String sortCriterion, boolean desc) {
+    public PageSortParams(int pageSize, int index, SortCriterion<T> sortCriterion, boolean desc) {
         this.pageSize = pageSize;
         this.index = index;
         this.sortCriterion = sortCriterion;
@@ -134,13 +136,13 @@ public class PageSortParams {
     /**
      * @return the sortCriterion
      */
-    public String getSortCriterion() {
+    public SortCriterion<T> getSortCriterion() {
         return sortCriterion;
     }
     /**
      * @param sortCriterion the sortCriterion to set
      */
-    public void setSortCriterion(String sortCriterion) {
+    public void setSortCriterion(SortCriterion<T> sortCriterion) {
         this.sortCriterion = sortCriterion;
     }
 

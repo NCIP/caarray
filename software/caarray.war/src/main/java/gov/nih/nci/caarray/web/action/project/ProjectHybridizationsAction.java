@@ -88,12 +88,14 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.domain.search.HybridizationSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.FileClosingInputStream;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -129,7 +131,8 @@ public class ProjectHybridizationsAction extends AbstractProjectAnnotationsListT
      * Default constructor.
      */
     public ProjectHybridizationsAction() {
-        super("hybridization");
+        super("hybridization", new PaginatedListImpl<Hybridization, HybridizationSortCriterion>(PAGE_SIZE,
+                HybridizationSortCriterion.NAME.name(), HybridizationSortCriterion.class));
     }
 
     /**

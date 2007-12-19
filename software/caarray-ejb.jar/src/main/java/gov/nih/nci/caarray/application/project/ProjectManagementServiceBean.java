@@ -258,9 +258,9 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public List<Project> getMyProjects(boolean showPublic) {
+    public List<Project> getMyProjects(boolean showPublic, PageSortParams pageSortParams) {
         LogUtil.logSubsystemEntry(LOG, showPublic);
-        List<Project> result = getProjectDao().getProjectsForCurrentUser(showPublic);
+        List<Project> result = getProjectDao().getProjectsForCurrentUser(showPublic, pageSortParams);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -486,7 +486,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public List<Project> searchByCategory(PageSortParams params, String keyword, SearchCategory... categories) {
+    public List<Project> searchByCategory(PageSortParams<Project> params, String keyword,
+            SearchCategory... categories) {
         return getProjectDao().searchByCategory(params, keyword, categories);
     }
 

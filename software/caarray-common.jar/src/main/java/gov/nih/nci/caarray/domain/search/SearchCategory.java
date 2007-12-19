@@ -88,7 +88,6 @@ import gov.nih.nci.caarray.domain.ResourceBasedEnum;
  * @author Winston Cheng
  *
  */
-// cannot define as constants because this is an enum
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public enum SearchCategory implements ResourceBasedEnum {
     /**

@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-war
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-war Software License (the License) is between NCI and You. You (or
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-war Software to (i) use, install, access, operate,
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-war Software; (ii) distribute and
- * have distributed to and by third parties the caarray-war Software and any
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,136 +80,55 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.web.action;
+package gov.nih.nci.caarray.domain.search;
 
-import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
-import gov.nih.nci.caarray.domain.search.SearchCategory;
-import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.opensymphony.xwork2.Action;
-import com.opensymphony.xwork2.ActionSupport;
-import com.opensymphony.xwork2.validator.annotations.RegexFieldValidator;
-import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
- * @author Winston Cheng
- *
+ * Enum of possible sort criterions for projects.
+ * @author dkokotov
  */
-@Validation
-public class SearchAction extends ActionSupport {
-    private static final long serialVersionUID = -6250359716714235444L;
-    private static final int SEARCH_PAGE_SIZE = 20;
+public enum ProjectSortCriterion implements SortCriterion<Project> {
     /**
-     * name of the experiments tab, should have a method of the same name.
+     * Experiment ID.
      */
-    protected static final String EXPERIMENTS_TAB = "experiments";
-
-    // search parameters
-    private String keyword;
-    private SearchCategory category;
-    private String location;
-
-    // fields for displaying search results
-    private String currentTab;
-    private final PaginatedListImpl<Project, ProjectSortCriterion> results =
-        new PaginatedListImpl<Project, ProjectSortCriterion>(SEARCH_PAGE_SIZE, ProjectSortCriterion.PUBLIC_ID.name(),
-                ProjectSortCriterion.class);
-    private Map<String, Integer> tabs;
+    PUBLIC_ID("experiment.publicIdentifier"),
 
     /**
-     * @return the keyword
+     * Experiment title.
      */
-    @RegexFieldValidator(expression = "[\\w \\-\\.]*", key = "search.error.keyword", message = "")
-    public String getKeyword() {
-        return keyword;
-    }
+    TITLE("experiment.title"),
+
     /**
-     * @param keyword the keyword to set
+     * Organism.
      */
-    public void setKeyword(String keyword) {
-        try {
-            this.keyword = URLDecoder.decode(keyword, "ISO-8859-1");
-        } catch (UnsupportedEncodingException e) {
-            this.keyword = keyword;
-        }
-    }
+    ORGANISM("experiment.organism.scientificName"),
+
     /**
-     * @return the category
+     * Assay Type.
      */
-    public SearchCategory getCategory() {
-        return category;
-    }
+    ASSAY_TYPE("experiment.assayType"),
+
     /**
-     * @param category the category to set
+     * Workflow status.
      */
-    public void setCategory(SearchCategory category) {
-        this.category = category;
-    }
+    STATUS("statusInternal"),
+
     /**
-     * @return the location
+     * Workflow status.
      */
-    public String getLocation() {
-        return location;
-    }
-    /**
-     * @param location the location to set
-     */
-    public void setLocation(String location) {
-        this.location = location;
-    }
-    /**
-     * @return the current tab
-     */
-    public String getCurrentTab() {
-        return currentTab;
-    }
-    /**
-     * Returns a map of tabs to #results in that tab.
-     * @return the tabs
-     */
-    public Map<String, Integer> getTabs() {
-        return tabs;
-    }
-    /**
-     * @return the experiments
-     */
-    public PaginatedListImpl<Project, ProjectSortCriterion> getResults() {
-        return results;
+    LAST_UPDATED("lastUpdated");
+
+    private final String orderField;
+
+    private ProjectSortCriterion(String orderField) {
+        this.orderField = orderField;
     }
 
     /**
-     * This action queries for the result counts of each tab.
-     * The tabs call other methods to return the actual data.
-     * @return success
+     * {@inheritDoc}
      */
-    public String basicSearch() {
-        SearchCategory[] categories = (category == null) ? SearchCategory.values() : new SearchCategory[]{category};
-        ProjectManagementService pms = ActionHelper.getProjectManagementService();
-        int projectCount = pms.searchCount(keyword, categories);
-        tabs = new LinkedHashMap<String, Integer>();
-        tabs.put(EXPERIMENTS_TAB, projectCount);
-        return Action.SUCCESS;
-    }
-    /**
-     * Search action for the experiments tab.
-     * @return tab
-     */
-    public String experiments() {
-        currentTab = EXPERIMENTS_TAB;
-        ProjectManagementService pms = ActionHelper.getProjectManagementService();
-        SearchCategory[] categories = (category == null) ? SearchCategory.values() : new SearchCategory[]{category};
-        List<Project> projects = pms.searchByCategory(this.results.getPageSortParams(), keyword, categories);
-        int projectCount = pms.searchCount(keyword, categories);
-        results.setFullListSize(projectCount);
-        results.setList(projects);
-        return "tab";
+    public String getOrderField() {
+        return this.orderField;
     }
 }

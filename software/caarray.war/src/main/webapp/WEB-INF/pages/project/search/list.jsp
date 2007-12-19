@@ -5,7 +5,7 @@
         <display:setProperty name="pagination.sort.param" value="results.sortCriterion" />
         <display:setProperty name="pagination.sortdirection.param" value="results.sortDirection" />
         <display:setProperty name="pagination.pagenumber.param" value="results.pageNumber" />
-        <display:column sortProperty="experiment.publicIdentifier" title="Experiment ID" sortable="true">
+        <display:column sortProperty="PUBLIC_ID" title="Experiment ID" sortable="true">
             <c:choose>
                 <c:when test="${caarrayfn:canRead(row, caarrayfn:currentUser())}">
                     <c:url var="viewUrl" value="/project/details.action">
@@ -18,12 +18,12 @@
                 </c:otherwise>
             </c:choose>
         </display:column>
-        <display:column property="experiment.title" titleKey="search.result.experimentTitle" sortable="true"/>
-        <display:column property="experiment.assayType" titleKey="search.result.assayType" sortable="true" />
+        <display:column property="experiment.title" sortProperty="TITLE" titleKey="search.result.experimentTitle" sortable="true"/>
+        <display:column property="experiment.assayType" sortProperty="ASSAY_TYPE" titleKey="search.result.assayType" sortable="true" />
         <display:column titleKey="search.result.pi">
             <a href="mailto:${row.experiment.mainPointOfContact.contact.email}?subject=${row.experiment.title}" class="email">${row.experiment.mainPointOfContact.contact.lastName}<img src="images/ico_sendmail.gif" alt="" style="padding-left:5px" /></a>
         </display:column>
-        <display:column property="experiment.organism.scientificName" titleKey="search.result.organism" sortable="true"/>
+        <display:column property="experiment.organism.scientificName" sortProperty="ORGANISM" titleKey="search.result.organism" sortable="true"/>
         <display:column titleKey="search.result.diseaseState">
             <c:choose>
                 <c:when test="${caarrayfn:canRead(row, caarrayfn:currentUser())}">
@@ -51,7 +51,7 @@
                 </c:otherwise>
             </c:choose>
         </display:column>
-        <display:column sortProperty="lastUpdated" titleKey="search.result.updated" sortable="true">
+        <display:column sortProperty="LAST_UPDATED" titleKey="search.result.updated" sortable="true">
             <fmt:formatDate value="${row.lastUpdated}" pattern="M/d/yyyy"/>
         </display:column>
     </display:table>

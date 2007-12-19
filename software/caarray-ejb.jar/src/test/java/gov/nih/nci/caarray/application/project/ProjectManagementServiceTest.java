@@ -111,6 +111,8 @@ import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.search.PageSortParams;
+import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.SecurityUtils;
@@ -176,7 +178,9 @@ public class ProjectManagementServiceTest {
 
     @Test
     public void testGetWorkspaceProjects() {
-        List<Project> projects = this.projectManagementService.getMyProjects(false);
+        List<Project> projects =
+                this.projectManagementService.getMyProjects(false, new PageSortParams<Project>(10000, 1,
+                        ProjectSortCriterion.PUBLIC_ID, false));
         assertNotNull(projects);
     }
 
@@ -458,7 +462,7 @@ public class ProjectManagementServiceTest {
          * {@inheritDoc}
          */
         @Override
-        public List<Project> getProjectsForCurrentUser(boolean showPublic) {
+        public List<Project> getProjectsForCurrentUser(boolean showPublic, PageSortParams pageSortParams) {
             return new ArrayList<Project>();
         }
 

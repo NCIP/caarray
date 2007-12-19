@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
@@ -185,5 +186,20 @@ public class GenericDataServiceBean implements GenericDataService {
     public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property,
             String value) {
         return this.daoFactory.getSearchDao().filterCollection(collection, property, value);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public <T extends PersistentObject> List<T> pageCollection(Collection<T> collection,
+            PageSortParams<T> pageSortParams) {
+        return this.daoFactory.getSearchDao().pageCollection(collection, pageSortParams);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public int collectionSize(Collection<? extends PersistentObject> collection) {
+        return this.daoFactory.getSearchDao().collectionSize(collection);
     }
 }

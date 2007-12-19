@@ -82,12 +82,14 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
+import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -120,9 +122,11 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
      * default constructor.
      *
      * @param resourceKey the base resouce key.
+     * @param pagedItems the paged list to use for this tab's item list
      */
-    public AbstractProjectProtocolAnnotationListTabAction(String resourceKey) {
-        super(resourceKey);
+    public AbstractProjectProtocolAnnotationListTabAction(String resourceKey,
+            PaginatedListImpl<? extends PersistentObject, ?> pagedItems) {
+        super(resourceKey, pagedItems);
     }
 
     private void initForm() {

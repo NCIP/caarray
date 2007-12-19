@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.search.PageSortParams;
+import gov.nih.nci.caarray.domain.search.SortCriterion;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import gov.nih.nci.cagrid.data.QueryProcessingException;
@@ -190,6 +192,34 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         Query q = HibernateUtil.getCurrentSession().createFilter(collection, hql);
         q.setParameter("value", value.toLowerCase(Locale.ENGLISH) + "%");
         return q.list();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public <T extends PersistentObject> List<T> pageCollection(Collection<T> collection, 
+            PageSortParams<T> pageSortParams) {
+        StringBuilder filterQueryStr = new StringBuilder();
+        SortCriterion<T> sortCrit = pageSortParams.getSortCriterion();
+        if (sortCrit != null) {
+            filterQueryStr.append(" ORDER BY this.").append(sortCrit.getOrderField());
+            if (pageSortParams.isDesc()) {
+                filterQueryStr.append(" desc");
+            }
+        }
+        Query q = HibernateUtil.getCurrentSession().createFilter(collection, filterQueryStr.toString());
+        q.setFirstResult(pageSortParams.getIndex());
+        q.setMaxResults(pageSortParams.getPageSize());
+        return q.list();
+    }
+        
+    /**
+     * {@inheritDoc}
+     */
+    public int collectionSize(Collection<? extends PersistentObject> collection) {
+        return ((Number) HibernateUtil.getCurrentSession().createFilter(collection, "select count(this)").iterate()
+                .next()).intValue();
     }
 
     /**

@@ -89,6 +89,7 @@ import java.util.List;
 import org.hibernate.criterion.Order;
 
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.search.PageSortParams;
 
 /**
  * @author dkokotov
@@ -131,6 +132,21 @@ public class GenericDataServiceStub implements GenericDataService {
      */
     public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property, String value) {
         return null;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public int collectionSize(Collection<? extends PersistentObject> collection) {
+        return 0;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public <T extends PersistentObject> List<T> pageCollection(Collection<T> collection,
+            PageSortParams<T> pageSortParams) {
+        return new ArrayList<T>(collection);
     }
 
     /**

@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.Collection;
 import java.util.List;
@@ -109,9 +110,11 @@ public abstract class AbstractProjectAnnotationsListTabAction<T extends Persiste
     /**
      * default constructor.
      * @param resourceKey the base resouce key.
+     * @param pagedItems the paged list to use for this tab's item list
      */
-    public AbstractProjectAnnotationsListTabAction(String resourceKey) {
-        super(resourceKey);
+    public AbstractProjectAnnotationsListTabAction(String resourceKey,
+            PaginatedListImpl<? extends PersistentObject, ?> pagedItems) {
+        super(resourceKey, pagedItems);
     }
 
     /**

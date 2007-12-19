@@ -89,10 +89,12 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.publication.Publication;
+import gov.nih.nci.caarray.domain.search.PublicationSortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.Collection;
 import java.util.Set;
@@ -116,7 +118,8 @@ public class ProjectPublicationsAction extends AbstractProjectListTabAction {
      * Default constructor.
      */
     public ProjectPublicationsAction() {
-        super("publication");
+        super("publication", new PaginatedListImpl<Publication, PublicationSortCriterion>(PAGE_SIZE,
+                PublicationSortCriterion.TITLE.name(), PublicationSortCriterion.class));
     }
 
     /**

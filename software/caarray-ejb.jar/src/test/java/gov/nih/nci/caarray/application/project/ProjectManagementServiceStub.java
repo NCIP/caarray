@@ -156,7 +156,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public List<Project> getMyProjects(boolean showPublic) {
+    public List<Project> getMyProjects(boolean showPublic, PageSortParams pageSortParams) {
         return new ArrayList<Project>();
     }
 

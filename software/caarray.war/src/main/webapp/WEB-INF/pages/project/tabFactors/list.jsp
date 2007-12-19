@@ -9,13 +9,16 @@
 
     <div class="tableboxpad">
     <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
-        <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${project.experiment.factors}"
-            requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="project.id">
+        <display:table class="searchresults" cellspacing="0" list="${pagedItems}"
+            requestURI="${sortUrl}" id="row" excludedParams="project.id">
+            <display:setProperty name="pagination.sort.param" value="pagedItems.sortCriterion" />
+            <display:setProperty name="pagination.sortdirection.param" value="pagedItems.sortDirection" />
+            <display:setProperty name="pagination.pagenumber.param" value="pagedItems.pageNumber" />
             <caarray:displayTagProperties/>
-            <display:column titleKey="experiment.factors.name" sortable="true" sortProperty="name">
+            <display:column titleKey="experiment.factors.name" sortable="true" sortProperty="NAME">
                 <caarray:projectListTabActionLink linkContent="${row.name}" entityName="Factor" action="view" itemId="${row.id}" isSubtab="true"/>
             </display:column>
-            <display:column property="type.value" titleKey="experiment.factors.type" sortable="true" />
+            <display:column property="type.value" sortProperty="TYPE" titleKey="experiment.factors.type" sortable="true" />
             <caarray:projectListTabActionColumns entityName="Factor" item="${row}" actions="!edit,!copy,!delete" isSubtab="true"/>
         </display:table>
     </ajax:displayTag>

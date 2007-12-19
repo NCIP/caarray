@@ -85,15 +85,13 @@ package gov.nih.nci.caarray.web.action;
 import gov.nih.nci.caarray.application.browse.BrowseService;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
-import gov.nih.nci.caarray.domain.search.PageSortParams;
+import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.web.ui.BrowseTab;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import org.displaytag.properties.SortOrderEnum;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
@@ -114,8 +112,9 @@ public class BrowseAction extends ActionSupport {
 
     // browse results
     private SortedSet<BrowseTab> tabs;
-    private final PaginatedListImpl<Project> results =
-        new PaginatedListImpl<Project>(BROWSE_PAGE_SIZE, "experiment.publicIdentifier");
+    private final PaginatedListImpl<Project, ProjectSortCriterion> results =
+            new PaginatedListImpl<Project, ProjectSortCriterion>(BROWSE_PAGE_SIZE, ProjectSortCriterion.PUBLIC_ID
+                    .name(), ProjectSortCriterion.class);
 
     /**
      * @return the category
@@ -155,7 +154,7 @@ public class BrowseAction extends ActionSupport {
     /**
      * @return the results
      */
-    public PaginatedListImpl<Project> getResults() {
+    public PaginatedListImpl<Project, ProjectSortCriterion> getResults() {
         return this.results;
     }
 
@@ -179,14 +178,9 @@ public class BrowseAction extends ActionSupport {
      * @return tab
      */
     public String list() {
-        int pageSize = this.results.getObjectsPerPage();
-        int index = pageSize * (this.results.getPageNumber() - 1);
-        boolean desc = SortOrderEnum.DESCENDING.equals(this.results.getSortDirection());
-        PageSortParams psp = new PageSortParams(pageSize, index, this.results.getSortCriterion(), desc);
-
         BrowseService bs = ActionHelper.getBrowseService();
         this.results.setFullListSize(bs.browseCount(this.category, this.id));
-        this.results.setList(bs.browseList(psp, this.category, this.id));
+        this.results.setList(bs.browseList(this.results.getPageSortParams(), this.category, this.id));
         return "tab";
     }
 }

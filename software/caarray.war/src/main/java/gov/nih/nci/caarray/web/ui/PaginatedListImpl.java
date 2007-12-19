@@ -82,6 +82,9 @@
  */
 package gov.nih.nci.caarray.web.ui;
 
+import gov.nih.nci.caarray.domain.search.PageSortParams;
+import gov.nih.nci.caarray.domain.search.SortCriterion;
+
 import java.util.List;
 
 import org.displaytag.pagination.PaginatedList;
@@ -91,9 +94,10 @@ import org.displaytag.properties.SortOrderEnum;
  *
  * @author Winston Cheng
  *
- * @param <T>
+ * @param <T> the persistent type of which this is the paginated list
+ * @param <E> the enum class defining possible sort criteria for T
  */
-public class PaginatedListImpl<T> implements PaginatedList {
+public class PaginatedListImpl<T, E extends Enum<E> & SortCriterion<T>> implements PaginatedList {
     private int fullListSize;
     private List<T> list;
     private int objectsPerPage;
@@ -101,16 +105,19 @@ public class PaginatedListImpl<T> implements PaginatedList {
     private String searchId;
     private String sortCriterion;
     private SortOrderEnum sortDirection = SortOrderEnum.ASCENDING;
+    private final Class<E> sortCriterionClass;
 
     /**
      * Constructor for a paginated list.
      *
      * @param objectsPerPage page size
      * @param sortCriterion sort criterion
+     * @param sortCriterionClass class of the sort criterion enum
      */
-    public PaginatedListImpl(int objectsPerPage, String sortCriterion) {
+    public PaginatedListImpl(int objectsPerPage, String sortCriterion, Class<E> sortCriterionClass) {
         this.objectsPerPage = objectsPerPage;
         this.sortCriterion = sortCriterion;
+        this.sortCriterionClass = sortCriterionClass;
     }
 
     /**
@@ -202,5 +209,17 @@ public class PaginatedListImpl<T> implements PaginatedList {
      */
     public void setSortDirection(SortOrderEnum sortDirection) {
         this.sortDirection = sortDirection;
+    }
+
+    /**
+     * @return a PageSortParams object encapsulating the page and sort specifications
+     * of this paginated list
+     */
+    public PageSortParams<T> getPageSortParams() {
+        int pageSize = getObjectsPerPage();
+        int index = pageSize * (getPageNumber() - 1);
+        boolean desc = SortOrderEnum.DESCENDING.equals(getSortDirection());
+        E typedSortCriterion = Enum.valueOf(this.sortCriterionClass, getSortCriterion());
+        return new PageSortParams<T>(pageSize, index, typedSortCriterion, desc);
     }
 }

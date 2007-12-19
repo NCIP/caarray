@@ -145,7 +145,8 @@ public class ProjectActionTest {
         project.getFiles().add(file2);
         project.getFiles().add(file3);
         projects.add(project);
-        this.workspaceAction.setProjects(projects);
+        this.workspaceAction.getProjects().setList(projects);
+        this.workspaceAction.getProjects().setFullListSize(1);
     }
 
     @SuppressWarnings("unchecked")

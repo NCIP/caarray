@@ -84,9 +84,8 @@ package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
 import gov.nih.nci.caarray.domain.project.Project;
-
-import java.util.ArrayList;
-import java.util.List;
+import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
+import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
@@ -98,8 +97,11 @@ import com.opensymphony.xwork2.Action;
  * @author Scott Miller
  */
 public class ProjectWorkspaceAction {
+    private static final int PAGE_SIZE = 20;
 
-    private List<Project> projects = new ArrayList<Project>();
+    private final PaginatedListImpl<Project, ProjectSortCriterion> projects =
+            new PaginatedListImpl<Project, ProjectSortCriterion>(PAGE_SIZE, ProjectSortCriterion.PUBLIC_ID.name(),
+                    ProjectSortCriterion.class);
     private int publicCount;
     private int workQueueCount;
 
@@ -110,8 +112,7 @@ public class ProjectWorkspaceAction {
      */
     @SkipValidation
     public String workspace() {
-        this.publicCount = getProjectManagementService().getMyProjectCount(true);
-        this.workQueueCount = getProjectManagementService().getMyProjectCount(false);
+        updateCounts();
         return Action.SUCCESS;
     }
 
@@ -122,7 +123,9 @@ public class ProjectWorkspaceAction {
      */
     @SkipValidation
     public String publicProjects() {
-        setProjects(getProjectManagementService().getMyProjects(true));
+        updateCounts();
+        this.projects.setList(getProjectManagementService().getMyProjects(true, this.projects.getPageSortParams()));
+        this.projects.setFullListSize(getPublicCount());
         return Action.SUCCESS;
     }
 
@@ -133,22 +136,15 @@ public class ProjectWorkspaceAction {
      */
     @SkipValidation
     public String myProjects() {
-        setProjects(getProjectManagementService().getMyProjects(false));
+        updateCounts();
+        this.projects.setList(getProjectManagementService().getMyProjects(false, this.projects.getPageSortParams()));
+        this.projects.setFullListSize(getWorkQueueCount());
         return Action.SUCCESS;
     }
-
-    /**
-     * @return the projects
-     */
-    public List<Project> getProjects() {
-        return this.projects;
-    }
-
-    /**
-     * @param projects the projects to set
-     */
-    public void setProjects(List<Project> projects) {
-        this.projects = projects;
+    
+    private void updateCounts() {
+        this.publicCount = getProjectManagementService().getMyProjectCount(true);
+        this.workQueueCount = getProjectManagementService().getMyProjectCount(false);        
     }
 
     /**
@@ -163,5 +159,12 @@ public class ProjectWorkspaceAction {
      */
     public int getWorkQueueCount() {
         return workQueueCount;
+    }
+    
+    /**
+     * @return the experiments
+     */
+    public PaginatedListImpl<Project, ProjectSortCriterion> getProjects() {
+        return projects;
     }
 }

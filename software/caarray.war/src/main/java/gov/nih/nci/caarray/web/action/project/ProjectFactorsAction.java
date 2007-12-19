@@ -89,11 +89,13 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Factor;
+import gov.nih.nci.caarray.domain.search.FactorSortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -119,7 +121,8 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
      * Default constructor.
      */
     public ProjectFactorsAction() {
-        super("factor");
+        super("factor", new PaginatedListImpl<Factor, FactorSortCriterion>(PAGE_SIZE,
+                FactorSortCriterion.NAME.name(), FactorSortCriterion.class));
     }
 
     /**

@@ -114,6 +114,7 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.sample.ValueBasedCharacteristic;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
+import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -209,6 +210,9 @@ public class ProjectDaoTest extends AbstractDaoTest {
     private static final VocabularyDao VOCABULARY_DAO = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
     private static final SearchDao SEARCH_DAO = CaArrayDaoFactory.INSTANCE.getSearchDao();
     private static final CollaboratorGroupDao COLLAB_DAO = CaArrayDaoFactory.INSTANCE.getCollaboratorGroupDao();
+    
+    private static final PageSortParams<Project> ALL_BY_ID =
+            new PageSortParams<Project>(10000, 0, ProjectSortCriterion.TITLE, false);
 
     /**
      * Define the dummy objects that will be used by the tests.
@@ -328,13 +332,13 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DUMMY_EXPERIMENT_1.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_1.setExperimentDesignDescription("Working on it");
 
-        DUMMY_EXPERIMENT_2.setTitle("DummyExperiment2");
+        DUMMY_EXPERIMENT_2.setTitle("New DummyExperiment2");
         DUMMY_EXPERIMENT_2.setAssayType(AssayType.ACGH);
         DUMMY_EXPERIMENT_2.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_2.setOrganism(DUMMY_ORGANISM);
         DUMMY_EXPERIMENT_2.setManufacturer(DUMMY_PROVIDER);
 
-        DUMMY_EXPERIMENT_3.setTitle("DummyExperiment3");
+        DUMMY_EXPERIMENT_3.setTitle("Ahab DummyExperiment3");
         DUMMY_EXPERIMENT_3.setAssayType(AssayType.ACGH);
         DUMMY_EXPERIMENT_3.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_3.setOrganism(DUMMY_ORGANISM);
@@ -487,8 +491,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
-            assertEquals(1, DAO_OBJECT.getProjectsForCurrentUser(false).size());
-            assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(true).size());
+            assertEquals(1, DAO_OBJECT.getProjectsForCurrentUser(false, ALL_BY_ID).size());
+            assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(true, ALL_BY_ID).size());
             tx.commit();
 
             UsernameHolder.setUser("caarrayuser");
@@ -539,8 +543,8 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
             UsernameHolder.setUser("caarrayuser");
             tx = HibernateUtil.beginTransaction();
-            assertEquals(1, DAO_OBJECT.getProjectsForCurrentUser(false).size());
-            assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(true).size());
+            assertEquals(1, DAO_OBJECT.getProjectsForCurrentUser(false, ALL_BY_ID).size());
+            assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(true, ALL_BY_ID).size());
             tx.commit();
 
             UsernameHolder.setUser(AbstractDaoTest.STANDARD_USER);
@@ -550,20 +554,20 @@ public class ProjectDaoTest extends AbstractDaoTest {
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
-            assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(false).size());
-            assertEquals(1, DAO_OBJECT.getProjectsForCurrentUser(true).size());
+            assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(false, ALL_BY_ID).size());
+            assertEquals(1, DAO_OBJECT.getProjectsForCurrentUser(true, ALL_BY_ID).size());
             tx.commit();
 
             UsernameHolder.setUser("caarrayuser");
             tx = HibernateUtil.beginTransaction();
-            assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(false).size());
-            assertEquals(1, DAO_OBJECT.getProjectsForCurrentUser(true).size());
+            assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(false, ALL_BY_ID).size());
+            assertEquals(1, DAO_OBJECT.getProjectsForCurrentUser(true, ALL_BY_ID).size());
             tx.commit();
 
             UsernameHolder.setUser("biostatistician");
             tx = HibernateUtil.beginTransaction();
-            assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(false).size());
-            assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(true).size());
+            assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(false, ALL_BY_ID).size());
+            assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(true, ALL_BY_ID).size());
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
@@ -1157,7 +1161,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         tx = HibernateUtil.beginTransaction();
 
         // test search all
-        PageSortParams psp = new PageSortParams(20,0,"experiment.title",false);
+        PageSortParams<Project> psp = new PageSortParams<Project>(20, 0, ProjectSortCriterion.PUBLIC_ID, false);
         List<Project> projects = DAO_OBJECT.searchByCategory(psp, "DummyExperiment", SearchCategory.values());
         assertEquals(3, projects.size());
 
@@ -1170,7 +1174,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         assertEquals(2, projects.size());
 
         psp.setIndex(2);
-        psp.setSortCriterion("experiment.title");
+        psp.setSortCriterion(ProjectSortCriterion.TITLE);
         projects = DAO_OBJECT.searchByCategory(psp, "DummyExperiment", SearchCategory.values());
         assertEquals(1, projects.size());
         psp.setIndex(0);
@@ -1178,14 +1182,54 @@ public class ProjectDaoTest extends AbstractDaoTest {
         // test sorting
         psp.setPageSize(20);
         projects = DAO_OBJECT.searchByCategory(psp, "DummyExperiment", SearchCategory.values());
-        assertTrue(DUMMY_PROJECT_1.equals(projects.get(0)));
+        assertTrue(DUMMY_PROJECT_3.equals(projects.get(0)));
         psp.setDesc(true);
         projects = DAO_OBJECT.searchByCategory(psp, "DummyExperiment", SearchCategory.values());
-        assertTrue(DUMMY_PROJECT_1.equals(projects.get(2)));
+        assertTrue(DUMMY_PROJECT_3.equals(projects.get(2)));
 
         // test search by title
         projects = DAO_OBJECT.searchByCategory(psp, "DummyExperiment1", SearchCategory.EXPERIMENT_TITLE);
         assertTrue(DUMMY_PROJECT_1.equals(projects.get(0)));
+
+        tx.commit();
+    }
+
+    @Test
+    public void testGetProjectsForCurrentUser() {
+        Transaction tx = HibernateUtil.beginTransaction();
+        saveSupportingObjects();
+        DAO_OBJECT.save(DUMMY_PROJECT_1);
+        DAO_OBJECT.save(DUMMY_PROJECT_2);
+        DAO_OBJECT.save(DUMMY_PROJECT_3);
+        tx.commit();
+        tx = HibernateUtil.beginTransaction();
+
+        // test search all
+        PageSortParams<Project> psp = new PageSortParams<Project>(20,0, ProjectSortCriterion.TITLE,false);
+        List<Project> projects = DAO_OBJECT.getProjectsForCurrentUser(false, psp);
+        assertEquals(3, projects.size());
+        projects = DAO_OBJECT.getProjectsForCurrentUser(true, psp);
+        assertEquals(0, projects.size());
+
+        // test count
+        assertEquals(3, DAO_OBJECT.getProjectCountForCurrentUser(false));
+        assertEquals(0, DAO_OBJECT.getProjectCountForCurrentUser(true));
+
+        // test paging
+        psp.setPageSize(2);
+        projects = DAO_OBJECT.getProjectsForCurrentUser(false, psp);
+        assertEquals(2, projects.size());
+
+        psp.setIndex(2);
+        psp.setSortCriterion(ProjectSortCriterion.TITLE);
+        projects = DAO_OBJECT.getProjectsForCurrentUser(false, psp);
+        assertEquals(1, projects.size());
+        assertEquals(DUMMY_EXPERIMENT_2.getTitle(), projects.get(0).getExperiment().getTitle());
+        
+        psp.setDesc(true);
+        projects = DAO_OBJECT.getProjectsForCurrentUser(false, psp);
+        assertEquals(1, projects.size());
+        assertEquals(DUMMY_EXPERIMENT_3.getTitle(), projects.get(0).getExperiment().getTitle());
 
         tx.commit();
     }

@@ -82,9 +82,12 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
+import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
+import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -103,15 +106,22 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
 @Validation
 public abstract class AbstractProjectListTabAction extends ProjectTabAction {
     private static final long serialVersionUID = 1L;
+    
+    /** page size for item lists. */
+    public static final int PAGE_SIZE = 15;
 
     private final String resourceKey;
+    private final PaginatedListImpl<? extends PersistentObject, ?> pagedItems;
 
     /**
      * @param resourceKey the resource to display
+     * @param pagedItems the paged list to use for this tab's item list
      */
-    public AbstractProjectListTabAction(String resourceKey) {
+    public AbstractProjectListTabAction(String resourceKey,
+            PaginatedListImpl<? extends PersistentObject, ?> pagedItems) {
         super();
         this.resourceKey = resourceKey;
+        this.pagedItems = pagedItems;
     }
 
     /**
@@ -121,7 +131,15 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
     @Override
     @SkipValidation
     public String load() {
+        updatePagedList();
         return "list";
+    }
+
+    @SuppressWarnings("unchecked")
+    private void updatePagedList() {
+        GenericDataService gds = getGenericDataService();
+        this.pagedItems.setList(gds.pageCollection(getCollection(), this.pagedItems.getPageSortParams()));
+        this.pagedItems.setFullListSize(gds.collectionSize(getCollection()));
     }
 
     /**
@@ -158,7 +176,9 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
         } else {
             ActionHelper.saveMessage(getText("experiment.items.updated", new String[] {getItemName()}));
         }
-        return super.save();
+        String result = super.save();
+        updatePagedList();
+        return result;
     }
 
     /**
@@ -179,6 +199,7 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
         getCollection().remove(getItem());
         super.save();
         ActionHelper.saveMessage(getText("experiment.items.deleted", new String[] {getItemName()}));
+        updatePagedList();
         return "list";
     }
 
@@ -198,6 +219,7 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
             args.add(getProject().getExperiment().getTitle());
             ActionHelper.saveMessage(getText("project.saveProblem", args));
         }
+        updatePagedList();
         return "list";
     }
 
@@ -231,5 +253,12 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
         if (this.hasErrors()) {
             setEditMode(true);
         }
+    }
+
+    /**
+     * @return the pagedItems
+     */
+    public PaginatedListImpl<?, ?> getPagedItems() {
+        return pagedItems;
     }
 }

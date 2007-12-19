@@ -88,10 +88,12 @@ import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.search.SourceSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.ActionHelper;
+import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.Collection;
 
@@ -121,7 +123,8 @@ public class ProjectSourcesAction extends AbstractProjectListTabAction {
      * Default constructor.
      */
     public ProjectSourcesAction() {
-        super("source");
+        super("source", new PaginatedListImpl<Source, SourceSortCriterion>(PAGE_SIZE,
+                SourceSortCriterion.NAME.name(), SourceSortCriterion.class));
     }
 
     /**

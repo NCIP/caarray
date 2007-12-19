@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.dao.stub;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
 import java.util.ArrayList;
@@ -149,6 +150,21 @@ public class SearchDaoStub extends AbstractDaoStub implements SearchDao {
     public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property, String value) {
         this.callsToFiltercollection++;
         return null;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public <T extends PersistentObject> List<T> pageCollection(Collection<T> collection,
+            PageSortParams<T> pageSortParams) {
+        return null;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public int collectionSize(Collection<? extends PersistentObject> collection) {
+        return 0;
     }
 
     /**

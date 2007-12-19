@@ -168,16 +168,23 @@ public interface ProjectManagementService {
     void changeProjectStatus(long projectId, ProposalStatus newStatus) throws ProposalWorkflowException;
 
     /**
-     * Gets projects belonging to the current user. Either public or non-public projects directly related to the 
-     * current user are returned. A project is directly related to a user if the user is either the data owner
-     * or in a collaboration group which has been granted access to the project.
+     * Gets a subset of the projects belonging to the current user. Either public or non-public projects directly
+     * related to the current user are returned. A project is directly related to a user if the user is either the data
+     * owner or in a collaboration group which has been granted access to the project. The subset to retrieve depends on
+     * the page and sort specifications in pageSortParams
      * 
-     * @param showPublic if true, then only projects in the "Public" workflow status are returned; if false,
-     * then only projects in workflow statuses other than "Public" are returned. 
+     * Note that this method currently only supports SortCriterions that are either simple properties of the target
+     * class or required single-valued associations from it. If a non-required association is used in the sort
+     * criterion, then any instances for which that association is null will not be included in the results (as an inner
+     * join is used)
+     * 
+     * @param showPublic if true, then only projects in the "Public" workflow status are returned; if false, then only
+     *            projects in workflow statuses other than "Public" are returned.
+     * @param pageSortParams specifies the sorting to apply and which page of the full result set to return
      * 
      * @return public or non-public projects directly related to the current user, as described above
      */
-    List<Project> getMyProjects(boolean showPublic);
+    List<Project> getMyProjects(boolean showPublic, PageSortParams pageSortParams);
 
     /**
      * Gets the count of projects belonging to the current user. The count of either public or non-public projects 
@@ -293,14 +300,18 @@ public interface ProjectManagementService {
 
     /**
      * Performs a query for experiments by text matching for the given keyword.
-     *
+     * 
+     * Note that this method currently only supports SortCriterions that are either simple properties of the target
+     * class or required single-valued associations from it. If a non-required association is used in the sort
+     * criterion, then any instances for which that association is null will not be included in the results (as an inner
+     * join is used)
+     * 
      * @param params paging and sorting parameters
      * @param keyword text to search for
-     * @param categories Indicates which categories to search.
-     *                   Passing null will search all categories.
+     * @param categories Indicates which categories to search. Passing null will search all categories.
      * @return a list of matching experiments
      */
-    List<Project> searchByCategory(PageSortParams params, String keyword, SearchCategory... categories);
+    List<Project> searchByCategory(PageSortParams<Project> params, String keyword, SearchCategory... categories);
 
     /**
      * Gets the count of search results matching the given keyword.

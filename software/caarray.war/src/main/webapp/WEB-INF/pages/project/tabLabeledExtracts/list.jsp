@@ -9,14 +9,17 @@
 
     <div class="tableboxpad">
     <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
-        <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${project.experiment.labeledExtracts}"
-            requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="project.id">
+        <display:table class="searchresults" cellspacing="0" list="${pagedItems}"
+            requestURI="${sortUrl}" id="row" excludedParams="project.id">
             <caarray:displayTagProperties/>
-            <display:column titleKey="experiment.labeledExtracts.name" sortable="true" sortProperty="name">
+            <display:setProperty name="pagination.sort.param" value="pagedItems.sortCriterion" />
+            <display:setProperty name="pagination.sortdirection.param" value="pagedItems.sortDirection" />
+            <display:setProperty name="pagination.pagenumber.param" value="pagedItems.pageNumber" />
+            <display:column titleKey="experiment.labeledExtracts.name" sortable="true" sortProperty="NAME">
                 <caarray:projectListTabActionLink linkContent="${row.name}" entityName="LabeledExtract" action="view" itemId="${row.id}" isSubtab="true"/>
             </display:column>
-            <display:column property="description" titleKey="experiment.labeledExtracts.description" sortable="true" />
-            <display:column property="materialType.value" titleKey="currentLabeledExtract.materialType" sortable="true" />
+            <display:column property="description" sortProperty="DESCRIPTION" titleKey="experiment.labeledExtracts.description" sortable="true" />
+            <display:column property="materialType.value" titleKey="currentLabeledExtract.materialType"/>
             <display:column titleKey="experiment.labeledExtracts.relatedExtract">
                 <caarray:projectListTabRelatedItemsLinks relatedItems="${row.extracts}" relatedEntityName="Extract" nameProperty="name" isSubtab="true"/>
             </display:column>

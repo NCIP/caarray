@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ServiceType;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
+import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.List;
@@ -230,7 +231,7 @@ public class BrowseDaoTest extends AbstractDaoTest {
         saveProjects();
         Transaction tx = HibernateUtil.beginTransaction();
         Long id = new Long(0);
-        PageSortParams psp = new PageSortParams(20,0,"experiment.title",false);
+        PageSortParams<Project> psp = new PageSortParams<Project>(20,0,ProjectSortCriterion.TITLE,false);
         DAO_OBJECT.browseCount(BrowseCategory.ORGANISMS, id);
         DAO_OBJECT.browseList(psp, BrowseCategory.ORGANISMS, id);
         tx.commit();

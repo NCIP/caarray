@@ -636,12 +636,6 @@ public class Experiment extends AbstractCaArrayEntity {
     /**
      * Gets the samples.
      *
-     * DEVELOPER NOTE: because of the extra laziness options, operations which do not initialize
-     * the Samples collection (such as size) do not take into account the security restrictions
-     * in the @Where annotation and therefore return values which are not consistent with those
-     * that would be returned by the collection once it were initialized. Ie, if the experiment
-     * has 3 samples but a user can only access 2, then getSamples().size() will return 3 prior
-     * to being initialized by hibernate, and 2 afterwards
      * @return the samples
      */
     @OneToMany(fetch = FetchType.LAZY)

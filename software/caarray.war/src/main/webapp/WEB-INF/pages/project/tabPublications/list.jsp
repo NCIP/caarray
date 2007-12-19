@@ -9,14 +9,17 @@
 
     <div class="tableboxpad">
     <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
-        <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${project.experiment.publications}"
-            requestURI="${sortUrl}" sort="list" id="row" pagesize="20" excludedParams="project.id">
+        <display:table class="searchresults" cellspacing="0" list="${pagedItems}"
+            requestURI="${sortUrl}" id="row" excludedParams="project.id">
             <caarray:displayTagProperties/>
-            <display:column titleKey="experiment.publications.title" sortable="true" sortProperty="title">
+            <display:setProperty name="pagination.sort.param" value="pagedItems.sortCriterion" />
+            <display:setProperty name="pagination.sortdirection.param" value="pagedItems.sortDirection" />
+            <display:setProperty name="pagination.pagenumber.param" value="pagedItems.pageNumber" />
+            <display:column titleKey="experiment.publications.title" sortable="true" sortProperty="TITLE">
                 <caarray:projectListTabActionLink linkContent="${row.title}" entityName="Publication" action="view" itemId="${row.id}"/>
             </display:column>
-            <display:column property="authors" titleKey="experiment.publications.authors" sortable="true" />
-            <display:column titleKey="experiment.publications.uri" sortable="true">
+            <display:column property="authors" sortProperty="AUTHORS" titleKey="experiment.publications.authors" sortable="true" />
+            <display:column titleKey="experiment.publications.uri" sortProperty="URI" sortable="true">
                 <a href="${row.uri}" target="_blank">${row.uri}</a>
             </display:column>
             <caarray:projectListTabActionColumns entityName="Publication" item="${row}" actions="!edit,!delete"/>

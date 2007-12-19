@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
 import java.util.Collection;
@@ -166,6 +167,31 @@ public interface SearchDao extends CaArrayDao {
      */
      <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property,
             String value);
+
+     /**
+      * Retrieves a specific subset of items from a given collection based on given sorting and paging params.
+      * The intention is that this collection is proxied, and the implementations of this will be able
+      * to retrieve the requested subset without needing to initialize the entire collection.
+      * 
+      * Note that this method currently only supports SortCriterions that are either simple properties of the target
+      * class or required single-valued associations from it. If a non-required association is used in the sort 
+      * criterion, then any instances for which that association is null will not be included in the results 
+      * (as an inner join is used)
+      * 
+      * @param <T> the class of objects to expext in return.
+      * @param collection the collection from which to retrieve the subset
+      * @param pageSortParams parameters specifying how the collection is to be sorted and which page is to be retrieved
+      * @return the list of objects representing the requested subset
+      */
+      <T extends PersistentObject> List<T> pageCollection(Collection<T> collection, PageSortParams<T> pageSortParams);
+
+      /**
+       * Returns the size of a given collection. The intention is that this collection is proxied, and the 
+       * implementations of this will be able to calculate the size without initializing it.
+       * @param collection the collection whose size to calculate
+       * @return the size of the collection
+       */
+       int collectionSize(Collection<? extends PersistentObject> collection);
 
     /**
      * Retrieve the list of values of the given field of the given entity that
