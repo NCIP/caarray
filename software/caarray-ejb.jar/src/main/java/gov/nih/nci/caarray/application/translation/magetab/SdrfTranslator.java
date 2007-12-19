@@ -186,12 +186,51 @@ final class SdrfTranslator extends AbstractTranslator {
             String investigationTitle = document.getIdfDocument().getInvestigation().getTitle();
             for (Experiment investigation : getTranslationResult().getInvestigations()) {
                 if (investigationTitle.equals(investigation.getTitle())) {
+                    addImplicitExtracts();
+                    addImplicitSamples();
+                    addImplicitSources();
                     investigation.getSources().addAll(this.allSources);
                     investigation.getSamples().addAll(this.allSamples);
                     investigation.getExtracts().addAll(this.allExtracts);
                     investigation.getLabeledExtracts().addAll(this.allLabeledExtracts);
                     investigation.getHybridizations().addAll(this.allHybridizations);
                 }
+            }
+        }
+    }
+
+    private void addImplicitExtracts() {
+        for (LabeledExtract labeledExtract : this.allLabeledExtracts) {
+            if (labeledExtract.getExtracts().isEmpty()) {
+                Extract extract = new Extract();
+                extract.setName(labeledExtract.getName());
+                extract.getLabeledExtracts().add(labeledExtract);
+                labeledExtract.getExtracts().add(extract);
+                this.allExtracts.add(extract);
+            }
+        }
+    }
+
+    private void addImplicitSamples() {
+        for (Extract extract : this.allExtracts) {
+            if (extract.getSamples().isEmpty()) {
+                Sample sample = new Sample();
+                sample.setName(extract.getName());
+                sample.getExtracts().add(extract);
+                extract.getSamples().add(sample);
+                this.allSamples.add(sample);
+            }
+        }
+    }
+
+    private void addImplicitSources() {
+        for (Sample sample : this.allSamples) {
+            if (sample.getSources().isEmpty()) {
+                Source source = new Source();
+                source.setName(sample.getName());
+                source.getSamples().add(sample);
+                sample.getSources().add(source);
+                this.allSources.add(source);
             }
         }
     }

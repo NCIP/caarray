@@ -187,8 +187,8 @@ public class MageTabTranslatorTest {
     }
 
     private void checkTcgaBroadBioMaterials(Experiment investigation) {
-        assertEquals(0, investigation.getSources().size());
-        assertEquals(0, investigation.getSamples().size());
+        assertEquals(26, investigation.getSources().size());
+        assertEquals(26, investigation.getSamples().size());
         assertEquals(26, investigation.getExtracts().size());
         assertEquals(26, investigation.getLabeledExtracts().size());
     }
