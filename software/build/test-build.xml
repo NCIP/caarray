@@ -186,14 +186,6 @@
 	<!-- TODO: Check for LDAP -->
 
 	<!-- DISPLAY ERROR MESSAGES -->
-	<au:assertEquals message="Unable to reach ${jboss.server.hostname}:${jboss.server.port}" 
-	  expected="true"
-	  actual="${jboss.server.port.running}" 
-	  casesensitive="true"/>
-	<au:assertEquals message="Unable to reach ${jboss.server.hostname}:${jboss.server.port}" 
-	  expected="true"
-	  actual="${jboss.server.port.running}"
-	  casesensitive="true"/>
 	<au:assertEquals message="Unable to reach ${database.server}:${database.port}" 
 	  expected="true"
 	  actual="${database.port.running}"
