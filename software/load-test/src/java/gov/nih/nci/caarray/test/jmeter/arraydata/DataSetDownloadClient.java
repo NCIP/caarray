@@ -179,8 +179,7 @@ public class DataSetDownloadClient extends CaArrayJmeterSampler implements JavaS
             int numValuesRetrieved = 0;
 
             // Check if the retrieved number of hybridizations and quantitation types are as requested.
-            if ((dataSet != null) && (request.getHybridizations().size() == dataSet.getHybridizationDataList().size())
-                    && (request.getQuantitationTypes().size() == dataSet.getQuantitationTypes().size())) {
+            if ((dataSet != null) && (request.getHybridizations().size() == dataSet.getHybridizationDataList().size())) {
                 // Get each HybridizationData in the DataSet.
                 for (HybridizationData oneHybData : dataSet.getHybridizationDataList()) {
                     HybridizationData populatedHybData = searchService.search(oneHybData).get(0);
@@ -225,7 +224,7 @@ public class DataSetDownloadClient extends CaArrayJmeterSampler implements JavaS
             } else {
                 results.sampleEnd();
                 results.setSuccessful(false);
-                results.setResponseCode("Error: Response did not match request.");
+                results.setResponseCode("Error: Response did not match request. DataSet=" + dataSet + "; request.hybs=" + request.getHybridizations().size() + ", request.qtypes=" + request.getQuantitationTypes().size());
             }
         } catch (ServerConnectionException e) {
             results.setSuccessful(false);
