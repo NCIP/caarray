@@ -413,4 +413,17 @@ public class Hybridization extends AbstractCaArrayEntity implements ProtectableD
         }
         return protectables;
     }
+
+    /**
+     * @return the uncompressed size of all associated data files, in bytes
+     */
+    @Transient
+    public int getUncompressedSizeOfDataFiles() {
+        int total = 0;
+        for (CaArrayFile caArrayFile : getAllDataFiles()) {
+            total += caArrayFile.getUncompressedSize();
+        }
+        return total;
+    }
+
 }
