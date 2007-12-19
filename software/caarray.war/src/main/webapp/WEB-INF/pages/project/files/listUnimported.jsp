@@ -13,15 +13,15 @@
         formTableTbody = formTable.getElementsByTagName('tbody')[0];
         formTableTbody.appendChild(newRow);
     }
-    
+
     doFilter = function() {
-    	Caarray.submitAjaxForm('selectFilesForm', 'unimportedForm', {url: '${listUnimportedFormUrl}'});
+      Caarray.submitAjaxForm('selectFilesForm', 'unimportedForm', {url: '${listUnimportedFormUrl}'});
     }
-    
+
     setExperimentTitleHeader('${project.experiment.title}');
 </script>
 
-<caarray:tabPane subtab="true" submittingPaneMessageKey="experiment.files.processing">
+<caarray:tabPane subtab="true" submittingPaneMessageKey="data.file.upload.inProgress">
 
     <div class="boxpad2">
         <h3><fmt:message key="project.tabs.unimportedFiles" /></h3>
@@ -50,10 +50,10 @@
         </div>
     </div>
 
-	<div class="tableboxpad" id="unimportedForm">
-    	<%@ include file="/WEB-INF/pages/project/files/listUnimportedForm.jsp" %>
+  <div class="tableboxpad" id="unimportedForm">
+      <%@ include file="/WEB-INF/pages/project/files/listUnimportedForm.jsp" %>
     </div>
-    
+
     <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
         <caarray:actions divclass="actionsthin">
             <c:url value="/ajax/project/files/deleteFiles.action" var="deleteUrl" />
