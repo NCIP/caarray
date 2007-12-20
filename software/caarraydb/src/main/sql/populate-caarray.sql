@@ -22,7 +22,6 @@ insert into termsource (name, version) values ('Caarray', '0.1');
 
 insert into term (value, source, category) select 'Brain', termsource.id, category.id from termsource, category where termsource.name='MO' and category.name='OrganismPart';
 insert into term (value, source, category) select 'Leg', termsource.id, category.id from termsource, category where termsource.name='MO' and category.name='OrganismPart';
-insert into term (value, source, category) select 'Feed', termsource.id, category.id from termsource, category where termsource.name='MO' and category.name='OrganismPart';
 insert into term (value, source, category) select 'cell lysate', termsource.id, category.id from termsource, category where termsource.name='MO' and category.name='MaterialType';
 insert into term (value, source, category) select 'total RNA', termsource.id, category.id from termsource, category where termsource.name='MO' and category.name='MaterialType';
 insert into term (value, source, category) select 'DNA', termsource.id, category.id from termsource, category where termsource.name='MO' and category.name='MaterialType';
