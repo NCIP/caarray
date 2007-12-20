@@ -541,13 +541,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
                 Enumeration<? extends ZipEntry> entries = zipFile.entries();
                 while (entries.hasMoreElements()) {
-                    ZipEntry entry = entries.nextElement();
-                    File entryFile = new File(directoryPath + "/" + entry.getName());
-                    FileOutputStream fos = new FileOutputStream(entryFile);
-                    IOUtils.copy(zipFile.getInputStream(entry), fos);
-                    IOUtils.closeQuietly(fos);
-                    this.uploads.add(entryFile);
-                    this.uploadFileNames.add(entry.getName());
+                    handleEntry(directoryPath, zipFile, entries.nextElement());
                 }
                 zipFile.close();
                 this.uploads.remove(index);
@@ -557,6 +551,30 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 index++;
             }
         }
+    }
+
+    private void handleEntry(String directoryPath, ZipFile zipFile, ZipEntry entry)
+            throws IOException {
+        String name = entry.getName();
+        if (name.charAt(0) == '/') {
+            name = name.substring(1);
+        }
+        if (name.endsWith("/")) {
+            // ignore directory entries
+            return;
+        }
+        int idx = name.lastIndexOf('/');
+        if (idx != -1) {
+            String dir = name.substring(0, idx);
+            File dirFile = new File(directoryPath + "/" + dir);
+            dirFile.mkdirs();
+        }
+        File entryFile = new File(directoryPath + "/" + name);
+        FileOutputStream fos = new FileOutputStream(entryFile);
+        IOUtils.copy(zipFile.getInputStream(entry), fos);
+        IOUtils.closeQuietly(fos);
+        this.uploads.add(entryFile);
+        this.uploadFileNames.add(entry.getName());
     }
 
     /**

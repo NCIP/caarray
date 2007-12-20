@@ -100,9 +100,12 @@ import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
@@ -117,6 +120,7 @@ import com.opensymphony.xwork2.Action;
  * @author Scott Miller
  *
  */
+@SuppressWarnings("PMD")
 public class ProjectFilesActionTest {
 
     private static final String LIST_IMPORTED = "listImported";
@@ -129,7 +133,6 @@ public class ProjectFilesActionTest {
     ProjectFilesAction action = new ProjectFilesAction();
 
     @BeforeClass
-    @SuppressWarnings("PMD")
     public static void beforeClass() {
         ServiceLocatorStub stub = ServiceLocatorStub.registerEmptyLocator();
         stub.addLookup(ProjectManagementService.JNDI_NAME, projectManagementServiceStub);
@@ -194,7 +197,39 @@ public class ProjectFilesActionTest {
     }
 
     @Test
-    @SuppressWarnings("PMD")
+    public void testZipUpload() throws Exception {
+        File zipFile = File.createTempFile("tmp", ".zip");
+        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile));
+        ZipEntry ze = new ZipEntry("test");
+        zos.putNextEntry(ze);
+        zos.write(new byte[] {1, 2, 3});
+        zos.closeEntry();
+
+        ze = new ZipEntry("/testdir/");
+        zos.putNextEntry(ze);
+        zos.closeEntry();
+
+        ze = new ZipEntry("/testdir/test");
+        zos.putNextEntry(ze);
+        zos.write(new byte[] {1, 2, 3});
+        zos.closeEntry();
+
+        zos.close();
+
+        List<File> files = new ArrayList<File>();
+        List<String> fileNames = new ArrayList<String>();
+        List<String> contentTypes = new ArrayList<String>();
+        files.add(zipFile);
+        fileNames.add(zipFile.getName());
+        contentTypes.add("test");
+        this.action.setUpload(files);
+        this.action.setUploadFileName(fileNames);
+        this.action.setUploadContentType(contentTypes);
+        assertEquals(UPLOAD, this.action.upload());
+        assertEquals(2, projectManagementServiceStub.getFilesAddedCount());
+    }
+
+    @Test
     public void testValidate() throws Exception {
         List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
@@ -243,7 +278,6 @@ public class ProjectFilesActionTest {
     }
 
     @Test
-    @SuppressWarnings("PMD")
     public void testImport() throws Exception {
         List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
@@ -292,7 +326,6 @@ public class ProjectFilesActionTest {
     }
 
     @Test
-    @SuppressWarnings("PMD")
     public void testDelete() throws Exception {
         List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
@@ -329,7 +362,6 @@ public class ProjectFilesActionTest {
         assertEquals(3, fileAccessServiceStub.getRemovedFileCount());
     }
     @Test
-    @SuppressWarnings("PMD")
     public void testDeleteSupplemental() throws Exception {
         List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
@@ -350,7 +382,6 @@ public class ProjectFilesActionTest {
     }
 
     @Test
-    @SuppressWarnings("PMD")
     public void testSave() throws Exception {
         List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
