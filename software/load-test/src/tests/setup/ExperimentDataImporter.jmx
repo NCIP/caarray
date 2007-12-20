@@ -685,6 +685,10 @@
                 <stringProp name="IfController.evaluateAll">false</stringProp>
               </IfController>
               <hashTree>
+                <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for Ten Seconds" enabled="true">
+                  <stringProp name="ConstantTimer.delay">10000</stringProp>
+                </ConstantTimer>
+                <hashTree/>
                 <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="List Imported Files" enabled="true">
                   <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
                     <collectionProp name="Arguments.arguments">
@@ -731,10 +735,6 @@
                   </RegexExtractor>
                   <hashTree/>
                 </hashTree>
-                <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for Ten Seconds" enabled="true">
-                  <stringProp name="ConstantTimer.delay">10000</stringProp>
-                </ConstantTimer>
-                <hashTree/>
               </hashTree>
             </hashTree>
           </hashTree>
@@ -1339,6 +1339,10 @@
                 <stringProp name="IfController.evaluateAll">false</stringProp>
               </IfController>
               <hashTree>
+                <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for Ten Seconds" enabled="true">
+                  <stringProp name="ConstantTimer.delay">10000</stringProp>
+                </ConstantTimer>
+                <hashTree/>
                 <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="List Imported Files" enabled="true">
                   <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
                     <collectionProp name="Arguments.arguments">
@@ -1385,10 +1389,6 @@
                   </RegexExtractor>
                   <hashTree/>
                 </hashTree>
-                <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for Ten Seconds" enabled="true">
-                  <stringProp name="ConstantTimer.delay">10000</stringProp>
-                </ConstantTimer>
-                <hashTree/>
               </hashTree>
             </hashTree>
           </hashTree>
@@ -1956,6 +1956,10 @@
                 <stringProp name="IfController.evaluateAll">false</stringProp>
               </IfController>
               <hashTree>
+                <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for Ten Seconds" enabled="true">
+                  <stringProp name="ConstantTimer.delay">10000</stringProp>
+                </ConstantTimer>
+                <hashTree/>
                 <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="List Imported Files" enabled="true">
                   <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
                     <collectionProp name="Arguments.arguments">
@@ -2002,10 +2006,6 @@
                   </RegexExtractor>
                   <hashTree/>
                 </hashTree>
-                <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for Ten Seconds" enabled="true">
-                  <stringProp name="ConstantTimer.delay">10000</stringProp>
-                </ConstantTimer>
-                <hashTree/>
               </hashTree>
             </hashTree>
           </hashTree>
@@ -2530,6 +2530,10 @@
                 <stringProp name="IfController.evaluateAll">false</stringProp>
               </IfController>
               <hashTree>
+                <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for Ten Seconds" enabled="true">
+                  <stringProp name="ConstantTimer.delay">10000</stringProp>
+                </ConstantTimer>
+                <hashTree/>
                 <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="List Imported Files" enabled="true">
                   <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
                     <collectionProp name="Arguments.arguments">
@@ -2576,10 +2580,6 @@
                   </RegexExtractor>
                   <hashTree/>
                 </hashTree>
-                <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for Ten Seconds" enabled="true">
-                  <stringProp name="ConstantTimer.delay">10000</stringProp>
-                </ConstantTimer>
-                <hashTree/>
               </hashTree>
             </hashTree>
           </hashTree>
