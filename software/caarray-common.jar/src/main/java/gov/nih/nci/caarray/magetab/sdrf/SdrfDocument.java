@@ -127,6 +127,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private final List<AbstractSampleDataRelationshipNode> leftmostNodes =
         new ArrayList<AbstractSampleDataRelationshipNode>();
     private ProtocolApplication currentProtocolApp;
+    private Hybridization currentHybridization;
+    private ArrayDesign currentArrayDesign;
 
     private final List<ArrayDesign> allArrayDesigns = new ArrayList<ArrayDesign>();
     private final List<Comment> allComments = new ArrayList<Comment>();
@@ -239,6 +241,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
                 handleValue(columns.get(i), values.get(i));
             }
             currentNode = null;
+            currentArrayDesign = null;
+            currentHybridization = null;
         }
     }
 
@@ -250,10 +254,12 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         case SAMPLE_NAME:
         case EXTRACT_NAME:
         case LABELED_EXTRACT_NAME:
-        case HYBRIDIZATION_NAME:
         case SCAN_NAME:
         case NORMALIZATION_NAME:
             handleNode(column, value);
+            break;
+        case HYBRIDIZATION_NAME:
+            handleHybridization(column, value);
             break;
         case PROVIDER:
             handleProviders(value);
@@ -320,6 +326,14 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         }
     }
 
+    private void handleHybridization(SdrfColumn column, String value) {
+        handleNode(column, value);
+        currentHybridization = (Hybridization) currentNode;
+        if (currentArrayDesign != null) {
+            currentHybridization.setArrayDesign(currentArrayDesign);
+        }
+    }
+
     private void handleImageFile(SdrfColumn column, String value) {
         Image image = new Image();
         image.setName(value);
@@ -342,12 +356,12 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     private ArrayDesign arrayDesignHelper(SdrfColumn column, String value) {
         ArrayDesign arrayDesign = getArrayDesign(value);
-        //ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.setName(value);
-        //arrayDesign.link(currentNode);
         arrayDesign.addToSdrfList(this);
-        //currentNode = arrayDesign;
-        allHybridizations.get(allHybridizations.size() - 1).setArrayDesign(arrayDesign);
+        if (currentHybridization != null) {
+            currentHybridization.setArrayDesign(arrayDesign);
+        }
+        currentArrayDesign = arrayDesign;
         return arrayDesign;
     }
 
@@ -422,7 +436,11 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleUnit(SdrfColumn column, String value, SdrfColumn nextColumn) {
         OntologyTerm unit = getOntologyTerm(column.getHeading().getQualifier(), value);
         unit.setValue(value);
-        currentUnitable.setUnit(unit);        
+        if (currentUnitable != null) {
+            currentUnitable.setUnit(unit);
+        } else {
+            addErrorMessage("Illegal Unit column: Unit must follow a Characteristic, ParameterValue or FactorValue");
+        }
         if (nextColumn != null && nextColumn.getType() == SdrfColumnType.TERM_SOURCE_REF) {
             currentTermSourceable = unit;
         }

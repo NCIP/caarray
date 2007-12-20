@@ -119,6 +119,11 @@ public final class TestMageTabSets {
     public static final MageTabInputFileSet MAGE_TAB_ERROR_SPECIFICATION_INPUT_SET = getErrorSpecificationInputSet();
 
     /**
+     * Example set of documents with ERRORS based on the MAGE-TAB specification.
+     */
+    public static final MageTabInputFileSet MAGE_TAB_GEDP_INPUT_SET = getGedpSpecificationInputSet();
+
+    /**
      * Example set of MAGE-TAB data with 10 large CEL files and no derived data.
      */
     public static final MageTabInputFileSet PERFORMANCE_TEST_10_INPUT_SET = getPerformanceTest10InputSet();
@@ -206,6 +211,13 @@ public final class TestMageTabSets {
         fileSet.addAdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
         fileSet.addDataMatrix(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX);
         addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY);
+        return fileSet;
+    }
+
+    private static MageTabInputFileSet getGedpSpecificationInputSet() {
+        MageTabInputFileSet fileSet = new MageTabInputFileSet();
+        fileSet.addIdf(MageTabDataFiles.GEDP_IDF);
+        fileSet.addSdrf(MageTabDataFiles.GEDP_SDRF);
         return fileSet;
     }
 

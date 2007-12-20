@@ -110,53 +110,57 @@ public class MageTabParserTest {
     private MageTabParser parser = MageTabParser.INSTANCE;
 
     @Test
-    public void testValidate() {
+    public void testValidate() throws MageTabParsingException {
         MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_ERROR_SPECIFICATION_INPUT_SET;
         ValidationResult result;
-        try {
-            result = parser.validate(fileSet);
-            assertFalse(result.isValid());
-            assertEquals(15, result.getMessages().size());
-            
-        } catch (MageTabParsingException e) {
-            e.printStackTrace();
-        }
+        result = parser.validate(fileSet);
+        assertFalse(result.isValid());
+        assertEquals(15, result.getMessages().size());
+    }
+
+    @Test
+    public void testValidateIllegalUnitPlacement() throws MageTabParsingException {
+        MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_GEDP_INPUT_SET;
+        ValidationResult result;
+        result = parser.validate(fileSet);
+        assertFalse(result.isValid());
+        assertTrue(result.getMessages().toString().contains("ERROR: Illegal Unit column"));
     }
 
     @Test
     public void testParseEmptySet() throws InvalidDataException, MageTabParsingException  {
-            MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
-            MageTabDocumentSet documentSet = parser.parse(inputFileSet);
-            assertNotNull(documentSet);
+        MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
+        MageTabDocumentSet documentSet = parser.parse(inputFileSet);
+        assertNotNull(documentSet);
     }
 
     @Test
     public void testValidateMissingSdrf() throws MageTabParsingException  {
-            MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
-            inputFileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-            ValidationResult result = parser.validate(inputFileSet);
-            assertNotNull(result);
-            assertFalse(result.isValid());
-            assertEquals(1, result.getFileValidationResults().size());
-            FileValidationResult fileValidationResult = result.getFileValidationResults().get(0);
-            assertEquals(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF, fileValidationResult.getFile());
-            assertEquals(1, fileValidationResult.getMessages().size());
-            ValidationMessage message = fileValidationResult.getMessages().get(0);
-            assertEquals(33, message.getLine());
-            assertEquals(2, message.getColumn());
-            assertTrue(message.getMessage().startsWith("Referenced SDRF file "));
-            assertTrue(message.getMessage().endsWith( " was not included in the MAGE-TAB document set"));
+        MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
+        inputFileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        ValidationResult result = parser.validate(inputFileSet);
+        assertNotNull(result);
+        assertFalse(result.isValid());
+        assertEquals(1, result.getFileValidationResults().size());
+        FileValidationResult fileValidationResult = result.getFileValidationResults().get(0);
+        assertEquals(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF, fileValidationResult.getFile());
+        assertEquals(1, fileValidationResult.getMessages().size());
+        ValidationMessage message = fileValidationResult.getMessages().get(0);
+        assertEquals(33, message.getLine());
+        assertEquals(2, message.getColumn());
+        assertTrue(message.getMessage().startsWith("Referenced SDRF file "));
+        assertTrue(message.getMessage().endsWith( " was not included in the MAGE-TAB document set"));
     }
 
     @Test
     public void testValidateProtocolWithoutType() throws MageTabParsingException  {
-            MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
-            inputFileSet.addIdf(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
-            inputFileSet.addSdrf(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
-            ValidationResult result = parser.validate(inputFileSet);
-            assertNotNull(result);
+        MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
+        inputFileSet.addIdf(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
+        inputFileSet.addSdrf(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
+        ValidationResult result = parser.validate(inputFileSet);
+        assertNotNull(result);
     }
-    
+
     @Test
     public void testValidateMissingDataFiles() throws MageTabParsingException {
         MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
