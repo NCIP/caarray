@@ -90,7 +90,7 @@ public enum ExperimentOntology {
     /**
      * MGED Ontology.
      */
-    MGED("MGED"),
+    MGED_ONTOLOGY("MO"),
 
     /**
      * CAArray Local Ontology.
