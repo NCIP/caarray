@@ -1224,7 +1224,7 @@
             <stringProp name="filename">importExperimentData_100M.csv</stringProp>
             <boolProp name="recycle">false</boolProp>
             <boolProp name="stopThread">true</boolProp>
-            <stringProp name="variableNames">experimentName</stringProp>
+            <stringProp name="variableNames">experimentName,arrayDesignId</stringProp>
           </CSVDataSet>
           <hashTree/>
           <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think for One Second before each page" enabled="true">
@@ -1286,7 +1286,7 @@
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.name">project.experiment.arrayDesigns</stringProp>
-                  <stringProp name="Argument.value">1</stringProp>
+                  <stringProp name="Argument.value">${arrayDesignId}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                   <boolProp name="HTTPArgument.use_equals">true</boolProp>
                 </elementProp>

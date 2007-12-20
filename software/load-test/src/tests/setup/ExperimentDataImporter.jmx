@@ -132,7 +132,7 @@
             <stringProp name="filename">affyExperimentDataAttributes.csv</stringProp>
             <boolProp name="recycle">false</boolProp>
             <boolProp name="stopThread">true</boolProp>
-            <stringProp name="variableNames">experimentName</stringProp>
+            <stringProp name="variableNames">experimentName,arrayDesignId</stringProp>
           </CSVDataSet>
           <hashTree/>
           <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="Create Project" enabled="true">
@@ -190,7 +190,7 @@
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.name">project.experiment.arrayDesigns</stringProp>
-                  <stringProp name="Argument.value">1</stringProp>
+                  <stringProp name="Argument.value">${arrayDesignId}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                   <boolProp name="HTTPArgument.use_equals">true</boolProp>
                 </elementProp>
@@ -786,7 +786,7 @@
             <stringProp name="filename">affySpecificationDataAttributes.csv</stringProp>
             <boolProp name="recycle">false</boolProp>
             <boolProp name="stopThread">true</boolProp>
-            <stringProp name="variableNames">experimentName</stringProp>
+            <stringProp name="variableNames">experimentName,arrayDesignId</stringProp>
           </CSVDataSet>
           <hashTree/>
           <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="Create Project" enabled="true">
@@ -844,7 +844,7 @@
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.name">project.experiment.arrayDesigns</stringProp>
-                  <stringProp name="Argument.value">1</stringProp>
+                  <stringProp name="Argument.value">${arrayDesignId}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                   <boolProp name="HTTPArgument.use_equals">true</boolProp>
                 </elementProp>
@@ -1440,7 +1440,7 @@
             <stringProp name="filename">illuminaExperimentDataAttributes.csv</stringProp>
             <boolProp name="recycle">false</boolProp>
             <boolProp name="stopThread">true</boolProp>
-            <stringProp name="variableNames">experimentName</stringProp>
+            <stringProp name="variableNames">experimentName,arrayDesignId</stringProp>
           </CSVDataSet>
           <hashTree/>
           <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="Create Project" enabled="true">
@@ -1498,7 +1498,7 @@
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.name">project.experiment.arrayDesigns</stringProp>
-                  <stringProp name="Argument.value">2</stringProp>
+                  <stringProp name="Argument.value">${arrayDesignId}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                   <boolProp name="HTTPArgument.use_equals">true</boolProp>
                 </elementProp>
@@ -2057,7 +2057,7 @@
             <stringProp name="filename">genepixExperimentDataAttributes.csv</stringProp>
             <boolProp name="recycle">false</boolProp>
             <boolProp name="stopThread">true</boolProp>
-            <stringProp name="variableNames">experimentName</stringProp>
+            <stringProp name="variableNames">experimentName,arrayDesignId</stringProp>
           </CSVDataSet>
           <hashTree/>
           <HTTPSampler guiclass="HttpTestSampleGui" testclass="HTTPSampler" testname="Create Project" enabled="true">
@@ -2115,7 +2115,7 @@
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.name">project.experiment.arrayDesigns</stringProp>
-                  <stringProp name="Argument.value"></stringProp>
+                  <stringProp name="Argument.value">${arrayDesignId}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                   <boolProp name="HTTPArgument.use_equals">true</boolProp>
                 </elementProp>
