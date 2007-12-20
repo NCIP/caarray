@@ -185,7 +185,7 @@ public class ProjectContactsAction extends ProjectTabAction {
     )
     public String save() {
         VocabularyService vocabService = getVocabularyService();
-        TermSource mged = vocabService.getSource(ExperimentOntology.MGED.getOntologyName());
+        TermSource mged = vocabService.getSource(ExperimentOntology.MGED_ONTOLOGY.getOntologyName());
         Category roleCat = vocabService.getCategory(mged, ExperimentOntologyCategory.ROLES.getCategoryName());
         Term piRole = vocabService.getTerm(mged, roleCat, ExperimentContact.PI_ROLE);
         Term mainPocRole = vocabService.getTerm(mged, roleCat, ExperimentContact.MAIN_POC_ROLE);
