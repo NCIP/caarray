@@ -82,12 +82,10 @@
  */
 package gov.nih.nci.caarray.application.fileaccess;
 
-import static org.junit.Assert.*;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -99,13 +97,13 @@ import java.util.Set;
  */
 public class FileAccessServiceStub implements FileAccessService, TemporaryFileCache {
 
-    private Map<String, File> nameToFile = new HashMap<String, File>();
+    private final Map<String, File> nameToFile = new HashMap<String, File>();
     private int savedFileCount = 0;
     private int removedFileCount = 0;
 
     public CaArrayFile add(File file) {
         CaArrayFile caArrayFile = new CaArrayFile();
-        caArrayFile.setName(file.getName());            
+        caArrayFile.setName(file.getName());
         this.nameToFile.put(caArrayFile.getName(), file);
         return caArrayFile;
     }
@@ -169,16 +167,16 @@ public class FileAccessServiceStub implements FileAccessService, TemporaryFileCa
      * @return the nameToFile
      */
     public Map<String, File> getNameToFile() {
-        return nameToFile;
+        return this.nameToFile;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public void closeFile(CaArrayFile caarrayFile) {
         // nothing to do
     }
-    
+
     /**
      * {@inheritDoc}
      */
