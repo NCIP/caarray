@@ -508,7 +508,7 @@ insert into config_parameter (param, raw_value) values ('CONFIRM_EMAIL_SUBJECT',
 insert into config_parameter (param, raw_value) values ('CONFIRM_EMAIL_CONTENT', 'Dear NCICB User\n\nThank you for your submission concerning caArray registration request.  It has been logged in our SupportWizard database with an ID of {0}.\n\nYour questions and suggestions are very important to us. You will receive a followup call or email shortly.\n\nThank you,\n\nNCICB Application Support Group');
 insert into config_parameter (param, raw_value) values ('SEND_ADMIN_EMAIL', 'true');
 insert into config_parameter (param, raw_value) values ('REG_EMAIL_TO', 'test@example.com');
-insert into config_parameter (param, raw_value) values ('REG_EMAIL_SUBJECT', 'caArray Registration');
+insert into config_parameter (param, raw_value) values ('REG_EMAIL_SUBJECT', 'caArray 2 Registration');
 insert into config_parameter (param, raw_value) values ('THANKS_MESSAGE', '<p>Thank you for registering with caArray. You should receive an email confirmation message shortly. Your account, with the roles you requested, will be activated within 48-72 hours. Expect to hear from the helpdesk within this time frame. You can continue to use caArray without an account to browse and search available experiments, and download data, while your account is activated.<p>If you have questions, please contact NCICB Application Support by email <a href="mailto:NCICB@pop.nci.nih.gov">NCICB@pop.nci.nih.gov</a> or by phone Phone: 888-478-4423 (toll-free) or 301-451-4384 (local).');
 
 insert into config_parameter (param, raw_value) values ('SUBMIT_EXPERIMENT_EMAIL_SUBJECT', 'caArray Experiment Submitted');
