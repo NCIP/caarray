@@ -116,7 +116,7 @@ public class SearchExperimentByExample extends CaArrayJmeterSampler implements J
     private int jndiPort;
 
     /**
-     * Sets up the search-by-example test by initializing the search criteria to use.
+     * Sets up the search-by-example test by initializing the connection parameters to use.
      *
      * @param context the <code>JavaSamplerContext</code> which contains the arguments passed in.
      */

@@ -80,9 +80,9 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.test.jmeter.search;
+package gov.nih.nci.caarray.test.jmeter.grid.search;
 
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
@@ -90,8 +90,12 @@ import gov.nih.nci.caarray.test.jmeter.base.CaArrayJmeterSampler;
 import gov.nih.nci.cagrid.cqlquery.Association;
 import gov.nih.nci.cagrid.cqlquery.Attribute;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
+import gov.nih.nci.cagrid.cqlquery.Group;
+import gov.nih.nci.cagrid.cqlquery.LogicalOperator;
 import gov.nih.nci.cagrid.cqlquery.Object;
 import gov.nih.nci.cagrid.cqlquery.Predicate;
+import gov.nih.nci.cagrid.data.client.DataServiceClient;
 
 import java.util.Iterator;
 import java.util.List;
@@ -102,18 +106,18 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
 /**
- * A custom JMeter Sampler that acts as a client searching for array designs using CQL through CaArray's Remote Java API.
+ * A custom JMeter Sampler that acts as a client searching for persons using CQL through the CaArray Grid Service.
  *
  * @author Rashmi Srinivasa
  */
-public class CQLSearchArrayDesign extends CaArrayJmeterSampler implements JavaSamplerClient {
-    private static final String PROVIDER_PARAM = "provider";
+public class CQLSearchPerson extends CaArrayJmeterSampler implements JavaSamplerClient {
+    private static final String LAST_NAME_PARAM = "lastName";
+    private static final String DEFAULT_LAST_NAME = "User";
+    private static final String TEST_SERVICE_URL = "test.serviceUrl";
 
-    private static final String DEFAULT_PROVIDER = "Affymetrix";
-
-    private String provider;
+    private String lastName;
     private String hostName;
-    private int jndiPort;
+    private int gridServicePort;
 
     /**
      * Sets up the search-by-example test by initializing the connection parameters to use.
@@ -122,7 +126,8 @@ public class CQLSearchArrayDesign extends CaArrayJmeterSampler implements JavaSa
      */
     public void setupTest(JavaSamplerContext context) {
         hostName = context.getParameter(getHostNameParam(), getDefaultHostName());
-        jndiPort = Integer.parseInt(context.getParameter(getJndiPortParam(), getDefaultJndiPort()));
+        gridServicePort = Integer.parseInt(context.getParameter(getGridServicePortParam(), getDefaultGridServicePort()));
+        System.setProperty(TEST_SERVICE_URL, "http://" + hostName + ":" + gridServicePort + "/wsrf/services/cagrid/CaArraySvc");
     }
 
     /**
@@ -132,9 +137,9 @@ public class CQLSearchArrayDesign extends CaArrayJmeterSampler implements JavaSa
      */
     public Arguments getDefaultParameters() {
         Arguments params = new Arguments();
-        params.addArgument(PROVIDER_PARAM, DEFAULT_PROVIDER);
+        params.addArgument(LAST_NAME_PARAM, DEFAULT_LAST_NAME);
         params.addArgument(getHostNameParam(), getDefaultHostName());
-        params.addArgument(getJndiPortParam(), getDefaultJndiPort());
+        params.addArgument(getGridServicePortParam(), getDefaultGridServicePort());
         return params;
     }
 
@@ -146,27 +151,17 @@ public class CQLSearchArrayDesign extends CaArrayJmeterSampler implements JavaSa
      */
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
-        provider = context.getParameter(PROVIDER_PARAM, DEFAULT_PROVIDER);
+        lastName = context.getParameter(LAST_NAME_PARAM, DEFAULT_LAST_NAME);
 
         CQLQuery cqlQuery = createCqlQuery();
         try {
-            CaArrayServer server = new CaArrayServer(hostName, jndiPort);
-            server.connect();
-            CaArraySearchService searchService = server.getSearchService();
+            DataServiceClient client = new DataServiceClient(System.getProperty(TEST_SERVICE_URL));
             results.sampleStart();
-            List arrayDesignList = searchService.search(cqlQuery);
+            CQLQueryResults cqlResults = client.query(cqlQuery);
             results.sampleEnd();
-            if (isResultOkay(arrayDesignList)) {
-                results.setSuccessful(true);
-                results.setResponseCodeOK();
-                results.setResponseMessage("Retrieved " + arrayDesignList.size() + " array designs.");
-            } else {
-                results.setSuccessful(false);
-                results.setResponseCode("Error: Response did not match request. Retrieved " + arrayDesignList.size() + " array designs.");
-            }
-        } catch (ServerConnectionException e) {
-            results.setSuccessful(false);
-            results.setResponseCode("Server connection exception: " + e);
+            results.setSuccessful(true);
+            results.setResponseCodeOK();
+            results.setResponseMessage("Retrieved " + cqlResults.getObjectResult().length + " persons with last name = " + lastName + ".");
         } catch (RuntimeException e) {
             results.setSuccessful(false);
             results.setResponseCode("Runtime exception: " + e);
@@ -180,38 +175,18 @@ public class CQLSearchArrayDesign extends CaArrayJmeterSampler implements JavaSa
 
     private CQLQuery createCqlQuery() {
         CQLQuery cqlQuery = new CQLQuery();
-        gov.nih.nci.cagrid.cqlquery.Object target = new Object();
-        target.setName("gov.nih.nci.caarray.domain.array.ArrayDesign");
+        Object target = new Object();
+        target.setName("gov.nih.nci.caarray.domain.contact.Person");
 
-        Association providerAssociation = new Association();
-        providerAssociation.setName("gov.nih.nci.caarray.domain.contact.Organization");
-        Attribute providerAttribute = new Attribute();
-        providerAttribute.setName("name");
-        providerAttribute.setValue(provider);
-        providerAttribute.setPredicate(Predicate.EQUAL_TO);
-        providerAssociation.setAttribute(providerAttribute);
-        providerAssociation.setRoleName("provider");
+        Attribute affiliationAttribute = new Attribute();
+        affiliationAttribute.setName("lastName");
+        affiliationAttribute.setValue(lastName);
+        affiliationAttribute.setPredicate(Predicate.EQUAL_TO);
 
-        target.setAssociation(providerAssociation);
+        target.setAttribute(affiliationAttribute);
 
         cqlQuery.setTarget(target);
         return cqlQuery;
-    }
-
-    private boolean isResultOkay(List arrayDesignList) {
-        if (arrayDesignList.isEmpty()) {
-            return true;
-        }
-
-        Iterator i = arrayDesignList.iterator();
-        while (i.hasNext()) {
-            ArrayDesign retrievedArrayDesign = (ArrayDesign) i.next();
-            // Check if retrieved array design matches requested search criteria.
-            if (!provider.equals(retrievedArrayDesign.getProvider().getName())) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**
