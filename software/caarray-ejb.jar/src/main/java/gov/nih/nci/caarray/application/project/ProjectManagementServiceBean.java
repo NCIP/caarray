@@ -258,6 +258,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     public List<Project> getMyProjects(boolean showPublic, PageSortParams pageSortParams) {
         LogUtil.logSubsystemEntry(LOG, showPublic);
         List<Project> result = getProjectDao().getProjectsForCurrentUser(showPublic, pageSortParams);

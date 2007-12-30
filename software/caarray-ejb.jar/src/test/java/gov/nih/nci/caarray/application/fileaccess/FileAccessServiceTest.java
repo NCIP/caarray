@@ -113,9 +113,9 @@ public class FileAccessServiceTest {
 
     @Before
     public void setUp() {
-        fileAccessService = new FileAccessServiceBean();
+        this.fileAccessService = new FileAccessServiceBean();
         HibernateUtil.enableFilters(false);
-        transaction = HibernateUtil.beginTransaction();
+        this.transaction = HibernateUtil.beginTransaction();
         TemporaryFileCacheLocator.resetTemporaryFileCache();
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(TemporaryFileCacheLocator.DEFAULT);
     }
@@ -123,23 +123,23 @@ public class FileAccessServiceTest {
     @After
     public void tearDown() {
         TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
-        transaction.rollback();
+        this.transaction.rollback();
     }
 
     @Test
     public void testAdd() throws IOException, FileAccessException {
         File file = File.createTempFile("pre", ".ext");
         file.deleteOnExit();
-        CaArrayFile caArrayFile = fileAccessService.add(file);
+        CaArrayFile caArrayFile = this.fileAccessService.add(file);
         assertEquals(file.getName(), caArrayFile.getName());
         assertNull(caArrayFile.getFileType());
 
         file = File.createTempFile("pre", ".cdf");
         file.deleteOnExit();
-        caArrayFile = fileAccessService.add(file);
+        caArrayFile = this.fileAccessService.add(file);
         assertEquals(FileType.AFFYMETRIX_CDF, caArrayFile.getFileType());
 
-        caArrayFile = fileAccessService.add(GenepixArrayDataFiles.GPR_3_0_6);
+        caArrayFile = this.fileAccessService.add(GenepixArrayDataFiles.GPR_3_0_6);
         assertEquals(FileType.GENEPIX_GPR, caArrayFile.getFileType());
     }
 
@@ -149,9 +149,8 @@ public class FileAccessServiceTest {
      */
     @Test
     public void testGetFile() throws FileAccessException {
-        String x = System.getProperty("java.io.tmpdir");
         File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF;
-        CaArrayFile caArrayFile = fileAccessService.add(file);
+        CaArrayFile caArrayFile = this.fileAccessService.add(file);
         HibernateUtil.getCurrentSession().save(caArrayFile);
         File retrievedFile = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caArrayFile);
         assertEquals(file.getName(), retrievedFile.getName());
@@ -177,7 +176,7 @@ public class FileAccessServiceTest {
         uploadFileNames.add(MageTabDataFiles.SPECIFICATION_ZIP.getName());
 
         assertEquals(1, uploadFiles.size());
-        fileAccessService.unzipFiles(uploadFiles, uploadFileNames);
+        this.fileAccessService.unzipFiles(uploadFiles, uploadFileNames);
         assertEquals(10, uploadFiles.size());
     }
 
@@ -197,7 +196,7 @@ public class FileAccessServiceTest {
         uploadFileNames.add(MageTabDataFiles.SPECIFICATION_ZIP.getName());
 
         assertEquals(2, uploadFiles.size());
-        fileAccessService.unzipFiles(uploadFiles, uploadFileNames);
+        this.fileAccessService.unzipFiles(uploadFiles, uploadFileNames);
         assertEquals(11, uploadFiles.size());
     }
 }
