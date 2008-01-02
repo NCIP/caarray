@@ -471,7 +471,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
             while (protocols.hasNext()) {
                 Protocol protocol = protocols.next();
                 if (protocol.getType() != null) {
-                    protocol.getType().setTermSource(getTermSource(value));
+                    protocol.getType().setTermSource(getOrCreateTermSource(value));
                 }
             }
 
@@ -511,7 +511,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
     }
 
     private void handleExperimentalDesignTermSourceRef(String value, int valueIndex) {
-        investigation.getDesigns().get(valueIndex).setTermSource(getTermSource(value));
+        investigation.getDesigns().get(valueIndex).setTermSource(getOrCreateTermSource(value));
     }
 
     private void handleExperimentalFactorName(String value, int valueIndex) {
@@ -525,7 +525,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
 
     private void handleExperimentalFactorTermSourceRef(String value, int valueIndex) {
         ExperimentalFactor factor = investigation.getFactors().get(valueIndex);
-        factor.getType().setTermSource(getTermSource(value));
+        factor.getType().setTermSource(getOrCreateTermSource(value));
     }
 
     private void handlePersonLastName(String value, int valueIndex) {
@@ -576,7 +576,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
     private void handlePersonRoleTermSourceRef(String value, int valueIndex) {
         Iterator<OntologyTerm> roles = investigation.getPersons().get(valueIndex).getRoles().iterator();
         while (roles.hasNext()) {
-            roles.next().setTermSource(getTermSource(value));
+            roles.next().setTermSource(getOrCreateTermSource(value));
         }
     }
 
@@ -605,7 +605,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
         if (!value.trim().equals("")) {
             Iterator<Publication> publications = investigation.getPublications().iterator();
             while (publications.hasNext()) {
-                publications.next().getStatus().setTermSource(getTermSource(value));
+                publications.next().getStatus().setTermSource(getOrCreateTermSource(value));
             }
         }
     }
@@ -619,7 +619,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
         if (!value.trim().equals("")) {
             Iterator<OntologyTerm> qcTypes = investigation.getQualityControlTypes().iterator();
             while (qcTypes.hasNext()) {
-                qcTypes.next().setTermSource(getTermSource(value));
+                qcTypes.next().setTermSource(getOrCreateTermSource(value));
             }
         }
     }
@@ -632,7 +632,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
         if (!value.trim().equals("")) {
             Iterator<OntologyTerm> replTypes = investigation.getReplicateTypes().iterator();
             while (replTypes.hasNext()) {
-                replTypes.next().setTermSource(getTermSource(value));
+                replTypes.next().setTermSource(getOrCreateTermSource(value));
             }
         }
     }
@@ -646,7 +646,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
         if (!value.trim().equals("")) {
             Iterator<OntologyTerm> normTypes = investigation.getNormalizationTypes().iterator();
             while (normTypes.hasNext()) {
-                normTypes.next().setTermSource(getTermSource(value));
+                normTypes.next().setTermSource(getOrCreateTermSource(value));
             }
         }
     }
@@ -657,7 +657,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
             TermSource trmSource = new TermSource();
             trmSource.setName(value);
             docTermSources.add(trmSource);
-            getTermSource(value);
+            getOrCreateTermSource(value);
         } else {
             docTermSources.get(valueIndex).setName(value);
         }

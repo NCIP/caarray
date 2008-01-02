@@ -158,6 +158,17 @@ public abstract class AbstractMageTabDocument implements Serializable {
      * @param termSourceName the name of the source
      * @return the term source
      */
+    protected TermSource getOrCreateTermSource(String termSourceName) {
+        return getDocumentSet().getOrCreateTermSource(termSourceName);
+    }
+
+    /**
+     * Returns a <code>TermSource</code> that has the given name (defined in an IDF).
+     * If no matching <code>TermSource</code> exists, returns null.
+     *
+     * @param termSourceName the name of the source
+     * @return the term source
+     */
     protected TermSource getTermSource(String termSourceName) {
         return getDocumentSet().getTermSource(termSourceName);
     }
@@ -201,7 +212,7 @@ public abstract class AbstractMageTabDocument implements Serializable {
      */
     protected final OntologyTerm getMgedOntologyTerm(MageTabOntologyCategory category, String value) {
         OntologyTerm term = getOntologyTerm(category.getCategoryName(), value);
-        term.setTermSource(getTermSource("MO"));
+        term.setTermSource(getOrCreateTermSource("MO"));
         return term;
     }
 
@@ -233,6 +244,49 @@ public abstract class AbstractMageTabDocument implements Serializable {
      */
     protected final ValidationMessage addErrorMessage(String message) {
         return addMessage(ValidationMessage.Type.ERROR, message);
+    }
+
+    /**
+     * Adds a new informational validation message to the document set's validation results.
+     *
+     * @param line line number in file that message applies to.
+     * @param column column number in file (on given line) that message applies to.
+     * @param message message content.
+     * @return the message.
+     */
+    protected final ValidationMessage addInfoMessage(int line, int column, String message) {
+        return addMessage(line, column, ValidationMessage.Type.INFO, message);
+    }
+
+    /**
+     * Adds a new warning validation message to the document set's validation results.
+     *
+     * @param line line number in file that message applies to.
+     * @param column column number in file (on given line) that message applies to.
+     * @param message message content.
+     * @return the message.
+     */
+    protected final ValidationMessage addWarningMessage(int line, int column, String message) {
+        return addMessage(line, column, ValidationMessage.Type.WARNING, message);
+    }
+
+    /**
+     * Adds a new error validation message to the document set's validation results.
+     *
+     * @param line line number in file that message applies to.
+     * @param column column number in file (on given line) that message applies to.
+     * @param message message content.
+     * @return the message.
+     */
+    protected final ValidationMessage addErrorMessage(int line, int column, String message) {
+        return addMessage(line, column, ValidationMessage.Type.ERROR, message);
+    }
+
+    private ValidationMessage addMessage(int line, int column, Type type, String message) {
+        ValidationMessage validationMessage = addMessage(type, message);
+        validationMessage.setLine(line);
+        validationMessage.setColumn(column);
+        return validationMessage;
     }
 
     private ValidationMessage addMessage(Type type, String message) {

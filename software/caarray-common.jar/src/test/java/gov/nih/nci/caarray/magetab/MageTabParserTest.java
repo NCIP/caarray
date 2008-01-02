@@ -162,6 +162,17 @@ public class MageTabParserTest {
     }
 
     @Test
+    public void testValidateMissingTermSources() throws MageTabParsingException  {
+        MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
+        inputFileSet.addIdf(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
+        inputFileSet.addSdrf(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
+        ValidationResult result = parser.validate(inputFileSet);
+        System.out.println(result);
+        assertTrue(result.toString().contains("No value was provided for a Term Source REF"));
+        assertTrue(result.toString().contains("Term Source not-in-IDF is not defined in the IDF document"));
+    }
+
+    @Test
     public void testValidateMissingDataFiles() throws MageTabParsingException {
         MageTabInputFileSet inputFileSet = new MageTabInputFileSet();
         inputFileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);

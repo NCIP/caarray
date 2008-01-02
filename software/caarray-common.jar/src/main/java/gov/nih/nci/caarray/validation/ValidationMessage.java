@@ -130,6 +130,8 @@ public final class ValidationMessage implements Serializable, Comparable<Validat
             return type.compareTo(o.getType());
         } else if (line != o.line) {
             return line - o.line;
+        } else if (column != o.column) {
+            return column - o.column;
         } else {
             return o.message.compareTo(message);
         }

@@ -110,7 +110,7 @@ public final class ValidationResult implements Serializable {
 
     /**
      * Returns true if all the documents in the set were valid.
-     * 
+     *
      * @return true if set was valid.
      */
     public boolean isValid() {
@@ -124,7 +124,7 @@ public final class ValidationResult implements Serializable {
 
     /**
      * Returns the messages ordered by file, type and location.
-     * 
+     *
      * @return the messages.
      */
     public List<ValidationMessage> getMessages() {
@@ -134,10 +134,10 @@ public final class ValidationResult implements Serializable {
         }
         return Collections.unmodifiableList(messages);
     }
-    
+
     /**
      * Returns all the file validation results in order by file.
-     * 
+     *
      * @return the file validation results.
      */
     public List<FileValidationResult> getFileValidationResults() {
@@ -149,7 +149,7 @@ public final class ValidationResult implements Serializable {
 
     /**
      * Adds a new validation message to the result.
-     * 
+     *
      * @param file validation message is associated with this file
      * @param type the type/level of the message
      * @param message the actual message content
@@ -169,12 +169,26 @@ public final class ValidationResult implements Serializable {
     /**
      * Returns the <code>FileValidationResult</code> corresponding to the
      * given file, or null if non exists.
-     * 
+     *
      * @param file get validation results for this file
      * @return the validation result.
      */
     public FileValidationResult getFileValidationResult(File file) {
         return fileValidationResults.get(file);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringBuffer stringBuffer = new StringBuffer();
+        for (FileValidationResult result : fileValidationResults.values()) {
+            stringBuffer.append(result.getFile().getName());
+            stringBuffer.append(":\n");
+            stringBuffer.append(result.toString());
+        }
+        return stringBuffer.toString();
     }
 
 }

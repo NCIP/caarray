@@ -160,7 +160,7 @@ public final class MageTabDocumentSet implements Serializable {
 
     /**
      * Returns all <code>TermSources</code> used in the document set.
-     * 
+     *
      * @return the <code>TermSources</code>.
      */
     public Collection<TermSource> getTermSources() {
@@ -169,7 +169,7 @@ public final class MageTabDocumentSet implements Serializable {
 
     /**
      * Returns all <code>OntologyTerms</code> used in the document set.
-     * 
+     *
      * @return the <code>OntologyTerms</code>.
      */
     public Collection<OntologyTerm> getTerms() {
@@ -234,7 +234,7 @@ public final class MageTabDocumentSet implements Serializable {
     /**
      * Returns an <code>OntologyTerm</code> matching the category and name given. Reuses an existing matching
      * <code>OntologyTerm</code> in the document set if one exists, otherwise creates one.
-     * 
+     *
      * @param category category of the term
      * @param value value of the term
      * @return the new or matching term.
@@ -255,14 +255,18 @@ public final class MageTabDocumentSet implements Serializable {
         return category + ":" + value;
     }
 
-    TermSource getTermSource(String name) {
-        TermSource termSource = termSourceCache.get(name);
+    TermSource getOrCreateTermSource(String name) {
+        TermSource termSource = getTermSource(name);
         if (termSource == null) {
             termSource = new TermSource();
             termSource.setName(name);
             termSourceCache.put(name, termSource);
         }
         return termSource;
+    }
+
+    TermSource getTermSource(String name) {
+        return termSourceCache.get(name);
     }
 
     ArrayDesign getArrayDesign(String name) {
@@ -277,7 +281,7 @@ public final class MageTabDocumentSet implements Serializable {
 
     /**
      * Adds a new Protocol to the document set.
-     * 
+     *
      * @param protocol the new protocol.
      */
     void addProtocol(Protocol protocol) {
@@ -289,7 +293,7 @@ public final class MageTabDocumentSet implements Serializable {
 
     /**
      * Returns the protocol with the id (name) provided.
-     * 
+     *
      * @param protocolId find protocol with this name.
      * @return the matching protocol or null if none exists for name.
      */
@@ -299,7 +303,7 @@ public final class MageTabDocumentSet implements Serializable {
 
     /**
      * Returns the <code>IdfDocument</code> that matches the filename provided, or null if none match.
-     * 
+     *
      * @param filename locate <code>IdfDocument</code> with this filename
      * @return the <code>IdfDocument</code>.
      */
@@ -309,7 +313,7 @@ public final class MageTabDocumentSet implements Serializable {
 
     /**
      * Returns the <code>SdrfDocument</code> that matches the filename provided, or null if none match.
-     * 
+     *
      * @param filename locate <code>SdrfDocument</code> with this filename
      * @return the <code>SdrfDocument</code>.
      */
@@ -319,7 +323,7 @@ public final class MageTabDocumentSet implements Serializable {
 
     /**
      * Returns the <code>AdfDocument</code> that matches the filename provided, or null if none match.
-     * 
+     *
      * @param filename locate <code>AdfDocument</code> with this filename
      * @return the <code>AdfDocument</code>.
      */
@@ -329,7 +333,7 @@ public final class MageTabDocumentSet implements Serializable {
 
     /**
      * Returns the <code>DataMatrix</code> that matches the filename provided, or null if none match.
-     * 
+     *
      * @param filename locate <code>DataMatrix</code> with this filename
      * @return the <code>DataMatrix</code>.
      */
@@ -339,7 +343,7 @@ public final class MageTabDocumentSet implements Serializable {
 
     /**
      * Returns the <code>NativeDataFile</code> that matches the filename provided, or null if none match.
-     * 
+     *
      * @param filename locate <code>NativeDataFile</code> with this filename
      * @return the <code>NativeDataFile</code>.
      */

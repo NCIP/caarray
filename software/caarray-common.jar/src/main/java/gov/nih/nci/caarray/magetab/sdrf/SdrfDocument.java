@@ -104,6 +104,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Represents a Sample and Data Relationship Format (SDRF) file - a tab-delimited file describing the relationships
  * between samples, arrays, data, and other objects used or produced in the investigation, and providing all MIAME
@@ -129,6 +131,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private ProtocolApplication currentProtocolApp;
     private Hybridization currentHybridization;
     private ArrayDesign currentArrayDesign;
+    private int currentLineNumber;
+    private int currentColumnNumber;
 
     private final List<ArrayDesign> allArrayDesigns = new ArrayList<ArrayDesign>();
     private final List<Comment> allComments = new ArrayList<Comment>();
@@ -172,7 +176,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             handleHeaderLine(getHeaderLine(tabDelimitedReader));
             if (minimumColumnCheck()) {
                 while (tabDelimitedReader.hasNextLine()) {
-                    handleLine(tabDelimitedReader.nextLine());
+                    List<String> values = tabDelimitedReader.nextLine();
+                    currentLineNumber = tabDelimitedReader.getCurrentLineNumber();
+                    handleLine(values);
                 }
             } else {
                 addErrorMessage("SDRF file does not have the "
@@ -238,6 +244,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleLine(List<String> values) {
         if (!isComment(values)) {
             for (int i = 0; i < values.size(); i++) {
+                currentColumnNumber = i + 1;
                 handleValue(columns.get(i), values.get(i));
             }
             currentNode = null;
@@ -453,11 +460,16 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     }
 
     private void handleTermSourceRef(String value) {
-        TermSource term = getTermSource(value);
-        if (term.getFile() == null) {
-            addWarningMessage("Term Source " + value + " is not defined in the IDF document");
+        if (StringUtils.isBlank(value)) {
+            addWarningMessage(currentLineNumber, currentColumnNumber, "No value was provided for a Term Source REF");
+            return;
         }
-        currentTermSourceable.setTermSource(term);
+        TermSource termSource = getTermSource(value);
+        if (termSource == null) {
+            addWarningMessage(currentLineNumber, currentColumnNumber,
+                    "Term Source " + value + " is not defined in the IDF document");
+        }
+        currentTermSourceable.setTermSource(termSource);
     }
 
     private void handleCharacteristic(String value, SdrfColumn currentColumn, SdrfColumn nextColumn) {
