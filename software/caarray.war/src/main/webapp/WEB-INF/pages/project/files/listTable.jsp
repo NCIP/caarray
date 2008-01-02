@@ -21,7 +21,7 @@
         <caarray:displayTagProperties/>
         <c:if test="${project.saveAllowed && caarrayfn:canWrite(project, caarrayfn:currentUser()) && !listingImported}">
             <display:column title="${checkboxAll}">
-                <s:checkbox name="selectedFiles" fieldValue="${row.id}" value="false" theme="simple" />
+                <s:checkbox name="selectedFiles" disabled="${!(row.fileStatus.importable || row.fileStatus.validatable || row.fileStatus.deletable)}" fieldValue="${row.id}" value="false" theme="simple" />
             </display:column>
         </c:if>
         <display:column property="name" titleKey="experiment.files.name" sortable="true" />
