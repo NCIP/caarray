@@ -136,7 +136,7 @@ public class PermissionsManagementServiceTest {
         assertEquals(created, this.genericDataServiceStub.getDeletedObject());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testDeleteException() throws CSTransactionException {
         CollaboratorGroup cg = new CollaboratorGroup(new Group(), new User());
         cg.getOwner().setLoginName("anotheruser");
