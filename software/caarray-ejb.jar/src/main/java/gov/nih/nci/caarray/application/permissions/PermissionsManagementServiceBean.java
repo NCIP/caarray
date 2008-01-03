@@ -94,6 +94,7 @@ import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.dao.GroupSearchCriteria;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 
@@ -140,7 +141,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
         AuthorizationManager am = SecurityUtils.getAuthorizationManager();
         for (AccessProfile ap : group.getAccessProfiles()) {
             ap.getProject().removeGroupProfile(group);
-            getGenericDataService().delete(ap);            
+            getGenericDataService().delete(ap);
         }
         getGenericDataService().delete(group);
         am.removeGroup(group.getGroup().getGroupId().toString());
@@ -213,14 +214,40 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     /**
      * {@inheritDoc}
      */
+    public void addUsers(String groupName, String... usernames)
+    throws CSTransactionException, CSObjectNotFoundException {
+        LogUtil.logSubsystemEntry(LOG, groupName, usernames);
+        AuthorizationManager am = SecurityUtils.getAuthorizationManager();
+        Group group = new Group();
+        group.setGroupName(SecurityUtils.ANONYMOUS_GROUP);
+        GroupSearchCriteria gsc = new GroupSearchCriteria(group);
+        List<Group> groupList = am.getObjects(gsc);
+        String groupId = groupList.get(0).getGroupId().toString();
+        List<String> users = new ArrayList<String>();
+        for (String username : usernames) {
+            String userId = am.getUser(username).getUserId().toString();
+            users.add(userId);
+        }
+        addUsersToGroup(groupId, users);
+        LogUtil.logSubsystemExit(LOG);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     public void addUsers(CollaboratorGroup targetGroup, List<String> users)
     throws CSTransactionException, CSObjectNotFoundException {
         LogUtil.logSubsystemEntry(LOG, targetGroup, users);
-        
+        String groupId = targetGroup.getGroup().getGroupId().toString();
+        addUsersToGroup(groupId, users);
+        LogUtil.logSubsystemExit(LOG);
+    }
+
+    private void addUsersToGroup(String groupId, List<String> users)
+        throws CSTransactionException, CSObjectNotFoundException {
         // This is a hack.  We should simply call am.assignUserToGroup, but that method appears to be buggy.
         AuthorizationManager am = SecurityUtils.getAuthorizationManager();
-        String groupId = targetGroup.getGroup().getGroupId().toString();
         Set<User> curUsers = am.getUsers(groupId);
         Set<String> newUsers = new HashSet(curUsers.size() + users.size());
         newUsers.addAll(users);
@@ -229,11 +256,11 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
         }
         // ensure that the fake anonymous user is not among them
         newUsers.remove(am.getUser(SecurityUtils.ANONYMOUS_USER).getUserId().toString());
-        
+
         String[] userIds = newUsers.toArray(new String[] {});
         am.assignUsersToGroup(groupId, userIds);
-        LogUtil.logSubsystemExit(LOG);
     }
+
 
     /**
      * {@inheritDoc}

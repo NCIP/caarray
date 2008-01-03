@@ -166,7 +166,9 @@ public class ArrayDesignActionTest {
 
     @Test
     public void testSave() throws Exception {
-        arrayDesignAction.setArrayDesign(new ArrayDesign());
+        ArrayDesign design = new ArrayDesign();
+        design.setName("name");
+        arrayDesignAction.setArrayDesign(design);
         String result = arrayDesignAction.save();
         assertEquals(Action.SUCCESS, result);
     }

@@ -179,6 +179,14 @@ public class PermissionsManagementServiceStub implements PermissionsManagementSe
     /**
      * {@inheritDoc}
      */
+    public void addUsers(String groupName, String... usernames)
+    throws CSTransactionException, CSObjectNotFoundException {
+        // no op
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public void removeUsers(CollaboratorGroup targetGroup, List<String> users) throws CSTransactionException {
         removedUsers = users;
         currentGroup = targetGroup;

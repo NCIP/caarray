@@ -82,7 +82,10 @@
  */
 package gov.nih.nci.caarray.web.filter;
 
+import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.web.action.ActionHelper;
 import gov.nih.nci.caarray.web.action.registration.UserRole;
 
 import java.io.IOException;
@@ -95,6 +98,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+
 /**
  * Request filter that places the currently logged in user credentials into
  * the UsernameHolder and adds app scoped params to support JSTL role checking.
@@ -102,6 +107,8 @@ import javax.servlet.http.HttpServletRequest;
  * @see UsernameHolder
  */
 public class UserFilter implements Filter {
+    private static final Logger LOG = Logger.getLogger(UserFilter.class);
+    private static final String ADDED_ANON_GROUP = "AddedAnonymousGroup";
 
     /**
      * {@inheritDoc}
@@ -121,12 +128,14 @@ public class UserFilter implements Filter {
             return;
         }
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        UsernameHolder.setUser(httpRequest.getRemoteUser());
+        String username = httpRequest.getRemoteUser();
+        UsernameHolder.setUser(username);
         for (UserRole ur : UserRole.values()) {
             if (httpRequest.isUserInRole(ur.getRoleName())) {
                 httpRequest.getSession().setAttribute(ur.getSessionVar(), true);
             }
         }
+        addAnonymousGroup(username, httpRequest);
         chain.doFilter(request, response);
     }
 
@@ -135,5 +144,19 @@ public class UserFilter implements Filter {
      */
     public void init(FilterConfig config) throws ServletException {
         // Do nothing
+    }
+
+    private void addAnonymousGroup(String username, HttpServletRequest request) {
+        if (username != null
+                && !request.isUserInRole(SecurityUtils.ANONYMOUS_GROUP)
+                && request.getSession().getAttribute(ADDED_ANON_GROUP) == null) {
+            try {
+                PermissionsManagementService pms = ActionHelper.getPermissionsManagementService();
+                pms.addUsers(SecurityUtils.ANONYMOUS_GROUP, username);
+                request.getSession().setAttribute(ADDED_ANON_GROUP, true);
+            } catch (Exception e) {
+                LOG.error("Unable to add " + username + " to anonymous group", e);
+            }
+        }
     }
 }

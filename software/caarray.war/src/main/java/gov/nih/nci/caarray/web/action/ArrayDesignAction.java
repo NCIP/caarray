@@ -103,6 +103,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.Action;
@@ -280,8 +281,13 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         if (arrayDesign.getId() == null) {
             CaArrayFile designFile = getFileAccessService().add(upload, uploadFileName);
             try {
+                String oldName = arrayDesign.getName();
                 getFileManagementService().addArrayDesign(arrayDesign, designFile);
                 getFileManagementService().importArrayDesignDetails(arrayDesign);
+                String newName = arrayDesign.getName();
+                if (!ObjectUtils.equals(oldName, newName)) {
+                    ActionHelper.saveMessage(getText("arrayDesign.nameOverwritten", new String[]{oldName, newName}));
+                }
             } catch (InvalidDataFileException e) {
                 FileValidationResult result = e.getFileValidationResult();
                 for (ValidationMessage message : result.getMessages()) {

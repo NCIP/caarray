@@ -13,6 +13,7 @@
                 <div class="addlink">
                     <caarray:linkButton url="edit.action" actionClass="add" text="Import a New Array Design" />
                 </div>
+                <caarray:successMessages />
             </div>
             <div class="tableboxpad">
                 <c:url value="/protected/ajax/arrayDesign/list.action" var="sortUrl"/>
