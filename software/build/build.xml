@@ -100,6 +100,7 @@
   <property name="commons-configuration.jar" value="${lib.dir}/commons-configuration-1.4.jar" />
   <property name="commons-logging.jar" value="${lib.dir}/commons-logging-1.1.jar" />
   <property name="dom4j.jar" value="${lib.dir}/dom4j-1.6.1.jar" />
+  <property name="ehcache.jar" value="${lib.dir}/ehcache-1.2.3.jar" />
   <property name="hibernate.jar" value="${lib.dir}/hibernate3.jar" />
   <property name="hibernate-client.jar" value="${lib.dir}/hibernate-client.jar" />
   <property name="ejb3-persistence.jar" value="${lib.dir}/ejb3-persistence.jar" />
@@ -138,6 +139,12 @@
   <property name="displaytag.jar" value="${lib.dir}/displaytag-1.1.1.jar"/>
   <property name="urlrewrite.jar" value="${lib.dir}/urlrewrite-2.6.0.jar"/>
   <property name="axis.jar" value="${lib.dir}/axis.jar"/>
+  <property name="jboss-cache.jar" value="${lib.dir}/jboss-cache.jar"/>
+  <property name="jboss-common.jar" value="${lib.dir}/jboss-common.jar"/>
+  <property name="jboss-system.jar" value="${lib.dir}/jboss-system.jar"/>
+  <property name="jboss-jmx.jar" value="${lib.dir}/jboss-jmx.jar"/>
+  <property name="jgroups.jar" value="${lib.dir}/jgroups.jar"/>
+  <property name="concurrent.jar" value="${lib.dir}/concurrent.jar"/>
 
   <!-- Test-related properties -->
   <property name="test.dir" value="${basedir}/test" />
@@ -317,7 +324,7 @@
   <!-- Copy hibernate files to classes directory and configure datasource and transaction management -->
   <target name="configure-datasource-for-deploy">
     <copy todir="${caarray-common.classes.dir}" overwrite="true">
-      <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*" />
+      <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*,treecache.xml" />
     </copy>
     <replace dir="${caarray-common.classes.dir}" includes="*.cfg.xml">
       <replacefilter token="@DATASOURCE_CONFIG_START@" value="${comment.end}" />
@@ -332,7 +339,7 @@
 
   <target name="configure-datasource-for-test">
     <copy todir="${caarray-common.test.classes.dir}" overwrite="true">
-      <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*" />
+      <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*,treecache.xml" />
     </copy>
     <replace dir="${caarray-common.test.classes.dir}" includes="*.cfg.xml">
       <replacefilter token="@HIBERNATE_CONFIG_START@" value="${comment.end}" />
@@ -781,7 +788,7 @@
   </target>
 
   <target name="test:junit-caarray-common.jar" depends="test:compile:caarray-common.test.classes,test:instrument:caarray-common.jar,configure-datasource-for-test,test:unpack-test-data">
-    <run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${csmapi.jar};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-common.resources.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar};${javacsv.jar};${hibernate-annotations.jar};${ejb3-persistence.jar};${caGrid-1.1-data-common.jar};${caGrid-1.1-data-stubs.jar};${caGrid-1.1-sdkQuery32-core.jar};${log4j.jar};${clm.jar};${axis.jar};${javaee.jar}" />
+    <run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${csmapi.jar};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${commons-lang.jar};${commons-io.jar};${caarray-common.test.files.dir};${caarray-common.classes.dir};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-collections.jar};${mysql-connector.jar};${netcdf.jar};${jta.jar};${junit.jar};${javacsv.jar};${hibernate-annotations.jar};${ejb3-persistence.jar};${caGrid-1.1-data-common.jar};${caGrid-1.1-data-stubs.jar};${caGrid-1.1-sdkQuery32-core.jar};${log4j.jar};${clm.jar};${axis.jar};${javaee.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar}" />
   </target>
 
   <!-- caarray-ejb.jar -->
@@ -819,7 +826,7 @@
   </target>
 
   <target name="test:junit-caarray-ejb.jar" depends="test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:functional:compile-tests,test:unpack-test-data">
-    <run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};${csmapi.jar};${affxfusion.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${javacsv.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-beanutils.jar};${commons-lang.jar};${commons-collections.jar};${commons-configuration.jar};${commons-io.jar};${commons-lang.jar};${javaee.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar};${hibernate.jar};${hibernate-annotations.jar};${clm.jar}:${cglib.jar}" />
+    <run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.files.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};${csmapi.jar};${affxfusion.jar};${antlr.jar};${asm.jar};${asm-attrs.jar};${c3p0.jar};${cglib.jar};${javacsv.jar};${dom4j.jar};${hibernate.jar};${commons-logging.jar};${commons-beanutils.jar};${commons-lang.jar};${commons-collections.jar};${commons-configuration.jar};${commons-io.jar};${commons-lang.jar};${javaee.jar};${mysql-connector.jar};${jta.jar};${junit.jar};${spring.jar};${log4j.jar};${hibernate.jar};${hibernate-annotations.jar};${clm.jar}:${cglib.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar}" />
   </target>
 
   <!-- caarray.war -->
@@ -861,7 +868,7 @@
   </target>
 
   <target name="test:junit-caarray.war" depends="test:compile:caarray-war.test.classes,test:instrument:caarray.war,compile:caarray-ejb.jar,compile:caarray-common.jar,test:compile:caarray-ejb.test.classes,test:unpack-test-data">
-    <run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-logging.jar};${caarray-common.test.classes.dir};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate.jar}:${hibernate-annotations.jar}:${commons-configuration.jar}:${commons-collections.jar};${displaytag.jar};${urlrewrite.jar};${dom4j.jar}:${cglib.jar};${commons-io.jar}" />
+    <run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${commons-lang.jar};${commons-logging.jar};${caarray-common.test.classes.dir};${caarray-ejb.test.classes.dir};${javaee.jar};${myfaces-api.jar};${junit.jar};${spring.jar};${spring-mock.jar};${struts2-core-2.0.9.jar};${xwork-2.0.4.jar};${ognl-2.6.11.jar};${csmapi.jar}:${hibernate.jar}:${hibernate-annotations.jar}:${commons-configuration.jar}:${commons-collections.jar};${displaytag.jar};${urlrewrite.jar};${dom4j.jar}:${cglib.jar};${commons-io.jar};${jboss-cache.jar};${jboss-common.jar};${jboss-system.jar};${jboss-jmx.jar};${concurrent.jar};${jgroups.jar}" />
   </target>
 
   <target name="test:junit-report">
