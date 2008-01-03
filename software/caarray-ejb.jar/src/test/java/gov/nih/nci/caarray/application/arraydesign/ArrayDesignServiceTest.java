@@ -100,11 +100,14 @@ import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.Feature;
+import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+import gov.nih.nci.caarray.test.data.arraydesign.GenepixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -112,11 +115,13 @@ import gov.nih.nci.caarray.validation.FileValidationResult;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.PredicateUtils;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.Order;
 import org.junit.Before;
 import org.junit.Test;
@@ -161,6 +166,32 @@ public class ArrayDesignServiceTest {
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
         assertEquals("Test3", design.getLsidObjectId());
     }
+
+    @Test
+    public void testImportDesignDetails_Genepix() {
+        ArrayDesign design = new ArrayDesign();
+        design.setDesignFile(getGenepixCaArrayFile(GenepixArrayDesignFiles.DEMO_GAL));
+        this.arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesignDetails(design);
+        assertEquals("Demo", design.getName());
+        assertEquals(8064, design.getNumberOfFeatures());
+        assertEquals(8064, design.getDesignDetails().getFeatures().size());
+        assertEquals(8064, design.getDesignDetails().getProbes().size());
+        Iterator<PhysicalProbe> probeIt = design.getDesignDetails().getProbes().iterator();
+        while (probeIt.hasNext()) {
+            PhysicalProbe probe = probeIt.next();
+            assertFalse(StringUtils.isBlank(probe.getName()));
+            assertEquals(1, probe.getFeatures().size());
+            Feature feature = probe.getFeatures().iterator().next();
+            assertTrue(feature.getBlockColumn() > 0);
+            assertTrue(feature.getBlockRow() > 0);
+            assertTrue(feature.getBlockColumn() < 5);
+            assertTrue(feature.getBlockRow() < 5);
+            assertTrue(feature.getColumn() > 0);
+            assertTrue(feature.getRow() > 0);
+        }
+    }
+
     @Test
     public void testImportDesignDetails_ArrayDesign() {
         ArrayDesign design = new ArrayDesign();
@@ -237,6 +268,18 @@ public class ArrayDesignServiceTest {
     }
 
     @Test
+    public void testValidateDesign_Genepix() {
+        CaArrayFile designFile = getGenepixCaArrayFile(GenepixArrayDesignFiles.DEMO_GAL);
+        FileValidationResult result = this.arrayDesignService.validateDesign(designFile);
+        System.out.println(result);
+        assertTrue(result.isValid());
+        designFile = getGenepixCaArrayFile(GenepixArrayDesignFiles.TWO_K_GAL);
+        result = this.arrayDesignService.validateDesign(designFile);
+        System.out.println(result);
+        assertTrue(result.isValid());
+    }
+
+    @Test
     public void testValidateDesign_IlluminaHumanWG6() {
         CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
         FileValidationResult result = this.arrayDesignService.validateDesign(designFile);
@@ -271,6 +314,10 @@ public class ArrayDesignServiceTest {
         FileValidationResult result = this.arrayDesignService.validateDesign(designFile);
         assertFalse(result.isValid());
         assertTrue(result.getMessages().iterator().next().getMessage().contains("has already been imported"));
+    }
+
+    private CaArrayFile getGenepixCaArrayFile(File file) {
+        return getCaArrayFile(file, FileType.GENEPIX_GAL);
     }
 
     private CaArrayFile getAffymetrixCaArrayFile(File file) {

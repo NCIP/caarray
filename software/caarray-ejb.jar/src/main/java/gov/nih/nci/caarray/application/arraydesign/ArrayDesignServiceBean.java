@@ -127,7 +127,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public FileValidationResult validateDesign(CaArrayFile designFile) {
         LogUtil.logSubsystemEntry(LOG, designFile);
-        FileValidationResult result = validateDesign(null, designFile);        
+        FileValidationResult result = validateDesign(null, designFile);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -138,13 +138,13 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public FileValidationResult validateDesign(ArrayDesign design) {
         LogUtil.logSubsystemEntry(LOG, design);
-        FileValidationResult result = validateDesign(design, design.getDesignFile());        
+        FileValidationResult result = validateDesign(design, design.getDesignFile());
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
 
     private FileValidationResult validateDesign(ArrayDesign arrayDesign, CaArrayFile designFile) {
-        FileValidationResult result;        
+        FileValidationResult result;
         if (arrayDesign != null && isDuplicate(arrayDesign))   {
             result = new FileValidationResult(null);
             result.addMessage(Type.ERROR, "An array design already exists with the name "
@@ -182,7 +182,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         }
         return false;
     }
-    
+
     private File getFile(CaArrayFile file) {
         return TemporaryFileCacheLocator.getTemporaryFileCache().getFile(file);
     }
@@ -237,6 +237,8 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             return new AffymetrixCdfHandler(designFile, getVocabularyService(), daoFactory);
         } else if (FileType.ILLUMINA_DESIGN_CSV.equals(type)) {
             return new IlluminaCsvDesignHandler(designFile, getVocabularyService(), daoFactory);
+        } else if (FileType.GENEPIX_GAL.equals(type)) {
+            return new GenepixGalDesignHandler(designFile, getVocabularyService(), daoFactory);
         } else {
             throw new IllegalArgumentException("Unsupported array design file type: " + type);
         }
