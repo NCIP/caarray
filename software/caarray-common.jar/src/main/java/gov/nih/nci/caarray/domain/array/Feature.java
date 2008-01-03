@@ -195,4 +195,22 @@ public class Feature extends AbstractDesignElement {
     private void setArrayDesignDetails(ArrayDesignDetails arrayDesignDetails) {
         this.arrayDesignDetails = arrayDesignDetails;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("blockColumn = ");
+        stringBuffer.append(blockColumn);
+        stringBuffer.append(", blockRow = ");
+        stringBuffer.append(blockRow);
+        stringBuffer.append(", column = ");
+        stringBuffer.append(column);
+        stringBuffer.append(", row = ");
+        stringBuffer.append(row);
+        return stringBuffer.toString();
+    }
+
 }
