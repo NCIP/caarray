@@ -100,8 +100,8 @@ public class StateDaoImpl extends AbstractCaArrayDaoImpl implements StateDao {
      */
     @SuppressWarnings("unchecked")
     public List<State> getStates() {
-        String query = "from State as State order by name asc";
-        return getCurrentSession().createQuery(query).list();
+        String query = "from " + State.class.getName() + " s order by s.name asc";
+        return getCurrentSession().createQuery(query).setCacheable(true).list();
     }
 
     @Override

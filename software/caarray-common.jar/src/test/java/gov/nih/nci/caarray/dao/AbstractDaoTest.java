@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 
@@ -100,6 +101,7 @@ public class AbstractDaoTest {
     @Before
     public void abstractSetup() {
         UsernameHolder.setUser(STANDARD_USER);
+        SecurityUtils.init();
         HibernateUtil.enableFilters(true);
         HibernateUtil.openAndBindSession();
     }

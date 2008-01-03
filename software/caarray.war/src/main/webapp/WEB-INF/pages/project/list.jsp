@@ -7,8 +7,9 @@
         <display:setProperty name="pagination.sortdirection.param" value="projects.sortDirection" />
         <display:setProperty name="pagination.pagenumber.param" value="projects.pageNumber" />
         <display:column sortProperty="PUBLIC_ID" title="Experiment ID" sortable="true" >
+            <c:set var="canReadRow" value="${caarrayfn:canRead(row, caarrayfn:currentUser())}"/>                        
             <c:choose>
-                <c:when test="${caarrayfn:canRead(row, caarrayfn:currentUser()) }">
+                <c:when test="${canReadRow}">
                     <c:url var="viewUrl" value="/project/details.action">
                         <c:param name="project.id" value="${row.id}"/>
                     </c:url>
@@ -28,7 +29,7 @@
             </s:else>
         </display:column>
         <display:column title="Samples">
-            <c:if test="${caarrayfn:canRead(row, caarrayfn:currentUser()) }">
+            <c:if test="${canReadRow}">
                 <c:url value="/project/details.action" var="viewSamplesUrl">
                     <c:param name="project.id" value="${row.id}" />
                     <c:param name="initialTab" value="annotations" />

@@ -100,8 +100,8 @@ public class CountryDaoImpl extends AbstractCaArrayDaoImpl implements CountryDao
      */
     @SuppressWarnings("unchecked")
     public List<Country> getCountries() {
-        String query = "from Country as Country order by name asc";
-        return getCurrentSession().createQuery(query).list();
+        String query = "from " + Country.class.getName() + " c order by c.name asc";
+        return getCurrentSession().createQuery(query).setCacheable(true).list();
     }
 
     @Override

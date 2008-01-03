@@ -6,8 +6,9 @@
         <display:setProperty name="pagination.sortdirection.param" value="results.sortDirection" />
         <display:setProperty name="pagination.pagenumber.param" value="results.pageNumber" />
         <display:column sortProperty="PUBLIC_ID" title="Experiment ID" sortable="true">
+            <c:set var="canReadRow" value="${caarrayfn:canRead(row, caarrayfn:currentUser())}"/>            
             <c:choose>
-                <c:when test="${caarrayfn:canRead(row, caarrayfn:currentUser())}">
+                <c:when test="${canReadRow}">
                     <c:url var="viewUrl" value="/project/details.action">
                         <c:param name="project.id" value="${row.id}"/>
                     </c:url>
@@ -26,7 +27,7 @@
         <display:column property="experiment.organism.scientificName" sortProperty="ORGANISM" titleKey="search.result.organism" sortable="true"/>
         <display:column titleKey="search.result.diseaseState">
             <c:choose>
-                <c:when test="${caarrayfn:canRead(row, caarrayfn:currentUser())}">
+                <c:when test="${canReadRow}">
                     <c:forEach var="condition" items="${row.experiment.sources}" varStatus="status">
                         ${condition.diseaseState.value}<c:if test="${!status.last}">,</c:if>
                     </c:forEach>
@@ -38,7 +39,7 @@
         </display:column>
         <display:column titleKey="search.result.numSamples">
             <c:choose>
-                <c:when test="${caarrayfn:canRead(row, caarrayfn:currentUser())}">
+                <c:when test="${canReadRow}">
                     <c:url value="/project/details.action" var="viewSamplesUrl">
                         <c:param name="project.id" value="${row.id}" />
                         <c:param name="initialTab" value="annotations" />

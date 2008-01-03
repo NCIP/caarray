@@ -30,6 +30,6 @@
         <mapping resource="gov/nih/nci/security/authorization/domainobjects/User.hbm.xml"/>
         <mapping resource="gov/nih/nci/security/authorization/domainobjects/UserGroupRoleProtectionGroup.hbm.xml"/>
         <mapping resource="gov/nih/nci/security/authorization/domainobjects/UserProtectionElement.hbm.xml"/>
-        <mapping resource="gov/nih/nci/security/authorization/domainobjects/FilterClause.hbm.xml"/>
+        <mapping resource="gov/nih/nci/security/authorization/domainobjects/FilterClause.hbm.xml"/>        
     </session-factory>
 </hibernate-configuration>

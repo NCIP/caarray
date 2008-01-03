@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.web.action.registration;
 
+import static gov.nih.nci.caarray.web.action.ActionHelper.getCountryService;
+import static gov.nih.nci.caarray.web.action.ActionHelper.getStateService;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.country.Country;
 import gov.nih.nci.caarray.domain.register.RegistrationRequest;
@@ -89,7 +91,6 @@ import gov.nih.nci.caarray.domain.state.State;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 import gov.nih.nci.caarray.web.helper.ConfigurationHelper;
 import gov.nih.nci.caarray.web.helper.EmailHelper;
-import gov.nih.nci.caarray.web.util.CacheManager;
 import gov.nih.nci.security.authentication.helper.LDAPHelper;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.dao.UserSearchCriteria;
@@ -132,7 +133,6 @@ public class RegistrationAction extends ActionSupport implements Preparable {
     private Boolean ldapAuthenticate;
     private List<Country> countryList;
     private List<State> stateList;
-    private List<UserRole> roleList;
     private final Hashtable<String, String> ldapContextParams = new Hashtable<String, String>();
     private String successMessage;
 
@@ -140,9 +140,8 @@ public class RegistrationAction extends ActionSupport implements Preparable {
      * {@inheritDoc}
      */
     public void prepare() {
-        setCountryList(CacheManager.getInstance().getCountries());
-        setStateList(CacheManager.getInstance().getStates());
-        setRoleList(CacheManager.getInstance().getRoles());
+        setCountryList(getCountryService().getCountries());
+        setStateList(getStateService().getStates());
         ServletContext context = ServletActionContext.getServletContext();
         Enumeration<String> e = context.getInitParameterNames();
         while (e.hasMoreElements()) {
@@ -280,20 +279,6 @@ public class RegistrationAction extends ActionSupport implements Preparable {
      */
     public void setStateList(List<State> stateList) {
         this.stateList = stateList;
-    }
-
-    /**
-     * @return the roleList
-     */
-    public List<UserRole> getRoleList() {
-        return roleList;
-    }
-
-    /**
-     * @param roleList the roleList to set
-     */
-    public void setRoleList(List<UserRole> roleList) {
-        this.roleList = roleList;
     }
 
     /**

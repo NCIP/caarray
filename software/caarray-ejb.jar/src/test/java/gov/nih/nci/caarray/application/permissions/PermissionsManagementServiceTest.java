@@ -122,6 +122,7 @@ public class PermissionsManagementServiceTest {
 
     @Before
     public void setup() {
+        SecurityUtils.init();
         PermissionsManagementServiceBean bean = new PermissionsManagementServiceBean();
         bean.setGenericDataService(this.genericDataServiceStub);
         bean.setDaoFactory(this.daoFactoryStub);
@@ -168,7 +169,7 @@ public class PermissionsManagementServiceTest {
     public void testAddAndRemoveUsers() throws CSTransactionException, CSObjectNotFoundException {
         CollaboratorGroup created = this.permissionsManagementService.create(TEST);
         List<String> toAdd = new ArrayList<String>();
-        Long anonId = SecurityUtils.getAuthorizationManager().getUser(SecurityUtils.ANONYMOUS_USER).getUserId();
+        Long anonId = SecurityUtils.getAnonymousUser().getUserId();
         toAdd.add(anonId.toString());
         toAdd.add("3");
         toAdd.add("4");

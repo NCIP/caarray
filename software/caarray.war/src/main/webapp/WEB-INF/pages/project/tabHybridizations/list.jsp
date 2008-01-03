@@ -10,6 +10,7 @@
     </c:url>
 
     <div class="tableboxpad">
+    <c:set var="canWriteProject" value="${caarrayfn:canWrite(project, caarrayfn:currentUser())}"/>
     <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
         <display:table class="searchresults" cellspacing="0" list="${pagedItems}"
             requestURI="${sortUrl}" id="row" excludedParams="project.id">
@@ -26,7 +27,8 @@
             <display:column titleKey="experiment.files.uncompressedSize">
                 <fmt:formatNumber value="${row.uncompressedSizeOfDataFiles / 1024}" maxFractionDigits="0"/>
             </display:column>
-            <caarray:projectListTabActionColumns entityName="Hybridization" item="${row}" actions="!edit,!delete" isSubtab="true" confirmText="${msgText}"/>
+            <caarray:projectListTabActionColumns entityName="Hybridization" item="${row}" actions="!edit,!delete" isSubtab="true" 
+                confirmText="${msgText}" canWriteProject="${canWriteProject}"/>
             <display:column titleKey="button.download">
 				<c:url value="/ajax/project/listTab/Hybridizations/download.action" var="actionUrl">
 				    <c:param name="project.id" value="${project.id}" />

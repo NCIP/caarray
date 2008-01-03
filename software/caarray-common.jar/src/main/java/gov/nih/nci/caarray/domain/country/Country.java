@@ -87,11 +87,16 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 /**
  * @author John Hedden
  *
  */
 @Entity
+@org.hibernate.annotations.Entity(mutable = false)
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class Country extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 3434506314749437341L;

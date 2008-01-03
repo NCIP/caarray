@@ -93,6 +93,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.validator.Email;
 import org.hibernate.validator.Length;
@@ -105,6 +107,8 @@ import org.hibernate.validator.Pattern;
  *
  */
 @Entity
+@org.hibernate.annotations.Entity(mutable = false)
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 @SuppressWarnings("PMD.TooManyFields")
 public class RegistrationRequest implements PersistentObject {
 

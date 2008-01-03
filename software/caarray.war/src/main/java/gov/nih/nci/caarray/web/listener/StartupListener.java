@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.web.listener;
 
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
+import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import javax.servlet.ServletContextEvent;
@@ -102,5 +103,6 @@ public class StartupListener extends AbstractHibernateSessionScopeListener {
         ArrayDataService arrayDataService =
             (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);
         arrayDataService.initialize();
+        SecurityUtils.init();
     }
 }

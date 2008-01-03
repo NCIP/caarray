@@ -763,7 +763,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             assertEquals(SecurityLevel.VISIBLE, DUMMY_PROJECT_1.getPublicProfile().getSecurityLevel());
 
             tx = HibernateUtil.beginTransaction();
-            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
+            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             Experiment e = SEARCH_DAO.retrieve(Experiment.class, experimentId);
             assertFalse(SecurityUtils.canRead(DUMMY_PROJECT_1, UsernameHolder.getCsmUser()));
             assertNotNull(e);
@@ -803,7 +803,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             assertTrue(SecurityUtils.canWrite(p, UsernameHolder.getCsmUser()));
             assertTrue(SecurityUtils.canModifyPermissions(p, UsernameHolder.getCsmUser()));
 
-            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
+            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             assertFalse(SecurityUtils.canRead(p, UsernameHolder.getCsmUser()));
             assertFalse(SecurityUtils.canWrite(p, UsernameHolder.getCsmUser()));
             assertFalse(SecurityUtils.canModifyPermissions(p, UsernameHolder.getCsmUser()));
@@ -813,7 +813,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
-            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
+            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNull(p);
             e = SEARCH_DAO.retrieve(Experiment.class, experimentId);
@@ -827,7 +827,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
-            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
+            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNotNull(p);
             assertEquals(p.getPublicProfile().getSecurityLevel(), SecurityLevel.READ);
@@ -859,7 +859,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
-            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
+            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNotNull(p);
             assertEquals(SecurityLevel.READ_SELECTIVE, p.getPublicProfile().getSecurityLevel());
@@ -877,7 +877,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
-            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
+            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNotNull(p);
             assertEquals(SecurityLevel.READ_SELECTIVE, p.getPublicProfile().getSecurityLevel());
@@ -897,7 +897,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
-            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
+            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             // because Exp.samples is extra lazy, must initialize it explicitly to verify security
             Hibernate.initialize(p.getExperiment().getSamples());
@@ -934,7 +934,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
-            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
+            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             // because Exp.samples is extra lazy, must initialize it explicitly to verify security
             Hibernate.initialize(p.getExperiment().getSamples());
@@ -948,7 +948,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
-            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
+            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             // because Exp.samples is extra lazy, must initialize it explicitly to verify security
             Hibernate.initialize(p.getExperiment().getSamples());
@@ -962,7 +962,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
-            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
+            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNull(p);
             tx.commit();
@@ -984,7 +984,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             tx.commit();
 
             tx = HibernateUtil.beginTransaction();
-            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
+            UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNotNull(p);
             assertNotNull(p.getExperiment().getAssayType());
@@ -1108,7 +1108,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         assertEquals(1, DUMMY_SAMPLE.getCharacteristics().size());
         tx.commit();
 
-        UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
+        UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
         tx = HibernateUtil.beginTransaction();
         s = SEARCH_DAO.retrieve(Sample.class, DUMMY_SAMPLE.getId());
         assertNotNull(s.getDescription());
@@ -1128,7 +1128,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         assertEquals(1, DUMMY_SAMPLE.getCharacteristics().size());
         tx.commit();
 
-        UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
+        UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
         tx = HibernateUtil.beginTransaction();
         p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
         assertEquals(1, p.getExperiment().getSamples().size());

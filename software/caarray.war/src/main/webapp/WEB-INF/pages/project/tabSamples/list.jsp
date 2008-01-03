@@ -8,6 +8,7 @@
     </c:url>
 
     <div class="tableboxpad">
+    <c:set var="canWriteProject" value="${caarrayfn:canWrite(project, caarrayfn:currentUser())}"/>
     <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults">
         <display:table class="searchresults" cellspacing="0" list="${pagedItems}"
             requestURI="${sortUrl}" id="row" excludedParams="project.id">
@@ -26,7 +27,8 @@
             <display:column titleKey="experiment.samples.extracts">
                 <caarray:projectListTabRelatedItemsLinks relatedItems="${row.extracts}" relatedEntityName="Extract" nameProperty="name" isSubtab="true"/>
             </display:column>
-            <caarray:projectListTabActionColumns entityName="Sample" item="${row}" actions="!edit,!copy,!delete" isSubtab="true"/>
+            <caarray:projectListTabActionColumns entityName="Sample" item="${row}" actions="!edit,!copy,!delete" 
+                isSubtab="true" canWriteProject="${canWriteProject}"/>
             <display:column titleKey="button.download">
         <c:url value="/ajax/project/listTab/Samples/download.action" var="actionUrl">
             <c:param name="project.id" value="${project.id}" />

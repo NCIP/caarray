@@ -27,7 +27,8 @@
                 <s:password name="passwordConfirm" key="registrationRequest.passwordConfirm" id="passwordConfirm" tabindex="4" required="true"/>
             </c:if>
             </tbody>
-            <s:checkboxlist name="registrationRequest.role" key="registrationRequest.role" list="roleList" listKey="name" listValue="name" tabindex="5" required="true"/>
+            <s:checkboxlist name="registrationRequest.role" key="registrationRequest.role" 
+                list="@gov.nih.nci.caarray.web.action.registration.UserRole@values()" listKey="name" listValue="name" tabindex="5" required="true"/>
             <tr><th colspan="2">Account Details</th></tr>
             <s:textfield name="registrationRequest.firstName" key="registrationRequest.firstName" size="50" tabindex="6" required="true" />
             <s:textfield name="registrationRequest.middleInitial" key="registrationRequest.middleInitial" size="50" tabindex="7" />

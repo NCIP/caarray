@@ -230,7 +230,7 @@ public class ProjectManagementServiceTest {
         }
 
         project = new Project();
-        UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USER);
+        UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
         try {
             this.projectManagementService.saveProject(project);
             fail("anonymous user should not have been allowed to save a project");

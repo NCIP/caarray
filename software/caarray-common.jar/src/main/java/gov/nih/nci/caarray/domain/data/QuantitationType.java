@@ -91,11 +91,16 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 /**
  * Represents the heading for a "column" of array data, indicating the name and primitive typeClass
  * of the data.
  */
 @Entity
+@org.hibernate.annotations.Entity(mutable = false)
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public final class QuantitationType extends AbstractCaArrayObject {
 
     private static final long serialVersionUID = 7207891070185665511L;

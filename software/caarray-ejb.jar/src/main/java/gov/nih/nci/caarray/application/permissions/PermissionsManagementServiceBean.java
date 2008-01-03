@@ -198,10 +198,10 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
         Group group = new Group();
         group.setGroupName(name);
         group.setGroupDesc("Collaborator Group");
-        group.setApplication(am.getApplication("caarray"));
+        group.setApplication(SecurityUtils.getApplication());
         am.createGroup(group);
 
-        User user = am.getUser(UsernameHolder.getUser());
+        User user = UsernameHolder.getCsmUser();
 
         CollaboratorGroup cg = new CollaboratorGroup(group, user);
         getDaoFactory().getCollaboratorGroupDao().save(cg);
@@ -219,7 +219,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
         LogUtil.logSubsystemEntry(LOG, groupName, usernames);
         AuthorizationManager am = SecurityUtils.getAuthorizationManager();
         Group group = new Group();
-        group.setGroupName(SecurityUtils.ANONYMOUS_GROUP);
+        group.setGroupName(groupName);
         GroupSearchCriteria gsc = new GroupSearchCriteria(group);
         List<Group> groupList = am.getObjects(gsc);
         String groupId = groupList.get(0).getGroupId().toString();
@@ -254,7 +254,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
             newUsers.add(u.getUserId().toString());
         }
         // ensure that the fake anonymous user is not among them
-        newUsers.remove(am.getUser(SecurityUtils.ANONYMOUS_USER).getUserId().toString());
+        newUsers.remove(SecurityUtils.getAnonymousUser().getUserId().toString());
 
         String[] userIds = newUsers.toArray(new String[] {});
         am.assignUsersToGroup(groupId, userIds);
@@ -296,7 +296,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
                 new ArrayList<User>(getDaoFactory().getArrayDao().queryEntityByExample(u == null ? new User() : u,
                         MatchMode.START));
         // do not include the anonymous user
-        result.remove(SecurityUtils.getAuthorizationManager().getUser(SecurityUtils.ANONYMOUS_USER));
+        result.remove(SecurityUtils.getAnonymousUser());
 
         LogUtil.logSubsystemExit(LOG);
         return result;

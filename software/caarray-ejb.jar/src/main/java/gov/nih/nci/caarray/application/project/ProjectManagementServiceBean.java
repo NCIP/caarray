@@ -230,7 +230,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         LogUtil.logSubsystemEntry(LOG, project);
         checkIfProjectSaveAllowed(project);
         // make sure that an anonymous user cannot create a new project
-        if (project.getId() == null && UsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USER)) {
+        if (project.getId() == null && UsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
             throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, UsernameHolder.getUser());
         }
         getProjectDao().save(project);

@@ -93,6 +93,8 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
@@ -101,6 +103,8 @@ import org.hibernate.annotations.ForeignKey;
  * associated with the particular type and version.
  */
 @Entity
+@org.hibernate.annotations.Entity(mutable = false)
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class ArrayDataType extends AbstractCaArrayObject {
 
     private static final long serialVersionUID = -192577620722459309L;

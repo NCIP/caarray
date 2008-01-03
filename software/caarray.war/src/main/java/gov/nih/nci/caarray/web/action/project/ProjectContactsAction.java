@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getCurrentUser;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getVocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.contact.AbstractContact;
@@ -93,6 +92,7 @@ import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.lang.reflect.InvocationTargetException;
@@ -136,7 +136,7 @@ public class ProjectContactsAction extends ProjectTabAction {
      * setup contacts tab.
      */
     public void setup() {
-        this.user = getCurrentUser();
+        this.user = UsernameHolder.getCsmUser();
 
         ExperimentContact pi = getProject().getExperiment().getPrimaryInvestigator();
         if (pi != null) {

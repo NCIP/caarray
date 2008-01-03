@@ -137,9 +137,9 @@ public final class SecurityUtils {
      */
     public static final String AUTHORIZATION_MANAGER_KEY = "caarray";
 
-    /** The synthetic user for anonymous access permissions. */
-    public static final String ANONYMOUS_USER = "__anonymous__";
-    /** The synthetic group for anonymous access permissions. */
+    /** The username of the synthetic user for anonymous access permissions. */
+    public static final String ANONYMOUS_USERNAME = "__anonymous__";
+    /** The name of the group for anonymous access permissions. */
     public static final String ANONYMOUS_GROUP = "__anonymous__";
 
     /** The privilege for Browsing a Protectable. * */
@@ -162,6 +162,9 @@ public final class SecurityUtils {
 
     private static final AuthorizationManager AUTH_MGR;
     private static final String APPLICATION_NAME = "caarray";
+    
+    private static Application caarrayApp;
+    private static User anonymousUser;
 
     static {
         AuthorizationManager am = null;
@@ -182,6 +185,19 @@ public final class SecurityUtils {
     }
 
     /**
+     * Method that must be called prior to usage of SecurityUtils, initializing some cached values.
+     * Intended to be called at system startup, such as from a web application startup listener
+     */
+    public static void init() {
+        try {
+            caarrayApp = AUTH_MGR.getApplication(APPLICATION_NAME);
+            anonymousUser = AUTH_MGR.getUser(ANONYMOUS_USERNAME);
+        } catch (CSObjectNotFoundException e) {
+            throw new IllegalStateException("Could not retrieve caarray application or anonymous user", e);
+        }        
+    }
+
+    /**
      * @return the CSM AuthorizationManager
      */
     public static AuthorizationManager getAuthorizationManager() {
@@ -193,12 +209,18 @@ public final class SecurityUtils {
      * @throws CSObjectNotFoundException
      */
     public static Application getApplication() {
-        try {
-            return AUTH_MGR.getApplication(APPLICATION_NAME);
-        } catch (CSObjectNotFoundException e) {
-            throw new IllegalStateException("CSM Misconfigured - Caarray application not found", e);
-        }
+        return caarrayApp;
     }
+
+    /**
+     * @return the CSM user instance for the fake anonymous user
+     * @throws CSObjectNotFoundException
+     */
+    public static User getAnonymousUser() {
+        return anonymousUser;
+    }
+    
+    
 
     static void handleBiomaterialChanges(Collection<Project> projects) {
         if (projects == null) {
@@ -394,7 +416,7 @@ public final class SecurityUtils {
             throws CSObjectNotFoundException, CSTransactionException {
 
         ProtectionElement pe = new ProtectionElement();
-        Application application = AUTH_MGR.getApplication(APPLICATION_NAME);
+        Application application = getApplication();
         pe.setApplication(application);
         pe.setObjectId(p.getClass().getName());
         pe.setAttribute("id");
@@ -591,7 +613,7 @@ public final class SecurityUtils {
             return UsernameHolder.getCsmUser().equals(user);
         }
         try {
-            Application app = AUTH_MGR.getApplication(APPLICATION_NAME);
+            Application app = getApplication();
             return AuthorizationManagerExtensions.checkPermission(user.getLoginName(), getNonGLIBClass(p).getName(),
                     "id", p.getId().toString(), privilege, app);
         } catch (CSException e) {

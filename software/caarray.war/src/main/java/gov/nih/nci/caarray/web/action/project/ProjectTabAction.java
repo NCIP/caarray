@@ -1,6 +1,5 @@
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getCurrentUser;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getVocabularyService;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
@@ -13,6 +12,7 @@ import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.util.ArrayList;
@@ -51,16 +51,16 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
     public String save() {
         boolean initialSave = getProject().getId() == null;
         if (initialSave && getProject().getExperiment().getPrimaryInvestigator() == null) {
-            // make sure PI is set so that the experiment has a public ID
-            // assume PI is user
+            // make sure PI is set so that the experiment has a public ID - assume PI is user
             VocabularyService vocabService = getVocabularyService();
             TermSource mged = vocabService.getSource(ExperimentOntology.MGED_ONTOLOGY.getOntologyName());
             Category roleCat = vocabService.getCategory(mged, ExperimentOntologyCategory.ROLES.getCategoryName());
             Term piRole = vocabService.getTerm(mged, roleCat, ExperimentContact.PI_ROLE);
             Term mainPocRole = vocabService.getTerm(mged, roleCat, ExperimentContact.MAIN_POC_ROLE);
 
-            ExperimentContact pi = new ExperimentContact(getExperiment(), new Person(getCurrentUser()), Arrays.asList(
-                    piRole, mainPocRole));
+            ExperimentContact pi =
+                    new ExperimentContact(getExperiment(), new Person(UsernameHolder.getCsmUser()), Arrays.asList(
+                            piRole, mainPocRole));
             getExperiment().getExperimentContacts().add(pi);
         }
         try {
