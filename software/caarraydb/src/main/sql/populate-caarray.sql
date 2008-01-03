@@ -201,6 +201,7 @@ insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_r
 insert into organism (ncbi_taxonomy_id, common_name, scientific_name, taxonomy_rank) values (4577, null, 'Zea mays', 'species');
 
 insert into contact(discriminator, name) values ('O', 'Affymetrix');
+insert into contact(discriminator, name) values ('O', 'GenePix');
 insert into contact(discriminator, name) values ('O', 'Illumina');
 
 insert into country (code, name, printable_name, iso3, numcode) values ('AF','AFGHANISTAN','Afghanistan','AFG','004');
