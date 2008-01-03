@@ -196,6 +196,10 @@
         <!-- ** RUN LOAD TESTS                                                ** -->
         <!-- ******************************************************************* -->
         <!--
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/AnonymousBrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/AnonymousBrowseTest_Basic.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+        </jmeter>
         <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/BrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseTest_Basic.jtl">
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
