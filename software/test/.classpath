@@ -19,5 +19,5 @@
 	<classpathentry kind="lib" path="/lib/jboss-aop-jdk50-client.jar"/>
 	<classpathentry kind="lib" path="/lib/jboss-aspect-jdk50-client.jar"/>
 	<classpathentry kind="lib" path="/lib/caGrid-1.1-data-stubs.jar"/>
-	<classpathentry kind="output" path="target/test-classes"/>
+	<classpathentry kind="output" path="eclipse-out"/>
 </classpath>

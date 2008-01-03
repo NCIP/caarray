@@ -108,11 +108,13 @@ public class EntityConfiguringInterceptor {
     @AroundInvoke
     @SuppressWarnings("PMD.SignatureDeclareThrowsException") // method invocation wrapper requires throws Exception
     public Object prepareReturnValue(InvocationContext invContext) throws Exception {
+        // make the call to the underlying method.  This method (prepareReturnValue) wraps the intended method.
+        Object returnValue = invContext.proceed();
+
         // flush any changes made (ie, DataSet population) to this point.  We're going to modify
         // hibernate objects in ways we /don't/ want flushed in prepareEntity
         HibernateUtil.getCurrentSession().flush();
 
-        Object returnValue = invContext.proceed();
         if (returnValue instanceof Collection) {
             prepareEntities((Collection<?>) returnValue);
         } else {

@@ -85,6 +85,8 @@ package gov.nih.nci.caarray.util;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
+import java.util.Locale;
+
 import org.apache.commons.lang.StringUtils;
 
 
@@ -92,7 +94,7 @@ import org.apache.commons.lang.StringUtils;
  * Holds the name of the currently-logged in user in a ThreadLocal.  If the
  * value is unset, return the username for the 'anonymous' user.
  *
- * @see SecurityInterceptor#ANONYMOUS_USER
+ * @see gov.nih.nci.carray.security.SecurityInterceptor#ANONYMOUS_USER
  */
 public final class UsernameHolder {
 
@@ -106,7 +108,7 @@ public final class UsernameHolder {
      * @param user the user to set for the current thread
      */
     public static void setUser(String user) {
-        tlocal.set(user);
+        tlocal.set((user == null) ? null : user.toLowerCase(Locale.US));
     }
 
     /**
@@ -120,12 +122,12 @@ public final class UsernameHolder {
         }
         return val;
     }
-    
+
     /**
      * @return the User instance for the logged in user for this thread, or the anonymous user
      *         if no user is logged in
      */
     public static User getCsmUser() {
         return SecurityUtils.getAuthorizationManager().getUser(getUser());
-    }    
+    }
 }

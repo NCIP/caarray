@@ -119,6 +119,7 @@ import org.hibernate.criterion.MatchMode;
 @Local
 @Stateless
 @Interceptors(ExceptionLoggingInterceptor.class)
+@SuppressWarnings("unchecked") // CSM API is unchecked
 public class PermissionsManagementServiceBean implements PermissionsManagementService {
 
     private static final Logger LOG = Logger.getLogger(PermissionsManagementServiceBean.class);
@@ -132,7 +133,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
      */
     public void delete(CollaboratorGroup group) throws CSTransactionException {
         LogUtil.logSubsystemEntry(LOG, group);
-        if (!group.getOwner().getLoginName().equals(UsernameHolder.getUser())) {
+        if (!group.getOwner().equals(UsernameHolder.getCsmUser())) {
             throw new IllegalArgumentException(
                     String.format("%s cannot delete group %s, because they are not the group owner.",
                                   UsernameHolder.getUser(), group.getGroup().getGroupName()));
@@ -166,7 +167,6 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public List<CollaboratorGroup> getCollaboratorGroups() {
         LogUtil.logSubsystemEntry(LOG);
@@ -235,7 +235,6 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     public void addUsers(CollaboratorGroup targetGroup, List<String> users)
     throws CSTransactionException, CSObjectNotFoundException {
         LogUtil.logSubsystemEntry(LOG, targetGroup, users);
@@ -249,7 +248,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
         // This is a hack.  We should simply call am.assignUserToGroup, but that method appears to be buggy.
         AuthorizationManager am = SecurityUtils.getAuthorizationManager();
         Set<User> curUsers = am.getUsers(groupId);
-        Set<String> newUsers = new HashSet(curUsers.size() + users.size());
+        Set<String> newUsers = new HashSet<String>(curUsers.size() + users.size());
         newUsers.addAll(users);
         for (User u : curUsers) {
             newUsers.add(u.getUserId().toString());
@@ -291,7 +290,6 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     public List<User> getUsers(User u) {
         LogUtil.logSubsystemEntry(LOG);
         List<User> result =

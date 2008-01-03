@@ -1,10 +1,12 @@
 package gov.nih.nci.cagrid.caarray.client;
 
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.cagrid.caarray.common.CaArraySvcI;
 import gov.nih.nci.cagrid.caarray.stubs.CaArraySvcPortType;
 import gov.nih.nci.cagrid.caarray.stubs.service.CaArraySvcServiceAddressingLocator;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import gov.nih.nci.cagrid.cqlquery.Object;
+import gov.nih.nci.cagrid.cqlresultset.CQLObjectResult;
 import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
 import gov.nih.nci.cagrid.data.utilities.CQLQueryResultsIterator;
 import gov.nih.nci.cagrid.introduce.security.client.ServiceSecurityClient;
@@ -18,6 +20,7 @@ import org.apache.axis.EngineConfiguration;
 import org.apache.axis.client.AxisClient;
 import org.apache.axis.client.Stub;
 import org.apache.axis.configuration.FileProvider;
+import org.apache.axis.message.MessageElement;
 import org.apache.axis.message.addressing.EndpointReferenceType;
 import org.apache.axis.types.URI.MalformedURIException;
 import org.globus.gsi.GlobusCredential;
@@ -115,17 +118,32 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
               Object target = new Object();
               cqlQuery.setTarget(target);
 
-              target.setName("gov.nih.nci.caarray.domain.project.Project");
+              target.setName("gov.nih.nci.caarray.domain.vocabulary.Category");
 
               CQLQueryResults results = client.query(cqlQuery);
 
               System.out.println("TCPTCP: " + results);
               System.out.println("TCPTCP: " + results.getCountResult());
+              CQLObjectResult[] resultsArray = results.getObjectResult();
+              for (CQLObjectResult r : resultsArray) {
+                  System.out.println("Iterate: " + r);
+                  MessageElement[] get_any = r.get_any();
+                  for (MessageElement me : get_any) {
+                      System.out.println("\tMessageElement: " + me.toString());
+                  }
+
+              }
+
               CQLQueryResultsIterator iter = new CQLQueryResultsIterator(results, CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
 
               while (iter.hasNext()) {
-                  java.lang.Object o = iter.next();
-                  System.out.println("TCPTCP2: " + o);
+                  try {
+                      java.lang.Object o = iter.next();
+                      System.out.println("As Category: " + ((Category) o).getParent());
+                      System.out.println("TCPTCP2: " + o);
+                  } catch (Exception e) {
+                      e.printStackTrace();
+                  }
               }
 
 			  // place client calls here if you want to use this main as a

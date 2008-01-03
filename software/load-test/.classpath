@@ -9,5 +9,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/caarray-client-jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/caarray-common-jar"/>
 	<classpathentry kind="lib" path="C:/ncicb_svn/caarray2/software/lib/caGrid-1.1-data-stubs.jar"/>
-	<classpathentry kind="output" path="target/classes"/>
+	<classpathentry kind="output" path="eclipse-out"/>
 </classpath>

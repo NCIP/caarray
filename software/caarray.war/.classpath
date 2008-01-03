@@ -101,5 +101,5 @@
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="lib" path="/lib/checkstyle-all-4.3.jar"/>
 	<classpathentry kind="lib" path="/lib/ncicb-ant.jar"/>
-	<classpathentry kind="output" path="target/classes"/>
+	<classpathentry kind="output" path="eclipse-out"/>
 </classpath>
