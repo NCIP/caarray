@@ -17,10 +17,13 @@
             <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${groups}"
                 requestURI="${sortUrl}" sort="list" id="row" pagesize="20">
                 <caarray:displayTagProperties/>
+                <c:url value="/protected/collaborators/edit.action" var="editUrl">
+                    <c:param name="targetGroup" value="${row.id}"/>
+                </c:url>
                 <display:column property="group.groupName" titleKey="collaboration.group.name" sortable="true"/>
                 <display:column titleKey="collaboration.group.members">
                   <c:if test="${fn:length(row.group.users) > 20}">
-                    <a href="#">(View All ${fn:length(row.group.users)})</a>
+                    <a href="${editUrl}">(View All ${fn:length(row.group.users)})</a>
                   </c:if>
                   <c:if test="${fn:length(row.group.users) <= 20}">
                     <c:forEach items="${row.group.users}" var="curUser" varStatus="status">
@@ -36,9 +39,6 @@
                 </display:column>
                 <display:column titleKey="button.edit">
                   <c:if test="${fn:toLowerCase(row.owner.loginName) eq caarrayfn:currentUsername()}">
-                      <c:url value="/protected/collaborators/edit.action" var="editUrl">
-                        <c:param name="targetGroup" value="${row.id}"/>
-                      </c:url>
                       <a href="${editUrl}"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
                   </c:if>
                 </display:column>
