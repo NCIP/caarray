@@ -50,7 +50,7 @@
                   required="true"
                   onchange="$('reg_state')[$('regForm_registrationRequest_country').value == '226' ? 'show' : 'hide']();"
             />
-            <tbody id="reg_state" <s:if test="registrationRequest.country.id != '226'">style="display: none"</s:if> >
+            <tbody id="reg_state">
             <s:select key="registrationRequest.state" name="registrationRequest.state" list="stateList"
                   listKey="id" listValue="code" headerKey="" headerValue="--Select a State--"
                   id="state" value="registrationRequest.state.id" tabindex="15" required="true"

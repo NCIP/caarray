@@ -97,9 +97,11 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Entity
 @org.hibernate.annotations.Entity(mutable = false)
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public class Country extends AbstractCaArrayEntity {
+public class Country extends AbstractCaArrayEntity implements Comparable<Country> {
 
     private static final long serialVersionUID = 3434506314749437341L;
+    private static final String PREFERRED_COUNTRY = "UNITED STATES";
+
     private String code;
     private String name;
     private String printableName;
@@ -167,5 +169,26 @@ public class Country extends AbstractCaArrayEntity {
      */
     public void setNumcode(String numcode) {
         this.numcode = numcode;
+    }
+
+    /**
+     * Compares countries by name, putting a preferred country ahead of all others.
+     * @param o other country to compare to
+     * @return result of comparison
+     */
+    public int compareTo(Country o) {
+        if (this.name.equals(o.name)) {
+            return 0;
+        }
+
+        if (this.name.equals(PREFERRED_COUNTRY)) {
+            return -1;
+        }
+
+        if (o.name.equals(PREFERRED_COUNTRY)) {
+            return 1;
+        }
+
+        return this.name.compareToIgnoreCase(o.name);
     }
 }
