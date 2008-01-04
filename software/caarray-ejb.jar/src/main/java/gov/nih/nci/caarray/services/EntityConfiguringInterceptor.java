@@ -113,7 +113,13 @@ public class EntityConfiguringInterceptor {
 
         // flush any changes made (ie, DataSet population) to this point.  We're going to modify
         // hibernate objects in ways we /don't/ want flushed in prepareEntity
-        HibernateUtil.getCurrentSession().flush();
+
+        // FIXME: we cannot flush any changes here, because the SecurityPolicyPostLoadEventListener makes
+        // changes to objects (like Project) that hibernate sees as modifications.  The anonymous user
+        // does not have permission to modify the objects, so we get an exception at this point.
+        // Commenting this call out for now, because the only time we'd need to flush changes is for
+        // parse-on-demand, which we don't currently do.
+//        HibernateUtil.getCurrentSession().flush();
 
         if (returnValue instanceof Collection) {
             prepareEntities((Collection<?>) returnValue);
@@ -123,6 +129,7 @@ public class EntityConfiguringInterceptor {
 
         // keep hibernate from performing write behind of all the cutting we just did
         HibernateUtil.getCurrentSession().clear();
+
         return returnValue;
     }
 
