@@ -186,7 +186,12 @@ public class CollaboratorsAction extends ActionSupport {
     public String addUsers() throws CSTransactionException, CSObjectNotFoundException {
         if (CollectionUtils.isNotEmpty(getUsers())) {
             getPermissionsManagementService().addUsers(getTargetGroup(), getUsers());
-            ActionHelper.saveMessage(getText("collaboration.group.added"));
+            String s = "Users";
+            if (getUsers().size() == 1) {
+                User u = SecurityUtils.getAuthorizationManager().getUserById(getUsers().get(0));
+                s = u.getFirstName() + " " + u.getLastName() + " (" + u.getLoginName() + ")";
+            }
+            ActionHelper.saveMessage(getText("collaboration.group.added", new String[] {s}));
         }
         setAllUsers((List<User>) CollectionUtils.subtract(getPermissionsManagementService().getUsers(getTargetUser()),
                 getTargetGroup().getGroup().getUsers()));
