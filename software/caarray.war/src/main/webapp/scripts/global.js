@@ -412,6 +412,11 @@ var TabUtils = {
         }
     },
 
+    showAltSubmittingText : function(altText) {
+        $('submittingTextSpan').innerHTML = altText;
+        TabUtils.showSubmittingText();
+    },
+
     showLoadingText : function() {
         if ($('loadingText')) {
             $('loadingText').show();

@@ -21,7 +21,7 @@
     setExperimentTitleHeader('${project.experiment.title}');
 </script>
 
-<caarray:tabPane subtab="true" submittingPaneMessageKey="data.file.upload.inProgress">
+<caarray:tabPane subtab="true" submittingPaneMessageKey="experiment.files.processing">
 
     <div class="boxpad2">
         <h3><fmt:message key="project.tabs.unimportedFiles" /></h3>
@@ -41,10 +41,11 @@
                     <s:file id="upload" name="upload" label="File" />
                 </s:form>
 
+                <fmt:message key="data.file.upload.inProgress" var="altSumittingMessage" />
                 <caarray:actions>
                     <caarray:linkButton actionClass="cancel" text="Cancel" onclick="Effect.Fade('uploadFileDiv', { duration: 0.1 } );"/>
                     <caarray:linkButton actionClass="add" text="Add More Files" onclick="moreUploads();"/>
-                    <caarray:linkButton actionClass="save" text="Upload" onclick="TabUtils.showSubmittingText(); document.getElementById('uploadForm').submit();"/>
+                    <caarray:linkButton actionClass="save" text="Upload" onclick="TabUtils.showAltSubmittingText('${altSumittingMessage}'); document.getElementById('uploadForm').submit();"/>
                 </caarray:actions>
             </c:if>
         </div>

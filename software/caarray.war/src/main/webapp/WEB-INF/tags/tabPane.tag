@@ -31,7 +31,7 @@
 </c:if>
 <c:set var="submittingDivId" value="submittingText"/>
 <div id="${submittingDivId}" style="display: none;">
-    <div><img alt="Indicator" align="absmiddle" src="<c:url value="/images/indicator.gif"/>" /> <fmt:message key="${submittingPaneMessageKey}" /></div>
+    <div><img alt="Indicator" align="absmiddle" src="<c:url value="/images/indicator.gif"/>" /> <span id="submittingTextSpan"><fmt:message key="${submittingPaneMessageKey}" /></span></div>
 </div>
 <c:set var="formDivId" value="theForm"/>
 <div id="${formDivId}">
