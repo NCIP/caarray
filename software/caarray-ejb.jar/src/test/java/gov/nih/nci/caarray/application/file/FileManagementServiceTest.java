@@ -105,19 +105,38 @@ public class FileManagementServiceTest {
 
     @Before
     public void setUp() {
-        FileManagementMDB fileManagementMDB = new FileManagementMDB();
-        fileManagementMDB.setDaoFactory(daoFactoryStub);
+        FileManagementMDB fileManagementMDB = new FileManagementMDB() {
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            protected void handleUnexpectedError(AbstractFileManagementJob job) {
+                if (job instanceof AbstractProjectFilesJob) {
+                    AbstractProjectFilesJob projectFilesJob = (AbstractProjectFilesJob) job;
+                    for (CaArrayFile file : projectFilesJob.getFileSet(projectFilesJob.getProject()).getFiles()) {
+                        file.setFileStatus(FileStatus.IMPORT_FAILED);
+                    }
+                } else if (job instanceof ArrayDesignFileImportJob) {
+                    ArrayDesignFileImportJob arrayDesignJob = (ArrayDesignFileImportJob) job;
+                    getDaoFactory().getArrayDao().getArrayDesign(
+                            arrayDesignJob.getArrayDesignId()).getDesignFile().setFileStatus(FileStatus.IMPORT_FAILED);
+                }
+            }
+
+        };
+        fileManagementMDB.setDaoFactory(this.daoFactoryStub);
         fileManagementMDB.setTransaction(new UserTransactionStub());
         DirectJobSubmitter submitter = new DirectJobSubmitter(fileManagementMDB);
         FileManagementServiceBean fileManagementServiceBean = new FileManagementServiceBean();
         fileManagementServiceBean.setSubmitter(submitter);
-        fileManagementServiceBean.setDaoFactory(daoFactoryStub);
+        fileManagementServiceBean.setDaoFactory(this.daoFactoryStub);
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
-        locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
+        locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
         locatorStub.addLookup(ArrayDataService.JNDI_NAME, new LocalArrayDataServiceStub());
-        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, arrayDesignServiceStub);
+        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, this.arrayDesignServiceStub);
         locatorStub.addLookup(MageTabTranslator.JNDI_NAME, new MageTabTranslatorStub());
-        fileManagementService = fileManagementServiceBean;
+        this.fileManagementService = fileManagementServiceBean;
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(this.fileAccessServiceStub));
         TemporaryFileCacheLocator.resetTemporaryFileCache();
     }
@@ -125,7 +144,7 @@ public class FileManagementServiceTest {
     @Test
     public void testValidateFiles() {
         Project project = getTgaBroadTestProject();
-        fileManagementService.validateFiles(project, project.getFileSet());
+        this.fileManagementService.validateFiles(project, project.getFileSet());
         for (CaArrayFile file : project.getFiles()) {
             assertEquals(FileStatus.VALIDATED, file.getFileStatus());
         }
@@ -134,7 +153,7 @@ public class FileManagementServiceTest {
     @Test
     public void testImportFiles() {
         Project project = getTgaBroadTestProject();
-        fileManagementService.importFiles(project, project.getFileSet());
+        this.fileManagementService.importFiles(project, project.getFileSet());
         for (CaArrayFile file : project.getFiles()) {
             assertEquals(FileStatus.IMPORTED, file.getFileStatus());
         }
@@ -144,14 +163,14 @@ public class FileManagementServiceTest {
     public void testImportIllegalState() {
         Project project = getTgaBroadTestProject();
         project.getFiles().iterator().next().setFileStatus(FileStatus.VALIDATING);
-        fileManagementService.importFiles(project, project.getFileSet());
+        this.fileManagementService.importFiles(project, project.getFileSet());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testValidateIllegalState() {
         Project project = getTgaBroadTestProject();
         project.getFiles().iterator().next().setFileStatus(FileStatus.IMPORTED);
-        fileManagementService.validateFiles(project, project.getFileSet());
+        this.fileManagementService.validateFiles(project, project.getFileSet());
     }
 
     @Test
@@ -161,13 +180,13 @@ public class FileManagementServiceTest {
         String title = "title" + System.currentTimeMillis();
         experiment.setTitle(title);
         project.setExperiment(experiment);
-        fileManagementService.importFiles(project, project.getFileSet());
+        this.fileManagementService.importFiles(project, project.getFileSet());
         assertEquals(title, project.getExperiment().getTitle());
     }
 
     private Project getTgaBroadTestProject() {
         Project project = new Project();
-        daoFactoryStub.searchDaoStub.save(project);
+        this.daoFactoryStub.searchDaoStub.save(project);
         addFiles(project, TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_SET).getFiles());
         saveFiles(project.getFiles());
         assertEquals(29, project.getFiles().size());
@@ -183,14 +202,14 @@ public class FileManagementServiceTest {
 
     private void saveFiles(SortedSet<CaArrayFile> files) {
         for (CaArrayFile file : files) {
-            daoFactoryStub.searchDaoStub.save(file);
+            this.daoFactoryStub.searchDaoStub.save(file);
         }
     }
 
     @Test
     public void testAddSupplementalFiles() {
         Project project = getTgaBroadTestProject();
-        fileManagementService.addSupplementalFiles(project, project.getFileSet());
+        this.fileManagementService.addSupplementalFiles(project, project.getFileSet());
         for (CaArrayFile file : project.getFiles()) {
             assertEquals(FileStatus.SUPPLEMENTAL, file.getFileStatus());
         }
@@ -200,43 +219,43 @@ public class FileManagementServiceTest {
     public void testImportArrayDesignFile() throws InvalidDataFileException {
         ArrayDesign design = new ArrayDesign();
         design.setName("design name");
-        daoFactoryStub.searchDaoStub.save(design);
-        CaArrayFile caArrayFile = fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
+        this.daoFactoryStub.searchDaoStub.save(design);
+        CaArrayFile caArrayFile = this.fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
         caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
         design.setDesignFile(caArrayFile);
-        fileManagementService.addArrayDesign(design, caArrayFile);
-        fileManagementService.importArrayDesignDetails(design);
-        assertTrue(arrayDesignServiceStub.importCalled);
+        this.fileManagementService.addArrayDesign(design, caArrayFile);
+        this.fileManagementService.importArrayDesignDetails(design);
+        assertTrue(this.arrayDesignServiceStub.importCalled);
     }
 
     @Test
     public void testErrorHandling() throws InvalidDataFileException {
         ArrayDesign design = new ArrayDesign();
         design.setName("throw exception");
-        daoFactoryStub.searchDaoStub.save(design);
-        CaArrayFile caArrayFile = fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
+        this.daoFactoryStub.searchDaoStub.save(design);
+        CaArrayFile caArrayFile = this.fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
         caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
         design.setDesignFile(caArrayFile);
-        fileManagementService.addArrayDesign(design, caArrayFile);
+        this.fileManagementService.addArrayDesign(design, caArrayFile);
         assertEquals(FileStatus.VALIDATED, caArrayFile.getFileStatus());
         try {
-            fileManagementService.importArrayDesignDetails(design);
+            this.fileManagementService.importArrayDesignDetails(design);
             fail("Expected exception");
         } catch (IllegalArgumentException e) {
             // expected
         }
-        assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
+        assertEquals(FileStatus.IMPORT_FAILED, caArrayFile.getFileStatus());
     }
 
     @Test(expected = InvalidDataFileException.class)
     public void testImportArrayDesignFileInvalid() throws InvalidDataFileException {
         ArrayDesign design = new ArrayDesign();
         design.setName("design name");
-        daoFactoryStub.searchDaoStub.save(design);
-        CaArrayFile caArrayFile = fileAccessServiceStub.add(AffymetrixArrayDataFiles.TEST3_CHP);
+        this.daoFactoryStub.searchDaoStub.save(design);
+        CaArrayFile caArrayFile = this.fileAccessServiceStub.add(AffymetrixArrayDataFiles.TEST3_CHP);
         caArrayFile.setFileType(FileType.AFFYMETRIX_CHP);
         design.setDesignFile(caArrayFile);
-        fileManagementService.addArrayDesign(design, caArrayFile);
+        this.fileManagementService.addArrayDesign(design, caArrayFile);
     }
 
 
@@ -280,7 +299,7 @@ public class FileManagementServiceTest {
             if ("throw exception".equals(arrayDesign.getName())) {
                 throw new IllegalArgumentException();
             }
-            importCalled = true;
+            this.importCalled = true;
         }
 
     }
@@ -288,16 +307,16 @@ public class FileManagementServiceTest {
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
 
         private final LocalSearchDaoStub searchDaoStub = new LocalSearchDaoStub();
-        private final ArrayDao arrayDaoStub = new LocalArrayDao(searchDaoStub);
+        private final ArrayDao arrayDaoStub = new LocalArrayDao(this.searchDaoStub);
 
         @Override
         public SearchDao getSearchDao() {
-            return searchDaoStub;
+            return this.searchDaoStub;
         }
 
         @Override
         public ArrayDao getArrayDao() {
-            return arrayDaoStub;
+            return this.arrayDaoStub;
         }
 
     }
@@ -312,7 +331,7 @@ public class FileManagementServiceTest {
 
         @Override
         public ArrayDesign getArrayDesign(long id) {
-            return searchDaoStub.retrieve(ArrayDesign.class, id);
+            return this.searchDaoStub.retrieve(ArrayDesign.class, id);
         }
 
     }
@@ -325,19 +344,19 @@ public class FileManagementServiceTest {
         @Override
         @SuppressWarnings("unchecked")
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
-            return (T) objectMap.get(entityId);
+            return (T) this.objectMap.get(entityId);
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId, LockMode lockMode) {
-            return (T) objectMap.get(entityId);
+            return (T) this.objectMap.get(entityId);
         }
 
         @SuppressWarnings("deprecation")
         void save(AbstractCaArrayObject object) {
             object.setId(nextId++);
-            objectMap.put(object.getId(), object);
+            this.objectMap.put(object.getId(), object);
         }
 
     }

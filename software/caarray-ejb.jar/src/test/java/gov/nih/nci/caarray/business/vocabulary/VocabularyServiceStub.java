@@ -232,4 +232,11 @@ public class VocabularyServiceStub implements VocabularyService {
     public List<Protocol> getProtocolByProtocolType(Term type) {
         return null;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Protocol getProtocol(String name, Term type, TermSource source) {
+        return null;
+    }
 }

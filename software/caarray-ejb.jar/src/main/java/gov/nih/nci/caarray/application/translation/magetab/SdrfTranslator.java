@@ -158,7 +158,7 @@ final class SdrfTranslator extends AbstractTranslator {
     private final List<Hybridization> allHybridizations = new ArrayList<Hybridization>();
     private final Map<String, AbstractCaArrayEntity> generatedNodes =
         new HashMap<String, AbstractCaArrayEntity>();
-    private final Map<String, Protocol> nameToProtocol = new HashMap<String, Protocol>();
+    private final Map<ProtocolKey, Protocol> importedProtocolMap = new HashMap<ProtocolKey, Protocol>();
     private final VocabularyService vocabularyService;
 
     SdrfTranslator(MageTabDocumentSet documentSet, CaArrayFileSet fileSet, MageTabTranslationResult translationResult,
@@ -343,49 +343,74 @@ final class SdrfTranslator extends AbstractTranslator {
         }
         for (gov.nih.nci.caarray.magetab.ProtocolApplication mageTabProtocolApplication
                 : sdrfBiomaterial.getProtocolApplications()) {
-            ProtocolApplication protocolApplication = new ProtocolApplication();
-            protocolApplication.setProtocol(getProtocolFromMageTabProtocol(mageTabProtocolApplication.getProtocol()));
+            ProtocolApplication protocolApplication =
+                getProtocolApplicationFromMageTabProtocolApplication(mageTabProtocolApplication);
             protocolApplication.setBioMaterial(bioMaterial);
             bioMaterial.getProtocolApplications().add(protocolApplication);
-            for (gov.nih.nci.caarray.magetab.ParameterValue mageTabValue
-                    : mageTabProtocolApplication.getParameterValues()) {
-                ParameterValue value = new ParameterValue();
-                if (mageTabValue.getParameter() != null) {
-                    Parameter param = new Parameter();
-                    param.setName(mageTabValue.getParameter().getName());
-                    value.setParameter(param);
-                }
-                value.setValue(mageTabValue.getValue());
-                value.setProtocolApplication(protocolApplication);
-                protocolApplication.getValues().add(value);
-            }
         }
     }
 
-    private Protocol getProtocolFromMageTabProtocol(gov.nih.nci.caarray.magetab.Protocol mageTabProtocol) {
-        Protocol p = this.nameToProtocol.get(mageTabProtocol.getName());
-        if (p == null) {
-            p = new Protocol();
-            p.setName(mageTabProtocol.getName());
-            p.setType(getTerm(mageTabProtocol.getType()));
-            if (p.getType() == null) {
-                // default tot he unknown protocol type if one is not in use.
-                TermSource source = this.vocabularyService.getSource(ExperimentOntology.CAARRAY.getOntologyName());
-                Category category = this.vocabularyService.getCategory(source,
-                        ExperimentOntologyCategory.PROTOCOL_TYPE.getCategoryName());
-                p.setType(this.vocabularyService.getTerm(source, category,
-                        VocabularyService.UNKNOWN_PROTOCOL_TYPE_NAME));
-            }
-            p = replaceIfExists(p);
-            if (p.getId() == null) {
-                p.setContact(mageTabProtocol.getContact());
-                p.setDescription(mageTabProtocol.getDescription());
-                p.setHardware(mageTabProtocol.getHardware());
-                p.setSoftware(mageTabProtocol.getSoftware());
-            }
-            this.nameToProtocol.put(p.getName(), p);
+    private Term getUnknownProtocolType() {
+        TermSource source = this.vocabularyService.getSource(ExperimentOntology.CAARRAY.getOntologyName());
+        Category category = this.vocabularyService.getCategory(source,
+                ExperimentOntologyCategory.PROTOCOL_TYPE.getCategoryName());
+        return this.vocabularyService.getTerm(source, category, VocabularyService.UNKNOWN_PROTOCOL_TYPE_NAME);
+    }
+
+    private Protocol replaceProtocolIfExists(Protocol p) {
+        ProtocolKey key = new ProtocolKey(p.getName(), p.getType(), p.getSource());
+
+        // check in our map of imported protocols
+        Protocol returnProtocol = this.importedProtocolMap.get(key);
+        if (returnProtocol == null) {
+            // not in the map, check in the db
+            returnProtocol = getDaoFactory().getProtocolDao().getProtocol(p.getName(), p.getType(), p.getSource());
         }
+        if (returnProtocol == null) {
+            // protocol not in the map of imported protocols or in the db, add to map as it will be new
+            this.importedProtocolMap.put(key, p);
+            returnProtocol = p;
+        }
+        return returnProtocol;
+    }
+
+    private Protocol getProtocolFromMageTabProtocol(gov.nih.nci.caarray.magetab.Protocol mageTabProtocol) {
+        Term type = getTerm(mageTabProtocol.getType());
+        if (type == null) {
+            type = getUnknownProtocolType();
+        }
+        TermSource termSource = null;
+        if (mageTabProtocol.getTermSource() != null) {
+            termSource = getTranslationResult().getSource(mageTabProtocol.getTermSource());
+        } else {
+            termSource = this.vocabularyService.getSource(ExperimentOntology.CAARRAY.getOntologyName());
+        }
+        Protocol p = new Protocol(mageTabProtocol.getName(), type, termSource);
+        p.setContact(mageTabProtocol.getContact());
+        p.setDescription(mageTabProtocol.getDescription());
+        p.setHardware(mageTabProtocol.getHardware());
+        p.setSoftware(mageTabProtocol.getSoftware());
+        p = replaceProtocolIfExists(p);
         return p;
+    }
+
+    private ProtocolApplication getProtocolApplicationFromMageTabProtocolApplication(
+            gov.nih.nci.caarray.magetab.ProtocolApplication mageTabProtocolApplication) {
+        ProtocolApplication protocolApplication = new ProtocolApplication();
+        protocolApplication.setProtocol(getProtocolFromMageTabProtocol(mageTabProtocolApplication.getProtocol()));
+        for (gov.nih.nci.caarray.magetab.ParameterValue mageTabValue
+                : mageTabProtocolApplication.getParameterValues()) {
+            ParameterValue value = new ParameterValue();
+            if (mageTabValue.getParameter() != null) {
+                Parameter param = new Parameter();
+                param.setName(mageTabValue.getParameter().getName());
+                value.setParameter(param);
+            }
+            value.setValue(mageTabValue.getValue());
+            value.setProtocolApplication(protocolApplication);
+            protocolApplication.getValues().add(value);
+        }
+        return protocolApplication;
     }
 
     private AbstractCharacteristic translateCharacteristic(
@@ -500,12 +525,12 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     private void associateScanWithData(RawArrayData caArrayData, Scan scan) {
-        ProtocolApplication scanProtocolApp = new ProtocolApplication();
-        Protocol scanProtocol = new Protocol();
-        scanProtocol.setName(scan.getName());
-        scanProtocol = replaceIfExists(scanProtocol);
-        scanProtocolApp.setProtocol(scanProtocol);
-        caArrayData.getProtocolApplications().add(scanProtocolApp);
+        for (gov.nih.nci.caarray.magetab.ProtocolApplication mageTabProtocolApplication
+                : scan.getProtocolApplications()) {
+            ProtocolApplication protocolApplication =
+                getProtocolApplicationFromMageTabProtocolApplication(mageTabProtocolApplication);
+            caArrayData.getProtocolApplications().add(protocolApplication);
+        }
     }
 
     private void translateDerivedArrayData(SdrfDocument document) {
@@ -539,12 +564,12 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     private void associateNormalizationWithData(DerivedArrayData caArrayData, Normalization normalization) {
-        ProtocolApplication normalizationProtocolApp = new ProtocolApplication();
-        Protocol normalizationProtocol = new Protocol();
-        normalizationProtocol.setName(normalization.getName());
-        normalizationProtocol = replaceIfExists(normalizationProtocol);
-        normalizationProtocolApp.setProtocol(normalizationProtocol);
-        caArrayData.getProtocolApplications().add(normalizationProtocolApp);
+        for (gov.nih.nci.caarray.magetab.ProtocolApplication mageTabProtocolApplication
+                : normalization.getProtocolApplications()) {
+            ProtocolApplication protocolApplication =
+                getProtocolApplicationFromMageTabProtocolApplication(mageTabProtocolApplication);
+            caArrayData.getProtocolApplications().add(protocolApplication);
+        }
     }
 
     private void linkNodes(SdrfDocument document) {

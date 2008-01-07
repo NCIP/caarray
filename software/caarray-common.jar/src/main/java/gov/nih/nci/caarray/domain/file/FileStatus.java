@@ -123,6 +123,11 @@ public enum FileStatus {
     IMPORTED(false, false, false),
 
     /**
+     * Failed Import.
+     */
+    IMPORT_FAILED(true, true, true),
+
+    /**
      * Arbitrary files associated directly with a project.
      */
     SUPPLEMENTAL(true, false, false);

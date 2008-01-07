@@ -90,6 +90,9 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -109,16 +112,16 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
         super(username);
         this.projectId = targetProject.getId();
         for (CaArrayFile file : fileSet.getFiles()) {
-            fileIds.add(file.getId());
+            this.fileIds.add(file.getId());
         }
     }
 
     Set<Long> getFileIds() {
-        return fileIds;
+        return this.fileIds;
     }
 
     long getProjectId() {
-        return projectId;
+        return this.projectId;
     }
 
     MageTabTranslator getMageTabTranslator() {
@@ -131,14 +134,14 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
 
     CaArrayFileSet getFileSet(Project project) {
         CaArrayFileSet fileSet = new CaArrayFileSet(project);
-        for (Long fileId : fileIds) {
+        for (Long fileId : this.fileIds) {
             fileSet.add(getDaoFactory().getSearchDao().retrieve(CaArrayFile.class, fileId));
         }
         return fileSet;
     }
 
     Project getProject() {
-        return getDaoFactory().getSearchDao().retrieve(Project.class, projectId);
+        return getDaoFactory().getSearchDao().retrieve(Project.class, this.projectId);
     }
 
     void doValidate(CaArrayFileSet fileSet) {
@@ -167,9 +170,15 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
         setStatus(getInProgressStatus());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    void setUploadedStatus() {
-        setStatus(FileStatus.UPLOADED);
+    PreparedStatement getUnexpectedErrorPreparedStatement(Connection con) throws SQLException {
+        PreparedStatement s = con.prepareStatement("update caarrayfile set status = ? where project = ?");
+        s.setString(1, FileStatus.IMPORT_FAILED.toString());
+        s.setLong(2, getProjectId());
+        return s;
     }
 
     private void setStatus(FileStatus status) {

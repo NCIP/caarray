@@ -88,11 +88,22 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
+import org.apache.log4j.Logger;
 
 /**
  * Base class for file handling jobs.
  */
 abstract class AbstractFileManagementJob implements Serializable {
+
+    private static final Logger LOG = Logger.getLogger(AbstractFileManagementJob.class);
 
     private static final long serialVersionUID = 1L;
     private final String username;
@@ -103,13 +114,13 @@ abstract class AbstractFileManagementJob implements Serializable {
     }
 
     String getUsername() {
-        return username;
+        return this.username;
     }
 
     abstract void execute();
 
     CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
+        return this.daoFactory;
     }
 
     void setDaoFactory(CaArrayDaoFactory daoFactory) {
@@ -130,6 +141,31 @@ abstract class AbstractFileManagementJob implements Serializable {
 
     abstract void setInProgressStatus();
 
-    abstract void setUploadedStatus();
+    abstract PreparedStatement getUnexpectedErrorPreparedStatement(Connection con) throws SQLException;
 
+    void handleUnexpectedError() {
+        Connection con = null;
+        PreparedStatement ps = null;
+        try {
+            DataSource ds = (DataSource) new InitialContext().lookup("java:jdbc/CaArrayDataSource");
+            con = ds.getConnection();
+            ps = getUnexpectedErrorPreparedStatement(con);
+            ps.executeUpdate();
+        } catch (NamingException e) {
+            LOG.error("Error while attempting to handle an unexpected error.", e);
+        } catch (SQLException e) {
+            LOG.error("Error while attempting to handle an unexpected error.", e);
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                LOG.error("Error while attempting close the connection after handling an unexpected error.", e);
+            }
+        }
+    }
 }

@@ -86,6 +86,10 @@ import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 /**
  * Encapsulates the data to import array design details from a design file.
  */
@@ -101,13 +105,13 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
     }
 
     long getArrayDesignId() {
-        return arrayDesignId;
+        return this.arrayDesignId;
     }
 
     @Override
     void execute() {
         ArrayDesign arrayDesign = getDaoFactory().getArrayDao().getArrayDesign(getArrayDesignId());
-        try {            
+        try {
             getArrayDesignImporter().importArrayDesign(arrayDesign);
         } finally {
             TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
@@ -120,10 +124,17 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
         arrayDesign.getDesignFile().setFileStatus(FileStatus.IMPORTING);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    void setUploadedStatus() {
-        ArrayDesign arrayDesign = getDaoFactory().getArrayDao().getArrayDesign(getArrayDesignId());
-        arrayDesign.getDesignFile().setFileStatus(FileStatus.UPLOADED);
+    PreparedStatement getUnexpectedErrorPreparedStatement(Connection con) throws SQLException {
+        PreparedStatement s = con.prepareStatement("update caarrayfile set status = ? where id = "
+                + "(select design_file from array_design where id = ?)");
+        s.setString(1, FileStatus.IMPORT_FAILED.toString());
+        s.setLong(2, getArrayDesignId());
+        return s;
     }
+
 
 }

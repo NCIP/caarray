@@ -28,11 +28,13 @@
                         <display:column property="technologyType.value" titleKey="arrayDesign.technologyType" sortable="true"/>
                         <display:column property="organism.scientificName" titleKey="arrayDesign.organism" sortable="true"/>
                         <display:column sortProperty="designFile.status" titleKey="experiment.files.status" sortable="true" >
-                            <ajax:anchors target="tabboxlevel2wrapper">
-                                <fmt:message key="experiment.files.filestatus.${row.designFile.status}">
-                                    <fmt:param><c:url value="/" /></fmt:param>
-                                </fmt:message>
-                            </ajax:anchors>
+                            <c:if test="${not empty row.designFile.status}">
+                                <ajax:anchors target="tabboxlevel2wrapper">
+                                    <fmt:message key="experiment.files.filestatus.${row.designFile.status}">
+                                        <fmt:param><c:url value="/" /></fmt:param>
+                                    </fmt:message>
+                                </ajax:anchors>
+                            </c:if>
                         </display:column>
                     </display:table>
                 </ajax:displayTag>

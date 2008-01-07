@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-ejb-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-ejb-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,159 +80,43 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.business.vocabulary;
+package gov.nih.nci.caarray.application.translation.magetab;
 
-import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.domain.protocol.Protocol;
-import gov.nih.nci.caarray.domain.vocabulary.Category;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
-import java.util.List;
-import java.util.Set;
+import org.junit.Test;
 
 /**
- * Interface to the controlled vocabulary lookup service.
+ * @author Scott Miller
+ *
  */
-public interface VocabularyService {
+public class ProtocolKeyTest {
 
-    /**
-     * The default JNDI name to use to lookup <code>VocabularyService</code>.
-     */
-    String JNDI_NAME = "caarray/VocabularyServiceBean/local";
+    @Test
+    @SuppressWarnings("deprecation")
+    public void testEqualsHashCode() {
+        Term term1 = new Term();
+        TermSource source1 = new TermSource();
+        String name1 = "name1";
+        ProtocolKey key1 = new ProtocolKey(name1, term1, source1);
+        ProtocolKey key2 = null;
 
-    /**
-     * The name of the protocol type term for unknown protocol types.
-     */
-    String UNKNOWN_PROTOCOL_TYPE_NAME = "Unknown";
+        assertFalse(key1.equals(key2));
+        assertTrue(key1.equals(key1));
 
-    /**
-     * Returns all terms that belong to the category for the name given (including all
-     * subcategories).
-     *
-     * TODO getTerms should take Source as argument
-     *
-     * @param categoryName find entries that match this category.
-     * @return the matching Terms.
-     */
-    Set<Term> getTerms(String categoryName);
+        key2 = new ProtocolKey(name1, term1, source1);
+        assertTrue(key1.equals(key2));
+        assertTrue(key1.hashCode() == key2.hashCode());
 
-    /**
-     * Returns all terms that belong to the category for the name given (including all
-     * subcategories) and whose value starts with the given value.
-     *
-     * TODO getTerms should take Source as argument
-     *
-     * @param categoryName find entries that match this category.
-     * @param value the value to search on
-     * @return the matching Terms.
-     */
-    Set<Term> getTerms(String categoryName, String value);
+        term1.setId(1l);
+        assertTrue(key1.equals(key2));
+        assertTrue(key1.hashCode() == key2.hashCode());
 
-    /**
-     * Returns all Organisms.
-     *
-     * @return the List&lt;Organism&gt; in the system
-     */
-    List<Organism> getOrganisms();
-
-    /**
-     * Returns the requested term source, if it exists.
-     *
-     * @param name name of the source
-     * @return the matching source.
-     */
-    TermSource getSource(String name);
-
-    /**
-     * Returns the category with the matching name for the given source.
-     *
-     * @param source the source
-     * @param categoryName the name of the category
-     * @return the category
-     */
-    Category getCategory(TermSource source, String categoryName);
-
-    /**
-     * Returns the term that matches the given criteria.
-     *
-     * @param source source of the term.
-     * @param category category of the term.
-     * @param value value of the term.
-     * @return the matching term or null.
-     */
-    Term getTerm(TermSource source, Category category, String value);
-
-    /**
-     * Returns the term with the given id.
-     *
-     * @param id the id of the desired term
-     * @return the term with given id or null if none found.
-     */
-    Term getTerm(Long id);
-
-    /**
-     * Returns the organism with the given id.
-     *
-     * @param id the id of the desired organism
-     * @return the organism with given id or null if none found.
-     */
-    Organism getOrganism(Long id);
-
-    /**
-     * Method to save the term.
-     * @param term the term
-     */
-    void saveTerm(Term term);
-
-    /**
-     * Retrieve all term sources.
-     * @return the sources.
-     */
-    List<TermSource> getAllSources();
-
-    /**
-     * Get tissue sites for the experiment and category.
-     * @param experiment the experiment
-     * @return the list of terms
-     */
-    List<Term> getTissueSitesForExperiment(Experiment experiment);
-
-    /**
-     * Get material types for the experiment and category.
-     * @param experiment the experiment
-     * @return the list of terms
-     */
-    List<Term> getMaterialTypesForExperiment(Experiment experiment);
-
-    /**
-     * Get cell types for the experiment and category.
-     * @param experiment the experiment
-     * @return the list of terms
-     */
-    List<Term> getCellTypesForExperiment(Experiment experiment);
-
-    /**
-     * Get disease states for the experiment and category.
-     * @param experiment the experiment
-     * @return the list of terms
-     */
-    List<Term> getDiseaseStatesForExperiment(Experiment experiment);
-
-    /**
-     * Get the list of protocols with the given type.
-     * @param type the type.
-     * @return the list of protocols.
-     */
-    List<Protocol> getProtocolByProtocolType(Term type);
-
-    /**
-     * Get a protocol based off of the fields in its unique constraint.
-     * @param name the name of the protocol.
-     * @param type the type of the protocol
-     * @param source the source.
-     * @return the protocol, or null if none found.
-     */
-    Protocol getProtocol(String name, Term type, TermSource source);
+        key2 = new ProtocolKey("name2", term1, source1);
+        assertFalse(key1.equals(key2));
+        assertFalse(key1.hashCode() == key2.hashCode());
+    }
 }

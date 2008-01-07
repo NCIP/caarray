@@ -161,8 +161,8 @@ public class FileManagementMDB implements MessageListener {
 
     private void beginTransaction() {
         try {
-            transaction.setTransactionTimeout(TIMEOUT_SECONDS);
-            transaction.begin();
+            this.transaction.setTransactionTimeout(TIMEOUT_SECONDS);
+            this.transaction.begin();
         } catch (NotSupportedException e) {
             LOG.error("Unexpected throwable -- transaction is supported", e);
             throw new IllegalStateException(e);
@@ -174,7 +174,7 @@ public class FileManagementMDB implements MessageListener {
 
     private void commitTransaction()  {
         try {
-            transaction.commit();
+            this.transaction.commit();
         } catch (SecurityException e) {
             LOG.error("Unexpected throwable -- transaction is supported", e);
             throw new IllegalStateException(e);
@@ -193,7 +193,7 @@ public class FileManagementMDB implements MessageListener {
 
     private void rollbackTransaction() {
         try {
-            transaction.rollback();
+            this.transaction.rollback();
         } catch (SecurityException e) {
             LOG.error("Unexpected throwable -- transaction is supported", e);
             throw new IllegalStateException(e);
@@ -210,10 +210,18 @@ public class FileManagementMDB implements MessageListener {
             job.execute();
         } catch (RuntimeException e) {
             rollbackTransaction();
-            setUploadedStatus(job);
+            handleUnexpectedError(job);
             throw e;
         }
         commitTransaction();
+    }
+
+    /**
+     * Handles unexpected errors.
+     * @param job the job.
+     */
+    protected void handleUnexpectedError(AbstractFileManagementJob job) {
+        job.handleUnexpectedError();
     }
 
     private void setInProgressStatus(AbstractFileManagementJob job)  {
@@ -222,14 +230,8 @@ public class FileManagementMDB implements MessageListener {
         commitTransaction();
     }
 
-    private void setUploadedStatus(AbstractFileManagementJob job)  {
-        beginTransaction();
-        job.setUploadedStatus();
-        commitTransaction();
-    }
-
     CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
+        return this.daoFactory;
     }
 
     void setDaoFactory(CaArrayDaoFactory daoFactory) {
@@ -240,7 +242,7 @@ public class FileManagementMDB implements MessageListener {
      * @return the transaction
      */
     public UserTransaction getTransaction() {
-        return transaction;
+        return this.transaction;
     }
 
     /**

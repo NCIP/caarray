@@ -83,6 +83,8 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.protocol</code> package.
@@ -96,4 +98,13 @@ public interface ProtocolDao extends CaArrayDao {
      * @return the <code>Protocol</code>.
      */
     Protocol getProtocol(long id);
+
+    /**
+     * Get a protocol based off of the fields in its unique constraint.
+     * @param name the name of the protocol.
+     * @param type the type of the protocol
+     * @param source the source.
+     * @return the protocol, or null if none found.
+     */
+    Protocol getProtocol(String name, Term type, TermSource source);
 }

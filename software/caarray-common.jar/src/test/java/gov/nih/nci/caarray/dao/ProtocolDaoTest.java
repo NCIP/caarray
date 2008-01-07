@@ -91,11 +91,13 @@ import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
@@ -112,11 +114,12 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
     private static ParameterValue DUMMY_PARAMETER_VALUE_2 = new ParameterValue();
     private static ParameterValue DUMMY_PARAMETER_VALUE_3 = new ParameterValue();
     private static Category DUMMY_CATEGORY = new Category();
+    private static TermSource DUMMY_TERM_SOURCE_1 = new TermSource();
     private static Term DUMMY_TERM_1 = new Term();
     private static Term DUMMY_TERM_2 = new Term();
-    private static Protocol DUMMY_PROTOCOL_1 = new Protocol();
-    private static Protocol DUMMY_PROTOCOL_2 = new Protocol();
-    private static Protocol DUMMY_PROTOCOL_3 = new Protocol();
+    private static Protocol DUMMY_PROTOCOL_1;
+    private static Protocol DUMMY_PROTOCOL_2;
+    private static Protocol DUMMY_PROTOCOL_3;
     private static Parameter DUMMY_PARAMETER_1 = new Parameter(DUMMY_PROTOCOL_1);
     private static Parameter DUMMY_PARAMETER_2 = new Parameter(DUMMY_PROTOCOL_1);
     private static ProtocolApplication DUMMY_PROTOCOL_APPLICATION_1 = new ProtocolApplication();
@@ -136,9 +139,11 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         DUMMY_CATEGORY = new Category();
         DUMMY_TERM_1 = new Term();
         DUMMY_TERM_2 = new Term();
-        DUMMY_PROTOCOL_1 = new Protocol();
-        DUMMY_PROTOCOL_2 = new Protocol();
-        DUMMY_PROTOCOL_3 = new Protocol();
+        DUMMY_TERM_SOURCE_1 = new TermSource();
+        DUMMY_TERM_SOURCE_1.setName("TestTermSource1");
+        DUMMY_PROTOCOL_1 = new Protocol("DummyTestProtocol1", DUMMY_TERM_1, DUMMY_TERM_SOURCE_1);
+        DUMMY_PROTOCOL_2 = new Protocol("DummyTestProtocol2", DUMMY_TERM_2, DUMMY_TERM_SOURCE_1);
+        DUMMY_PROTOCOL_3 = new Protocol("DummyTestProtocol3", DUMMY_TERM_2, DUMMY_TERM_SOURCE_1);
         DUMMY_PARAMETER_1 = new Parameter(DUMMY_PROTOCOL_1);
         DUMMY_PARAMETER_2 = new Parameter(DUMMY_PROTOCOL_1);
         DUMMY_PROTOCOL_APPLICATION_1 = new ProtocolApplication();
@@ -179,18 +184,12 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         DUMMY_TERM_2.setValue("DummyTestTerm2");
         DUMMY_TERM_2.setCategory(DUMMY_CATEGORY);
 
-        DUMMY_PROTOCOL_1.setName("DummyTestProtocol1");
         DUMMY_PROTOCOL_1.setDescription("DummyDescForProtocol");
         DUMMY_PROTOCOL_1.setUrl("DummyUrlForProtocol1");
-        DUMMY_PROTOCOL_1.setType(DUMMY_TERM_1);
         DUMMY_PROTOCOL_1.getParameters().add(DUMMY_PARAMETER_1);
         DUMMY_PROTOCOL_1.getParameters().add(DUMMY_PARAMETER_2);
-        DUMMY_PROTOCOL_2.setName("DummyTestProtocol2");
         DUMMY_PROTOCOL_2.setDescription("DummyDescForProtocol");
-        DUMMY_PROTOCOL_2.setType(DUMMY_TERM_1);
-        DUMMY_PROTOCOL_3.setName("DummyTestProtocol3");
         DUMMY_PROTOCOL_3.setDescription("DummyDescForProtocol");
-        DUMMY_PROTOCOL_3.setType(DUMMY_TERM_2);
     }
 
     /**
@@ -241,8 +240,12 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         try {
             tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(protocolList);
+            Logger.getLogger(this.getClass()).error("STM:  Here 1");
             tx.commit();
-        } catch (DAOException e) {
+            Logger.getLogger(this.getClass()).error("STM:  Here 2");
+        } catch (Exception e) {
+            Logger.getLogger(this.getClass()).error("STM:  Here 3");
+            Logger.getLogger(this.getClass()).error("STM:  ", e);
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save of protocol collection: " + e.getMessage());
         }
@@ -299,6 +302,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
      * Tests searching for a <code>Protocol</code> by example.
      */
     @Test
+    @SuppressWarnings("deprecation")
     public void testSearchProtocolByExample() {
         Transaction tx = null;
 
@@ -329,6 +333,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
      * Both dummy protocols 2 and 3 have the same text, but only protocol 3 has the matching type.
      */
     @Test
+    @SuppressWarnings("deprecation")
     public void testDeepSearchProtocolByExample() {
         Transaction tx = null;
 
@@ -342,10 +347,9 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
             Protocol retrievedProtocol = null;
             List<Protocol> matchingProtocols =
                 DAO_OBJECT.queryEntityAndAssociationsByExample(exampleProtocol);
-            if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
-                retrievedProtocol = matchingProtocols.get(0);
-            }
-            if (DUMMY_PROTOCOL_3.equals(retrievedProtocol)) {
+            assertEquals(2, matchingProtocols.size());
+            retrievedProtocol = matchingProtocols.get(0);
+            if (DUMMY_PROTOCOL_2.equals(retrievedProtocol)) {
                 // The retrieved protocol is the same as the saved protocol. Test passed.
                 assertTrue(true);
             } else {
@@ -363,6 +367,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
      *
      * @return the example Protocol object with search attributes and associations filled in.
      */
+    @SuppressWarnings("deprecation")
     private Protocol setupDeepSearchExample() {
         Protocol exampleProtocol = new Protocol();
         exampleProtocol.setDescription(DUMMY_PROTOCOL_2.getDescription());

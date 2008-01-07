@@ -220,6 +220,7 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("deprecation")
     public List<Protocol> getProtocolByProtocolType(Term type) {
         if (type == null) {
             return new ArrayList<Protocol>();
@@ -227,6 +228,13 @@ public class VocabularyServiceBean implements VocabularyService {
         Protocol p = new Protocol();
         p.setType(type);
         return getVocabularyDao().queryEntityAndAssociationsByExample(p);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Protocol getProtocol(String name, Term type, TermSource source) {
+        return this.daoFactory.getProtocolDao().getProtocol(name, type, source);
     }
 
     /**

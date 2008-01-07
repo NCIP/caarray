@@ -87,6 +87,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
@@ -108,6 +110,8 @@ import com.opensymphony.xwork2.Action;
 public class ProtocolManagementActionTest {
 
     private static GenericDataService genericDataService;
+    private static VocabularyService vocabularyService;
+
     ProtocolManagementAction action;
 
     @BeforeClass
@@ -131,8 +135,11 @@ public class ProtocolManagementActionTest {
             }
 
         };
+
+        vocabularyService = new VocabularyServiceStub();
         ServiceLocatorStub stub = ServiceLocatorStub.registerEmptyLocator();
         stub.addLookup(GenericDataService.JNDI_NAME, genericDataService);
+        stub.addLookup(VocabularyService.JNDI_NAME, vocabularyService);
     }
 
     @Before

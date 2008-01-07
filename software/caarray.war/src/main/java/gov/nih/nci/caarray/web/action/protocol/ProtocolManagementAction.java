@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.web.action.protocol;
 
 import gov.nih.nci.caarray.domain.protocol.Protocol;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
@@ -101,8 +102,8 @@ import org.hibernate.criterion.Order;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
-import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.UrlValidator;
+import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
@@ -118,6 +119,9 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
     private static final long serialVersionUID = 1L;
     private List<Protocol> protocols;
     private Protocol protocol;
+    private boolean createNewSource = false;
+    private TermSource newSource;
+    private List<TermSource> sources = new ArrayList<TermSource>();
     private boolean editMode = false;
 
     private boolean returnToProjectOnCompletion = false;
@@ -130,7 +134,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
      * {@inheritDoc}
      */
     public void prepare() {
-        if (this.getProtocol() != null && this.getProtocol().getId() != null) {
+        if (getProtocol() != null && getProtocol().getId() != null) {
             Protocol retrieved = ActionHelper.getGenericDataService().retrieveEntity(Protocol.class,
                     this.getProtocol().getId());
             if (retrieved == null) {
@@ -139,6 +143,9 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
             } else {
                 this.setProtocol(retrieved);
             }
+        }
+        if (isCreateNewSource() && getProtocol() != null) {
+            getProtocol().setSource(getNewSource());
         }
     }
 
@@ -166,6 +173,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
     @SkipValidation
     public String edit() {
         setEditMode(true);
+        setSources(ActionHelper.getVocabularyService().getAllSources());
         return INPUT;
     }
 
@@ -176,6 +184,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
     @SkipValidation
     public String details() {
         setEditMode(false);
+        setSources(ActionHelper.getVocabularyService().getAllSources());
         return INPUT;
     }
 
@@ -187,10 +196,8 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
      */
     @Validations(
         urls = {
-            @UrlValidator(message = "", fieldName = "protocol.url", key = "struts.validator.url")
-        },
-        requiredFields = {
-            @RequiredFieldValidator(message = "", fieldName = "protocol.type", key = "struts.validator.requiredString")
+            @UrlValidator(message = "", fieldName = "protocol.url", key = "struts.validator.url"),
+            @UrlValidator(message = "", fieldName = "newSource.url", key = "struts.validator.url")
         }
     )
     public String save() throws InstantiationException, IllegalAccessException {
@@ -202,6 +209,25 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
             return "projectEdit";
         }
         return list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void validate() {
+        super.validate();
+        if (!ActionHelper.isSkipValidationSetOnCurrentAction() && getProtocol() != null) {
+            Protocol p = ActionHelper.getVocabularyService().getProtocol(getProtocol().getName(),
+                    getProtocol().getType(), getProtocol().getSource());
+            if (p != null && !p.getId().equals(getProtocol().getId())) {
+                addFieldError("protocol.name", getText("protocol.duplicate.name"));
+            }
+        }
+
+        if (hasErrors()) {
+            setSources(ActionHelper.getVocabularyService().getAllSources());
+        }
     }
 
     /**
@@ -353,5 +379,49 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
      */
     public void setReturnProjectId(Long returnProjectId) {
         this.returnProjectId = returnProjectId;
+    }
+
+    /**
+     * @return the newSource
+     */
+    @CustomValidator(type = "hibernate",
+            parameters = @ValidationParameter(name = "conditionalExpression", value = "createNewSource == true"))
+    public TermSource getNewSource() {
+        return this.newSource;
+    }
+
+    /**
+     * @param newSource the newSource to set
+     */
+    public void setNewSource(TermSource newSource) {
+        this.newSource = newSource;
+    }
+
+    /**
+     * @return the sources
+     */
+    public List<TermSource> getSources() {
+        return this.sources;
+    }
+
+    /**
+     * @param sources the sources to set
+     */
+    public void setSources(List<TermSource> sources) {
+        this.sources = sources;
+    }
+
+    /**
+     * @return the createNewSource
+     */
+    public boolean isCreateNewSource() {
+        return this.createNewSource;
+    }
+
+    /**
+     * @param createNewSource the createNewSource to set
+     */
+    public void setCreateNewSource(boolean createNewSource) {
+        this.createNewSource = createNewSource;
     }
 }

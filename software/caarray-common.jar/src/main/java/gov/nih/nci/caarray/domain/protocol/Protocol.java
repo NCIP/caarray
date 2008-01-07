@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.domain.protocol;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.Protectable;
 
 import java.util.HashSet;
@@ -94,7 +95,11 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
@@ -103,9 +108,11 @@ import org.hibernate.validator.NotNull;
 
 /**
  * Class representing a protocol.
+ *
  * @author Scott Miller
  */
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "type", "source" }))
 public class Protocol extends AbstractCaArrayEntity implements Protectable {
     private static final long serialVersionUID = 1234567890L;
 
@@ -115,8 +122,30 @@ public class Protocol extends AbstractCaArrayEntity implements Protectable {
     private String name;
     private String software;
     private Term type;
+    private TermSource source;
     private String url;
     private Set<Parameter> parameters = new HashSet<Parameter>();
+
+    /**
+     * Constructor for use by hibernate and struts only.
+     */
+    @Deprecated
+    public Protocol() {
+        // do nothing
+    }
+
+    /**
+     * Constructor taking all required fields.
+     *
+     * @param name the name.
+     * @param type the type.
+     * @param source the source.
+     */
+    public Protocol(String name, Term type, TermSource source) {
+        this.name = name;
+        this.type = type;
+        this.source = source;
+    }
 
     /**
      * Gets the contact.
@@ -222,6 +251,7 @@ public class Protocol extends AbstractCaArrayEntity implements Protectable {
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "PROTOCOL_TYPE_FK")
+    @NotNull
     public Term getType() {
         return this.type;
     }
@@ -273,5 +303,59 @@ public class Protocol extends AbstractCaArrayEntity implements Protectable {
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private void setParameters(final Set<Parameter> parametersVal) {
         this.parameters = parametersVal;
+    }
+
+    /**
+     * @return the source
+     */
+    @ManyToOne
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ForeignKey(name = "PROTOCOL_TERM_SOURCE_FK")
+    @NotNull
+    public TermSource getSource() {
+        return this.source;
+    }
+
+    /**
+     * @param source the source to set
+     */
+    public void setSource(TermSource source) {
+        this.source = source;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+
+        if (!(o instanceof Protocol)) {
+            return false;
+        }
+
+        if (o == this) {
+            return true;
+        }
+
+        if (getId() == null) {
+            // by default, two transient instances cannot ever be equal
+            return false;
+        }
+
+        Protocol rhs = (Protocol) o;
+        return new EqualsBuilder().append(getId(), rhs.getId()).append(getName(), rhs.getName()).append(getType(),
+                rhs.getType()).append(getSource(), rhs.getSource()).isEquals();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(getId()).append(getName()).append(getType()).
+            append(getSource()).toHashCode();
     }
 }

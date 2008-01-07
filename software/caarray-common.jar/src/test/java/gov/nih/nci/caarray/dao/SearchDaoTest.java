@@ -99,6 +99,7 @@ import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SourceSortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.cagrid.cqlquery.Association;
 import gov.nih.nci.cagrid.cqlquery.Attribute;
@@ -127,7 +128,7 @@ public class SearchDaoTest {
     private static final String FAIL_NO_MATCH = "Retrieved protocol is different from saved protocol.";
     private static final Category DUMMY_CATEGORY = new Category();
     private static final Term DUMMY_TERM_1 = new Term();
-    private static final Protocol DUMMY_PROTOCOL_1 = new Protocol();
+    private static final Protocol DUMMY_PROTOCOL_1 = new Protocol("DummyTestProtocol1", DUMMY_TERM_1, new TermSource());
     private static final Parameter DUMMY_PARAMETER_1 = new Parameter(DUMMY_PROTOCOL_1);
     private static final Parameter DUMMY_PARAMETER_2 = new Parameter(DUMMY_PROTOCOL_1);
 
@@ -147,6 +148,7 @@ public class SearchDaoTest {
         // Save dummy objects to database.
         try {
             tx = HibernateUtil.beginTransaction();
+            DUMMY_PROTOCOL_1.getSource().setName("testName");
             PROTOCOL_DAO.save(DUMMY_PROTOCOL_1);
             tx.commit();
         } catch (DAOException e) {
@@ -173,10 +175,8 @@ public class SearchDaoTest {
         DUMMY_TERM_1.setValue("DummyTestTerm1");
         DUMMY_TERM_1.setCategory(DUMMY_CATEGORY);
 
-        DUMMY_PROTOCOL_1.setName("DummyTestProtocol1");
         DUMMY_PROTOCOL_1.setDescription("DummyDescForProtocol");
         DUMMY_PROTOCOL_1.setUrl("DummyUrlForProtocol1");
-        DUMMY_PROTOCOL_1.setType(DUMMY_TERM_1);
         DUMMY_PROTOCOL_1.getParameters().add(DUMMY_PARAMETER_1);
         DUMMY_PROTOCOL_1.getParameters().add(DUMMY_PARAMETER_2);
     }
@@ -339,7 +339,7 @@ public class SearchDaoTest {
         return cqlQuery;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "deprecation"} )
     private Protocol setUpExampleProtocol() {
         Protocol exampleProtocol = new Protocol();
         exampleProtocol.setDescription(DUMMY_PROTOCOL_1.getDescription());
@@ -359,11 +359,11 @@ public class SearchDaoTest {
 
             obj = SEARCH_DAO.retrieve(Protocol.class, DUMMY_PROTOCOL_1.getId());
             assertEquals(DUMMY_PROTOCOL_1, obj);
-            
+
             obj = SEARCH_DAO.retrieve(Term.class, DUMMY_TERM_1.getId());
             assertEquals(DUMMY_TERM_1, obj);
             ((Term) obj).setValue("Foo");
-            
+
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
@@ -407,12 +407,12 @@ public class SearchDaoTest {
 
             filteredList = SEARCH_DAO.filterCollection(retrievedExperiment.getSources(), "name", "SoUrce 3");
             assertEquals(0, filteredList.size());
-            
+
             s.clear();
             retrievedExperiment = SEARCH_DAO.retrieve(Experiment.class, project.getExperiment().getId());
             int collSize = SEARCH_DAO.collectionSize(retrievedExperiment.getSources());
             assertEquals(2, collSize);
-            
+
             s.clear();
             retrievedExperiment = SEARCH_DAO.retrieve(Experiment.class, project.getExperiment().getId());
             PageSortParams<Source> params = new PageSortParams<Source>(1, 1, SourceSortCriterion.NAME, false);
