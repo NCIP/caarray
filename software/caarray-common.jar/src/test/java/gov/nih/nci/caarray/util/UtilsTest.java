@@ -150,6 +150,15 @@ public class UtilsTest {
         assertTrue(b.getUsers().isEmpty());
     }
 
+    @Test
+    public void testMap() {
+        C c = new C();
+        CaArrayUtils.makeChildrenLeaves(c);
+        assertNotNull(c.getMapA());
+        A a = c.getMapA().get(c.getMapA().keySet().iterator().next());
+        assertNull(a.getA());
+    }
+
     public static class A implements PersistentObject, Comparable<A> {
         private static final long serialVersionUID = 1L;
         private Long id = 1L;
@@ -331,6 +340,25 @@ public class UtilsTest {
 
         public void setSortedSet(SortedSet<A> sortedSet) {
             this.sortedSet = sortedSet;
+        }
+    }
+
+    public static class C implements PersistentObject {
+        private Map<Long, A> mapA = new HashMap<Long, A>();
+
+        public C() {
+            mapA.put(1L, new A());
+        }
+        public Long getId() {
+            return 1L;
+        }
+
+        public Map<Long, A> getMapA() {
+            return mapA;
+        }
+
+        public void setMapA(Map<Long, A> mapA) {
+            this.mapA = mapA;
         }
     }
 }

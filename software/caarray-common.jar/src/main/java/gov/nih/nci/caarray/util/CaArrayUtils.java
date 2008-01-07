@@ -90,6 +90,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -221,7 +222,6 @@ public final class CaArrayUtils {
      *
      * @param val object to perform cutting on
      */
-    @SuppressWarnings("PMD.ExcessiveMethodLength")
     public static void makeChildrenLeaves(Object val) {
         if (val == null) {
             return;
@@ -232,15 +232,9 @@ public final class CaArrayUtils {
                 m[0].setAccessible(true);
                 Object curObj = m[0].invoke(val);
                 if (curObj instanceof Collection) {
-                    Iterator<?> iter = ((Collection<?>) curObj).iterator();
-                    while (iter.hasNext()) {
-                        Object o = iter.next();
-                        if (!Serializable.class.isAssignableFrom(o.getClass())) {
-                            iter.remove();
-                        } else {
-                            makeLeaf(o);
-                        }
-                    }
+                    handleCollection(curObj);
+                } else if (curObj instanceof Map) {
+                    handleMap(val, m, curObj);
                 } else if (curObj != null && !Serializable.class.isAssignableFrom(curObj.getClass())) {
                     m[1].setAccessible(true);
                     m[1].invoke(val, new Object[] {null});
@@ -252,6 +246,35 @@ public final class CaArrayUtils {
                 LOG.error("Unable to call a getter: " + e.getMessage(), e);
             }
         }
+    }
+
+    private static void handleCollection(Object curObj) {
+        Iterator<?> iter = ((Collection<?>) curObj).iterator();
+        while (iter.hasNext()) {
+            Object o = iter.next();
+            if (!Serializable.class.isAssignableFrom(o.getClass())) {
+                iter.remove();
+            } else {
+                makeLeaf(o);
+            }
+        }
+    }
+
+    private static void handleMap(Object val, Method[] m, Object curObj) throws IllegalAccessException,
+            InvocationTargetException {
+        // Maps are a pain.  Because hibernate keeps track of the original state of a map,
+        // we cannot simply trim all (key, value) pairs in the original map.  Instead, we
+        // create a new map, and put the trimmed entries into the new map, and then set
+        // the new map to be the value in the object.
+        Map<?, ?> oldMap = (Map<?, ?>) curObj;
+        Map<Object, Object> newMap = new HashMap<Object, Object>();
+        for (Map.Entry<?, ?> e : oldMap.entrySet()) {
+            makeLeaf(e.getKey());
+            makeLeaf(e.getValue());
+            newMap.put(e.getKey(), e.getValue());
+        }
+        m[1].setAccessible(true);
+        m[1].invoke(val, new Object[] {newMap});
     }
 
     /**
