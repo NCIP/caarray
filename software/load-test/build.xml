@@ -154,7 +154,7 @@
             <property name="server.host.name" value="${server.host.name}" />
             <property name="server.jboss.port" value="${server.jboss.port}" />
         </jmeter>
-  -->
+        -->
 
         <!-- ******************************************************************* -->
         <!-- ** RUN API TESTS                                                 ** -->
@@ -190,7 +190,21 @@
             <property name="server.host.name" value="${server.host.name}" />
             <property name="grid.service.port" value="${grid.service.port}" />
         </jmeter>
-  -->
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/GridDataSetDownloadTest.jmx" resultlog="${tests.out.dir}/apitest/GridDataSetDownloadTest.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jndi.port" value="${server.jndi.port}" />
+            <property name="grid.service.port" value="${grid.service.port}" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/GridFileDownloadTest.jmx" resultlog="${tests.out.dir}/apitest/GridFileDownloadTest.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jndi.port" value="${server.jndi.port}" />
+            <property name="grid.service.port" value="${grid.service.port}" />
+        </jmeter>
+        -->
 
         <!-- ******************************************************************* -->
         <!-- ** RUN LOAD TESTS                                                ** -->
@@ -251,7 +265,7 @@
             <property name="server.jboss.port" value="${server.jboss.port}" />
             <property name="server.jndi.port" value="${server.jndi.port}" />
         </jmeter>
-    -->
+        -->
 
         <!-- UNCOMMENT TO RUN TESTS WITH BIGGER DATABASE SIZES.
         <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/setup/FiveHundredExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/FiveHundredExperimentLoader.jtl">
