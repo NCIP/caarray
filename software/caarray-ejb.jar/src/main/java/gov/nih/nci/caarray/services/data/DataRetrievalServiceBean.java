@@ -204,15 +204,21 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
             List<QuantitationType> quantitationTypes) {
         // hyb.getArrayData is allowed to be null.  For instance, Illuminia only has derived,
         // not raw, array data.
-        if (hybridization.getArrayData() != null
-                && containsAllTypes(hybridization.getArrayData(), quantitationTypes)) {
+        if (shouldAddData(arrayDatas, hybridization.getArrayData(), quantitationTypes)) {
             arrayDatas.add(hybridization.getArrayData());
         }
         for (DerivedArrayData derivedArrayData : hybridization.getDerivedDataCollection()) {
-            if (containsAllTypes(derivedArrayData, quantitationTypes)) {
+            if (shouldAddData(arrayDatas, derivedArrayData, quantitationTypes)) {
                 arrayDatas.add(derivedArrayData);
             }
         }
+    }
+
+    private boolean shouldAddData(List<AbstractArrayData> arrayDatas, AbstractArrayData arrayData,
+            List<QuantitationType> quantitationTypes) {
+        return arrayData != null
+                && !arrayDatas.contains(arrayData)
+                && containsAllTypes(arrayData, quantitationTypes);
     }
 
     private boolean containsAllTypes(AbstractArrayData arrayData, List<QuantitationType> quantitationTypes) {
