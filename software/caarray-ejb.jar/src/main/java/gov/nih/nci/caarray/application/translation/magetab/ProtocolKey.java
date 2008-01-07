@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
-import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -95,18 +94,15 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public class ProtocolKey {
 
     private final String name;
-    private final Term type;
     private final TermSource termSource;
 
     /**
      * Constructor taking required fields.
      * @param name the name of the key.
-     * @param type the type of the key.
      * @param termSource the source.
      */
-    public ProtocolKey(String name, Term type, TermSource termSource) {
+    public ProtocolKey(String name, TermSource termSource) {
         this.name = name;
-        this.type = type;
         this.termSource = termSource;
     }
 
@@ -115,13 +111,6 @@ public class ProtocolKey {
      */
     public String getName() {
         return this.name;
-    }
-
-    /**
-     * @return the type
-     */
-    public Term getType() {
-        return this.type;
     }
 
     /**
@@ -149,8 +138,8 @@ public class ProtocolKey {
         }
 
         ProtocolKey rhs = (ProtocolKey) o;
-        return new EqualsBuilder().append(getName(), rhs.getName()).append(getType(), rhs.getType()).
-            append(getTermSource(), rhs.getTermSource()).isEquals();
+        return new EqualsBuilder().append(getName(), rhs.getName()).append(getTermSource(), rhs.getTermSource()).
+            isEquals();
     }
 
     /**
@@ -158,6 +147,6 @@ public class ProtocolKey {
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(getName()).append(getType()).append(getTermSource()).toHashCode();
+        return new HashCodeBuilder().append(getName()).append(getTermSource()).toHashCode();
     }
 }

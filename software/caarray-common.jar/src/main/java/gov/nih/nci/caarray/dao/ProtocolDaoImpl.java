@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.protocol.Protocol;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
 import org.apache.commons.lang.StringUtils;
@@ -112,19 +111,15 @@ class ProtocolDaoImpl extends AbstractCaArrayDaoImpl implements ProtocolDao {
     /**
      * {@inheritDoc}
      */
-    public Protocol getProtocol(String name, Term type, TermSource source) {
-        if (StringUtils.isEmpty(name) || type == null || type.getId() == null || source == null
-                || source.getId() == null) {
-            // all of these fields are required, and the query below does not handle nulls,
-            // so handle here.
+    public Protocol getProtocol(String name, TermSource source) {
+        if (StringUtils.isEmpty(name) || source == null || source.getId() == null) {
+            // all of these fields are required
             return null;
         }
-        String hsql = "from " + Protocol.class.getName() + " where name = :name and type.id = :typeId "
-            + "and source.id = :sourceId";
+        String hsql = "from " + Protocol.class.getName() + " where name = :name and source = :source";
         Query q = getCurrentSession().createQuery(hsql);
         q.setString("name", name);
-        q.setLong("typeId", type.getId());
-        q.setLong("sourceId", source.getId());
+        q.setEntity("source", source);
         return (Protocol) q.uniqueResult();
     }
 

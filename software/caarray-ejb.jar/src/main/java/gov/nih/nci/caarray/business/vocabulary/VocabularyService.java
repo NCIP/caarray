@@ -230,9 +230,8 @@ public interface VocabularyService {
     /**
      * Get a protocol based off of the fields in its unique constraint.
      * @param name the name of the protocol.
-     * @param type the type of the protocol
      * @param source the source.
      * @return the protocol, or null if none found.
      */
-    Protocol getProtocol(String name, Term type, TermSource source);
+    Protocol getProtocol(String name, TermSource source);
 }

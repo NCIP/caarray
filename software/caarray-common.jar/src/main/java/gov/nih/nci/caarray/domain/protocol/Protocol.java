@@ -112,7 +112,7 @@ import org.hibernate.validator.NotNull;
  * @author Scott Miller
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "type", "source" }))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "source" }))
 public class Protocol extends AbstractCaArrayEntity implements Protectable {
     private static final long serialVersionUID = 1234567890L;
 
@@ -346,8 +346,7 @@ public class Protocol extends AbstractCaArrayEntity implements Protectable {
         }
 
         Protocol rhs = (Protocol) o;
-        return new EqualsBuilder().append(getId(), rhs.getId()).append(getName(), rhs.getName()).append(getType(),
-                rhs.getType()).append(getSource(), rhs.getSource()).isEquals();
+        return new EqualsBuilder().append(getName(), rhs.getName()).append(getSource(), rhs.getSource()).isEquals();
     }
 
     /**
@@ -355,7 +354,6 @@ public class Protocol extends AbstractCaArrayEntity implements Protectable {
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(getId()).append(getName()).append(getType()).
-            append(getSource()).toHashCode();
+        return new HashCodeBuilder().append(getName()).append(getSource()).toHashCode();
     }
 }

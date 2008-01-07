@@ -358,13 +358,13 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     private Protocol replaceProtocolIfExists(Protocol p) {
-        ProtocolKey key = new ProtocolKey(p.getName(), p.getType(), p.getSource());
+        ProtocolKey key = new ProtocolKey(p.getName(), p.getSource());
 
         // check in our map of imported protocols
         Protocol returnProtocol = this.importedProtocolMap.get(key);
         if (returnProtocol == null) {
             // not in the map, check in the db
-            returnProtocol = getDaoFactory().getProtocolDao().getProtocol(p.getName(), p.getType(), p.getSource());
+            returnProtocol = getDaoFactory().getProtocolDao().getProtocol(p.getName(), p.getSource());
         }
         if (returnProtocol == null) {
             // protocol not in the map of imported protocols or in the db, add to map as it will be new

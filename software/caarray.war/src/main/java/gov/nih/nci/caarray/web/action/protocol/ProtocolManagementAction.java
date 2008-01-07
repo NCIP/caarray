@@ -219,7 +219,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
         super.validate();
         if (!ActionHelper.isSkipValidationSetOnCurrentAction() && getProtocol() != null) {
             Protocol p = ActionHelper.getVocabularyService().getProtocol(getProtocol().getName(),
-                    getProtocol().getType(), getProtocol().getSource());
+                    getProtocol().getSource());
             if (p != null && !p.getId().equals(getProtocol().getId())) {
                 addFieldError("protocol.name", getText("protocol.duplicate.name"));
             }

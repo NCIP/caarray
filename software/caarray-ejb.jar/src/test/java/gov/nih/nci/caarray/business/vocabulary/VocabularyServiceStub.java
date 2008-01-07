@@ -236,7 +236,7 @@ public class VocabularyServiceStub implements VocabularyService {
     /**
      * {@inheritDoc}
      */
-    public Protocol getProtocol(String name, Term type, TermSource source) {
+    public Protocol getProtocol(String name, TermSource source) {
         return null;
     }
 }

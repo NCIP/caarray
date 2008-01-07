@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.application.translation.magetab;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
 import org.junit.Test;
@@ -98,24 +97,22 @@ public class ProtocolKeyTest {
     @Test
     @SuppressWarnings("deprecation")
     public void testEqualsHashCode() {
-        Term term1 = new Term();
         TermSource source1 = new TermSource();
         String name1 = "name1";
-        ProtocolKey key1 = new ProtocolKey(name1, term1, source1);
+        ProtocolKey key1 = new ProtocolKey(name1, source1);
         ProtocolKey key2 = null;
 
         assertFalse(key1.equals(key2));
         assertTrue(key1.equals(key1));
 
-        key2 = new ProtocolKey(name1, term1, source1);
+        key2 = new ProtocolKey(name1, source1);
         assertTrue(key1.equals(key2));
         assertTrue(key1.hashCode() == key2.hashCode());
 
-        term1.setId(1l);
         assertTrue(key1.equals(key2));
         assertTrue(key1.hashCode() == key2.hashCode());
 
-        key2 = new ProtocolKey("name2", term1, source1);
+        key2 = new ProtocolKey("name2", source1);
         assertFalse(key1.equals(key2));
         assertFalse(key1.hashCode() == key2.hashCode());
     }

@@ -123,7 +123,7 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
             LOG.error(e.getMessage(), e);
         }
         getDaoFactory().getProjectDao().flushSession();
-        getDaoFactory().getProjectDao().clearSession();        
+        getDaoFactory().getProjectDao().clearSession();
     }
 
     private void importArrayData(CaArrayFileSet fileSet) {

@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.file;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorFactory;
 
 import java.io.Serializable;
@@ -92,11 +93,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
 import org.apache.log4j.Logger;
+import org.hibernate.engine.SessionFactoryImplementor;
 
 /**
  * Base class for file handling jobs.
@@ -147,12 +145,12 @@ abstract class AbstractFileManagementJob implements Serializable {
         Connection con = null;
         PreparedStatement ps = null;
         try {
-            DataSource ds = (DataSource) new InitialContext().lookup("java:jdbc/CaArrayDataSource");
-            con = ds.getConnection();
+            con = ((SessionFactoryImplementor) HibernateUtil.getSessionFactory()).
+                getConnectionProvider().getConnection();
+            con.setAutoCommit(false);
             ps = getUnexpectedErrorPreparedStatement(con);
             ps.executeUpdate();
-        } catch (NamingException e) {
-            LOG.error("Error while attempting to handle an unexpected error.", e);
+            con.commit();
         } catch (SQLException e) {
             LOG.error("Error while attempting to handle an unexpected error.", e);
         } finally {
