@@ -127,7 +127,8 @@ public class DataRetrievalRequest implements Serializable {
     }
 
     /**
-     * Return data for this quantitation type.
+     * Return data for this quantitation type. Only hybridization data that contains
+     * all configured <code>QuantitationTypes</code> will be returned.
      *
      * @param quantitationType find data related to this quantitation type.
      */
