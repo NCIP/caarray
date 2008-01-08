@@ -139,7 +139,7 @@ public class CaArraySvcClient extends ServiceSecurityClient implements CaArraySv
               while (iter.hasNext()) {
                   try {
                       java.lang.Object o = iter.next();
-                      System.out.println("As Category: " + ((Category) o).getParent());
+                      System.out.println("As Category: " + ((Category) o).getParents());
                       System.out.println("TCPTCP2: " + o);
                   } catch (Exception e) {
                       e.printStackTrace();
