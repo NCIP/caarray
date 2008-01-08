@@ -19,7 +19,7 @@
     <property name="jmeter.lib.ext.dir" value="${jmeter.dir}/lib/ext" />
     <property name="ant.lib.dir" value="${env.ANT_HOME}/lib" />
     <property name="caarray.lib.dir" value="../lib" />
-    <property name="grid.service.lib.dir" value="../CaArraySvc/lib" />
+    <property name="grid.service.lib.dir" value="../CaArraySvc/build/lib" />
     <property name="jmeter.ant.jar" value="${lib.dir}/ant-jmeter.jar" />
 
     <property name="caarray.jmeter.samplers.jar" value="${target.dir}/caarray-jmeter-samplers.jar" />
