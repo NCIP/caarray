@@ -96,7 +96,9 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.validator.NotNull;
 
 /**
  *
@@ -112,6 +114,24 @@ public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1L;
 
     private AbstractBioMaterial bioMaterial;
+    private Category category;
+
+    /**
+     * Hibernate-only constructor.
+     */
+    public AbstractCharacteristic() {
+        // empty
+    }
+        
+    /**
+     * Creates a new AbstractCharacteristic with given category.
+     * @param category the category
+     */
+    public AbstractCharacteristic(final Category category) {
+        this.category = category;
+    }
+
+
 
     /**
      * @return the abstractBioMaterial
@@ -128,6 +148,24 @@ public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
     public void setBioMaterial(AbstractBioMaterial abstractBioMaterial) {
         this.bioMaterial = abstractBioMaterial;
     }
+    
+    /**
+     * @return the category for this characteristic
+     */
+    @ManyToOne(optional = false)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @NotNull
+    public Category getCategory() {
+        return category;
+    }
+
+    /**
+     * Set the category.
+     * @param category The category to set
+     */
+    public void setCategory(Category category) {
+        this.category = category;
+    }    
 
     /**
      * {@inheritDoc}
@@ -143,14 +181,5 @@ public abstract class AbstractCharacteristic extends AbstractCaArrayEntity {
      */
     @Transient
     public abstract String getDisplayValue();
-    
-    /**
-     * @return the category for this characteristic. By default, characteristics do not have categories, 
-     * but subclasses that do should override this method to return it
-     */
-    @Transient
-    public Category getCategory() {
-        return null;
-    }
 }
 

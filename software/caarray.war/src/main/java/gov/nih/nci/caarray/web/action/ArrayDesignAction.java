@@ -140,7 +140,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         ArrayDesignService ads = getArrayDesignService();
         this.organisms = vs.getOrganisms();
         this.providers = ads.getAllOrganizations();
-        this.featureTypes = vs.getTerms(ExperimentOntologyCategory.TECHNOLOGY_TYPE.getCategoryName());
+        this.featureTypes = ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.TECHNOLOGY_TYPE);
     }
 
     /**

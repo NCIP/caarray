@@ -2,12 +2,17 @@ package gov.nih.nci.caarray.domain.vocabulary;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.validation.UniqueConstraint;
+import gov.nih.nci.caarray.validation.UniqueConstraintField;
+import gov.nih.nci.caarray.validation.UniqueConstraints;
 
 /**
  * The software subject to this notice and license includes both human readable
@@ -95,15 +100,19 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
   /**
    */
 @Entity
-@Table(name = "TERMSOURCE")
+@UniqueConstraints(constraints = {
+        @UniqueConstraint(fields = { @UniqueConstraintField(name = "name"),
+                @UniqueConstraintField(name = "version", nullsEqual = true) }),
+        @UniqueConstraint(fields = { @UniqueConstraintField(name = "url"),
+                @UniqueConstraintField(name = "version", nullsEqual = true) }) }, 
+                message = "{termSource.uniqueConstraint}")
 public class TermSource extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The name String.
-     */
     private String name;
+    private String url;
+    private String version;
 
     /**
      * Gets the name.
@@ -124,10 +133,6 @@ public class TermSource extends AbstractCaArrayEntity {
     public void setName(final String nameVal) {
         this.name = nameVal;
     }
-    /**
-     * The url String.
-     */
-    private String url;
 
     /**
      * Gets the url.
@@ -147,10 +152,6 @@ public class TermSource extends AbstractCaArrayEntity {
     public void setUrl(final String urlVal) {
         this.url = urlVal;
     }
-    /**
-     * The version String.
-     */
-    private String version;
 
     /**
      * Gets the version.
@@ -170,7 +171,43 @@ public class TermSource extends AbstractCaArrayEntity {
     public void setVersion(final String versionVal) {
         this.version = versionVal;
     }
+    
+    /**
+     * @return the name and the version, if any, of this term source
+     */
+    @Transient
+    public String getNameAndVersion() {
+        StringBuilder str = new StringBuilder(this.name);
+        if (this.version != null) {
+            str.append(" ").append(this.version); 
+        }
+        return str.toString();
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof TermSource)) {
+            return false;
+        }
+        if (o == this) {
+            return true;
+        }
+        TermSource other = (TermSource) o;
+        return new EqualsBuilder().append(this.getName(), other.getName())
+                .append(this.getVersion(), other.getVersion()).isEquals();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(this.getName()).append(this.getVersion()).toHashCode();
+    }
+    
     /**
      * {@inheritDoc}
      */

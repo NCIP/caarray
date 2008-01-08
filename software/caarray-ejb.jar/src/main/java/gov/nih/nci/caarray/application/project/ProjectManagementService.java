@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
@@ -96,6 +97,7 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.io.File;
 import java.io.IOException;
@@ -320,4 +322,32 @@ public interface ProjectManagementService {
      * @return number of results
      */
     int searchCount(String keyword, SearchCategory... categories);
+    
+    /**
+     * Get tissue sites for the experiment and category.
+     * @param experiment the experiment
+     * @return the list of terms
+     */
+    List<Term> getTissueSitesForExperiment(Experiment experiment);
+
+    /**
+     * Get material types for the experiment and category.
+     * @param experiment the experiment
+     * @return the list of terms
+     */
+    List<Term> getMaterialTypesForExperiment(Experiment experiment);
+
+    /**
+     * Get cell types for the experiment and category.
+     * @param experiment the experiment
+     * @return the list of terms
+     */
+    List<Term> getCellTypesForExperiment(Experiment experiment);
+
+    /**
+     * Get disease states for the experiment and category.
+     * @param experiment the experiment
+     * @return the list of terms
+     */
+    List<Term> getDiseaseStatesForExperiment(Experiment experiment);
 }

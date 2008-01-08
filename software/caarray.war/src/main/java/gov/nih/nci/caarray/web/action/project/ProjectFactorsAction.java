@@ -149,8 +149,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
      */
     @Override
     public String view() {
-        setCategories(ActionHelper.getVocabularyService().getTerms(
-                ExperimentOntologyCategory.COMPLEX_ACTION.getCategoryName()));
+        setCategories(ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.COMPLEX_ACTION));
         return super.view();
     }
 
@@ -160,8 +159,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
     @Override
     @SkipValidation
     public String edit() {
-        setCategories(ActionHelper.getVocabularyService().getTerms(
-                ExperimentOntologyCategory.COMPLEX_ACTION.getCategoryName()));
+        setCategories(ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.COMPLEX_ACTION));
         return super.edit();
     }
 
@@ -172,8 +170,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
     public void validate() {
         super.validate();
         if (hasErrors()) {
-            setCategories(ActionHelper.getVocabularyService().getTerms(
-                    ExperimentOntologyCategory.COMPLEX_ACTION.getCategoryName()));
+            setCategories(ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.COMPLEX_ACTION));
         }
     }
 

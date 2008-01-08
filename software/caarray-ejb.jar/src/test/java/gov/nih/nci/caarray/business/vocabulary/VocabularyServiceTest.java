@@ -53,167 +53,89 @@ package gov.nih.nci.caarray.business.vocabulary;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
-import gov.nih.nci.caarray.dao.stub.AbstractDaoStub;
-import gov.nih.nci.caarray.domain.PersistentObject;
-import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
+import gov.nih.nci.caarray.domain.project.ExperimentOntology;
+import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import org.hibernate.criterion.Order;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
  * @author John Pike
- *
+ * 
  */
 @SuppressWarnings("PMD")
 public class VocabularyServiceTest {
 
     private static final int NUM_PROT_TYPES = 37;
+    private VocabularyService vocabularyService;
+    private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
 
+    // //TEST METHODS///////////////////////////////////
 
-////TEST METHODS///////////////////////////////////
+    @Before
+    public void setUpService() {
+        VocabularyServiceBean vsBean = new VocabularyServiceBean();
+        vsBean.setDaoFactory(this.daoFactoryStub);
+        vocabularyService = vsBean;
+    }
 
     /**
-     * Test to ensure that 37 entries are returned for the categoryName "ProtocolType".
-     * Test method for {@link gov.nih.nci.caarray.business.vocabulary.VocabularyServiceBean#getTerms
-     * (java.lang.String)}.
-    */
+     * Test to ensure that 37 entries are returned for the categoryName "ProtocolType". Test method for
+     * {@link gov.nih.nci.caarray.business.vocabulary.VocabularyServiceBean#getTerms (java.lang.String)}.
+     */
     @Test
-    public void getTermsProtocolType() {
-        VocabularyService vocab = new MockVocabularyServiceBean();
+    public void testGetTerms() {
         Set<Term> terms = new HashSet<Term>();
         try {
-             terms =  vocab.getTerms("ProtocolType");
-             assertTrue(!terms.isEmpty());
-             assertTrue(terms.size() == NUM_PROT_TYPES);
+            TermSource mo = vocabularyService.getSource(ExperimentOntology.MGED_ONTOLOGY.getOntologyName(),
+                    ExperimentOntology.MGED_ONTOLOGY.getVersion());
+            Category protocolType = vocabularyService.getCategory(mo, ExperimentOntologyCategory.PROTOCOL_TYPE.getCategoryName());
+            terms = vocabularyService.getTerms(protocolType);
+            assertTrue(!terms.isEmpty());
+            assertTrue(terms.size() == NUM_PROT_TYPES);
         } catch (Exception e) {
-             System.out.println(e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
     /**
-     * Test to ensure IllegalArgumentException is thrown if a null arg
-     * is passed to "getTerms()" method
+     * Test to ensure IllegalArgumentException is thrown if a null arg is passed to "getTerms()" method
      */
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void getTermsNullCategory() {
-        VocabularyService vocab = new MockVocabularyServiceBean();
-        vocab.getTerms(null);
+        vocabularyService.getTerms(null);
     }
 
-    /**
-     * Test to ensure that when the EVS service goes haywire, the getTerms() method will create
-     * a VocabServiceException
-     * Test method for {@link gov.nih.nci.caarray.business.vocabulary.VocabularyServiceBean#getTerms
-     * (java.lang.String)}.
-     */
-    @Test(expected=DAOException.class)
-    public void getTermsEVSException() {
-        VocabularyService vocab = new MockVSBeanForEVSException();
-        vocab.getTerms("ProtocolType");
+    // ////// INNER CLASS TEST STUBS///////////////////////
+    private static class LocalDaoFactoryStub extends DaoFactoryStub {
+        LocalVocabularyDaoStub vocabularyDao = new LocalVocabularyDaoStub();
 
-    }
-
-    @Test(expected=DAOException.class)
-    public void testDAOException() throws DAOException {
-        VocabularyDao vocabDao = new MockVocabularyDaoForException();
-        vocabDao.getTerms("ProtocolType");
-    }
-
-
-//////// INNER CLASS TEST STUBS///////////////////////
-
-    class MockVSBeanForEVSException extends VocabularyServiceBean {
+        /**
+         * {@inheritDoc}
+         */
         @Override
-        protected VocabularyDao getVocabularyDao() {
-            return new MockVocabularyDao();
+        public VocabularyDao getVocabularyDao() {
+            return vocabularyDao;
         }
     }
-    class MockVocabularyServiceBean extends VocabularyServiceBean {
-        @Override
-        protected VocabularyDao getVocabularyDao() {
-            return new MockVocabularyDao();
-        }
-    }
-    public class MockVocabularyDao extends VocabularyDaoTestStub {
 
+    private static class LocalVocabularyDaoStub extends VocabularyDaoStub {
+        @Override
+        public Set<Term> getTerms(Category category) throws DAOException {
+            return new HashSet<Term>();
+        }
 
         @Override
-        public List<Term> getTerms(String categoryName) throws DAOException {
-            return new ArrayList<Term>();
-        }
-        @Override
-        public Set<Term> getTermsRecursive(String categoryName, String value) {
+        public Set<Term> getTermsRecursive(Category category, String value) {
             throw new DAOException("This is a test exception");
-        }
-
-        @Override
-        public <T> List<T> queryEntityByExample(T entityToMatch, Order... order) throws DAOException {
-            return new ArrayList<T>();
-        }
-        @Override
-        public List<PersistentObject> queryEntityAndAssociationsByExample(PersistentObject entityToMatch) throws DAOException {
-            return new ArrayList<PersistentObject>();
-        }
-     }
-    public class MockVocabularyDaoForException extends AbstractDaoStub implements VocabularyDao {
-        public Term getTermById(Long id) {
-            throw new DAOException("test exception");
-        }
-
-        public List<Term> getTerms(String categoryName) throws DAOException {
-            throw new DAOException("This is a test exception");
-        }
-        public Set<Term> getTermsRecursive(String categoryName, String value) throws DAOException {
-            throw new DAOException("This is a test exception");
-        }
-        public Category getCategory(String name) throws DAOException {
-            throw new DAOException("This is a test exception");
-        }
-
-        public void removeTerms(List<Term> termList) {
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public List<Term> getCellTypesForExperiment(Experiment experiment) {
-            return null;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public List<Term> getDiseaseStatesForExperiment(Experiment experiment) {
-            return null;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public List<Term> getMaterialTypesForExperiment(Experiment experiment) {
-            return null;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public List<Term> getTissueSitesForExperiment(Experiment experiment) {
-            return null;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public List<Term> getTerms(TermSource source, Category category, String value) {
-            return null;
         }
     }
 }

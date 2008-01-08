@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common.jar
+ * source code form and machine readable, binary, object code form. The caarray-war
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-common.jar Software License (the License) is between NCI and You. You (or
+ * This caarray-war Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-common.jar Software to (i) use, install, access, operate,
+ * its rights in the caarray-war Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common.jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-common.jar Software and any
+ * and prepare derivative works of the caarray-war Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-war Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,126 +80,84 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.dao;
+package gov.nih.nci.caarray.web.interceptor;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
-import gov.nih.nci.caarray.domain.sample.Sample;
-import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
-import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import java.util.Map;
 
-import java.util.Collection;
-import java.util.Iterator;
+import org.apache.commons.lang.StringUtils;
 
-import org.hibernate.Transaction;
-import org.junit.Before;
-import org.junit.Test;
+import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.interceptor.Interceptor;
+import com.opensymphony.xwork2.util.ValueStack;
 
 /**
- * Unit tests for the Sample DAO.
- *
- * @author Rashmi Srinivasa
+ * Interceptor that trims input parameters, removing trailing and optionally, if <code>trimFromFront</code> attribute 
+ * is set to true (by default it is not), leading whitespace from input parameter values. If the 
+ * <code>trimToNull</code> attribute is set (by default it is not), then if after trimming the parameter value 
+ * is empty, it is changed to null
+ * @author Dan Kokotov
  */
-@SuppressWarnings("PMD")
-public class SampleDaoTest  extends AbstractDaoTest {
-    private static Sample DUMMY_SAMPLE_1 = new Sample();
-    private static TermSource DUMMY_SOURCE = new TermSource();
-    private static Category DUMMY_CATEGORY = new Category();
-    private static Term DUMMY_MATERIAL_TYPE = new Term();
-    private static TermBasedCharacteristic DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
-
-    private static final SampleDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getSampleDao();
+public class ParameterTrimInterceptor implements Interceptor {
+    private static final long serialVersionUID = 1L;
+    private boolean trimFromFront;
+    private boolean trimToNull;
 
     /**
-     * Define the dummy objects that will be used by the tests.
+     * Set whether leading space should be trimmed as well (default is no).
+     * @param trimFromFront whether to trim leading space
      */
-    @Before
-    public void setUpBeforeClass() {
-        DUMMY_SAMPLE_1 = new Sample();
-        DUMMY_SAMPLE_1.setName("DummySample1");
-        DUMMY_SAMPLE_1.setDescription("DummySample1Desc");
-
-        DUMMY_SOURCE = new TermSource();
-        DUMMY_SOURCE.setName("Dummy Source");
-        DUMMY_SOURCE.setUrl("Dummy URL");
-
-        DUMMY_CATEGORY = new Category();
-        DUMMY_CATEGORY.setName("Dummy Category");
-        DUMMY_CATEGORY.setTermSource(DUMMY_SOURCE);
-        
-        DUMMY_MATERIAL_TYPE = new Term();
-        DUMMY_MATERIAL_TYPE.setValue("Dummy Material Type");
-        DUMMY_MATERIAL_TYPE.setSource(DUMMY_SOURCE);
-        DUMMY_MATERIAL_TYPE.setCategory(DUMMY_CATEGORY);
-        DUMMY_SAMPLE_1.setMaterialType(DUMMY_MATERIAL_TYPE);
-
-        DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
-        DUMMY_CHARACTERISTIC.setCategory(DUMMY_CATEGORY);
-        DUMMY_CHARACTERISTIC.setTerm(DUMMY_MATERIAL_TYPE);
-        Transaction tx = null;
-        try {
-            tx = HibernateUtil.beginTransaction();
-            DAO_OBJECT.save(DUMMY_SAMPLE_1);
-            tx.commit();
-        } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
-            fail("Error setting up test data: " + e.getMessage());
-        }
+    public void setTrimFromFront(String trimFromFront) {
+        this.trimFromFront = Boolean.parseBoolean(trimFromFront);
     }
 
     /**
-     * Tests retrieving the <code>Sample</code> with the given id. Test encompasses save and delete of a
-     * <code>Sample</code>.
+     * Set whether to set the value of a parameter to null if it is empty after trimming.
+     * @param trimToNull whether to set to null values that are empty after trimming
      */
-    @Test
-    public void testGetSample() {
-        Transaction tx = null;
+    public void setTrimToNull(String trimToNull) {
+        this.trimToNull = Boolean.parseBoolean(trimToNull);
+    }
 
-        try {
-            tx = HibernateUtil.beginTransaction();
-            DAO_OBJECT.save(DUMMY_SAMPLE_1);
-            Sample retrievedSample = DAO_OBJECT.getSample(DUMMY_SAMPLE_1.getId());
-            tx.commit();
-            if (DUMMY_SAMPLE_1.equals(retrievedSample)) {
-                if (compareSamples(retrievedSample, DUMMY_SAMPLE_1)) {
-                    // The retrieved sample is the same as the saved sample. Test passed.
-                    assertTrue(true);
+    /**
+     * {@inheritDoc}
+     */
+    public void destroy() {
+        // do nothings
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void init() {
+        // do nothing
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("PMD")
+    public String intercept(ActionInvocation actionInvocation) throws Exception {
+        Map<?, ?> params = actionInvocation.getInvocationContext().getParameters();
+        ValueStack stack = actionInvocation.getStack();
+        for (Object key : params.keySet()) {
+            Object value = stack.findValue((String) key);
+            if (value instanceof String) {
+                stack.setValue((String) key, truncate((String) value));
+            } else if (value instanceof String[]) {
+                String[] values = (String[]) value;
+                for (int i = 0; i < values.length; i++) {
+                    values[i] = truncate(values[i]);
                 }
-            } else {
-                fail("Retrieved sample is different from saved sample.");
-            }
-        } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
-            fail("DAO exception during save and retrieve of sample: " + e.getMessage());
+            } 
         }
+        return actionInvocation.invoke();
     }
-
-    /**
-     * Compare 2 samples to check if they are the same.
-     *
-     * @return true if the 2 samples are the same and false otherwise.
-     */
-    private boolean compareSamples(Sample retrievedSample, Sample dummySample) {
-        if (!dummySample.getName().equals(retrievedSample.getName())) {
-            return false;
+    
+    private String truncate(String input) {
+        String result = this.trimFromFront ? StringUtils.strip(input) : StringUtils.stripEnd(input, null);
+        if (this.trimToNull && StringUtils.isEmpty(result)) {
+            result = null;
         }
-        Term retrievedMaterialType = retrievedSample.getMaterialType();
-        if (!DUMMY_MATERIAL_TYPE.getValue().equals(retrievedMaterialType.getValue())) {
-            return false;
-        }
-        Collection<AbstractCharacteristic> characteristics = retrievedSample.getCharacteristics();
-        if (characteristics.isEmpty() || characteristics.size() != 1) {
-            return false;
-        }
-        Iterator<AbstractCharacteristic> i = characteristics.iterator();
-        TermBasedCharacteristic retrievedCharacteristic = (TermBasedCharacteristic) i.next();
-        if (!DUMMY_CHARACTERISTIC.getTerm().equals(retrievedCharacteristic.getTerm())) {
-            return false;
-        }
-        return true;
+        return result;
     }
 }

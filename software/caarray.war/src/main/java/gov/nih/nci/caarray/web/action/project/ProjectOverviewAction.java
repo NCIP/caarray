@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getArrayDesignService;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
+import static gov.nih.nci.caarray.web.action.ActionHelper.getProjectManagementService;
 import static gov.nih.nci.caarray.web.action.ActionHelper.getVocabularyService;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
@@ -148,10 +149,10 @@ public class ProjectOverviewAction extends ProjectTabAction {
     @SkipValidation
     public String load() {
         if (!isEditMode() && getExperiment() != null && getExperiment().getId() != null) {
-            setTissueSites(getVocabularyService().getTissueSitesForExperiment(getExperiment()));
-            setCellTypes(getVocabularyService().getCellTypesForExperiment(getExperiment()));
-            setDiseaseState(getVocabularyService().getDiseaseStatesForExperiment(getExperiment()));
-            setMaterialTypes(getVocabularyService().getMaterialTypesForExperiment(getExperiment()));
+            setTissueSites(getProjectManagementService().getTissueSitesForExperiment(getExperiment()));
+            setCellTypes(getProjectManagementService().getCellTypesForExperiment(getExperiment()));
+            setDiseaseState(getProjectManagementService().getDiseaseStatesForExperiment(getExperiment()));
+            setMaterialTypes(getProjectManagementService().getMaterialTypesForExperiment(getExperiment()));
         }
         return super.load();
     }

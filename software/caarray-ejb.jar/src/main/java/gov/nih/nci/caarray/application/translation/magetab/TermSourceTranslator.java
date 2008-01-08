@@ -84,71 +84,142 @@ package gov.nih.nci.caarray.application.translation.magetab;
 
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.magetab.TermSource;
 
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.apache.commons.collections.map.MultiKeyMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
  * Translates MAGE-TAB <code>TermSources</code> to caArray <code>TermSources</code>.
  */
+@SuppressWarnings("PMD.CyclomaticComplexity")
 final class TermSourceTranslator extends AbstractTranslator {
 
     private static final Logger LOG = Logger.getLogger(TermSourceTranslator.class);
 
     private final VocabularyService vocabularyService;
+    private final MultiKeyMap termSourceByName = new MultiKeyMap();
+    private final MultiKeyMap termSourceByUrl = new MultiKeyMap();
 
     TermSourceTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
             VocabularyService vocabularyService, CaArrayDaoFactory daoFatory) {
-                super(documentSet, translationResult, daoFatory);
-                this.vocabularyService = vocabularyService;
+        super(documentSet, translationResult, daoFatory);
+        this.vocabularyService = vocabularyService;
     }
 
     @Override
     void translate() {
-        for (TermSource termSource : getDocumentSet().getTermSources()) {
+        for (gov.nih.nci.caarray.magetab.TermSource termSource : getDocumentSet().getTermSources()) {
             translate(termSource);
         }
     }
 
-    private void translate(TermSource termSource) {
-        gov.nih.nci.caarray.domain.vocabulary.TermSource source = getExistingSource(termSource);
-        if (source == null) {
-            source = createSource(termSource);
-        } else {
-            updateSource(source, termSource);
+    private void translate(gov.nih.nci.caarray.magetab.TermSource termSource) {
+        // first, check that we haven
+        TermSource source = lookupSource(termSource);
+        // check that this does not match (via unique constraints) one of the sources we've already created.
+        if (!termSourceByName.containsKey(source.getName(), source.getVersion())
+                && !termSourceByUrl.containsKey(source.getUrl(), source.getVersion())) {
+            getTranslationResult().addSource(termSource, source);
+            termSourceByName.put(source.getName(), source.getVersion(), source);
+            termSourceByUrl.put(source.getUrl(), source.getVersion(), source);
         }
-        getTranslationResult().addSource(termSource, source);
     }
 
-    private gov.nih.nci.caarray.domain.vocabulary.TermSource getExistingSource(TermSource termSource) {
-        return this.vocabularyService.getSource(termSource.getName());
-    }
-
-    private gov.nih.nci.caarray.domain.vocabulary.TermSource createSource(TermSource termSource) {
-        gov.nih.nci.caarray.domain.vocabulary.TermSource source =
-            new gov.nih.nci.caarray.domain.vocabulary.TermSource();
-        source.setName(termSource.getName());
-        source.setUrl(termSource.getFile());
-        source.setVersion(termSource.getVersion());
-        return source;
+    private TermSource lookupSource(gov.nih.nci.caarray.magetab.TermSource termSource) {
+        boolean hasFile = termSource.getFile() != null;
+        boolean hasVersion = termSource.getVersion() != null;
+        if (hasFile && hasVersion) {
+            return lookupSourceByNameUrlAndVersion(termSource.getName(), termSource.getFile(), termSource
+                    .getVersion());
+        } else if (hasFile && !hasVersion) {
+            return lookupSourceByNameAndUrl(termSource.getName(), termSource.getFile());
+        } else if (!hasFile && hasVersion) {
+            return lookupSourceByNameAndVersion(termSource.getName(), termSource.getVersion());
+        } else {
+            return lookupSourceByNameOnly(termSource.getName());
+        }
     }
 
     /**
-     * @param source
-     * @param termSource
+     * @param name
+     * @param file
+     * @param version
+     * @return
      */
-    private void updateSource(gov.nih.nci.caarray.domain.vocabulary.TermSource source, TermSource termSource) {
-        if (StringUtils.isEmpty(source.getName())) {
-            source.setName(termSource.getName());
+    private TermSource lookupSourceByNameUrlAndVersion(String name, String url, String version) {
+        TermSource match = vocabularyService.getSourceByUrl(url, version);
+        if (match != null) {
+            return match;
+        } else {
+            TermSource result = lookupSourceByNameAndVersion(name, version);
+            result.setUrl(url);
+            return result;
         }
-        if (StringUtils.isEmpty(source.getVersion())) {
-            source.setVersion(termSource.getVersion());
+    }
+
+    /**
+     * @param name
+     * @param file
+     * @return
+     */
+    private TermSource lookupSourceByNameAndUrl(String name, String url) {
+        Set<TermSource> matches = vocabularyService.getSourcesByUrl(url);
+        if (!matches.isEmpty()) {
+            return getBestMatch(matches);
+        } else {
+            TermSource result = lookupSourceByNameOnly(name);
+            result.setUrl(url);
+            return result;
         }
-        if (StringUtils.isEmpty(source.getUrl())) {
-            source.setUrl(termSource.getFile());
+    }
+
+    /**
+     * @param name
+     * @param version
+     * @return
+     */
+    private TermSource lookupSourceByNameAndVersion(String name, String version) {
+        TermSource match = vocabularyService.getSource(name, version);
+        if (match != null) {
+            return match;
+        } else {
+            TermSource newSource = new TermSource();
+            newSource.setName(name);
+            newSource.setVersion(version);
+            return newSource;
         }
+    }
+
+    /**
+     * @param name
+     * @return
+     */
+    private TermSource lookupSourceByNameOnly(String name) {
+        Set<TermSource> matches = vocabularyService.getSources(name);
+        if (!matches.isEmpty()) {
+            return getBestMatch(matches);
+        } else {
+            TermSource newSource = new TermSource();
+            newSource.setName(name);
+            return newSource;
+        }
+    }
+
+    /**
+     * @param matches
+     * @return
+     */
+    private TermSource getBestMatch(Set<TermSource> matches) {
+        TreeSet<TermSource> sorted = new TreeSet<TermSource>(new TermSourceVersionComparator());
+        sorted.addAll(matches);
+        return sorted.first();
     }
 
     @Override
@@ -156,4 +227,24 @@ final class TermSourceTranslator extends AbstractTranslator {
         return LOG;
     }
 
+    /**
+     * Compares term sources by their version, such that empty / null versions come first, and otherwise uses inverse
+     * alphabetical ordering.
+     * 
+     * @author dkokotov@vecna.com
+     */
+    private static class TermSourceVersionComparator implements Comparator<TermSource> {
+        /**
+         * {@inheritDoc}
+         */
+        public int compare(TermSource ts1, TermSource ts2) {
+            if (StringUtils.isEmpty(ts1.getVersion())) {
+                return StringUtils.isEmpty(ts2.getVersion()) ? 0 : -1;
+            }
+            if (StringUtils.isEmpty(ts2.getVersion())) {
+                return 1;
+            }
+            return ts1.getVersion().compareToIgnoreCase(ts2.getVersion()) * -1;
+        }
+    }
 }

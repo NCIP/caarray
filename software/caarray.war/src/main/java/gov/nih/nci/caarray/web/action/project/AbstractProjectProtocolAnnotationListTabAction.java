@@ -130,8 +130,7 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction<T extends A
     }
 
     private void initForm() {
-        setProtocolTypes(ActionHelper.getVocabularyService().getTerms(
-                ExperimentOntologyCategory.PROTOCOL_TYPE.getCategoryName()));
+        setProtocolTypes(ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.PROTOCOL_TYPE));
     }
 
     /**

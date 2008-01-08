@@ -92,6 +92,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.validator.NotNull;
 
 /**
  * 
@@ -103,15 +104,34 @@ public class TermBasedCharacteristic extends AbstractCharacteristic {
     private static final long serialVersionUID = 1L;
     
     private Term term;
+    
+    /**
+     * Hibernate-only constructor.
+     */
+    public TermBasedCharacteristic() {
+        //empty
+    }
+    
+    /**
+     * Create a new characteristic with given category and term.
+     * 
+     * @param category the category.
+     * @param term the term
+     */
+    public TermBasedCharacteristic(Category category, Term term) {
+        super(category);
+        this.term = term;
+    }
 
     /**
      * Gets the term.
      *
      * @return the term
      */
-    @ManyToOne
+    @ManyToOne(optional = false)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "CHARACTERISTIC_TERM_FK")
+    @NotNull
     public Term getTerm() {
         return term;
     }
@@ -132,14 +152,5 @@ public class TermBasedCharacteristic extends AbstractCharacteristic {
     @Transient
     public String getDisplayValue() {
         return this.term != null ? this.term.getValue() : null;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Transient
-    public Category getCategory() {
-        return getTerm().getCategory();
-    }
+    }    
 }

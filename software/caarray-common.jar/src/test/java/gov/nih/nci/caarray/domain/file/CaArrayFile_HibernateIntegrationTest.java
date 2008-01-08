@@ -90,6 +90,7 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ServiceType;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.File;
@@ -123,11 +124,17 @@ public class CaArrayFile_HibernateIntegrationTest extends AbstractCaArrayEntity_
         caArrayFile.setStatus(getNextValue(FileStatus.values(), caArrayFile.getFileStatus()).name());
         caArrayFile.setName(getUniqueStringValue());
         if (caArrayFile.getProject() == null) {
+            TermSource ts = new TermSource();
+            ts.setName("Dummy TS");
+            ts.setVersion("1.0");
+            Organism org = new Organism();
+            org.setScientificName("Foo");
+            org.setTermSource(ts);
             caArrayFile.setProject(new Project());
             caArrayFile.getProject().getExperiment().setTitle("TestFileExperiment1");
             caArrayFile.getProject().getExperiment().setAssayType(AssayType.ACGH);
             caArrayFile.getProject().getExperiment().setServiceType(ServiceType.FULL);
-            caArrayFile.getProject().getExperiment().setOrganism(new Organism());
+            caArrayFile.getProject().getExperiment().setOrganism(org);
             caArrayFile.getProject().getExperiment().setManufacturer(new Organization());
             save(caArrayFile.getProject());
         }

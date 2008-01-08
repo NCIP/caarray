@@ -147,10 +147,10 @@ public class ProjectOverviewActionTest {
     public void testLoad() throws Exception {
         this.action.setProject(projectManagementServiceStub.getProject(1L));
         assertEquals(Action.INPUT, this.action.load());
-        assertEquals(vocabularyServiceStub.getTissueSitesForExperiment(null).size(), this.action.getTissueSites().size());
-        assertEquals(vocabularyServiceStub.getDiseaseStatesForExperiment(null).size(), this.action.getDiseaseState().size());
-        assertEquals(vocabularyServiceStub.getMaterialTypesForExperiment(null).size(), this.action.getMaterialTypes().size());
-        assertEquals(vocabularyServiceStub.getCellTypesForExperiment(null).size(), this.action.getCellTypes().size());
+        assertEquals(projectManagementServiceStub.getTissueSitesForExperiment(null).size(), this.action.getTissueSites().size());
+        assertEquals(projectManagementServiceStub.getDiseaseStatesForExperiment(null).size(), this.action.getDiseaseState().size());
+        assertEquals(projectManagementServiceStub.getMaterialTypesForExperiment(null).size(), this.action.getMaterialTypes().size());
+        assertEquals(projectManagementServiceStub.getCellTypesForExperiment(null).size(), this.action.getCellTypes().size());
     }
 
     @Test

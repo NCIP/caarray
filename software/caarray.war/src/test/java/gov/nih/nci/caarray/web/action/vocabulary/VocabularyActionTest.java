@@ -151,6 +151,7 @@ public class VocabularyActionTest {
     @Test(expected = PermissionDeniedException.class)
     @SuppressWarnings("deprecation")
     public void testPrepare() {
+        this.action.setCategory(ExperimentOntologyCategory.ORGANISM_PART);
         this.action.prepare();
         assertEquals(null, this.action.getCurrentTerm());
         this.action.setCurrentTerm(new Term());

@@ -324,7 +324,7 @@
   <!-- Copy hibernate files to classes directory and configure datasource and transaction management -->
   <target name="configure-datasource-for-deploy">
     <copy todir="${caarray-common.classes.dir}" overwrite="true">
-      <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*,treecache.xml" />
+      <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*,treecache.xml,ValidatorMessages.properties" />
     </copy>
     <replace dir="${caarray-common.classes.dir}" includes="*.cfg.xml">
       <replacefilter token="@DATASOURCE_CONFIG_START@" value="${comment.end}" />
@@ -1135,6 +1135,7 @@
       <filterset refid="caarray.filterset" />
     </copy>
     <copy file="${clm.jar}" todir="${jboss.lib.dir}" overwrite="true" />
+    <copy file="${mysql-connector.jar}" todir="${jboss.lib.dir}" overwrite="true" />
     <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
     <copy file="${resource.dir}/deploy/${jboss-mail-service.file}" todir="${jboss.deploy.dir}" />
     <replace file="${jboss.deploy.dir}/${jboss-mail-service.file}">

@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.domain.project.ServiceType;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.List;
@@ -117,6 +118,7 @@ public class BrowseDaoTest extends AbstractDaoTest {
     private static Experiment DUMMY_EXPERIMENT_1 = new Experiment();
     private static Experiment DUMMY_EXPERIMENT_2 = new Experiment();
     private static Experiment DUMMY_EXPERIMENT_3 = new Experiment();
+    private static TermSource DUMMY_TERM_SOURCE = new TermSource();
 
     private static final BrowseDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getBrowseDao();
 
@@ -134,6 +136,7 @@ public class BrowseDaoTest extends AbstractDaoTest {
         DUMMY_EXPERIMENT_1 = new Experiment();
         DUMMY_EXPERIMENT_2 = new Experiment();
         DUMMY_EXPERIMENT_3 = new Experiment();
+        DUMMY_TERM_SOURCE = new TermSource();
         initializeProjects();
     }
 
@@ -141,8 +144,13 @@ public class BrowseDaoTest extends AbstractDaoTest {
      * Initialize the dummy <code>Project</code> objects.
      */
     private static void initializeProjects() {
-        DUMMY_ORGANISM_1.setCommonName("organism1");
-        DUMMY_ORGANISM_2.setCommonName("organism2");
+        DUMMY_TERM_SOURCE.setName("Dummy MGED Ontology");
+        DUMMY_TERM_SOURCE.setUrl("test url");
+        
+        DUMMY_ORGANISM_1.setScientificName("organism1");
+        DUMMY_ORGANISM_1.setTermSource(DUMMY_TERM_SOURCE);
+        DUMMY_ORGANISM_2.setScientificName("organism2");
+        DUMMY_ORGANISM_2.setTermSource(DUMMY_TERM_SOURCE);
 
         DUMMY_PROJECT_1.setExperiment(DUMMY_EXPERIMENT_1);
         DUMMY_EXPERIMENT_1.setTitle("DummyExperiment1");

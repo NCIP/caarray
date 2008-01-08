@@ -50,6 +50,7 @@
  */
 package gov.nih.nci.caarray.magetab;
 
+import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDesign;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
@@ -136,8 +137,8 @@ public abstract class AbstractMageTabDocument implements Serializable {
      * @param value value of the term
      * @return the new or matching term.
      */
-    protected final OntologyTerm getOntologyTerm(String category, String value) {
-        return getDocumentSet().getOntologyTerm(category, value);
+    protected final OntologyTerm addOntologyTerm(String category, String value) {
+        return getDocumentSet().addOntologyTerm(category, value);
     }
 
     /**
@@ -210,9 +211,9 @@ public abstract class AbstractMageTabDocument implements Serializable {
      * @param value the term.
      * @return the term object.
      */
-    protected final OntologyTerm getMgedOntologyTerm(MageTabOntologyCategory category, String value) {
-        OntologyTerm term = getOntologyTerm(category.getCategoryName(), value);
-        term.setTermSource(getOrCreateTermSource("MO"));
+    protected final OntologyTerm addMgedOntologyTerm(MageTabOntologyCategory category, String value) {
+        OntologyTerm term = addOntologyTerm(category.getCategoryName(), value);
+        term.setTermSource(getTermSource(ExperimentOntology.MGED_ONTOLOGY.getOntologyName()));
         return term;
     }
 

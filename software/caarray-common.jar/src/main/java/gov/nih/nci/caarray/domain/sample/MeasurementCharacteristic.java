@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.domain.sample;
 
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.text.DecimalFormat;
@@ -109,6 +110,25 @@ public class MeasurementCharacteristic extends AbstractCharacteristic {
 
     private Float value;
     private Term unit;
+    
+    /**
+     * Hibernate-only constructor.
+     */
+    public MeasurementCharacteristic() {
+        // empty
+    }
+    
+    /**
+     * Create a new characteristic with given fields.
+     * @param category the category of the characteristic
+     * @param value the value of the characteristic
+     * @param unit the unit for the value
+     */
+    public MeasurementCharacteristic(Category category, Float value, Term unit) {
+        super(category);
+        this.value = value;
+        this.unit = unit;
+    }
 
     /**
      * Gets the unit.

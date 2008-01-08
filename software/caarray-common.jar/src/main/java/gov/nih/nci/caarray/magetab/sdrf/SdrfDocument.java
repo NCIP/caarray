@@ -435,7 +435,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     private void handleLabel(SdrfColumn column, String value) {
         LabeledExtract labeledExtract = (LabeledExtract) currentNode;
-        labeledExtract.setLabel(getMgedOntologyTerm(MageTabOntologyCategory.LABEL_COMPOUND, value));
+        labeledExtract.setLabel(addMgedOntologyTerm(MageTabOntologyCategory.LABEL_COMPOUND, value));
         currentTermSourceable = labeledExtract.getLabel();
     }
 
@@ -449,7 +449,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     }
 
     private void handleUnit(SdrfColumn column, String value, SdrfColumn nextColumn) {
-        OntologyTerm unit = getOntologyTerm(column.getHeading().getQualifier(), value);
+        OntologyTerm unit = addOntologyTerm(column.getHeading().getQualifier(), value);
         unit.setValue(value);
         if (currentUnitable != null) {
             currentUnitable.setUnit(unit);
@@ -462,7 +462,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     }
 
     private void handleMaterialType(SdrfColumn column, String value) {
-        OntologyTerm materialType = getMgedOntologyTerm(MageTabOntologyCategory.MATERIAL_TYPE, value);
+        OntologyTerm materialType = addMgedOntologyTerm(MageTabOntologyCategory.MATERIAL_TYPE, value);
         ((AbstractBioMaterial) currentNode).setMaterialType(materialType);
         currentTermSourceable = materialType;
     }
@@ -479,17 +479,16 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private void handleCharacteristic(String value, SdrfColumn currentColumn, SdrfColumn nextColumn) {
         Characteristic characteristic = new Characteristic();
         ((AbstractBioMaterial) currentNode).getCharacteristics().add(characteristic);
-        characteristic.setValue(value);
-        if (nextColumn != null && nextColumn.getType() == SdrfColumnType.TERM_SOURCE_REF) {
-            OntologyTerm term = getOntologyTerm(currentColumn.getHeading().getQualifier(), value);
-            // the value becomes the term so clear out the value
-            characteristic.setTerm(term);
-            currentTermSourceable = term;
-        } else if (nextColumn != null && nextColumn.getType() == SdrfColumnType.UNIT) {
+        characteristic.setCategory(currentColumn.getHeading().getQualifier());
+        if (nextColumn != null && nextColumn.getType() == SdrfColumnType.UNIT) {
             characteristic.setValue(value);
             currentUnitable = characteristic;
         } else {
-            characteristic.setValue(value);
+            OntologyTerm term = addOntologyTerm(characteristic.getCategory(), value);
+            characteristic.setTerm(term);
+            if (nextColumn != null && nextColumn.getType() == SdrfColumnType.TERM_SOURCE_REF) {
+                currentTermSourceable = term;
+            }
         }
     }
 

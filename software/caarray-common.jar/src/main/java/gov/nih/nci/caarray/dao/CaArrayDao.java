@@ -122,7 +122,7 @@ public interface CaArrayDao {
     void remove(PersistentObject persistentObject);
 
     /**
-     * Calls queryEntityByExample(entityToMatch, MatchMode.EXACT).
+     * Calls queryEntityByExample(entityToMatch, MatchMode.EXACT, order).
      *
      * @param <T> entity type
      * @param entityToMatch get objects matching this entity
@@ -132,8 +132,7 @@ public interface CaArrayDao {
     <T> List<T> queryEntityByExample(T entityToMatch, Order... order);
 
     /**
-     * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity,
-     * or null if none exists.
+     * Calls queryEntityByExample(entityToMatch, MatchMode.EXACT, true, new String[] { }, order).
      *
      * @param <T> entity type
      * @param mode string comparison mode
@@ -144,6 +143,22 @@ public interface CaArrayDao {
     <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, Order... order);
 
     /**
+     * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity,
+     * or null if none exists.
+     *
+     * @param <T> entity type
+     * @param entityToMatch get objects matching this entity
+     * @param mode string comparison mode
+     * @param excludeNulls whether to exclude null properties from the query (ie not consider them at all, rather
+     * than including an is null check for them)
+     * @param excludeProperties a list of additional properties to exclude from the query.
+     * @param order list or order by clauses to add
+     * @return the List of objects, or an empty List.
+     */
+    <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, boolean excludeNulls, String[] excludeProperties,
+            Order... order);
+
+    /**
      * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity
      * and its associations, or null if none exists.  This method ignores collection associations
      * (ie, one-to-many), but handles non-collection associatations such as many-to-one or
@@ -151,10 +166,11 @@ public interface CaArrayDao {
      *
      * @param <T> entity type
      * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
+     * @param order list or order by clauses to add
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
      */
-    <T extends PersistentObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch);
-
+    <T extends PersistentObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch, Order... order);
+    
     /**
      * Flushes the current Hibernate <code>Session</code>.
      */

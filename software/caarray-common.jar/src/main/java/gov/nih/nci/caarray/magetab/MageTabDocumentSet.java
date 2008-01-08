@@ -113,7 +113,7 @@ public final class MageTabDocumentSet implements Serializable {
     private final Set<AdfDocument> adfDocuments = new HashSet<AdfDocument>();
     private final Set<DataMatrix> dataMatrixes = new HashSet<DataMatrix>();
     private final Set<NativeDataFile> nativeDataFiles = new HashSet<NativeDataFile>();
-    private final Map<String, OntologyTerm> termCache = new HashMap<String, OntologyTerm>();
+    private final Set<OntologyTerm> termCache = new HashSet<OntologyTerm>();
     private final Map<String, TermSource> termSourceCache = new HashMap<String, TermSource>();
     private final Map<String, ArrayDesign> arrayDesignCache = new HashMap<String, ArrayDesign>();
     private final Map<String, Protocol> protocolCache = new HashMap<String, Protocol>();
@@ -173,7 +173,7 @@ public final class MageTabDocumentSet implements Serializable {
      * @return the <code>OntologyTerms</code>.
      */
     public Collection<OntologyTerm> getTerms() {
-        return termCache.values();
+        return termCache;
     }
 
     private void initializeFromFileSet(MageTabInputFileSet inputFileSet) {
@@ -239,27 +239,18 @@ public final class MageTabDocumentSet implements Serializable {
      * @param value value of the term
      * @return the new or matching term.
      */
-    OntologyTerm getOntologyTerm(String category, String value) {
-        String key = getTermCacheKey(category, value);
-        OntologyTerm term = termCache.get(key);
-        if (term == null) {
-            term = new OntologyTerm();
-            term.setCategory(category);
-            term.setValue(value);
-            termCache.put(key, term);
-        }
+    OntologyTerm addOntologyTerm(String category, String value) {
+        OntologyTerm term = new OntologyTerm();
+        term.setCategory(category);
+        term.setValue(value);
+        termCache.add(term);
         return term;
-    }
-
-    private String getTermCacheKey(String category, String value) {
-        return category + ":" + value;
     }
 
     TermSource getOrCreateTermSource(String name) {
         TermSource termSource = getTermSource(name);
         if (termSource == null) {
-            termSource = new TermSource();
-            termSource.setName(name);
+            termSource = new TermSource(name);
             termSourceCache.put(name, termSource);
         }
         return termSource;

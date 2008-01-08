@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.business.vocabulary;
 
 import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -105,30 +104,28 @@ public interface VocabularyService {
     /**
      * The name of the protocol type term for unknown protocol types.
      */
-    String UNKNOWN_PROTOCOL_TYPE_NAME = "Unknown";
+    String UNKNOWN_PROTOCOL_TYPE_NAME = "unknown_protocol_type";
 
     /**
-     * Returns all terms that belong to the category for the name given (including all
-     * subcategories).
+     * Returns all terms that belong to the given category (including all subcategories).
      *
-     * TODO getTerms should take Source as argument
-     *
-     * @param categoryName find entries that match this category.
-     * @return the matching Terms.
+     * @param category the category for which to return terms 
+     * @return the Set of Terms belonging to the given categories or any of its subcategories
+     * (where its set of subcategories is the transitive closure of the children property of Category)
      */
-    Set<Term> getTerms(String categoryName);
+    Set<Term> getTerms(Category category);
 
     /**
-     * Returns all terms that belong to the category for the name given (including all
+     * Returns all terms that belong to the given category  (including all
      * subcategories) and whose value starts with the given value.
      *
-     * TODO getTerms should take Source as argument
-     *
-     * @param categoryName find entries that match this category.
+     * @param category the category for which to return terms 
      * @param value the value to search on
-     * @return the matching Terms.
+     * @return the Set of Terms belonging to the given categories or any of its subcategories
+     * (where its set of subcategories is the transitive closure of the children property of Category),
+     * and whose value starts with one of the given terms
      */
-    Set<Term> getTerms(String categoryName, String value);
+    Set<Term> getTerms(Category category, String value);
 
     /**
      * Returns all Organisms.
@@ -141,9 +138,35 @@ public interface VocabularyService {
      * Returns the requested term source, if it exists.
      *
      * @param name name of the source
-     * @return the matching source.
+     * @param version version to retrieve. If null, then will retrieve the term source with given name and no version
+     * @return the matching source, or null if no matching source exists.
      */
-    TermSource getSource(String name);
+    TermSource getSource(String name, String version);
+    
+    /**
+     * Returns the term sources with given name.
+     *
+     * @param name name of the sources to return
+     * @return the matching sources, or empty set if no matching sources exists.
+     */
+    Set<TermSource> getSources(String name);    
+
+    /**
+     * Returns the requested term source, if it exists.
+     *
+     * @param url url of the source
+     * @param version version to retrieve. If null, then will retrieve the term source with given url and no version
+     * @return the matching source, or null if no matching source exists.
+     */
+    TermSource getSourceByUrl(String url, String version);
+
+    /**
+     * Returns the term sources with given url.
+     *
+     * @param url url of the sources to return
+     * @return the matching sources, or empty set if no matching sources exists.
+     */
+    Set<TermSource> getSourcesByUrl(String url);    
 
     /**
      * Returns the category with the matching name for the given source.
@@ -155,14 +178,13 @@ public interface VocabularyService {
     Category getCategory(TermSource source, String categoryName);
 
     /**
-     * Returns the term that matches the given criteria.
+     * Returns the term with the given value from the given term source if it exists, or null if it does not.
      *
-     * @param source source of the term.
-     * @param category category of the term.
-     * @param value value of the term.
-     * @return the matching term or null.
+     * @param source the source to which the term should belong
+     * @param value value of the term (case insensitive)
+     * @return the matching term or null if no term with that value exists
      */
-    Term getTerm(TermSource source, Category category, String value);
+    Term getTerm(TermSource source, String value);
 
     /**
      * Returns the term with the given id.
@@ -181,6 +203,14 @@ public interface VocabularyService {
     Organism getOrganism(Long id);
 
     /**
+     * Get the organism with given name in the given term source. 
+     * @param source the source the organism must have.
+     * @param scientificName the scientific name the organism must have (case insensitive)
+     * @return the organism matching the above, or null if no matches
+     */
+    Organism getOrganism(TermSource source, String scientificName);
+
+    /**
      * Method to save the term.
      * @param term the term
      */
@@ -191,34 +221,6 @@ public interface VocabularyService {
      * @return the sources.
      */
     List<TermSource> getAllSources();
-
-    /**
-     * Get tissue sites for the experiment and category.
-     * @param experiment the experiment
-     * @return the list of terms
-     */
-    List<Term> getTissueSitesForExperiment(Experiment experiment);
-
-    /**
-     * Get material types for the experiment and category.
-     * @param experiment the experiment
-     * @return the list of terms
-     */
-    List<Term> getMaterialTypesForExperiment(Experiment experiment);
-
-    /**
-     * Get cell types for the experiment and category.
-     * @param experiment the experiment
-     * @return the list of terms
-     */
-    List<Term> getCellTypesForExperiment(Experiment experiment);
-
-    /**
-     * Get disease states for the experiment and category.
-     * @param experiment the experiment
-     * @return the list of terms
-     */
-    List<Term> getDiseaseStatesForExperiment(Experiment experiment);
 
     /**
      * Get the list of protocols with the given type.

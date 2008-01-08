@@ -160,12 +160,15 @@ abstract class AbstractTranslator {
     Collection<Term> getTerms(List<OntologyTerm> ontologyTerms) {
         HashSet<Term> terms = new HashSet<Term>(ontologyTerms.size());
         for (OntologyTerm ontologyTerm : ontologyTerms) {
-            terms.add(translationResult.getTerm(ontologyTerm));
+            terms.add(getTerm(ontologyTerm));
         }
         return terms;
     }
 
     Term getTerm(OntologyTerm ontologyTerm) {
+        if (ontologyTerm == null) {
+            return null;
+        }
         return translationResult.getTerm(ontologyTerm);
     }
 

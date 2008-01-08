@@ -83,90 +83,97 @@
 package gov.nih.nci.caarray.domain.project;
 
 /**
- * Enum of Ontology categories for various concepts used by Experiment.
- * Taken from MGED Ontology, http://mged.sourceforge.net/ontologies/MGEDontology.php
+ * Enum of Ontology categories for various concepts used in caarray
+ * The majority of these categories come from the MGED ontology.
  */
 public enum ExperimentOntologyCategory {
 
     /**
+     * Organism category, used for organisms.
+     */
+    ORGANISM("Organism", ExperimentOntology.MGED_ONTOLOGY),
+
+    /**
      * OrganismPart category, used for tissue site.
      */
-    ORGANISM_PART("OrganismPart"),
+    ORGANISM_PART("OrganismPart", ExperimentOntology.MGED_ONTOLOGY),
 
     /**
      * MaterialType category, used for tissue types.
      */
-    MATERIAL_TYPE("MaterialType"),
+    MATERIAL_TYPE("MaterialType", ExperimentOntology.MGED_ONTOLOGY),
 
     /**
      * CellType category, used for cell types.
      */
-    CELL_TYPE("CellType"),
+    CELL_TYPE("CellType", ExperimentOntology.MGED_ONTOLOGY),
 
     /**
      * DiseaseState category, used for diseases/conditions of an experiment.
      */
-    DISEASE_STATE("DiseaseState"),
+    DISEASE_STATE("DiseaseState", ExperimentOntology.MGED_ONTOLOGY),
 
     /**
      * ExperimentDesignType category, for selecting type of experiment design.
      */
-    EXPERIMENT_DESIGN_TYPE("ExperimentDesignType"),
+    EXPERIMENT_DESIGN_TYPE("ExperimentDesignType", ExperimentOntology.MGED_ONTOLOGY),
 
     /**
      * QualityControlDescriptionType category, for selecting type of quality control measures.
      */
-    QUALITY_CONTROL_TYPE("QualityControlDescriptionType"),
+    QUALITY_CONTROL_TYPE("QualityControlDescriptionType", ExperimentOntology.MGED_ONTOLOGY),
 
     /**
      * QualityControlDescriptionType category, for selecting type of quality control measures.
      */
-    REPLICATE_TYPE("ReplicateDescriptionType"),
+    REPLICATE_TYPE("ReplicateDescriptionType", ExperimentOntology.MGED_ONTOLOGY),
 
     /**
      * Roles category, used for various roles in an experiment.
      */
-    ROLES("Roles"),
+    ROLES("Roles", ExperimentOntology.MGED_ONTOLOGY),
 
     /**
      * PublicationType category, used for type of Publications.
      */
-    PUBLICATION_TYPE("PublicationType"),
+    PUBLICATION_TYPE("PublicationType", ExperimentOntology.MGED_ONTOLOGY),
 
     /**
      * PublicationStatus category, used for status of Publications.
      */
-    PUBLICATION_STATUS("PublicationStatus"),
+    PUBLICATION_STATUS("PublicationStatus", ExperimentOntology.MGED_ONTOLOGY),
 
     /**
      * Clinical Diagnosis category, one of annotation fields allowed by TCGA policy.
      */
-    CLINICAL_DIAGNOSIS("ClinicalDiagnosis"),
+    CLINICAL_DIAGNOSIS("ClinicalDiagnosis", ExperimentOntology.MGED_ONTOLOGY),
 
     /**
      * Histologic Diagnosis category, one of annotation fields allowed by TCGA policy.
      */
-    HISTOLOGIC_DIAGNOSIS("HistologicDiagnosis"),
+    HISTOLOGIC_DIAGNOSIS("HistologicDiagnosis", ExperimentOntology.MGED_ONTOLOGY),
 
     /**
      * TechnologyType category, used for array designs.
      */
-    TECHNOLOGY_TYPE("TechnologyType"),
+    TECHNOLOGY_TYPE("TechnologyType", ExperimentOntology.MGED_ONTOLOGY),
 
     /**
      * ComplextAction category, used for experimental factors.
      */
-    COMPLEX_ACTION("ComplexAction"),
+    COMPLEX_ACTION("ComplexAction", ExperimentOntology.MGED_ONTOLOGY),
 
     /**
      * ProtocolType category, used for protocol types.
      */
-    PROTOCOL_TYPE("ProtocolType");
+    PROTOCOL_TYPE("ProtocolType", ExperimentOntology.MGED_ONTOLOGY);
 
     private final String categoryName;
+    private final ExperimentOntology ontology;
 
-    ExperimentOntologyCategory(String categoryName) {
+    ExperimentOntologyCategory(String categoryName, ExperimentOntology ontology) {
         this.categoryName = categoryName;
+        this.ontology = ontology;
     }
 
     /**
@@ -176,4 +183,10 @@ public enum ExperimentOntologyCategory {
         return this.categoryName;
     }
 
+    /**
+     * @return the ontology to which this category belongs
+     */
+    public ExperimentOntology getOntology() {
+        return ontology;
+    }
 }

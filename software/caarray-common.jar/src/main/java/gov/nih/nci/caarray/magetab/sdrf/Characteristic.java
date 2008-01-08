@@ -94,12 +94,13 @@ public final class Characteristic implements Serializable, Unitable {
 
     private static final long serialVersionUID = 2872802845635671179L;
 
+    private String category;
     private String value;
     private OntologyTerm term;
     private OntologyTerm unit;
 
     /**
-     * @return the term
+     * @return the term containing the value of this characteristic
      */
     public OntologyTerm getTerm() {
         return term;
@@ -113,7 +114,7 @@ public final class Characteristic implements Serializable, Unitable {
     }
 
     /**
-     * @return the unit
+     * @return the unit of this characteristic (optional, for measurement characteristics only)
      */
     public OntologyTerm getUnit() {
         return unit;
@@ -127,7 +128,8 @@ public final class Characteristic implements Serializable, Unitable {
     }
 
     /**
-     * @return the value
+     * @return the explicit value of this characteristic. this is used if no term source is specified for
+     * a characteristic, or if it has a unit. otherwise, the value will be contained in the term property
      */
     public String getValue() {
         return value;
@@ -138,6 +140,20 @@ public final class Characteristic implements Serializable, Unitable {
      */
     public void setValue(String value) {
         this.value = value;
+    }
+
+    /**
+     * @return the category of this characteristic
+     */
+    public String getCategory() {
+        return category;
+    }
+
+    /**
+     * @param category The category to set
+     */
+    public void setCategory(String category) {
+        this.category = category;
     }
 
 }

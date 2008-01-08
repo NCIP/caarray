@@ -83,9 +83,11 @@
 package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.dao.ProjectDao;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.Collections;
 import java.util.List;
@@ -122,5 +124,32 @@ public class ProjectDaoStub extends AbstractDaoStub implements ProjectDao {
      */
     public int searchCount(String keyword, SearchCategory... categories) {
         return 0;
+    }
+    /**
+     * {@inheritDoc}
+     */
+    public List<Term> getCellTypesForExperiment(Experiment experiment) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Term> getDiseaseStatesForExperiment(Experiment experiment) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Term> getMaterialTypesForExperiment(Experiment experiment) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Term> getTissueSitesForExperiment(Experiment experiment) {
+        return null;
     }
 }

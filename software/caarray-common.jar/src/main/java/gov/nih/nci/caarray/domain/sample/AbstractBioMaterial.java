@@ -331,12 +331,15 @@ public abstract class AbstractBioMaterial extends AbstractCaArrayEntity {
                     it.remove();
                 } else {
                     TermBasedCharacteristic termChar = (TermBasedCharacteristic) absChar;
-                    if (!ArrayUtils.contains(ALLOWED_CHARACTERISTIC_CATEGORIES, termChar.getTerm().getCategory()
-                            .getName())) {
+                    if (!isCharacteristicAllowed(termChar)) {
                         it.remove();
                     }
                 }
             }
         }
-    }
+        
+        private static boolean isCharacteristicAllowed(TermBasedCharacteristic termChar) {
+            return ArrayUtils.contains(ALLOWED_CHARACTERISTIC_CATEGORIES, termChar.getCategory().getName());
+        }
+    }    
 }

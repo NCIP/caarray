@@ -94,19 +94,17 @@ import org.hibernate.LockMode;
 import org.hibernate.criterion.Order;
 
 /**
- * DAO to search for entities using different criteria.
- * Supports searching by example, CQL, HQL (Hibernate Query Language) string and
- * Hibernate Detached Criteria.
- *
+ * DAO to search for entities using different criteria. Supports searching by example, CQL, HQL (Hibernate Query
+ * Language) string and Hibernate Detached Criteria.
+ * 
  * @author Rashmi Srinivasa
  */
 public interface SearchDao extends CaArrayDao {
     /**
-     * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity
-     * and its associations, or null if none exists.
-     * If the id of the given entity is not null, this query will only match by id,
-     * ignoring all other fields.
-     *
+     * Returns the list of <code>AbstractCaArrayEntity</code> matching the given entity and its associations, or null
+     * if none exists. If the id of the given entity is not null, this query will only match by id, ignoring all other
+     * fields.
+     * 
      * @param <T> the type of entites to retreive
      * @param entityToMatch get <code>AbstractCaArrayEntity</code> objects matching this entity
      * @return the List of <code>AbstractCaArrayEntity</code> objects, or an empty List.
@@ -114,9 +112,8 @@ public interface SearchDao extends CaArrayDao {
     <T extends AbstractCaArrayObject> List<T> query(T entityToMatch);
 
     /**
-     * Returns the list of <code>AbstractCaArrayEntity</code> retrieved based on the
-     * given CQL query.
-     *
+     * Returns the list of <code>AbstractCaArrayEntity</code> retrieved based on the given CQL query.
+     * 
      * @param cqlQuery CQL query to use as search criteria.
      * @return the List of objects, values, or the count, depending on query modifier.
      */
@@ -124,6 +121,7 @@ public interface SearchDao extends CaArrayDao {
 
     /**
      * Retrieves the object from the database.
+     * 
      * @param <T> the class to retreieve
      * @param entityClass the class of the object to retrieve
      * @param entityId the id of the enity to retrieve
@@ -133,6 +131,7 @@ public interface SearchDao extends CaArrayDao {
 
     /**
      * Retrieves the object from the database using given lock mode.
+     * 
      * @param <T> the class to retreieve
      * @param entityClass the class of the object to retrieve
      * @param entityId the id of the enity to retrieve
@@ -143,13 +142,15 @@ public interface SearchDao extends CaArrayDao {
 
     /**
      * Refreshes the object's state from the database.
-     * @param o the object whose state needs to be refreshed. This must be a persistent or detached object (ie its
-     * id must be non-null)
+     * 
+     * @param o the object whose state needs to be refreshed. This must be a persistent or detached object (ie its id
+     *            must be non-null)
      */
     void refresh(PersistentObject o);
 
     /**
      * Method to get all the entities of a given type.
+     * 
      * @param <T> the type
      * @param entityClass the class
      * @param orders the order by clauses
@@ -159,48 +160,49 @@ public interface SearchDao extends CaArrayDao {
 
     /**
      * Filters the given collection where the given property = the given value.
+     * 
      * @param <T> the class of objects to expext in return.
      * @param collection the collection to filter.
      * @param property the property to filter on.
      * @param value the value of the property.
      * @return the list of objects representing the filtered set.
      */
-     <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property,
-            String value);
-
-     /**
-      * Retrieves a specific subset of items from a given collection based on given sorting and paging params.
-      * The intention is that this collection is proxied, and the implementations of this will be able
-      * to retrieve the requested subset without needing to initialize the entire collection.
-      * 
-      * Note that this method currently only supports SortCriterions that are either simple properties of the target
-      * class or required single-valued associations from it. If a non-required association is used in the sort 
-      * criterion, then any instances for which that association is null will not be included in the results 
-      * (as an inner join is used)
-      * 
-      * @param <T> the class of objects to expext in return.
-      * @param collection the collection from which to retrieve the subset
-      * @param pageSortParams parameters specifying how the collection is to be sorted and which page is to be retrieved
-      * @return the list of objects representing the requested subset
-      */
-      <T extends PersistentObject> List<T> pageCollection(Collection<T> collection, PageSortParams<T> pageSortParams);
-
-      /**
-       * Returns the size of a given collection. The intention is that this collection is proxied, and the 
-       * implementations of this will be able to calculate the size without initializing it.
-       * @param collection the collection whose size to calculate
-       * @return the size of the collection
-       */
-       int collectionSize(Collection<? extends PersistentObject> collection);
+    <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property, String value);
 
     /**
-     * Retrieve the list of values of the given field of the given entity that
-     * start with the given prefix.
+     * Retrieves a specific subset of items from a given collection based on given sorting and paging params. The
+     * intention is that this collection is proxied, and the implementations of this will be able to retrieve the
+     * requested subset without needing to initialize the entire collection.
+     * 
+     * Note that this method currently only supports SortCriterions that are either simple properties of the target
+     * class or required single-valued associations from it. If a non-required association is used in the sort
+     * criterion, then any instances for which that association is null will not be included in the results (as an inner
+     * join is used)
+     * 
+     * @param <T> the class of objects to expext in return.
+     * @param collection the collection from which to retrieve the subset
+     * @param pageSortParams parameters specifying how the collection is to be sorted and which page is to be retrieved
+     * @return the list of objects representing the requested subset
+     */
+    <T extends PersistentObject> List<T> pageCollection(Collection<T> collection, PageSortParams<T> pageSortParams);
+
+    /**
+     * Returns the size of a given collection. The intention is that this collection is proxied, and the implementations
+     * of this will be able to calculate the size without initializing it.
+     * 
+     * @param collection the collection whose size to calculate
+     * @return the size of the collection
+     */
+    int collectionSize(Collection<? extends PersistentObject> collection);
+
+    /**
+     * Retrieve the list of values of the given field of the given entity that start with the given prefix.
+     * 
+     * 
      * @param entityClass the entity class
      * @param fieldName the field name. This must be a String-valued field
      * @param prefix the string that the values should begin with
-     * @return the List of values of the given field of the given entity
-     * that start with the given value
+     * @return the List of values of the given field of the given entity that start with the given value
      */
     List<String> findValuesWithSamePrefix(Class<?> entityClass, String fieldName, String prefix);
 }

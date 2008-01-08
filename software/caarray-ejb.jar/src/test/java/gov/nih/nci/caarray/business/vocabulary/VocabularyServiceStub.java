@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.business.vocabulary;
 
 import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -100,31 +100,70 @@ import java.util.Set;
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class VocabularyServiceStub implements VocabularyService {
 
-    public Set<Term> getTerms(String categoryName) {
-        return getTerms(categoryName, null);
+    public Set<Term> getTerms(Category category) {
+        return getTerms(category, null);
     }
 
-    public Set<Term> getTerms(String categoryName, String value) {
+    public Set<Term> getTerms(Category category, String value) {
         Set<Term> terms = new HashSet<Term>();
-        TermSource source = getSource("MO");
+        TermSource source = getSource(ExperimentOntology.MGED_ONTOLOGY.getOntologyName(),
+                ExperimentOntology.MGED_ONTOLOGY.getVersion());
         for (int i = 0; i < 10; i++) {
-            Term term = getTerm(source, getCategory(source, categoryName), "term" + i);
+            Term term = createTerm(source, category, "term" + i);
             terms.add(term);
         }
         return terms;
     }
-
-    public TermSource getSource(String name) {
+    
+    /**
+     * {@inheritDoc}
+     */
+    public TermSource getSource(String name, String version) {
         TermSource source = new TermSource();
         source.setName(name);
+        source.setVersion(version);
         return source;
     }
 
-    public Term getTerm(TermSource source, Category category, String value) {
+    /**
+     * {@inheritDoc}
+     */
+    public TermSource getSourceByUrl(String url, String version) {
+        TermSource source = new TermSource();
+        source.setName("Name for " + url);
+        source.setUrl(url);
+        source.setVersion(version);
+        return source;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Set<TermSource> getSources(String name) {
+        TermSource ts = getSource(name, null);
+        Set<TermSource> result = new HashSet<TermSource>();
+        result.add(ts);
+        return result;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Set<TermSource> getSourcesByUrl(String url) {
+        TermSource ts = getSourceByUrl(url, null);
+        Set<TermSource> result = new HashSet<TermSource>();
+        result.add(ts);
+        return result;
+    }
+
+    public Term getTerm(TermSource source, String value) {
         Term term = new Term();
         term.setSource(source);
-        term.setCategory(category);
         term.setValue(value);
+        Category cat = new Category();
+        cat.setTermSource(source);
+        cat.setName("Category for " + value);
+        term.setCategory(cat);
         return term;
     }
 
@@ -140,24 +179,36 @@ public class VocabularyServiceStub implements VocabularyService {
         org.setId(id);
         return org;
     }
+    
+    public Organism getOrganism(TermSource source, String scientificName) {
+        Organism org = new Organism();
+        org.setTermSource(source);
+        org.setScientificName(scientificName);
+        return org;
+    }
 
     public List<Organism> getOrganisms() {
         List<Organism> orgs = new ArrayList<Organism>();
         Organism o1 = new Organism();
         o1.setId(1L);
-        o1.setCommonName("Mizouse");
+        o1.setScientificName("Mizouse");
         orgs.add(o1);
         return orgs;
     }
 
     public Category createCategory(TermSource source, String categoryName) {
         Category category = new Category();
+        category.setTermSource(source);
         category.setName(categoryName);
         return category;
     }
 
     public Term createTerm(TermSource source, Category category, String value) {
-        return getTerm(source, category, value);
+        Term term = new Term();
+        term.setSource(source);
+        term.setValue(value);
+        term.setCategory(category);
+        return term;
     }
 
     public Category getCategory(TermSource source, String categoryName) {
@@ -166,8 +217,10 @@ public class VocabularyServiceStub implements VocabularyService {
         return category;
     }
 
-    public TermSource createSource(String name) {
-        return getSource(name);
+    public TermSource createSource(String name, String url, String version) {
+        TermSource ts = getSource(name, version);
+        ts.setUrl(url);
+        return ts;
     }
 
     public void saveTerm(Term term) {
@@ -176,54 +229,6 @@ public class VocabularyServiceStub implements VocabularyService {
 
     public List<TermSource> getAllSources() {
         return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("deprecation")
-    public List<Term> getCellTypesForExperiment(Experiment experiment) {
-        List<Term> terms = new ArrayList<Term>();
-        Term t1 = new Term();
-        t1.setId(1L);
-        terms.add(t1);
-        return terms;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("deprecation")
-    public List<Term> getDiseaseStatesForExperiment(Experiment experiment) {
-        List<Term> terms = new ArrayList<Term>();
-        Term t1 = new Term();
-        t1.setId(1L);
-        terms.add(t1);
-        return terms;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("deprecation")
-    public List<Term> getMaterialTypesForExperiment(Experiment experiment) {
-        List<Term> terms = new ArrayList<Term>();
-        Term t1 = new Term();
-        t1.setId(1L);
-        terms.add(t1);
-        return terms;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("deprecation")
-    public List<Term> getTissueSitesForExperiment(Experiment experiment) {
-        List<Term> terms = new ArrayList<Term>();
-        Term t1 = new Term();
-        t1.setId(1L);
-        terms.add(t1);
-        return terms;
     }
 
     /**

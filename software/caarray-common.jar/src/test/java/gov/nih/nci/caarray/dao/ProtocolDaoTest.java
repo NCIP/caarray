@@ -113,6 +113,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
     private static ParameterValue DUMMY_PARAMETER_VALUE_1 = new ParameterValue();
     private static ParameterValue DUMMY_PARAMETER_VALUE_2 = new ParameterValue();
     private static ParameterValue DUMMY_PARAMETER_VALUE_3 = new ParameterValue();
+    private static TermSource DUMMY_TERM_SOURCE = new TermSource();
     private static Category DUMMY_CATEGORY = new Category();
     private static TermSource DUMMY_TERM_SOURCE_1 = new TermSource();
     private static Term DUMMY_TERM_1 = new Term();
@@ -136,6 +137,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         DUMMY_PARAMETER_VALUE_1 = new ParameterValue();
         DUMMY_PARAMETER_VALUE_2 = new ParameterValue();
         DUMMY_PARAMETER_VALUE_3 = new ParameterValue();
+        DUMMY_TERM_SOURCE = new TermSource();
         DUMMY_CATEGORY = new Category();
         DUMMY_TERM_1 = new Term();
         DUMMY_TERM_2 = new Term();
@@ -178,11 +180,17 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
      */
     @SuppressWarnings("unchecked")
     private static void initializeProtocols() {
+        DUMMY_TERM_SOURCE.setName("Dummy MGED Ontology");
+        DUMMY_TERM_SOURCE.setUrl("test url");
+        DUMMY_CATEGORY.setTermSource(DUMMY_TERM_SOURCE);
         DUMMY_CATEGORY.setName("DummyTestCategory");
+
         DUMMY_TERM_1.setValue("DummyTestTerm1");
         DUMMY_TERM_1.setCategory(DUMMY_CATEGORY);
+        DUMMY_TERM_1.setSource(DUMMY_TERM_SOURCE);
         DUMMY_TERM_2.setValue("DummyTestTerm2");
         DUMMY_TERM_2.setCategory(DUMMY_CATEGORY);
+        DUMMY_TERM_2.setSource(DUMMY_TERM_SOURCE);
 
         DUMMY_PROTOCOL_1.setDescription("DummyDescForProtocol");
         DUMMY_PROTOCOL_1.setUrl("DummyUrlForProtocol1");

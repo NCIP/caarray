@@ -82,26 +82,28 @@
  */
 package gov.nih.nci.caarray.domain.project;
 
+
 /**
  * Enum of Ontologies for various concepts used by Experiment.
- * These correspond to names of TermSource instances
+ * These correspond to TermSource instances
  */
 public enum ExperimentOntology {
     /**
      * MGED Ontology.
      */
-    MGED_ONTOLOGY("MO"),
+    MGED_ONTOLOGY("MO", "1.3.1.1"),
 
     /**
-     * CAArray Local Ontology.
+     * CAArray Local (aka User-defined) Ontology.
      */
-    CAARRAY("Caarray");
-
+    CAARRAY("Caarray", "0.1");    
 
     private final String ontologyName;
+    private final String version;
 
-    ExperimentOntology(String ontologyName) {
+    ExperimentOntology(String ontologyName, String version) {
         this.ontologyName = ontologyName;
+        this.version = version;
     }
 
     /**
@@ -111,4 +113,10 @@ public enum ExperimentOntology {
         return this.ontologyName;
     }
 
+    /**
+     * @return the ontology version
+     */
+    public String getVersion() {
+        return version;
+    }        
 }

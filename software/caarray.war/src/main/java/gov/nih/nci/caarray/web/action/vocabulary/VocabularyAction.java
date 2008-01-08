@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.web.action.vocabulary;
 
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
@@ -144,6 +145,21 @@ public class VocabularyAction extends ActionSupport implements Preparable {
                 setCurrentTerm(retrieved);
             }
         }
+        populateCurrentTerm();
+    }
+
+    /**
+     * 
+     */
+    private void populateCurrentTerm() {
+        if (getCurrentTerm() != null) {
+            if (isCreateNewSource()) {
+                getCurrentTerm().setSource(getNewSource());
+            }
+            if (getCurrentTerm().getCategories().isEmpty()) {
+                getCurrentTerm().setCategory(retrieveCategory());
+            }
+        }        
     }
 
     /**
@@ -172,7 +188,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
             session.removeAttribute("returnInitialTab2Url");
             return edit();
         }
-        this.setTerms(ActionHelper.getVocabularyService().getTerms(this.getCategory().getCategoryName()));
+        this.setTerms(ActionHelper.getTermsFromCategory(this.getCategory()));
         return SUCCESS;
     }
 
@@ -183,7 +199,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
      */
     @SkipValidation
     public String searchForTerms() {
-        this.setTerms(ActionHelper.getVocabularyService().getTerms(this.getCategory().getCategoryName(),
+        this.setTerms(ActionHelper.getVocabularyService().getTerms(ActionHelper.getCategory(this.getCategory()),
                 getCurrentTerm().getValue()));
         return "termAutoCompleterValues";
     }
@@ -224,13 +240,6 @@ public class VocabularyAction extends ActionSupport implements Preparable {
         }
     )
     public String save() {
-        if (getCurrentTerm().getCategory() == null) {
-            getCurrentTerm().setCategory(
-                    ActionHelper.getVocabularyService().getCategory(null, getCategory().getCategoryName()));
-        }
-        if (isCreateNewSource()) {
-            getCurrentTerm().setSource(getNewSource());
-        }
         ActionHelper.getVocabularyService().saveTerm(getCurrentTerm());
         if (getCurrentTerm().getId() == null) {
             ActionHelper.saveMessage(getText("vocabulary.term.created", new String[] {getCurrentTerm().getValue()}));
@@ -258,11 +267,6 @@ public class VocabularyAction extends ActionSupport implements Preparable {
     @Override
     public void validate() {
         super.validate();
-        if (!ActionHelper.isSkipValidationSetOnCurrentAction() && !isCreateNewSource()
-                && getCurrentTerm().getSource() == null) {
-            addFieldError("currentTerm.source", "You must select a term source or create a new source.");
-        }
-
         if (hasErrors()) {
             setSources(ActionHelper.getVocabularyService().getAllSources());
         }
@@ -280,6 +284,10 @@ public class VocabularyAction extends ActionSupport implements Preparable {
      */
     public void setCategory(ExperimentOntologyCategory category) {
         this.category = category;
+    }
+    
+    private Category retrieveCategory() {
+        return ActionHelper.getCategory(getCategory());        
     }
 
     /**

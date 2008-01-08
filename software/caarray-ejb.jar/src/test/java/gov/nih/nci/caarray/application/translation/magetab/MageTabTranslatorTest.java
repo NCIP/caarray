@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.application.translation.magetab;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
@@ -97,18 +96,16 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
-import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.Order;
 import org.junit.Before;
 import org.junit.Test;
@@ -121,7 +118,7 @@ public class MageTabTranslatorTest {
 
     private MageTabTranslator translator;
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
-    private final LocalVocabularyServiceStub vocabularyServiceStub = new LocalVocabularyServiceStub();
+    private final VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
 
     /**
      * Prepares the translator implementation, stubbing out dependencies.
@@ -159,7 +156,9 @@ public class MageTabTranslatorTest {
     private void testTcgaBroadDocuments() {
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_SET);
         CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.TCGA_BROAD_SET, fileSet);
-        assertEquals(10, result.getTerms().size());
+        Set<Term> terms = new HashSet<Term>();
+        terms.addAll(result.getTerms());
+        assertEquals(10, terms.size());
         assertEquals(1, result.getInvestigations().size());
         Experiment investigation = result.getInvestigations().iterator().next();
         checkTcgaBroadInvestigation(investigation);
@@ -220,73 +219,9 @@ public class MageTabTranslatorTest {
     }
 
     private static class LocalVocabularyDaoStub extends VocabularyDaoStub {
-
         @Override
         public <T> List<T> queryEntityByExample(T entityToMatch, Order... order) {
             return new ArrayList<T>();
         }
-
     }
-
-    private static class LocalVocabularyServiceStub extends VocabularyServiceStub {
-
-        @Override
-        public TermSource getSource(String name) {
-            assertFalse(StringUtils.isEmpty(name));
-            if ("caarray".equals(name)) {
-                return null;
-            } else {
-                return super.getSource(name);
-            }
-        }
-
-        @Override
-        public Category getCategory(TermSource source, String categoryName) {
-            assertFalse(StringUtils.isEmpty(source.getName()));
-            assertFalse(StringUtils.isEmpty(categoryName));
-            if ("MO".equals(source.getName())) {
-                return super.getCategory(source, categoryName);
-            } else {
-                return null;
-            }
-        }
-
-        @Override
-        public Term getTerm(TermSource source, Category category, String value) {
-            if ("Unknown".equals(value)) {
-                Term t = new Term();
-                t.setValue(value);
-                t.setCategory(category);
-                return t;
-            }
-            assertFalse(StringUtils.isEmpty(source.getName()));
-            assertFalse(StringUtils.isEmpty(category.getName()));
-            assertFalse(StringUtils.isEmpty(value));
-            if ("MO".equals(source.getName())) {
-                return super.getTerm(source, category, value);
-            } else {
-                return null;
-            }
-        }
-
-        @Override
-        public TermSource createSource(String name) {
-            assertFalse("MO".equals(name));
-            return super.createSource(name);
-        }
-
-        @Override
-        public Category createCategory(TermSource source, String categoryName) {
-            assertFalse("MO".equals(source.getName()));
-            return super.createCategory(source, categoryName);
-        }
-
-        @Override
-        public Term createTerm(TermSource source, Category category, String value) {
-            assertFalse("MO".equals(source.getName()));
-            return super.createTerm(source, category, value);
-        }
-
-    }
-
 }

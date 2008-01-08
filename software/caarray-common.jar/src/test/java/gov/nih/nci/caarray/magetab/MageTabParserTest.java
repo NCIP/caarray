@@ -97,6 +97,7 @@ import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
 
 /**
@@ -224,6 +225,7 @@ public class MageTabParserTest {
         MageTabInputFileSet fileSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET;
         MageTabDocumentSet documentSet = parser.parse(fileSet);
         assertNotNull(documentSet);
+        checkTermSources(documentSet);
         checkTerms(documentSet);
         assertEquals(1, documentSet.getIdfDocuments().size());
         IdfDocument idfDocument = documentSet.getIdfDocument(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
@@ -251,11 +253,30 @@ public class MageTabParserTest {
         assertEquals("H_TK6 replicate 1.CEL", arrayDataFile.getName());
     }
 
+    private void checkTermSources(MageTabDocumentSet documentSet) {
+        for (TermSource termSource : documentSet.getTermSources()) {
+            assertTrue(ArrayUtils.contains(new String[] { "MO", "CTO", "ncbitax", "ArrayExpress" }, termSource.getName()));
+            if (termSource.getName().equals("MO")) {
+                assertEquals("http://mged.sourceforge.net/ontologies/MGEDontology.php", termSource.getFile());
+                assertEquals("1.3.0.1", termSource.getVersion());
+            } else if (termSource.getName().equals("CTO")) {
+                assertEquals("http://obo.sourceforge.net/cgi-bin/detail.cgi?cell", termSource.getFile());
+                assertNull(termSource.getVersion());
+            } else if (termSource.getName().equals("ncbitax")) {
+                assertEquals("http://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/", termSource.getFile());
+                assertNull(termSource.getVersion());
+            } else {
+                assertEquals("http://www.ebi.ac.uk/arrayexpress/", termSource.getFile());
+                assertNull(termSource.getVersion());
+            }
+
+        }
+    }
+
     private void checkTerms(MageTabDocumentSet documentSet) {
         for (OntologyTerm term : documentSet.getTerms()) {
             assertNotNull("null category for term " + term.getValue(), term.getCategory());
             assertNotNull("null value for term", term.getValue());
-            assertNotNull("null source for term " + term.getValue(), term.getTermSource());
         }
     }
 

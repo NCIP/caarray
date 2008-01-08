@@ -112,7 +112,7 @@ import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
-import gov.nih.nci.caarray.domain.sample.ValueBasedCharacteristic;
+import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
@@ -278,6 +278,9 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DUMMY_TERM_SOURCE.setName("Dummy MGED Ontology");
         DUMMY_TERM_SOURCE.setUrl("test url");
         DUMMY_CATEGORY.setName("Dummy Category");
+        DUMMY_CATEGORY.setTermSource(DUMMY_TERM_SOURCE);
+        DUMMY_ORGANISM.setScientificName("Foo");
+        DUMMY_ORGANISM.setTermSource(DUMMY_TERM_SOURCE);
         setExperimentAnnotations();
         setExperimentalFactors();
         setPublications();
@@ -303,14 +306,16 @@ public class ProjectDaoTest extends AbstractDaoTest {
     private static void setBioMaterials() {
         DUMMY_SOURCE.setName("DummySource");
         DUMMY_SOURCE.setDescription("DummySourceDescription");
-        ValueBasedCharacteristic vbChar = new ValueBasedCharacteristic();
-        vbChar.setValue("Foo");
-        DUMMY_SOURCE.getCharacteristics().add(vbChar);
+        TermBasedCharacteristic characteristic = new TermBasedCharacteristic();
+        characteristic.setCategory(DUMMY_CATEGORY);
+        characteristic.setTerm(DUMMY_REPLICATE_TYPE);
+        DUMMY_SOURCE.getCharacteristics().add(characteristic);
         DUMMY_SAMPLE.setName("DummySample");
         DUMMY_SAMPLE.setDescription("DummySampleDescription");
-        vbChar = new ValueBasedCharacteristic();
-        vbChar.setValue("Foo");
-        DUMMY_SAMPLE.getCharacteristics().add(vbChar);
+        characteristic = new TermBasedCharacteristic();
+        characteristic.setCategory(DUMMY_CATEGORY);
+        characteristic.setTerm(DUMMY_NORMALIZATION_TYPE);
+        DUMMY_SAMPLE.getCharacteristics().add(characteristic);
         DUMMY_EXTRACT.setName("DummyExtract");
         DUMMY_LABELED_EXTRACT.setName("DummyLabeledExtract");
         DUMMY_EXPERIMENT_1.getSources().add(DUMMY_SOURCE);
@@ -1232,6 +1237,33 @@ public class ProjectDaoTest extends AbstractDaoTest {
         assertEquals(DUMMY_EXPERIMENT_3.getTitle(), projects.get(0).getExperiment().getTitle());
 
         tx.commit();
+    }
+    
+    @Test
+    public void testGetTermsForExperiment() {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.beginTransaction();
+            Organism org = new Organism();
+            org.setScientificName("Foo");
+            org.setTermSource(DUMMY_TERM_SOURCE);
+            Experiment e = new Experiment();
+            e.setTitle("test title");
+            e.setServiceType(ServiceType.FULL);
+            e.setAssayType(AssayType.ACGH);
+            e.setManufacturer(new Organization());
+            e.setOrganism(org);
+            DAO_OBJECT.save(e);
+            assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());
+            assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());
+            assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());
+            assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            e.printStackTrace();
+            fail("DAO exception during save of accession collection: " + e.getMessage());
+        }
     }
 
     private static class HasRolePredicate implements Predicate {

@@ -91,6 +91,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -106,6 +107,7 @@ import org.hibernate.criterion.Order;
  *
  * @author Rashmi Srinivasa
  */
+@SuppressWarnings("PMD.CyclomaticComplexity")
 public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
 
     private static final String UNABLE_TO_RETRIEVE_ENTITY_MESSAGE = "Unable to retrieve entity";
@@ -182,10 +184,17 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      */
     @SuppressWarnings("unchecked")
     public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, Order... order) {
-        List<T> resultList = new ArrayList<T>();
-        List hibernateReturnedEntities = null;
+        return queryEntityByExample(entityToMatch, mode, true, ArrayUtils.EMPTY_STRING_ARRAY, order);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, boolean excludeNulls,
+            String[] excludeProperties, Order... order) {
         if (entityToMatch == null) {
-            return resultList;
+            return new ArrayList<T>();
         }
 
         Session mySession = HibernateUtil.getCurrentSession();
@@ -194,28 +203,29 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             // Query database for list of entities matching the given entity's attributes.
             Criteria criteria = mySession.createCriteria(entityToMatch.getClass())
                                          .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-            criteria.add(Example.create(entityToMatch).enableLike(mode).ignoreCase()
-                    );
+            Example example = Example.create(entityToMatch).enableLike(mode).ignoreCase();
+            if (!excludeNulls) {
+                example.excludeNone();
+            }
+            for (String property : excludeProperties) {
+                example.excludeProperty(property);
+            }
+            criteria.add(example);
             for (Order curretOrder : order) {
                 criteria.addOrder(curretOrder);
             }
-            hibernateReturnedEntities = criteria.list();
+            return criteria.list();
         } catch (HibernateException he) {
             getLog().error(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
             throw new DAOException(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
         }
-
-        if (hibernateReturnedEntities != null) {
-            resultList.addAll(hibernateReturnedEntities);
-        }
-        return resultList;
     }
 
     /**
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public <T extends PersistentObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch) {
+    public <T extends PersistentObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch, Order...orders) {
         List<T> resultList = new ArrayList<T>();
         List hibernateReturnedEntities = null;
         if (entityToMatch == null) {
@@ -230,6 +240,9 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             criteria.add(Example.create(entityToMatch));
             // Add search-criteria with the given entity's associations.
             SearchCriteriaUtil.addCriteriaForAssociations(entityToMatch, criteria);
+            for (Order curretOrder : orders) {
+              criteria.addOrder(curretOrder);
+            }
             hibernateReturnedEntities = criteria.list();
         } catch (HibernateException he) {
             getLog().error(UNABLE_TO_RETRIEVE_ENTITY_MESSAGE, he);
@@ -254,6 +267,5 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      */
     public void clearSession() {
         HibernateUtil.getCurrentSession().clear();
-    }
-
+    }    
 }

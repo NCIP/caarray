@@ -85,18 +85,16 @@ package gov.nih.nci.caarray.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.project.AssayType;
-import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.domain.project.ServiceType;
-import gov.nih.nci.caarray.domain.vocabulary.Accession;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -123,8 +121,8 @@ public class VocabularyDaoTest extends AbstractDaoTest {
     private static Term DUMMY_TERM_3 = new Term();
     private static TermSource DUMMY_SOURCE_1 = new TermSource();
     private static TermSource DUMMY_SOURCE_2 = new TermSource();
-    private static Accession DUMMY_ACCESSION_1 = new Accession();
-    private static Accession DUMMY_ACCESSION_2 = new Accession();
+    private static Organism DUMMY_ORGANISM_1 = new Organism();
+    private static Organism DUMMY_ORGANISM_2 = new Organism();    
 
     private static final VocabularyDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
 
@@ -133,62 +131,60 @@ public class VocabularyDaoTest extends AbstractDaoTest {
      */
     @Before
     public void setup() {
-        // Initialize all the dummy objects needed for the tests.
-        initializeCategoriesAndTerms();
-        initializeSourcesAndAccessions();
-    }
-
-    /**
-     * Initialize the dummy <code>Category</code> and <code>Term</code> objects.
-     */
-    @SuppressWarnings("unchecked")
-    private static void initializeCategoriesAndTerms() {
-        DUMMY_CATEGORY_1 = new Category();
-        DUMMY_CATEGORY_2 = new Category();
-        DUMMY_CATEGORY_3 = new Category();
-        DUMMY_CATEGORY_4 = new Category();
-        DUMMY_TERM_1 = new Term();
-        DUMMY_TERM_2 = new Term();
-        DUMMY_TERM_3 = new Term();
-        DUMMY_CATEGORY_1.setName("DummyTestCategory1");
-        DUMMY_CATEGORY_2.setName("DummyTestCategory2");
-        DUMMY_CATEGORY_3.setName("DummyTestCategory3");
-        DUMMY_CATEGORY_4.setName("DummyTestCategory4");
-        DUMMY_CATEGORY_3.setParent(DUMMY_CATEGORY_4);
-        DUMMY_CATEGORY_4.getChildren().add(DUMMY_CATEGORY_3);
-
-        DUMMY_TERM_1.setValue("DammyValue1");
-        DUMMY_TERM_1.setDescription("DummyTestTerm1");
-        DUMMY_TERM_1.setCategory(DUMMY_CATEGORY_3);
-        DUMMY_TERM_2.setValue("DammyValue2");
-        DUMMY_TERM_2.setDescription("DummyTestTerm2");
-        DUMMY_TERM_2.setCategory(DUMMY_CATEGORY_3);
-        DUMMY_TERM_3.setValue("DammyValue3");
-        DUMMY_TERM_3.setDescription("DummyTestTerm3");
-        DUMMY_TERM_3.setCategory(DUMMY_CATEGORY_4);
-    }
-
-    /**
-     * Initialize the dummy <code>Source</code> and <code>Accession</code> objects.
-     */
-    private static void initializeSourcesAndAccessions() {
         DUMMY_SOURCE_1 = new TermSource();
-        DUMMY_SOURCE_2 = new TermSource();
-        DUMMY_ACCESSION_1 = new Accession();
-        DUMMY_ACCESSION_2 = new Accession();
         DUMMY_SOURCE_1.setName("DummyTestSource1");
         DUMMY_SOURCE_1.setUrl("DummyUrlForSource1");
         DUMMY_SOURCE_1.setVersion("1.0");
+        DUMMY_SOURCE_2 = new TermSource();
         DUMMY_SOURCE_2.setName("DummyTestSource2");
         DUMMY_SOURCE_2.setUrl("DummyUrlForSource2");
         DUMMY_SOURCE_2.setVersion("1.0");
 
-        DUMMY_ACCESSION_1.setUrl("DummyUrlForAccession1");
-        DUMMY_ACCESSION_1.setValue("DummyValueForAccession1");
-        DUMMY_ACCESSION_1.setSource(DUMMY_SOURCE_1);
-        DUMMY_ACCESSION_2.setUrl("DummyUrlForAccession2");
-        DUMMY_ACCESSION_2.setValue("DummyValueForAccession2");
-        DUMMY_ACCESSION_2.setSource(DUMMY_SOURCE_1);
+        DUMMY_CATEGORY_1 = new Category();
+        DUMMY_CATEGORY_1.setName("DummyTestCategory1");
+        DUMMY_CATEGORY_1.setTermSource(DUMMY_SOURCE_1);
+        DUMMY_CATEGORY_2 = new Category();
+        DUMMY_CATEGORY_2.setName("DummyTestCategory2");
+        DUMMY_CATEGORY_2.setTermSource(DUMMY_SOURCE_1);
+        DUMMY_CATEGORY_3 = new Category();
+        DUMMY_CATEGORY_3.setName("DummyTestCategory3");
+        DUMMY_CATEGORY_3.setTermSource(DUMMY_SOURCE_2);
+        DUMMY_CATEGORY_4 = new Category();
+        DUMMY_CATEGORY_4.getChildren().add(DUMMY_CATEGORY_3);
+        DUMMY_CATEGORY_4.setName("DummyTestCategory4");
+        DUMMY_CATEGORY_4.setTermSource(DUMMY_SOURCE_2);
+        DUMMY_CATEGORY_3.getParents().add(DUMMY_CATEGORY_4);
+        DUMMY_CATEGORY_4.getChildren().add(DUMMY_CATEGORY_3);
+
+        DUMMY_TERM_1 = new Term();
+        DUMMY_TERM_1.setValue("DammyValue1");
+        DUMMY_TERM_1.setDescription("DummyTestTerm1");
+        DUMMY_TERM_1.setAccession("DummyAccession1");
+        DUMMY_TERM_1.setUrl("DummyUrl1");        
+        DUMMY_TERM_1.setCategory(DUMMY_CATEGORY_3);
+        DUMMY_TERM_1.setSource(DUMMY_SOURCE_1);
+        DUMMY_TERM_2 = new Term();
+        DUMMY_TERM_2.setValue("DammyValue2");
+        DUMMY_TERM_2.setDescription("DummyTestTerm2");
+        DUMMY_TERM_2.setCategory(DUMMY_CATEGORY_3);
+        DUMMY_TERM_2.setUrl("DummyUrlForAccession2");
+        DUMMY_TERM_2.setAccession("DummyValueForAccession2");
+        DUMMY_TERM_2.setSource(DUMMY_SOURCE_1);
+        DUMMY_TERM_3 = new Term();
+        DUMMY_TERM_3.setValue("DammyValue3");
+        DUMMY_TERM_3.setDescription("DummyTestTerm3");
+        DUMMY_TERM_3.setCategory(DUMMY_CATEGORY_4);
+        DUMMY_TERM_3.setSource(DUMMY_SOURCE_2);
+        
+        DUMMY_ORGANISM_1 = new Organism();
+        DUMMY_ORGANISM_1.setScientificName("name1");
+        DUMMY_ORGANISM_1.setCommonName("foo");
+        DUMMY_ORGANISM_1.setTermSource(DUMMY_SOURCE_1);
+
+        DUMMY_ORGANISM_2 = new Organism();
+        DUMMY_ORGANISM_2.setScientificName("name1");
+        DUMMY_ORGANISM_2.setCommonName("baz");
+        DUMMY_ORGANISM_2.setTermSource(DUMMY_SOURCE_2);
     }
 
     /**
@@ -200,7 +196,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         try {
             tx = HibernateUtil.beginTransaction();
             setupTestGetTerms();
-            List<Term> retrievedTerms = DAO_OBJECT.getTerms(DUMMY_CATEGORY_3.getName());
+            Set<Term> retrievedTerms = DAO_OBJECT.getTerms(DUMMY_CATEGORY_3);
             if (retrievedTerms.size() != 2) {
                 fail("Did not retrieve the expected number of terms.");
             }
@@ -225,17 +221,60 @@ public class VocabularyDaoTest extends AbstractDaoTest {
             setupTestGetTermsRecursive();
             tx.commit();
             tx = HibernateUtil.beginTransaction();
-            Set<Term> retrievedTerms = DAO_OBJECT.getTermsRecursive(DUMMY_CATEGORY_4.getName(), null);
-            if (retrievedTerms.size() != NUM_DUMMY_TERMS) {
-                assertEquals("Did not retrieve the expected number of terms.", NUM_DUMMY_TERMS, retrievedTerms.size());
-            }
+            Set<Term> retrievedTerms = DAO_OBJECT.getTermsRecursive(DUMMY_CATEGORY_4, null);
+            assertEquals("Did not retrieve the expected number of terms.", NUM_DUMMY_TERMS, retrievedTerms.size());
             // Check if we got the expected terms, and accordingly pass or fail the test.
             checkIfExpectedTermsRecursive(retrievedTerms);
+            retrievedTerms = DAO_OBJECT.getTermsRecursive(DUMMY_CATEGORY_4, "DammyValue");
+            assertEquals("Did not retrieve the expected number of terms.", NUM_DUMMY_TERMS, retrievedTerms.size());
+            retrievedTerms = DAO_OBJECT.getTermsRecursive(DUMMY_CATEGORY_4, "DammyValue1");
+            assertEquals("Did not retrieve the expected number of terms.", 1, retrievedTerms.size());
+            assertEquals(DUMMY_TERM_1, retrievedTerms.iterator().next());
+                        
             tx.commit();
         } catch (Exception e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception while getting terms in a category: " + e.getMessage());
         }
+    }
+    
+    @Test
+    public void testGetOrganism() {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.beginTransaction();
+            DAO_OBJECT.save(DUMMY_ORGANISM_1);
+            DAO_OBJECT.save(DUMMY_ORGANISM_2);
+            Organism o = DAO_OBJECT.getOrganism(DUMMY_SOURCE_1, DUMMY_ORGANISM_1.getScientificName());
+            assertEquals(DUMMY_ORGANISM_1, o);
+            o = DAO_OBJECT.getOrganism(DUMMY_SOURCE_2, "foobar");
+            assertNull(o);
+            o = DAO_OBJECT.getOrganism(DUMMY_SOURCE_2, DUMMY_ORGANISM_2.getScientificName());
+            assertEquals(DUMMY_ORGANISM_2, o);
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception while getting organisms: " + e.getMessage());
+        }        
+    }
+
+    @Test
+    public void testGetTerm() {
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.beginTransaction();
+            setupTestGetTerms();
+            Term t = DAO_OBJECT.getTerm(DUMMY_SOURCE_1, DUMMY_TERM_1.getValue());
+            assertEquals(DUMMY_TERM_1, t);
+            t = DAO_OBJECT.getTerm(DUMMY_SOURCE_1, DUMMY_TERM_1.getValue().toUpperCase());
+            assertEquals(DUMMY_TERM_1, t);            
+            t = DAO_OBJECT.getTerm(DUMMY_SOURCE_2, DUMMY_TERM_1.getValue());
+            assertNull(t);
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception while getting organisms: " + e.getMessage());
+        }        
     }
 
     /**
@@ -269,13 +308,9 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         try {
             tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(DUMMY_CATEGORY_1);
-            String categoryName = DUMMY_CATEGORY_1.getName();
-            Category retrievedCategory = DAO_OBJECT.getCategory(categoryName);
-            if ((retrievedCategory != null) && (categoryName.equals(retrievedCategory.getName()))) {
-                assertTrue(true);
-            } else {
-                fail("Did not retrieve the expected category.");
-            }
+            Category retrievedCategory = DAO_OBJECT.getCategory(DUMMY_CATEGORY_1.getTermSource(), DUMMY_CATEGORY_1.getName());
+            assertNotNull(retrievedCategory);
+            assertEquals(DUMMY_CATEGORY_1.getName(), retrievedCategory.getName());
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
@@ -402,52 +437,10 @@ public class VocabularyDaoTest extends AbstractDaoTest {
     }
 
     /**
-     * Tests save, retrieve, update and remove operations on a <code>Accession</code>.
-     * Relies on cascading save-update being set in the Hibernate mapping.
-     */
-    @Test
-    public void testAccessionCrud() {
-        Transaction tx = null;
-        // Try saving the dummy accession and then retrieving it.
-        try {
-            tx = HibernateUtil.beginTransaction();
-            DAO_OBJECT.save(DUMMY_ACCESSION_1);
-            // Check if we got the expected accession, and accordingly pass or fail the test.
-            checkIfExpectedAccession(DUMMY_ACCESSION_1.getId());
-            tx.commit();
-        } catch (DAOException saveException) {
-            HibernateUtil.rollbackTransaction(tx);
-            fail("DAO exception during save and retrieve of accession: " + saveException.getMessage());
-        }
-    }
-
-    /**
-     * Tests saving an <code>Accession</code> collection.
-     * Relies on cascading save-update being set in the Hibernate mapping.
-     */
-    @Test
-    public void testSaveAccessionCollection() {
-        Transaction tx = null;
-        List<Accession> accessionList = new ArrayList<Accession>();
-        accessionList.add(DUMMY_ACCESSION_1);
-        accessionList.add(DUMMY_ACCESSION_2);
-        try {
-            tx = HibernateUtil.beginTransaction();
-            DAO_OBJECT.save(accessionList);
-            tx.commit();
-        } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
-            fail("DAO exception during save of accession collection: " + e.getMessage());
-        }
-        assertTrue(true);
-    }
-
-    /**
      * Methods to check if we got the expected results from the tests.
      */
-    private void checkIfExpectedTerms(List<Term> retrievedTerms) {
-        for (int i = 0; i < 2; i++) {
-            Term term = retrievedTerms.get(i);
+    private void checkIfExpectedTerms(Collection<Term> retrievedTerms) {
+        for (Term term : retrievedTerms) {
             if (!(DUMMY_TERM_1.equals(term) || DUMMY_TERM_2.equals(term))) {
                 fail("Did not retrieve the expected terms.");
             }
@@ -499,40 +492,6 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         }
     }
 
-    private void checkIfExpectedAccession(long id) {
-        Accession retrievedAccession = (Accession) HibernateUtil.getCurrentSession().get(Accession.class, id);
-        if (DUMMY_ACCESSION_1.equals(retrievedAccession)) {
-            // The retrieved accession is the same as the saved accession. Save and retrieve test passed.
-            assertTrue(true);
-        } else {
-            fail("Retrieved accession is different from saved accession.");
-        }
-    }
-
-    @Test
-    public void testGetTermsForExperiment() {
-        Transaction tx = null;
-        try {
-            tx = HibernateUtil.beginTransaction();
-            Experiment e = new Experiment();
-            e.setTitle("test title");
-            e.setServiceType(ServiceType.FULL);
-            e.setAssayType(AssayType.ACGH);
-            e.setManufacturer(new Organization());
-            e.setOrganism(new Organism());
-            DAO_OBJECT.save(e);
-            assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());
-            assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());
-            assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());
-            assertEquals(0, DAO_OBJECT.getCellTypesForExperiment(e).size());
-            tx.commit();
-        } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
-            e.printStackTrace();
-            fail("DAO exception during save of accession collection: " + e.getMessage());
-        }
-    }
-
     /**
      * Save dummy entities in the database to prepare for tests.
      */
@@ -540,6 +499,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         DAO_OBJECT.save(DUMMY_TERM_1);
         DAO_OBJECT.save(DUMMY_TERM_2);
     }
+    
 
     private void setupTestGetTermsRecursive() {
         DAO_OBJECT.save(DUMMY_TERM_1);

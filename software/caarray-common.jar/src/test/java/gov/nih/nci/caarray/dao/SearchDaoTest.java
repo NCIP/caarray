@@ -126,6 +126,7 @@ public class SearchDaoTest {
     private static final Logger LOG = Logger.getLogger(SearchDaoTest.class);
 
     private static final String FAIL_NO_MATCH = "Retrieved protocol is different from saved protocol.";
+    private static TermSource DUMMY_TERM_SOURCE = new TermSource();
     private static final Category DUMMY_CATEGORY = new Category();
     private static final Term DUMMY_TERM_1 = new Term();
     private static final Protocol DUMMY_PROTOCOL_1 = new Protocol("DummyTestProtocol1", DUMMY_TERM_1, new TermSource());
@@ -171,9 +172,13 @@ public class SearchDaoTest {
      */
     @SuppressWarnings("unchecked")
     private static void initializeProtocols() {
+        DUMMY_TERM_SOURCE.setName("Dummy MGED Ontology");
+        DUMMY_TERM_SOURCE.setUrl("test url");
+        DUMMY_CATEGORY.setTermSource(DUMMY_TERM_SOURCE);
         DUMMY_CATEGORY.setName("DummyTestCategory");
         DUMMY_TERM_1.setValue("DummyTestTerm1");
         DUMMY_TERM_1.setCategory(DUMMY_CATEGORY);
+        DUMMY_TERM_1.setSource(DUMMY_TERM_SOURCE);
 
         DUMMY_PROTOCOL_1.setDescription("DummyDescForProtocol");
         DUMMY_PROTOCOL_1.setUrl("DummyUrlForProtocol1");
@@ -377,11 +382,14 @@ public class SearchDaoTest {
             // set up dummy data
             tx = HibernateUtil.beginTransaction();
             Session s = HibernateUtil.getCurrentSession();
+            Organism org = new Organism();
+            org.setScientificName("Foo");
+            org.setTermSource(DUMMY_TERM_SOURCE);
             Project project = new Project();
             project.getExperiment().setTitle("test experiment.");
             project.getExperiment().setAssayType(AssayType.ACGH);
             project.getExperiment().setServiceType(ServiceType.FULL);
-            project.getExperiment().setOrganism(new Organism());
+            project.getExperiment().setOrganism(org);
             project.getExperiment().setManufacturer(new Organization());
             Source source = new Source();
             source.setName("Source 1 Name");

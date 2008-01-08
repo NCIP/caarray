@@ -83,8 +83,6 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import static gov.nih.nci.caarray.web.action.ActionHelper.getGenericDataService;
-import static gov.nih.nci.caarray.web.action.ActionHelper.getVocabularyService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
@@ -94,6 +92,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.web.action.ActionHelper;
 import gov.nih.nci.caarray.web.ui.PaginatedListImpl;
 
 import java.util.Collection;
@@ -140,10 +139,8 @@ public class ProjectPublicationsAction extends AbstractProjectListTabAction {
             }
         }
 
-        VocabularyService vocabService = getVocabularyService();
-        this.publicationTypes = vocabService.getTerms(ExperimentOntologyCategory.PUBLICATION_TYPE.getCategoryName());
-        this.publicationStatuses = vocabService.getTerms(ExperimentOntologyCategory.PUBLICATION_STATUS
-                .getCategoryName());
+        this.publicationTypes = ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.PUBLICATION_TYPE);
+        this.publicationStatuses = ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.PUBLICATION_STATUS);
     }
 
     /**

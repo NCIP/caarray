@@ -90,6 +90,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 
@@ -101,7 +102,7 @@ public class AbstractDaoStub implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
-    public <T extends PersistentObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch) {
+    public <T extends PersistentObject> List<T> queryEntityAndAssociationsByExample(T entityToMatch, Order... orders) {
         return new ArrayList<T>();
     }
 
@@ -116,6 +117,14 @@ public class AbstractDaoStub implements CaArrayDao {
      * {@inheritDoc}
      */
     public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, Order... order) {
+        return queryEntityByExample(entityToMatch, mode, true, ArrayUtils.EMPTY_STRING_ARRAY, order);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public <T> List<T> queryEntityByExample(T entityToMatch, MatchMode mode, boolean excludeNulls,
+            String[] excludeProperties, Order... order) {
         return new ArrayList<T>();
     }
 

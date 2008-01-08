@@ -84,48 +84,63 @@
 package gov.nih.nci.caarray.domain.vocabulary;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.validation.UniqueConstraint;
+import gov.nih.nci.caarray.validation.UniqueConstraintField;
+import gov.nih.nci.caarray.validation.UniqueConstraints;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.ForeignKey;
+import org.hibernate.validator.Length;
+import org.hibernate.validator.NotNull;
 
-  /**
-
-   */
+/**
+ * 
+ */
 @Entity
+@UniqueConstraints(constraints = {
+        @UniqueConstraint(fields = { @UniqueConstraintField(name = "name"),
+                @UniqueConstraintField(name = "termSource") }),
+        @UniqueConstraint(fields = { @UniqueConstraintField(name = "accession"),
+                @UniqueConstraintField(name = "termSource") }) }, message = "{category.uniqueConstraint}")
 public class Category extends AbstractCaArrayEntity implements Cloneable {
     /**
      * The serial version UID for serialization.
      */
     private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * The name String.
-     */
     private String name;
+    private String accession;
+    private String url;
+    private TermSource termSource;
+    private Set<Category> parents = new HashSet<Category>();
+    private Set<Category> children = new HashSet<Category>();
 
     /**
      * Gets the name.
-     *
+     * 
      * @return the name
      */
-    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
+    @NotNull
     public String getName() {
         return name;
+
     }
 
     /**
      * Sets the name.
-     *
+     * 
      * @param nameVal the name
      */
     public void setName(final String nameVal) {
@@ -133,55 +148,118 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
     }
 
     /**
-     * The parent gov.nih.nci.caarray.domain.vocabulary.Category.
+     * @return the accession number for this category
      */
-    private Category parent;
+    public String getAccession() {
+        return accession;
+    }
+
+    /**
+     * @param accession the accession to set
+     */
+    public void setAccession(String accession) {
+        this.accession = accession;
+    }
+
+    /**
+     * @return the url for this category
+     */
+    public String getUrl() {
+        return url;
+    }
+
+    /**
+     * @param url the url to set
+     */
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     /**
      * Gets the parent.
-     *
+     * 
      * @return the parent
      */
-    @ManyToOne
-    @JoinColumn
+    @ManyToMany
+    @JoinTable(name = "CATEGORY_PARENTS", 
+            joinColumns = @JoinColumn(name = "CATEGORY_ID"), 
+            inverseJoinColumns = @JoinColumn(name = "PARENT_CATEGORY_ID"))
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @ForeignKey(name = "CATEGORY_PARENT_FK")
-    public Category getParent() {
-        return parent;
+    public Set<Category> getParents() {
+        return parents;
     }
 
     /**
-     * Sets the parent.
-     *
-     * @param parentVal the parent
+     * Sets the parent categories.
+     * 
+     * @param parents the parent categories
      */
-    public void setParent(final Category parentVal) {
-        this.parent = parentVal;
+    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
+    private void setParents(final Set<Category> parents) {
+        this.parents = parents;
     }
-
-    /**
-     * The children set.
-     */
-    private Set<Category> children = new HashSet<Category>();
 
     /**
      * Gets the children.
-     *
+     * 
      * @return the children
      */
-    @OneToMany(mappedBy = "parent")
+    @ManyToMany(mappedBy = "parents")
     public Set<Category> getChildren() {
         return children;
     }
 
     /**
      * Sets the children.
-     *
+     * 
      * @param childrenVal the children
      */
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
     private void setChildren(final Set<Category> childrenVal) {
         this.children = childrenVal;
+    }
+
+    /**
+     * @return the term source to which this category belongs
+     */
+    @ManyToOne(optional = false)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @NotNull
+    public TermSource getTermSource() {
+        return termSource;
+    }
+
+    /**
+     * Set the termSource.
+     * 
+     * @param termSource The termSource to set
+     */
+    public void setTermSource(TermSource termSource) {
+        this.termSource = termSource;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Category)) {
+            return false;
+        }
+        if (o == this) {
+            return true;
+        }
+        Category other = (Category) o;
+        return new EqualsBuilder().append(this.getName(), other.getName())
+                .append(this.getTermSource(), other.getTermSource()).isEquals();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(this.getName()).append(this.getTermSource()).toHashCode();
     }
 
     /**
@@ -189,19 +267,6 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
      */
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-            .append("name", name)
-            .toString();
+        return new ToStringBuilder(this).append("name", name).toString();
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        Category c = (Category) super.clone();
-
-        return c;
-    }
-
 }

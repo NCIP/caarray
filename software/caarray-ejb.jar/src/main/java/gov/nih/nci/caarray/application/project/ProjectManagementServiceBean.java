@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
@@ -104,6 +105,7 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
@@ -519,5 +521,33 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         File result = prepareForDownload(p, files);
         LogUtil.logSubsystemExit(LOG);
         return result;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public List<Term> getCellTypesForExperiment(Experiment experiment) {
+        return getProjectDao().getCellTypesForExperiment(experiment);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Term> getDiseaseStatesForExperiment(Experiment experiment) {
+        return getProjectDao().getDiseaseStatesForExperiment(experiment);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Term> getMaterialTypesForExperiment(Experiment experiment) {
+        return getProjectDao().getMaterialTypesForExperiment(experiment);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Term> getTissueSitesForExperiment(Experiment experiment) {
+        return getProjectDao().getTissueSitesForExperiment(experiment);
     }
 }

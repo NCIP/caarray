@@ -89,7 +89,9 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
 import org.junit.Test;
 
@@ -104,20 +106,33 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
 
     @Override
     protected void setValues(AbstractCaArrayObject caArrayObject) {
+        TermSource ts = new TermSource();
+        ts.setName("TS 1");
+        Category cat = new Category();
+        cat.setName("catName");
+        cat.setTermSource(ts);
         ArrayDesign arrayDesign = (ArrayDesign) caArrayObject;
         arrayDesign.setDesignFile(new CaArrayFile());
         arrayDesign.setName(getUniqueStringValue());
         arrayDesign.setNumberOfFeatures(getUniqueIntValue());
         arrayDesign.setPolymerType(new Term());
         arrayDesign.getPolymerType().setValue("testval1");
+        arrayDesign.getPolymerType().setCategory(cat);
+        arrayDesign.getPolymerType().setSource(ts);        
         arrayDesign.setPrinting(new ProtocolApplication());
         arrayDesign.setProvider(new Organization());
         arrayDesign.setSubstrateType(new Term());
         arrayDesign.getSubstrateType().setValue("testval2");
+        arrayDesign.getSubstrateType().setCategory(cat);
+        arrayDesign.getSubstrateType().setSource(ts);        
         arrayDesign.setSurfaceType(new Term());
         arrayDesign.getSurfaceType().setValue("testval3");
+        arrayDesign.getSurfaceType().setCategory(cat);
+        arrayDesign.getSurfaceType().setSource(ts);        
         arrayDesign.setTechnologyType(new Term());
         arrayDesign.getTechnologyType().setValue("testval4");
+        arrayDesign.getTechnologyType().setCategory(cat);
+        arrayDesign.getTechnologyType().setSource(ts);        
         arrayDesign.setType(getNextValue(AssayType.values(), arrayDesign.getAssayType()).name());
         arrayDesign.setVersion(getUniqueStringValue());
         ArrayDesignDetails designDetails = new ArrayDesignDetails();

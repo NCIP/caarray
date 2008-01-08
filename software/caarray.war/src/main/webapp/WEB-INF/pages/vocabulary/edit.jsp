@@ -1,12 +1,5 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
-<script type="text/javascript">
-    displayCorrectSourceEditingUi = function() {
-        $('selectSource')[$('termForm_createNewSourcetrue').checked ? 'hide' : 'show']();
-        $('newSource')[$('termForm_createNewSourcetrue').checked ? 'show' : 'hide']();
-        if ($('termForm_createNewSourcetrue').checked)
-             $('termForm_currentTerm_source').selectedIndex = 0;
-    }
-</script>
+
 <c:if test="${!editMode}">
     <c:set var="theme" value="readonly" scope="request"/>
 </c:if>
@@ -16,8 +9,15 @@
     </div>
     <div class="boxpad">
         <p class="instructions">Required fields are marked with <span class="required">*asterisks*</span>.</p>
-        <s:form action="ajax/vocabulary/save" cssClass="form" id="termForm" onsubmit="TabUtils.submitTabForm('termForm', 'tabboxwrapper'); return false;">
+        <s:form action="ajax/vocabulary/save" cssClass="form" id="termForm">
             <tr><th colspan="2">Term</th></tr>
+            <tr>
+              <td colspan="2">
+                <s:fielderror>
+                  <s:param>currentTerm</s:param>
+                </s:fielderror>              
+              </td>
+            </tr>
             <s:textfield key="currentTerm.value" required="true" size="80" tabindex="1"/>
             <s:textfield key="currentTerm.description" size="80" tabindex="2"/>
             <tr><th colspan="2">Source</th></tr>
@@ -27,16 +27,23 @@
             </c:if>
             <tbody id="selectSource" <s:if test="createNewSource == true">style="display: none"</s:if>>
                 <s:select list="sources" key="currentTerm.source" headerKey="" headerValue="-- Select A Source --"
-                    listKey="id" listValue="name" value="currentTerm.source.id" tabindex="4" required="true" />
+                    listKey="id" listValue="nameAndVersion" value="currentTerm.source.id" tabindex="4" required="true" />
             </tbody>
             <tbody id="newSource" <s:if test="createNewSource == false">style="display: none"</s:if>>
+            <tr>
+              <td colspan="2">
+                <s:fielderror>
+                  <s:param>newSource</s:param>
+                </s:fielderror>              
+              </td>
+            </tr>
             <s:textfield key="newSource.name" size="80" tabindex="5" required="true" />
             <s:textfield key="newSource.url" size="80" tabindex="5" />
             <s:textfield key="newSource.version" size="80" tabindex="7"/>
             </tbody>
             <tr><th colspan="2">Accession</th></tr>
-            <s:textfield key="currentTerm.accession.url" size="80" tabindex="8"/>
-            <s:textfield name="currentTerm.accession.value" label="Accession Value" size="80" tabindex="9"/>
+            <s:textfield key="currentTerm.url" size="80" tabindex="8"/>
+            <s:textfield name="currentTerm.accession" label="Accession Value" size="80" tabindex="9"/>
             <s:hidden name="category" />
             <s:hidden name="currentTerm.id" />
             <s:hidden name="returnProjectId" />
@@ -66,7 +73,7 @@
             </s:else>
             <c:choose>
                 <c:when test="${editMode}">
-                    <caarray:action actionClass="save" text="Save" onclick="TabUtils.submitTabForm('termForm', 'tabboxwrapper'); return false;" tabindex="11" />
+                    <caarray:action actionClass="save" text="Save" onclick="return submitTermForm();" tabindex="11" />
                 </c:when>
                 <c:otherwise>
                     <c:url value="/protected/ajax/vocabulary/edit.action" var="actionUrl">
@@ -80,4 +87,19 @@
             </c:choose>
         </caarray:actions>
     </div>
+<script type="text/javascript">
+    displayCorrectSourceEditingUi = function() {
+        $('selectSource')[$('termForm_createNewSourcetrue').checked ? 'hide' : 'show']();
+        $('newSource')[$('termForm_createNewSourcetrue').checked ? 'show' : 'hide']();
+        if ($('termForm_createNewSourcetrue').checked) {
+             $('termForm_currentTerm_source').selectedIndex = 0;
+        }             
+    }
+    
+    submitTermForm = function() {
+        $('termForm_currentTerm_source').disabled = $('termForm_createNewSourcetrue').checked;    
+        TabUtils.submitTabForm('termForm', 'tabboxwrapper'); 
+        return false;
+    }
+</script>
 </caarray:tabPane>

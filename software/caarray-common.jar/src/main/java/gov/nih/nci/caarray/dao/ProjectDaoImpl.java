@@ -85,17 +85,22 @@ package gov.nih.nci.caarray.dao;
 import gov.nih.nci.caarray.domain.PersistentObject;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.project.ProposalStatus;
+import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
+import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.PageSortParams;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.search.SortCriterion;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -112,6 +117,11 @@ import org.hibernate.Query;
 @SuppressWarnings("PMD.CyclomaticComplexity")
 class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     private static final Logger LOG = Logger.getLogger(ProjectDaoImpl.class);
+    private static final String UNCHECKED = "unchecked";
+    private static final String EXP_ID_PARAM = "expId";
+    private static final String TERM_FOR_EXPERIMENT_HSQL = "select distinct s.{0} from " + Experiment.class.getName()
+        + " e," +  Source.class.getName() + " s where e.id = :" + EXP_ID_PARAM + " and s in elements(e.sources) "
+        + "and s.{0} is not null";
 
     /**
      * Saves a project by first updating the lastUpdated field, and then saves the entity to persistent storage,
@@ -132,7 +142,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         return LOG;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings(UNCHECKED)
     public List<Project> getProjectsForCurrentUser(boolean showPublic, PageSortParams pageSortParams) {
         Query q = getProjectsForUserQuery(showPublic, false, pageSortParams);
         q.setFirstResult(pageSortParams.getIndex());
@@ -189,7 +199,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings(UNCHECKED)
     public List<Project> searchByCategory(PageSortParams<Project> params, String keyword,
             SearchCategory... categories) {
         Query q = getSearchQuery(false, params, keyword, categories);
@@ -257,5 +267,44 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             sb.append(')');
         }
         return sb.toString();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public List<Term> getCellTypesForExperiment(Experiment experiment) {
+        String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "cellType");
+        return HibernateUtil.getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public List<Term> getDiseaseStatesForExperiment(Experiment experiment) {
+        String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "diseaseState");
+        return HibernateUtil.getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public List<Term> getTissueSitesForExperiment(Experiment experiment) {
+        String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "tissueSite");
+        return HibernateUtil.getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings(UNCHECKED)
+    public List<Term> getMaterialTypesForExperiment(Experiment experiment) {
+        String hsql = "select distinct b.materialType from " + Experiment.class.getName() + " e,"
+            + AbstractBioMaterial.class.getName() +  " b where e.id = :expId and "
+            + "(b in elements(e.sources) or b in elements(e.samples) or b in elements(e.extracts) "
+            + "or b in elements(e.labeledExtracts)) and b.materialType is not null";
+        return HibernateUtil.getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
     }
 }

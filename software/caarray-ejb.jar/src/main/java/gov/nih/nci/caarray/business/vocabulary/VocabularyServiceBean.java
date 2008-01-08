@@ -87,7 +87,6 @@ import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.OrganismDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
-import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -95,6 +94,7 @@ import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -104,6 +104,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 
 /**
@@ -114,34 +115,41 @@ import org.hibernate.criterion.Order;
 @Interceptors(ExceptionLoggingInterceptor.class)
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class VocabularyServiceBean implements VocabularyService {
-
+    private static final String VERSION_FIELD = "version";
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
     /**
-     * Creates a new instance.
-     */
-    public VocabularyServiceBean() {
-        super();
-    }
-
-    /**
-     *
+     * 
      * {@inheritDoc}
      */
-    public Set<Term> getTerms(final String categoryName) {
-        return getTerms(categoryName, null);
+    public Set<Term> getTerms(final Category category) {
+        return getTerms(category, null);
     }
 
     /**
      * {@inheritDoc}
      */
-    public Set<Term> getTerms(final String categoryName, String value) {
-        if (categoryName == null) {
-            throw new IllegalArgumentException("CategoryName is null");
+    public Set<Term> getTerms(final Category category, String value) {
+        if (category == null) {
+            throw new IllegalArgumentException("Category is null");
         }
-        return getVocabularyDao().getTermsRecursive(categoryName, value);
+        return getVocabularyDao().getTermsRecursive(category, value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public Term getTerm(TermSource source, String value) {
+        return getVocabularyDao().getTerm(source, value);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Organism getOrganism(TermSource source, String scientificName) {
+        return getVocabularyDao().getOrganism(source, scientificName);
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -152,14 +160,47 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
-    public TermSource getSource(String name) {
+    public TermSource getSource(String name, String version) {
         TermSource querySource = new TermSource();
         querySource.setName(name);
-        return uniqueResult(getVocabularyDao().queryEntityByExample(querySource));
+        querySource.setVersion(version);
+        return uniqueResult(getVocabularyDao().queryEntityByExample(querySource, MatchMode.EXACT, false,
+                new String[] {"url" }, Order.desc(VERSION_FIELD)));
     }
 
     /**
-     *
+     * {@inheritDoc}
+     */
+    public Set<TermSource> getSources(String name) {
+        TermSource querySource = new TermSource();
+        querySource.setName(name);
+        return new LinkedHashSet<TermSource>(getVocabularyDao().queryEntityByExample(querySource,
+                Order.desc(VERSION_FIELD)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public TermSource getSourceByUrl(String url, String version) {
+        TermSource querySource = new TermSource();
+        querySource.setUrl(url);
+        querySource.setVersion(version);
+        return uniqueResult(getVocabularyDao().queryEntityByExample(querySource, MatchMode.EXACT, false,
+                new String[] {"name" }, Order.desc(VERSION_FIELD)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Set<TermSource> getSourcesByUrl(String url) {
+        TermSource querySource = new TermSource();
+        querySource.setUrl(url);
+        return new LinkedHashSet<TermSource>(getVocabularyDao().queryEntityByExample(querySource,
+                Order.desc(VERSION_FIELD)));
+    }
+
+    /**
+     * 
      * {@inheritDoc}
      */
     public List<TermSource> getAllSources() {
@@ -170,16 +211,7 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     public Category getCategory(TermSource source, String categoryName) {
-        Category queryCategory = new Category();
-        queryCategory.setName(categoryName);
-        return uniqueResult(getVocabularyDao().queryEntityByExample(queryCategory));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Term getTerm(TermSource source, Category category, String value) {
-        return uniqueResult(getVocabularyDao().getTerms(source, category, value));
+        return getVocabularyDao().getCategory(source, categoryName);
     }
 
     /**
@@ -187,34 +219,6 @@ public class VocabularyServiceBean implements VocabularyService {
      */
     public Term getTerm(Long id) {
         return getVocabularyDao().getTermById(id);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<Term> getCellTypesForExperiment(Experiment experiment) {
-        return getVocabularyDao().getCellTypesForExperiment(experiment);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<Term> getDiseaseStatesForExperiment(Experiment experiment) {
-        return getVocabularyDao().getDiseaseStatesForExperiment(experiment);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<Term> getMaterialTypesForExperiment(Experiment experiment) {
-        return getVocabularyDao().getMaterialTypesForExperiment(experiment);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<Term> getTissueSitesForExperiment(Experiment experiment) {
-        return getVocabularyDao().getTissueSitesForExperiment(experiment);
     }
 
     /**
@@ -254,6 +258,7 @@ public class VocabularyServiceBean implements VocabularyService {
 
     /**
      * Method to take a get a unique result from a set and return it or null.
+     * 
      * @param <T> the type of the returned object
      * @param results the set of results returned from a query
      * @return the first result in the set or null
@@ -263,7 +268,7 @@ public class VocabularyServiceBean implements VocabularyService {
     }
 
     /**
-     *
+     * 
      * @return VocabularyDao
      */
     protected VocabularyDao getVocabularyDao() {

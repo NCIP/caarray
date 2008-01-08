@@ -82,7 +82,11 @@
  */
 package edu.georgetown.pir;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.PersistentObject;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.validation.UniqueConstraint;
+import gov.nih.nci.caarray.validation.UniqueConstraintField;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -93,13 +97,19 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.validator.Length;
+import org.hibernate.validator.NotNull;
 
 /**
  * Organism that the sample or data comes from.
  */
 @Entity
+@UniqueConstraint(fields = { @UniqueConstraintField(name = "scientificName"), 
+        @UniqueConstraintField(name = "termSource") }, message = "{organism.uniqueConstraint}")
 public class Organism implements PersistentObject {
-
     private static final long serialVersionUID = 1L;
     
     private Long id;
@@ -108,6 +118,7 @@ public class Organism implements PersistentObject {
     private String commonName;
     private String taxonomyRank;
     private String ethnicityStrain;
+    private TermSource termSource;
     
     private Set<AdditionalOrganismName> additionalOrganismNameCollection = new HashSet<AdditionalOrganismName>();
 
@@ -187,6 +198,8 @@ public class Organism implements PersistentObject {
     /**
      * @return the scientificName
      */
+    @NotNull
+    @Length(min = 1, max = AbstractCaArrayObject.DEFAULT_STRING_COLUMN_SIZE)
     public String getScientificName() {
         return scientificName;
     }
@@ -210,6 +223,24 @@ public class Organism implements PersistentObject {
      */
     public void setTaxonomyRank(String taxonomyRank) {
         this.taxonomyRank = taxonomyRank;
+    }
+
+    /**
+     * @return the term source to which this organism belongs
+     */
+    @ManyToOne(optional = false)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @NotNull
+    public TermSource getTermSource() {
+        return termSource;
+    }
+
+    /**
+     * Set the termSource.
+     * @param termSource The termSource to set
+     */
+    public void setTermSource(TermSource termSource) {
+        this.termSource = termSource;
     }
 
 }

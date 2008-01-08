@@ -33,8 +33,8 @@
                 <display:column title="Description" property="description" sortable="true" />
                 <display:column title="Source" sortProperty="source.name" sortable="true">
                     <c:choose>
-                        <c:when test="${not empty row.source.url}"><a href="${row.source.url}" target="_blank">${row.source.name}</a></c:when>
-                        <c:otherwise>${row.source.name}</c:otherwise>
+                        <c:when test="${not empty row.source.url}"><a href="${row.source.url}" target="_blank">${row.source.nameAndVersion}</a></c:when>
+                        <c:otherwise>${row.source.nameAndVersion}</c:otherwise>
                     </c:choose>
                 </display:column>
                  <display:column titleKey="button.edit" class="centered" headerClass="centered">

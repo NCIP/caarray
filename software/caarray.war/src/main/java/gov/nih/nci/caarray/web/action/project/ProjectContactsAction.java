@@ -82,16 +82,11 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getVocabularyService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.contact.AbstractContact;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
-import gov.nih.nci.caarray.domain.project.ExperimentOntology;
-import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
-import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.web.action.ActionHelper;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -184,11 +179,8 @@ public class ProjectContactsAction extends ProjectTabAction {
         }
     )
     public String save() {
-        VocabularyService vocabService = getVocabularyService();
-        TermSource mged = vocabService.getSource(ExperimentOntology.MGED_ONTOLOGY.getOntologyName());
-        Category roleCat = vocabService.getCategory(mged, ExperimentOntologyCategory.ROLES.getCategoryName());
-        Term piRole = vocabService.getTerm(mged, roleCat, ExperimentContact.PI_ROLE);
-        Term mainPocRole = vocabService.getTerm(mged, roleCat, ExperimentContact.MAIN_POC_ROLE);
+        Term piRole = ActionHelper.getMOTerm(ExperimentContact.PI_ROLE);
+        Term mainPocRole = ActionHelper.getMOTerm(ExperimentContact.MAIN_POC_ROLE);
 
         ExperimentContact pi = getProject().getExperiment().getPrimaryInvestigator();
         if (pi != null) {

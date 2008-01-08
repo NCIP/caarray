@@ -82,11 +82,10 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static gov.nih.nci.caarray.web.action.ActionHelper.getVocabularyService;
-import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyServiceException;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.web.action.ActionHelper;
 
 import java.util.Set;
 
@@ -113,12 +112,10 @@ public class ProjectExperimentalDesignAction extends ProjectTabAction {
     public void prepare() throws VocabularyServiceException {
         super.prepare();
 
-        VocabularyService vocabService = getVocabularyService();
-        this.experimentDesignTypes = vocabService.getTerms(ExperimentOntologyCategory.EXPERIMENT_DESIGN_TYPE
-                .getCategoryName());
-        this.qualityControlTypes = vocabService.getTerms(ExperimentOntologyCategory.QUALITY_CONTROL_TYPE
-                .getCategoryName());
-        this.replicateTypes = vocabService.getTerms(ExperimentOntologyCategory.REPLICATE_TYPE.getCategoryName());
+        this.experimentDesignTypes = ActionHelper
+                .getTermsFromCategory(ExperimentOntologyCategory.EXPERIMENT_DESIGN_TYPE);
+        this.qualityControlTypes = ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.QUALITY_CONTROL_TYPE);
+        this.replicateTypes = ActionHelper.getTermsFromCategory(ExperimentOntologyCategory.REPLICATE_TYPE);
     }
 
     /**

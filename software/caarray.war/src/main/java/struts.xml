@@ -13,6 +13,9 @@
             <interceptor name="nullCollectionElements"
                 class="gov.nih.nci.caarray.web.interceptor.NullCollectionElementInterceptor" />
 
+            <interceptor name="parameterTrim"
+                class="gov.nih.nci.caarray.web.interceptor.ParameterTrimInterceptor" />
+
             <interceptor-stack name="caarrayParamsPrepareParamsStack">
                 <interceptor-ref name="exception" />
                 <interceptor-ref name="alias" />
@@ -28,6 +31,9 @@
                 <interceptor-ref name="caarrayParams" />
                 <interceptor-ref name="conversionError" />
                 <interceptor-ref name="nullCollectionElements" />
+                <interceptor-ref name="parameterTrim">
+                  <param name="trimToNull">true</param>
+                </interceptor-ref>
                 <interceptor-ref name="validation">
                     <param name="excludeMethods">input,back,cancel</param>
                 </interceptor-ref>
@@ -55,6 +61,9 @@
                 </interceptor-ref>
                 <interceptor-ref name="conversionError" />
                 <interceptor-ref name="nullCollectionElements" />
+                <interceptor-ref name="parameterTrim">
+                  <param name="trimToNull">true</param>
+                </interceptor-ref>
                 <interceptor-ref name="validation">
                     <param name="excludeMethods">input,back,cancel,browse</param>
                 </interceptor-ref>

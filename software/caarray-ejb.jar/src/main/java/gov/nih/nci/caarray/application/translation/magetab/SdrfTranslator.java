@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
+import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
@@ -112,7 +113,6 @@ import gov.nih.nci.caarray.domain.sample.MeasurementCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
-import gov.nih.nci.caarray.domain.sample.ValueBasedCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -156,6 +156,7 @@ final class SdrfTranslator extends AbstractTranslator {
     private final Map<String, AbstractCaArrayEntity> generatedNodes =
         new HashMap<String, AbstractCaArrayEntity>();
     private final Map<ProtocolKey, Protocol> importedProtocolMap = new HashMap<ProtocolKey, Protocol>();
+    private final Map<Term, Organism> termToOrganism = new HashMap<Term, Organism>();
     private final VocabularyService vocabularyService;
 
     SdrfTranslator(MageTabDocumentSet documentSet, CaArrayFileSet fileSet, MageTabTranslationResult translationResult,
@@ -169,6 +170,8 @@ final class SdrfTranslator extends AbstractTranslator {
         for (SdrfDocument document : getDocumentSet().getSdrfDocuments()) {
             translateSdrf(document);
         }
+        // cleanup the organism terms
+        getTranslationResult().removeOrganismTerms();
     }
 
     private void translateSdrf(SdrfDocument document) {
@@ -319,20 +322,16 @@ final class SdrfTranslator extends AbstractTranslator {
         for (Characteristic sdrfCharacteristic : sdrfBiomaterial.getCharacteristics()) {
             AbstractCharacteristic characteristic =
                 translateCharacteristic(sdrfCharacteristic);
-            if (characteristic instanceof TermBasedCharacteristic) {
-                TermBasedCharacteristic tbCharacteristic = (TermBasedCharacteristic) characteristic;
-                Term term = tbCharacteristic.getTerm();
-                String category = term.getCategory().getName();
-                if (ExperimentOntologyCategory.ORGANISM_PART.getCategoryName().equals(category)) {
-                    bioMaterial.setTissueSite(term);
-                } else if (ExperimentOntologyCategory.CELL_TYPE.getCategoryName().equals(category)) {
-                    bioMaterial.setCellType(term);
-                } else if (ExperimentOntologyCategory.DISEASE_STATE.getCategoryName().equals(category)) {
-                    bioMaterial.setDiseaseState(term);
-                } else {
-                    bioMaterial.getCharacteristics().add(characteristic);
-                    characteristic.setBioMaterial(bioMaterial);
-                }
+            String category = characteristic.getCategory().getName();
+            if (ExperimentOntologyCategory.ORGANISM_PART.getCategoryName().equals(category)) {
+                bioMaterial.setTissueSite(((TermBasedCharacteristic) characteristic).getTerm());
+            } else if (ExperimentOntologyCategory.CELL_TYPE.getCategoryName().equals(category)) {
+                bioMaterial.setCellType(((TermBasedCharacteristic) characteristic).getTerm());
+            } else if (ExperimentOntologyCategory.DISEASE_STATE.getCategoryName().equals(category)) {
+                bioMaterial.setDiseaseState(((TermBasedCharacteristic) characteristic).getTerm());
+            } else if (ExperimentOntologyCategory.ORGANISM.getCategoryName().equals(category)) {
+                Organism organism = getOrganism(((TermBasedCharacteristic) characteristic).getTerm());
+                bioMaterial.setOrganism(organism);
             } else {
                 bioMaterial.getCharacteristics().add(characteristic);
                 characteristic.setBioMaterial(bioMaterial);
@@ -348,10 +347,9 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     private Term getUnknownProtocolType() {
-        TermSource source = this.vocabularyService.getSource(ExperimentOntology.CAARRAY.getOntologyName());
-        Category category = this.vocabularyService.getCategory(source,
-                ExperimentOntologyCategory.PROTOCOL_TYPE.getCategoryName());
-        return this.vocabularyService.getTerm(source, category, VocabularyService.UNKNOWN_PROTOCOL_TYPE_NAME);
+        TermSource source = this.vocabularyService.getSource(ExperimentOntology.CAARRAY.getOntologyName(),
+                ExperimentOntology.CAARRAY.getVersion());
+        return this.vocabularyService.getTerm(source, VocabularyService.UNKNOWN_PROTOCOL_TYPE_NAME);
     }
 
     private Protocol replaceProtocolIfExists(Protocol p) {
@@ -371,6 +369,24 @@ final class SdrfTranslator extends AbstractTranslator {
         return returnProtocol;
     }
 
+    /**
+     * @param term
+     * @return
+     */
+    private Organism getOrganism(Term term) {
+        Organism o = termToOrganism.get(term);
+        if (o == null && term.getSource().getId() != null) {
+            o = vocabularyService.getOrganism(term.getSource(), term.getValue());
+        }
+        if (o == null) {
+            o = new Organism();
+            o.setScientificName(term.getValue());
+            o.setTermSource(term.getSource());
+            termToOrganism.put(term, o);
+        }
+        return o;
+    }
+
     private Protocol getProtocolFromMageTabProtocol(gov.nih.nci.caarray.magetab.Protocol mageTabProtocol) {
         Term type = getTerm(mageTabProtocol.getType());
         if (type == null) {
@@ -380,7 +396,8 @@ final class SdrfTranslator extends AbstractTranslator {
         if (mageTabProtocol.getTermSource() != null) {
             termSource = getTranslationResult().getSource(mageTabProtocol.getTermSource());
         } else {
-            termSource = this.vocabularyService.getSource(ExperimentOntology.CAARRAY.getOntologyName());
+            termSource = this.vocabularyService.getSource(ExperimentOntology.CAARRAY.getOntologyName(),
+                    ExperimentOntology.CAARRAY.getVersion());
         }
         Protocol p = new Protocol(mageTabProtocol.getName(), type, termSource);
         p.setContact(mageTabProtocol.getContact());
@@ -412,23 +429,16 @@ final class SdrfTranslator extends AbstractTranslator {
 
     private AbstractCharacteristic translateCharacteristic(
             Characteristic sdrfCharacteristic) {
-        if (sdrfCharacteristic.getTerm() != null) {
-            TermBasedCharacteristic characteristic =
-                new TermBasedCharacteristic();
-            characteristic.setTerm(getTerm(sdrfCharacteristic.getTerm()));
-            return characteristic;
-        } else if (sdrfCharacteristic.getUnit() != null) {
-            MeasurementCharacteristic characteristic = new MeasurementCharacteristic();
-            characteristic.setValue(Float.valueOf(sdrfCharacteristic.getValue()));
-            characteristic.setUnit(getTerm(sdrfCharacteristic.getUnit()));
-            return characteristic;
+        Category category = TermTranslator.getOrCreateCategory(this.vocabularyService, this.getTranslationResult(),
+                sdrfCharacteristic.getCategory());
+        if (sdrfCharacteristic.getUnit() != null) {
+            return new MeasurementCharacteristic(category, Float.valueOf(sdrfCharacteristic.getValue()),
+                    getTerm(sdrfCharacteristic.getUnit()));
         } else {
-            ValueBasedCharacteristic characteristic = new ValueBasedCharacteristic();
-            characteristic.setValue(sdrfCharacteristic.getValue());
-            return characteristic;
-        }
+            return new TermBasedCharacteristic(category, getTerm(sdrfCharacteristic.getTerm()));
+        } 
     }
-
+    
     // Translates arraydesigns to a linked array-arraydesign pair in the caArray domain.
     private void translateArrayDesigns(SdrfDocument document) {
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDesign sdrfArrayDesign : document.getAllArrayDesigns()) {

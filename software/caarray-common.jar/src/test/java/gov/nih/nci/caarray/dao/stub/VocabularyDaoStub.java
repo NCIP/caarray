@@ -82,13 +82,12 @@
  */
 package gov.nih.nci.caarray.dao.stub;
 
+import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.dao.VocabularyDao;
-import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -101,21 +100,20 @@ public class VocabularyDaoStub extends AbstractDaoStub implements VocabularyDao 
     /**
      * {@inheritDoc}
      */
-    public Category getCategory(String name) {
+    public Category getCategory(TermSource source, String name) {
         return null;
     }
 
     /**
      * {@inheritDoc}
      */
-    public List<Term> getTerms(String categoryName) {
-        return new ArrayList<Term>();
+    public Set<Term> getTerms(Category category) {
+        return new HashSet<Term>();
     }
-
     /**
      * {@inheritDoc}
      */
-    public Set<Term> getTermsRecursive(String categoryName, String value) {
+    public Set<Term> getTermsRecursive(Category category, String value) {
         return new HashSet<Term>();
     }
 
@@ -132,39 +130,15 @@ public class VocabularyDaoStub extends AbstractDaoStub implements VocabularyDao 
     public Term getTermById(Long id) {
         return null;
     }
-
+   
     /**
      * {@inheritDoc}
      */
-    public List<Term> getCellTypesForExperiment(Experiment experiment) {
+    public Term getTerm(TermSource source, String value) {
         return null;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<Term> getDiseaseStatesForExperiment(Experiment experiment) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<Term> getMaterialTypesForExperiment(Experiment experiment) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<Term> getTissueSitesForExperiment(Experiment experiment) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<Term> getTerms(TermSource source, Category category, String value) {
+    
+    public Organism getOrganism(TermSource source, String scientificName) {
         return null;
     }
 }

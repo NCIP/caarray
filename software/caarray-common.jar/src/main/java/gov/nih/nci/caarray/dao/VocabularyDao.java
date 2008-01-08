@@ -82,12 +82,11 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.domain.project.Experiment;
+import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -98,46 +97,41 @@ import java.util.Set;
 public interface VocabularyDao extends CaArrayDao {
 
     /**
-     * Gets all the <code>Terms</code> matching the category name
-     * given.
+     * Gets all the <code>Terms</code> belonging to the given category only (and not its subcategories).
      *
-     * @param categoryName get terms for this category
-     * @return all matching terms or an empty <code>List</code> if no matches.
+     * @param category the category for which to retrieve terms
+     * @return <code>List&lt;Term></code> of all terms belonging directly to the given category, or an empty 
+     * <code>List</code> if no matches.
      */
-    List<Term> getTerms(String categoryName);
+    Set<Term> getTerms(Category category);
 
     /**
-     * Removes a given list of terms from the db.
+     * Gets all the <code>Terms</code> in the given category and all sub-categories (where a category's
+     * subcategories are the transitive closure of its children property), optionally retrieving only
+     * terms whose value starts with the given prefix.
      *
-     * @param termList list of temrs
-     */
-    void removeTerms(List<Term> termList);
-
-    /**
-     * Gets all the <code>Terms</code> in the given category and all sub-categories.
-     *
-     * @param categoryName get terms for this category and all sub-categories.
-     * @param value the value to search on
+     * @param category the category for which to retrieve terms
+     * @param valuePrefix if not null, only return terms whose value starts with this. 
      * @return all matching terms or an empty <code>Set</code> if no matches.
      */
-    Set<Term> getTermsRecursive(String categoryName, String value);
+    Set<Term> getTermsRecursive(Category category, String valuePrefix);
 
     /**
-     * Get the terms with the given criteria.
+     * Get the term with given value in the given term source.
      * @param source the source the term must have.
-     * @param category the returned terms will either be of this category or a descendant category.
-     * @param value the value of the term
-     * @return the list of terms
+     * @param value the value the term must have (case insensitive)
+     * @return the term matching the above, or null if no matches
      */
-    List<Term> getTerms(TermSource source, Category category, String value);
+    Term getTerm(TermSource source, String value);
 
     /**
-     * Returns the <code>Category</code> with the given name or null if none exists.
+     * Returns the <code>Category</code> with the given name from the given term source or null if none exists.
      *
-     * @param name get <code>Category</code> matching this name
-     * @return the <code>Category</code> or null.
+     * @param termSource source the term source to look in
+     * @param name the name of the <code>Category</code> to look for
+     * @return the matching <code>Category</code> or null if none exist.
      */
-    Category getCategory(String name);
+    Category getCategory(TermSource termSource, String name);
 
     /**
      * Returns the Term with given id.
@@ -145,32 +139,12 @@ public interface VocabularyDao extends CaArrayDao {
      * @return the Term with given id or null if none found
      */
     Term getTermById(Long id);
-
+    
     /**
-     * Get tissue sites for the experiment and category.
-     * @param experiment the experiment
-     * @return the list of terms
+     * Get the organism with given name in the given term source.
+     * @param source the source the organism must have.
+     * @param scientificName the scientific name the organism must have (case insensitive)
+     * @return the organism matching the above, or null if no matches
      */
-    List<Term> getTissueSitesForExperiment(Experiment experiment);
-
-    /**
-     * Get material types for the experiment and category.
-     * @param experiment the experiment
-     * @return the list of terms
-     */
-    List<Term> getMaterialTypesForExperiment(Experiment experiment);
-
-    /**
-     * Get cell types for the experiment and category.
-     * @param experiment the experiment
-     * @return the list of terms
-     */
-    List<Term> getCellTypesForExperiment(Experiment experiment);
-
-    /**
-     * Get disease states for the experiment and category.
-     * @param experiment the experiment
-     * @return the list of terms
-     */
-    List<Term> getDiseaseStatesForExperiment(Experiment experiment);
+    Organism getOrganism(TermSource source, String scientificName);
 }
