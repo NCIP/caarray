@@ -168,7 +168,6 @@ public class MageTabParserTest {
         inputFileSet.addSdrf(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
         ValidationResult result = parser.validate(inputFileSet);
         System.out.println(result);
-        assertTrue(result.toString().contains("No value was provided for a Term Source REF"));
         assertTrue(result.toString().contains("Term Source not-in-IDF is not defined in the IDF document"));
     }
 

@@ -171,7 +171,7 @@ public class Protocol extends AbstractCaArrayEntity implements Protectable {
      *
      * @return the description
      */
-    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
+    @Length(max = LARGE_TEXT_FIELD_LENGTH)
     public String getDescription() {
         return this.description;
     }

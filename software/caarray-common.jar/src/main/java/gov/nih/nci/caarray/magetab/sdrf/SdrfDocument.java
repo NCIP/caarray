@@ -119,6 +119,7 @@ import org.apache.commons.lang.StringUtils;
 public final class SdrfDocument extends AbstractMageTabDocument {
 
     private static final long serialVersionUID = 1116542609494378874L;
+    private static final String EMPTY_SYMBOL = "->";
     private IdfDocument idfDocument;
     private final List<SdrfColumn> columns = new ArrayList<SdrfColumn>();
     private final Map<NodeKey, AbstractSampleDataRelationshipNode> nodeCache =
@@ -256,6 +257,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     @SuppressWarnings("PMD")
     // warnings suppressed due to long switch statement
     private void handleValue(SdrfColumn column, String value) {
+        if (isBlank(value)) {
+            return;
+        }
         switch (column.getType()) {
         case SOURCE_NAME:
         case SAMPLE_NAME:
@@ -331,6 +335,10 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         default:
             break;
         }
+    }
+
+    private boolean isBlank(String value) {
+        return StringUtils.isBlank(value) || EMPTY_SYMBOL.equals(value);
     }
 
     private void handleHybridization(SdrfColumn column, String value) {
@@ -460,10 +468,6 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     }
 
     private void handleTermSourceRef(String value) {
-        if (StringUtils.isBlank(value)) {
-            addWarningMessage(currentLineNumber, currentColumnNumber, "No value was provided for a Term Source REF");
-            return;
-        }
         TermSource termSource = getTermSource(value);
         if (termSource == null) {
             addWarningMessage(currentLineNumber, currentColumnNumber,
