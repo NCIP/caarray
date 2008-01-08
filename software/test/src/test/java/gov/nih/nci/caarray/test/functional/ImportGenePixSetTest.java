@@ -102,9 +102,8 @@ import org.junit.Test;
 public class ImportGenePixSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 4;
-    private static final int SECOND_COLUMN = 2;
-    private static final int THIRD_COLUMN = 3;
-
+    private static final String FIRST_COLUMN = "1";
+ 
     @Test
     public void testImportAndRetrieval() throws Exception {
         String title = "gpr files" + System.currentTimeMillis();
@@ -137,10 +136,8 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
         selenium.click("link=Import");
         waitForAction();
 
-        assertTrue(selenium.isTextPresent("Importing"));
-
         // - hit the refresh button until files are imported
-        waitForImport();
+        waitForImport("Nothing found to display");
 
         // - click on the Imported data tab
         selenium.click("link=Imported Data");
@@ -164,7 +161,7 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
 
         findTitleAcrossMultiPages(title);
         // - Make the experiment public
-        int row = getExperimentRow(title);
+        int row = getExperimentRow(title, FIRST_COLUMN);
         // - Click on the image to enter the edit mode again
         selenium.click("//tr[" + row + "]/td[7]/a/img");
         waitForText("Overall Experiment Characteristics");
@@ -173,36 +170,6 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
         setExperimentPublic();
     }
 
-    private int getExperimentRow(String text) {
-        for (int loop = 1;; loop++) {
-            if (loop % PAGE_SIZE != 0) {
-                if (text.equalsIgnoreCase(selenium.getTable("row." + loop + ".1"))) {
-                    return loop;
-                }
-            } else {
-                // Moving to next page
-                selenium.click("link=Next");
-                waitForAction();
-                loop = 1;
-            }
-        }
-    }
-
-    private boolean waitForImport() throws Exception {
-        for (int loop = 1;; loop++) {
-            if (loop == 40) {
-                fail();
-                return false;
-            }
-            selenium.click(REFRESH_BUTTON);
-            if (selenium.isTextPresent("Importing")) {
-                Thread.sleep(10000);
-            } else {
-                // done
-                return true;
-            }
-        }
-    }
 
     private void verifyDataViaApi(String experimentTitle) throws ServerConnectionException {
         CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties.getServerJndiPort());

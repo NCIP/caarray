@@ -91,7 +91,6 @@ import com.thoughtworks.selenium.SeleneseTestCase;
  * Base class for all functional tests that use Selenium Remote Control. Provides proper set up in order to be called by
  * caArray's ant script.
  *
- * @author tavelae
  */
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
@@ -102,6 +101,10 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected static final int PAGE_SIZE = 20;
     protected static final String REFRESH_BUTTON = "//a[6]/span/span";
     private static final String UPLOAD_BUTTON = "//ul/a[3]/span/span";
+    protected static final String FIRST_COLUMN = "0";
+    protected static final int SECOND_COLUMN = 2;
+    protected static final int THIRD_COLUMN = 3;
+    protected static final String IMPORTED = "Imported";
 
     @Override
     public void setUp() throws Exception {
@@ -222,8 +225,10 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     /**
      * @param title
+     * @throws InterruptedException 
      */
-    protected void createExperiment(String title) {
+    protected void createExperiment(String title) throws InterruptedException {
+        Thread.sleep(1000);
         selenium.click("link=Create/Propose Experiment");
         waitForElementWithId("projectForm_project_experiment_title");
         // - Type in the Experiment name
@@ -253,9 +258,9 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.select("arrayDesignForm_arrayDesign_organism", "label=Homo sapiens");
         selenium.type("arrayDesignForm_upload", arrayDesign.toString());
         selenium.click("link=Save");
-        waitForText("Edit");
+        waitForText("found");
         //Affymetrix design HG-U133_Plus_2 has already been imported
-        selenium.isTextPresent(arrayDesignName);
+      //  selenium.isTextPresent(arrayDesignName);
     }
     
     protected void findTitleAcrossMultiPages(String text) throws Exception {
@@ -287,4 +292,52 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         assertTrue(selenium.getConfirmation().matches("^Are you sure you want to change the project's status[\\s\\S]$"));
         waitForText("Permissions");
     }
+    protected boolean waitForArrayDesignImport(int seconds, int row) throws Exception {
+        for (int loop = 1; loop<seconds; loop++) {
+            selenium.click("link=Manage Array Designs");
+            // done
+            String rowText =  selenium.getTable("row." + row + ".6");
+            if (rowText.equalsIgnoreCase(IMPORTED)) {
+                return true;
+            } else {
+                Thread.sleep(10000);
+            }
+        }
+        fail("Timeout waiting for Array Design to Import");
+        return false;
+
+    }
+    protected int getExperimentRow(String text, String column) {
+        for (int loop = 1;; loop++) {
+            if (loop % PAGE_SIZE != 0) {
+                if (text.equalsIgnoreCase(selenium.getTable("row." + loop + "." + column))) {
+                    return loop;
+                }
+            } else {
+                // Moving to next page
+                // (this will fail once there are no more pages
+                selenium.click("link=Next");
+                waitForAction();
+                loop = 1;
+            }
+        }
+    }
+    
+    protected boolean waitForImport(String textToWaitFor) throws Exception {
+        int ten_minutes = 60;
+        for (int time = 1;; time++) {
+            if (time == ten_minutes) {
+                fail("Timeout waiting for Import");
+                return false;
+            }
+            selenium.click(REFRESH_BUTTON);
+            if (selenium.isTextPresent(textToWaitFor)) {
+                // done
+                return true;
+            } else {
+                Thread.sleep(10000);
+            }
+        }
+    }
+
 }

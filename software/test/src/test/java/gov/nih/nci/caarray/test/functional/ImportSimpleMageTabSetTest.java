@@ -105,8 +105,7 @@ import org.junit.Test;
 public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
 
     private static final int NUMBER_OF_FILES = 10;
-    private static final int SECOND_COLUMN = 2;
-    private static final int THIRD_COLUMN = 3;
+    private static final int TWO_MINUTES = 12;
 
     @Test
     public void testImportAndRetrieval() throws Exception {
@@ -155,10 +154,8 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         selenium.click("link=Import");
         waitForAction();
 
-        assertTrue(selenium.isTextPresent("Importing"));
-
         // - hit the refresh button until files are imported
-        waitForImport();
+        waitForImport("Nothing found to display");
 
         // - click on the Imported data tab
         selenium.click("link=Imported Data");
@@ -182,7 +179,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
 
         assertTrue(selenium.isTextPresent(title));
         // - Make the experiment public
-        int row = getExperimentRow(title);
+        int row = getExperimentRow(title, FIRST_COLUMN);
         // - Click on the image to enter the edit mode again
         selenium.click("//tr[" + row + "]/td[7]/a/img");
         waitForText("Overall Experiment Characteristics");
@@ -191,27 +188,16 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         setExperimentPublic();
     }
 
-    private int getExperimentRow(String text) {
-        for (int loop = 1;; loop++) {
-            if (loop % PAGE_SIZE != 0) {
-                if (text.equalsIgnoreCase(selenium.getTable("row." + loop + ".1"))) {
-                    return loop;
-                }
-            } else {
-                // Moving to next page
-                selenium.click("link=Next");
-                waitForAction();
-                loop = 1;
-            }
-        }
-    }
-
     private void importArrayDesign(File arrayDesign) throws Exception {
         String arrayDesignName = "Test3";
         selenium.click("link=Manage Array Designs");
         selenium.waitForPageToLoad("30000");
         if (!doesArrayDesignExists(arrayDesignName)) {
             addArrayDesign(arrayDesignName, arrayDesign);
+            // get the array design row so we do not find the wrong Imported text
+            int column = getExperimentRow(arrayDesignName, FIRST_COLUMN);
+            // wait for array design to be imported
+            waitForArrayDesignImport(TWO_MINUTES, column);
         }
     }
 
@@ -223,21 +209,6 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
      * @throws Exception
      * 
      */
-    private boolean waitForImport() throws Exception {
-        for (int loop = 1;; loop++) {
-            if (loop == 40) {
-                fail("Timeout");
-                return false;
-            }
-            selenium.click(REFRESH_BUTTON);
-            if (selenium.isTextPresent("Importing")) {
-                Thread.sleep(10000);
-            } else {
-                // done
-                return true;
-            }
-        }
-    }
 
     private void verifyDataViaApi(String experimentTitle) throws ServerConnectionException {
         CaArrayServer server = new CaArrayServer(TestProperties.getServerHostname(), TestProperties.getServerJndiPort());
@@ -252,6 +223,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         assertEquals(6, experiment.getExtracts().size());
         assertEquals(6, experiment.getLabeledExtracts().size());
         assertEquals(6, experiment.getHybridizations().size());
+        System.out.println("java api was successful");
     }
 
     private void checkFileStatus(String status, int column) {
