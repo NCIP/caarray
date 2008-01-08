@@ -131,6 +131,7 @@ public class UtilsTest {
         HibernateUtil.beginTransaction();
         B b = new B();
         CaArrayUtils.makeChildrenLeaves(b);
+        assertTrue(b.fooAccessed || b.iAccessed);
 
         assertNull(b.getUser());
         assertEquals(b.getId(), 1L);
@@ -202,6 +203,7 @@ public class UtilsTest {
         public int compareTo(A o) {
             return 0;
         }
+
     }
 
     public static class B extends A {
@@ -212,8 +214,10 @@ public class UtilsTest {
         private Map<Integer, A> otherMap = new HashMap<Integer, A>();
         private Collection<A> otherCollection = new HashSet<A>();
         private String foo = "foo";
+        private boolean fooAccessed = false;
         private User user = new User();
         private int i = 3;
+        private boolean iAccessed = false;
         private Set<User> users = new HashSet<User>();
         private SortedSet<A> sortedSet = new TreeSet<A>();
 
@@ -236,6 +240,7 @@ public class UtilsTest {
 
         @SuppressWarnings("unused")
         private String getFoo() {
+            fooAccessed = true;
             return foo;
         }
 
@@ -327,6 +332,7 @@ public class UtilsTest {
         }
 
         public int getI() {
+            iAccessed = true;
             return i;
         }
 
@@ -341,6 +347,7 @@ public class UtilsTest {
         public void setSortedSet(SortedSet<A> sortedSet) {
             this.sortedSet = sortedSet;
         }
+
     }
 
     public static class C implements PersistentObject {

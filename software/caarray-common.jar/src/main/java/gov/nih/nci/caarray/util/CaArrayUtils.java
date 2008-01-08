@@ -176,6 +176,7 @@ public final class CaArrayUtils {
             return;
         }
 
+        boolean initialized = false;
         for (Method[] m : findGettersAndSetters(val)) {
             Class<?> type = m[1].getParameterTypes()[0];
             Object param = null;
@@ -193,7 +194,15 @@ public final class CaArrayUtils {
                 // Don't allow non-serializable to go over the wire
                 LOG.debug("Cutting non-serializable object of type: " + type);
             } else if (!PersistentObject.class.isAssignableFrom(type)) {
-                // Don't call setting for primitive types, or non-domain model objects
+                // Ensures that object is initialized and not a Hibernate proxy
+                if (!initialized && !m[0].getName().equals("getId")) {
+                    try {
+                        m[0].invoke(val, new Object[] {});
+                        initialized = true;
+                    } catch (Exception e) {
+                        LOG.error("Unable to call a getter: " + e.getMessage(), e);
+                    }
+                }
                 continue;
             }
 
