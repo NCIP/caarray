@@ -127,6 +127,7 @@ abstract class AbstractDataSetImporter {
 
     AbstractArrayData importData(boolean createAnnnotation) {
         lookupOrCreateArrayData(createAnnnotation);
+        setArrayDataType();
         getArrayData().setDataSet(new DataSet());
         addHybridizationDatas();
         addColumns();
@@ -135,6 +136,13 @@ abstract class AbstractDataSetImporter {
             getArrayData().setName(getCaArrayFile().getName());
         }
         return getArrayData();
+    }
+
+    private void setArrayDataType() {
+        if (getArrayData().getType() == null) {
+            getArrayData().setType(getArrayDataType(getDataFileHandler().getArrayDataTypeDescriptor(getFile())));
+            getArrayDao().save(getArrayData());
+        }
     }
 
     private void lookupOrCreateArrayData(boolean createAnnnotation) {

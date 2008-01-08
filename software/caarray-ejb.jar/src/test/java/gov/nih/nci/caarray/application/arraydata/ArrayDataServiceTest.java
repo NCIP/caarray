@@ -245,8 +245,10 @@ public class ArrayDataServiceTest {
         celData.setHybridization(hybridization);
         hybridization.setArrayData(celData);
         celData.setDataFile(celFile);
+        assertNull(celData.getType());
         this.daoFactoryStub.getArrayDao().save(celData);
         this.arrayDataService.importData(celFile, true);
+        assertNotNull(celData.getType());
         assertEquals(celData, this.daoFactoryStub.getArrayDao().getRawArrayData(celFile));
         assertEquals(hybridization, celData.getHybridization());
     }
