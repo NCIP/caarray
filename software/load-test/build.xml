@@ -102,6 +102,7 @@
                 <include name="caGrid-1.1-metadata-security.jar" />
                 <include name="caGrid-1.1-ServiceSecurityProvider-client.jar" />
                 <include name="caGrid-1.1-ServiceSecurityProvider-common.jar" />
+                <include name="caGrid-1.1-ServiceSecurityProvider-stubs.jar" />
             </fileset>
         </copy>
         <copy file="${caarray.common.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
