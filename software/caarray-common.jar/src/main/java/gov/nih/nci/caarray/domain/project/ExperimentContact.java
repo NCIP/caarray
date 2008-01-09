@@ -206,6 +206,7 @@ public class ExperimentContact extends AbstractCaArrayEntity {
      * @return the experiment
      */
     @ManyToOne
+    @JoinColumn(name = "experiment", insertable = false, updatable = false)
     @ForeignKey(name = "EXPCONTACT_INVEST_FK")
     public Experiment getExperiment() {
         return experiment;

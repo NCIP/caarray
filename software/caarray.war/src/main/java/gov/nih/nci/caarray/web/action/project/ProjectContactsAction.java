@@ -97,6 +97,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 
@@ -163,18 +164,19 @@ public class ProjectContactsAction extends ProjectTabAction {
     @Override
     @SuppressWarnings("PMD")
     @Validations(
+        requiredStrings = {
+            @RequiredStringValidator(fieldName = "primaryInvestigator.firstName", key = REQUIRED_STRING_KEY, 
+                    message = ""),
+            @RequiredStringValidator(fieldName = "primaryInvestigator.lastName", key = REQUIRED_STRING_KEY, 
+                    message = ""),
+            @RequiredStringValidator(fieldName = "primaryInvestigator.email", key = REQUIRED_STRING_KEY, 
+                    message = "") }, 
         fieldExpressions = {
-            @FieldExpressionValidator(expression = "primaryInvestigator.firstName.length() > 0",
-                    fieldName = "primaryInvestigator.firstName", key = REQUIRED_STRING_KEY, message = ""),
-            @FieldExpressionValidator(expression = "primaryInvestigator.lastName.length() > 0",
-                    fieldName = "primaryInvestigator.lastName", key = REQUIRED_STRING_KEY, message = ""),
-            @FieldExpressionValidator(expression = "primaryInvestigator.email.length() > 0",
-                    fieldName = "primaryInvestigator.email", key = REQUIRED_STRING_KEY, message = ""),
-            @FieldExpressionValidator(expression = "piIsMainPoc || mainPointOfContact.firstName.length() > 0",
+            @FieldExpressionValidator(expression = "piIsMainPoc || mainPointOfContact.firstName != null", 
                     fieldName = "mainPointOfContact.firstName", key = REQUIRED_STRING_KEY, message = ""),
-            @FieldExpressionValidator(expression = "piIsMainPoc || mainPointOfContact.lastName.length() > 0",
+            @FieldExpressionValidator(expression = "piIsMainPoc || mainPointOfContact.lastName != null", 
                     fieldName = "mainPointOfContact.lastName", key = REQUIRED_STRING_KEY, message = ""),
-            @FieldExpressionValidator(expression = "piIsMainPoc || mainPointOfContact.email.length() > 0",
+            @FieldExpressionValidator(expression = "piIsMainPoc || mainPointOfContact.email != null", 
                     fieldName = "mainPointOfContact.email", key = REQUIRED_STRING_KEY, message = "")
         }
     )
@@ -194,7 +196,7 @@ public class ProjectContactsAction extends ProjectTabAction {
                 if (pi.isMainPointOfContact()) {
                     pi.removeMainPointOfContactRole();
                     mainPoc = new ExperimentContact(getExperiment(), new Person(), mainPocRole);
-                    getProject().getExperiment().getExperimentContacts().add(mainPoc);
+                    getProject().getExperiment().getExperimentContacts().add(1, mainPoc); 
                 }
                 copyContact(this.mainPointOfContact, mainPoc.getContact());
             }
@@ -272,7 +274,7 @@ public class ProjectContactsAction extends ProjectTabAction {
      * @return the primaryInvestigator
      */
     @CustomValidator(type = "hibernate", parameters = @ValidationParameter(name = "conditionalExpression",
-                    value = "primaryInvestigator.email.length() > 0"))
+                    value = "primaryInvestigator.email != null"))
     public Person getPrimaryInvestigator() {
         return this.primaryInvestigator;
     }
@@ -288,7 +290,7 @@ public class ProjectContactsAction extends ProjectTabAction {
      * @return the mainPointOfContact
      */
     @CustomValidator(type = "hibernate", parameters = @ValidationParameter(name = "conditionalExpression",
-                    value = "mainPointOfContact.email.length() > 0 && !piIsMainPoc"))
+                    value = "mainPointOfContact.email != null && !piIsMainPoc"))
     public Person getMainPointOfContact() {
         return this.mainPointOfContact;
     }

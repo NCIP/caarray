@@ -127,6 +127,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Formula;
+import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.validator.Length;
@@ -342,7 +343,7 @@ public class Experiment extends AbstractCaArrayEntity {
             + "contact c join experiment_contact ec on c.id = ec.contact "
             + "join experimentcontactrole ecr on ecr.experimentcontact_id = ec.id "
             + "join term t on ecr.role_id = t.id where t.value='" + ExperimentContact.PI_ROLE
-            + "' and ec.experiment = id)")
+            + "' and ec.experiment = id order by ec.indx limit 1)")
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public String getPublicIdentifier() {
         return this.publicIdentifier;
@@ -400,7 +401,6 @@ public class Experiment extends AbstractCaArrayEntity {
             if (contact.isMainPointOfContact() && !contact.isPrimaryInvestigator()) {
                 contact.setExperiment(null);
                 it.remove();
-                break;
             }
         }
     }
@@ -751,7 +751,9 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the experimentContacts
      */
-    @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.LAZY)
+    @OneToMany
+    @IndexColumn(name = "indx")
+    @JoinColumn(name = "experiment")
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public List<ExperimentContact> getExperimentContacts() {
