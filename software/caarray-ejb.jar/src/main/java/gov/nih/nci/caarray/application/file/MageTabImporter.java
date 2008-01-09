@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
@@ -247,17 +248,21 @@ class MageTabImporter {
         originalExperiment.getArrays().addAll(translatedExperiment.getArrays());
         originalExperiment.setDateOfExperiment(translatedExperiment.getDateOfExperiment());
         originalExperiment.setDescription(translatedExperiment.getDescription());
-        originalExperiment.getExperimentContacts().addAll(translatedExperiment.getExperimentContacts());
         originalExperiment.getExtracts().addAll(translatedExperiment.getExtracts());
         originalExperiment.getFactors().addAll(translatedExperiment.getFactors());
         originalExperiment.getHybridizations().addAll(translatedExperiment.getHybridizations());
         originalExperiment.getLabeledExtracts().addAll(translatedExperiment.getLabeledExtracts());
+        originalExperiment.getExperimentDesignTypes().addAll(translatedExperiment.getExperimentDesignTypes());
         originalExperiment.getNormalizationTypes().addAll(translatedExperiment.getNormalizationTypes());
         originalExperiment.getPublications().addAll(translatedExperiment.getPublications());
         originalExperiment.getQualityControlTypes().addAll(translatedExperiment.getQualityControlTypes());
         originalExperiment.getReplicateTypes().addAll(translatedExperiment.getReplicateTypes());
         originalExperiment.getSamples().addAll(translatedExperiment.getSamples());
         originalExperiment.getSources().addAll(translatedExperiment.getSources());
+        originalExperiment.getExperimentContacts().addAll(translatedExperiment.getExperimentContacts());
+        for (ExperimentContact ec : translatedExperiment.getExperimentContacts()) {
+            ec.setExperiment(originalExperiment);
+        }
     }
 
     private CaArrayDao getCaArrayDao() {

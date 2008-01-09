@@ -16,6 +16,7 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(project.experiment.title)
         </p>
         <s:form action="ajax/project/tab/Overview/save" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper'); return false;">
             <s:textfield required="true" key="project.experiment.title" size="80" tabindex="1"/>
+            <s:textarea key="project.experiment.description" cols="80" rows="5" tabindex="2"/>
             <s:textfield theme="readonly" label="Status" value="%{getText(project.status.resourceKey)}"/>
             <s:textfield theme="readonly" name="project.experiment.publicIdentifier" label="Experiment Identifier"/>
             <s:select required="true" key="project.experiment.serviceType" tabindex="4"

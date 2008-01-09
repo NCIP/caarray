@@ -98,9 +98,11 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.AttributePolicy;
 import gov.nih.nci.caarray.security.SecurityPolicy;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -220,8 +222,8 @@ public class Experiment extends AbstractCaArrayEntity {
     private Organization manufacturer;
     private Organism organism;
     private Set<Factor> factors = new HashSet<Factor>();
-    private Set<ExperimentContact> experimentContacts = new HashSet<ExperimentContact>();
-    private Term experimentDesignType;
+    private List<ExperimentContact> experimentContacts = new ArrayList<ExperimentContact>();
+    private Set<Term> experimentDesignTypes = new HashSet<Term>();
     private String experimentDesignDescription;
     private String qualityControlDescription;
     private Set<Term> qualityControlTypes = new HashSet<Term>();
@@ -364,8 +366,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @Transient
     public ExperimentContact getPrimaryInvestigator() {
         // find the first contact whose set of roles includes the PI role
-        Set<ExperimentContact> contacts = getExperimentContacts();
-        for (ExperimentContact contact : contacts) {
+        for (ExperimentContact contact : this.experimentContacts) {
             if (contact.isPrimaryInvestigator()) {
                 return contact;
             }
@@ -381,8 +382,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @Transient
     public ExperimentContact getMainPointOfContact() {
         // find the first contact whose set of roles includes the PI role
-        Set<ExperimentContact> contacts = getExperimentContacts();
-        for (ExperimentContact contact : contacts) {
+        for (ExperimentContact contact : this.experimentContacts) {
             if (contact.isMainPointOfContact()) {
                 return contact;
             }
@@ -754,7 +754,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @OneToMany(mappedBy = EXPERIMENT_REF, fetch = FetchType.LAZY)
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
-    public Set<ExperimentContact> getExperimentContacts() {
+    public List<ExperimentContact> getExperimentContacts() {
         return this.experimentContacts;
     }
 
@@ -764,25 +764,28 @@ public class Experiment extends AbstractCaArrayEntity {
      * @param experimentContactsVal the experimentContacts
      */
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    private void setExperimentContacts(final Set<ExperimentContact> experimentContactsVal) {
+    private void setExperimentContacts(final List<ExperimentContact> experimentContactsVal) {
         this.experimentContacts = experimentContactsVal;
     }
 
     /**
      * @return the experimentDesignType
      */
-    @ManyToOne
-    @ForeignKey(name = "EXPERIMENT_DESIGN_TYPE_FK")
+    @ManyToMany
+    @JoinTable(name = "EXPERIMENT_DESIGN_TYPES",
+            joinColumns = {@JoinColumn(name = FK_COLUMN_NAME) },
+            inverseJoinColumns = {@JoinColumn(name = TERM_FK_NAME) })
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    public Term getExperimentDesignType() {
-        return this.experimentDesignType;
+    public Set<Term> getExperimentDesignTypes() {
+        return this.experimentDesignTypes;
     }
 
     /**
      * @param experimentDesignType the experimentDesignType to set
      */
-    public void setExperimentDesignType(Term experimentDesignType) {
-        this.experimentDesignType = experimentDesignType;
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setExperimentDesignTypes(Set<Term> experimentDesignTypes) {
+        this.experimentDesignTypes = experimentDesignTypes;
     }
 
     /**

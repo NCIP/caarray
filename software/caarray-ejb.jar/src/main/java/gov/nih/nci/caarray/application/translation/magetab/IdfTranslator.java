@@ -144,6 +144,7 @@ final class IdfTranslator extends AbstractTranslator {
 
     private void translateTerms(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
             Experiment investigation) {
+        investigation.getExperimentDesignTypes().addAll(getTerms(idfInvestigation.getDesigns()));
         investigation.getNormalizationTypes().addAll(getTerms(idfInvestigation.getNormalizationTypes()));
         investigation.getReplicateTypes().addAll(getTerms(idfInvestigation.getReplicateTypes()));
         investigation.getQualityControlTypes().addAll(getTerms(idfInvestigation.getQualityControlTypes()));

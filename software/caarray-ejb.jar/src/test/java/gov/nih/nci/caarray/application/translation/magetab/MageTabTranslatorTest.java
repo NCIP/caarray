@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.translation.magetab;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
@@ -146,6 +147,11 @@ public class MageTabTranslatorTest {
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
         CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
+        assertNotNull(experiment.getDescription());
+        assertTrue(experiment.getDescription().startsWith("Gene expression of TK6"));
+        assertEquals(8, experiment.getExperimentContacts().size());
+        assertEquals(1, experiment.getExperimentDesignTypes().size());
+        assertEquals("genetic_modification_design", experiment.getExperimentDesignTypes().iterator().next().getValue());
         assertEquals(6, experiment.getSources().size());
         assertEquals(6, experiment.getSamples().size());
         assertEquals(6, experiment.getExtracts().size());
