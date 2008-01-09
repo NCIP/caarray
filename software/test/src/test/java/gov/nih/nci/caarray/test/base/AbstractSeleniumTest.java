@@ -101,7 +101,8 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected static final int PAGE_SIZE = 20;
     protected static final String REFRESH_BUTTON = "//a[6]/span/span";
     private static final String UPLOAD_BUTTON = "//ul/a[3]/span/span";
-    protected static final String FIRST_COLUMN = "0";
+    protected static final String ZERO_COLUMN = "0";
+    protected static final String FIRST_COLUMN = "1";
     protected static final int SECOND_COLUMN = 2;
     protected static final int THIRD_COLUMN = 3;
     protected static final String IMPORTED = "Imported";

@@ -179,7 +179,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
 
         assertTrue(selenium.isTextPresent(title));
         // - Make the experiment public
-        int row = getExperimentRow(title, FIRST_COLUMN);
+        int row = getExperimentRow(title, ZERO_COLUMN);
         // - Click on the image to enter the edit mode again
         selenium.click("//tr[" + row + "]/td[7]/a/img");
         waitForText("Overall Experiment Characteristics");
@@ -196,7 +196,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         } else {
             addArrayDesign(arrayDesignName, arrayDesign);
             // get the array design row so we do not find the wrong Imported text
-            int row = getExperimentRow(arrayDesignName, FIRST_COLUMN);
+            int row = getExperimentRow(arrayDesignName, ZERO_COLUMN);
             // wait for array design to be imported
             waitForArrayDesignImport(FIVE_MINUTES, row);
         }

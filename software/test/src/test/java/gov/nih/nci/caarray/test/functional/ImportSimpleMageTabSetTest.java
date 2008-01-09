@@ -195,7 +195,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         if (!doesArrayDesignExists(arrayDesignName)) {
             addArrayDesign(arrayDesignName, arrayDesign);
             // get the array design row so we do not find the wrong Imported text
-            int column = getExperimentRow(arrayDesignName, FIRST_COLUMN);
+            int column = getExperimentRow(arrayDesignName, ZERO_COLUMN);
             // wait for array design to be imported
             waitForArrayDesignImport(TWO_MINUTES, column);
         }
