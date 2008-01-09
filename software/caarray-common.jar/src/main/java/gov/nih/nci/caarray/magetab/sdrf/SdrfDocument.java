@@ -172,6 +172,18 @@ public final class SdrfDocument extends AbstractMageTabDocument {
      */
     @Override
     protected void parse() throws MageTabParsingException {
+        if (checkHasIdf()) {
+            parseSdrf();
+        } else {
+            addErrorMessage("This SDRF file is not referenced by an IDF file.");
+        }
+    }
+
+    private boolean checkHasIdf() {
+        return getIdfDocument() != null;
+    }
+
+    private void parseSdrf() throws MageTabParsingException {
         DelimitedFileReader tabDelimitedReader = createTabDelimitedReader();
         try {
             handleHeaderLine(getHeaderLine(tabDelimitedReader));
@@ -188,7 +200,6 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         } catch (IllegalArgumentException e) {
             addErrorMessage("SDRF type not found: " + e.getMessage());
         }
-
     }
 
     private List<String> getHeaderLine(DelimitedFileReader tabDelimitedReader) {
