@@ -27,7 +27,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">5</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1194019666000</longProp>
         <longProp name="ThreadGroup.end_time">1194019666000</longProp>
@@ -218,7 +218,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">5</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1194019666000</longProp>
         <longProp name="ThreadGroup.end_time">1194019666000</longProp>
@@ -483,7 +483,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">5</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1193253269000</longProp>
         <longProp name="ThreadGroup.end_time">1193253269000</longProp>
@@ -621,7 +621,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">5</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1193253269000</longProp>
         <longProp name="ThreadGroup.end_time">1193253269000</longProp>
@@ -674,7 +674,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">5</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1194019666000</longProp>
         <longProp name="ThreadGroup.end_time">1194019666000</longProp>
@@ -878,7 +878,7 @@
               <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 01" enabled="true">
                 <stringProp name="RegexExtractor.useHeaders">false</stringProp>
                 <stringProp name="RegexExtractor.refname">fileId01</stringProp>
-                <stringProp name="RegexExtractor.regex">downloadMgr.populateAll.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
+                <stringProp name="RegexExtractor.regex">downloadMgr.addDownloadRow.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
                 <stringProp name="RegexExtractor.default"></stringProp>
                 <stringProp name="RegexExtractor.match_number">1</stringProp>
@@ -887,7 +887,7 @@
               <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 02" enabled="true">
                 <stringProp name="RegexExtractor.useHeaders">false</stringProp>
                 <stringProp name="RegexExtractor.refname">fileId02</stringProp>
-                <stringProp name="RegexExtractor.regex">downloadMgr.populateAll.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
+                <stringProp name="RegexExtractor.regex">downloadMgr.addDownloadRow.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
                 <stringProp name="RegexExtractor.default"></stringProp>
                 <stringProp name="RegexExtractor.match_number">2</stringProp>
@@ -896,7 +896,7 @@
               <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 03" enabled="true">
                 <stringProp name="RegexExtractor.useHeaders">false</stringProp>
                 <stringProp name="RegexExtractor.refname">fileId03</stringProp>
-                <stringProp name="RegexExtractor.regex">downloadMgr.populateAll.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
+                <stringProp name="RegexExtractor.regex">downloadMgr.addDownloadRow.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
                 <stringProp name="RegexExtractor.default"></stringProp>
                 <stringProp name="RegexExtractor.match_number">3</stringProp>
@@ -905,7 +905,7 @@
               <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 04" enabled="true">
                 <stringProp name="RegexExtractor.useHeaders">false</stringProp>
                 <stringProp name="RegexExtractor.refname">fileId04</stringProp>
-                <stringProp name="RegexExtractor.regex">downloadMgr.populateAll.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
+                <stringProp name="RegexExtractor.regex">downloadMgr.addDownloadRow.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
                 <stringProp name="RegexExtractor.default"></stringProp>
                 <stringProp name="RegexExtractor.match_number">4</stringProp>
@@ -914,7 +914,7 @@
               <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 05" enabled="true">
                 <stringProp name="RegexExtractor.useHeaders">false</stringProp>
                 <stringProp name="RegexExtractor.refname">fileId05</stringProp>
-                <stringProp name="RegexExtractor.regex">downloadMgr.populateAll.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
+                <stringProp name="RegexExtractor.regex">downloadMgr.addDownloadRow.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
                 <stringProp name="RegexExtractor.default"></stringProp>
                 <stringProp name="RegexExtractor.match_number">5</stringProp>
@@ -923,7 +923,7 @@
               <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 06" enabled="true">
                 <stringProp name="RegexExtractor.useHeaders">false</stringProp>
                 <stringProp name="RegexExtractor.refname">fileId06</stringProp>
-                <stringProp name="RegexExtractor.regex">downloadMgr.populateAll.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
+                <stringProp name="RegexExtractor.regex">downloadMgr.addDownloadRow.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
                 <stringProp name="RegexExtractor.default"></stringProp>
                 <stringProp name="RegexExtractor.match_number">6</stringProp>
@@ -932,7 +932,7 @@
               <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 07" enabled="true">
                 <stringProp name="RegexExtractor.useHeaders">false</stringProp>
                 <stringProp name="RegexExtractor.refname">fileId07</stringProp>
-                <stringProp name="RegexExtractor.regex">downloadMgr.populateAll.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
+                <stringProp name="RegexExtractor.regex">downloadMgr.addDownloadRow.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
                 <stringProp name="RegexExtractor.default"></stringProp>
                 <stringProp name="RegexExtractor.match_number">7</stringProp>
@@ -941,7 +941,7 @@
               <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 08" enabled="true">
                 <stringProp name="RegexExtractor.useHeaders">false</stringProp>
                 <stringProp name="RegexExtractor.refname">fileId08</stringProp>
-                <stringProp name="RegexExtractor.regex">downloadMgr.populateAll.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
+                <stringProp name="RegexExtractor.regex">downloadMgr.addDownloadRow.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
                 <stringProp name="RegexExtractor.default"></stringProp>
                 <stringProp name="RegexExtractor.match_number">8</stringProp>
@@ -950,7 +950,7 @@
               <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 09" enabled="true">
                 <stringProp name="RegexExtractor.useHeaders">false</stringProp>
                 <stringProp name="RegexExtractor.refname">fileId09</stringProp>
-                <stringProp name="RegexExtractor.regex">downloadMgr.populateAll.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
+                <stringProp name="RegexExtractor.regex">downloadMgr.addDownloadRow.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
                 <stringProp name="RegexExtractor.default"></stringProp>
                 <stringProp name="RegexExtractor.match_number">9</stringProp>
@@ -959,7 +959,7 @@
               <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="File ID Extractor 10" enabled="true">
                 <stringProp name="RegexExtractor.useHeaders">false</stringProp>
                 <stringProp name="RegexExtractor.refname">fileId10</stringProp>
-                <stringProp name="RegexExtractor.regex">downloadMgr.populateAll.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
+                <stringProp name="RegexExtractor.regex">downloadMgr.addDownloadRow.&apos;.+?&apos;, &apos;(.+?)&apos;</stringProp>
                 <stringProp name="RegexExtractor.template">$1$</stringProp>
                 <stringProp name="RegexExtractor.default"></stringProp>
                 <stringProp name="RegexExtractor.match_number">10</stringProp>
@@ -1066,7 +1066,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">5</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1193253269000</longProp>
         <longProp name="ThreadGroup.end_time">1193253269000</longProp>
@@ -1119,7 +1119,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">5</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1194019666000</longProp>
         <longProp name="ThreadGroup.end_time">1194019666000</longProp>
