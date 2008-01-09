@@ -82,23 +82,14 @@
  */
 package gov.nih.nci.caarray.test.jmeter.grid.search;
 
-import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.services.CaArrayServer;
-import gov.nih.nci.caarray.services.ServerConnectionException;
-import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.jmeter.base.CaArrayJmeterSampler;
+import gov.nih.nci.cagrid.caarray.client.CaArraySvcClient;
 import gov.nih.nci.cagrid.cqlquery.Association;
 import gov.nih.nci.cagrid.cqlquery.Attribute;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
-import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
-import gov.nih.nci.cagrid.cqlquery.Group;
-import gov.nih.nci.cagrid.cqlquery.LogicalOperator;
 import gov.nih.nci.cagrid.cqlquery.Object;
 import gov.nih.nci.cagrid.cqlquery.Predicate;
-import gov.nih.nci.cagrid.data.client.DataServiceClient;
-
-import java.util.Iterator;
-import java.util.List;
+import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
 
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerClient;
@@ -111,11 +102,11 @@ import org.apache.jmeter.samplers.SampleResult;
  * @author Rashmi Srinivasa
  */
 public class CQLSearchTerm extends CaArrayJmeterSampler implements JavaSamplerClient {
-    private static final String CATEGORY_PARAM = "category";
-    private static final String DEFAULT_CATEGORY = "OrganismPart";
+    private static final String TERMSOURCE_PARAM = "termsource";
+    private static final String DEFAULT_TERMSOURCE = "MO";
     private static final String TEST_SERVICE_URL = "test.serviceUrl";
 
-    private String categoryName;
+    private String termSourceName;
     private String hostName;
     private int gridServicePort;
 
@@ -137,7 +128,7 @@ public class CQLSearchTerm extends CaArrayJmeterSampler implements JavaSamplerCl
      */
     public Arguments getDefaultParameters() {
         Arguments params = new Arguments();
-        params.addArgument(CATEGORY_PARAM, DEFAULT_CATEGORY);
+        params.addArgument(TERMSOURCE_PARAM, DEFAULT_TERMSOURCE);
         params.addArgument(getHostNameParam(), getDefaultHostName());
         params.addArgument(getGridServicePortParam(), getDefaultGridServicePort());
         return params;
@@ -151,11 +142,11 @@ public class CQLSearchTerm extends CaArrayJmeterSampler implements JavaSamplerCl
      */
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
-        categoryName = context.getParameter(CATEGORY_PARAM, DEFAULT_CATEGORY);
+        termSourceName = context.getParameter(TERMSOURCE_PARAM, DEFAULT_TERMSOURCE);
 
         CQLQuery cqlQuery = createCqlQuery();
         try {
-            DataServiceClient client = new DataServiceClient(System.getProperty(TEST_SERVICE_URL));
+            CaArraySvcClient client = new CaArraySvcClient(System.getProperty(TEST_SERVICE_URL));
             results.sampleStart();
             CQLQueryResults cqlResults = client.query(cqlQuery);
             results.sampleEnd();
@@ -178,16 +169,16 @@ public class CQLSearchTerm extends CaArrayJmeterSampler implements JavaSamplerCl
         Object target = new Object();
         target.setName("gov.nih.nci.caarray.domain.vocabulary.Term");
 
-        Association categoryAssociation = new Association();
-        categoryAssociation.setName("gov.nih.nci.caarray.domain.vocabulary.Category");
-        Attribute categoryAttribute = new Attribute();
-        categoryAttribute.setName("name");
-        categoryAttribute.setValue(categoryName);
-        categoryAttribute.setPredicate(Predicate.EQUAL_TO);
-        categoryAssociation.setAttribute(categoryAttribute);
-        categoryAssociation.setRoleName("category");
+        Association termSourceAssociation = new Association();
+        termSourceAssociation.setName("gov.nih.nci.caarray.domain.vocabulary.TermSource");
+        Attribute termSourceAttribute = new Attribute();
+        termSourceAttribute.setName("name");
+        termSourceAttribute.setValue(termSourceName);
+        termSourceAttribute.setPredicate(Predicate.EQUAL_TO);
+        termSourceAssociation.setAttribute(termSourceAttribute);
+        termSourceAssociation.setRoleName("source");
 
-        target.setAssociation(categoryAssociation);
+        target.setAssociation(termSourceAssociation);
 
         cqlQuery.setTarget(target);
         return cqlQuery;

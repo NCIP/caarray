@@ -92,6 +92,9 @@
                 <include name="wsrf_core_stubs.jar" />
             </fileset>
             <fileset dir="${grid.service.lib.dir}">
+                <include name="CaArraySvc-client.jar" />
+                <include name="CaArraySvc-common.jar" />
+                <include name="CaArraySvc-stubs.jar" />
                 <include name="caGrid-1.1-caDSR-common.jar" />
                 <include name="caGrid-1.1-core.jar" />
                 <include name="caGrid-1.1-data-utils.jar" />

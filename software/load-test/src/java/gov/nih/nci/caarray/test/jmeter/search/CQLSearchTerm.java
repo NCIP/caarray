@@ -107,11 +107,11 @@ import org.apache.jmeter.samplers.SampleResult;
  * @author Rashmi Srinivasa
  */
 public class CQLSearchTerm extends CaArrayJmeterSampler implements JavaSamplerClient {
-    private static final String CATEGORY_PARAM = "category";
+    private static final String TERMSOURCE_PARAM = "termsource";
 
-    private static final String DEFAULT_CATEGORY = "OrganismPart";
+    private static final String DEFAULT_TERMSOURCE = "MO";
 
-    private String categoryName;
+    private String termSourceName;
     private String hostName;
     private int jndiPort;
 
@@ -132,7 +132,7 @@ public class CQLSearchTerm extends CaArrayJmeterSampler implements JavaSamplerCl
      */
     public Arguments getDefaultParameters() {
         Arguments params = new Arguments();
-        params.addArgument(CATEGORY_PARAM, DEFAULT_CATEGORY);
+        params.addArgument(TERMSOURCE_PARAM, DEFAULT_TERMSOURCE);
         params.addArgument(getHostNameParam(), getDefaultHostName());
         params.addArgument(getJndiPortParam(), getDefaultJndiPort());
         return params;
@@ -146,7 +146,7 @@ public class CQLSearchTerm extends CaArrayJmeterSampler implements JavaSamplerCl
      */
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
-        categoryName = context.getParameter(CATEGORY_PARAM, DEFAULT_CATEGORY);
+        termSourceName = context.getParameter(TERMSOURCE_PARAM, DEFAULT_TERMSOURCE);
 
         CQLQuery cqlQuery = createCqlQuery();
         try {
@@ -183,16 +183,16 @@ public class CQLSearchTerm extends CaArrayJmeterSampler implements JavaSamplerCl
         Object target = new Object();
         target.setName("gov.nih.nci.caarray.domain.vocabulary.Term");
 
-        Association categoryAssociation = new Association();
-        categoryAssociation.setName("gov.nih.nci.caarray.domain.vocabulary.Category");
-        Attribute categoryAttribute = new Attribute();
-        categoryAttribute.setName("name");
-        categoryAttribute.setValue(categoryName);
-        categoryAttribute.setPredicate(Predicate.EQUAL_TO);
-        categoryAssociation.setAttribute(categoryAttribute);
-        categoryAssociation.setRoleName("category");
+        Association termSourceAssociation = new Association();
+        termSourceAssociation.setName("gov.nih.nci.caarray.domain.vocabulary.TermSource");
+        Attribute termSourceAttribute = new Attribute();
+        termSourceAttribute.setName("name");
+        termSourceAttribute.setValue(termSourceName);
+        termSourceAttribute.setPredicate(Predicate.EQUAL_TO);
+        termSourceAssociation.setAttribute(termSourceAttribute);
+        termSourceAssociation.setRoleName("source");
 
-        target.setAssociation(categoryAssociation);
+        target.setAssociation(termSourceAssociation);
 
         cqlQuery.setTarget(target);
         return cqlQuery;
@@ -207,7 +207,7 @@ public class CQLSearchTerm extends CaArrayJmeterSampler implements JavaSamplerCl
         while (i.hasNext()) {
             Term retrievedTerm = (Term) i.next();
             // Check if retrieved term matches requested search criteria.
-            if (!categoryName.equals(retrievedTerm.getCategory().getName())) {
+            if (!termSourceName.equals(retrievedTerm.getSource().getName())) {
                 return false;
             }
         }

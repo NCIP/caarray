@@ -102,7 +102,7 @@
           <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Search Request" enabled="true">
             <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments">
-                <elementProp name="sampleName" elementType="Argument">
+                <elementProp name="sourceName" elementType="Argument">
                   <stringProp name="Argument.name">sourceName</stringProp>
                   <stringProp name="Argument.value">${sourceName}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
@@ -376,15 +376,15 @@
             <stringProp name="filename">termSearchCriteria.csv</stringProp>
             <boolProp name="recycle">false</boolProp>
             <boolProp name="stopThread">true</boolProp>
-            <stringProp name="variableNames">categoryName</stringProp>
+            <stringProp name="variableNames">termsource</stringProp>
           </CSVDataSet>
           <hashTree/>
           <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Search Request" enabled="true">
             <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments">
-                <elementProp name="category" elementType="Argument">
-                  <stringProp name="Argument.name">category</stringProp>
-                  <stringProp name="Argument.value">${categoryName}</stringProp>
+                <elementProp name="termsource" elementType="Argument">
+                  <stringProp name="Argument.name">termsource</stringProp>
+                  <stringProp name="Argument.value">${termsource}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
                 <elementProp name="host.name" elementType="Argument">

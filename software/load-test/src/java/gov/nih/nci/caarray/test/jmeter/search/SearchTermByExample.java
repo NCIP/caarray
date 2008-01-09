@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.test.jmeter.search;
 
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.services.CaArrayServer;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.search.CaArraySearchService;
@@ -103,11 +104,11 @@ import org.apache.jmeter.samplers.SampleResult;
  * @author Rashmi Srinivasa
  */
 public class SearchTermByExample extends CaArrayJmeterSampler implements JavaSamplerClient {
-    private static final String CATEGORY_PARAM = "categoryName";
+    private static final String TERMSOURCE_PARAM = "termsource";
 
-    private static final String DEFAULT_CATEGORY = "OrganismPart";
+    private static final String DEFAULT_TERMSOURCE = "MO";
 
-    private String categoryName;
+    private String termSourceName;
     private String hostName;
     private int jndiPort;
 
@@ -128,7 +129,7 @@ public class SearchTermByExample extends CaArrayJmeterSampler implements JavaSam
      */
     public Arguments getDefaultParameters() {
         Arguments params = new Arguments();
-        params.addArgument(CATEGORY_PARAM, DEFAULT_CATEGORY);
+        params.addArgument(TERMSOURCE_PARAM, DEFAULT_TERMSOURCE);
         params.addArgument(getHostNameParam(), getDefaultHostName());
         params.addArgument(getJndiPortParam(), getDefaultJndiPort());
         return params;
@@ -142,7 +143,7 @@ public class SearchTermByExample extends CaArrayJmeterSampler implements JavaSam
      */
     public SampleResult runTest(JavaSamplerContext context) {
         SampleResult results = new SampleResult();
-        categoryName = context.getParameter(CATEGORY_PARAM, DEFAULT_CATEGORY);
+        termSourceName = context.getParameter(TERMSOURCE_PARAM, DEFAULT_TERMSOURCE);
 
         Term exampleTerm = createExampleTerm();
         try {
@@ -177,9 +178,9 @@ public class SearchTermByExample extends CaArrayJmeterSampler implements JavaSam
     private Term createExampleTerm() {
         Term exampleTerm = new Term();
 
-        Category belongsToCategory = new Category();
-        belongsToCategory.setName(categoryName);
-        exampleTerm.setCategory(belongsToCategory);
+        TermSource belongsToTermSource = new TermSource();
+        belongsToTermSource.setName(termSourceName);
+        exampleTerm.setSource(belongsToTermSource);
 
         return exampleTerm;
     }
@@ -193,7 +194,7 @@ public class SearchTermByExample extends CaArrayJmeterSampler implements JavaSam
         while (i.hasNext()) {
             Term retrievedTerm = i.next();
             // Check if retrieved term matches requested search criteria.
-            if (!categoryName.equals(retrievedTerm.getCategory().getName())) {
+            if (!termSourceName.equals(retrievedTerm.getSource().getName())) {
                 return false;
             }
         }

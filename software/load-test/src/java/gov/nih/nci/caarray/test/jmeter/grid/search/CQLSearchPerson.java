@@ -82,23 +82,13 @@
  */
 package gov.nih.nci.caarray.test.jmeter.grid.search;
 
-import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.services.CaArrayServer;
-import gov.nih.nci.caarray.services.ServerConnectionException;
-import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.caarray.test.jmeter.base.CaArrayJmeterSampler;
-import gov.nih.nci.cagrid.cqlquery.Association;
+import gov.nih.nci.cagrid.caarray.client.CaArraySvcClient;
 import gov.nih.nci.cagrid.cqlquery.Attribute;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
-import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
-import gov.nih.nci.cagrid.cqlquery.Group;
-import gov.nih.nci.cagrid.cqlquery.LogicalOperator;
 import gov.nih.nci.cagrid.cqlquery.Object;
 import gov.nih.nci.cagrid.cqlquery.Predicate;
-import gov.nih.nci.cagrid.data.client.DataServiceClient;
-
-import java.util.Iterator;
-import java.util.List;
+import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
 
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerClient;
@@ -155,7 +145,7 @@ public class CQLSearchPerson extends CaArrayJmeterSampler implements JavaSampler
 
         CQLQuery cqlQuery = createCqlQuery();
         try {
-            DataServiceClient client = new DataServiceClient(System.getProperty(TEST_SERVICE_URL));
+            CaArraySvcClient client = new CaArraySvcClient(System.getProperty(TEST_SERVICE_URL));
             results.sampleStart();
             CQLQueryResults cqlResults = client.query(cqlQuery);
             results.sampleEnd();
