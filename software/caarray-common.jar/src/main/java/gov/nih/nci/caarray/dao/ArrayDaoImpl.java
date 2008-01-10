@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
@@ -140,9 +141,19 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
-    public List<ArrayDesign> getArrayDesignsForProvider(Organization provider) {
-        String query = "from " + ArrayDesign.class.getName() + " ad where ad.provider = :provider order by name asc";
-        return getCurrentSession().createQuery(query).setEntity("provider", provider).list();
+    public List<ArrayDesign> getArrayDesignsForProvider(Organization provider, boolean importedOnly) {
+        StringBuilder queryStr = new StringBuilder("from ").append(ArrayDesign.class.getName()).append(
+                " ad where ad.provider = :provider ");
+        if (importedOnly) {
+            queryStr.append(" and ad.designFile.status = :status ");
+        }
+        queryStr.append("order by name asc");
+        Query query = getCurrentSession().createQuery(queryStr.toString());
+        query.setEntity("provider", provider);
+        if (importedOnly) {
+            query.setString("status", FileStatus.IMPORTED.name());
+        }
+        return query.list();
     }
 
     /**

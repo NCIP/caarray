@@ -115,7 +115,7 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
-    public List<ArrayDesign> getArrayDesignsForProvider(Organization provider) {
+    public List<ArrayDesign> getImportedArrayDesignsForProvider(Organization provider) {
         return new ArrayList<ArrayDesign>();
     }
 

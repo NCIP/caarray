@@ -97,6 +97,8 @@ import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
 import org.apache.log4j.Logger;
@@ -191,6 +193,7 @@ public class FileManagementServiceBean implements FileManagementService {
     /**
      * {@inheritDoc}
      */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void importArrayDesignDetails(ArrayDesign arrayDesign) {
         arrayDesign.getDesignFile().setFileStatus(FileStatus.IN_QUEUE);
         getDaoFactory().getProjectDao().save(arrayDesign.getDesignFile());

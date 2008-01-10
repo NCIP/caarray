@@ -129,10 +129,13 @@ public interface ArrayDao extends CaArrayDao {
     /**
      * Returns the list of ArrayDesigns with the given provider.
      * @param provider the provider
+     * @param importedOnly whether to only return ArrayDesigns which have finished importing (ie
+     * whose corresponding design file has a status of IMPORTED). if true only those array designs
+     * are returned, otherwise, all array designs are.
      * @return the List&lt;ArrayDesign&gt; of the array designs whose
      * provider is the given provider
      */
-    List<ArrayDesign> getArrayDesignsForProvider(Organization provider);
+    List<ArrayDesign> getArrayDesignsForProvider(Organization provider, boolean importedOnly);
 
     /**
      * Returns the list of Organizations that are a provider for at least

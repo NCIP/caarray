@@ -97,6 +97,7 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.List;
@@ -166,10 +167,16 @@ public class ArrayDaoTest extends AbstractDaoTest {
         DUMMY_ARRAYDESIGN_2.setName("DummyTestArrayDesign2");
         DUMMY_ARRAYDESIGN_2.setVersion("2.0");
         DUMMY_ARRAYDESIGN_2.setProvider(DUMMY_ORGANIZATION2);
+        CaArrayFile file = new CaArrayFile();
+        file.setFileStatus(FileStatus.IMPORTING);
+        DUMMY_ARRAYDESIGN_2.setDesignFile(file);
         DUMMY_ARRAYDESIGN_3 = new ArrayDesign();
         DUMMY_ARRAYDESIGN_3.setName("DummyTestArrayDesign3");
         DUMMY_ARRAYDESIGN_3.setVersion("2.0");
         DUMMY_ARRAYDESIGN_3.setProvider(DUMMY_ORGANIZATION2);
+        CaArrayFile file2 = new CaArrayFile();
+        file2.setFileStatus(FileStatus.IMPORTED);
+        DUMMY_ARRAYDESIGN_3.setDesignFile(file2);
     }
 
     @Test
@@ -217,9 +224,10 @@ public class ArrayDaoTest extends AbstractDaoTest {
         try {
             tx = HibernateUtil.beginTransaction();
             List<Organization> providers = DAO_OBJECT.getArrayDesignProviders();
-            List<ArrayDesign> org1Designs = DAO_OBJECT.getArrayDesignsForProvider(DUMMY_ORGANIZATION);
-            List<ArrayDesign> org2Designs = DAO_OBJECT.getArrayDesignsForProvider(DUMMY_ORGANIZATION2);
-            List<ArrayDesign> org3Designs = DAO_OBJECT.getArrayDesignsForProvider(DUMMY_ORGANIZATION3);
+            List<ArrayDesign> org1Designs = DAO_OBJECT.getArrayDesignsForProvider(DUMMY_ORGANIZATION, false);
+            List<ArrayDesign> org2Designs = DAO_OBJECT.getArrayDesignsForProvider(DUMMY_ORGANIZATION2, false);
+            List<ArrayDesign> org3Designs = DAO_OBJECT.getArrayDesignsForProvider(DUMMY_ORGANIZATION3, false);
+            List<ArrayDesign> org2ImportedDesigns = DAO_OBJECT.getArrayDesignsForProvider(DUMMY_ORGANIZATION2, true);
             tx.commit();
             assertNotNull(providers);
             assertEquals(2, providers.size());
@@ -229,6 +237,9 @@ public class ArrayDaoTest extends AbstractDaoTest {
             assertEquals(2, org2Designs.size());
             assertNotNull(org3Designs);
             assertEquals(0, org3Designs.size());
+            assertNotNull(org2ImportedDesigns);
+            assertEquals(1, org2ImportedDesigns.size());
+            assertEquals(DUMMY_ARRAYDESIGN_3, org2ImportedDesigns.get(0));
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());

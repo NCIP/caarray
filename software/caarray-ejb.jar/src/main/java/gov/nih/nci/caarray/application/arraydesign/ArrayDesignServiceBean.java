@@ -173,7 +173,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
 
     private boolean isDuplicate(ArrayDesign arrayDesign) {
         List<ArrayDesign> providerDesigns =
-            getDaoFactory().getArrayDao().getArrayDesignsForProvider(arrayDesign.getProvider());
+            getDaoFactory().getArrayDao().getArrayDesignsForProvider(arrayDesign.getProvider(), false);
         for (ArrayDesign providerDesign : providerDesigns) {
             if (!arrayDesign.equals(providerDesign)
                     && arrayDesign.getName().equalsIgnoreCase(providerDesign.getName())) {
@@ -267,9 +267,9 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
-    public List<ArrayDesign> getArrayDesignsForProvider(Organization provider) {
+    public List<ArrayDesign> getImportedArrayDesignsForProvider(Organization provider) {
         LogUtil.logSubsystemEntry(LOG);
-        List<ArrayDesign> designs = getArrayDao().getArrayDesignsForProvider(provider);
+        List<ArrayDesign> designs = getArrayDao().getArrayDesignsForProvider(provider, true);
         LogUtil.logSubsystemExit(LOG);
         return designs;
     }

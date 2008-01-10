@@ -138,7 +138,8 @@ public class ProjectOverviewAction extends ProjectTabAction {
         ArrayDesignService arrayDesignService = getArrayDesignService();
         this.manufacturers = arrayDesignService.getAllOrganizations();
         if (getExperiment().getManufacturer() != null) {
-            this.arrayDesigns = getArrayDesignService().getArrayDesignsForProvider(getExperiment().getManufacturer());
+            this.arrayDesigns = getArrayDesignService().getImportedArrayDesignsForProvider(
+                    getExperiment().getManufacturer());
         }
     }
 
@@ -166,7 +167,7 @@ public class ProjectOverviewAction extends ProjectTabAction {
     public String retrieveArrayDesigns() {
         if (this.manufacturerId != null) {
             Organization provider = getGenericDataService().retrieveEntity(Organization.class, this.manufacturerId);
-            this.arrayDesigns = getArrayDesignService().getArrayDesignsForProvider(provider);
+            this.arrayDesigns = getArrayDesignService().getImportedArrayDesignsForProvider(provider);
         }
         return "xmlArrayDesigns";
     }

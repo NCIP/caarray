@@ -94,7 +94,6 @@ import javax.jms.QueueConnection;
 import javax.jms.QueueConnectionFactory;
 import javax.jms.QueueSender;
 import javax.jms.QueueSession;
-import javax.jms.Session;
 
 import org.apache.log4j.Logger;
 
@@ -104,7 +103,7 @@ import org.apache.log4j.Logger;
 class JmsJobSubmitter implements Serializable, FileManagementJobSubmitter {
 
     private static final long serialVersionUID = 1L;
-    private static final String DEFAULT_QUEUE_CONN_FACTORY = "UIL2ConnectionFactory";
+    private static final String DEFAULT_QUEUE_CONN_FACTORY = "java:/JmsXA";
     private static final Logger LOG = Logger.getLogger(JmsJobSubmitter.class);
 
     /**
@@ -119,7 +118,7 @@ class JmsJobSubmitter implements Serializable, FileManagementJobSubmitter {
         QueueSender queueSender = null;
         try {
             queueConnection = factory.createQueueConnection();
-            queueSession = queueConnection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
+            queueSession = queueConnection.createQueueSession(true, 0);
             queueSender = queueSession.createSender(queue);
             final ObjectMessage message = queueSession.createObjectMessage(job);
             queueSender.send(message);

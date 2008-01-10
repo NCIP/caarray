@@ -186,7 +186,7 @@ public class ProjectOverviewActionTest {
             return providers;
         }
         @Override
-        public List<ArrayDesign> getArrayDesignsForProvider(Organization provider) {
+        public List<ArrayDesign> getImportedArrayDesignsForProvider(Organization provider) {
             if (provider != null && Long.valueOf(1L).equals(provider.getId())) {
                 List<ArrayDesign> designs = new ArrayList<ArrayDesign>();
                 ArrayDesign d1 = new ArrayDesign();

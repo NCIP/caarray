@@ -147,12 +147,13 @@ public interface ArrayDesignService {
     List<Organization> getArrayDesignProviders();
 
     /**
-     * Returns the list of ArrayDesigns with the given provider.
+     * Returns the list of imported ArrayDesigns with the given provider.
      *
      * @param provider the provider
-     * @return the List&lt;ArrayDesign&gt; of the array designs whose provider is the given provider
+     * @return the List&lt;ArrayDesign&gt; of the array designs whose provider is the given provider and
+     * whose array design details have been successfully imported
      */
-    List<ArrayDesign> getArrayDesignsForProvider(Organization provider);
+    List<ArrayDesign> getImportedArrayDesignsForProvider(Organization provider);
 
     /**
      * Returns the <code>ArrayDesign</code> with the id given.
