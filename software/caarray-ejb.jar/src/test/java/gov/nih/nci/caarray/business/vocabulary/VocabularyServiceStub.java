@@ -161,7 +161,7 @@ public class VocabularyServiceStub implements VocabularyService {
         term.setSource(source);
         term.setValue(value);
         Category cat = new Category();
-        cat.setTermSource(source);
+        cat.setSource(source);
         cat.setName("Category for " + value);
         term.setCategory(cat);
         return term;
@@ -198,7 +198,7 @@ public class VocabularyServiceStub implements VocabularyService {
 
     public Category createCategory(TermSource source, String categoryName) {
         Category category = new Category();
-        category.setTermSource(source);
+        category.setSource(source);
         category.setName(categoryName);
         return category;
     }

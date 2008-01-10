@@ -163,7 +163,7 @@ final class TermTranslator extends AbstractTranslator {
         if (category == null) {
             category = new Category();
             category.setName(categoryName);
-            category.setTermSource(userDef);
+            category.setSource(userDef);
             translationResult.addCategory(categoryName, category);
         }
         return category;
