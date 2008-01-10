@@ -132,7 +132,7 @@ public class CaArrayFile_HibernateIntegrationTest extends AbstractCaArrayEntity_
             org.setTermSource(ts);
             caArrayFile.setProject(new Project());
             caArrayFile.getProject().getExperiment().setTitle("TestFileExperiment1");
-            caArrayFile.getProject().getExperiment().setAssayType(AssayType.ACGH);
+            caArrayFile.getProject().getExperiment().setAssayTypeEnum(AssayType.ACGH);
             caArrayFile.getProject().getExperiment().setServiceType(ServiceType.FULL);
             caArrayFile.getProject().getExperiment().setOrganism(org);
             caArrayFile.getProject().getExperiment().setManufacturer(new Organization());

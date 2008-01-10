@@ -105,14 +105,14 @@ import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
 /**
- * 
+ *
  */
 @Entity
 @UniqueConstraints(constraints = {
         @UniqueConstraint(fields = { @UniqueConstraintField(name = "name"),
-                @UniqueConstraintField(name = "termSource") }),
+                @UniqueConstraintField(name = "source") }),
         @UniqueConstraint(fields = { @UniqueConstraintField(name = "accession"),
-                @UniqueConstraintField(name = "termSource") }) }, message = "{category.uniqueConstraint}")
+                @UniqueConstraintField(name = "source") }) }, message = "{category.uniqueConstraint}")
 public class Category extends AbstractCaArrayEntity implements Cloneable {
     /**
      * The serial version UID for serialization.
@@ -122,13 +122,13 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
     private String name;
     private String accession;
     private String url;
-    private TermSource termSource;
+    private TermSource source;
     private Set<Category> parents = new HashSet<Category>();
     private Set<Category> children = new HashSet<Category>();
 
     /**
      * Gets the name.
-     * 
+     *
      * @return the name
      */
     @Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
@@ -140,7 +140,7 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
 
     /**
      * Sets the name.
-     * 
+     *
      * @param nameVal the name
      */
     public void setName(final String nameVal) {
@@ -177,12 +177,12 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
 
     /**
      * Gets the parent.
-     * 
+     *
      * @return the parent
      */
     @ManyToMany
-    @JoinTable(name = "CATEGORY_PARENTS", 
-            joinColumns = @JoinColumn(name = "CATEGORY_ID"), 
+    @JoinTable(name = "CATEGORY_PARENTS",
+            joinColumns = @JoinColumn(name = "CATEGORY_ID"),
             inverseJoinColumns = @JoinColumn(name = "PARENT_CATEGORY_ID"))
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     public Set<Category> getParents() {
@@ -191,7 +191,7 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
 
     /**
      * Sets the parent categories.
-     * 
+     *
      * @param parents the parent categories
      */
     @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
@@ -201,7 +201,7 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
 
     /**
      * Gets the children.
-     * 
+     *
      * @return the children
      */
     @ManyToMany(mappedBy = "parents")
@@ -211,7 +211,7 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
 
     /**
      * Sets the children.
-     * 
+     *
      * @param childrenVal the children
      */
     @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
@@ -225,17 +225,17 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
     @ManyToOne(optional = false)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @NotNull
-    public TermSource getTermSource() {
-        return termSource;
+    public TermSource getSource() {
+        return source;
     }
 
     /**
      * Set the termSource.
-     * 
+     *
      * @param termSource The termSource to set
      */
-    public void setTermSource(TermSource termSource) {
-        this.termSource = termSource;
+    public void setSource(TermSource termSource) {
+        this.source = termSource;
     }
 
     /**
@@ -251,7 +251,7 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
         }
         Category other = (Category) o;
         return new EqualsBuilder().append(this.getName(), other.getName())
-                .append(this.getTermSource(), other.getTermSource()).isEquals();
+                .append(this.getSource(), other.getSource()).isEquals();
     }
 
     /**
@@ -259,7 +259,7 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(this.getName()).append(this.getTermSource()).toHashCode();
+        return new HashCodeBuilder().append(this.getName()).append(this.getSource()).toHashCode();
     }
 
     /**

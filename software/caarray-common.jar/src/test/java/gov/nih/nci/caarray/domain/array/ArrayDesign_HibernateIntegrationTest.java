@@ -110,7 +110,7 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         ts.setName("TS 1");
         Category cat = new Category();
         cat.setName("catName");
-        cat.setTermSource(ts);
+        cat.setSource(ts);
         ArrayDesign arrayDesign = (ArrayDesign) caArrayObject;
         arrayDesign.setDesignFile(new CaArrayFile());
         arrayDesign.setName(getUniqueStringValue());
@@ -133,7 +133,7 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         arrayDesign.getTechnologyType().setValue("testval4");
         arrayDesign.getTechnologyType().setCategory(cat);
         arrayDesign.getTechnologyType().setSource(ts);        
-        arrayDesign.setType(getNextValue(AssayType.values(), arrayDesign.getAssayType()).name());
+        arrayDesign.setAssayType(getNextValue(AssayType.values(), arrayDesign.getAssayTypeEnum()).name());
         arrayDesign.setVersion(getUniqueStringValue());
         ArrayDesignDetails designDetails = new ArrayDesignDetails();
         arrayDesign.setDesignDetails(designDetails);
@@ -157,7 +157,7 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
     protected void compareValues(AbstractCaArrayObject caArrayObject, AbstractCaArrayObject retrievedCaArrayObject) {
         ArrayDesign original = (ArrayDesign) caArrayObject;
         ArrayDesign retrieved = (ArrayDesign) retrievedCaArrayObject;
-        assertEquals(original.getAssayType(), retrieved.getAssayType());
+        assertEquals(original.getAssayTypeEnum(), retrieved.getAssayTypeEnum());
         assertEquals(original.getDesignFile(), retrieved.getDesignFile());
         assertEquals(original.getName(), retrieved.getName());
         assertEquals(original.getNumberOfFeatures(), retrieved.getNumberOfFeatures());
@@ -167,7 +167,7 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         assertEquals(original.getSubstrateType(), retrieved.getSubstrateType());
         assertEquals(original.getSurfaceType(), retrieved.getSurfaceType());
         assertEquals(original.getTechnologyType(), retrieved.getTechnologyType());
-        assertEquals(original.getType(), retrieved.getType());
+        assertEquals(original.getAssayType(), retrieved.getAssayType());
         assertEquals(original.getVersion(), retrieved.getVersion());
         assertEquals(original.getDesignDetails(), retrieved.getDesignDetails());
         if (original.getDesignDetails() != null) {

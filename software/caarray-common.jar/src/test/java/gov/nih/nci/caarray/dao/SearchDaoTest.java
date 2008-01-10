@@ -174,7 +174,7 @@ public class SearchDaoTest {
     private static void initializeProtocols() {
         DUMMY_TERM_SOURCE.setName("Dummy MGED Ontology");
         DUMMY_TERM_SOURCE.setUrl("test url");
-        DUMMY_CATEGORY.setTermSource(DUMMY_TERM_SOURCE);
+        DUMMY_CATEGORY.setSource(DUMMY_TERM_SOURCE);
         DUMMY_CATEGORY.setName("DummyTestCategory");
         DUMMY_TERM_1.setValue("DummyTestTerm1");
         DUMMY_TERM_1.setCategory(DUMMY_CATEGORY);
@@ -387,7 +387,7 @@ public class SearchDaoTest {
             org.setTermSource(DUMMY_TERM_SOURCE);
             Project project = new Project();
             project.getExperiment().setTitle("test experiment.");
-            project.getExperiment().setAssayType(AssayType.ACGH);
+            project.getExperiment().setAssayTypeEnum(AssayType.ACGH);
             project.getExperiment().setServiceType(ServiceType.FULL);
             project.getExperiment().setOrganism(org);
             project.getExperiment().setManufacturer(new Organization());

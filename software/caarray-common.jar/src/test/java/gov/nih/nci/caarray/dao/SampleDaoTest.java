@@ -129,7 +129,7 @@ public class SampleDaoTest  extends AbstractDaoTest {
 
         DUMMY_CATEGORY = new Category();
         DUMMY_CATEGORY.setName("Dummy Category");
-        DUMMY_CATEGORY.setTermSource(DUMMY_SOURCE);
+        DUMMY_CATEGORY.setSource(DUMMY_SOURCE);
         
         DUMMY_MATERIAL_TYPE = new Term();
         DUMMY_MATERIAL_TYPE.setValue("Dummy Material Type");

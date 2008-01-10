@@ -146,7 +146,7 @@ public class BrowseDaoTest extends AbstractDaoTest {
     private static void initializeProjects() {
         DUMMY_TERM_SOURCE.setName("Dummy MGED Ontology");
         DUMMY_TERM_SOURCE.setUrl("test url");
-        
+
         DUMMY_ORGANISM_1.setScientificName("organism1");
         DUMMY_ORGANISM_1.setTermSource(DUMMY_TERM_SOURCE);
         DUMMY_ORGANISM_2.setScientificName("organism2");
@@ -154,21 +154,21 @@ public class BrowseDaoTest extends AbstractDaoTest {
 
         DUMMY_PROJECT_1.setExperiment(DUMMY_EXPERIMENT_1);
         DUMMY_EXPERIMENT_1.setTitle("DummyExperiment1");
-        DUMMY_EXPERIMENT_1.setAssayType(AssayType.ACGH);
+        DUMMY_EXPERIMENT_1.setAssayTypeEnum(AssayType.ACGH);
         DUMMY_EXPERIMENT_1.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_1.setOrganism(DUMMY_ORGANISM_1);
         DUMMY_EXPERIMENT_1.setManufacturer(DUMMY_PROVIDER);
 
         DUMMY_PROJECT_2.setExperiment(DUMMY_EXPERIMENT_2);
         DUMMY_EXPERIMENT_2.setTitle("DummyExperiment2");
-        DUMMY_EXPERIMENT_2.setAssayType(AssayType.ACGH);
+        DUMMY_EXPERIMENT_2.setAssayTypeEnum(AssayType.ACGH);
         DUMMY_EXPERIMENT_2.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_2.setOrganism(DUMMY_ORGANISM_2);
         DUMMY_EXPERIMENT_2.setManufacturer(DUMMY_PROVIDER);
 
         DUMMY_PROJECT_3.setExperiment(DUMMY_EXPERIMENT_3);
         DUMMY_EXPERIMENT_3.setTitle("DummyExperiment3");
-        DUMMY_EXPERIMENT_3.setAssayType(AssayType.ACGH);
+        DUMMY_EXPERIMENT_3.setAssayTypeEnum(AssayType.ACGH);
         DUMMY_EXPERIMENT_3.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_3.setOrganism(DUMMY_ORGANISM_1);
         DUMMY_EXPERIMENT_3.setManufacturer(DUMMY_PROVIDER);

@@ -210,7 +210,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
     private static final VocabularyDao VOCABULARY_DAO = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
     private static final SearchDao SEARCH_DAO = CaArrayDaoFactory.INSTANCE.getSearchDao();
     private static final CollaboratorGroupDao COLLAB_DAO = CaArrayDaoFactory.INSTANCE.getCollaboratorGroupDao();
-    
+
     private static final PageSortParams<Project> ALL_BY_ID =
             new PageSortParams<Project>(10000, 0, ProjectSortCriterion.TITLE, false);
 
@@ -278,7 +278,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         DUMMY_TERM_SOURCE.setName("Dummy MGED Ontology");
         DUMMY_TERM_SOURCE.setUrl("test url");
         DUMMY_CATEGORY.setName("Dummy Category");
-        DUMMY_CATEGORY.setTermSource(DUMMY_TERM_SOURCE);
+        DUMMY_CATEGORY.setSource(DUMMY_TERM_SOURCE);
         DUMMY_ORGANISM.setScientificName("Foo");
         DUMMY_ORGANISM.setTermSource(DUMMY_TERM_SOURCE);
         setExperimentAnnotations();
@@ -333,18 +333,18 @@ public class ProjectDaoTest extends AbstractDaoTest {
         Date currDate = new Date();
         DUMMY_EXPERIMENT_1.setDateOfExperiment(currDate);
         DUMMY_EXPERIMENT_1.setPublicReleaseDate(currDate);
-        DUMMY_EXPERIMENT_1.setAssayType(AssayType.ACGH);
+        DUMMY_EXPERIMENT_1.setAssayTypeEnum(AssayType.ACGH);
         DUMMY_EXPERIMENT_1.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_1.setExperimentDesignDescription("Working on it");
 
         DUMMY_EXPERIMENT_2.setTitle("New DummyExperiment2");
-        DUMMY_EXPERIMENT_2.setAssayType(AssayType.ACGH);
+        DUMMY_EXPERIMENT_2.setAssayTypeEnum(AssayType.ACGH);
         DUMMY_EXPERIMENT_2.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_2.setOrganism(DUMMY_ORGANISM);
         DUMMY_EXPERIMENT_2.setManufacturer(DUMMY_PROVIDER);
 
         DUMMY_EXPERIMENT_3.setTitle("Ahab DummyExperiment3");
-        DUMMY_EXPERIMENT_3.setAssayType(AssayType.ACGH);
+        DUMMY_EXPERIMENT_3.setAssayTypeEnum(AssayType.ACGH);
         DUMMY_EXPERIMENT_3.setServiceType(ServiceType.FULL);
         DUMMY_EXPERIMENT_3.setOrganism(DUMMY_ORGANISM);
         DUMMY_EXPERIMENT_3.setManufacturer(DUMMY_PROVIDER);
@@ -992,7 +992,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNotNull(p);
-            assertNotNull(p.getExperiment().getAssayType());
+            assertNotNull(p.getExperiment().getAssayTypeEnum());
             assertNull(p.getExperiment().getExperimentDesignDescription());
             HibernateUtil.getCurrentSession().clear();
             tx.commit();
@@ -1230,7 +1230,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
         projects = DAO_OBJECT.getProjectsForCurrentUser(false, psp);
         assertEquals(1, projects.size());
         assertEquals(DUMMY_EXPERIMENT_2.getTitle(), projects.get(0).getExperiment().getTitle());
-        
+
         psp.setDesc(true);
         projects = DAO_OBJECT.getProjectsForCurrentUser(false, psp);
         assertEquals(1, projects.size());
@@ -1238,7 +1238,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
 
         tx.commit();
     }
-    
+
     @Test
     public void testGetTermsForExperiment() {
         Transaction tx = null;
@@ -1250,7 +1250,7 @@ public class ProjectDaoTest extends AbstractDaoTest {
             Experiment e = new Experiment();
             e.setTitle("test title");
             e.setServiceType(ServiceType.FULL);
-            e.setAssayType(AssayType.ACGH);
+            e.setAssayTypeEnum(AssayType.ACGH);
             e.setManufacturer(new Organization());
             e.setOrganism(org);
             DAO_OBJECT.save(e);

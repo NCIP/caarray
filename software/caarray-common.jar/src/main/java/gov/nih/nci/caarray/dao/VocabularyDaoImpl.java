@@ -88,7 +88,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
         query.setEntity("category", category);
         return new LinkedHashSet<Term>(query.list());
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -97,7 +97,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
         Set<Category> searchCategories = new HashSet<Category>();
         searchCategories.add(category);
         addChildren(searchCategories, category);
-        
+
         StringBuilder whereClause = new StringBuilder("cat in (:categories)");
         if (valuePrefix != null) {
             whereClause.append(" and upper(t.value) like upper(:valuePrefix)");
@@ -121,14 +121,14 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
         criteria.add(Restrictions.eq("source", source));
         return (Term) criteria.uniqueResult();
     }
-    
+
     public Organism getOrganism(TermSource source, String scientificName) {
         Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Organism.class);
         criteria.add(Restrictions.eq("scientificName", scientificName).ignoreCase());
         criteria.add(Restrictions.eq("termSource", source));
         return (Organism) criteria.uniqueResult();
     }
-    
+
     /**
      * Create a set of all of the descendants of the category.
      * @param searchCategories the set to build
@@ -147,7 +147,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
     public Category getCategory(TermSource termSource, String name) {
         Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Category.class);
         criteria.add(Restrictions.eq("name", name).ignoreCase());
-        criteria.add(Restrictions.eq("termSource", termSource));
+        criteria.add(Restrictions.eq("source", termSource));
         return (Category) criteria.uniqueResult();
     }
 

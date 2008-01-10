@@ -121,4 +121,16 @@ public enum AssayType implements ResourceBasedEnum {
     public String getResourceKey() {
         return resourceKey;
     }
+
+    /**
+     * Checks a String value to ensure it's a valid AssayType, throwing IllegalArgumentException
+     * if not.
+     *
+     * @param typeValue check if this String is a valid AssayType
+     */
+    public static void checkType(String typeValue) {
+        if (typeValue != null) {
+            AssayType.valueOf(typeValue);
+        }
+    }
 }

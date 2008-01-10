@@ -219,7 +219,7 @@ public class Experiment extends AbstractCaArrayEntity {
     private PaymentMechanism paymentMechanism;
     private String paymentNumber;
     private ServiceType serviceType;
-    private AssayType assayType;
+    private String assayType;
     private Organization manufacturer;
     private Organism organism;
     private Set<Factor> factors = new HashSet<Factor>();
@@ -470,10 +470,10 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the assay type
      */
-    @Enumerated(EnumType.STRING)
     @NotNull
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
-    public AssayType getAssayType() {
+    public String getAssayType() {
         return this.assayType;
     }
 
@@ -482,8 +482,29 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @param assayType the assay type to set
      */
-    public void setAssayType(AssayType assayType) {
+    public void setAssayType(String assayType) {
+        AssayType.checkType(assayType);
         this.assayType = assayType;
+    }
+
+
+    /**
+     * @return the assayType enum
+     */
+    @Transient
+    public AssayType getAssayTypeEnum() {
+        return getAssayType() == null ? null : AssayType.valueOf(getAssayType());
+    }
+
+    /**
+     * @param assayTypeEnum the assayTypeEnum to set
+     */
+    public void setAssayTypeEnum(AssayType assayTypeEnum) {
+        if (assayTypeEnum == null) {
+            setAssayType(null);
+        } else {
+            setAssayType(assayTypeEnum.name());
+        }
     }
 
     /**

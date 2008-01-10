@@ -182,7 +182,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
     private static void initializeProtocols() {
         DUMMY_TERM_SOURCE.setName("Dummy MGED Ontology");
         DUMMY_TERM_SOURCE.setUrl("test url");
-        DUMMY_CATEGORY.setTermSource(DUMMY_TERM_SOURCE);
+        DUMMY_CATEGORY.setSource(DUMMY_TERM_SOURCE);
         DUMMY_CATEGORY.setName("DummyTestCategory");
 
         DUMMY_TERM_1.setValue("DummyTestTerm1");

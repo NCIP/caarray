@@ -142,17 +142,17 @@ public class VocabularyDaoTest extends AbstractDaoTest {
 
         DUMMY_CATEGORY_1 = new Category();
         DUMMY_CATEGORY_1.setName("DummyTestCategory1");
-        DUMMY_CATEGORY_1.setTermSource(DUMMY_SOURCE_1);
+        DUMMY_CATEGORY_1.setSource(DUMMY_SOURCE_1);
         DUMMY_CATEGORY_2 = new Category();
         DUMMY_CATEGORY_2.setName("DummyTestCategory2");
-        DUMMY_CATEGORY_2.setTermSource(DUMMY_SOURCE_1);
+        DUMMY_CATEGORY_2.setSource(DUMMY_SOURCE_1);
         DUMMY_CATEGORY_3 = new Category();
         DUMMY_CATEGORY_3.setName("DummyTestCategory3");
-        DUMMY_CATEGORY_3.setTermSource(DUMMY_SOURCE_2);
+        DUMMY_CATEGORY_3.setSource(DUMMY_SOURCE_2);
         DUMMY_CATEGORY_4 = new Category();
         DUMMY_CATEGORY_4.getChildren().add(DUMMY_CATEGORY_3);
         DUMMY_CATEGORY_4.setName("DummyTestCategory4");
-        DUMMY_CATEGORY_4.setTermSource(DUMMY_SOURCE_2);
+        DUMMY_CATEGORY_4.setSource(DUMMY_SOURCE_2);
         DUMMY_CATEGORY_3.getParents().add(DUMMY_CATEGORY_4);
         DUMMY_CATEGORY_4.getChildren().add(DUMMY_CATEGORY_3);
 
@@ -308,7 +308,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         try {
             tx = HibernateUtil.beginTransaction();
             DAO_OBJECT.save(DUMMY_CATEGORY_1);
-            Category retrievedCategory = DAO_OBJECT.getCategory(DUMMY_CATEGORY_1.getTermSource(), DUMMY_CATEGORY_1.getName());
+            Category retrievedCategory = DAO_OBJECT.getCategory(DUMMY_CATEGORY_1.getSource(), DUMMY_CATEGORY_1.getName());
             assertNotNull(retrievedCategory);
             assertEquals(DUMMY_CATEGORY_1.getName(), retrievedCategory.getName());
             tx.commit();

@@ -11,24 +11,24 @@ public class ArrayDesignTest {
     @Test(expected = IllegalArgumentException.class)
     public void testSetType() {
         ArrayDesign arrayDesign = new ArrayDesign();
-        arrayDesign.setType(AssayType.EXON.name());
-        assertEquals(AssayType.EXON.name(), arrayDesign.getType());
-        assertEquals(AssayType.EXON, arrayDesign.getAssayType());
-        arrayDesign.setType(null);
+        arrayDesign.setAssayType(AssayType.EXON.name());
+        assertEquals(AssayType.EXON.name(), arrayDesign.getAssayType());
+        assertEquals(AssayType.EXON, arrayDesign.getAssayTypeEnum());
+        arrayDesign.setAssayType(null);
+        assertNull(arrayDesign.getAssayTypeEnum());
         assertNull(arrayDesign.getAssayType());
-        assertNull(arrayDesign.getType());
-        arrayDesign.setType("illegal value");
+        arrayDesign.setAssayType("illegal value");
     }
 
     @Test
     public void testSetArrayType() {
         ArrayDesign arrayDesign = new ArrayDesign();
-        arrayDesign.setAssayType(AssayType.EXON);
-        assertEquals(AssayType.EXON.name(), arrayDesign.getType());
-        assertEquals(AssayType.EXON, arrayDesign.getAssayType());
-        arrayDesign.setAssayType(null);
+        arrayDesign.setAssayTypeEnum(AssayType.EXON);
+        assertEquals(AssayType.EXON.name(), arrayDesign.getAssayType());
+        assertEquals(AssayType.EXON, arrayDesign.getAssayTypeEnum());
+        arrayDesign.setAssayTypeEnum(null);
+        assertNull(arrayDesign.getAssayTypeEnum());
         assertNull(arrayDesign.getAssayType());
-        assertNull(arrayDesign.getType());
     }
 
 }

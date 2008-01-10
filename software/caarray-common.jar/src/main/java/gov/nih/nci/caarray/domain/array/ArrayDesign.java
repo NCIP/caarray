@@ -114,7 +114,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 
     private String name;
-    private String type;
+    private String assayType;
     private ProtocolApplication printing;
     private Term polymerType;
     private Integer numberOfFeatures;
@@ -354,41 +354,35 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     /**
      * @return the type
      */
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * @param type the type to set
-     */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    public void setType(String type) {
-        checkType(type);
-        this.type = type;
-    }
-
-    private void checkType(String typeValue) {
-        if (typeValue != null) {
-            AssayType.valueOf(typeValue);
-        }
-    }
-
-    /**
-     * @return the assayType
-     */
-    @Transient
-    public AssayType getAssayType() {
-        return getType() == null ? null : AssayType.valueOf(getType());
+    public String getAssayType() {
+        return assayType;
     }
 
     /**
      * @param assayType the assayType to set
      */
-    public void setAssayType(AssayType assayType) {
-        if (assayType == null) {
-            setType(null);
+    public void setAssayType(String assayType) {
+        AssayType.checkType(assayType);
+        this.assayType = assayType;
+    }
+
+    /**
+     * @return the assayType enum
+     */
+    @Transient
+    public AssayType getAssayTypeEnum() {
+        return getAssayType() == null ? null : AssayType.valueOf(getAssayType());
+    }
+
+    /**
+     * @param assayTypeEnum the assayTypeEnum to set
+     */
+    public void setAssayTypeEnum(AssayType assayTypeEnum) {
+        if (assayTypeEnum == null) {
+            setAssayType(null);
         } else {
-            setType(assayType.name());
+            setAssayType(assayTypeEnum.name());
         }
     }
 
