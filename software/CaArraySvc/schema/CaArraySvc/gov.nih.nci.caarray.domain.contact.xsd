@@ -1,65 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.contact" xmlns:edu.wustl.catissuecore.domain="gme://caCORE.caCORE/3.2/edu.wustl.catissuecore.domain" xmlns:gov.nih.nci.caarray.domain="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain" xmlns:gov.nih.nci.caarray.domain.array="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.array" xmlns:gov.nih.nci.caarray.domain.data="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.data" xmlns:gov.nih.nci.caarray.domain.file="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.file" xmlns:gov.nih.nci.caarray.domain.hybridization="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.hybridization" xmlns:gov.nih.nci.caarray.domain.project="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.project" xmlns:gov.nih.nci.caarray.domain.protocol="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.protocol" xmlns:gov.nih.nci.caarray.domain.publication="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.publication" xmlns:gov.nih.nci.caarray.domain.sample="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.sample" xmlns:gov.nih.nci.caarray.domain.vocabulary="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.vocabulary" xmlns:gov.nih.nci.cabio.domain="gme://caCORE.caCORE/3.2/gov.nih.nci.cabio.domain" targetNamespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.contact" elementFormDefault="qualified">
-  <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.publication" schemaLocation="gov.nih.nci.caarray.domain.publication.xsd" />
-  <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.array" schemaLocation="gov.nih.nci.caarray.domain.array.xsd" />
-  <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.project" schemaLocation="gov.nih.nci.caarray.domain.project.xsd" />
-  <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.file" schemaLocation="gov.nih.nci.caarray.domain.file.xsd" />
-  <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.cabio.domain" schemaLocation="gov.nih.nci.cabio.domain.xsd" />
-  <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.hybridization" schemaLocation="gov.nih.nci.caarray.domain.hybridization.xsd" />
-  <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.sample" schemaLocation="gov.nih.nci.caarray.domain.sample.xsd" />
-  <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.protocol" schemaLocation="gov.nih.nci.caarray.domain.protocol.xsd" />
-  <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.data" schemaLocation="gov.nih.nci.caarray.domain.data.xsd" />
-  <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.vocabulary" schemaLocation="gov.nih.nci.caarray.domain.vocabulary.xsd" />
-  <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain" schemaLocation="gov.nih.nci.caarray.domain.xsd" />
-  <xs:import namespace="gme://caCORE.caCORE/3.2/edu.wustl.catissuecore.domain" schemaLocation="edu.wustl.catissuecore.domain.xsd" />
-  <xs:element name="Organization" type="Organization" />
-  <xs:complexType name="Organization">
-    <xs:complexContent>
-      <xs:extension base="AbstractContact">
-        <xs:sequence />
-        <xs:attribute name="name" type="xs:string" />
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:element name="Person" type="Person" />
-  <xs:complexType name="Person">
-    <xs:complexContent>
-      <xs:extension base="AbstractContact">
-        <xs:sequence>
-          <xs:element name="affiliations" minOccurs="0" maxOccurs="unbounded" type="Organization" />
-        </xs:sequence>
-        <xs:attribute name="firstName" type="xs:string" />
-        <xs:attribute name="lastName" type="xs:string" />
-        <xs:attribute name="middleInitials" type="xs:string" />
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:element name="AbstractContact" type="AbstractContact" />
-  <xs:complexType name="AbstractContact">
-    <xs:complexContent>
-      <xs:extension base="gov.nih.nci.caarray.domain:AbstractCaArrayEntity">
-        <xs:sequence>
-          <xs:element name="address" minOccurs="0" maxOccurs="1" type="Address" />
-        </xs:sequence>
-        <xs:attribute name="email" type="xs:string" />
-        <xs:attribute name="fax" type="xs:string" />
-        <xs:attribute name="phone" type="xs:string" />
-        <xs:attribute name="url" type="xs:string" />
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:element name="Address" type="Address" />
-  <xs:complexType name="Address">
-    <xs:complexContent>
-      <xs:extension base="gov.nih.nci.caarray.domain:AbstractCaArrayEntity">
-        <xs:sequence />
-        <xs:attribute name="city" type="xs:string" />
-        <xs:attribute name="state" type="xs:string" />
-        <xs:attribute name="streetAddress1" type="xs:string" />
-        <xs:attribute name="streetAddress2" type="xs:string" />
-        <xs:attribute name="zipCode" type="xs:string" />
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.contact"
+    xmlns:gov.nih.nci.caarray.domain="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain"
+    targetNamespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.contact" elementFormDefault="qualified">
+    <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain"
+        schemaLocation="gov.nih.nci.caarray.domain.xsd" />
+
+    <xs:element name="Organization" type="Organization" />
+    <xs:complexType name="Organization">
+        <xs:complexContent>
+            <xs:extension base="AbstractContact">
+                <xs:sequence />
+                <xs:attribute name="name" type="xs:string" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="Person" type="Person" />
+    <xs:complexType name="Person">
+        <xs:complexContent>
+            <xs:extension base="AbstractContact">
+                <xs:sequence>
+                    <xs:element name="affiliations" minOccurs="0">
+                        <xs:complexType>
+                            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                                <xs:element ref="Organization" />
+                            </xs:choice>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+                <xs:attribute name="firstName" type="xs:string" />
+                <xs:attribute name="lastName" type="xs:string" />
+                <xs:attribute name="middleInitials" type="xs:string" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="AbstractContact" type="AbstractContact" />
+    <xs:complexType name="AbstractContact">
+        <xs:complexContent>
+            <xs:extension base="gov.nih.nci.caarray.domain:AbstractCaArrayEntity">
+                <xs:sequence>
+                    <xs:element name="address" minOccurs="0" maxOccurs="1" type="Address" />
+                </xs:sequence>
+                <xs:attribute name="email" type="xs:string" />
+                <xs:attribute name="fax" type="xs:string" />
+                <xs:attribute name="phone" type="xs:string" />
+                <xs:attribute name="url" type="xs:string" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="Address" type="Address" />
+    <xs:complexType name="Address">
+        <xs:complexContent>
+            <xs:extension base="gov.nih.nci.caarray.domain:AbstractCaArrayEntity">
+                <xs:sequence />
+                <xs:attribute name="city" type="xs:string" />
+                <xs:attribute name="state" type="xs:string" />
+                <xs:attribute name="streetAddress1" type="xs:string" />
+                <xs:attribute name="streetAddress2" type="xs:string" />
+                <xs:attribute name="zipCode" type="xs:string" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
 </xs:schema>
 
