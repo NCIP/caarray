@@ -252,9 +252,7 @@ final class SdrfTranslator extends AbstractTranslator {
             Source source = new Source();
             translateBioMaterial(source, sdrfSource);
             for (Provider sdrfProvider : sdrfSource.getProviders()) {
-                Organization organization = new Organization();
-                organization.setName(sdrfProvider.getName());
-                organization = replaceIfExists(organization);
+                Organization organization = getOrCreateOrganization(sdrfProvider.getName());
                 source.getProviders().add(organization);
             }
             this.nodeTranslations.put(sdrfSource, source);
@@ -436,9 +434,9 @@ final class SdrfTranslator extends AbstractTranslator {
                     getTerm(sdrfCharacteristic.getUnit()));
         } else {
             return new TermBasedCharacteristic(category, getTerm(sdrfCharacteristic.getTerm()));
-        } 
+        }
     }
-    
+
     // Translates arraydesigns to a linked array-arraydesign pair in the caArray domain.
     private void translateArrayDesigns(SdrfDocument document) {
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDesign sdrfArrayDesign : document.getAllArrayDesigns()) {

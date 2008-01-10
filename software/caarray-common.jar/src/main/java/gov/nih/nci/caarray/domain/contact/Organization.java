@@ -90,7 +90,7 @@ import javax.persistence.Entity;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * 
+ *
  */
 @Entity
 @DiscriminatorValue("O")

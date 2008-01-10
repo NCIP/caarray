@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -93,11 +94,14 @@ import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.OntologyTerm;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -109,6 +113,7 @@ abstract class AbstractTranslator {
     private final CaArrayFileSet fileSet;
     private final MageTabTranslationResult translationResult;
     private final CaArrayDaoFactory daoFactory;
+    private final Map<String, Organization> importedOrganizations = new HashMap<String, Organization>();
 
     AbstractTranslator(MageTabDocumentSet documentSet, CaArrayFileSet fileSet,
             MageTabTranslationResult translationResult, CaArrayDaoFactory daoFactory) {
@@ -202,6 +207,32 @@ abstract class AbstractTranslator {
 
         // Error searching database; return original entity.
         return entityToMatch;
+    }
+
+    /**
+     * Creates or retrieves the org witht he given name.
+     * @param name the name.
+     * @return the org.
+     */
+    protected Organization getOrCreateOrganization(String name) {
+
+        Organization org = importedOrganizations.get(name);
+
+        if (org == null && StringUtils.isNotBlank(name)) {
+            Organization entityToMatch = new Organization();
+            entityToMatch.setName(name);
+
+            List<Organization> matchingEntities = getProjectDao().queryEntityAndAssociationsByExample(entityToMatch);
+            if (matchingEntities.isEmpty()) {
+                importedOrganizations.put(name, entityToMatch);
+                org = entityToMatch;
+            } else {
+                // use existing object in database.
+                org = matchingEntities.get(0);
+            }
+        }
+
+        return org;
     }
 
     ProjectDao getProjectDao() {

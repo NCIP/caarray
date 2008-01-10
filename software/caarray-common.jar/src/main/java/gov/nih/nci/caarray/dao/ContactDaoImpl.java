@@ -90,7 +90,7 @@ import org.apache.log4j.Logger;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.contact</code> package.
- * 
+ *
  * @author Dan Kokotov
  */
 class ContactDaoImpl extends AbstractCaArrayDaoImpl implements ContactDao {
@@ -101,7 +101,7 @@ class ContactDaoImpl extends AbstractCaArrayDaoImpl implements ContactDao {
      */
     @SuppressWarnings("unchecked")
     public List<Organization> getAllOrganizations() {
-        return getCurrentSession().createQuery("FROM " + Organization.class.getName()).list();
+        return getCurrentSession().createQuery("FROM " + Organization.class.getName() + "  order by name").list();
     }
 
     @Override
