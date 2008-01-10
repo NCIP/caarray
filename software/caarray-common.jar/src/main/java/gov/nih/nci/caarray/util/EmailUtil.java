@@ -165,7 +165,7 @@ public final class EmailUtil {
         Transport.send(message);
         LOG.debug("email successfully sent");
     }
-    
+
     /**
      * Sends a multipart email with both HTML and plain-text bodies based upon input parameters.
      *
@@ -182,14 +182,14 @@ public final class EmailUtil {
 
         Multipart mp = new MimeMultipart("alternative");
         addBodyPart(mp, htmlMailBody, "text/html");
-        addBodyPart(mp, plainMailBody, "text/plain");        
+        addBodyPart(mp, plainMailBody, "text/plain");
         message.setContent(mp);
-        
+
         LOG.debug("sending email");
         Transport.send(message);
         LOG.debug("email successfully sent");
     }
-    
+
     private static MimeMessage constructMessage(List<String> mailRecipients, String from, String mailSubject)
             throws MessagingException {
         Validate.notEmpty(mailRecipients, "No email recipients are specified");
@@ -204,15 +204,15 @@ public final class EmailUtil {
 
         MimeMessage message = new MimeMessage(MAILSESSION);
         message.setRecipients(Message.RecipientType.TO, addresses.toArray(new Address[addresses.size()]));
-        message.setSender(new InternetAddress(from));
+        message.setFrom(new InternetAddress(from));
         message.setSubject(mailSubject);
 
         return message;
     }
-    
+
     private static void addBodyPart(Multipart mp, String content, String contentType) throws MessagingException {
         BodyPart bp = new MimeBodyPart();
         bp.setContent(content, contentType);
-        mp.addBodyPart(bp);        
+        mp.addBodyPart(bp);
     }
 }
