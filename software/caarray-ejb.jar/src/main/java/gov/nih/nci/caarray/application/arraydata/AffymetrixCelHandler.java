@@ -132,17 +132,20 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
     @Override
     void validate(CaArrayFile caArrayFile, File file, FileValidationResult result,
             ArrayDesignService arrayDesignService) {
-        String celDataFileName;
-        celData.setFileName(file.getAbsolutePath());
-        celDataFileName = StringUtils.defaultIfEmpty(celData.getFileName(), "<MISSING FILE NAME>");
-        if (!celData.read()) {
-            result.addMessage(ValidationMessage.Type.ERROR, "Unable to read the CEL file: "
-                    + celDataFileName);
-        } else {
-            validateHeader(result);
-            validateAgainstDesign(result, arrayDesignService);
+        try {
+            String celDataFileName;
+            celData.setFileName(file.getAbsolutePath());
+            celDataFileName = StringUtils.defaultIfEmpty(celData.getFileName(), "<MISSING FILE NAME>");
+            if (!readCelData(celDataFileName)) {
+                result.addMessage(ValidationMessage.Type.ERROR, "Unable to read the CEL file: "
+                        + celDataFileName);
+            } else {
+                validateHeader(result);
+                validateAgainstDesign(result, arrayDesignService);
+            }
+        } finally {
+            closeCelData();
         }
-        closeCelData();
     }
 
     private void validateAgainstDesign(FileValidationResult result, ArrayDesignService arrayDesignService) {
@@ -191,28 +194,41 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void readCelData(File celFile) {
-        celData.setFileName(celFile.getAbsolutePath());
-        celData.read();
-    }
-
     @Override
     void loadData(DataSet dataSet, List<QuantitationType> types, File celFile) {
-        LOG.debug("Started loadData for file: " + celFile.getName());
-        readCelData(celFile);
-        prepareColumns(dataSet, types, celData.getCells());
-        loadDataIntoColumns(dataSet.getHybridizationDataList().get(0), types);
-        closeCelData();
+        try {
+            LOG.debug("Started loadData for file: " + celFile.getName());
+            readCelData(celFile.getAbsolutePath());
+            prepareColumns(dataSet, types, celData.getCells());
+            loadDataIntoColumns(dataSet.getHybridizationDataList().get(0), types);
+        } finally {
+            closeCelData();
+        }
         LOG.debug("Completed loadData for file: " + celFile.getName());
     }
 
+    /**
+     * @param celFile
+     */
+    private boolean readCelData(String filename) {
+        celData.setFileName(filename);
+        boolean success = celData.read();
+        if (!success) {
+            // This invokes a fileChannel.map call that could possibly fail due to a bug in Java
+            // that causes previous memory mapped files to not be released until after GC.  So
+            // we force a gc here to ensure that is not the cause of our problems
+            System.gc();
+            celData.clear();
+            success = celData.read();
+        }
+        return success;
+    }
+
     private void closeCelData() {
-        // See development tracker issue #9735 for details on why System.gc() used here
+        // See development tracker issue #9735 and dev tracker #10925 for details on why System.gc() used here
         celData.clear();
         celData = null;
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            System.gc();
-        }
+        System.gc();
     }
 
     private void loadDataIntoColumns(HybridizationData hybridizationData, List<QuantitationType> types) {

@@ -128,16 +128,17 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
 
     @Override
     void validate(FileValidationResult result) {
-        if (!loadFusionCDFData()) {
-            if (fusionCDFData == null) {
-                result.addMessage(ValidationMessage.Type.ERROR, "CDF file is missing");
-            } else {
+        try {
+            if (!loadFusionCDFData()) {
+                LOG.error("We were unable to process an uploaded array design file.  The Affy parser recorded the "
+                        + " following error" + fusionCDFData.getError());
                 result.addMessage(ValidationMessage.Type.ERROR,
                         "Unable to read the CDF file : " + fusionCDFData.getFileName());
             }
+            checkForDuplicateDesign(result);
+        } finally {
+            closeCdf();
         }
-        checkForDuplicateDesign(result);
-        closeCdf();
     }
 
     /**
@@ -146,48 +147,56 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     private void checkForDuplicateDesign(FileValidationResult result) {
         ArrayDesign existingDesign =
             getDaoFactory().getArrayDao().getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE,
-                    getFusionCDFData().getChipType());
+                    fusionCDFData.getChipType());
         if (existingDesign != null) {
-            result.addMessage(Type.ERROR, "Affymetrix design " + getFusionCDFData().getChipType()
+            result.addMessage(Type.ERROR, "Affymetrix design " + fusionCDFData.getChipType()
                     + " has already been imported");
         }
     }
 
     private void closeCdf() {
-        // see development tracker issue #9735 for details on why system.gc() used here
+        // See development tracker issue #9735 and dev tracker #10925 for details on why System.gc() used here
         fusionCDFData.clear();
         fusionCDFData = null;
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            System.gc();
-        }
+        System.gc();
     }
 
     @Override
     void load(ArrayDesign arrayDesign) {
-        arrayDesign.setName(getFusionCDFData().getChipType());
-        arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + getFusionCDFData().getChipType());
-        int rows = getFusionCDFData().getHeader().getRows();
-        int cols = getFusionCDFData().getHeader().getCols();
-        arrayDesign.setNumberOfFeatures(rows * cols);
-        closeCdf();
+        try {
+            loadFusionCDFData();
+            arrayDesign.setName(fusionCDFData.getChipType());
+            arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + fusionCDFData.getChipType());
+            int rows = fusionCDFData.getHeader().getRows();
+            int cols = fusionCDFData.getHeader().getCols();
+            arrayDesign.setNumberOfFeatures(rows * cols);
+        } finally {
+            closeCdf();
+        }
     }
 
     @Override
     void createDesignDetails(ArrayDesign arrayDesign) {
-        ArrayDesignDetails designDetails = new ArrayDesignDetails();
-        arrayDesign.setDesignDetails(designDetails);
-        getArrayDao().save(arrayDesign);
-        getArrayDao().flushSession();
-        probeGroup = new ProbeGroup(designDetails);
-        probeGroup.setName(LSID_AUTHORITY + ":" + probeGroup.getClass().getSimpleName() + ":All."
-                + this.getFusionCDFData().getChipType());
-        getDaoFactory().getSearchDao().save(probeGroup);
-        initializeFeaturesCreated(getFusionCDFHeader());
+        try {
+            ArrayDesignDetails designDetails = new ArrayDesignDetails();
+            arrayDesign.setDesignDetails(designDetails);
+            getArrayDao().save(arrayDesign);
+            getArrayDao().flushSession();
 
-        handleProbeSets(designDetails);
-        handleQCProbeSets(designDetails);
-        createMissingFeatures(designDetails);
-        closeCdf();
+            loadFusionCDFData();
+            probeGroup = new ProbeGroup(designDetails);
+            probeGroup.setName(LSID_AUTHORITY + ":" + probeGroup.getClass().getSimpleName() + ":All."
+                    + fusionCDFData.getChipType());
+            getDaoFactory().getSearchDao().save(probeGroup);
+            initializeFeaturesCreated(fusionCDFData.getHeader());
+
+            handleProbeSets(designDetails);
+            handleQCProbeSets(designDetails);
+            createMissingFeatures(designDetails);
+
+        } finally {
+            closeCdf();
+        }
     }
 
     private void initializeFeaturesCreated(FusionCDFHeader fusionCDFHeader) {
@@ -195,14 +204,14 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     }
 
     private void handleProbeSets(ArrayDesignDetails designDetails) {
-        int numProbeSets = getFusionCDFHeader().getNumProbeSets();
+        int numProbeSets = fusionCDFData.getHeader().getNumProbeSets();
         FusionCDFProbeSetInformation probeSetInformation = new FusionCDFProbeSetInformation();
         for (int index = 0; index < numProbeSets; index++) {
             fusionCDFData.getProbeSetInformation(index, probeSetInformation);
             handleProbeSet(probeSetInformation, fusionCDFData.getProbeSetName(index), designDetails);
             if (index % PROBE_SET_BATCH_SIZE == 0) {
                 flushAndClearSession();
-                this.probeGroup = getDaoFactory().getSearchDao().retrieve(ProbeGroup.class, probeGroup.getId());        
+                this.probeGroup = getDaoFactory().getSearchDao().retrieve(ProbeGroup.class, probeGroup.getId());
             }
         }
     }
@@ -250,14 +259,14 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
     }
 
     private void handleQCProbeSets(ArrayDesignDetails designDetails) {
-        int numQCProbeSets = getFusionCDFHeader().getNumQCProbeSets();
+        int numQCProbeSets = fusionCDFData.getHeader().getNumQCProbeSets();
         FusionCDFQCProbeSetInformation qcProbeSetInformation = new FusionCDFQCProbeSetInformation();
         for (int index = 0; index < numQCProbeSets; index++) {
-            getFusionCDFData().getQCProbeSetInformation(index, qcProbeSetInformation);
+            fusionCDFData.getQCProbeSetInformation(index, qcProbeSetInformation);
             handleQCProbeSet(qcProbeSetInformation, designDetails);
             if (index % PROBE_SET_BATCH_SIZE == 0) {
                 flushAndClearSession();
-                this.probeGroup = getDaoFactory().getSearchDao().retrieve(ProbeGroup.class, probeGroup.getId());        
+                this.probeGroup = getDaoFactory().getSearchDao().retrieve(ProbeGroup.class, probeGroup.getId());
             }
         }
     }
@@ -288,22 +297,21 @@ class AffymetrixCdfHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private FusionCDFData getFusionCDFData() {
-        if (fusionCDFData == null) {
-            loadFusionCDFData();
-        }
-        return fusionCDFData;
-    }
-
-    private FusionCDFHeader getFusionCDFHeader() {
-        return getFusionCDFData().getHeader();
-    }
-
     private boolean loadFusionCDFData() {
         fusionCDFData = new FusionCDFData();
         fusionCDFData.setFileName(getFile().getAbsolutePath());
-        return fusionCDFData.read();
+        boolean success = fusionCDFData.read();
+        if (!success) {
+            // This invokes a fileChannel.map call that could possibly fail due to a bug in Java
+            // that causes previous memory mapped files to not be released until after GC.  So
+            // we force a gc here to ensure that is not the cause of our problems
+            System.gc();
+            fusionCDFData.clear();
+            success = fusionCDFData.read();
+        }
+        return success;
     }
+
 
     @Override
     Logger getLog() {
