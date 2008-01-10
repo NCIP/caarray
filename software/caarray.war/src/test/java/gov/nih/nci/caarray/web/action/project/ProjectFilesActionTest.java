@@ -458,11 +458,11 @@ public class ProjectFilesActionTest {
     public void testFilterActions() {
         assertEquals(Action.SUCCESS, action.downloadFilesList());
         assertEquals(Action.SUCCESS, action.downloadFilesListTable());
-        assertTrue(action.getUploadContentType().isEmpty());
-        action.getUploadContentType().add("Test");
-        assertTrue(!action.getUploadContentType().isEmpty());
-        action.setUploadContentType(new ArrayList<String>());
-        assertTrue(action.getUploadContentType().isEmpty());
+        assertTrue(action.getUploadFileName().isEmpty());
+        action.getUploadFileName().add("Test");
+        assertTrue(!action.getUploadFileName().isEmpty());
+        action.setUploadFileName(new ArrayList<String>());
+        assertTrue(action.getUploadFileName().isEmpty());
 
         assertTrue(!action.getAllExtensions().isEmpty());
         action.setAllExtensions(new HashSet<String>());

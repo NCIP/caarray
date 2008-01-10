@@ -152,7 +152,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     private List<File> uploads;
     private List<String> uploadFileNames = new ArrayList<String>();
-    private List<String> uploadContentTypes = new ArrayList<String>();
     private List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
     private InputStream downloadStream;
     private Set<CaArrayFile> files = new HashSet<CaArrayFile>();
@@ -546,7 +545,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 zipFile.close();
                 this.uploads.remove(index);
                 this.uploadFileNames.remove(index);
-                this.uploadContentTypes.remove(index);
             } else {
                 index++;
             }
@@ -631,24 +629,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     public void setUploadFileName(List<String> inUploadFileNames) {
         this.uploadFileNames = inUploadFileNames;
-    }
-
-    /**
-     * returns uploaded content type.
-     *
-     * @return uploadContentTypes
-     */
-    public List<String> getUploadContentType() {
-        return this.uploadContentTypes;
-    }
-
-    /**
-     * sets upload content type.
-     *
-     * @param inContentTypes List
-     */
-    public void setUploadContentType(List<String> inContentTypes) {
-        this.uploadContentTypes = inContentTypes;
     }
 
     /**
