@@ -7,7 +7,7 @@
         <display:setProperty name="pagination.sortdirection.param" value="projects.sortDirection" />
         <display:setProperty name="pagination.pagenumber.param" value="projects.pageNumber" />
         <display:column sortProperty="PUBLIC_ID" title="Experiment ID" sortable="true" >
-            <c:set var="canReadRow" value="${caarrayfn:canRead(row, caarrayfn:currentUser())}"/>                        
+            <c:set var="canReadRow" value="${caarrayfn:canRead(row, caarrayfn:currentUser())}"/>
             <c:choose>
                 <c:when test="${canReadRow}">
                     <c:url var="viewUrl" value="/project/details.action">
@@ -22,8 +22,8 @@
         </display:column>
         <display:column property="experiment.title" sortProperty="TITLE" title="Experiment Title" escapeXml="true" sortable="true"/>
         <display:column sortProperty="ASSAY_TYPE" title="Assay Type" sortable="true" >
-            <s:if test="${row.experiment.assayType != null}">
-                <fmt:message key="${row.experiment.assayType.resourceKey}" />
+            <s:if test="${row.experiment.assayTypeEnum != null}">
+                <fmt:message key="${row.experiment.assayTypeEnum.resourceKey}" />
             </s:if>
             <s:else>&nbsp;
             </s:else>
