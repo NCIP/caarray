@@ -523,7 +523,8 @@
               <include name="**/validation/**" />
               <include name="**/georgetown/**"/>
               <include name="**/Protectable*"/>
-              <include name="**/security/PermissionDeniedException*"/>
+                <include name="**/security/PermissionDeniedException*"/>
+                <include name="**/security/Attribute*"/>
             </fileset>
         </jar>
     </target>
