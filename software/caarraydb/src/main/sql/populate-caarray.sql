@@ -4,24 +4,24 @@ insert into term_source (name, url, version) values ('MO', 'http://mged.sourcefo
 insert into term_source (name, url) values ('ncbitax', 'http://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/');
 insert into term_source (name, version) values ('Caarray', '0.1');
 
-insert into category (term_source, name) select id, 'OrganismPart' from term_source where name='MO';
-insert into category (term_source, name) select id, 'MaterialType' from term_source where name='MO';
-insert into category (term_source, name) select id, 'CellType' from term_source where name='MO';
-insert into category (term_source, name) select id, 'DiseaseState' from term_source where name='MO';
-insert into category (term_source, name) select id, 'ExperimentDesignType' from term_source where name='MO';
-insert into category (term_source, name) select id, 'QualityControlDescriptionType' from term_source where name='MO';
-insert into category (term_source, name) select id, 'ReplicateDescriptionType' from term_source where name='MO';
-insert into category (term_source, name) select id, 'Roles' from term_source where name='MO';
-insert into category (term_source, name) select id, 'PublicationType' from term_source where name='MO';
-insert into category (term_source, name) select id, 'PublicationStatus' from term_source where name='MO';
-insert into category (term_source, name) select id, 'TechnologyType' from term_source where name='MO';
-insert into category (term_source, name) select id, 'ComplexAction' from term_source where name='MO';
-insert into category (term_source, name) select id, 'ProtocolType' from term_source where name='MO';
-insert into category (term_source, name) select term_source.id, 'ExperimentalProtocolType' from term_source where term_source.name='MO';
+insert into category (source, name) select id, 'OrganismPart' from term_source where name='MO';
+insert into category (source, name) select id, 'MaterialType' from term_source where name='MO';
+insert into category (source, name) select id, 'CellType' from term_source where name='MO';
+insert into category (source, name) select id, 'DiseaseState' from term_source where name='MO';
+insert into category (source, name) select id, 'ExperimentDesignType' from term_source where name='MO';
+insert into category (source, name) select id, 'QualityControlDescriptionType' from term_source where name='MO';
+insert into category (source, name) select id, 'ReplicateDescriptionType' from term_source where name='MO';
+insert into category (source, name) select id, 'Roles' from term_source where name='MO';
+insert into category (source, name) select id, 'PublicationType' from term_source where name='MO';
+insert into category (source, name) select id, 'PublicationStatus' from term_source where name='MO';
+insert into category (source, name) select id, 'TechnologyType' from term_source where name='MO';
+insert into category (source, name) select id, 'ComplexAction' from term_source where name='MO';
+insert into category (source, name) select id, 'ProtocolType' from term_source where name='MO';
+insert into category (source, name) select term_source.id, 'ExperimentalProtocolType' from term_source where term_source.name='MO';
 insert into category_parents (category_id, parent_category_id) select c1.id, c2.id from category c1, category c2 where c1.name='ExperimentalProtocolType' and c2.name = 'ProtocolType';
-insert into category (term_source, name) select term_source.id, 'DataTransformationProtocolType' from term_source where term_source.name='MO';
+insert into category (source, name) select term_source.id, 'DataTransformationProtocolType' from term_source where term_source.name='MO';
 insert into category_parents (category_id, parent_category_id) select c1.id, c2.id from category c1, category c2 where c1.name='DataTransformationProtocolType' and c2.name = 'ProtocolType';
-insert into category (term_source, name) select term_source.id, 'HigherLevelAnalysisProtocolType' from term_source where term_source.name='MO';
+insert into category (source, name) select term_source.id, 'HigherLevelAnalysisProtocolType' from term_source where term_source.name='MO';
 insert into category_parents (category_id, parent_category_id) select c1.id, c2.id from category c1, category c2 where c1.name='HigherLevelAnalysisProtocolType' and c2.name = 'ProtocolType';
 
 -- OrganismParts
