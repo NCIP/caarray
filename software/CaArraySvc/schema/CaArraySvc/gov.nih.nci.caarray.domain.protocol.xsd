@@ -40,6 +40,8 @@
                     </xs:element>
                     <xs:element name="type" minOccurs="0" maxOccurs="1"
                         type="gov.nih.nci.caarray.domain.vocabulary:Term" />
+                    <xs:element name="source" minOccurs="0" maxOccurs="1"
+                        type="gov.nih.nci.caarray.domain.vocabulary:TermSource" />
                 </xs:sequence>
                 <xs:attribute name="contact" type="xs:string" />
                 <xs:attribute name="description" type="xs:string" />

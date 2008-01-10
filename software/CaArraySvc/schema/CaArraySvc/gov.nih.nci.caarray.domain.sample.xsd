@@ -191,14 +191,5 @@
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
-    <xs:element name="ValueBasedCharacteristic" type="ValueBasedCharacteristic" />
-    <xs:complexType name="ValueBasedCharacteristic">
-        <xs:complexContent>
-            <xs:extension base="AbstractCharacteristic">
-                <xs:sequence />
-                <xs:attribute name="value" type="xs:string" />
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
 </xs:schema>
 

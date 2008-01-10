@@ -22,7 +22,6 @@
    <ns2:SchemaElement className="ExonProbeAnnotation" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="ExonProbeAnnotation" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
   <ns2:Namespace location="./gov.nih.nci.caarray.domain.vocabulary.xsd" namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.vocabulary" packageName="gov.nih.nci.caarray.domain.vocabulary" xsi:type="ns2:NamespaceType">
-   <ns2:SchemaElement className="Accession" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Accession" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="TermSource" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="TermSource" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="Category" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Category" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="Term" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Term" xsi:type="ns2:SchemaElementType"/>
@@ -78,7 +77,6 @@
    <ns2:SchemaElement className="Sample" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Sample" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="TermBasedCharacteristic" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="TermBasedCharacteristic" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement className="Extract" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="Extract" xsi:type="ns2:SchemaElementType"/>
-   <ns2:SchemaElement className="ValueBasedCharacteristic" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="ValueBasedCharacteristic" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
   <ns2:Namespace location="./edu.wustl.catissuecore.domain.xsd" namespace="gme://caCORE.caCORE/3.2/edu.wustl.catissuecore.domain" packageName="edu.wustl.catissuecore.domain" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="AbstractDomainObject" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="AbstractDomainObject" xsi:type="ns2:SchemaElementType"/>

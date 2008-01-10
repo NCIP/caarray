@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.project"
+    xmlns:edu.georgetown.pir="gme://caCORE.caCORE/3.2/edu.georgetown.pir"
     xmlns:gov.nih.nci.caarray.domain="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain"
     xmlns:gov.nih.nci.caarray.domain.array="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.array"
     xmlns:gov.nih.nci.caarray.domain.contact="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.contact"
@@ -11,6 +12,8 @@
     xmlns:gov.nih.nci.caarray.domain.vocabulary="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.vocabulary"
     targetNamespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.project" elementFormDefault="qualified">
 
+    <xs:import namespace="gme://caCORE.caCORE/3.2/edu.georgetown.pir"
+        schemaLocation="edu.georgetown.pir.xsd" />
     <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.file"
         schemaLocation="gov.nih.nci.caarray.domain.file.xsd" />
     <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.sample"
@@ -27,7 +30,7 @@
         schemaLocation="gov.nih.nci.caarray.domain.array.xsd" />
     <xs:import namespace="gme://caCORE.caCORE/3.2/gov.nih.nci.caarray.domain.contact"
         schemaLocation="gov.nih.nci.caarray.domain.contact.xsd" />
-        
+
     <xs:element name="Factor" type="Factor" />
     <xs:complexType name="Factor">
         <xs:complexContent>
@@ -87,6 +90,13 @@
                             </xs:choice>
                         </xs:complexType>
                     </xs:element>
+                    <xs:element name="experimentDesignTypes" minOccurs="0">
+                        <xs:complexType>
+                            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                                <xs:element ref="gov.nih.nci.caarray.domain.vocabulary:Term" />
+                            </xs:choice>
+                        </xs:complexType>
+                    </xs:element>
                     <xs:element name="qualityControlTypes" minOccurs="0">
                         <xs:complexType>
                             <xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -143,8 +153,14 @@
                             </xs:choice>
                         </xs:complexType>
                     </xs:element>
+                    <xs:element name="organism" minOccurs="0" maxOccurs="1" type="edu.georgetown.pir:Organism" />
                 </xs:sequence>
                 <xs:attribute name="dateOfExperiment" type="xs:dateTime" />
+                <xs:attribute name="assayType" type="xs:string" />
+                <xs:attribute name="experimentDesignDescription" type="xs:string" />
+                <xs:attribute name="qualityControlDescription" type="xs:string" />
+                <xs:attribute name="replicateDescription" type="xs:string" />
+                <xs:attribute name="publicIdentifier" type="xs:string" />
                 <xs:attribute name="description" type="xs:string" />
                 <xs:attribute name="publicReleaseDate" type="xs:dateTime" />
                 <xs:attribute name="title" type="xs:string" />
