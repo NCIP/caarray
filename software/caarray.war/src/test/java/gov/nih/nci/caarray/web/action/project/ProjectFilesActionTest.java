@@ -224,7 +224,6 @@ public class ProjectFilesActionTest {
         contentTypes.add("test");
         this.action.setUpload(files);
         this.action.setUploadFileName(fileNames);
-        this.action.setUploadContentType(contentTypes);
         assertEquals(UPLOAD, this.action.upload());
         assertEquals(2, projectManagementServiceStub.getFilesAddedCount());
     }
