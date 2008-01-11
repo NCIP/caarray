@@ -173,6 +173,11 @@ public final class CaArrayFileSet implements Serializable {
         return true;
     }
 
+    /**
+     * tells if the status is in the set.
+     * @param status the status.
+     * @return true if it is in the set.
+     */
     public boolean statusesContains(FileStatus status) {
         for (CaArrayFile file : files) {
             if (status.equals(file.getFileStatus())) {
