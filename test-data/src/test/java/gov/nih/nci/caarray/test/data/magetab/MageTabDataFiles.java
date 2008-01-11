@@ -110,6 +110,27 @@ public class MageTabDataFiles {
     public static final File SPECIFICATION_EXAMPLE_DIRECTORY =
         new File(MageTabDataFiles.class.getResource("/magetab/specification").getFile());
 
+    public static final File UNSUPPORTED_DATA_EXAMPLE_IDF =
+        new File(MageTabDataFiles.class.getResource("/magetab/unsupported_data/e-mexp-428_v1.0.idf").getFile());
+
+    public static final File UNSUPPORTED_DATA_EXAMPLE_SDRF =
+        new File(MageTabDataFiles.class.getResource("/magetab/unsupported_data/e-mexp-428_v1.0.sdrf").getFile());
+
+    public static final File UNSUPPORTED_DATA_EXAMPLE_ADF =
+        new File(MageTabDataFiles.class.getResource("/magetab/unsupported_data/a-mexp-58f_excerpt_v1.0.adf").getFile());
+
+    public static final File UNSUPPORTED_DATA_EXAMPLE_EXP =
+        new File(MageTabDataFiles.class.getResource("/magetab/unsupported_data/unsupported.mas5.exp").getFile());
+
+    public static final File UNSUPPORTED_DATA_EXAMPLE_DATA_MATRIX =
+        new File(MageTabDataFiles.class.getResource("/magetab/unsupported_data/e-mexp-428data_v1.0.data").getFile());
+
+    public static final File UNSUPPORTED_DATA_ZIP =
+        new File(MageTabDataFiles.class.getResource("/magetab/unsupported_data/unsupported.zip").getFile());
+
+    public static final File UNSUPPORTED_DATA_EXAMPLE_DIRECTORY =
+        new File(MageTabDataFiles.class.getResource("/magetab/unsupported_data").getFile());
+
     public static final File EBI_TEMPLATE_IDF =
         new File(MageTabDataFiles.class.getResource("/magetab/ebi_template/MAGE-TAB_GSK.idf").getFile());
 
