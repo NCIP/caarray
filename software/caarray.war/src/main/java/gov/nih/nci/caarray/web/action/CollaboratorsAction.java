@@ -115,7 +115,7 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
         requiredFields = @RequiredFieldValidator(
                 fieldName = "groupName", key = "struts.validator.requiredString", message = ""),
         stringLengthFields = @StringLengthFieldValidator(
-                fieldName = "groupName", maxLength="254", message="", key="struts.validator.stringLength"
+                fieldName = "groupName", maxLength = "254", message = "", key = "struts.validator.stringLength"
         )
 )
 public class CollaboratorsAction extends ActionSupport {
